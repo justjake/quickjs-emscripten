@@ -1,6 +1,6 @@
 Original code is located at `master` branch
 
-# Make
+# Installation
 ## Ubuntu
 - `sudo apt-get install -y build-essential gcc-multilib`
 - `cd {/YOUR/PATH/TO/}QuickJS`
@@ -37,3 +37,16 @@ goto command line and type
 # known issues
 - doesn't support Blob
 - doesn't support WebWorker
+
+# fun facts
+- compiled executable of `qjsc` does not has speed advantage compare to interpreting script with `qjs`
+
+test it yourself
+ ```
+ # run benchmark with interpretor
+ ./qjs tests/microbench
+ 
+ # run benchmark with compiler
+ ./qjsc -o microbench tests/microbench
+ ./microbench
+ ```
