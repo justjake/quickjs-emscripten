@@ -39,7 +39,7 @@ goto command line and type
 - doesn't support WebWorker
 
 # fun facts
-- compiled executable of `qjsc` does not has speed advantage compare to interpreting script with `qjs`
+- compiled executable of `qjsc` does not has speed advantage compared with interpreting script with `qjs`
 
 test it yourself
  ```
