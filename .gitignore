@@ -50,3 +50,27 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# quick specific
+c_module.c
+examples/c_module
+examples/hello
+examples/hello_module
+hello.c
+hello_world2
+microbench
+microbench-new.txt
+qjs
+qjs32
+qjs32_s
+qjsbn
+qjsbn32
+qjsbnc
+qjsc
+qjscalc
+qjscalc.c
+repl-bn.c
+repl.c
+run-test262
+run-test262-bn
+test_std.js
