@@ -1,0 +1,30 @@
+# See QJS_LIB_OBJS in ../quickjs/Makefile
+DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(shell cat ../quickjs/VERSION)\"
+QJS_ROOT=../quickjs
+QJS_LIBS=$(QJS_ROOT)/quickjs.c $(QJS_ROOT)/libregexp.c $(QJS_ROOT)/libunicode.c $(QJS_ROOT)/cutils.c $(QJS_ROOT)/quickjs-libc.c
+
+# See https://emscripten.org/docs/tools_reference/emcc.html
+CFLAGS+=--closure 1
+CFLAGS+=-O2
+
+# See https://github.com/emscripten-core/emscripten/blob/master/src/settings.js
+SETTINGS:=-s WASM=1
+SETTINGS+=-s EXTRA_EXPORTED_RUNTIME_METHODS='["eval"]'
+SETTINGS+=-s SINGLE_FILE=1
+SETTINGS+=-s MODULARIZE=1
+SETTINGS+=-s EXPORT_ES6=1
+SETTINGS+=-s EXPORT_NAME=QuickJSRaw
+# Don't run main()
+SETTINGS+=-s INVOKE_RUN=0
+
+quickjs-module.js: Makefile interface.c $(QJS_LIBS)
+	emcc \
+		$(SETTINGS) \
+		$(CFLAGS) \
+		$(DEFINES) \
+		-o quickjs-module.js \
+		./interface.c \
+		$(QJS_LIBS)
+
+clean:
+	rm -f quickjs-module.js
