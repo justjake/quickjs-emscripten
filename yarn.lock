@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@types/emscripten@^1.38.0":
+  version "1.38.0"
+  resolved "https://registry.yarnpkg.com/@types/emscripten/-/emscripten-1.38.0.tgz#eba859e3bf94249dcd25bcf853481065a92a6c5c"
+  integrity sha512-qfuBbl9hC0ybmW9s8SDORPgg+LdPV+KRpB8AMdTRqxuQZR4G5T7ozIAVUJLO26N7SFSM1zvDVuZ9+qOX7qt/EQ==
+
 typescript@^3.7.4:
   version "3.7.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.4.tgz#1743a5ec5fef6a1fa9f3e4708e33c81c73876c19"

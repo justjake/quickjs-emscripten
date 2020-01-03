@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
+    "@types/emscripten": "^1.38.0",
     "typescript": "^3.7.4"
   }
 }
