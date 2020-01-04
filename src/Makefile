@@ -17,8 +17,15 @@ SETTINGS+=-s NODEJS_CATCH_EXIT=0
 SETTINGS+=-s SINGLE_FILE=1
 SETTINGS+=-s MODULARIZE=1
 SETTINGS+=-s EXPORT_NAME=QuickJSRaw
+SETTINGS+=-s ASSERTIONS=1
 # Don't run main()
 SETTINGS+=-s INVOKE_RUN=0
+# We're an interrprerter... need more mem
+# This also lets us see stack explosions and bugs during development...
+SETTINGS+=-s ALLOW_MEMORY_GROWTH=1
+# Should we turn this on? We'll need to check `strdup`...
+# QuickJS should hanlde this gracefully...
+# SETTINGS+=-s ABORTING_MALLOC=0
 
 quickjs-emscripten-module.js: Makefile $(C_SOURCES)
 	emcc \

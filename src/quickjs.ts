@@ -1,7 +1,14 @@
-import QuickJSModuleLoader from './quickjs-module'
+import QuickJSModuleLoader from './quickjs-emscripten-module'
 
 const QuickJSModule = QuickJSModuleLoader()
 const initialized = new Promise(resolve => { QuickJSModule.onRuntimeInitialized = resolve })
+
+type SuccessOrFail<T> = {
+  value: T
+  error?: undefined
+} | {
+  error: string | object | number
+}
 
 /**
  * QuickJSFFI contains `cwrap` declarations that expose C functions from the Emscripten module.
@@ -23,12 +30,12 @@ class QuickJS {
    * Note that the result is encoded with JSON, so a snippet that produces a cycle
    * will throw an exception inside QuickJS.
    */
-  eval(code: string) {
+  eval(code: string): SuccessOrFail<any> {
     const result = this.ffi.eval(code)
     try {
       return JSON.parse(result)
     } catch(error) {
-      throw result
+      return { error: result }
     }
   }
 }
