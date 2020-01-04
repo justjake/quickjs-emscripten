@@ -4,8 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:ldarren/QuickJS.git mod",
     "make": "cd src && make",
-    "example": "yarn make && ts-node ./src/examples/hello.ts"
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "yarn make && ts-node ./src/examples/hello.ts"
   },
   "devDependencies": {
     "@types/emscripten": "^1.38.0",
