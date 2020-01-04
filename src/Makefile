@@ -9,10 +9,11 @@ CFLAGS+=-O2
 
 # See https://github.com/emscripten-core/emscripten/blob/master/src/settings.js
 SETTINGS:=-s WASM=1
-SETTINGS+=-s EXTRA_EXPORTED_RUNTIME_METHODS='["eval"]'
+SETTINGS+=-s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
+SETTINGS+=-s EXPORTED_FUNCTIONS='["_eval"]'
+SETTINGS+=-s NODEJS_CATCH_EXIT=0
 SETTINGS+=-s SINGLE_FILE=1
 SETTINGS+=-s MODULARIZE=1
-SETTINGS+=-s EXPORT_ES6=1
 SETTINGS+=-s EXPORT_NAME=QuickJSRaw
 # Don't run main()
 SETTINGS+=-s INVOKE_RUN=0

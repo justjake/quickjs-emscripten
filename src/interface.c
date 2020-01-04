@@ -1,6 +1,6 @@
+#include <string.h>
 #include "../quickjs/quickjs.h"
 #include "../quickjs/quickjs-libc.h"
-#include <string.h>
 
 const char* eval(char* js_code) {
   JSRuntime * runtime = JS_NewRuntime();
