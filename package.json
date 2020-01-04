@@ -3,8 +3,14 @@
   "version": "0.1.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "make": "cd src && make",
+    "example": "yarn make && ts-node ./src/examples/hello.ts"
+  },
   "devDependencies": {
     "@types/emscripten": "^1.38.0",
+    "@types/node": "^13.1.4",
+    "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
   }
 }
