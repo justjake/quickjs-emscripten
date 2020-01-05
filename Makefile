@@ -40,8 +40,9 @@ $(BUILD_ROOT):
 
 ### Executables
 # The WASM module we'll link to typescript
-$(BUILD_WRAPPER)/wasm/quickjs-emscripten-module.js: $(BUILD_WRAPPER)/wasm/interface.o $(QUICKJS_OBJS_WASM)
+$(BUILD_WRAPPER)/wasm/quickjs-emscripten-module.js: $(BUILD_WRAPPER)/wasm/interface.o $(QUICKJS_OBJS_WASM) ts/quickjs-emscripten-module.d.ts
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) -o $@ $< $(QUICKJS_OBJS_WASM)
+	cp ./ts/quickjs-emscripten-module.d.ts $(BUILD_WRAPPER)/wasm
 
 # Trying to debug C...
 $(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(WRAPPER_ROOT) $(QUICKJS_OBJS_NATIVE)

@@ -6,6 +6,10 @@ blogposts about using building a Javascript plugin runtime:
 * [Theory and considerations](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/)
 * [Security follow-up where they switch to QuickJS](https://www.figma.com/blog/an-update-on-plugin-security/)
 
+## Status
+
+**Segfaulting.** This is a learning experience.
+
 ## Related
 
 * Duktape wrapped in Wasm: https://github.com/maple3142/duktape-eval/blob/master/src/Makefile
@@ -17,27 +21,28 @@ This library is implemented in two languages: C and Typescript.
 
 ### The C parts
 
-The C parts are built using `emscripten`. Build outputs are committed
-to the repo in src/quickjs-module.js.
+The ./c directory contains C code that wraps the QuickJS C linrary (in ./quickjs).
 
-To build the C codebase, you'll need `emscripten`.
+The C code builds as both with `emscripten` (using `emcc`), to produce WASM (or
+ASM.js) and with `clang`. Build outputs end up in ./build/wrapper.
+Intermediate object files from QuickJS end up in ./build/quickjs.
 
- Install `emscripten` following the offical instructions here, using
- `emsdk`:
- https://emscripten.org/docs/getting_started/downloads.html#installation-instructions
+You'll need to install `emscripten`. Following the offical instructions here, using `emsdk`:
+https://emscripten.org/docs/getting_started/downloads.html#installation-instructions
 
 Related NPM scripts:
 
 * `yarn update-quickjs` will sync the ./quickjs folder with a
   github repo tracking the upstream QuickJS.
-* `yarn make` will rebuild emscripten outputs inside ./src
+* `yarn make-debug` will rebuild C outputs into ./build/wrapper
 
 ### The Typescript parts
 
-WIP.
+The ./ts directory contains Typescript bindings (via Emscripten & our wrapper) to QuickJS.
 
 You'll need `node` and `npm` or `yarn` to work on them.
 Install dependencies with `npm install` or `yarn install`.
 
-* `yarn build` will produce a fresh ./build output
-* `yarn watch` will watch ./src for changes and build into ./build
+* Build the C parts first: `yarn make-debug`, then:
+* `yarn build` produces ./build/js
+* `yarn watch` will watch ./ts for changes and build into ./build/js

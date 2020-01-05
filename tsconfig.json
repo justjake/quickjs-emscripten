@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*.ts", "src/**/*.js"],
+  "include": ["ts/**/*.ts", "ts/**/*.js", "build/wrapper/*.js", "build/wrapper/*.wasm", "build/wrapper/*.ts"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     /* Basic Options */
@@ -15,7 +15,7 @@
     // "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
     "sourceMap": true,                     /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
-    "outDir": "./build",                        /* Redirect output structure to the directory. */
+    "outDir": "./build/js",                        /* Redirect output structure to the directory. */
     // "composite": true,                     /* Enable project compilation */
     // "tsBuildInfoFile": "./",               /* Specify file to store incremental compilation information */
     // "removeComments": true,                /* Do not emit comments to output. */

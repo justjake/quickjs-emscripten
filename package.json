@@ -1,15 +1,16 @@
 {
   "name": "quickjs-typescript",
   "version": "0.1.0",
-  "main": "index.js",
+  "main": "build/js/quickjs.js",
   "license": "MIT",
   "scripts": {
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:ldarren/QuickJS.git mod",
-    "make-debug": "cd src && make DEBUG=1",
+    "make-debug": "make DEBUG=1",
+    "make-release": "make clean && make",
+    "clean": "make clean",
     "build": "tsc",
     "watch": "tsc --watch",
-    "start": "yarn make-debug && ts-node ./src/examples/hello.ts",
-    "clean": "cd src && make clean"
+    "start": "yarn make-debug && ts-node ./ts/examples/hello.ts"
   },
   "devDependencies": {
     "@types/emscripten": "^1.38.0",
