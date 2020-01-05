@@ -52,13 +52,13 @@ JSValue wrap_error(JSContext *ctx, JSValueConst error) {
         if (!JS_IsException(stack) && !JS_IsUndefined(stack)) {
           QJS_DEBUG("setting stack");
           JS_SetPropertyStr(ctx, error_props, "stack", stack);
-          JS_FreeValue(ctx, stack);
+          /*JS_FreeValue(ctx, stack);*/
           QJS_DEBUG("done: setting stack");
         }
         if (!JS_IsException(message) && !JS_IsUndefined(message)) {
           QJS_DEBUG("setting message");
           JS_SetPropertyStr(ctx, error_props, "message", message);
-          JS_FreeValue(ctx, message);
+          /*JS_FreeValue(ctx, message);*/
           QJS_DEBUG("done: setting message");
         }
 
@@ -80,7 +80,7 @@ JSValue wrap_error(JSContext *ctx, JSValueConst error) {
   if (!JS_IsException(error_as_string)) {
     QJS_DEBUG("converted error to string")
     JS_SetPropertyStr(ctx, result, error_prop, error_as_string);
-    JS_FreeValue(ctx, error_as_string);
+    /*JS_FreeValue(ctx, error_as_string);*/
     return result;
   }
 
@@ -89,7 +89,7 @@ JSValue wrap_error(JSContext *ctx, JSValueConst error) {
   js_std_dump_error(ctx);
   JSValue best_we_could_do = JS_NewString(ctx, QJS_TYPESCRIPT "failed to create error");
   JS_SetPropertyStr(ctx, result, error_prop, best_we_could_do);
-  JS_FreeValue(ctx, best_we_could_do);
+  /*JS_FreeValue(ctx, best_we_could_do);*/
   return result;
 }
 
@@ -105,13 +105,13 @@ char* to_result_json(JSContext* ctx, JSValueConst result, int handle_json_error)
   if (JS_IsException(result)) {
     QJS_DEBUG("handling exception")
     JSValue error = JS_GetException(ctx);
-    QJS_DUMP(error);
+    /*QJS_DUMP(error);*/
     wrapped = wrap_error(ctx, error);
     QJS_DEBUG("wrapped error");
-    /*QJS_DEBUG("wrapped error, now freeing");*/
-    /*JS_FreeValue(ctx, error);*/
-    /*QJS_DEBUG("freed error");*/
-    QJS_DUMP(wrapped);
+    QJS_DEBUG("wrapped error, now freeing");
+    JS_FreeValue(ctx, error);
+    QJS_DEBUG("freed error");
+    /*QJS_DUMP(wrapped);*/
   } else {
     wrapped = wrap_success(ctx, result);
     QJS_DEBUG("wrapped success")
@@ -161,7 +161,7 @@ char* eval(char* js_code) {
   result = to_result_json(ctx, value, 1);
   QJS_DEBUG("got a result");
   /*QJS_DEBUG(result);*/
-  QJS_DUMP(value);
+  /*QJS_DUMP(value);*/
   /*JS_FreeValue(ctx, value);*/
 
   // Free JS stuff
