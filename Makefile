@@ -44,13 +44,16 @@ $(BUILD_WRAPPER)/wasm/quickjs-emscripten-module.js: $(BUILD_WRAPPER)/wasm/interf
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) -o $@ $< $(QUICKJS_OBJS_WASM)
 
 # Trying to debug C...
-$(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(BUILD_WRAPPER)/native/interface.o  $(QUICKJS_OBJS_NATIVE)
-	$(CC) $(CFLAGS) -o $@ $<
+$(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(WRAPPER_ROOT) $(QUICKJS_OBJS_NATIVE)
+	$(CC) $(CFLAGS) -o $@ $< $(QUICKJS_OBJS_NATIVE)
 
 ### Object files
 # Our wrapper
 $(BUILD_WRAPPER)/wasm/%.o: $(WRAPPER_ROOT)/%.c | $(BUILD_ROOT)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) -c -o $@ $<
+
+$(BUILD_WRAPPER)/native/test.o: $(WRAPPER_ROOT)/test.c $(WRAPPER_ROOT)/interface.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(BUILD_WRAPPER)/native/%.o: $(WRAPPER_ROOT)/%.c | $(BUILD_ROOT)
 	$(CC) $(CFLAGS) -c -o $@ $<

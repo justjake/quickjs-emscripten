@@ -7,7 +7,7 @@
 #define QJS_DEBUG(msg) qjs_log(msg);
 #define QJS_DUMP(value) qjs_dump(ctx, value);
 
-void qjs_log(const char* msg) {
+void qjs_log(char* msg) {
   fputs(QJS_TYPESCRIPT, stdout);
   fputs(msg, stdout);
   fputs("\n", stdout);
@@ -100,7 +100,7 @@ JSValue wrap_success(JSContext *ctx, JSValueConst success) {
   return result;
 }
 
-const char* to_result_json(JSContext* ctx, JSValueConst result, int handle_json_error) {
+char* to_result_json(JSContext* ctx, JSValueConst result, int handle_json_error) {
   JSValue wrapped;
   if (JS_IsException(result)) {
     QJS_DEBUG("handling exception")
@@ -139,10 +139,10 @@ const char* to_result_json(JSContext* ctx, JSValueConst result, int handle_json_
   if (!owned_cstring) {
     return NULL;
   }
-  const char* out = strdup(owned_cstring);
-  QJS_DEBUG("duplicated cstring")
+  char* out = strdup(owned_cstring);
+  QJS_DEBUG("duplicated cstring");
   JS_FreeCString(ctx, owned_cstring);
-  QJS_DEBUG("freed cstring. done!")
+  QJS_DEBUG("freed cstring. done!");
   return out;
 }
 
@@ -150,15 +150,19 @@ const char* to_result_json(JSContext* ctx, JSValueConst result, int handle_json_
  * APIs
  */
 
-const char* eval(char* js_code) {
+char* eval(char* js_code) {
+  const char* result = "none";
   // Startup
   JSRuntime *runtime = JS_NewRuntime();
   JSContext *ctx = JS_NewContext(runtime);
 
   // Do stuff
   JSValue value = JS_Eval(ctx, js_code, strlen(js_code), "eval.js", 0);
-  const char* result = to_result_json(ctx, value, 1);
-  JS_FreeValue(ctx, value);
+  result = to_result_json(ctx, value, 1);
+  QJS_DEBUG("got a result");
+  /*QJS_DEBUG(result);*/
+  QJS_DUMP(value);
+  /*JS_FreeValue(ctx, value);*/
 
   // Free JS stuff
   JS_FreeContext(ctx);
