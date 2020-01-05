@@ -170,3 +170,63 @@ char* eval(char* js_code) {
 
   return result;
 }
+
+
+
+/**
+ * FFI
+ */
+
+JSValue *jsvalue_to_heap(JSValue value) {
+  JSValue* result = malloc(sizeof(JSValue));
+  if  (result) {
+    memcpy(result, &value, sizeof(JSValue));
+  }
+  return result;
+}
+
+void QTS_FreeValuePointer(JSContext *ctx, JSValue *value) {
+  JS_FreeValue(ctx, *value);
+  free(value);
+}
+
+JSValue *QTS_NewObject(JSContext *ctx) {
+  return jsvalue_to_heap(JS_NewObject(ctx));
+}
+
+JSValue *QTS_NewFloat64(JSContext *ctx, double num) {
+  return jsvalue_to_heap(JS_NewFloat64(ctx, num));
+}
+
+double QTS_GetFloat64(JSContext *ctx, JSValue *value) {
+  double result = 0;
+  JS_ToFloat64(ctx, &result, *value);
+  return result;
+}
+
+JSValue *QTS_NewString(JSContext *ctx, const char* string) {
+  return jsvalue_to_heap(JS_NewString(ctx, string));
+}
+
+char* QTS_GetString(JSContext *ctx, JSValue *value) {
+  const char* owned = JS_ToCString(ctx, *value);
+  char* result = strdup(owned);
+  JS_FreeCString(ctx, owned);
+  return result;
+}
+
+char* QTS_Typeof(JSContext *ctx, JSValue *value) {
+  const char* result = "";
+  if (JS_IsString(*value)) {
+    result = "string";
+  } else if (JS_IsNumber(*value)) {
+    result = "number";
+  } else if (JS_IsBool(*value)) {
+    result = "boolean";
+  }
+  // TODO: finish
+
+  char* out = malloc(sizeof(char) * strlen(result));
+  strcpy(out, result);
+  return out;
+}

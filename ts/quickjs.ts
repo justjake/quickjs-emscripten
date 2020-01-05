@@ -26,7 +26,7 @@ class QuickJSFFI {
   freeContext: (ctx: ContextPointer) => void = QuickJSModule.cwrap('JS_FreeContext', null, ['number'])
 
   // TODO: implement
-  freeJSValuePointer: (ctx: ContextPointer, value: ValuePointer) => void = QuickJSModule.cwrap('WP_FreeJSValuePointer', null, ['number', 'number'])
+  freeJSValuePointer: (ctx: ContextPointer, value: ValuePointer) => void = QuickJSModule.cwrap('QTS_FreeValuePointer', null, ['number', 'number'])
 
   eval: (code: string) => string = QuickJSModule.cwrap('eval', 'string', ['string'])
 }
