@@ -5,10 +5,11 @@
   "license": "MIT",
   "scripts": {
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:ldarren/QuickJS.git mod",
-    "make": "cd src && make",
+    "make-debug": "cd src && make DEBUG=1",
     "build": "tsc",
     "watch": "tsc --watch",
-    "start": "yarn make && ts-node ./src/examples/hello.ts"
+    "start": "yarn make-debug && ts-node ./src/examples/hello.ts",
+    "clean": "cd src && make clean"
   },
   "devDependencies": {
     "@types/emscripten": "^1.38.0",

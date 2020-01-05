@@ -1,4 +1,4 @@
-import QuickJSModule from './quickjs-emscripten-module'
+import QuickJSModuleLoader from './quickjs-emscripten-module'
 
 const QuickJSModule = QuickJSModuleLoader()
 const initialized = new Promise(resolve => { QuickJSModule.onRuntimeInitialized = resolve })
