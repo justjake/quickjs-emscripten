@@ -1,14 +1,11 @@
 import QuickJSModuleLoader from '../build/wrapper/wasm/quickjs-emscripten-module'
-import { LowLevelJavascriptVm, VmHandle } from './types'
+import { LowLevelJavascriptVm } from './types'
 
 const QuickJSModule = QuickJSModuleLoader()
 const initialized = new Promise(resolve => { QuickJSModule.onRuntimeInitialized = resolve })
 
-const pointerBrand = Symbol('pointer')
-
-
-
 // FFI types
+const pointerBrand = Symbol('pointer')
 type Pointer<Brand extends string> = number & { [pointerBrand]: Brand }
 type RuntimePointer = Pointer<'JSRuntime'>
 type ContextPointer = Pointer<'JSContext'>
@@ -19,25 +16,30 @@ type ValuePointer = Pointer<'JSValue'>
  * @private
  */
 class QuickJSFFI {
-  newRuntime: () => RuntimePointer = QuickJSModule.cwrap('JS_NewRuntime', 'number', [])
-  freeRuntime: (rt: RuntimePointer) => void = QuickJSModule.cwrap('JS_FreeRuntime', null, ['number'])
+  newRuntime: () => RuntimePointer =
+    QuickJSModule.cwrap('JS_NewRuntime', 'number', [])
+  freeRuntime: (rt: RuntimePointer) => void =
+    QuickJSModule.cwrap('JS_FreeRuntime', null, ['number'])
 
-  newContext: (rt: RuntimePointer) => ContextPointer = QuickJSModule.cwrap('JS_NewContext', 'number', ['number'])
-  freeContext: (ctx: ContextPointer) => void = QuickJSModule.cwrap('JS_FreeContext', null, ['number'])
+  newContext: (rt: RuntimePointer) => ContextPointer =
+    QuickJSModule.cwrap('JS_NewContext', 'number', ['number'])
+  freeContext: (ctx: ContextPointer) => void =
+    QuickJSModule.cwrap('JS_FreeContext', null, ['number'])
 
   // TODO: implement
-  freeJSValuePointer: (ctx: ContextPointer, value: ValuePointer) => void = QuickJSModule.cwrap('QTS_FreeValuePointer', null, ['number', 'number'])
+  freeJSValuePointer: (ctx: ContextPointer, value: ValuePointer) => void =
+    QuickJSModule.cwrap('QTS_FreeValuePointer', null, ['number', 'number'])
 
   newObject: (ctx: ContextPointer) => ValuePointer =
     QuickJSModule.cwrap('QTS_NewObject', 'number', ['number'])
-  newNumber: (ctx: ContextPointer, num: number) => ValuePointer =
+  newFloat64: (ctx: ContextPointer, num: number) => ValuePointer =
     QuickJSModule.cwrap('QTS_NewFloat64', 'number', ['number', 'number'])
   newString: (ctx: ContextPointer, str: string) => ValuePointer =
     QuickJSModule.cwrap('QTS_NewString', 'number', ['number', 'string'])
 
   typeof: (ctx: ContextPointer, val: ValuePointer) => string =
     QuickJSModule.cwrap('QTS_GetFloat64', 'number', ['number', 'number'])
-  getNumber: (ctx: ContextPointer, val: ValuePointer) => number =
+  getFloat64: (ctx: ContextPointer, val: ValuePointer) => number =
     QuickJSModule.cwrap('QTS_GetFloat64', 'number', ['number', 'number'])
   getString: (ctx: ContextPointer, val: ValuePointer) => string =
     QuickJSModule.cwrap('QTS_GetString', 'string', ['number', 'number'])
@@ -90,7 +92,7 @@ class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
 
   typeof(handle: QuickJSValueHandle) {
     // no need to check owner
-    return this.ffi.typeof(handle.pointer.value)
+    return this.ffi.typeof(this.ctx.value, handle.pointer.value)
   }
 
   getNumber(handle: QuickJSValueHandle) {

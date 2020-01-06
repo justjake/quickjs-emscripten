@@ -173,7 +173,19 @@ char* QTS_EvalToJSON(char* js_code) {
 
 /**
  * FFI
+ *
+ * Functions starting with "QTS_" are exported to:
+ * - interface.h for native
+ * - ffi.ts for emscripten
  */
+
+JSRuntime *QTS_NewRuntime() {
+  return JS_NewRuntime();
+}
+
+JSContext *QTS_NewContext(JSRuntime *rt) {
+  return JS_NewContext(rt);
+}
 
 JSValue *jsvalue_to_heap(JSValueConst value) {
   JSValue* result = malloc(sizeof(JSValue));
