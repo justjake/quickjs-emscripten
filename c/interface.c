@@ -178,13 +178,25 @@ char* QTS_EvalToJSON(char* js_code) {
  * - interface.h for native
  * - ffi.ts for emscripten
  */
+const JSValue QTS_Undefined = JS_UNDEFINED;
+const JSValue * QTS_GetUndefined() {
+  return &QTS_Undefined;
+}
 
 JSRuntime *QTS_NewRuntime() {
   return JS_NewRuntime();
 }
 
+void QTS_FreeRuntime(JSRuntime *rt) {
+  JS_FreeRuntime(rt);
+}
+
 JSContext *QTS_NewContext(JSRuntime *rt) {
   return JS_NewContext(rt);
+}
+
+void QTS_FreeContext(JSContext *rt) {
+  JS_FreeContext(rt);
 }
 
 JSValue *jsvalue_to_heap(JSValueConst value) {
