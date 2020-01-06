@@ -10,7 +10,8 @@
     "clean": "make clean",
     "build": "tsc",
     "watch": "tsc --watch",
-    "start": "yarn make-debug && ts-node ./ts/examples/hello.ts"
+    "run-ts": "yarn make-debug && ts-node ./ts/examples/hello.ts",
+    "run-n": "yarn make-debug && ./build/wrapper/native/test.exe"
   },
   "devDependencies": {
     "@types/emscripten": "^1.38.0",
