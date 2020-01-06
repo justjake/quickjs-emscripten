@@ -104,14 +104,11 @@ char* to_result_json(JSContext* ctx, JSValue result, int handle_json_error) {
   if (JS_IsException(result)) {
     QJS_DEBUG("handling exception")
     JSValue error = JS_GetException(ctx);
-    /*QJS_DUMP(error);*/
+    QJS_DUMP(error);
     wrapped = wrap_error(ctx, error);
-    QJS_DEBUG("wrapped error");
-    QJS_DEBUG("wrapped error, now freeing");
     JS_FreeValue(ctx, error);
     JS_FreeValue(ctx, result);
-    QJS_DEBUG("freed error");
-    /*QJS_DUMP(wrapped);*/
+    QJS_DEBUG("freed error & result");
   } else {
     wrapped = wrap_success(ctx, result);
     // wrap_success consumes result;no free
@@ -151,7 +148,7 @@ char* to_result_json(JSContext* ctx, JSValue result, int handle_json_error) {
  * APIs
  */
 
-char* eval(char* js_code) {
+char* QTS_EvalToJSON(char* js_code) {
   const char* result = "none";
   // Startup
   JSRuntime *runtime = JS_NewRuntime();

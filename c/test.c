@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "interface.c"
+#include "interface.h"
 
 void eval_and_log(char* code) {
-  char* result = eval(code);
+  char* result = QTS_EvalToJSON(code);
   fputs("-->\n", stdout);
   fputs(result, stdout);
   fputs("<--\n", stdout);

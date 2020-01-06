@@ -15,7 +15,7 @@ QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\"
 
 CFLAGS_EMCC+=-s WASM=1
 CFLAGS_EMCC+=-s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
-CFLAGS_EMCC+=-s EXPORTED_FUNCTIONS='["_eval"]'
+CFLAGS_EMCC+=-s EXPORTED_FUNCTIONS=$(shell cat $(WRAPPER_ROOT)/symbols.json)
 CFLAGS_EMCC+=-s NODEJS_CATCH_EXIT=0
 CFLAGS_EMCC+=-s MODULARIZE=1
 CFLAGS_EMCC+=-s EXPORT_NAME=QuickJSRaw
@@ -34,9 +34,16 @@ endif
 all: $(BUILD_DIR) $(BUILD_WRAPPER)/wasm/quickjs-emscripten-module.js $(BUILD_WRAPPER)/native/test.exe
 
 $(BUILD_ROOT):
+	make $(WRAPPER_ROOT)/symbols.json
 	mkdir -p \
 		$(BUILD_WRAPPER)/wasm $(BUILD_WRAPPER)/native \
 		$(BUILD_QUICKJS)/wasm $(BUILD_QUICKJS)/native
+
+$(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c $(WRAPPER_ROOT)/generate.js
+	cat $< | node $(WRAPPER_ROOT)/generate.js header > $@ || rm $@
+
+$(WRAPPER_ROOT)/symbols.json: $(WRAPPER_ROOT)/interface.c $(WRAPPER_ROOT)/generate.js
+	cat $< | node $(WRAPPER_ROOT)/generate.js symbols > $@ || rm $@
 
 ### Executables
 # The WASM module we'll link to typescript
@@ -45,15 +52,15 @@ $(BUILD_WRAPPER)/wasm/quickjs-emscripten-module.js: $(BUILD_WRAPPER)/wasm/interf
 	cp ./ts/quickjs-emscripten-module.d.ts $(BUILD_WRAPPER)/wasm
 
 # Trying to debug C...
-$(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(WRAPPER_ROOT) $(QUICKJS_OBJS_NATIVE)
-	$(CC) $(CFLAGS) -o $@ $< $(QUICKJS_OBJS_NATIVE)
+$(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(BUILD_WRAPPER)/native/interface.o $(WRAPPER_ROOT) $(QUICKJS_OBJS_NATIVE)
+	$(CC) $(CFLAGS) -o $@ $< $(BUILD_WRAPPER)/native/interface.o $(QUICKJS_OBJS_NATIVE)
 
 ### Object files
 # Our wrapper
 $(BUILD_WRAPPER)/wasm/%.o: $(WRAPPER_ROOT)/%.c | $(BUILD_ROOT)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) -c -o $@ $<
 
-$(BUILD_WRAPPER)/native/test.o: $(WRAPPER_ROOT)/test.c $(WRAPPER_ROOT)/interface.c
+$(BUILD_WRAPPER)/native/test.o: $(WRAPPER_ROOT)/test.c $(WRAPPER_ROOT)/interface.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(BUILD_WRAPPER)/native/%.o: $(WRAPPER_ROOT)/%.c | $(BUILD_ROOT)

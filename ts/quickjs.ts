@@ -28,7 +28,21 @@ class QuickJSFFI {
   // TODO: implement
   freeJSValuePointer: (ctx: ContextPointer, value: ValuePointer) => void = QuickJSModule.cwrap('QTS_FreeValuePointer', null, ['number', 'number'])
 
-  eval: (code: string) => string = QuickJSModule.cwrap('eval', 'string', ['string'])
+  newObject: (ctx: ContextPointer) => ValuePointer =
+    QuickJSModule.cwrap('QTS_NewObject', 'number', ['number'])
+  newNumber: (ctx: ContextPointer, num: number) => ValuePointer =
+    QuickJSModule.cwrap('QTS_NewFloat64', 'number', ['number', 'number'])
+  newString: (ctx: ContextPointer, str: string) => ValuePointer =
+    QuickJSModule.cwrap('QTS_NewString', 'number', ['number', 'string'])
+
+  typeof: (ctx: ContextPointer, val: ValuePointer) => string =
+    QuickJSModule.cwrap('QTS_GetFloat64', 'number', ['number', 'number'])
+  getNumber: (ctx: ContextPointer, val: ValuePointer) => number =
+    QuickJSModule.cwrap('QTS_GetFloat64', 'number', ['number', 'number'])
+  getString: (ctx: ContextPointer, val: ValuePointer) => string =
+    QuickJSModule.cwrap('QTS_GetString', 'string', ['number', 'number'])
+
+  evalToJSON: (code: string) => string = QuickJSModule.cwrap('QTS_EvalToJSON', 'string', ['string'])
 }
 
 class Freeable<T> {
