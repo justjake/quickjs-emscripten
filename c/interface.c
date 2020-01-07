@@ -294,6 +294,65 @@ void QTS_DefineProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_n
   JS_FreeAtom(ctx, prop_atom);
 }
 
+
+JSValue *QTS_Call(JSContext *ctx, JSValueConst *func_obj, JSValueConst *this_obj, int argc, JSValueConst **argv_ptrs) {
+  // convert array of pointers to array of values
+  JSValueConst argv[argc];
+  int i;
+  for (i=0; i<argc; i++) {
+    argv[i] = *(argv_ptrs[i]);
+  }
+
+  return jsvalue_to_heap(JS_Call(ctx, *func_obj, *this_obj, argc, argv));
+}
+
+/**
+ * If maybe_exception is an exception, get the error.
+ * Otherwise, return NULL.
+ */
+JSValue *QTS_ResolveException(JSContext *ctx, JSValue *maybe_exception) {
+  if (JS_IsException(*maybe_exception)) {
+    return jsvalue_to_heap(JS_GetException(ctx));
+  }
+
+  return NULL;
+}
+
+char *QTS_Dump(JSContext *ctx, JSValueConst *obj) {
+  JSValue obj_json_value = JS_JSONStringify(ctx, *obj, JS_UNDEFINED, JS_UNDEFINED);
+  if (!JS_IsException(obj_json_value)) {
+    const char* obj_json_chars = JS_ToCString(ctx, obj_json_value);
+    JS_FreeValue(ctx, obj_json_value);
+    if (obj_json_chars != NULL) {
+      JSValue enumerable_props = JS_ParseJSON(ctx, obj_json_chars, strlen(obj_json_chars), "<dump>");
+      JS_FreeCString(ctx, obj_json_chars);
+      if (!JS_IsException(enumerable_props)) {
+        // Copy common non-enumerable props for different object types.
+        // Errors:
+        copy_prop_if_needed(ctx, enumerable_props, *obj, "name");
+        copy_prop_if_needed(ctx, enumerable_props, *obj, "message");
+        copy_prop_if_needed(ctx, enumerable_props, *obj, "stack");
+
+        // Serialize again.
+        JSValue enumerable_json = JS_JSONStringify(ctx, enumerable_props, JS_UNDEFINED, JS_UNDEFINED);
+        char * result = QTS_GetString(ctx, &enumerable_json);
+        JS_FreeValue(ctx, enumerable_json);
+        return result;
+      }
+    }
+  }
+
+  QJS_DEBUG("Error dumping JSON:");
+  js_std_dump_error(ctx);
+
+  // Fallback: convert to string
+  return QTS_GetString(ctx, obj);
+}
+
+JSValue *QTS_Eval(JSContext *ctx, const char* js_code) {
+  return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), "eval.js", 0));
+}
+
 char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   const char* result = "";
 

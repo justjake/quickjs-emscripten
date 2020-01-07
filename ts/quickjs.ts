@@ -1,6 +1,6 @@
 import QuickJSModuleLoader from '../build/wrapper/wasm/quickjs-emscripten-module'
 import { QuickJSFFI, JSContextPointer, JSValuePointer, JSRuntimePointer } from '../build/wrapper/wasm/ffi'
-import { LowLevelJavascriptVm, VmPropertyDescriptor } from './types'
+import { LowLevelJavascriptVm, VmPropertyDescriptor, VmCallResult } from './types'
 
 const QuickJSModule = QuickJSModuleLoader()
 const initialized = new Promise(resolve => { QuickJSModule.onRuntimeInitialized = resolve })
@@ -31,7 +31,7 @@ class Freeable<T> {
   }
 }
 
-class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
+export class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
   readonly ctx: Freeable<JSContextPointer>
   readonly rt: Freeable<JSRuntimePointer>
 
@@ -183,7 +183,39 @@ class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
     }
   }
 
+  callFunction(func: QuickJSValueHandle, thisVal: QuickJSValueHandle, ...args: QuickJSValueHandle[]): VmCallResult<QuickJSValueHandle> {
+    const argsArrayPtr = this.toPointerArray(args)
+    const resultPtr = this.ffi.QTS_Call(this.ctx.value, func.value, thisVal.value, args.length, argsArrayPtr.value)
+    argsArrayPtr.free()
+
+    const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
+    if (errorPtr) {
+      this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
+      return { error: this.heapValueHandle(errorPtr) }
+    }
+
+    return { value: this.heapValueHandle(resultPtr) }
+  }
+
+  evalCode(code: string): VmCallResult<QuickJSValueHandle> {
+    const resultPtr = this.ffi.QTS_Eval(this.ctx.value, code)
+    const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
+    if (errorPtr) {
+      this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
+      return { error: this.heapValueHandle(errorPtr) }
+    }
+    return { value: this.heapValueHandle(resultPtr) }
+  }
+
   // customizations
+  dump(handle: QuickJSValueHandle) {
+    const str = this.ffi.QTS_Dump(this.ctx.value, handle.value)
+    try {
+      return JSON.parse(str)
+    } catch (err) {
+      return str
+    }
+  }
 
   free() {
     this.ctx.free()
@@ -206,6 +238,19 @@ class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
     if (handle.vm !== this) {
       throw new Error('Given handle created by a different VM')
     }
+  }
+
+  private heapValueHandle(ptr: JSValuePointer) {
+    return new QuickJSValueHeap(this, ptr)
+  }
+
+  private toPointerArray(handleArray: QuickJSValueHandle[]): Freeable<JSValueConstPointerPointer> {
+    const typedArray = new Int32Array(handleArray.map(handle => handle.value))
+    const numBytes = typedArray.length * typedArray.BYTES_PER_ELEMENT
+    const ptr = this.module._malloc(numBytes) as JSValueConstPointerPointer
+    var heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes);
+    heapBytes.set(new Uint8Array(typedArray.buffer));
+    return new Freeable(ptr, ptr => this.module._free(ptr))
   }
 }
 

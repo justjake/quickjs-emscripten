@@ -5,4 +5,5 @@ type JSRuntimePointer = Pointer<'JSRuntime'>
 type JSContextPointer = Pointer<'JSContext'>
 type JSValuePointer = Pointer<'JSValue'>
 type JSValueConstPointer = Pointer<'JSValueConst'>
+type JSValueConstPointerPointer = Pointer<'JSValueConst[]'>
 type JSCFunctionPointer = Pointer<'JSCFunction'>

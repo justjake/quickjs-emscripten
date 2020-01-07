@@ -68,7 +68,7 @@ function cTypeToTypescriptType(ctype: string) {
     return { ffi: 'string', typescript: 'string', ctype }
   }
 
-  let typescript = type.replace('*', 'Pointer')
+  let typescript = type.replace(/\*/g, 'Pointer')
   let ffi: string | null = 'number'
 
   if (type === 'bool') { ffi = 'boolean'; typescript = 'boolean' }

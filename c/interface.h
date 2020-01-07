@@ -24,4 +24,8 @@ JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index);
 JSValue *QTS_GetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name);
 void QTS_SetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name, JSValueConst *prop_value);
 void QTS_DefineProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name, JSValueConst *prop_value, JSValueConst *get, JSValueConst *set, bool configurable, bool enumerable);
+JSValue *QTS_Call(JSContext *ctx, JSValueConst *func_obj, JSValueConst *this_obj, int argc, JSValueConst **argv_ptrs);
+JSValue *QTS_ResolveException(JSContext *ctx, JSValue *maybe_exception);
+char *QTS_Dump(JSContext *ctx, JSValueConst *obj);
+JSValue *QTS_Eval(JSContext *ctx, const char* js_code);
 char* QTS_Typeof(JSContext *ctx, JSValueConst *value);

@@ -8,6 +8,11 @@ export type SuccessOrFail<S, F> = {
 export type VmCallResult<VmHandle> = SuccessOrFail<VmHandle, VmHandle>
 
 /**
+ * A minimal interface to a Javascript execution environment.
+ *
+ * Higher-level tools should build over the LowLevelJavascriptVm interface to
+ * share as much as possible between executors.
+ *
  * From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
  */
 export interface LowLevelJavascriptVm<VmHandle> {
