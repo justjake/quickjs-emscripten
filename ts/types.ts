@@ -36,6 +36,7 @@ export interface LowLevelJavascriptVm<VmHandle> {
  * From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
  */
 export interface VmPropertyDescriptor<VmHandle> {
+  value?: VmHandle
   configurable?: boolean
   enumerable?: boolean
   get?: (this: VmHandle) => VmHandle

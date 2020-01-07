@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>  // For NAN
+#include <stdbool.h>
 #include "../quickjs/quickjs.h"
 #include "../quickjs/quickjs-libc.h"
 
@@ -178,8 +179,8 @@ char* QTS_EvalToJSON(char* js_code) {
  * - interface.h for native
  * - ffi.ts for emscripten
  */
-const JSValue QTS_Undefined = JS_UNDEFINED;
-const JSValue * QTS_GetUndefined() {
+JSValueConst QTS_Undefined = JS_UNDEFINED;
+JSValue *QTS_GetUndefined() {
   return &QTS_Undefined;
 }
 
@@ -212,15 +213,23 @@ void QTS_FreeValuePointer(JSContext *ctx, JSValue *value) {
   free(value);
 }
 
+JSValue *QTS_DupValuePointer(JSContext* ctx, JSValueConst *val) {
+  return jsvalue_to_heap(JS_DupValue(ctx, *val));
+}
+
 JSValue *QTS_NewObject(JSContext *ctx) {
   return jsvalue_to_heap(JS_NewObject(ctx));
+}
+
+JSValue *QTS_NewObjectProto(JSContext *ctx, JSValueConst *proto) {
+  return jsvalue_to_heap(JS_NewObjectProto(ctx, *proto));
 }
 
 JSValue *QTS_NewFloat64(JSContext *ctx, double num) {
   return jsvalue_to_heap(JS_NewFloat64(ctx, num));
 }
 
-double QTS_GetFloat64(JSContext *ctx, JSValue *value) {
+double QTS_GetFloat64(JSContext *ctx, JSValueConst *value) {
   double result = NAN;
   JS_ToFloat64(ctx, &result, *value);
   return result;
@@ -230,14 +239,62 @@ JSValue *QTS_NewString(JSContext *ctx, const char* string) {
   return jsvalue_to_heap(JS_NewString(ctx, string));
 }
 
-char* QTS_GetString(JSContext *ctx, JSValue *value) {
+char* QTS_GetString(JSContext *ctx, JSValueConst *value) {
   const char* owned = JS_ToCString(ctx, *value);
   char* result = strdup(owned);
   JS_FreeCString(ctx, owned);
   return result;
 }
 
-char* QTS_Typeof(JSContext *ctx, JSValue *value) {
+JSValue *QTS_NewFunction(JSContext *ctx, JSCFunction *fn, const char* name) {
+  return jsvalue_to_heap(JS_NewCFunction(ctx, fn, name, strlen(name)));
+}
+
+JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
+  return &argv[index];
+}
+
+JSValue *QTS_GetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name) {
+  JSAtom prop_atom = JS_ValueToAtom(ctx, *prop_name);
+  JSValue prop_val = JS_GetProperty(ctx, *this_val, prop_atom);
+  JS_FreeAtom(ctx, prop_atom);
+  return jsvalue_to_heap(prop_val);
+}
+
+void QTS_SetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name, JSValueConst *prop_value) {
+  JSAtom prop_atom = JS_ValueToAtom(ctx, *prop_name);
+  JSValue extra_prop_value = JS_DupValue(ctx, *prop_value);
+  // TODO: should we use DefineProperty internally if this object doesn't have the property yet?
+  JS_SetProperty(ctx, *this_val, prop_atom, extra_prop_value); // consumes extra_prop_value
+  JS_FreeAtom(ctx, prop_atom);
+}
+
+void QTS_DefineProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name, JSValueConst *prop_value, JSValueConst *get, JSValueConst *set, bool configurable, bool enumerable) {
+  JSAtom prop_atom = JS_ValueToAtom(ctx, *prop_name);
+
+  int flags = 0;
+  if (configurable) {
+    flags = flags | JS_PROP_HAS_CONFIGURABLE;
+  }
+  if (enumerable) {
+    flags = flags | JS_PROP_HAS_ENUMERABLE;
+  }
+  if (!JS_IsUndefined(*get)) {
+    flags = flags | JS_PROP_HAS_GET;
+  }
+  if (!JS_IsUndefined(*set)) {
+    flags = flags | JS_PROP_HAS_SET;
+  }
+  if (!JS_IsUndefined(*prop_value)) {
+    flags = flags | JS_PROP_HAS_VALUE;
+  }
+
+  JS_DefineProperty(ctx, *this_val, prop_atom, *prop_value, *get, *set, flags);
+
+  JS_FreeAtom(ctx, prop_atom);
+}
+
+char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   const char* result = "";
 
   if (JS_IsNumber(*value)) { result = "number"; }

@@ -13,9 +13,10 @@ QUICKJS_OBJS_NATIVE=$(patsubst %.o, $(BUILD_QUICKJS)/native/%.o, $(QUICKJS_OBJS)
 QUICKJS_CONFIG_VERSION=$(shell cat $(QUICKJS_ROOT)/VERSION)
 QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\"
 
+EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=$(shell cat $(WRAPPER_ROOT)/symbols.json)
+
 CFLAGS_EMCC+=-s WASM=1
-CFLAGS_EMCC+=-s EXTRA_EXPORTED_RUNTIME_METHODS='["cwrap"]'
-CFLAGS_EMCC+=-s EXPORTED_FUNCTIONS=$(shell cat $(WRAPPER_ROOT)/symbols.json)
+CFLAGS_EMCC+=-s EXTRA_EXPORTED_RUNTIME_METHODS='["cwrap", "addFunction", "removeFunction"]'
 CFLAGS_EMCC+=-s NODEJS_CATCH_EXIT=0
 CFLAGS_EMCC+=-s MODULARIZE=1
 CFLAGS_EMCC+=-s EXPORT_NAME=QuickJSRaw
@@ -39,20 +40,20 @@ $(BUILD_ROOT):
 		$(BUILD_QUICKJS)/wasm $(BUILD_QUICKJS)/native
 
 # Generated source files
-$(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c generate.ts $(BUILD_ROOT)
+$(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 	ts-node generate.ts header $@
 
 # generate.ts not listed because it changes more often for other reasons
 $(BUILD_WRAPPER)/symbols.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 	ts-node generate.ts symbols $@
 
-$(BUILD_WRAPPER)/wasm/ffi.ts: $(WRAPPER_ROOT)/interface.c generate.ts $(TY) $(BUILD_ROOT) ts/ffi-types.ts
+$(BUILD_WRAPPER)/wasm/ffi.ts: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT) ts/ffi-types.ts
 	ts-node generate.ts ffi $@
 
 ### Executables
 # The WASM module we'll link to typescript
 $(BUILD_WRAPPER)/wasm/quickjs-emscripten-module.js: $(BUILD_WRAPPER)/wasm/interface.o $(QUICKJS_OBJS_WASM) ts/quickjs-emscripten-module.d.ts
-	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) -o $@ $< $(QUICKJS_OBJS_WASM)
+	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(QUICKJS_OBJS_WASM)
 	cp ./ts/quickjs-emscripten-module.d.ts $(BUILD_WRAPPER)/wasm
 
 # Trying to debug C...
@@ -61,8 +62,8 @@ $(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(BUILD_WRAPPER
 
 ### Object files
 # Our wrapper
-$(BUILD_WRAPPER)/wasm/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.json  $(BUILD_ROOT)
-	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) -c -o $@ $<
+$(BUILD_WRAPPER)/wasm/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.json $(BUILD_ROOT)
+	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -c -o $@ $<
 
 $(BUILD_WRAPPER)/native/test.o: $(WRAPPER_ROOT)/test.c $(WRAPPER_ROOT)/interface.h
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -71,7 +72,7 @@ $(BUILD_WRAPPER)/native/%.o: $(WRAPPER_ROOT)/%.c | $(BUILD_ROOT)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 # QuickJS
-$(BUILD_QUICKJS)/wasm/%.o: $(QUICKJS_ROOT)/%.c $(BUILD_WRAPPER)/symbols.json $(BUILD_ROOT)
+$(BUILD_QUICKJS)/wasm/%.o: $(QUICKJS_ROOT)/%.c $(BUILD_ROOT)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(QUICKJS_DEFINES) -c -o $@ $<
 
 $(BUILD_QUICKJS)/native/%.o: $(QUICKJS_ROOT)/%.c | $(BUILD_ROOT)

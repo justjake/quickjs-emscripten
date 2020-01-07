@@ -9,6 +9,7 @@ const DECL_RE = /^([\w*]+[\s*]+)(QTS_\w+)(\((.*?)\)) ?{$/gm
 function writeFile(filename:  string, content: string) {
   if (filename === '-') {
     console.log(content)
+    return
   }
 
   fs.writeFileSync(filename, content + '\n', 'utf-8')
@@ -70,8 +71,9 @@ function cTypeToTypescriptType(ctype: string) {
   let typescript = type.replace('*', 'Pointer')
   let ffi: string | null = 'number'
 
+  if (type === 'bool') { ffi = 'boolean'; typescript = 'boolean' }
   if (type === 'void') { ffi = null }
-  if (type === 'double') { ffi = 'number'; typescript = 'number' }
+  if (type === 'double' || type === 'int') { ffi = 'number'; typescript = 'number' }
   if (type.includes('*')) { ffi = 'number' }
 
   return { typescript, ffi, ctype }
@@ -91,7 +93,14 @@ function buildFFI(matches: RegExpExecArray[]) {
     return { functionName, returnType: cTypeToTypescriptType(returnType.trim()), params }
   })
   const decls = parsed.map(fn => {
-    const typescriptParams = fn.params.map(param => `${param.name}: ${param.type.typescript}`).join(', ')
+    const typescriptParams = fn.params.map(param => {
+      // Allow JSValue wherever JSValueConst is accepted.
+      const tsType = param.type.typescript === 'JSValueConstPointer' ?
+        'JSValuePointer | JSValueConstPointer' :
+        param.type.typescript
+
+      return `${param.name}: ${tsType}`
+    }).join(', ')
     const typescriptFnType = `(${typescriptParams}) => ${fn.returnType.typescript}`
     const ffiParams = JSON.stringify(fn.params.map(param => param.type.ffi))
     const cwrap = `this.module.cwrap(${JSON.stringify(fn.functionName)}, ${JSON.stringify(fn.returnType.ffi)}, ${ffiParams})`
