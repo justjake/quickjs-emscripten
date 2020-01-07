@@ -10,7 +10,7 @@
     "clean": "make clean",
     "build": "tsc",
     "watch": "tsc --watch",
-    "run-ts": "yarn make-debug && ts-node ./ts/examples/hello.ts",
+    "run-ts": "yarn make-debug && ts-node -T ./ts/examples/hello.ts",
     "run-n": "yarn make-debug && ./build/wrapper/native/test.exe"
   },
   "devDependencies": {
