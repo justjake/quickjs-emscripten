@@ -5,40 +5,83 @@ import { LowLevelJavascriptVm, VmPropertyDescriptor, VmCallResult } from './type
 const QuickJSModule = QuickJSModuleLoader()
 const initialized = new Promise(resolve => { QuickJSModule.onRuntimeInitialized = resolve })
 
-class Freeable<T> {
-  private _freed: boolean = false
+class Lifetime<T, Owner = never> {
+  private _alive: boolean = true
+
   constructor(
     private readonly _value: T,
-    private readonly freeImpl?: (value: T) => void
+    private readonly disposer?: (value: T) => void,
+    private readonly _owner?: Owner
   ) {}
 
-  get freed() { return this._freed }
-  free() {
-    this.assertAlive()
-    if (this.freeImpl) {
-      this.freeImpl(this._value)
-    }
-    this._freed = true
+  get alive() {
+    return this._alive
   }
+
   get value() {
     this.assertAlive()
     return this._value
   }
-  assertAlive() {
-    if (this._freed) {
-      throw new Error('Already freed')
+
+  get owner() {
+    return this._owner
+  }
+
+  dispose() {
+    this.assertAlive()
+    if (this.disposer) {
+      this.disposer(this._value)
+    }
+    this._alive = true
+  }
+
+  private assertAlive() {
+    if (!this._alive) {
+      throw new Error('Not alive')
     }
   }
 }
 
-export class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
-  readonly ctx: Freeable<JSContextPointer>
-  readonly rt: Freeable<JSRuntimePointer>
+/**
+ * Idea around managing a group of lifetimes
+ * @experimental
+ */
+export class LifetimeScope<T> {
+  static readonly Disposer = <T>(lifetimes: Lifetime<T>[]) => {
+    for (const lifetime of lifetimes) {
+      lifetime.dispose()
+    }
+  }
+
+  private readonly lifetime = new Lifetime<Lifetime<T>[]>([], LifetimeScope.Disposer)
+
+  get alive() {
+    return this.lifetime.alive
+  }
+
+  create(value: T, disposer?: (val: T) => void) {
+    const lifetime = new Lifetime(value, disposer)
+    this.add(lifetime)
+    return lifetime
+  }
+
+  add(lifetime: Lifetime<T>) {
+    this.lifetime.value.push(lifetime)
+  }
+
+  dispose() {
+    this.lifetime.dispose()
+  }
+}
+
+export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
+  readonly ctx: Lifetime<JSContextPointer>
+  readonly rt: Lifetime<JSRuntimePointer>
 
   private readonly module: typeof QuickJSModule
   private readonly ffi: QuickJSFFI
-  private _undefined: QuickJSValueHandle | undefined = undefined
-  private readonly allocatedFunctionPointers: number[] = []
+  private _undefined: QuickJSHandle | undefined = undefined
+  private readonly lifetimes: Lifetime<any>[] = []
 
   constructor(args: {
     module: typeof QuickJSModule
@@ -48,8 +91,8 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
   }) {
     this.module = args.module
     this.ffi = args.ffi
-    this.ctx = new Freeable(args.ctx, ctx => this.ffi.QTS_FreeContext(ctx))
-    this.rt = new Freeable(args.rt, rt => this.ffi.QTS_FreeRuntime(rt))
+    this.ctx = new Lifetime(args.ctx, ctx => this.ffi.QTS_FreeContext(ctx))
+    this.rt = new Lifetime(args.rt, rt => this.ffi.QTS_FreeRuntime(rt))
   }
 
   // interface
@@ -59,43 +102,44 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
     }
 
     const ptr = this.ffi.QTS_GetUndefined()
-    return this._undefined = new QuickJSValueStatic(ptr)
+    return this._undefined = new Lifetime(ptr)
   }
 
-  typeof(handle: QuickJSValueHandle) {
-    // no need to check owner
+  typeof(handle: QuickJSHandle) {
+    this.assertOwned(handle)
     return this.ffi.QTS_Typeof(this.ctx.value, handle.value)
   }
 
-  newNumber(num: number): QuickJSValueHandle {
-    const ptr = this.ffi.QTS_NewFloat64(this.ctx.value, num)
-    return new QuickJSValueHeap(this, ptr)
+  newNumber(num: number): QuickJSHandle {
+    return this.heapValueHandle(this.ffi.QTS_NewFloat64(this.ctx.value, num))
   }
 
-  getNumber(handle: QuickJSValueHandle) {
+  getNumber(handle: QuickJSHandle) {
     this.assertOwned(handle)
     return this.ffi.QTS_GetFloat64(this.ctx.value, handle.value)
   }
 
   newString(str: string) {
-    const ptr = this.ffi.QTS_NewString(this.ctx.value, str)
-    return new QuickJSValueHeap(this, ptr)
+    return this.heapValueHandle(this.ffi.QTS_NewString(this.ctx.value, str))
   }
 
-  getString(handle: QuickJSValueHandle) {
+  getString(handle: QuickJSHandle) {
     this.assertOwned(handle)
     return this.ffi.QTS_GetString(this.ctx.value, handle.value)
   }
 
-  newObject(prototype?: QuickJSValueHandle) {
+  newObject(prototype?: QuickJSHandle) {
+    if (prototype) {
+      this.assertOwned(prototype)
+    }
     const ptr = prototype ?
       this.ffi.QTS_NewObjectProto(this.ctx.value, prototype.value) :
       this.ffi.QTS_NewObject(this.ctx.value)
-    return new QuickJSValueHeap(this, ptr)
+    return this.heapValueHandle(ptr)
   }
 
-  newFunction(name: string, fn: (this: QuickJSValueHandle, ...args: QuickJSValueHandle[]) => QuickJSValueHandle | void): QuickJSValueHandle {
-    const inner = (ctx: JSContextPointer, this_ptr: JSValueConstPointer, argc: number, argv: JSValueConstPointer) => {
+  newFunction(name: string, fn: (this: QuickJSHandle, ...args: QuickJSHandle[]) => QuickJSHandle | void): QuickJSHandle {
+    const functionAdapter = (ctx: JSContextPointer, this_ptr: JSValueConstPointer, argc: number, argv: JSValueConstPointer) => {
       // Double-check the context matches up
       if (ctx !== this.ctx.value) {
         throw new Error('function callback for a different context')
@@ -103,57 +147,60 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
 
       // TODO: seperate class for JSValueConst wrappers with ownership & dup
       // although... these don't need to be free()'d because they're on the stack...
-      const thisHandle = new QuickJSValueConstStack(this, this_ptr)
-      const args = new Array<QuickJSValueConstStack>(argc)
+      const thisHandle: JSValueConst = new Lifetime(this_ptr, undefined, this)
+      const args = new Array<JSValueConst>(argc)
       for (let i = 0; i<argc; i++) {
         const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
-        args[i] = new QuickJSValueConstStack(this, ptr)
+        args[i] = new Lifetime(ptr, undefined, this)
       }
       const result = fn.apply(thisHandle, args)
       const resultPtr = (result || this.undefined).value
 
-      // Free all the stack variables so we don't use them by accident.
-      thisHandle.free()
-      args.forEach(arg => arg.free())
+      // no use-afterr-free: dispose stack variables so we don't retain them by accident
+      thisHandle.dispose()
+      args.forEach(arg => arg.dispose())
 
       return resultPtr
     }
+
     // https://emscripten.org/docs/porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-function-pointers-from-c
     // https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L6237
-    const fp = this.module.addFunction(inner, 'iiiii') as JSCFunctionPointer
-    this.allocatedFunctionPointers.push(fp)
+    const fp = this.module.addFunction(functionAdapter, 'iiiii') as JSCFunctionPointer
+    const fpLifetime = new Lifetime(fp, fp => this.module.removeFunction(fp))
+    this.lifetimes.push(fpLifetime)
+
     const jsValueFunctionPointer = this.ffi.QTS_NewFunction(this.ctx.value, fp, name);
-    return new QuickJSValueHeap(this, jsValueFunctionPointer)
+    return this.heapValueHandle(jsValueFunctionPointer)
   }
 
-  getProp(handle: QuickJSValueHandle, key: string | QuickJSValueHandle): QuickJSValueHandle {
+  getProp(handle: QuickJSHandle, key: string | QuickJSHandle): QuickJSHandle {
     const quickJSKey = typeof key === 'string' ?
       this.newString(key) :
       key
 
     const ptr = this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value)
-    const result = new QuickJSValueHeap(this, ptr)
-    if (typeof key === 'string' && quickJSKey instanceof QuickJSValueHeap) {
+    const result = this.heapValueHandle(ptr)
+    if (typeof key === 'string') {
       // we allocated a string
-      quickJSKey.free()
+      quickJSKey.dispose()
     }
     return result
   }
 
-  setProp(handle: QuickJSValueHandle, key: string | QuickJSValueHandle, value: QuickJSValueHandle) {
+  setProp(handle: QuickJSHandle, key: string | QuickJSHandle, value: QuickJSHandle) {
     const quickJSKey = typeof key === 'string' ?
       this.newString(key) :
       key
 
     this.ffi.QTS_SetProp(this.ctx.value, handle.value, quickJSKey.value, value.value)
 
-    if (typeof key === 'string' && quickJSKey instanceof QuickJSValueHeap) {
+    if (typeof key === 'string') {
       // we allocated a string
-      quickJSKey.free()
+      quickJSKey.dispose()
     }
   }
 
-  defineProp(handle: QuickJSValueHandle, key: string | QuickJSValueHandle, descriptor: VmPropertyDescriptor<QuickJSValueHandle>): void {
+  defineProp(handle: QuickJSHandle, key: string | QuickJSHandle, descriptor: VmPropertyDescriptor<QuickJSHandle>): void {
     const quickJSKey = typeof key === 'string' ?
       this.newString(key) :
       key
@@ -177,16 +224,16 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
       enumerable,
     )
 
-    if (typeof key === 'string' && quickJSKey instanceof QuickJSValueHeap) {
+    if (typeof key === 'string') {
       // we allocated a string
-      quickJSKey.free()
+      quickJSKey.dispose()
     }
   }
 
-  callFunction(func: QuickJSValueHandle, thisVal: QuickJSValueHandle, ...args: QuickJSValueHandle[]): VmCallResult<QuickJSValueHandle> {
+  callFunction(func: QuickJSHandle, thisVal: QuickJSHandle, ...args: QuickJSHandle[]): VmCallResult<QuickJSHandle> {
     const argsArrayPtr = this.toPointerArray(args)
     const resultPtr = this.ffi.QTS_Call(this.ctx.value, func.value, thisVal.value, args.length, argsArrayPtr.value)
-    argsArrayPtr.free()
+    argsArrayPtr.dispose()
 
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
@@ -197,7 +244,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
     return { value: this.heapValueHandle(resultPtr) }
   }
 
-  evalCode(code: string): VmCallResult<QuickJSValueHandle> {
+  evalCode(code: string): VmCallResult<QuickJSHandle> {
     const resultPtr = this.ffi.QTS_Eval(this.ctx.value, code)
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
@@ -208,7 +255,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
   }
 
   // customizations
-  dump(handle: QuickJSValueHandle) {
+  dump(handle: QuickJSHandle) {
     const str = this.ffi.QTS_Dump(this.ctx.value, handle.value)
     try {
       return JSON.parse(str)
@@ -217,85 +264,45 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSValueHandle> {
     }
   }
 
-  free() {
-    this.ctx.free()
-    this.rt.free()
-    for (const fp of this.allocatedFunctionPointers) {
-      this.module.removeFunction(fp)
+  dispose() {
+    this.ctx.dispose()
+    this.rt.dispose()
+    for (const lifetime of this.lifetimes) {
+      if (lifetime.alive) {
+        lifetime.dispose()
+      }
     }
   }
 
-  freeHandle(handle: QuickJSValueHeap) {
-    this.assertOwned(handle)
-    this.ffi.QTS_FreeValuePointer(this.ctx.value, handle.value)
-  }
-
-  assertOwned(handle: QuickJSValueHandle) {
-    if (handle instanceof QuickJSValueStatic) {
-      return
-    }
-
-    if (handle.vm !== this) {
+  assertOwned(handle: QuickJSHandle) {
+    if (handle.owner && handle.owner !== this) {
       throw new Error('Given handle created by a different VM')
     }
   }
 
-  private heapValueHandle(ptr: JSValuePointer) {
-    return new QuickJSValueHeap(this, ptr)
+  private freeJSValue = (ptr: JSValuePointer) => {
+    this.ffi.QTS_FreeValuePointer(this.ctx.value, ptr)
   }
 
-  private toPointerArray(handleArray: QuickJSValueHandle[]): Freeable<JSValueConstPointerPointer> {
+  private heapValueHandle(ptr: JSValuePointer): JSValue {
+    return new Lifetime(ptr, this.freeJSValue, this)
+  }
+
+  private toPointerArray(handleArray: QuickJSHandle[]): Lifetime<JSValueConstPointerPointer> {
     const typedArray = new Int32Array(handleArray.map(handle => handle.value))
     const numBytes = typedArray.length * typedArray.BYTES_PER_ELEMENT
     const ptr = this.module._malloc(numBytes) as JSValueConstPointerPointer
     var heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes);
     heapBytes.set(new Uint8Array(typedArray.buffer));
-    return new Freeable(ptr, ptr => this.module._free(ptr))
+    return new Lifetime(ptr, ptr => this.module._free(ptr))
   }
 }
 
-type QuickJSValueHandle = QuickJSValueStatic | QuickJSValueHeap | QuickJSValueConstStack
+type StaticJSValue = Lifetime<JSValueConstPointer>
+type JSValueConst = Lifetime<JSValueConstPointer, QuickJSVm>
+type JSValue = Lifetime<JSValuePointer, QuickJSVm>
+export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
 
-class QuickJSValueStatic {
-  constructor(readonly value: JSValuePointer) {}
-}
-
-class QuickJSValueConstStack {
-  private ptr: Freeable<JSValueConstPointer>
-
-  constructor(readonly vm: QuickJSVm, ptr: JSValueConstPointer) {
-    this.ptr = new Freeable(ptr)
-  }
-
-  get value() {
-    return this.ptr.value
-  }
-
-  /**
-   * Call to mark this QuickJSValueConstStack pointer as no longer valid.
-   * The C runtime manages its memory automatically.
-   */
-  free() {
-    this.ptr.free()
-  }
-}
-
-class QuickJSValueHeap {
-  private ptr: Freeable<JSValuePointer>
-
-  constructor(readonly vm: QuickJSVm, ptr: JSValuePointer) {
-    this.ptr = new Freeable(ptr)
-  }
-
-  get value() {
-    return this.ptr.value
-  }
-
-  free() {
-    this.vm.freeHandle(this)
-    this.ptr.free()
-  }
-}
 
 /**
  * QuickJS presents a Javascript interface to QuickJS, a Javascript interpreter that

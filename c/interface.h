@@ -5,8 +5,7 @@
 #include "../quickjs/quickjs.h"
 #include "../quickjs/quickjs-libc.h"
 
-char* QTS_EvalToJSON(char* js_code);
-JSValue *QTS_GetUndefined();
+JSValueConst *QTS_GetUndefined();
 JSRuntime *QTS_NewRuntime();
 void QTS_FreeRuntime(JSRuntime *rt);
 JSContext *QTS_NewContext(JSRuntime *rt);
