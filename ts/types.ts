@@ -16,6 +16,7 @@ export type VmCallResult<VmHandle> = SuccessOrFail<VmHandle, VmHandle>
  * From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
  */
 export interface LowLevelJavascriptVm<VmHandle> {
+  global: VmHandle
   undefined: VmHandle
 
   typeof(handle: VmHandle): string

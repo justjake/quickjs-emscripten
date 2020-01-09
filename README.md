@@ -1,27 +1,58 @@
-# quickjs-typescript
+# quickjs-emscripten
 
-This was inspired by https://github.com/maple3142/duktape-eval and Figma's
+Module `quickjs-emscripten` wraps QuickJS, a modern Javascript interpreter
+written in C, for usage from Typescript or Javascript. This allows evaluating
+untrusted Javascript safely, or even building a plugin system.
+
+```typescript
+import { getInstance } from 'quickjs-emscripten'
+
+async function main() {
+  const QuickJS = await getInstance()
+  const vm = QuickJS.createVm()
+
+  const result = vm.evalCode(`"Hello " + "world!"`)
+  if (result.error) {
+    console.log('Execution failed:', vm.dump(result.error))
+    result.error.dispose()
+  } else {
+    console.log('Success:', vm.dump(result.value))
+    result.value.dispose()
+  }
+
+  vm.dispose()
+}
+
+main()
+```
+
+## Background
+
+This was inspired by seeing https://github.com/maple3142/duktape-eval
+[on Hacker News](https://news.ycombinator.com/item?id=21946565) and Figma's
 blogposts about using building a Javascript plugin runtime:
 
-* [Theory and considerations](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/)
-* [Security follow-up where they switch to QuickJS](https://www.figma.com/blog/an-update-on-plugin-security/)
+* [How [Figma] built the Figma plugin system](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/): Describes the LowLevelJavascriptVm interface.
+* [An update on plugin security](https://www.figma.com/blog/an-update-on-plugin-security/): Figma switches to QuickJS.
 
 ## Status
 
-**Appears to work**. This project is untested and still under rapid
-development, but the approach has stabilized.
+**Appears to work**, but lacks rigorous tests. Some functionality is excersized
+in ts/examples/hello.ts.
 
 Open problems:
-
-* Simplify memory management. We need to remove the `.free()` methods on
-  handles and just use `vm.freeHandle(...)`. Should also rename `VM.free()` to `VM.freeVM`.
-
-  * We chould use a Pool abstraction and do a Pool.freeAll() to free all handles and pointers
-    in the pool.
 
 * Think more about C -> JS function calls. Right now there is a fixed-size
   array for these pointers. Maybe we need to manage our own resizable array
   inside C code?
+
+* Simplify memory management. Currently the user must call `handle.dispose()` on all handles they
+  create to avoid leaking memory in C.
+
+  * We chould use a Pool abstraction and do a Pool.freeAll() to free all handles and pointers
+    in the pool.
+
+  * Pools, etc, should not pollute QuickJSVm interface. Composition!
 
 ## Related
 

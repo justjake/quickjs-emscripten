@@ -7,3 +7,4 @@ type JSValuePointer = Pointer<'JSValue'>
 type JSValueConstPointer = Pointer<'JSValueConst'>
 type JSValueConstPointerPointer = Pointer<'JSValueConst[]'>
 type JSCFunctionPointer = Pointer<'JSCFunction'>
+type QTS_C_To_HostCallbackFuncPointer = Pointer<'C_To_HostCallbackFuncPointer'>

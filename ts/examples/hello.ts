@@ -17,17 +17,28 @@ async function main() {
   const vm = quickjs.createVm()
 
   // Basics
-  const num = vm.newNumber(55)
-  console.log('num', vm.getNumber(num))
+  const num = vm.newNumber(42)
+  vm.setProp(vm.global, 'num', num)
+  console.log('num =', vm.getNumber(num))
   num.dispose()
 
-  const str = vm.newString('hi nora')
-  console.log('str', vm.getString(str))
+  const str = vm.newString('hi nora ')
+  vm.setProp(vm.global, 'str', str)
+  console.log('str =', vm.getString(str))
   str.dispose()
+
+  // Make a function
+  const rand = vm.newFunction('random', () => {
+    return vm.newNumber(Math.random())
+  })
+  vm.setProp(vm.global, 'random', rand)
+  rand.dispose()
 
   // Evals
   logEval(vm, `["this", "should", "work"].join(' ')`)
   logEval(vm, `["this", "should", "fail].join(' ')`)
+  logEval(vm, 'str.repeat(num)')
+  logEval(vm, 'random() * num')
 
   // Try a cyclical object
   logEval(vm, `

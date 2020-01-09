@@ -81,18 +81,19 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private readonly module: typeof QuickJSModule
   private readonly ffi: QuickJSFFI
   private _undefined: QuickJSHandle | undefined = undefined
-  private readonly lifetimes: Lifetime<any>[] = []
+  private _global: QuickJSHandle | undefined = undefined
+  private readonly lifetimes: Lifetime<any, any>[] = []
 
   constructor(args: {
     module: typeof QuickJSModule
     ffi: QuickJSFFI
-    ctx: JSContextPointer
-    rt: JSRuntimePointer
+    ctx: Lifetime<JSContextPointer>
+    rt: Lifetime<JSRuntimePointer>
   }) {
     this.module = args.module
     this.ffi = args.ffi
-    this.ctx = new Lifetime(args.ctx, ctx => this.ffi.QTS_FreeContext(ctx))
-    this.rt = new Lifetime(args.rt, rt => this.ffi.QTS_FreeRuntime(rt))
+    this.ctx = args.ctx
+    this.rt = args.rt
   }
 
   // interface
@@ -101,8 +102,25 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
       return this._undefined
     }
 
+    // Undefined is a constant, immutable value in QuickJS.
     const ptr = this.ffi.QTS_GetUndefined()
     return this._undefined = new Lifetime(ptr)
+  }
+
+  get global() {
+    if (this._global) {
+      return this._global
+    }
+
+    // The global is a JSValue, but since it's lifetime is as long as the VM's,
+    // we should manage it.
+    const ptr = this.ffi.QTS_GetGlobalObject(this.ctx.value)
+
+    // Automatically clean up this reference when we dispose(
+    this.lifetimes.push(this.heapValueHandle(ptr))
+
+    this._global = new Lifetime(ptr, undefined, this)
+    return this._global
   }
 
   typeof(handle: QuickJSHandle) {
@@ -139,6 +157,16 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   newFunction(name: string, fn: (this: QuickJSHandle, ...args: QuickJSHandle[]) => QuickJSHandle | void): QuickJSHandle {
+    // TODO: make this a constant
+    const pointerType = 'j'
+    const intType = 'i'
+    const wasmTypes = [
+      pointerType, // return
+      pointerType, // ctx
+      pointerType, // this_ptr
+      intType, // argc
+      pointerType, // argv
+    ]
     const functionAdapter = (ctx: JSContextPointer, this_ptr: JSValueConstPointer, argc: number, argv: JSValueConstPointer) => {
       // Double-check the context matches up
       if (ctx !== this.ctx.value) {
@@ -165,7 +193,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
     // https://emscripten.org/docs/porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-function-pointers-from-c
     // https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L6237
-    const fp = this.module.addFunction(functionAdapter, 'iiiii') as JSCFunctionPointer
+    const fp = this.module.addFunction(functionAdapter, wasmTypes.join('')) as JSCFunctionPointer
     const fpLifetime = new Lifetime(fp, fp => this.module.removeFunction(fp))
     this.lifetimes.push(fpLifetime)
 
@@ -255,6 +283,11 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   // customizations
+
+  /**
+   * Dump a JSValue to JSON.
+   * Returns the object's .toString() if it cannot be serialized to JSON.
+   */
   dump(handle: QuickJSHandle) {
     const str = this.ffi.QTS_Dump(this.ctx.value, handle.value)
     try {
@@ -264,17 +297,18 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     }
   }
 
+
   dispose() {
-    this.ctx.dispose()
-    this.rt.dispose()
     for (const lifetime of this.lifetimes) {
       if (lifetime.alive) {
         lifetime.dispose()
       }
     }
+    this.ctx.dispose()
+    this.rt.dispose()
   }
 
-  assertOwned(handle: QuickJSHandle) {
+  private assertOwned(handle: QuickJSHandle) {
     if (handle.owner && handle.owner !== this) {
       throw new Error('Given handle created by a different VM')
     }
@@ -310,16 +344,85 @@ export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
  */
 class QuickJS {
   private ffi = new QuickJSFFI(QuickJSModule)
+  private vmMap = new Map<JSContextPointer, QuickJSVm>()
+  private module = QuickJSModule
 
+  /**
+   * Create a QuickJS VM.
+   *
+   * Each VM is completely independent - you cannot share handles between
+   * VMs.
+   */
   createVm(): QuickJSVm {
-    const rtPointer = this.ffi.QTS_NewRuntime()
-    const ctxPointer = this.ffi.QTS_NewContext(rtPointer)
-    return new QuickJSVm({
-      module: QuickJSModule,
-      ffi: this.ffi,
-      rt: rtPointer,
-      ctx: ctxPointer,
+    const rt = new Lifetime(this.ffi.QTS_NewRuntime(), rt_ptr => this.ffi.QTS_FreeRuntime(rt_ptr))
+    const ctx = new Lifetime(this.ffi.QTS_NewContext(rt.value), ctx_ptr => {
+      this.vmMap.delete(ctx_ptr)
+      this.ffi.QTS_FreeContext(ctx_ptr)
     })
+    const vm = new QuickJSVm({
+      module: this.module,
+      ffi: this.ffi,
+      rt,
+      ctx,
+    })
+    this.vmMap.set(ctx.value, vm)
+    return vm
+  }
+
+  /**
+   * One-off evaluate code without needing to create a VM.
+   */
+  evalCode(code: string): unknown {
+    const vm = this.createVm()
+    const result = vm.evalCode(code)
+
+    if (result.error) {
+      const error = vm.dump(result.error)
+      result.error.dispose()
+      vm.dispose()
+      throw error
+    }
+
+    const value = vm.dump(result.value)
+    result.value.dispose()
+    vm.dispose()
+
+    return value
+  }
+
+  // We need to send this into C-land
+  private cToHostCallbackFunction = (ctx: JSContextPointer, this_ptr: JSValueConstPointer, argv_ptrs: JSValueConstPointerPointer, fn_data_ptr: JSValueConstPointer): JSValuePointer => {
+    try {
+      const vm = this.vmMap.get(ctx)
+      if (!vm) {
+        const fn_name = this.ffi.QTS_GetString(ctx, fn_data_ptr)
+        throw new Error(`QuickJSVm(ctx = ${ctx}) not found for C function call "${fn_name}"`)
+      }
+      return vm.cToHostCallbackFunction(ctx, this_ptr, argv_ptrs, fn_data_ptr)
+    } catch (error) {
+      console.error(error)
+      return 0 as JSValuePointer
+    }
+  }
+
+  private initialized = false
+  private initialize() {
+    if (this.initialized) {
+      return
+    }
+    this.initialized = true
+
+    // TODO: make this a constant
+    const pointerType = 'j'
+    const intType = 'i'
+    const wasmTypes = [
+      pointerType, // return
+      pointerType, // ctx
+      pointerType, // this_ptr
+      intType, // argc
+      pointerType, // argv
+    ]
+    const fp = this.module.addFunction(this.cToHostCallbackFunction, 'i')
   }
 }
 
@@ -328,5 +431,6 @@ let singleton: QuickJS | undefined = undefined
 export async function getInstance() {
   await initialized
   singleton = singleton || new QuickJS()
+  (singleton as any).initialize()
   return singleton
 }

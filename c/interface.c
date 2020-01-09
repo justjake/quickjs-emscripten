@@ -54,6 +54,44 @@ JSValue *jsvalue_to_heap(JSValueConst value) {
   return result;
 }
 
+/**
+ * C -> Host JS calls support
+ */
+
+// When host javascript loads this Emscripten module, it should set `bound_callback` to a dispatcher function
+typedef JSValue* QTS_C_To_HostCallbackFunc(JSContext *ctx, JSValueConst *this_ptr, int argc, JSValueConst **argv_ptrs, JSValueConst *fn_data_ptr);
+QTS_C_To_HostCallbackFunc* bound_callback = NULL;
+
+void QTS_SetHostCallback(QTS_C_To_HostCallbackFunc *fp) {
+  bound_callback = fp;
+}
+
+// We always use a pointer to this function with NewCFunctionData.
+JSValue qts_quickjs_to_c_callback(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic, JSValue *func_data) {
+  if (bound_callback == NULL) {
+    printf(PKG "callback from C, but no QTS_C_To_HostCallback set");
+    abort();
+  }
+
+  JSValueConst* argv_ptrs[argc];
+  int i;
+  for (i = 0; i < argc; i++) {
+    argv_ptrs[i] = &argv[i];
+  }
+
+  JSValue* result_ptr = (*bound_callback)(ctx, &this_val, argc, argv_ptrs, func_data);
+  if (result_ptr == NULL) {
+    // Exception in the host
+  }
+  return *result_ptr;
+}
+
+JSValue *QTS_NewFunction(JSContext *ctx, JSValue *func_data, const char* name, int min_argc) {
+  JSValue func_obj = JS_NewCFunctionData(ctx, &qts_quickjs_to_c_callback, min_argc, /* unused magic */0, /* func_data len */1, func_data);
+  JS_DefinePropertyValueStr(ctx, func_obj, "name", JS_NewString(ctx, name), JS_PROP_CONFIGURABLE);
+  return jsvalue_to_heap(func_obj);
+}
+
 
 /**
  * FFI
@@ -79,8 +117,8 @@ JSContext *QTS_NewContext(JSRuntime *rt) {
   return JS_NewContext(rt);
 }
 
-void QTS_FreeContext(JSContext *rt) {
-  JS_FreeContext(rt);
+void QTS_FreeContext(JSContext *ctx) {
+  JS_FreeContext(ctx);
 }
 
 void QTS_FreeValuePointer(JSContext *ctx, JSValue *value) {
@@ -121,9 +159,8 @@ char* QTS_GetString(JSContext *ctx, JSValueConst *value) {
   return result;
 }
 
-JSValue *QTS_NewFunction(JSContext *ctx, JSCFunction *fn, const char* name) {
-  return jsvalue_to_heap(JS_NewCFunction(ctx, fn, name, strlen(name)));
-}
+
+
 
 JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
   return &argv[index];
@@ -144,15 +181,21 @@ void QTS_SetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name
   JS_FreeAtom(ctx, prop_atom);
 }
 
-void QTS_DefineProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name, JSValueConst *prop_value, JSValueConst *get, JSValueConst *set, bool configurable, bool enumerable) {
+void QTS_DefineProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name, JSValueConst *prop_value, JSValueConst *get, JSValueConst *set, bool configurable, bool enumerable, bool has_value) {
   JSAtom prop_atom = JS_ValueToAtom(ctx, *prop_name);
 
   int flags = 0;
   if (configurable) {
-    flags = flags | JS_PROP_HAS_CONFIGURABLE;
+    flags = flags | JS_PROP_CONFIGURABLE;
+    if (has_value) {
+      flags = flags | JS_PROP_HAS_CONFIGURABLE;
+    }
   }
   if (enumerable) {
-    flags = flags | JS_PROP_HAS_ENUMERABLE;
+    flags = flags | JS_PROP_ENUMERABLE;
+    if (has_value) {
+      flags = flags | JS_PROP_HAS_ENUMERABLE;
+    }
   }
   if (!JS_IsUndefined(*get)) {
     flags = flags | JS_PROP_HAS_GET;
@@ -160,12 +203,11 @@ void QTS_DefineProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_n
   if (!JS_IsUndefined(*set)) {
     flags = flags | JS_PROP_HAS_SET;
   }
-  if (!JS_IsUndefined(*prop_value)) {
+  if (has_value) {
     flags = flags | JS_PROP_HAS_VALUE;
   }
 
   JS_DefineProperty(ctx, *this_val, prop_atom, *prop_value, *get, *set, flags);
-
   JS_FreeAtom(ctx, prop_atom);
 }
 
@@ -227,7 +269,7 @@ char *QTS_Dump(JSContext *ctx, JSValueConst *obj) {
 }
 
 JSValue *QTS_Eval(JSContext *ctx, const char* js_code) {
-  return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), "eval.js", 0));
+  return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), "eval.js", JS_EVAL_TYPE_GLOBAL));
 }
 
 char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
@@ -246,4 +288,12 @@ char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   char* out = malloc(sizeof(char) * strlen(result));
   strcpy(out, result);
   return out;
+}
+
+void QTS_Debug() {
+  QTS_DEBUG(sizeof(JSValue *));
+}
+
+JSValue *QTS_GetGlobalObject(JSContext *ctx) {
+  return jsvalue_to_heap(JS_GetGlobalObject(ctx));
 }
