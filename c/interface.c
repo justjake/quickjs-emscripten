@@ -1,3 +1,18 @@
+/**
+ * interface.c
+ *
+ * We primarily use JSValue* (pointer to JSValue) when communicating with the
+ * host javascript environment, because pointers are trivial to use for calls
+ * into emscripten because they're just a number!
+ *
+ * As with the quickjs.h API, a JSValueConst* value is "borrowed" and should
+ * not be freed. A JSValue* is "owned" and should be freed by the owner.
+ *
+ * Functions starting with "QTS_" are exported by generate.ts to:
+ * - interface.h for native C code.
+ * - ffi.ts for emscripten.
+ */
+
 #include <string.h>
 #include <stdio.h>
 #include <math.h>  // For NAN
@@ -58,52 +73,55 @@ JSValue *jsvalue_to_heap(JSValueConst value) {
  * C -> Host JS calls support
  */
 
-// When host javascript loads this Emscripten module, it should set `bound_callback` to a dispatcher function
-typedef JSValue* QTS_C_To_HostCallbackFunc(JSContext *ctx, JSValueConst *this_ptr, int argc, JSValueConst **argv_ptrs, JSValueConst *fn_data_ptr);
+// When host javascript loads this Emscripten module, it should set `bound_callback` to a dispatcher function.
+typedef JSValue* QTS_C_To_HostCallbackFunc(JSContext *ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, JSValueConst *fn_data_ptr);
 QTS_C_To_HostCallbackFunc* bound_callback = NULL;
 
-void QTS_SetHostCallback(QTS_C_To_HostCallbackFunc *fp) {
+void QTS_SetHostCallback(QTS_C_To_HostCallbackFunc* fp) {
   bound_callback = fp;
 }
 
 // We always use a pointer to this function with NewCFunctionData.
+// The host JS should do it's own dispatch based on the value of *func_data.
 JSValue qts_quickjs_to_c_callback(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic, JSValue *func_data) {
   if (bound_callback == NULL) {
     printf(PKG "callback from C, but no QTS_C_To_HostCallback set");
     abort();
   }
 
-  JSValueConst* argv_ptrs[argc];
-  int i;
-  for (i = 0; i < argc; i++) {
-    argv_ptrs[i] = &argv[i];
-  }
-
-  JSValue* result_ptr = (*bound_callback)(ctx, &this_val, argc, argv_ptrs, func_data);
+  JSValue* result_ptr = (*bound_callback)(ctx, &this_val, argc, argv, func_data);
   if (result_ptr == NULL) {
     // Exception in the host
+    return JS_UNDEFINED;
   }
   return *result_ptr;
 }
 
-JSValue *QTS_NewFunction(JSContext *ctx, JSValue *func_data, const char* name, int min_argc) {
-  JSValue func_obj = JS_NewCFunctionData(ctx, &qts_quickjs_to_c_callback, min_argc, /* unused magic */0, /* func_data len */1, func_data);
+JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
+  return &argv[index];
+}
+
+JSValue *QTS_NewFunction(JSContext *ctx, JSValueConst *func_data, const char* name) {
+  JSValue func_obj = JS_NewCFunctionData(ctx, &qts_quickjs_to_c_callback, /* min argc */0, /* unused magic */0, /* func_data len */1, func_data);
   JS_DefinePropertyValueStr(ctx, func_obj, "name", JS_NewString(ctx, name), JS_PROP_CONFIGURABLE);
   return jsvalue_to_heap(func_obj);
 }
 
 
+
 /**
- * FFI
- *
- * Functions starting with "QTS_" are exported to:
- * - interface.h for native
- * - ffi.ts for emscripten
+ * Constant pointers. Because we always use JSValue* from the host Javascript environment,
+ * we need helper fuctions to return pointers to these constants.
  */
+
 JSValueConst QTS_Undefined = JS_UNDEFINED;
 JSValueConst *QTS_GetUndefined() {
   return &QTS_Undefined;
 }
+
+/**
+ * Standard FFI functions
+ */
 
 JSRuntime *QTS_NewRuntime() {
   return JS_NewRuntime();
@@ -159,12 +177,6 @@ char* QTS_GetString(JSContext *ctx, JSValueConst *value) {
   return result;
 }
 
-
-
-
-JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
-  return &argv[index];
-}
 
 JSValue *QTS_GetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name) {
   JSAtom prop_atom = JS_ValueToAtom(ctx, *prop_name);
@@ -288,6 +300,10 @@ char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   char* out = malloc(sizeof(char) * strlen(result));
   strcpy(out, result);
   return out;
+}
+
+JSValue *QTS_DupValue(JSContext *ctx, JSValueConst *value_ptr) {
+  return jsvalue_to_heap(JS_DupValue(ctx, *value_ptr));
 }
 
 void QTS_Debug() {

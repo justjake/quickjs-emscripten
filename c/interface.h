@@ -5,8 +5,11 @@
 #include "../quickjs/quickjs.h"
 #include "../quickjs/quickjs-libc.h"
 
-void QTS_SetHostCallback(QTS_C_To_HostCallbackFunc *fp);
-JSValue *QTS_NewFunction(JSContext *ctx, JSValue *func_data, const char* name, int min_argc);
+typedef JSValue* QTS_C_To_HostCallbackFunc(JSContext *ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, JSValueConst *fn_data_ptr);
+
+void QTS_SetHostCallback(QTS_C_To_HostCallbackFunc* fp);
+JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index);
+JSValue *QTS_NewFunction(JSContext *ctx, JSValueConst *func_data, const char* name);
 JSValueConst *QTS_GetUndefined();
 JSRuntime *QTS_NewRuntime();
 void QTS_FreeRuntime(JSRuntime *rt);
@@ -20,7 +23,6 @@ JSValue *QTS_NewFloat64(JSContext *ctx, double num);
 double QTS_GetFloat64(JSContext *ctx, JSValueConst *value);
 JSValue *QTS_NewString(JSContext *ctx, const char* string);
 char* QTS_GetString(JSContext *ctx, JSValueConst *value);
-JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index);
 JSValue *QTS_GetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name);
 void QTS_SetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name, JSValueConst *prop_value);
 void QTS_DefineProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name, JSValueConst *prop_value, JSValueConst *get, JSValueConst *set, bool configurable, bool enumerable, bool has_value);
@@ -29,5 +31,6 @@ JSValue *QTS_ResolveException(JSContext *ctx, JSValue *maybe_exception);
 char *QTS_Dump(JSContext *ctx, JSValueConst *obj);
 JSValue *QTS_Eval(JSContext *ctx, const char* js_code);
 char* QTS_Typeof(JSContext *ctx, JSValueConst *value);
+JSValue *QTS_DupValue(JSContext *ctx, JSValueConst *value_ptr);
 void QTS_Debug();
 JSValue *QTS_GetGlobalObject(JSContext *ctx);

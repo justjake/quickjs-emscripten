@@ -6,6 +6,7 @@ export type SuccessOrFail<S, F> = {
 }
 
 export type VmCallResult<VmHandle> = SuccessOrFail<VmHandle, VmHandle>
+export type VmFunctionImplementation<VmHandle> = (this: VmHandle, ...args: VmHandle[]) => VmHandle | void
 
 /**
  * A minimal interface to a Javascript execution environment.
@@ -27,7 +28,7 @@ export interface LowLevelJavascriptVm<VmHandle> {
   newNumber(value: number): VmHandle
   newString(value: string): VmHandle
   newObject(prototype?: VmHandle): VmHandle
-  newFunction(name: string, value: (this: VmHandle, ...args: VmHandle[]) => VmHandle): VmHandle
+  newFunction(name: string, value: VmFunctionImplementation<VmHandle>): VmHandle
 
   // For accessing properties of objects
   getProp(handle: VmHandle, key: string | VmHandle): VmHandle

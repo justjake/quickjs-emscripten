@@ -1,9 +1,10 @@
 // Generate symbols list
 // Generate header file
 import * as fs from 'fs'
-const HEADER_FILE_PATH = process.env.HEADER_FILE_PATH || './c/interface.c'
+const INTERFACE_FILE_PATH = process.env.HEADER_FILE_PATH || './c/interface.c'
 const FFI_TYPES_PATH = process.env.FFI_TYPES_PATH || './ts/ffi-types.ts'
 const INCLUDE_RE = /^#include.*$/gm
+const TYPEDEF_RE = /^\s*typedef\s+(.+)$/gm
 const DECL_RE = /^([\w*]+[\s*]+)(QTS_\w+)(\((.*?)\)) ?{$/gm
 
 function writeFile(filename:  string, content: string) {
@@ -22,9 +23,10 @@ function main() {
     throw new Error('Usage: generate.ts [symbols | header | ffi] WRITE_PATH')
   }
 
-  const headerFile = fs.readFileSync(HEADER_FILE_PATH, 'utf-8')
-  const matches = matchAll(DECL_RE, headerFile)
-  const includeMatches = matchAll(INCLUDE_RE, headerFile)
+  const interfaceFile = fs.readFileSync(INTERFACE_FILE_PATH, 'utf-8')
+  const matches = matchAll(DECL_RE, interfaceFile)
+  const includeMatches = matchAll(INCLUDE_RE, interfaceFile)
+  const typedefMatches = matchAll(TYPEDEF_RE, interfaceFile)
 
   if (command === 'symbols') {
     const symbols = matches.map(match => {
@@ -37,13 +39,14 @@ function main() {
 
   if (command === 'header') {
     const includes = includeMatches.map(match => match[0]).join('\n')
+    const typedefs = typedefMatches.map(match => match[0]).join('\n')
     const decls = matches.map(match => {
       const returnType = match[1]
       const name = match[2]
       const params = match[3]
       return (`${returnType}${name}${params};`)
     }).join('\n')
-    writeFile(destination, includes + "\n\n" + decls)
+    writeFile(destination, [includes, typedefs, decls].join('\n\n'))
     return
   }
 
