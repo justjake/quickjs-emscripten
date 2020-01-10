@@ -7,7 +7,7 @@ const INCLUDE_RE = /^#include.*$/gm
 const TYPEDEF_RE = /^\s*typedef\s+(.+)$/gm
 const DECL_RE = /^([\w*]+[\s*]+)(QTS_\w+)(\((.*?)\)) ?{$/gm
 
-function writeFile(filename:  string, content: string) {
+function writeFile(filename: string, content: string) {
   if (filename === '-') {
     console.log(content)
     return
@@ -17,7 +17,7 @@ function writeFile(filename:  string, content: string) {
 }
 
 function main() {
-  const [,, command, destination]  = process.argv
+  const [, , command, destination] = process.argv
 
   if (!command || !destination) {
     throw new Error('Usage: generate.ts [symbols | header | ffi] WRITE_PATH')
@@ -29,10 +29,12 @@ function main() {
   const typedefMatches = matchAll(TYPEDEF_RE, interfaceFile)
 
   if (command === 'symbols') {
-    const symbols = matches.map(match => {
-      const name = match[2]
-      return `_${name}`
-    })
+    const symbols = matches
+      .map(match => {
+        const name = match[2]
+        return `_${name}`
+      })
+      .concat('_malloc', '_free')
     writeFile(destination, JSON.stringify(symbols))
     return
   }
@@ -40,12 +42,14 @@ function main() {
   if (command === 'header') {
     const includes = includeMatches.map(match => match[0]).join('\n')
     const typedefs = typedefMatches.map(match => match[0]).join('\n')
-    const decls = matches.map(match => {
-      const returnType = match[1]
-      const name = match[2]
-      const params = match[3]
-      return (`${returnType}${name}${params};`)
-    }).join('\n')
+    const decls = matches
+      .map(match => {
+        const returnType = match[1]
+        const name = match[2]
+        const params = match[3]
+        return `${returnType}${name}${params};`
+      })
+      .join('\n')
     writeFile(destination, [includes, typedefs, decls].join('\n\n'))
     return
   }
@@ -74,39 +78,47 @@ function cTypeToTypescriptType(ctype: string) {
   let typescript = type.replace(/\*/g, 'Pointer')
   let ffi: string | null = 'number'
 
-  if (type === 'bool') { ffi = 'boolean'; typescript = 'boolean' }
-  if (type === 'void') { ffi = null }
-  if (type === 'double' || type === 'int') { ffi = 'number'; typescript = 'number' }
-  if (type.includes('*')) { ffi = 'number' }
+  if (type === 'bool') {
+    ffi = 'boolean'
+    typescript = 'boolean'
+  }
+  if (type === 'void') {
+    ffi = null
+  }
+  if (type === 'double' || type === 'int') {
+    ffi = 'number'
+    typescript = 'number'
+  }
+  if (type.includes('*')) {
+    ffi = 'number'
+  }
 
   return { typescript, ffi, ctype }
 }
 
-
 function buildFFI(matches: RegExpExecArray[]) {
   const parsed = matches.map(match => {
-    const [
-      ,
-      returnType,
-      functionName,
-      ,
-      rawParams,
-    ] = match
+    const [, returnType, functionName, , rawParams] = match
     const params = parseParams(rawParams)
     return { functionName, returnType: cTypeToTypescriptType(returnType.trim()), params }
   })
   const decls = parsed.map(fn => {
-    const typescriptParams = fn.params.map(param => {
-      // Allow JSValue wherever JSValueConst is accepted.
-      const tsType = param.type.typescript === 'JSValueConstPointer' ?
-        'JSValuePointer | JSValueConstPointer' :
-        param.type.typescript
+    const typescriptParams = fn.params
+      .map(param => {
+        // Allow JSValue wherever JSValueConst is accepted.
+        const tsType =
+          param.type.typescript === 'JSValueConstPointer'
+            ? 'JSValuePointer | JSValueConstPointer'
+            : param.type.typescript
 
-      return `${param.name}: ${tsType}`
-    }).join(', ')
+        return `${param.name}: ${tsType}`
+      })
+      .join(', ')
     const typescriptFnType = `(${typescriptParams}) => ${fn.returnType.typescript}`
     const ffiParams = JSON.stringify(fn.params.map(param => param.type.ffi))
-    const cwrap = `this.module.cwrap(${JSON.stringify(fn.functionName)}, ${JSON.stringify(fn.returnType.ffi)}, ${ffiParams})`
+    const cwrap = `this.module.cwrap(${JSON.stringify(fn.functionName)}, ${JSON.stringify(
+      fn.returnType.ffi
+    )}, ${ffiParams})`
     return `  ${fn.functionName}: ${typescriptFnType} =\n    ${cwrap}`
   })
   const ffiTypes = fs.readFileSync(FFI_TYPES_PATH, 'utf-8').replace(/\btype\b/g, 'export type')
@@ -122,7 +134,7 @@ ${ffiTypes}
 export class QuickJSFFI {
   constructor(private module: EmscriptenModule) {}
 
-${decls.join("\n\n")}
+${decls.join('\n\n')}
 }
   `.trim()
   return classString
@@ -142,15 +154,15 @@ function parseParams(paramListString: string) {
 }
 
 function matchAll(regexp: RegExp, text: string) {
-	// We're using .exec, which mutates the regexp by setting the .lastIndex
-	const initialLastIndex = regexp.lastIndex
+  // We're using .exec, which mutates the regexp by setting the .lastIndex
+  const initialLastIndex = regexp.lastIndex
   const result: RegExpExecArray[] = []
-	let match  = null
-	while ((match = regexp.exec(text)) !== null) {
-		result.push(match)
-	}
-	regexp.lastIndex = initialLastIndex
-	return result
+  let match = null
+  while ((match = regexp.exec(text)) !== null) {
+    result.push(match)
+  }
+  regexp.lastIndex = initialLastIndex
+  return result
 }
 
 main()
