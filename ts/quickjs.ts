@@ -30,6 +30,7 @@ type CToHostCallbackFunctionImplementation = (
 
 class Lifetime<T, Owner = never> {
   private _alive: boolean = true
+  private _thenDispose: boolean = false
 
   constructor(
     private readonly _value: T,
@@ -278,6 +279,28 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     } catch (err) {
       return str
     }
+  }
+
+  /**
+   * Unwrap a VmCallResult, returning it's value on success, and throwing the dumped
+   * error on failure.
+   */
+  unwrapResult(result: VmCallResult<QuickJSHandle>): QuickJSHandle {
+    if (result.error) {
+      const dumped = this.dump(result.error)
+      result.error.dispose()
+
+      if (dumped && typeof dumped === 'object' && typeof dumped.message === 'string') {
+        const exception = new Error(dumped.message)
+        if (typeof dumped.name === 'string') {
+          exception.name = dumped.name
+        }
+        throw exception
+      }
+      throw dumped
+    }
+
+    return result.value
   }
 
   dispose() {

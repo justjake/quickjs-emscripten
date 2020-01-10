@@ -1,15 +1,17 @@
 import { getInstance, QuickJSVm } from '../quickjs'
 
 function logEval(vm: QuickJSVm, code: string) {
+  console.log(`${code} -->`)
   const res = vm.evalCode(code)
   if (res.error) {
-    console.log(vm.dump(res.error))
-    res.error.dispose()
+    console.log('Error in eval:', vm.dump(res.error))
+    console.log('')
+    return res.error
   } else {
     console.log(vm.dump(res.value))
-    res.value.dispose()
+    console.log('')
+    return res.value
   }
-  return res
 }
 
 async function main() {
@@ -35,13 +37,14 @@ async function main() {
   rand.dispose()
 
   // Evals
-  logEval(vm, `["this", "should", "work"].join(' ')`)
-  logEval(vm, `["this", "should", "fail].join(' ')`)
-  logEval(vm, 'str.repeat(num)')
-  logEval(vm, 'random() * num')
+  logEval(vm, `["this", "should", "work"].join(' ')`).dispose()
+  logEval(vm, `["this", "should", "fail].join(' ')`).dispose()
+  logEval(vm, 'str.repeat(num)').dispose()
+  logEval(vm, 'random() * num').dispose()
 
   // Try retaining result of function
-  logEval(vm, 'var cow = random()')
+  logEval(vm, 'var cow = random()').dispose()
+  logEval(vm, 'cow').dispose()
 
   // Try a cyclical object
   logEval(
@@ -51,7 +54,14 @@ const obj = {};
 obj.cycle = obj;
 obj
 `
-  )
+  ).dispose()
+
+  // Try calling a function defined inside the VM
+  logEval(vm, `function definedInside(n) { return n * n + random() }`).dispose()
+  const fnHandle = vm.getProp(vm.global, 'definedInside')
+  const fnResult = vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined, vm.newNumber(5)))
+  console.log('defined inside', vm.dump(fnResult))
+  fnHandle.dispose()
 
   vm.dispose()
 }
