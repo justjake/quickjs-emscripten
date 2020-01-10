@@ -45,38 +45,6 @@ class Lifetime<T, Owner = never> {
   }
 }
 
-/**
- * Idea around managing a group of lifetimes
- * @experimental
- */
-export class LifetimeScope<T> {
-  static readonly Disposer = <T>(lifetimes: Lifetime<T>[]) => {
-    for (const lifetime of lifetimes) {
-      lifetime.dispose()
-    }
-  }
-
-  private readonly lifetime = new Lifetime<Lifetime<T>[]>([], LifetimeScope.Disposer)
-
-  get alive() {
-    return this.lifetime.alive
-  }
-
-  create(value: T, disposer?: (val: T) => void) {
-    const lifetime = new Lifetime(value, disposer)
-    this.add(lifetime)
-    return lifetime
-  }
-
-  add(lifetime: Lifetime<T>) {
-    this.lifetime.value.push(lifetime)
-  }
-
-  dispose() {
-    this.lifetime.dispose()
-  }
-}
-
 export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   readonly ctx: Lifetime<JSContextPointer>
   readonly rt: Lifetime<JSRuntimePointer>
@@ -261,10 +229,19 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   // customizations
 
   /**
-   * Dump a JSValue to JSON.
+   * Dump a JSValue to Javascript in a best-effort fashion.
    * Returns the object's .toString() if it cannot be serialized to JSON.
    */
   dump(handle: QuickJSHandle) {
+    const type = this.typeof(handle)
+    if (type === 'string') {
+      return this.getString(handle)
+    } else if (type === 'number') {
+      return this.getNumber(handle)
+    } else if (type === 'undefined') {
+      return undefined
+    }
+
     const str = this.ffi.QTS_Dump(this.ctx.value, handle.value)
     try {
       return JSON.parse(str)
@@ -350,9 +327,28 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 }
 
+/**
+ * A QuickJSHandle to a constant that will never change, and does not need to be disposed.
+ */
 type StaticJSValue = Lifetime<JSValueConstPointer>
+
+/**
+ * A QuickJSHandle to a borrowed value that does not need to be disposed.
+ */
 type JSValueConst = Lifetime<JSValueConstPointer, QuickJSVm>
+
+/**
+ * A owned QuickJSHandle that should be disposed.
+ */
 type JSValue = Lifetime<JSValuePointer, QuickJSVm>
+
+/**
+ * Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
+ * a QuickJS virtual machine.
+ *
+ * Values must not be shared between QuickJSVm instances.
+ * You must dispose of any handles you create by calling the `.dispose()` method.
+ */
 export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
 
 
@@ -424,17 +420,12 @@ class QuickJS {
   }
 
   private initialized = false
-
-  /**
-   * @private
-   */
-  public initialize() {
+  initialize() {
     if (this.initialized) {
       return
     }
     this.initialized = true
 
-    // TODO: make this a constant
     const pointerType = 'i'
     const intType = 'i'
     const wasmTypes = [

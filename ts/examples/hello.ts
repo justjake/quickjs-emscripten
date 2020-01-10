@@ -40,6 +40,9 @@ async function main() {
   logEval(vm, 'str.repeat(num)')
   logEval(vm, 'random() * num')
 
+  // Try retaining result of function
+  logEval(vm, 'var cow = random()')
+
   // Try a cyclical object
   logEval(vm, `
 const obj = {};
