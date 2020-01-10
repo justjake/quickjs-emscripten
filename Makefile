@@ -16,7 +16,7 @@ QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\"
 EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=$(shell cat $(BUILD_WRAPPER)/symbols.json)
 
 CFLAGS_EMCC+=-s WASM=1
-CFLAGS_EMCC+=-s EXTRA_EXPORTED_RUNTIME_METHODS='["cwrap", "addFunction", "removeFunction"]'
+CFLAGS_EMCC+=-s EXTRA_EXPORTED_RUNTIME_METHODS='["cwrap", "addFunction", "removeFunction", "_malloc", "_free"]'
 CFLAGS_EMCC+=-s NODEJS_CATCH_EXIT=0
 CFLAGS_EMCC+=-s MODULARIZE=1
 CFLAGS_EMCC+=-s EXPORT_NAME=QuickJSRaw
@@ -37,10 +37,10 @@ wasm: $(BUILD_DIR) $(BUILD_WRAPPER)/wasm/quickjs-emscripten-module.js  $(BUILD_W
 native: $(BUILD_WRAPPER)/native/test.exe
 
 $(BUILD_WRAPPER):
-	mkdir -p $(BUILD_WRAPPER)/wasm $(BUILD_WRAPPER)/native \
+	mkdir -p $(BUILD_WRAPPER)/wasm $(BUILD_WRAPPER)/native
 
 $(BUILD_QUICKJS):
-	mkdir -p $(BUILD_QUICKJS)/wasm $(BUILD_QUICKJS)/native \
+	mkdir -p $(BUILD_QUICKJS)/wasm $(BUILD_QUICKJS)/native
 
 $(BUILD_ROOT): $(BUILD_WRAPPER) $(BUILD_QUICKJS)
 
