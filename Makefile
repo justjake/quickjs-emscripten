@@ -33,12 +33,16 @@ else
 	CFLAGS_EMCC+=--closure 1
 endif
 
-all: $(BUILD_DIR) $(BUILD_WRAPPER)/wasm/quickjs-emscripten-module.js $(BUILD_WRAPPER)/native/test.exe $(BUILD_WRAPPER)/wasm/ffi.ts
+wasm: $(BUILD_DIR) $(BUILD_WRAPPER)/wasm/quickjs-emscripten-module.js  $(BUILD_WRAPPER)/wasm/ffi.ts
+native: $(BUILD_WRAPPER)/native/test.exe
 
-$(BUILD_ROOT):
-	mkdir -p \
-		$(BUILD_WRAPPER)/wasm $(BUILD_WRAPPER)/native \
-		$(BUILD_QUICKJS)/wasm $(BUILD_QUICKJS)/native
+$(BUILD_WRAPPER):
+	mkdir -p $(BUILD_WRAPPER)/wasm $(BUILD_WRAPPER)/native \
+
+$(BUILD_QUICKJS):
+	mkdir -p $(BUILD_QUICKJS)/wasm $(BUILD_QUICKJS)/native \
+
+$(BUILD_ROOT): $(BUILD_WRAPPER) $(BUILD_QUICKJS)
 
 # Generated source files
 $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)

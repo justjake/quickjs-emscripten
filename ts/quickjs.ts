@@ -12,9 +12,12 @@ import {
   VmFunctionImplementation,
 } from './types'
 
+let isReady = false
 const QuickJSModule = QuickJSModuleLoader()
-const initialized = new Promise(resolve => {
+const ready = new Promise(resolve => {
   QuickJSModule.onRuntimeInitialized = resolve
+}).then(() => {
+  isReady = true
 })
 
 type CToHostCallbackFunctionImplementation = (
@@ -392,6 +395,30 @@ class QuickJS {
   private vmMap = new Map<JSContextPointer, QuickJSVm>()
   private module = QuickJSModule
 
+  constructor() {
+    if (!isReady) {
+      throw new Error(
+        'QuickJS WASM module not initialized. Either wait for `ready` or use getInstance()'
+      )
+    }
+
+    const pointerType = 'i'
+    const intType = 'i'
+    const wasmTypes = [
+      pointerType, // return
+      pointerType, // ctx
+      pointerType, // this_ptr
+      intType, // argc
+      pointerType, // argv
+      pointerType, // fn_data_ptr
+    ]
+    const fp = this.module.addFunction(
+      this.cToHostCallbackFunction,
+      wasmTypes.join('')
+    ) as QTS_C_To_HostCallbackFuncPointer
+    this.ffi.QTS_SetHostCallback(fp)
+  }
+
   /**
    * Create a QuickJS VM.
    *
@@ -455,39 +482,17 @@ class QuickJS {
       return 0 as JSValuePointer
     }
   }
-
-  private initialized = false
-  initialize() {
-    if (this.initialized) {
-      return
-    }
-    this.initialized = true
-
-    const pointerType = 'i'
-    const intType = 'i'
-    const wasmTypes = [
-      pointerType, // return
-      pointerType, // ctx
-      pointerType, // this_ptr
-      intType, // argc
-      pointerType, // argv
-      pointerType, // fn_data_ptr
-    ]
-    const fp = this.module.addFunction(
-      this.cToHostCallbackFunction,
-      wasmTypes.join('')
-    ) as QTS_C_To_HostCallbackFuncPointer
-    this.ffi.QTS_SetHostCallback(fp)
-  }
 }
 
 let singleton: QuickJS | undefined = undefined
 
+/**
+ * Get the root QuickJS API.
+ */
 export async function getInstance(): Promise<QuickJS> {
-  await initialized
+  await ready
   if (!singleton) {
     singleton = new QuickJS()
   }
-  ;(singleton as any).initialize()
   return singleton
 }

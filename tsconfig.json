@@ -1,5 +1,5 @@
 {
-  "include": ["ts/**/*.ts", "ts/**/*.js", "build/wrapper/*.js", "build/wrapper/*.wasm", "build/wrapper/*.ts"],
+  "include": ["ts/**/*.ts", "ts/**/*.js", "build/wrapper/**/*.js", "build/wrapper/**/*.wasm", "build/wrapper/**/*.ts"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     /* Basic Options */

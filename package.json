@@ -1,7 +1,7 @@
 {
   "name": "quickjs-typescript",
   "version": "0.1.0",
-  "main": "build/js/quickjs.js",
+  "main": "build/js/ts/quickjs.js",
   "license": "MIT",
   "scripts": {
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:ldarren/QuickJS.git mod",
