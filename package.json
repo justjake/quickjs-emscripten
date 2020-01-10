@@ -10,12 +10,14 @@
     "clean": "make clean",
     "build": "tsc",
     "watch": "tsc --watch",
+    "prettier": "prettier --write ./package.json ./ts/**/*.ts",
     "run-ts": "yarn make-debug && ts-node -T ./ts/examples/hello.ts",
     "run-n": "yarn make-debug && ./build/wrapper/native/test.exe"
   },
   "devDependencies": {
     "@types/emscripten": "^1.38.0",
     "@types/node": "^13.1.4",
+    "prettier": "^1.19.1",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
   }

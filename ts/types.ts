@@ -1,12 +1,17 @@
-export type SuccessOrFail<S, F> = {
-  value: S
-  error?: undefined
-} | {
-  error: F
-}
+export type SuccessOrFail<S, F> =
+  | {
+      value: S
+      error?: undefined
+    }
+  | {
+      error: F
+    }
 
 export type VmCallResult<VmHandle> = SuccessOrFail<VmHandle, VmHandle>
-export type VmFunctionImplementation<VmHandle> = (this: VmHandle, ...args: VmHandle[]) => VmHandle | void
+export type VmFunctionImplementation<VmHandle> = (
+  this: VmHandle,
+  ...args: VmHandle[]
+) => VmHandle | void
 
 /**
  * A minimal interface to a Javascript execution environment.
@@ -33,7 +38,11 @@ export interface LowLevelJavascriptVm<VmHandle> {
   // For accessing properties of objects
   getProp(handle: VmHandle, key: string | VmHandle): VmHandle
   setProp(handle: VmHandle, key: string | VmHandle, value: VmHandle): void
-  defineProp(handle: VmHandle, key: string | VmHandle, descriptor: VmPropertyDescriptor<VmHandle>): void
+  defineProp(
+    handle: VmHandle,
+    key: string | VmHandle,
+    descriptor: VmPropertyDescriptor<VmHandle>
+  ): void
 
   callFunction(func: VmHandle, thisVal: VmHandle, ...args: VmHandle[]): VmCallResult<VmHandle>
   evalCode(code: string): VmCallResult<VmHandle>

@@ -1,4 +1,4 @@
-import {getInstance, QuickJSVm} from '../quickjs'
+import { getInstance, QuickJSVm } from '../quickjs'
 
 function logEval(vm: QuickJSVm, code: string) {
   const res = vm.evalCode(code)
@@ -44,11 +44,14 @@ async function main() {
   logEval(vm, 'var cow = random()')
 
   // Try a cyclical object
-  logEval(vm, `
+  logEval(
+    vm,
+    `
 const obj = {};
 obj.cycle = obj;
 obj
-`)
+`
+  )
 
   vm.dispose()
 }

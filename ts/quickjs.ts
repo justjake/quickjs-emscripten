@@ -1,12 +1,29 @@
 import QuickJSModuleLoader from '../build/wrapper/wasm/quickjs-emscripten-module'
-import { QuickJSFFI, JSContextPointer, JSValuePointer, JSRuntimePointer } from '../build/wrapper/wasm/ffi'
-import { LowLevelJavascriptVm, VmPropertyDescriptor, VmCallResult, VmFunctionImplementation } from './types'
+import {
+  QuickJSFFI,
+  JSContextPointer,
+  JSValuePointer,
+  JSRuntimePointer,
+} from '../build/wrapper/wasm/ffi'
+import {
+  LowLevelJavascriptVm,
+  VmPropertyDescriptor,
+  VmCallResult,
+  VmFunctionImplementation,
+} from './types'
 
 const QuickJSModule = QuickJSModuleLoader()
-const initialized = new Promise(resolve => { QuickJSModule.onRuntimeInitialized = resolve })
+const initialized = new Promise(resolve => {
+  QuickJSModule.onRuntimeInitialized = resolve
+})
 
-type CToHostCallbackFunctionImplementation =
-  (ctx: JSContextPointer, this_ptr: JSValueConstPointer, argc: number, argv: JSValueConstPointer, fn_data_ptr: JSValueConstPointer) => JSValuePointer
+type CToHostCallbackFunctionImplementation = (
+  ctx: JSContextPointer,
+  this_ptr: JSValueConstPointer,
+  argc: number,
+  argv: JSValueConstPointer,
+  fn_data_ptr: JSValueConstPointer
+) => JSValuePointer
 
 class Lifetime<T, Owner = never> {
   private _alive: boolean = true
@@ -75,7 +92,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
     // Undefined is a constant, immutable value in QuickJS.
     const ptr = this.ffi.QTS_GetUndefined()
-    return this._undefined = new Lifetime(ptr)
+    return (this._undefined = new Lifetime(ptr))
   }
 
   get global() {
@@ -121,9 +138,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     if (prototype) {
       this.assertOwned(prototype)
     }
-    const ptr = prototype ?
-      this.ffi.QTS_NewObjectProto(this.ctx.value, prototype.value) :
-      this.ffi.QTS_NewObject(this.ctx.value)
+    const ptr = prototype
+      ? this.ffi.QTS_NewObjectProto(this.ctx.value, prototype.value)
+      : this.ffi.QTS_NewObject(this.ctx.value)
     return this.heapValueHandle(ptr)
   }
 
@@ -144,9 +161,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   getProp(handle: QuickJSHandle, key: string | QuickJSHandle): QuickJSHandle {
-    const quickJSKey = typeof key === 'string' ?
-      this.newString(key) :
-      key
+    const quickJSKey = typeof key === 'string' ? this.newString(key) : key
 
     const ptr = this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value)
     const result = this.heapValueHandle(ptr)
@@ -158,9 +173,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   setProp(handle: QuickJSHandle, key: string | QuickJSHandle, value: QuickJSHandle) {
-    const quickJSKey = typeof key === 'string' ?
-      this.newString(key) :
-      key
+    const quickJSKey = typeof key === 'string' ? this.newString(key) : key
 
     this.ffi.QTS_SetProp(this.ctx.value, handle.value, quickJSKey.value, value.value)
 
@@ -170,30 +183,34 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     }
   }
 
-  defineProp(handle: QuickJSHandle, key: string | QuickJSHandle, descriptor: VmPropertyDescriptor<QuickJSHandle>): void {
-    const quickJSKey = typeof key === 'string' ?
-      this.newString(key) :
-      key
+  defineProp(
+    handle: QuickJSHandle,
+    key: string | QuickJSHandle,
+    descriptor: VmPropertyDescriptor<QuickJSHandle>
+  ): void {
+    const quickJSKey = typeof key === 'string' ? this.newString(key) : key
 
     const value = descriptor.value || this.undefined
     const configurable = Boolean(descriptor.configurable)
     const enumerable = Boolean(descriptor.enumerable)
     const hasValue = Boolean(descriptor.value)
-    const get = descriptor.get ?
-      this.newFunction(descriptor.get.name, descriptor.get) :
-      this.undefined
-    const set = descriptor.set ?
-      this.newFunction(descriptor.set.name, descriptor.set) :
-      this.undefined
+    const get = descriptor.get
+      ? this.newFunction(descriptor.get.name, descriptor.get)
+      : this.undefined
+    const set = descriptor.set
+      ? this.newFunction(descriptor.set.name, descriptor.set)
+      : this.undefined
 
     this.ffi.QTS_DefineProp(
-      this.ctx.value, handle.value, quickJSKey.value,
+      this.ctx.value,
+      handle.value,
+      quickJSKey.value,
       value.value,
       get.value,
       set.value,
       configurable,
       enumerable,
-      hasValue,
+      hasValue
     )
 
     if (typeof key === 'string') {
@@ -202,9 +219,19 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     }
   }
 
-  callFunction(func: QuickJSHandle, thisVal: QuickJSHandle, ...args: QuickJSHandle[]): VmCallResult<QuickJSHandle> {
+  callFunction(
+    func: QuickJSHandle,
+    thisVal: QuickJSHandle,
+    ...args: QuickJSHandle[]
+  ): VmCallResult<QuickJSHandle> {
     const argsArrayPtr = this.toPointerArray(args)
-    const resultPtr = this.ffi.QTS_Call(this.ctx.value, func.value, thisVal.value, args.length, argsArrayPtr.value)
+    const resultPtr = this.ffi.QTS_Call(
+      this.ctx.value,
+      func.value,
+      thisVal.value,
+      args.length,
+      argsArrayPtr.value
+    )
     argsArrayPtr.dispose()
 
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
@@ -250,7 +277,6 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     }
   }
 
-
   dispose() {
     for (const lifetime of this.lifetimes) {
       if (lifetime.alive) {
@@ -264,7 +290,13 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private fnNextId = 0
   private fnMap = new Map<number, VmFunctionImplementation<QuickJSHandle>>()
 
-  cToHostCallbackFunction: CToHostCallbackFunctionImplementation = (ctx, this_ptr, argc, argv, fn_data) => {
+  cToHostCallbackFunction: CToHostCallbackFunctionImplementation = (
+    ctx,
+    this_ptr,
+    argc,
+    argv,
+    fn_data
+  ) => {
     if (ctx !== this.ctx.value) {
       throw new Error('QuickJSVm instance received C -> JS call with mismatched ctx')
     }
@@ -277,7 +309,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
     const thisHandle = new Lifetime(this_ptr, undefined, this)
     const argHandles = new Array<QuickJSHandle>(argc)
-    for (let i=0; i<argc; i++) {
+    for (let i = 0; i < argc; i++) {
       const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
       argHandles.push(new Lifetime(ptr, undefined, this))
     }
@@ -293,7 +325,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
       ownedResultPtr = this.ffi.QTS_DupValue(this.ctx.value, resultHandle.value)
       // We assume that QuickJS takes ownership of the underlying value, so we just need to
       // free the pointer to it.
-      this.lifetimes.push(new Lifetime(ownedResultPtr, (ptr) => this.module._free(ptr)))
+      this.lifetimes.push(new Lifetime(ownedResultPtr, ptr => this.module._free(ptr)))
     }
 
     // Free the arguments so they can't be retained and re-used after we return.
@@ -321,8 +353,8 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     const typedArray = new Int32Array(handleArray.map(handle => handle.value))
     const numBytes = typedArray.length * typedArray.BYTES_PER_ELEMENT
     const ptr = this.module._malloc(numBytes) as JSValueConstPointerPointer
-    var heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes);
-    heapBytes.set(new Uint8Array(typedArray.buffer));
+    var heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes)
+    heapBytes.set(new Uint8Array(typedArray.buffer))
     return new Lifetime(ptr, ptr => this.module._free(ptr))
   }
 }
@@ -350,7 +382,6 @@ type JSValue = Lifetime<JSValuePointer, QuickJSVm>
  * You must dispose of any handles you create by calling the `.dispose()` method.
  */
 export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
-
 
 /**
  * QuickJS presents a Javascript interface to QuickJS, a Javascript interpreter that
@@ -405,7 +436,13 @@ class QuickJS {
   }
 
   // We need to send this into C-land
-  private cToHostCallbackFunction: CToHostCallbackFunctionImplementation = (ctx, this_ptr, argc, argv, fn_data_ptr) => {
+  private cToHostCallbackFunction: CToHostCallbackFunctionImplementation = (
+    ctx,
+    this_ptr,
+    argc,
+    argv,
+    fn_data_ptr
+  ) => {
     try {
       const vm = this.vmMap.get(ctx)
       if (!vm) {
@@ -436,7 +473,10 @@ class QuickJS {
       pointerType, // argv
       pointerType, // fn_data_ptr
     ]
-    const fp = this.module.addFunction(this.cToHostCallbackFunction, wasmTypes.join('')) as QTS_C_To_HostCallbackFuncPointer
+    const fp = this.module.addFunction(
+      this.cToHostCallbackFunction,
+      wasmTypes.join('')
+    ) as QTS_C_To_HostCallbackFuncPointer
     this.ffi.QTS_SetHostCallback(fp)
   }
 }
@@ -448,6 +488,6 @@ export async function getInstance(): Promise<QuickJS> {
   if (!singleton) {
     singleton = new QuickJS()
   }
-  (singleton as any).initialize()
+  ;(singleton as any).initialize()
   return singleton
 }
