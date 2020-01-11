@@ -4,6 +4,9 @@ import {
   JSContextPointer,
   JSValuePointer,
   JSRuntimePointer,
+  JSValueConstPointer,
+  JSValueConstPointerPointer,
+  QTS_C_To_HostCallbackFuncPointer,
 } from '../build/wrapper/wasm/ffi'
 import {
   LowLevelJavascriptVm,
@@ -14,7 +17,7 @@ import {
 
 let isReady = false
 const QuickJSModule = QuickJSModuleLoader()
-const ready = new Promise(resolve => {
+export const ready = new Promise(resolve => {
   QuickJSModule.onRuntimeInitialized = resolve
 }).then(() => {
   isReady = true
@@ -30,7 +33,6 @@ type CToHostCallbackFunctionImplementation = (
 
 class Lifetime<T, Owner = never> {
   private _alive: boolean = true
-  private _thenDispose: boolean = false
 
   constructor(
     private readonly _value: T,
@@ -337,7 +339,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     const argHandles = new Array<QuickJSHandle>(argc)
     for (let i = 0; i < argc; i++) {
       const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
-      argHandles.push(new Lifetime(ptr, undefined, this))
+      argHandles[i] = new Lifetime(ptr, undefined, this)
     }
 
     // TODO: there' still some funky memory management to do here.
@@ -413,7 +415,7 @@ export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
  * QuickJS presents a Javascript interface to QuickJS, a Javascript interpreter that
  * supports ES2019.
  */
-class QuickJS {
+export class QuickJS {
   private ffi = new QuickJSFFI(QuickJSModule)
   private vmMap = new Map<JSContextPointer, QuickJSVm>()
   private module = QuickJSModule
@@ -425,6 +427,15 @@ class QuickJS {
       )
     }
 
+    if (singleton) {
+      throw new Error(
+        'Cannot create another QuickJS instance. Use the instance already created (try getInstance())'
+      )
+    }
+    singleton = this
+
+    // This is why we need to be a singleton: each Emscripten module of QuickJS needs
+    // a single C callback dispatcher.
     const pointerType = 'i'
     const intType = 'i'
     const wasmTypes = [
@@ -501,7 +512,7 @@ class QuickJS {
       }
       return vm.cToHostCallbackFunction(ctx, this_ptr, argc, argv, fn_data_ptr)
     } catch (error) {
-      console.error(error)
+      console.error('[C to host error: returning null]', error)
       return 0 as JSValuePointer
     }
   }
