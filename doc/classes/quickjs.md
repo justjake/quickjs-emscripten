@@ -5,7 +5,7 @@
 QuickJS presents a Javascript interface to QuickJS, a Javascript interpreter that
 supports ES2019.
 
-QuickJS is a singleton. Use the [getInstance](../globals.md#getinstance) function to instantiate
+QuickJS is a singleton. Use the [getQuickJS](../globals.md#getquickjs) function to instantiate
 or retrieve an instance.
 
 Use the [QuickJS.createVm](quickjs.md#createvm) method to create a [QuickJSVm](quickjsvm.md).
@@ -34,7 +34,7 @@ and return the result as a native Javascript value.
 
 \+ **new QuickJS**(): *[QuickJS](quickjs.md)*
 
-*Defined in [quickjs.ts:601](https://github.com/justjake/quickjs-emscripten/blob/f464b72/ts/quickjs.ts#L601)*
+*Defined in [quickjs.ts:601](https://github.com/justjake/quickjs-emscripten/blob/dd55194/ts/quickjs.ts#L601)*
 
 **Returns:** *[QuickJS](quickjs.md)*
 
@@ -44,7 +44,7 @@ and return the result as a native Javascript value.
 
 ▸ **createVm**(): *[QuickJSVm](quickjsvm.md)*
 
-*Defined in [quickjs.ts:642](https://github.com/justjake/quickjs-emscripten/blob/f464b72/ts/quickjs.ts#L642)*
+*Defined in [quickjs.ts:642](https://github.com/justjake/quickjs-emscripten/blob/dd55194/ts/quickjs.ts#L642)*
 
 Create a QuickJS VM.
 
@@ -59,7 +59,7 @@ ___
 
 ▸ **evalCode**(`code`: string): *unknown*
 
-*Defined in [quickjs.ts:663](https://github.com/justjake/quickjs-emscripten/blob/f464b72/ts/quickjs.ts#L663)*
+*Defined in [quickjs.ts:663](https://github.com/justjake/quickjs-emscripten/blob/dd55194/ts/quickjs.ts#L663)*
 
 One-off evaluate code without needing to create a VM.
 The result is coerced to a native Javascript value using JSON
