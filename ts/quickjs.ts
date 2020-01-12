@@ -40,6 +40,8 @@ type CToHostCallbackFunctionImplementation = (
 /**
  * A lifetime prevents access to a value after the lifetime has been
  * [[dispose]]ed.
+ *
+ * Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
  */
 export class Lifetime<T, Owner = never> {
   private _alive: boolean = true
@@ -133,7 +135,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   /**
    * [`undefined`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined).
    */
-  get undefined() {
+  get undefined(): QuickJSHandle {
     if (this._undefined) {
       return this._undefined
     }
@@ -148,7 +150,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * A handle to the global object inside the interpreter.
    * You can set properties to create global variables.
    */
-  get global() {
+  get global(): QuickJSHandle {
     if (this._global) {
       return this._global
     }
@@ -194,7 +196,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   /**
    * Create a QuickJS [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) value.
    */
-  newString(str: string) {
+  newString(str: string): QuickJSHandle {
     return this.heapValueHandle(this.ffi.QTS_NewString(this.ctx.value, str))
   }
 
@@ -212,7 +214,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    *
    * @param prototype - Like [`Object.create`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create).
    */
-  newObject(prototype?: QuickJSHandle) {
+  newObject(prototype?: QuickJSHandle): QuickJSHandle {
     if (prototype) {
       this.assertOwned(prototype)
     }
@@ -333,7 +335,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * [`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call).
    * Call a JSValue as a function.
    *
-   * See [unwrapResult], which will throw if the function returned an error, or
+   * See [[unwrapResult]], which will throw if the function returned an error, or
    * return the result handle directly.
    *
    * @returns A result. If the function threw, result `error` be a handle to the exception.
@@ -366,10 +368,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * Like [`eval(code)`].
    * Evauatetes the Javascript source `code` in the global scope of this VM.
    *
-   * See [unwrapResult], which will throw if the function returned an error, or
+   * See [[unwrapResult]], which will throw if the function returned an error, or
    * return the result handle directly.
    *
-   * @returns The last statement's vlaue. If the code threw, result `error` be
+   * @returns The last statement's value. If the code threw, result `error` be
    * a handle to the exception.
    */
   evalCode(code: string): VmCallResult<QuickJSHandle> {
