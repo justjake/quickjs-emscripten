@@ -8,9 +8,7 @@
     "url": "https://github.com/justjake/quickjs-emscripten"
   },
   "files": [
-    "./build/js/build/**/*",
-    "./build/js/ts/**/*",
-    "./build/wrapper/wasm/*.js"
+    "./build/js/**/*"
   ],
   "scripts": {
     "prepare": "yarn make-release && yarn build && mocha ./build/js/ts/quickjs.test.js",
