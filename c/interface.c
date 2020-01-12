@@ -91,10 +91,11 @@ JSValue qts_quickjs_to_c_callback(JSContext *ctx, JSValueConst this_val, int arg
 
   JSValue* result_ptr = (*bound_callback)(ctx, &this_val, argc, argv, func_data);
   if (result_ptr == NULL) {
-    // Exception in the host
     return JS_UNDEFINED;
   }
-  return *result_ptr;
+  JSValue result = *result_ptr;
+  free(result_ptr);
+  return result;
 }
 
 JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
@@ -107,6 +108,14 @@ JSValue *QTS_NewFunction(JSContext *ctx, JSValueConst *func_data, const char* na
   return jsvalue_to_heap(func_obj);
 }
 
+JSValue *QTS_Throw(JSContext *ctx, JSValueConst* error) {
+  JSValue copy = JS_DupValue(ctx, *error);
+  return jsvalue_to_heap(JS_Throw(ctx, copy));
+}
+
+JSValue *QTS_NewError(JSContext *ctx) {
+  return jsvalue_to_heap(JS_NewError(ctx));
+}
 
 
 /**
@@ -288,6 +297,7 @@ char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   const char* result = "";
 
   if (JS_IsNumber(*value)) { result = "number"; }
+  else if (JS_IsFunction(ctx, *value)) { result = "function"; }
   else if (JS_IsBool(*value)) { result = "boolean"; }
   else if (JS_IsNull(*value)) { result = "object"; }
   else if (JS_IsUndefined(*value)) { result = "undefined"; }
@@ -295,7 +305,6 @@ char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   else if (JS_IsString(*value)) { result = "string"; }
   else if (JS_IsSymbol(*value)) { result = "symbol"; }
   else if (JS_IsObject(*value)) { result = "object"; }
-  else if (JS_IsFunction(ctx, *value)) { result = "function"; }
 
   char* out = malloc(sizeof(char) * strlen(result));
   strcpy(out, result);

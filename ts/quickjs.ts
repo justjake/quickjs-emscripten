@@ -347,18 +347,28 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     // the pointer, and also call JS_FreeValue, but because we're going to return
     // the JSValue to QuickJS, it will already have been "moved" to be owned by QuickJS -
     // so using JS_FreeValue would be a mistake.
-    let ownedResultPtr = this.undefined.value
-    const resultHandle = fn.apply(thisHandle, argHandles)
-    if (resultHandle) {
-      ownedResultPtr = this.ffi.QTS_DupValue(this.ctx.value, resultHandle.value)
-      // We assume that QuickJS takes ownership of the underlying value, so we just need to
-      // free the pointer to it.
-      this.lifetimes.push(new Lifetime(ownedResultPtr, ptr => this.module._free(ptr)))
+    let ownedResultPtr = 0 as JSValuePointer
+    try {
+      const resultHandle = fn.apply(thisHandle, argHandles)
+      if (resultHandle) {
+        ownedResultPtr = this.ffi.QTS_DupValue(this.ctx.value, resultHandle.value)
+        resultHandle.dispose()
+      }
+    } catch (error) {
+      const errorHandle = this.errorToHandle(error)
+      ownedResultPtr = this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
+      errorHandle.dispose()
     }
 
     // Free the arguments so they can't be retained and re-used after we return.
-    thisHandle.dispose()
-    argHandles.forEach(argHandle => argHandle.dispose())
+    if (thisHandle.alive) {
+      thisHandle.dispose()
+    }
+    for (const argHandle of argHandles) {
+      if (argHandle.alive) {
+        argHandle.dispose()
+      }
+    }
 
     return ownedResultPtr as JSValuePointer
   }
@@ -384,6 +394,31 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     var heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes)
     heapBytes.set(new Uint8Array(typedArray.buffer))
     return new Lifetime(ptr, ptr => this.module._free(ptr))
+  }
+
+  private errorToHandle(error: Error) {
+    const errorHandle = this.heapValueHandle(this.ffi.QTS_NewError(this.ctx.value))
+
+    if (error.name !== undefined) {
+      const handle = this.newString(error.name)
+      this.setProp(errorHandle, 'name', handle)
+      handle.dispose()
+    }
+
+    if (error.message !== undefined) {
+      const handle = this.newString(error.message)
+      this.setProp(errorHandle, 'message', handle)
+      handle.dispose()
+    }
+
+    if (error.stack !== undefined) {
+      const handle = this.newString(error.stack)
+      // Set to fullStack...? For debugging.
+      //this.setProp(errorHandle, 'fullStack', handle)
+      handle.dispose()
+    }
+
+    return errorHandle
   }
 }
 
