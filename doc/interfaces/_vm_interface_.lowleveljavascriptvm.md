@@ -49,7 +49,7 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 • **global**: *VmHandle*
 
-*Defined in [vm-interface.ts:25](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L25)*
+*Defined in [vm-interface.ts:25](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L25)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 • **undefined**: *VmHandle*
 
-*Defined in [vm-interface.ts:26](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L26)*
+*Defined in [vm-interface.ts:26](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L26)*
 
 ## Methods
 
@@ -65,7 +65,7 @@ ___
 
 ▸ **callFunction**(`func`: VmHandle, `thisVal`: VmHandle, ...`args`: VmHandle[]): *[VmCallResult](../modules/_vm_interface_.md#vmcallresult)‹VmHandle›*
 
-*Defined in [vm-interface.ts:47](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L47)*
+*Defined in [vm-interface.ts:47](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L47)*
 
 **Parameters:**
 
@@ -83,7 +83,7 @@ ___
 
 ▸ **defineProp**(`handle`: VmHandle, `key`: string | VmHandle, `descriptor`: [VmPropertyDescriptor](_vm_interface_.vmpropertydescriptor.md)‹VmHandle›): *void*
 
-*Defined in [vm-interface.ts:41](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L41)*
+*Defined in [vm-interface.ts:41](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L41)*
 
 **Parameters:**
 
@@ -101,7 +101,7 @@ ___
 
 ▸ **evalCode**(`code`: string): *[VmCallResult](../modules/_vm_interface_.md#vmcallresult)‹VmHandle›*
 
-*Defined in [vm-interface.ts:48](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L48)*
+*Defined in [vm-interface.ts:48](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L48)*
 
 **Parameters:**
 
@@ -117,7 +117,7 @@ ___
 
 ▸ **getNumber**(`handle`: VmHandle): *number*
 
-*Defined in [vm-interface.ts:30](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L30)*
+*Defined in [vm-interface.ts:30](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L30)*
 
 **Parameters:**
 
@@ -133,7 +133,7 @@ ___
 
 ▸ **getProp**(`handle`: VmHandle, `key`: string | VmHandle): *VmHandle*
 
-*Defined in [vm-interface.ts:39](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L39)*
+*Defined in [vm-interface.ts:39](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L39)*
 
 **Parameters:**
 
@@ -150,7 +150,7 @@ ___
 
 ▸ **getString**(`handle`: VmHandle): *string*
 
-*Defined in [vm-interface.ts:31](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L31)*
+*Defined in [vm-interface.ts:31](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L31)*
 
 **Parameters:**
 
@@ -166,7 +166,7 @@ ___
 
 ▸ **newFunction**(`name`: string, `value`: [VmFunctionImplementation](../modules/_vm_interface_.md#vmfunctionimplementation)‹VmHandle›): *VmHandle*
 
-*Defined in [vm-interface.ts:36](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L36)*
+*Defined in [vm-interface.ts:36](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L36)*
 
 **Parameters:**
 
@@ -183,7 +183,7 @@ ___
 
 ▸ **newNumber**(`value`: number): *VmHandle*
 
-*Defined in [vm-interface.ts:33](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L33)*
+*Defined in [vm-interface.ts:33](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L33)*
 
 **Parameters:**
 
@@ -199,7 +199,7 @@ ___
 
 ▸ **newObject**(`prototype?`: VmHandle): *VmHandle*
 
-*Defined in [vm-interface.ts:35](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L35)*
+*Defined in [vm-interface.ts:35](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L35)*
 
 **Parameters:**
 
@@ -215,7 +215,7 @@ ___
 
 ▸ **newString**(`value`: string): *VmHandle*
 
-*Defined in [vm-interface.ts:34](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L34)*
+*Defined in [vm-interface.ts:34](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L34)*
 
 **Parameters:**
 
@@ -231,7 +231,7 @@ ___
 
 ▸ **setProp**(`handle`: VmHandle, `key`: string | VmHandle, `value`: VmHandle): *void*
 
-*Defined in [vm-interface.ts:40](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L40)*
+*Defined in [vm-interface.ts:40](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L40)*
 
 **Parameters:**
 
@@ -249,7 +249,7 @@ ___
 
 ▸ **typeof**(`handle`: VmHandle): *string*
 
-*Defined in [vm-interface.ts:28](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L28)*
+*Defined in [vm-interface.ts:28](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L28)*
 
 **Parameters:**
 

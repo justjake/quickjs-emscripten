@@ -8,9 +8,9 @@ supports ES2019.
 QuickJS is a singleton. Use the [getInstance](../modules/_quickjs_.md#getinstance) function to instantiate
 or retrieve an instance.
 
-Use the {@link QuickJS#createVm} method to create a [QuickJSVm](_quickjs_.quickjsvm.md).
+Use the [QuickJS.createVm](_quickjs_.quickjs.md#createvm) method to create a [QuickJSVm](_quickjs_.quickjsvm.md).
 
-Use the {@link QuickJS#evalCode} method as a shortcut evaluate Javascript safely
+Use the [QuickJS.evalCode](_quickjs_.quickjs.md#evalcode) method as a shortcut evaluate Javascript safely
 and return the result as a native Javascript value.
 
 ## Hierarchy
@@ -34,7 +34,7 @@ and return the result as a native Javascript value.
 
 \+ **new QuickJS**(): *[QuickJS](_quickjs_.quickjs.md)*
 
-*Defined in [quickjs.ts:492](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/quickjs.ts#L492)*
+*Defined in [quickjs.ts:495](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/quickjs.ts#L495)*
 
 **Returns:** *[QuickJS](_quickjs_.quickjs.md)*
 
@@ -44,7 +44,7 @@ and return the result as a native Javascript value.
 
 ▸ **createVm**(): *[QuickJSVm](_quickjs_.quickjsvm.md)*
 
-*Defined in [quickjs.ts:533](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/quickjs.ts#L533)*
+*Defined in [quickjs.ts:536](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/quickjs.ts#L536)*
 
 Create a QuickJS VM.
 
@@ -59,7 +59,7 @@ ___
 
 ▸ **evalCode**(`code`: string): *unknown*
 
-*Defined in [quickjs.ts:554](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/quickjs.ts#L554)*
+*Defined in [quickjs.ts:557](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/quickjs.ts#L557)*
 
 One-off evaluate code without needing to create a VM.
 The result is coerced to a native Javascript value using JSON

@@ -4,10 +4,6 @@
 
 ## Index
 
-### Classes
-
-* [QuickJSFFI](../classes/_ffi_.quickjsffi.md)
-
 ### Type aliases
 
 * [JSCFunctionPointer](_ffi_.md#jscfunctionpointer)
@@ -25,7 +21,7 @@
 
 Ƭ **JSCFunctionPointer**: *[Pointer](_ffi_.md#pointer)‹"JSCFunction"›*
 
-*Defined in [ffi.ts:11](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/ffi.ts#L11)*
+*Defined in [ffi.ts:11](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/ffi.ts#L11)*
 
 ___
 
@@ -33,7 +29,7 @@ ___
 
 Ƭ **JSContextPointer**: *[Pointer](_ffi_.md#pointer)‹"JSContext"›*
 
-*Defined in [ffi.ts:7](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/ffi.ts#L7)*
+*Defined in [ffi.ts:7](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/ffi.ts#L7)*
 
 ___
 
@@ -41,7 +37,7 @@ ___
 
 Ƭ **JSRuntimePointer**: *[Pointer](_ffi_.md#pointer)‹"JSRuntime"›*
 
-*Defined in [ffi.ts:6](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/ffi.ts#L6)*
+*Defined in [ffi.ts:6](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/ffi.ts#L6)*
 
 ___
 
@@ -49,7 +45,7 @@ ___
 
 Ƭ **JSValueConstPointer**: *[Pointer](_ffi_.md#pointer)‹"JSValueConst"›*
 
-*Defined in [ffi.ts:9](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/ffi.ts#L9)*
+*Defined in [ffi.ts:9](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/ffi.ts#L9)*
 
 ___
 
@@ -57,7 +53,7 @@ ___
 
 Ƭ **JSValueConstPointerPointer**: *[Pointer](_ffi_.md#pointer)‹"JSValueConst[]"›*
 
-*Defined in [ffi.ts:10](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/ffi.ts#L10)*
+*Defined in [ffi.ts:10](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/ffi.ts#L10)*
 
 ___
 
@@ -65,7 +61,7 @@ ___
 
 Ƭ **JSValuePointer**: *[Pointer](_ffi_.md#pointer)‹"JSValue"›*
 
-*Defined in [ffi.ts:8](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/ffi.ts#L8)*
+*Defined in [ffi.ts:8](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/ffi.ts#L8)*
 
 ___
 
@@ -73,7 +69,7 @@ ___
 
 Ƭ **Pointer**: *number & object*
 
-*Defined in [ffi.ts:5](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/ffi.ts#L5)*
+*Defined in [ffi.ts:5](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/ffi.ts#L5)*
 
 ___
 
@@ -81,4 +77,4 @@ ___
 
 Ƭ **QTS_C_To_HostCallbackFuncPointer**: *[Pointer](_ffi_.md#pointer)‹"C_To_HostCallbackFuncPointer"›*
 
-*Defined in [ffi.ts:12](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/ffi.ts#L12)*
+*Defined in [ffi.ts:12](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/ffi.ts#L12)*

@@ -21,7 +21,7 @@
 
 Ƭ **SuccessOrFail**: *object | object*
 
-*Defined in [vm-interface.ts:1](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L1)*
+*Defined in [vm-interface.ts:1](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L1)*
 
 ___
 
@@ -29,7 +29,7 @@ ___
 
 Ƭ **VmCallResult**: *[SuccessOrFail](_vm_interface_.md#successorfail)‹VmHandle, VmHandle›*
 
-*Defined in [vm-interface.ts:10](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L10)*
+*Defined in [vm-interface.ts:10](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L10)*
 
 ___
 
@@ -37,7 +37,7 @@ ___
 
 Ƭ **VmFunctionImplementation**: *function*
 
-*Defined in [vm-interface.ts:11](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L11)*
+*Defined in [vm-interface.ts:11](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L11)*
 
 #### Type declaration:
 

@@ -28,7 +28,7 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 • **configurable**? : *undefined | false | true*
 
-*Defined in [vm-interface.ts:56](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L56)*
+*Defined in [vm-interface.ts:56](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L56)*
 
 ___
 
@@ -36,7 +36,7 @@ ___
 
 • **enumerable**? : *undefined | false | true*
 
-*Defined in [vm-interface.ts:57](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L57)*
+*Defined in [vm-interface.ts:57](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L57)*
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 • **get**? : *undefined | function*
 
-*Defined in [vm-interface.ts:58](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L58)*
+*Defined in [vm-interface.ts:58](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L58)*
 
 ___
 
@@ -52,7 +52,7 @@ ___
 
 • **set**? : *undefined | function*
 
-*Defined in [vm-interface.ts:59](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L59)*
+*Defined in [vm-interface.ts:59](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L59)*
 
 ___
 
@@ -60,4 +60,4 @@ ___
 
 • **value**? : *VmHandle*
 
-*Defined in [vm-interface.ts:55](https://github.com/justjake/quickjs-emscripten/blob/aff5edf/ts/vm-interface.ts#L55)*
+*Defined in [vm-interface.ts:55](https://github.com/justjake/quickjs-emscripten/blob/5fb2234/ts/vm-interface.ts#L55)*

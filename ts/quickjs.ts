@@ -37,7 +37,7 @@ type CToHostCallbackFunctionImplementation = (
   fn_data_ptr: JSValueConstPointer
 ) => JSValuePointer
 
-class Lifetime<T, Owner = never> {
+export class Lifetime<T, Owner = never> {
   private _alive: boolean = true
 
   constructor(
@@ -77,12 +77,12 @@ class Lifetime<T, Owner = never> {
 /**
  * QuickJSVm wraps a QuickJS Javascript runtime (JSRuntime*) and context (JSContext*).
  * This class's methods return {@link QuickJSHandle}, which wrap C pointers (JSValue*).
- * It's the caller's responsibility to call {@link QuickJSHandle#dispose} on any
+ * It's the caller's responsibility to call `.dispose()` on any
  * handles you create to free memory once you're done with the handle.
  *
  * You cannot share handles between different QuickJSVm instances.
  *
- * @see {@link QuickJS#createVm} Creates a new QuickJSVm
+ * Use {@link QuickJS.createVm} to create a new QuickJSVm
  */
 export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   readonly ctx: Lifetime<JSContextPointer>
@@ -94,6 +94,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private _global: QuickJSHandle | undefined = undefined
   private readonly lifetimes: Lifetime<any, any>[] = []
 
+  /**
+   * Use {@link QuickJS.createVm} to create a QuickJSVm instance.
+   */
   constructor(args: {
     module: typeof QuickJSModule
     ffi: QuickJSFFI
@@ -344,7 +347,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private fnMap = new Map<number, VmFunctionImplementation<QuickJSHandle>>()
 
   /**
-   * @private
+   * @hidden
    */
   cToHostCallbackFunction: CToHostCallbackFunctionImplementation = (
     ctx,
@@ -453,17 +456,17 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 /**
  * A QuickJSHandle to a constant that will never change, and does not need to be disposed.
  */
-type StaticJSValue = Lifetime<JSValueConstPointer>
+export type StaticJSValue = Lifetime<JSValueConstPointer>
 
 /**
  * A QuickJSHandle to a borrowed value that does not need to be disposed.
  */
-type JSValueConst = Lifetime<JSValueConstPointer, QuickJSVm>
+export type JSValueConst = Lifetime<JSValueConstPointer, QuickJSVm>
 
 /**
  * A owned QuickJSHandle that should be disposed.
  */
-type JSValue = Lifetime<JSValuePointer, QuickJSVm>
+export type JSValue = Lifetime<JSValuePointer, QuickJSVm>
 
 /**
  * Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
@@ -481,9 +484,9 @@ export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
  * QuickJS is a singleton. Use the {@link getInstance} function to instantiate
  * or retrieve an instance.
  *
- * Use the {@link QuickJS#createVm} method to create a {@link QuickJSVm}.
+ * Use the {@link QuickJS.createVm} method to create a {@link QuickJSVm}.
  *
- * Use the {@link QuickJS#evalCode} method as a shortcut evaluate Javascript safely
+ * Use the {@link QuickJS.evalCode} method as a shortcut evaluate Javascript safely
  * and return the result as a native Javascript value.
  */
 export class QuickJS {
