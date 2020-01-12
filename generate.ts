@@ -129,7 +129,7 @@ ${ffiTypes}
 
 /**
  * Low-level FFI bindings to QuickJS's Emscripten module
- * @private
+ * @hidden
  */
 export class QuickJSFFI {
   constructor(private module: EmscriptenModule) {}
