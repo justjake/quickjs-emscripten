@@ -1,4 +1,10 @@
 node_modules
 yarn-error.log
 npm-error.log
+
+*.wasm
+*.wasm.map
+*.tsbuildinfo
+
 /build
+/dist

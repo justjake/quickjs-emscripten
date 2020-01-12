@@ -1,4 +1,4 @@
-import QuickJSModuleLoader from '../build/wrapper/wasm/quickjs-emscripten-module'
+import QuickJSModuleLoader from './quickjs-emscripten-module'
 import {
   QuickJSFFI,
   JSContextPointer,
@@ -7,13 +7,13 @@ import {
   JSValueConstPointer,
   JSValueConstPointerPointer,
   QTS_C_To_HostCallbackFuncPointer,
-} from '../build/wrapper/wasm/ffi'
+} from './ffi'
 import {
   LowLevelJavascriptVm,
   VmPropertyDescriptor,
   VmCallResult,
   VmFunctionImplementation,
-} from './types'
+} from './vm-interface'
 
 let isReady = false
 

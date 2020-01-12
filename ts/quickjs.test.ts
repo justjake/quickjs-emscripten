@@ -1,7 +1,7 @@
 import { getInstance, QuickJSVm, QuickJSHandle } from './quickjs'
 import { it, describe } from 'mocha'
 import assert from 'assert'
-import { VmCallResult } from './types'
+import { VmCallResult } from './vm-interface'
 
 describe('QuickJSVm', async () => {
   let vm: QuickJSVm = undefined as any

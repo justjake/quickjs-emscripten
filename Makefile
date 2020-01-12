@@ -5,7 +5,6 @@ WRAPPER_ROOT=c
 BUILD_ROOT=build
 BUILD_WRAPPER=$(BUILD_ROOT)/wrapper
 BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
-# ... BUILD_TYPESCRIPT?
 
 QUICKJS_OBJS=quickjs.o libregexp.o libunicode.o cutils.o quickjs-libc.o
 QUICKJS_OBJS_WASM=$(patsubst %.o, $(BUILD_QUICKJS)/wasm/%.o, $(QUICKJS_OBJS))
@@ -33,7 +32,7 @@ else
 	CFLAGS_EMCC+=--closure 1
 endif
 
-wasm: $(BUILD_DIR) $(BUILD_WRAPPER)/wasm/quickjs-emscripten-module.js  $(BUILD_WRAPPER)/wasm/ffi.ts
+wasm: $(BUILD_DIR) ts/quickjs-emscripten-module.js  ts/ffi.ts
 native: $(BUILD_WRAPPER)/native/test.exe
 
 $(BUILD_WRAPPER):
@@ -52,14 +51,13 @@ $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 $(BUILD_WRAPPER)/symbols.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 	ts-node generate.ts symbols $@
 
-$(BUILD_WRAPPER)/wasm/ffi.ts: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT) ts/ffi-types.ts
+ts/ffi.ts: $(WRAPPER_ROOT)/interface.c
 	ts-node generate.ts ffi $@
 
 ### Executables
 # The WASM module we'll link to typescript
-$(BUILD_WRAPPER)/wasm/quickjs-emscripten-module.js: $(BUILD_WRAPPER)/wasm/interface.o $(QUICKJS_OBJS_WASM) ts/quickjs-emscripten-module.d.ts
+ts/quickjs-emscripten-module.js: $(BUILD_WRAPPER)/wasm/interface.o $(QUICKJS_OBJS_WASM)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(QUICKJS_OBJS_WASM)
-	cp ./ts/quickjs-emscripten-module.d.ts $(BUILD_WRAPPER)/wasm
 
 # Trying to debug C...
 $(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(BUILD_WRAPPER)/native/interface.o $(WRAPPER_ROOT) $(QUICKJS_OBJS_NATIVE)
@@ -84,5 +82,10 @@ $(BUILD_QUICKJS)/native/%.o: $(QUICKJS_ROOT)/%.c | $(BUILD_ROOT)
 	$(CC) $(CFLAGS) $(QUICKJS_DEFINES) -c -o $@ $<
 
 clean:
+	rm -rf ./ts/ffi.ts
+	rm -rf ./ts/quickjs-emscripten-module.js
+	rm -rf ./ts/quickjs-emscripten-module.map
+	rm -rf ./ts/quickjs-emscripten-module.wasm
+	rm -rf ./ts/quickjs-emscripten-module.wasm.map
 	rm -rfv $(BUILD_ROOT)
 	rm -rf $(WRAPPER_ROOT)/interface.h

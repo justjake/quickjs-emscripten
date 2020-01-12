@@ -1,17 +1,19 @@
 {
   "name": "quickjs-emscripten",
-  "version": "0.1.0a",
-  "main": "build/js/ts/quickjs.js",
+  "version": "0.1.0b",
+  "main": "dist/quickjs.js",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/justjake/quickjs-emscripten"
   },
   "files": [
-    "./build/js/**/*"
+    "./dist/*.js",
+    "./dist/*.ts",
+    "./dist/*.map"
   ],
   "scripts": {
-    "prepare": "yarn make-release && yarn build && mocha ./build/js/ts/quickjs.test.js",
+    "prepare": "yarn make-release && yarn build && mocha ./dist/quickjs.test.js",
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:ldarren/QuickJS.git mod",
     "make-debug": "make DEBUG=1 -j 8",
     "make-release": "make clean && make -j 8",
@@ -20,7 +22,6 @@
     "doc": "typedoc --plugin typedoc-plugin-markdown",
     "test": "yarn make-debug && mocha",
     "prettier": "prettier --write ./*.json ./**/*.ts ./*.js",
-    "run-ts": "yarn make-debug && ts-node -T ./ts/examples/hello.ts",
     "run-n": "yarn make-debug && ./build/wrapper/native/test.exe"
   },
   "devDependencies": {
