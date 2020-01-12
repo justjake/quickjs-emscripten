@@ -19,7 +19,7 @@
     "make-release": "make clean && make -j 8",
     "clean": "make clean",
     "build": "tsc",
-    "doc": "typedoc --plugin typedoc-plugin-markdown ts/quickjs.ts",
+    "doc": "typedoc --plugin typedoc-plugin-markdown ts",
     "test": "yarn make-debug && mocha",
     "prettier": "prettier --write ./*.json ./**/*.ts ./*.js",
     "run-n": "yarn make-debug && ./build/wrapper/native/test.exe"

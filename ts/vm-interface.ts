@@ -1,3 +1,7 @@
+/**
+ * Used as an optional.
+ * `{ value: S } | { error: E }`.
+ */
 export type SuccessOrFail<S, F> =
   | {
       value: S
@@ -7,11 +11,28 @@ export type SuccessOrFail<S, F> =
       error: F
     }
 
+/**
+ * Used as an optional.
+ * `{ value: VmHandle } | { error: VmHandle }`.
+ */
 export type VmCallResult<VmHandle> = SuccessOrFail<VmHandle, VmHandle>
+
+/**
+ * A VmFunctionImplementation takes handles as arguments.
+ * It should return a handle, or be void.
+ *
+ * To indicate an exception, a VMs can throw either a handle (transferred
+ * directly) or any other Javascript value (only the poperties `name` and
+ * `message` will be transferred). Or, the VmFunctionImplementation may return
+ * a VmCallResult's `{ error: handle }` error variant.
+ *
+ * VmFunctionImplementation should not free its arguments or its return value.
+ * It should not retain a reference to its return value or thrown error.
+ */
 export type VmFunctionImplementation<VmHandle> = (
   this: VmHandle,
   ...args: VmHandle[]
-) => VmHandle | void
+) => VmHandle | VmCallResult<VmHandle> | void
 
 /**
  * A minimal interface to a Javascript execution environment.

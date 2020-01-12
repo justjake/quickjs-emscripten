@@ -1,3 +1,7 @@
+/**
+ * These tests demonstate some common patterns for using quickjs-emscripten.
+ */
+
 import { getInstance, QuickJSVm, QuickJSHandle } from './quickjs'
 import { it, describe } from 'mocha'
 import assert from 'assert'

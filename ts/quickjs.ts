@@ -37,9 +37,21 @@ type CToHostCallbackFunctionImplementation = (
   fn_data_ptr: JSValueConstPointer
 ) => JSValuePointer
 
+/**
+ * A lifetime prevents access to a value after the lifetime has been
+ * [[dispose]]ed.
+ */
 export class Lifetime<T, Owner = never> {
   private _alive: boolean = true
 
+  /**
+   * When the Lifetime is disposed, it will call `disposer(_value)`. Use the
+   * disposer function to implement whatever cleanup needs to happen at the end
+   * of `value`'s lifetime.
+   *
+   * `_owner` is not used or controlled by the lifetime. It's just metadata for
+   * the creator.
+   */
   constructor(
     private readonly _value: T,
     private readonly disposer?: (value: T) => void,
@@ -50,6 +62,12 @@ export class Lifetime<T, Owner = never> {
     return this._alive
   }
 
+  /**
+   * The value this Lifetime protects. You must never retain the value - it
+   * may become invalid, leading to memory errors.
+   *
+   * @throws If the lifetime has been [[dispose]]d already.
+   */
   get value() {
     this.assertAlive()
     return this._value
@@ -59,6 +77,9 @@ export class Lifetime<T, Owner = never> {
     return this._owner
   }
 
+  /**
+   * Dispose of [[value]] and perform cleanup.
+   */
   dispose() {
     this.assertAlive()
     if (this.disposer) {
@@ -109,7 +130,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     this.rt = args.rt
   }
 
-  // interface
+  /**
+   * [`undefined`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined).
+   */
   get undefined() {
     if (this._undefined) {
       return this._undefined
@@ -121,6 +144,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   /**
+   * [`global`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects).
    * A handle to the global object inside the interpreter.
    * You can set properties to create global variables.
    */
@@ -140,29 +164,54 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return this._global
   }
 
+  /**
+   * `typeof` operator. **Not** [standards compliant](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof).
+   *
+   * @remarks
+   * Does not support BigInt values correctly.
+   */
   typeof(handle: QuickJSHandle) {
     this.assertOwned(handle)
     return this.ffi.QTS_Typeof(this.ctx.value, handle.value)
   }
 
+  /**
+   * Converts a Javascript number into a QuckJS value.
+   */
   newNumber(num: number): QuickJSHandle {
     return this.heapValueHandle(this.ffi.QTS_NewFloat64(this.ctx.value, num))
   }
 
+  /**
+   * Converts `handle` into a Javascript number.
+   * @returns `NaN` on error, othewise a `number`.
+   */
   getNumber(handle: QuickJSHandle) {
     this.assertOwned(handle)
     return this.ffi.QTS_GetFloat64(this.ctx.value, handle.value)
   }
 
+  /**
+   * Create a QuickJS [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) value.
+   */
   newString(str: string) {
     return this.heapValueHandle(this.ffi.QTS_NewString(this.ctx.value, str))
   }
 
+  /**
+   * Converts `handle` to a Javascript string.
+   */
   getString(handle: QuickJSHandle) {
     this.assertOwned(handle)
     return this.ffi.QTS_GetString(this.ctx.value, handle.value)
   }
 
+  /**
+   * `{}`.
+   * Create a new QuickJS [object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer).
+   *
+   * @param prototype - Like [`Object.create`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create).
+   */
   newObject(prototype?: QuickJSHandle) {
     if (prototype) {
       this.assertOwned(prototype)
@@ -173,6 +222,14 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return this.heapValueHandle(ptr)
   }
 
+  /**
+   * Convert a Javascript function into a QuickJS function value.
+   * See [[VmFunctionImplementation]] for more details.
+   *
+   * A [[VmFunctionImplementation]] should not free its arguments or its retun
+   * value. A VmFunctionImplementation should also not retain any references to
+   * its veturn value.
+   */
   newFunction(name: string, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
     const fnId = ++this.fnNextId
     this.fnMap.set(fnId, fn)
@@ -189,6 +246,13 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return funcHandle
   }
 
+  /**
+   * `handle[key]`.
+   * Get a property from a JSValue.
+   *
+   * @param key - The property may be specified as a JSValue handle, or as a
+   * Javascript string (which will be converted automatically).
+   */
   getProp(handle: QuickJSHandle, key: string | QuickJSHandle): QuickJSHandle {
     const quickJSKey = typeof key === 'string' ? this.newString(key) : key
 
@@ -201,6 +265,17 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return result
   }
 
+  /**
+   * `handle[key] = value`.
+   * Set a property on a JSValue.
+   *
+   * @remarks
+   * Note that the QuickJS authors recommend using [[defineProp]] to define new
+   * properties.
+   *
+   * @param key - The property may be specified as a JSValue handle, or as a
+   * Javascript string (which will be converted automatically).
+   */
   setProp(handle: QuickJSHandle, key: string | QuickJSHandle, value: QuickJSHandle) {
     const quickJSKey = typeof key === 'string' ? this.newString(key) : key
 
@@ -212,6 +287,12 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     }
   }
 
+  /**
+   * [`Object.defineProperty(handle, key, descriptor)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty).
+   *
+   * @param key - The property may be specified as a JSValue handle, or as a
+   * Javascript string (which will be converted automatically).
+   */
   defineProp(
     handle: QuickJSHandle,
     key: string | QuickJSHandle,
@@ -248,6 +329,15 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     }
   }
 
+  /**
+   * [`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call).
+   * Call a JSValue as a function.
+   *
+   * See [unwrapResult], which will throw if the function returned an error, or
+   * return the result handle directly.
+   *
+   * @returns A result. If the function threw, result `error` be a handle to the exception.
+   */
   callFunction(
     func: QuickJSHandle,
     thisVal: QuickJSHandle,
@@ -272,6 +362,16 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return { value: this.heapValueHandle(resultPtr) }
   }
 
+  /**
+   * Like [`eval(code)`].
+   * Evauatetes the Javascript source `code` in the global scope of this VM.
+   *
+   * See [unwrapResult], which will throw if the function returned an error, or
+   * return the result handle directly.
+   *
+   * @returns The last statement's vlaue. If the code threw, result `error` be
+   * a handle to the exception.
+   */
   evalCode(code: string): VmCallResult<QuickJSHandle> {
     const resultPtr = this.ffi.QTS_Eval(this.ctx.value, code)
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
@@ -286,7 +386,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
   /**
    * Dump a JSValue to Javascript in a best-effort fashion.
-   * Returns the object's .toString() if it cannot be serialized to JSON.
+   * Returns `handle.toString()` if it cannot be serialized to JSON.
    */
   dump(handle: QuickJSHandle) {
     const type = this.typeof(handle)
@@ -330,8 +430,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
   /**
    * Dispose of this VM's underlying resources.
-   * Calling this method without disposing of all created handles will result
-   * in an error.
+   *
+   * @throws If Calling this method without disposing of all created handles
+   * will result in an error.
    */
   dispose() {
     for (const lifetime of this.lifetimes) {
@@ -373,17 +474,16 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
       argHandles[i] = new Lifetime(ptr, undefined, this)
     }
 
-    // TODO: there' still some funky memory management to do here.
-    // For values created with vm.new...(), calling .dispose() will both free
-    // the pointer, and also call JS_FreeValue, but because we're going to return
-    // the JSValue to QuickJS, it will already have been "moved" to be owned by QuickJS -
-    // so using JS_FreeValue would be a mistake.
     let ownedResultPtr = 0 as JSValuePointer
     try {
-      const resultHandle = fn.apply(thisHandle, argHandles)
-      if (resultHandle) {
-        ownedResultPtr = this.ffi.QTS_DupValue(this.ctx.value, resultHandle.value)
-        resultHandle.dispose()
+      let result = fn.apply(thisHandle, argHandles)
+      if (result) {
+        if ('error' in result && result.error) {
+          throw result.error
+        }
+        const handle = result instanceof Lifetime ? result : result.value
+        ownedResultPtr = this.ffi.QTS_DupValue(this.ctx.value, handle.value)
+        handle.dispose()
       }
     } catch (error) {
       const errorHandle = this.errorToHandle(error)
@@ -427,7 +527,11 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return new Lifetime(ptr, ptr => this.module._free(ptr))
   }
 
-  private errorToHandle(error: Error) {
+  private errorToHandle(error: Error | QuickJSHandle) {
+    if (error instanceof Lifetime) {
+      return error
+    }
+
     const errorHandle = this.heapValueHandle(this.ffi.QTS_NewError(this.ctx.value))
 
     if (error.name !== undefined) {
@@ -597,6 +701,7 @@ export class QuickJS {
 let singleton: QuickJS | undefined = undefined
 
 /**
+ * This is the top-level entrypoint for the quickjs-emscripten library.
  * Get the root QuickJS API.
  */
 export async function getInstance(): Promise<QuickJS> {
