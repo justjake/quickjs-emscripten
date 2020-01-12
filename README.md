@@ -11,8 +11,8 @@ async function main() {
   const QuickJS = await getInstance()
   const vm = QuickJS.createVm()
 
-  const world = vm.createString("world")
-  vm.setProp(vm.global, "NAME", world)
+  const world = vm.createString('world')
+  vm.setProp(vm.global, 'NAME', world)
   world.dispose()
 
   const result = vm.evalCode(`"Hello " + NAME + "!"`)
@@ -52,7 +52,7 @@ getQuickJS.then(QuickJS => {
 })
 ```
 
-*Note: this will not protect you from infinite loops.*
+_Note: this will not protect you from infinite loops._
 
 ### Interfacing with the interpreter
 
@@ -81,8 +81,8 @@ This was inspired by seeing https://github.com/maple3142/duktape-eval
 [on Hacker News](https://news.ycombinator.com/item?id=21946565) and Figma's
 blogposts about using building a Javascript plugin runtime:
 
-* [How [Figma] built the Figma plugin system](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/): Describes the LowLevelJavascriptVm interface.
-* [An update on plugin security](https://www.figma.com/blog/an-update-on-plugin-security/): Figma switches to QuickJS.
+- [How [Figma] built the Figma plugin system](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/): Describes the LowLevelJavascriptVm interface.
+- [An update on plugin security](https://www.figma.com/blog/an-update-on-plugin-security/): Figma switches to QuickJS.
 
 ## Status
 
@@ -91,23 +91,23 @@ on top of this.
 
 Ideas for future work:
 
-* Simplify memory management. Currently the user must call `handle.dispose()` on all handles they
+- Simplify memory management. Currently the user must call `handle.dispose()` on all handles they
   create to avoid leaking memory in C.
-  * We chould use a Pool abstraction and do a Pool.freeAll() to free all handles and pointers
+  - We chould use a Pool abstraction and do a Pool.freeAll() to free all handles and pointers
     in the pool.
-  * Pools, etc, should not pollute QuickJSVm interface. Composition!
-* Expose QuickJS interpreter execution hooks to protect against infinite loops.
-* Higher-level abstractions for translating values into (and out of) QuickJS.
+  - Pools, etc, should not pollute QuickJSVm interface. Composition!
+- Expose QuickJS interpreter execution hooks to protect against infinite loops.
+- Higher-level abstractions for translating values into (and out of) QuickJS.
   These should be implemented in a way that works for any `LowLevelJavascriptVm`
   implementation.
-* Removing the singleton limitations. Each QuickJS class instance could create
+- Removing the singleton limitations. Each QuickJS class instance could create
   its own copy of the emscripten module, although we'd need to make all public
   methods async - so they wait for the module instance to be ready.
 
 ## Related
 
-* Duktape wrapped in Wasm: https://github.com/maple3142/duktape-eval/blob/master/src/Makefile
-* QuickJS wrapped in C++: https://github.com/ftk/quickjspp
+- Duktape wrapped in Wasm: https://github.com/maple3142/duktape-eval/blob/master/src/Makefile
+- QuickJS wrapped in C++: https://github.com/ftk/quickjspp
 
 ## Developing
 
@@ -123,7 +123,7 @@ automatically exported to native code (via a generated header) and to
 Typescript (via a generated FFI class). See ./generate.ts for how this works.
 
 The C code builds as both with `emscripten` (using `emcc`), to produce WASM (or
-ASM.js) and with `clang`. Build outputs are checked in, so 
+ASM.js) and with `clang`. Build outputs are checked in, so
 Intermediate object files from QuickJS end up in ./build/quickjs/{wasm,native}.
 
 You'll need to install `emscripten`. Following the offical instructions here, using `emsdk`:
@@ -131,10 +131,10 @@ https://emscripten.org/docs/getting_started/downloads.html#installation-instruct
 
 Related NPM scripts:
 
-* `yarn update-quickjs` will sync the ./quickjs folder with a
+- `yarn update-quickjs` will sync the ./quickjs folder with a
   github repo tracking the upstream QuickJS.
-* `yarn make-debug` will rebuild C outputs into ./build/wrapper
-* `yarn run-n` builds and runs ./c/test.c
+- `yarn make-debug` will rebuild C outputs into ./build/wrapper
+- `yarn run-n` builds and runs ./c/test.c
 
 ### The Typescript parts
 
@@ -144,6 +144,6 @@ FFI in a more usable interface.
 You'll need `node` and `npm` or `yarn`. Install dependencies with `npm install`
 or `yarn install`.
 
-* `yarn build` produces ./dist.
-* `yarn test` runs the tests.
-* `yarn test --watch` watches for changes and re-runs the tests.
+- `yarn build` produces ./dist.
+- `yarn test` runs the tests.
+- `yarn test --watch` watches for changes and re-runs the tests.

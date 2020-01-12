@@ -1,8 +1,5 @@
 {
-  "include": [
-    "ts/**/*.ts",
-    "ts/**/*.js",
-  ],
+  "include": ["ts/**/*.ts", "ts/**/*.js"],
   "exclude": ["node_modules", "ts/ffi-types.ts"],
   "compilerOptions": {
     /* Basic Options */

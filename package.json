@@ -21,7 +21,7 @@
     "build": "tsc",
     "doc": "typedoc --plugin typedoc-plugin-markdown ts",
     "test": "yarn make-debug && mocha",
-    "prettier": "prettier --write ./*.json ./**/*.ts ./*.js",
+    "prettier": "prettier --write ./*.json ./**/*.ts ./*.js ./*.md",
     "run-n": "yarn make-debug && ./build/wrapper/native/test.exe"
   },
   "devDependencies": {
