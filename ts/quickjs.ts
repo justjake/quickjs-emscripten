@@ -372,7 +372,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   /**
-   * Like [`eval(code)`].
+   * Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
    * Evauatetes the Javascript source `code` in the global scope of this VM.
    *
    * See [[unwrapResult]], which will throw if the function returned an error, or
@@ -688,6 +688,9 @@ export class QuickJS {
    * One-off evaluate code without needing to create a VM.
    * The result is coerced to a native Javascript value using JSON
    * serialization, so values unsupported by JSON will be dropped.
+   *
+   * If you need more control over how the code executes, create a
+   * [[QuickJSVm]] instance and use its [[QuickJSVm.evalCode]] method.
    *
    * *Note: this does not protect against infinite loops.*
    *
