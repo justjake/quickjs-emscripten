@@ -1,6 +1,9 @@
+const name = require('./package.json').name
 const NO_THANKS = ['**/node_modules/**', './quickjs/**']
 
 module.exports = {
+  // disable package version in doc headers
+  name,
   out: './doc',
   mode: 'file',
   exclude: NO_THANKS,

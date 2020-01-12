@@ -30,7 +30,7 @@ async function main() {
 main()
 ```
 
-[API Documentation](doc/globals.md) | [Examples](ts/quickjs.test.ts)
+[API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md) | [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
 
 ## Usage
 
@@ -86,7 +86,7 @@ blogposts about using building a Javascript plugin runtime:
 
 ## Status
 
-**Beta**. There [are tests](ts/quickjs.test.ts), but I haven't built anything
+**Beta**. There [are tests](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts), but I haven't built anything
 on top of this.
 
 Ideas for future work:
