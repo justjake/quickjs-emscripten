@@ -11,7 +11,11 @@ async function main() {
   const QuickJS = await getInstance()
   const vm = QuickJS.createVm()
 
-  const result = vm.evalCode(`"Hello " + "world!"`)
+  const world = vm.createString("world")
+  vm.setProp(vm.global, "NAME", world)
+  world.dispose()
+
+  const result = vm.evalCode(`"Hello " + NAME + "!"`)
   if (result.error) {
     console.log('Execution failed:', vm.dump(result.error))
     result.error.dispose()
@@ -26,6 +30,51 @@ async function main() {
 main()
 ```
 
+[API Documentation](doc/globals.md) | [Examples](ts/quickjs.test.ts)
+
+## Usage
+
+Install from `npm`: `npm install --save quickjs-emscripten` or `yarn add quickjs-emscripten`.
+
+The root entrypoint of this library is the `getQuickJS` function, which returns
+a promise that resolves to a [QuickJS singleton](doc/classes/quickjs.md) when
+the Emscripten WASM module is ready.
+
+### Safely evaluate Javascript code
+
+See [QuickJS.evalCode](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/quickjs.md#evalcode)
+
+```typescript
+import { getQuickJS } from 'quickjs-emscripten'
+
+getQuickJS.then(QuickJS => {
+  console.log(QuickJS.evalCode('1 + 1'))
+})
+```
+
+*Note: this will not protect you from infinite loops.*
+
+### Interfacing with the interpreter
+
+You can use [QuickJSVm](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/quickjsvm.md)
+to build a scripting environment by modifying globals and exposing functions
+into the QuickJS interpreter.
+
+```typescript
+const vm = QuickJS.createVm()
+let state = 0
+
+const fnHandle = vm.newFunction('nextId', () => {
+  return vm.newNumber(++state)
+})
+
+vm.setProp(vm.global, 'nextId', fnHandle)
+fnHandle.dispose()
+
+const nextId = vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`))
+console.log('vm result:', vm.getNumber(nextId), 'native state:', state)
+```
+
 ## Background
 
 This was inspired by seeing https://github.com/maple3142/duktape-eval
@@ -37,22 +86,23 @@ blogposts about using building a Javascript plugin runtime:
 
 ## Status
 
-**Appears to work**, but lacks rigorous tests. Some functionality is excersized
-in ts/examples/hello.ts.
+**Beta**. There [are tests](ts/quickjs.test.ts), but I haven't built anything
+on top of this.
 
-Open problems:
-
-* Think more about C -> JS function calls. Right now there is a fixed-size
-  array for these pointers. Maybe we need to manage our own resizable array
-  inside C code?
+Ideas for future work:
 
 * Simplify memory management. Currently the user must call `handle.dispose()` on all handles they
   create to avoid leaking memory in C.
-
   * We chould use a Pool abstraction and do a Pool.freeAll() to free all handles and pointers
     in the pool.
-
   * Pools, etc, should not pollute QuickJSVm interface. Composition!
+* Expose QuickJS interpreter execution hooks to protect against infinite loops.
+* Higher-level abstractions for translating values into (and out of) QuickJS.
+  These should be implemented in a way that works for any `LowLevelJavascriptVm`
+  implementation.
+* Removing the singleton limitations. Each QuickJS class instance could create
+  its own copy of the emscripten module, although we'd need to make all public
+  methods async - so they wait for the module instance to be ready.
 
 ## Related
 
@@ -61,7 +111,9 @@ Open problems:
 
 ## Developing
 
-This library is implemented in two languages: C and Typescript.
+This library is implemented in two languages: C (compiled to WASM with
+Emscripten), and Typescript. Emscripten outputs are checked in, so you will
+only need the C compiler if you need to modify C code.
 
 ### The C parts
 
@@ -71,7 +123,7 @@ automatically exported to native code (via a generated header) and to
 Typescript (via a generated FFI class). See ./generate.ts for how this works.
 
 The C code builds as both with `emscripten` (using `emcc`), to produce WASM (or
-ASM.js) and with `clang`. Build outputs end up in ./build/wrapper/{wasm,native}.
+ASM.js) and with `clang`. Build outputs are checked in, so 
 Intermediate object files from QuickJS end up in ./build/quickjs/{wasm,native}.
 
 You'll need to install `emscripten`. Following the offical instructions here, using `emsdk`:
@@ -92,6 +144,6 @@ FFI in a more usable interface.
 You'll need `node` and `npm` or `yarn`. Install dependencies with `npm install`
 or `yarn install`.
 
-* `yarn run-ts` runs an example file
-* `yarn build` produces ./build/js
-* `yarn watch` will watch ./ts for changes and build into ./build/js
+* `yarn build` produces ./dist.
+* `yarn test` runs the tests.
+* `yarn test --watch` watches for changes and re-runs the tests.

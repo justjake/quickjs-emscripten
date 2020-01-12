@@ -103,9 +103,16 @@ export class Lifetime<T, Owner = never> {
  * It's the caller's responsibility to call `.dispose()` on any
  * handles you create to free memory once you're done with the handle.
  *
- * You cannot share handles between different QuickJSVm instances.
+ * Each QuickJSVm instance is isolated. You cannot share handles between different
+ * QuickJSVm instances. You should create separate QuickJSVm instances for
+ * untrusted code from different souces for isolation.
  *
- * Use {@link QuickJS.createVm} to create a new QuickJSVm
+ * Use [[QuickJS.createVm]] to create a new QuickJSVm.
+ *
+ * Create QuickJS values with methods like [[newNumber]], [[newString]], [[newObject]], and [[newFunction]].
+ *
+ * Call [[setProp]] or [[defineProp]] to customize objects. Use those methods with [[global]] to expose the
+ * values you create to the interior of the interpreter, so they can be used in [[evalCode]].
  */
 export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   readonly ctx: Lifetime<JSContextPointer>
@@ -371,6 +378,8 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * See [[unwrapResult]], which will throw if the function returned an error, or
    * return the result handle directly.
    *
+   * *Note: this does not protect against infinite loops*.
+   *
    * @returns The last statement's value. If the code threw, result `error` be
    * a handle to the exception.
    */
@@ -560,17 +569,37 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 }
 
 /**
- * A QuickJSHandle to a constant that will never change, and does not need to be disposed.
+ * A QuickJSHandle to a constant that will never change, and does not need to
+ * be disposed.
  */
 export type StaticJSValue = Lifetime<JSValueConstPointer>
 
 /**
  * A QuickJSHandle to a borrowed value that does not need to be disposed.
+ *
+ * In QuickJS, a JSValueConst is a "borrowed" reference that isn't owned by the
+ * current scope. That means that the current scope should not `JS_FreeValue`
+ * it, or retain a reference to it after the scope exits, because it may be
+ * freed by its owner.
+ *
+ * quickjs-emscripten takes care of disposing JSValueConst references.
  */
 export type JSValueConst = Lifetime<JSValueConstPointer, QuickJSVm>
 
 /**
- * A owned QuickJSHandle that should be disposed.
+ * A owned QuickJSHandle that should be disposed or returned.
+ *
+ * The QuickJS interpreter passes Javascript values between functions as
+ * `JSValue` structs that references some internal data. Because passing
+ * structs cross the Empscripten FFI interfaces is bothersome, we use pointers
+ * to these structs instead.
+ *
+ * A JSValue reference is "owned" in its scope. before exiting the scope, it
+ * should be freed,  by calling `JS_FreeValue(ctx, js_value)`) or returned from
+ * the scope. We extend that contract - a JSValuePointer (`JSValue*`) must also
+ * be `free`d.
+ *
+ * You can do so from Javascript by calling the .dispose() method.
  */
 export type JSValue = Lifetime<JSValuePointer, QuickJSVm>
 
@@ -659,6 +688,11 @@ export class QuickJS {
    * One-off evaluate code without needing to create a VM.
    * The result is coerced to a native Javascript value using JSON
    * serialization, so values unsupported by JSON will be dropped.
+   *
+   * *Note: this does not protect against infinite loops.*
+   *
+   * @throws If `code` throws during evaluation, the exception will be
+   * converted into a Javascript value and throw.
    */
   evalCode(code: string): unknown {
     const vm = this.createVm()

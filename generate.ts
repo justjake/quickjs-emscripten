@@ -128,8 +128,11 @@ function buildFFI(matches: RegExpExecArray[]) {
 ${ffiTypes}
 
 /**
- * Low-level FFI bindings to QuickJS's Emscripten module
- * @hidden
+ * Low-level FFI bindings to QuickJS's Emscripten module.
+ * See instead [[QuickJSVm]], the public Javascript interface exposed by this
+ * library.
+ *
+ * @unstable The FFI interface is considered private and may change.
  */
 export class QuickJSFFI {
   constructor(private module: EmscriptenModule) {}

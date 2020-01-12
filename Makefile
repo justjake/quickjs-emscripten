@@ -34,6 +34,7 @@ endif
 
 wasm: $(BUILD_DIR) ts/quickjs-emscripten-module.js  ts/ffi.ts
 native: $(BUILD_WRAPPER)/native/test.exe
+all: wasm native
 
 $(BUILD_WRAPPER):
 	mkdir -p $(BUILD_WRAPPER)/wasm $(BUILD_WRAPPER)/native
@@ -82,8 +83,8 @@ $(BUILD_QUICKJS)/native/%.o: $(QUICKJS_ROOT)/%.c | $(BUILD_ROOT)
 	$(CC) $(CFLAGS) $(QUICKJS_DEFINES) -c -o $@ $<
 
 clean:
-	rm -rf ./ts/ffi.ts
-	rm -rf ./ts/quickjs-emscripten-module.js
+	git checkout -- ./ts/ffi.ts
+	git checkout -- ./ts/quickjs-emscripten-module.js
 	rm -rf ./ts/quickjs-emscripten-module.map
 	rm -rf ./ts/quickjs-emscripten-module.wasm
 	rm -rf ./ts/quickjs-emscripten-module.wasm.map
