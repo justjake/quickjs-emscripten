@@ -1,4 +1,4 @@
-[quickjs-emscripten - v0.1.0b](../README.md) › [Globals](../globals.md) › [QuickJS](quickjs.md)
+[quickjs-emscripten](../README.md) › [Globals](../globals.md) › [QuickJS](quickjs.md)
 
 # Class: QuickJS
 
@@ -34,7 +34,7 @@ and return the result as a native Javascript value.
 
 \+ **new QuickJS**(): *[QuickJS](quickjs.md)*
 
-*Defined in [quickjs.ts:601](https://github.com/justjake/quickjs-emscripten/blob/dd55194/ts/quickjs.ts#L601)*
+*Defined in [quickjs.ts:630](https://github.com/justjake/quickjs-emscripten/blob/7b8a7ae/ts/quickjs.ts#L630)*
 
 **Returns:** *[QuickJS](quickjs.md)*
 
@@ -44,7 +44,7 @@ and return the result as a native Javascript value.
 
 ▸ **createVm**(): *[QuickJSVm](quickjsvm.md)*
 
-*Defined in [quickjs.ts:642](https://github.com/justjake/quickjs-emscripten/blob/dd55194/ts/quickjs.ts#L642)*
+*Defined in [quickjs.ts:671](https://github.com/justjake/quickjs-emscripten/blob/7b8a7ae/ts/quickjs.ts#L671)*
 
 Create a QuickJS VM.
 
@@ -59,11 +59,16 @@ ___
 
 ▸ **evalCode**(`code`: string): *unknown*
 
-*Defined in [quickjs.ts:663](https://github.com/justjake/quickjs-emscripten/blob/dd55194/ts/quickjs.ts#L663)*
+*Defined in [quickjs.ts:697](https://github.com/justjake/quickjs-emscripten/blob/7b8a7ae/ts/quickjs.ts#L697)*
 
 One-off evaluate code without needing to create a VM.
 The result is coerced to a native Javascript value using JSON
 serialization, so values unsupported by JSON will be dropped.
+
+*Note: this does not protect against infinite loops.*
+
+**`throws`** If `code` throws during evaluation, the exception will be
+converted into a Javascript value and throw.
 
 **Parameters:**
 

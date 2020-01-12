@@ -1,4 +1,4 @@
-[quickjs-emscripten - v0.1.0b](../README.md) › [Globals](../globals.md) › [VmPropertyDescriptor](vmpropertydescriptor.md)
+[quickjs-emscripten](../README.md) › [Globals](../globals.md) › [VmPropertyDescriptor](vmpropertydescriptor.md)
 
 # Interface: VmPropertyDescriptor <**VmHandle**>
 
@@ -28,7 +28,7 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 • **configurable**? : *undefined | false | true*
 
-*Defined in [vm-interface.ts:77](https://github.com/justjake/quickjs-emscripten/blob/dd55194/ts/vm-interface.ts#L77)*
+*Defined in [vm-interface.ts:77](https://github.com/justjake/quickjs-emscripten/blob/7b8a7ae/ts/vm-interface.ts#L77)*
 
 ___
 
@@ -36,7 +36,7 @@ ___
 
 • **enumerable**? : *undefined | false | true*
 
-*Defined in [vm-interface.ts:78](https://github.com/justjake/quickjs-emscripten/blob/dd55194/ts/vm-interface.ts#L78)*
+*Defined in [vm-interface.ts:78](https://github.com/justjake/quickjs-emscripten/blob/7b8a7ae/ts/vm-interface.ts#L78)*
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 • **get**? : *undefined | function*
 
-*Defined in [vm-interface.ts:79](https://github.com/justjake/quickjs-emscripten/blob/dd55194/ts/vm-interface.ts#L79)*
+*Defined in [vm-interface.ts:79](https://github.com/justjake/quickjs-emscripten/blob/7b8a7ae/ts/vm-interface.ts#L79)*
 
 ___
 
@@ -52,7 +52,7 @@ ___
 
 • **set**? : *undefined | function*
 
-*Defined in [vm-interface.ts:80](https://github.com/justjake/quickjs-emscripten/blob/dd55194/ts/vm-interface.ts#L80)*
+*Defined in [vm-interface.ts:80](https://github.com/justjake/quickjs-emscripten/blob/7b8a7ae/ts/vm-interface.ts#L80)*
 
 ___
 
@@ -60,4 +60,4 @@ ___
 
 • **value**? : *VmHandle*
 
-*Defined in [vm-interface.ts:76](https://github.com/justjake/quickjs-emscripten/blob/dd55194/ts/vm-interface.ts#L76)*
+*Defined in [vm-interface.ts:76](https://github.com/justjake/quickjs-emscripten/blob/7b8a7ae/ts/vm-interface.ts#L76)*
