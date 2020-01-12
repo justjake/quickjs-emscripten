@@ -294,7 +294,7 @@ JSValue *QTS_Eval(JSContext *ctx, const char* js_code) {
 }
 
 char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
-  const char* result = "";
+  const char* result = "unknown";
 
   if (JS_IsNumber(*value)) { result = "number"; }
   else if (JS_IsFunction(ctx, *value)) { result = "function"; }
@@ -313,10 +313,6 @@ char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
 
 JSValue *QTS_DupValue(JSContext *ctx, JSValueConst *value_ptr) {
   return jsvalue_to_heap(JS_DupValue(ctx, *value_ptr));
-}
-
-void QTS_Debug() {
-  QTS_DEBUG(sizeof(JSValue *));
 }
 
 JSValue *QTS_GetGlobalObject(JSContext *ctx) {
