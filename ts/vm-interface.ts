@@ -12,7 +12,7 @@ export type SuccessOrFail<S, F> =
     }
 
 /**
- * Used as an optional.
+ * Used as an optional for results of a Vm call.
  * `{ value: VmHandle } | { error: VmHandle }`.
  */
 export type VmCallResult<VmHandle> = SuccessOrFail<VmHandle, VmHandle>

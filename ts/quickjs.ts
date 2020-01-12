@@ -587,7 +587,7 @@ export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
  * QuickJS presents a Javascript interface to QuickJS, a Javascript interpreter that
  * supports ES2019.
  *
- * QuickJS is a singleton. Use the {@link getInstance} function to instantiate
+ * QuickJS is a singleton. Use the [[getQuickJS]] function to instantiate
  * or retrieve an instance.
  *
  * Use the {@link QuickJS.createVm} method to create a {@link QuickJSVm}.
@@ -603,13 +603,13 @@ export class QuickJS {
   constructor() {
     if (!isReady) {
       throw new Error(
-        'QuickJS WASM module not initialized. Either wait for `ready` or use getInstance()'
+        'QuickJS WASM module not initialized. Either wait for `ready` or use getQuickJS()'
       )
     }
 
     if (singleton) {
       throw new Error(
-        'Cannot create another QuickJS instance. Use the instance already created (try getInstance())'
+        'Cannot create another QuickJS instance. Use the instance already created (try getQuickJS())'
       )
     }
     singleton = this
@@ -706,7 +706,7 @@ let singleton: QuickJS | undefined = undefined
  * This is the top-level entrypoint for the quickjs-emscripten library.
  * Get the root QuickJS API.
  */
-export async function getInstance(): Promise<QuickJS> {
+export async function getQuickJS(): Promise<QuickJS> {
   await ready
   if (!singleton) {
     singleton = new QuickJS()

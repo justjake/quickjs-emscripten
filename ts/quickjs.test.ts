@@ -2,7 +2,7 @@
  * These tests demonstate some common patterns for using quickjs-emscripten.
  */
 
-import { getInstance, QuickJSVm, QuickJSHandle } from './quickjs'
+import { getQuickJS, QuickJSVm, QuickJSHandle } from './quickjs'
 import { it, describe } from 'mocha'
 import assert from 'assert'
 import { VmCallResult } from './vm-interface'
@@ -11,7 +11,7 @@ describe('QuickJSVm', async () => {
   let vm: QuickJSVm = undefined as any
 
   beforeEach(async () => {
-    const quickjs = await getInstance()
+    const quickjs = await getQuickJS()
     vm = quickjs.createVm()
   })
 
