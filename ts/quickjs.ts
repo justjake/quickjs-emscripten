@@ -16,8 +16,14 @@ import {
 } from './types'
 
 let isReady = false
+
 const QuickJSModule = QuickJSModuleLoader()
-export const ready = new Promise(resolve => {
+
+/**
+ * This promise will be fufilled when the QuickJS emscripten module has initialized
+ * and the {@link QuickJS} instance can be created.
+ */
+const ready = new Promise(resolve => {
   QuickJSModule.onRuntimeInitialized = resolve
 }).then(() => {
   isReady = true
@@ -68,6 +74,16 @@ class Lifetime<T, Owner = never> {
   }
 }
 
+/**
+ * QuickJSVm wraps a QuickJS Javascript runtime (JSRuntime*) and context (JSContext*).
+ * This class's methods return {@link QuickJSHandle}, which wrap C pointers (JSValue*).
+ * It's the caller's responsibility to call {@link QuickJSHandle#dispose} on any
+ * handles you create to free memory once you're done with the handle.
+ *
+ * You cannot share handles between different QuickJSVm instances.
+ *
+ * @see {@link QuickJS#createVm} Creates a new QuickJSVm
+ */
 export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   readonly ctx: Lifetime<JSContextPointer>
   readonly rt: Lifetime<JSRuntimePointer>
@@ -101,6 +117,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return (this._undefined = new Lifetime(ptr))
   }
 
+  /**
+   * A handle to the global object inside the interpreter.
+   * You can set properties to create global variables.
+   */
   get global() {
     if (this._global) {
       return this._global
@@ -305,6 +325,11 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return result.value
   }
 
+  /**
+   * Dispose of this VM's underlying resources.
+   * Calling this method without disposing of all created handles will result
+   * in an error.
+   */
   dispose() {
     for (const lifetime of this.lifetimes) {
       if (lifetime.alive) {
@@ -318,6 +343,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private fnNextId = 0
   private fnMap = new Map<number, VmFunctionImplementation<QuickJSHandle>>()
 
+  /**
+   * @private
+   */
   cToHostCallbackFunction: CToHostCallbackFunctionImplementation = (
     ctx,
     this_ptr,
@@ -449,6 +477,14 @@ export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
 /**
  * QuickJS presents a Javascript interface to QuickJS, a Javascript interpreter that
  * supports ES2019.
+ *
+ * QuickJS is a singleton. Use the {@link getInstance} function to instantiate
+ * or retrieve an instance.
+ *
+ * Use the {@link QuickJS#createVm} method to create a {@link QuickJSVm}.
+ *
+ * Use the {@link QuickJS#evalCode} method as a shortcut evaluate Javascript safely
+ * and return the result as a native Javascript value.
  */
 export class QuickJS {
   private ffi = new QuickJSFFI(QuickJSModule)
@@ -512,6 +548,8 @@ export class QuickJS {
 
   /**
    * One-off evaluate code without needing to create a VM.
+   * The result is coerced to a native Javascript value using JSON
+   * serialization, so values unsupported by JSON will be dropped.
    */
   evalCode(code: string): unknown {
     const vm = this.createVm()

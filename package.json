@@ -17,9 +17,9 @@
     "make-release": "make clean && make -j 8",
     "clean": "make clean",
     "build": "tsc",
-    "test": "mocha",
-    "watch": "tsc --watch",
-    "prettier": "prettier --write ./package.json ./**/*.ts",
+    "doc": "typedoc --plugin typedoc-plugin-markdown",
+    "test": "yarn make-debug && mocha",
+    "prettier": "prettier --write ./*.json ./**/*.ts ./*.js",
     "run-ts": "yarn make-debug && ts-node -T ./ts/examples/hello.ts",
     "run-n": "yarn make-debug && ./build/wrapper/native/test.exe"
   },
@@ -31,6 +31,8 @@
     "prettier": "^1.19.1",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.5.4",
+    "typedoc": "^0.15.8",
+    "typedoc-plugin-markdown": "^2.2.16",
     "typescript": "^3.7.4"
   }
 }
