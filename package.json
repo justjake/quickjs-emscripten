@@ -1,6 +1,6 @@
 {
   "name": "quickjs-emscripten",
-  "version": "0.1.0b",
+  "version": "0.1.0-c",
   "main": "dist/quickjs.js",
   "license": "MIT",
   "repository": {
@@ -8,9 +8,9 @@
     "url": "https://github.com/justjake/quickjs-emscripten"
   },
   "files": [
-    "./dist/*.js",
-    "./dist/*.ts",
-    "./dist/*.map"
+    "dist/*.js",
+    "dist/*.ts",
+    "dist/*.map"
   ],
   "scripts": {
     "prepare": "yarn make-release && yarn build && mocha ./dist/quickjs.test.js",
