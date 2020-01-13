@@ -115,8 +115,8 @@ export class Lifetime<T, Owner = never> {
  * values you create to the interior of the interpreter, so they can be used in [[evalCode]].
  */
 export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
-  readonly ctx: Lifetime<JSContextPointer>
-  readonly rt: Lifetime<JSRuntimePointer>
+  private readonly ctx: Lifetime<JSContextPointer>
+  private readonly rt: Lifetime<JSRuntimePointer>
 
   private readonly module: typeof QuickJSModule
   private readonly ffi: QuickJSFFI
