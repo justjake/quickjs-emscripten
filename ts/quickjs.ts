@@ -87,14 +87,22 @@ export class Lifetime<T, Owner = never> {
     if (this.disposer) {
       this.disposer(this._value)
     }
-    this._alive = true
+    this._alive = false
   }
 
   private assertAlive() {
-    if (!this._alive) {
-      throw new Error('Not alive')
+    if (!this.alive) {
+      throw new Error('Lifetime not alive')
     }
   }
+}
+
+/**
+ * A Lifetime that lives forever. Used for constants.
+ */
+export class StaticLifetime<T, Owner = never> extends Lifetime<T, Owner> {
+  // Dispose does nothing.
+  dispose() {}
 }
 
 /**
@@ -149,7 +157,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
     // Undefined is a constant, immutable value in QuickJS.
     const ptr = this.ffi.QTS_GetUndefined()
-    return (this._undefined = new Lifetime(ptr))
+    return (this._undefined = new StaticLifetime(ptr))
   }
 
   /**
@@ -169,7 +177,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     // Automatically clean up this reference when we dispose(
     this.lifetimes.push(this.heapValueHandle(ptr))
 
-    this._global = new Lifetime(ptr, undefined, this)
+    // This isn't technically a static lifetime, but since it has the same
+    // lifetime as the VM, it's okay to fake one since when the VM iss
+    // disposed, no other functions will accept the value.
+    this._global = new StaticLifetime(ptr, undefined, this)
     return this._global
   }
 
@@ -263,6 +274,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * Javascript string (which will be converted automatically).
    */
   getProp(handle: QuickJSHandle, key: string | QuickJSHandle): QuickJSHandle {
+    this.assertOwned(handle)
     const quickJSKey = typeof key === 'string' ? this.newString(key) : key
 
     const ptr = this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value)
@@ -286,6 +298,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * Javascript string (which will be converted automatically).
    */
   setProp(handle: QuickJSHandle, key: string | QuickJSHandle, value: QuickJSHandle) {
+    this.assertOwned(handle)
     const quickJSKey = typeof key === 'string' ? this.newString(key) : key
 
     this.ffi.QTS_SetProp(this.ctx.value, handle.value, quickJSKey.value, value.value)
@@ -307,6 +320,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     key: string | QuickJSHandle,
     descriptor: VmPropertyDescriptor<QuickJSHandle>
   ): void {
+    this.assertOwned(handle)
     const quickJSKey = typeof key === 'string' ? this.newString(key) : key
 
     const value = descriptor.value || this.undefined
@@ -352,6 +366,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     thisVal: QuickJSHandle,
     ...args: QuickJSHandle[]
   ): VmCallResult<QuickJSHandle> {
+    this.assertOwned(func)
     const argsArrayPtr = this.toPointerArray(args)
     const resultPtr = this.ffi.QTS_Call(
       this.ctx.value,
@@ -400,6 +415,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * Returns `handle.toString()` if it cannot be serialized to JSON.
    */
   dump(handle: QuickJSHandle) {
+    this.assertOwned(handle)
     const type = this.typeof(handle)
     if (type === 'string') {
       return this.getString(handle)
@@ -572,7 +588,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
  * A QuickJSHandle to a constant that will never change, and does not need to
  * be disposed.
  */
-export type StaticJSValue = Lifetime<JSValueConstPointer>
+export type StaticJSValue = StaticLifetime<JSValueConstPointer>
 
 /**
  * A QuickJSHandle to a borrowed value that does not need to be disposed.

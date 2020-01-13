@@ -1,8 +1,9 @@
 # quickjs-emscripten
 
-Module `quickjs-emscripten` wraps QuickJS, a modern Javascript interpreter
-written in C, for usage from Typescript or Javascript. This allows evaluating
-untrusted Javascript safely, or even building a plugin system.
+`quickjs-emscripten` wraps [QuickJS, a modern Javascript interpreter written in
+C](https://bellard.org/quickjs/) for usage from Javascript. This allows
+evaluating untrusted Javascript safely, or even building a plugin system for
+untrusted code.
 
 ```typescript
 import { getInstance } from 'quickjs-emscripten'

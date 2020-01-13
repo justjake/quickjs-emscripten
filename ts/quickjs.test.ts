@@ -68,6 +68,19 @@ describe('QuickJSVm', async () => {
       result.error.dispose()
       fnHandle.dispose()
     })
+
+    it('can return undefined twice', () => {
+      const fnHandle = vm.newFunction('returnUndef', () => {
+        return vm.undefined
+      })
+
+      vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined)).dispose()
+      const result = vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined))
+
+      assert.equal(vm.typeof(result), 'undefined')
+      result.dispose()
+      fnHandle.dispose()
+    })
   })
 
   describe('objects', () => {
