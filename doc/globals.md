@@ -10,6 +10,7 @@
 * [QuickJS](classes/quickjs.md)
 * [QuickJSFFI](classes/quickjsffi.md)
 * [QuickJSVm](classes/quickjsvm.md)
+* [StaticLifetime](classes/staticlifetime.md)
 
 ### Interfaces
 
@@ -74,7 +75,7 @@ ___
 
 Ƭ **JSValue**: *[Lifetime](classes/lifetime.md)‹[JSValuePointer](globals.md#jsvaluepointer), [QuickJSVm](classes/quickjsvm.md)›*
 
-*Defined in [quickjs.ts:604](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L604)*
+*Defined in [quickjs.ts:620](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L620)*
 
 A owned QuickJSHandle that should be disposed or returned.
 
@@ -96,7 +97,7 @@ ___
 
 Ƭ **JSValueConst**: *[Lifetime](classes/lifetime.md)‹[JSValueConstPointer](globals.md#jsvalueconstpointer), [QuickJSVm](classes/quickjsvm.md)›*
 
-*Defined in [quickjs.ts:587](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L587)*
+*Defined in [quickjs.ts:603](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L603)*
 
 A QuickJSHandle to a borrowed value that does not need to be disposed.
 
@@ -168,7 +169,7 @@ ___
 
 Ƭ **QuickJSHandle**: *[StaticJSValue](globals.md#staticjsvalue) | [JSValue](globals.md#jsvalue) | [JSValueConst](globals.md#jsvalueconst)*
 
-*Defined in [quickjs.ts:613](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L613)*
+*Defined in [quickjs.ts:629](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L629)*
 
 Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
 a QuickJS virtual machine.
@@ -180,9 +181,9 @@ ___
 
 ###  StaticJSValue
 
-Ƭ **StaticJSValue**: *[Lifetime](classes/lifetime.md)‹[JSValueConstPointer](globals.md#jsvalueconstpointer)›*
+Ƭ **StaticJSValue**: *[StaticLifetime](classes/staticlifetime.md)‹[JSValueConstPointer](globals.md#jsvalueconstpointer)›*
 
-*Defined in [quickjs.ts:575](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L575)*
+*Defined in [quickjs.ts:591](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L591)*
 
 A QuickJSHandle to a constant that will never change, and does not need to
 be disposed.
@@ -245,7 +246,7 @@ Name | Type |
 
 ▸ **getQuickJS**(): *Promise‹[QuickJS](classes/quickjs.md)›*
 
-*Defined in [quickjs.ts:746](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L746)*
+*Defined in [quickjs.ts:762](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L762)*
 
 This is the top-level entrypoint for the quickjs-emscripten library.
 Get the root QuickJS API.

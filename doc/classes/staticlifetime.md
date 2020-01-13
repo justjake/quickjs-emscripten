@@ -1,11 +1,8 @@
-[quickjs-emscripten](../README.md) › [Globals](../globals.md) › [Lifetime](lifetime.md)
+[quickjs-emscripten](../README.md) › [Globals](../globals.md) › [StaticLifetime](staticlifetime.md)
 
-# Class: Lifetime <**T, Owner**>
+# Class: StaticLifetime <**T, Owner**>
 
-A lifetime prevents access to a value after the lifetime has been
-[dispose](lifetime.md#dispose)ed.
-
-Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
+A Lifetime that lives forever. Used for constants.
 
 ## Type parameters
 
@@ -15,31 +12,33 @@ Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
 
 ## Hierarchy
 
-* **Lifetime**
+* [Lifetime](lifetime.md)‹T, Owner›
 
-  ↳ [StaticLifetime](staticlifetime.md)
+  ↳ **StaticLifetime**
 
 ## Index
 
 ### Constructors
 
-* [constructor](lifetime.md#constructor)
+* [constructor](staticlifetime.md#constructor)
 
 ### Accessors
 
-* [alive](lifetime.md#alive)
-* [owner](lifetime.md#owner)
-* [value](lifetime.md#value)
+* [alive](staticlifetime.md#alive)
+* [owner](staticlifetime.md#owner)
+* [value](staticlifetime.md#value)
 
 ### Methods
 
-* [dispose](lifetime.md#dispose)
+* [dispose](staticlifetime.md#dispose)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new Lifetime**(`_value`: T, `disposer?`: undefined | function, `_owner?`: Owner): *[Lifetime](lifetime.md)*
+\+ **new StaticLifetime**(`_value`: T, `disposer?`: undefined | function, `_owner?`: Owner): *[StaticLifetime](staticlifetime.md)*
+
+*Inherited from [Lifetime](lifetime.md).[constructor](lifetime.md#constructor)*
 
 *Defined in [quickjs.ts:47](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L47)*
 
@@ -58,13 +57,15 @@ Name | Type |
 `disposer?` | undefined &#124; function |
 `_owner?` | Owner |
 
-**Returns:** *[Lifetime](lifetime.md)*
+**Returns:** *[StaticLifetime](staticlifetime.md)*
 
 ## Accessors
 
 ###  alive
 
 • **get alive**(): *boolean*
+
+*Inherited from [Lifetime](lifetime.md).[alive](lifetime.md#alive)*
 
 *Defined in [quickjs.ts:63](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L63)*
 
@@ -76,6 +77,8 @@ ___
 
 • **get owner**(): *undefined | Owner*
 
+*Inherited from [Lifetime](lifetime.md).[owner](lifetime.md#owner)*
+
 *Defined in [quickjs.ts:78](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L78)*
 
 **Returns:** *undefined | Owner*
@@ -86,12 +89,14 @@ ___
 
 • **get value**(): *T*
 
+*Inherited from [Lifetime](lifetime.md).[value](lifetime.md#value)*
+
 *Defined in [quickjs.ts:73](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L73)*
 
 The value this Lifetime protects. You must never retain the value - it
 may become invalid, leading to memory errors.
 
-**`throws`** If the lifetime has been [dispose](lifetime.md#dispose)d already.
+**`throws`** If the lifetime has been [dispose](staticlifetime.md#dispose)d already.
 
 **Returns:** *T*
 
@@ -101,8 +106,8 @@ may become invalid, leading to memory errors.
 
 ▸ **dispose**(): *void*
 
-*Defined in [quickjs.ts:85](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L85)*
+*Overrides [Lifetime](lifetime.md).[dispose](lifetime.md#dispose)*
 
-Dispose of [value](lifetime.md#value) and perform cleanup.
+*Defined in [quickjs.ts:105](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L105)*
 
 **Returns:** *void*
