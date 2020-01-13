@@ -32,11 +32,6 @@ values you create to the interior of the interpreter, so they can be used in [ev
 
 * [constructor](quickjsvm.md#constructor)
 
-### Properties
-
-* [ctx](quickjsvm.md#ctx)
-* [rt](quickjsvm.md#rt)
-
 ### Accessors
 
 * [global](quickjsvm.md#global)
@@ -66,7 +61,7 @@ values you create to the interior of the interpreter, so they can be used in [ev
 
 \+ **new QuickJSVm**(`args`: object): *[QuickJSVm](quickjsvm.md)*
 
-*Defined in [quickjs.ts:125](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L125)*
+*Defined in [quickjs.ts:125](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L125)*
 
 Use [QuickJS.createVm](quickjs.md#createvm) to create a QuickJSVm instance.
 
@@ -78,29 +73,13 @@ Name | Type |
 
 **Returns:** *[QuickJSVm](quickjsvm.md)*
 
-## Properties
-
-###  ctx
-
-• **ctx**: *[Lifetime](lifetime.md)‹[JSContextPointer](../globals.md#jscontextpointer)›*
-
-*Defined in [quickjs.ts:118](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L118)*
-
-___
-
-###  rt
-
-• **rt**: *[Lifetime](lifetime.md)‹[JSRuntimePointer](../globals.md#jsruntimepointer)›*
-
-*Defined in [quickjs.ts:119](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L119)*
-
 ## Accessors
 
 ###  global
 
 • **get global**(): *[QuickJSHandle](../globals.md#quickjshandle)*
 
-*Defined in [quickjs.ts:160](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L160)*
+*Defined in [quickjs.ts:160](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L160)*
 
 [`global`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects).
 A handle to the global object inside the interpreter.
@@ -114,7 +93,7 @@ ___
 
 • **get undefined**(): *[QuickJSHandle](../globals.md#quickjshandle)*
 
-*Defined in [quickjs.ts:145](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L145)*
+*Defined in [quickjs.ts:145](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L145)*
 
 [`undefined`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined).
 
@@ -126,7 +105,7 @@ ___
 
 ▸ **callFunction**(`func`: [QuickJSHandle](../globals.md#quickjshandle), `thisVal`: [QuickJSHandle](../globals.md#quickjshandle), ...`args`: [QuickJSHandle](../globals.md#quickjshandle)[]): *[VmCallResult](../globals.md#vmcallresult)‹[QuickJSHandle](../globals.md#quickjshandle)›*
 
-*Defined in [quickjs.ts:350](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L350)*
+*Defined in [quickjs.ts:350](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L350)*
 
 [`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call).
 Call a JSValue as a function.
@@ -152,7 +131,7 @@ ___
 
 ▸ **defineProp**(`handle`: [QuickJSHandle](../globals.md#quickjshandle), `key`: string | [QuickJSHandle](../globals.md#quickjshandle), `descriptor`: [VmPropertyDescriptor](../interfaces/vmpropertydescriptor.md)‹[QuickJSHandle](../globals.md#quickjshandle)›): *void*
 
-*Defined in [quickjs.ts:305](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L305)*
+*Defined in [quickjs.ts:305](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L305)*
 
 [`Object.defineProperty(handle, key, descriptor)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty).
 
@@ -172,7 +151,7 @@ ___
 
 ▸ **dispose**(): *void*
 
-*Defined in [quickjs.ts:448](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L448)*
+*Defined in [quickjs.ts:448](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L448)*
 
 Dispose of this VM's underlying resources.
 
@@ -187,7 +166,7 @@ ___
 
 ▸ **dump**(`handle`: [QuickJSHandle](../globals.md#quickjshandle)): *any*
 
-*Defined in [quickjs.ts:402](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L402)*
+*Defined in [quickjs.ts:402](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L402)*
 
 Dump a JSValue to Javascript in a best-effort fashion.
 Returns `handle.toString()` if it cannot be serialized to JSON.
@@ -208,7 +187,7 @@ ___
 
 *Implementation of [LowLevelJavascriptVm](../interfaces/lowleveljavascriptvm.md)*
 
-*Defined in [quickjs.ts:386](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L386)*
+*Defined in [quickjs.ts:386](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L386)*
 
 Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
 Evauatetes the Javascript source `code` in the global scope of this VM.
@@ -235,7 +214,7 @@ ___
 
 ▸ **getNumber**(`handle`: [QuickJSHandle](../globals.md#quickjshandle)): *number*
 
-*Defined in [quickjs.ts:198](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L198)*
+*Defined in [quickjs.ts:198](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L198)*
 
 Converts `handle` into a Javascript number.
 
@@ -255,7 +234,7 @@ ___
 
 ▸ **getProp**(`handle`: [QuickJSHandle](../globals.md#quickjshandle), `key`: string | [QuickJSHandle](../globals.md#quickjshandle)): *[QuickJSHandle](../globals.md#quickjshandle)*
 
-*Defined in [quickjs.ts:265](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L265)*
+*Defined in [quickjs.ts:265](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L265)*
 
 `handle[key]`.
 Get a property from a JSValue.
@@ -275,7 +254,7 @@ ___
 
 ▸ **getString**(`handle`: [QuickJSHandle](../globals.md#quickjshandle)): *string*
 
-*Defined in [quickjs.ts:213](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L213)*
+*Defined in [quickjs.ts:213](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L213)*
 
 Converts `handle` to a Javascript string.
 
@@ -295,7 +274,7 @@ ___
 
 *Implementation of [LowLevelJavascriptVm](../interfaces/lowleveljavascriptvm.md)*
 
-*Defined in [quickjs.ts:242](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L242)*
+*Defined in [quickjs.ts:242](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L242)*
 
 Convert a Javascript function into a QuickJS function value.
 See [VmFunctionImplementation](../globals.md#vmfunctionimplementation) for more details.
@@ -321,7 +300,7 @@ ___
 
 *Implementation of [LowLevelJavascriptVm](../interfaces/lowleveljavascriptvm.md)*
 
-*Defined in [quickjs.ts:190](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L190)*
+*Defined in [quickjs.ts:190](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L190)*
 
 Converts a Javascript number into a QuckJS value.
 
@@ -341,7 +320,7 @@ ___
 
 *Implementation of [LowLevelJavascriptVm](../interfaces/lowleveljavascriptvm.md)*
 
-*Defined in [quickjs.ts:224](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L224)*
+*Defined in [quickjs.ts:224](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L224)*
 
 `{}`.
 Create a new QuickJS [object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer).
@@ -362,7 +341,7 @@ ___
 
 *Implementation of [LowLevelJavascriptVm](../interfaces/lowleveljavascriptvm.md)*
 
-*Defined in [quickjs.ts:206](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L206)*
+*Defined in [quickjs.ts:206](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L206)*
 
 Create a QuickJS [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) value.
 
@@ -380,7 +359,7 @@ ___
 
 ▸ **setProp**(`handle`: [QuickJSHandle](../globals.md#quickjshandle), `key`: string | [QuickJSHandle](../globals.md#quickjshandle), `value`: [QuickJSHandle](../globals.md#quickjshandle)): *void*
 
-*Defined in [quickjs.ts:288](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L288)*
+*Defined in [quickjs.ts:288](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L288)*
 
 `handle[key] = value`.
 Set a property on a JSValue.
@@ -405,7 +384,7 @@ ___
 
 ▸ **typeof**(`handle`: [QuickJSHandle](../globals.md#quickjshandle)): *string*
 
-*Defined in [quickjs.ts:182](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L182)*
+*Defined in [quickjs.ts:182](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L182)*
 
 `typeof` operator. **Not** [standards compliant](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof).
 
@@ -426,7 +405,7 @@ ___
 
 ▸ **unwrapResult**(`result`: [VmCallResult](../globals.md#vmcallresult)‹[QuickJSHandle](../globals.md#quickjshandle)›): *[QuickJSHandle](../globals.md#quickjshandle)*
 
-*Defined in [quickjs.ts:424](https://github.com/justjake/quickjs-emscripten/blob/2557c41/ts/quickjs.ts#L424)*
+*Defined in [quickjs.ts:424](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L424)*
 
 Unwrap a VmCallResult, returning it's value on success, and throwing the dumped
 error on failure.
