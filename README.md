@@ -1,9 +1,11 @@
 # quickjs-emscripten
 
-`quickjs-emscripten` wraps [QuickJS, a modern Javascript interpreter written in
-C](https://bellard.org/quickjs/) for usage from Javascript. This allows
-evaluating untrusted Javascript safely, or even building a plugin system for
-untrusted code.
+Javascript/Typescript bindings for [QuickJS, a modern Javascript interpreter written in
+C by Fabrice Bellard](https://bellard.org/quickjs/).
+
+* Safely evaluate untrusted Javascript (up to ES2020).
+* Create and manipulate values inside the QuickJS runtime.
+* Expose host functions to the QuickJS runtime.
 
 ```typescript
 import { getInstance } from 'quickjs-emscripten'
@@ -30,8 +32,6 @@ async function main() {
 
 main()
 ```
-
-[API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md) | [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
 
 ## Usage
 
@@ -76,19 +76,27 @@ const nextId = vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`))
 console.log('vm result:', vm.getNumber(nextId), 'native state:', state)
 ```
 
+### More Documentation
+
+* [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md)
+* [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
+
 ## Background
 
 This was inspired by seeing https://github.com/maple3142/duktape-eval
 [on Hacker News](https://news.ycombinator.com/item?id=21946565) and Figma's
 blogposts about using building a Javascript plugin runtime:
 
-- [How [Figma] built the Figma plugin system](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/): Describes the LowLevelJavascriptVm interface.
+- [How Figma built the Figma plugin system](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/): Describes the LowLevelJavascriptVm interface.
 - [An update on plugin security](https://www.figma.com/blog/an-update-on-plugin-security/): Figma switches to QuickJS.
 
 ## Status
 
-**Beta**. There [are tests](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts), but I haven't built anything
-on top of this.
+Both the original project quickjs and this project are still in the early stage
+of development.
+There [are tests](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts), but I haven't built anything
+on top of this. Please use this project carefully in a production
+environment.
 
 Ideas for future work:
 
