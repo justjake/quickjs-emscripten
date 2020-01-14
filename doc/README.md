@@ -12,10 +12,10 @@ C by Fabrice Bellard](https://bellard.org/quickjs/).
 * Expose host functions to the QuickJS runtime.
 
 ```typescript
-import { getInstance } from 'quickjs-emscripten'
+import { getQuickJS } from 'quickjs-emscripten'
 
 async function main() {
-  const QuickJS = await getInstance()
+  const QuickJS = await getQuickJS()
   const vm = QuickJS.createVm()
 
   const world = vm.createString('world')
@@ -94,7 +94,7 @@ blogposts about using building a Javascript plugin runtime:
 - [How Figma built the Figma plugin system](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/): Describes the LowLevelJavascriptVm interface.
 - [An update on plugin security](https://www.figma.com/blog/an-update-on-plugin-security/): Figma switches to QuickJS.
 
-## Status
+## Status & TODOs
 
 Both the original project quickjs and this project are still in the early stage
 of development.
@@ -109,13 +109,17 @@ Ideas for future work:
   - We chould use a Pool abstraction and do a Pool.freeAll() to free all handles and pointers
     in the pool.
   - Pools, etc, should not pollute QuickJSVm interface. Composition!
-- Expose QuickJS interpreter execution hooks to protect against infinite loops.
+- quickjs-emscripten only exposes a small subset of the QuickJS APIs. Add more QuickJS bindings!
+  - Expose the QuickJS interpreter execution hooks to protect against infinite loops.
+  - Expose tools for object and array iteration and creation.
+  - Stretch goals: class support, an event emitter bridge implementation
 - Higher-level abstractions for translating values into (and out of) QuickJS.
   These should be implemented in a way that works for any `LowLevelJavascriptVm`
   implementation.
 - Removing the singleton limitations. Each QuickJS class instance could create
   its own copy of the emscripten module, although we'd need to make all public
   methods async - so they wait for the module instance to be ready.
+- Run quickjs-emscripten inside quickjs-emscripten.
 
 ## Related
 
