@@ -15,7 +15,7 @@ console.log('hello world')
 goto command line and type
 ```bash
 > ./qjsc -o hello_world1 ./hello_world1.js
-> ./hello_world1
+> ./hello_world
 > hello world
 ```
 
