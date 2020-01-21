@@ -690,6 +690,7 @@ export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
 export interface QuickJSEvalOptions {
   /**
    * Interrupt evaluation if `shouldInterrupt` returns `true`.
+   * See [[shouldInterruptAfterDeadline]].
    */
   shouldInterrupt?: ShouldInterruptHandler
 }
@@ -785,8 +786,7 @@ export class QuickJS {
    * One-off evaluate code without needing to create a VM.
    *
    * To protect against infinite loops, use the `shouldInterrupt` option. The
-   * [[shouldInterruptAfterDeadline] will create a time-based deadline
-   * interrupt function.
+   * [[shouldInterruptAfterDeadline]] function will create a time-based deadline.
    *
    * If you need more control over how the code executes, create a
    * [[QuickJSVm]] instance and use its [[QuickJSVm.evalCode]] method.

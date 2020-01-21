@@ -34,7 +34,7 @@ and return the result as a native Javascript value.
 
 \+ **new QuickJS**(): *[QuickJS](quickjs.md)*
 
-*Defined in [quickjs.ts:713](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L713)*
+*Defined in [quickjs.ts:714](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L714)*
 
 **Returns:** *[QuickJS](quickjs.md)*
 
@@ -44,7 +44,7 @@ and return the result as a native Javascript value.
 
 ▸ **createVm**(): *[QuickJSVm](quickjsvm.md)*
 
-*Defined in [quickjs.ts:764](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L764)*
+*Defined in [quickjs.ts:765](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L765)*
 
 Create a QuickJS VM.
 
@@ -64,8 +64,7 @@ ___
 One-off evaluate code without needing to create a VM.
 
 To protect against infinite loops, use the `shouldInterrupt` option. The
-[[shouldInterruptAfterDeadline] will create a time-based deadline
-interrupt function.
+[shouldInterruptAfterDeadline](../globals.md#shouldinterruptafterdeadline) function will create a time-based deadline.
 
 If you need more control over how the code executes, create a
 [QuickJSVm](quickjsvm.md) instance and use its [QuickJSVm.evalCode](quickjsvm.md#evalcode) method.
