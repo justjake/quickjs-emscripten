@@ -8,3 +8,5 @@ npm-error.log
 
 /build
 /dist
+quickjs/test_fib.c
+quickjs/examples/test_fib
