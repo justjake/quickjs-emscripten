@@ -7,6 +7,7 @@ import {
   JSValueConstPointer,
   JSValueConstPointerPointer,
   QTS_C_To_HostCallbackFuncPointer,
+  QTS_C_To_HostInterruptFuncPointer,
 } from './ffi'
 import {
   LowLevelJavascriptVm,
@@ -36,6 +37,16 @@ type CToHostCallbackFunctionImplementation = (
   argv: JSValueConstPointer,
   fn_data_ptr: JSValueConstPointer
 ) => JSValuePointer
+
+type CToHostInterruptImplementation = (rt: JSRuntimePointer) => 0 | 1
+
+/**
+ * Determines if a VM's execution should be interrupted.
+ *
+ * Return `true` to interrupt JS execution.
+ * Return `false` or `undefined` to continue JS execution.
+ */
+export type ShouldInterruptHandler = (vm: QuickJSVm) => boolean | undefined
 
 /**
  * A lifetime prevents access to a value after the lifetime has been
@@ -455,10 +466,38 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return result.value
   }
 
+  private interruptHandler: ShouldInterruptHandler | undefined
+
+  /**
+   * Set a callback which is regularly called by the QuickJS engine when it is
+   * executing code. This callback can be used to implement an execution
+   * timeout.
+   *
+   * The interrupt handler can be removed with [[removeInterruptHandler]].
+   */
+  setShouldInterruptHandler(cb: ShouldInterruptHandler) {
+    const prevInterruptHandler = this.interruptHandler
+    this.interruptHandler = cb
+    if (!prevInterruptHandler) {
+      this.ffi.QTS_RuntimeEnableInterruptHandler(this.rt.value)
+    }
+  }
+
+  /**
+   * Remove the interrupt handler, if any.
+   * See [[setShouldInterruptHandler]].
+   */
+  removeShouldInterruptHandler() {
+    if (this.interruptHandler) {
+      this.ffi.QTS_RuntimeDisableInterruptHandler(this.rt.value)
+      this.interruptHandler = undefined
+    }
+  }
+
   /**
    * Dispose of this VM's underlying resources.
    *
-   * @throws If Calling this method without disposing of all created handles
+   * @throws Calling this method without disposing of all created handles
    * will result in an error.
    */
   dispose() {
@@ -529,6 +568,20 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     }
 
     return ownedResultPtr as JSValuePointer
+  }
+
+  /** @hidden */
+  cToHostInterrupt: CToHostInterruptImplementation = rt => {
+    if (rt !== this.rt.value) {
+      throw new Error('QuickJSVm instance received C -> JS interrupt with mismatched rt')
+    }
+
+    const fn = this.interruptHandler
+    if (!fn) {
+      throw new Error('QuickJSVm had no interrupt handler')
+    }
+
+    return fn(this) ? 1 : 0
   }
 
   private assertOwned(handle: QuickJSHandle) {
@@ -643,6 +696,7 @@ export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
 export class QuickJS {
   private ffi = new QuickJSFFI(QuickJSModule)
   private vmMap = new Map<JSContextPointer, QuickJSVm>()
+  private rtMap = new Map<JSRuntimePointer, QuickJSVm>()
   private module = QuickJSModule
 
   constructor() {
@@ -663,7 +717,7 @@ export class QuickJS {
     // a single C callback dispatcher.
     const pointerType = 'i'
     const intType = 'i'
-    const wasmTypes = [
+    const functionCallbackWasmTypes = [
       pointerType, // return
       pointerType, // ctx
       pointerType, // this_ptr
@@ -671,11 +725,21 @@ export class QuickJS {
       pointerType, // argv
       pointerType, // fn_data_ptr
     ]
-    const fp = this.module.addFunction(
+    const funcCallbackFp = this.module.addFunction(
       this.cToHostCallbackFunction,
-      wasmTypes.join('')
+      functionCallbackWasmTypes.join('')
     ) as QTS_C_To_HostCallbackFuncPointer
-    this.ffi.QTS_SetHostCallback(fp)
+    this.ffi.QTS_SetHostCallback(funcCallbackFp)
+
+    const interruptCallbackWasmTypes = [
+      intType, // return 0 no interrupt, !=0 interrrupt
+      pointerType, // rt_ptr
+    ]
+    const interruptCallbackFp = this.module.addFunction(
+      this.cToHostInterrupt,
+      interruptCallbackWasmTypes.join('')
+    ) as QTS_C_To_HostInterruptFuncPointer
+    this.ffi.QTS_SetInterruptCallback(interruptCallbackFp)
   }
 
   /**
@@ -685,7 +749,10 @@ export class QuickJS {
    * VMs.
    */
   createVm(): QuickJSVm {
-    const rt = new Lifetime(this.ffi.QTS_NewRuntime(), rt_ptr => this.ffi.QTS_FreeRuntime(rt_ptr))
+    const rt = new Lifetime(this.ffi.QTS_NewRuntime(), rt_ptr => {
+      this.rtMap.delete(rt_ptr)
+      this.ffi.QTS_FreeRuntime(rt_ptr)
+    })
     const ctx = new Lifetime(this.ffi.QTS_NewContext(rt.value), ctx_ptr => {
       this.vmMap.delete(ctx_ptr)
       this.ffi.QTS_FreeContext(ctx_ptr)
@@ -697,6 +764,7 @@ export class QuickJS {
       ctx,
     })
     this.vmMap.set(ctx.value, vm)
+    this.rtMap.set(rt.value, vm)
     return vm
   }
 
@@ -749,6 +817,19 @@ export class QuickJS {
     } catch (error) {
       console.error('[C to host error: returning null]', error)
       return 0 as JSValuePointer
+    }
+  }
+
+  private cToHostInterrupt: CToHostInterruptImplementation = rt => {
+    try {
+      const vm = this.rtMap.get(rt)
+      if (!vm) {
+        throw new Error(`QuickJSVm(rt = ${rt}) not found for C interrupt`)
+      }
+      return vm.cToHostInterrupt(rt)
+    } catch (error) {
+      console.error('[C to host interrupt: returning error]', error)
+      return 1
     }
   }
 }

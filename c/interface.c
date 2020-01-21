@@ -119,6 +119,39 @@ JSValue *QTS_NewError(JSContext *ctx) {
 
 
 /**
+ * Interrupt handler - called regularly from QuickJS. Return !=0 to interrupt.
+ * TODO: because this is perf critical, really send a new func pointer for each
+ * call to QTS_RuntimeEnableInterruptHandler instead of using dispatch.
+ */
+typedef int QTS_C_To_HostInterruptFunc(JSRuntime *rt);
+QTS_C_To_HostInterruptFunc *bound_interrupt = NULL;
+
+int qts_interrupt_handler(JSRuntime *rt, void *_unused) {
+  if (bound_interrupt == NULL) {
+    printf(PKG "cannot call interrupt handler because no QTS_C_To_HostInterruptFunc set");
+    abort();
+  }
+  return (*bound_interrupt)(rt);
+}
+
+void QTS_SetInterruptCallback(QTS_C_To_HostInterruptFunc *cb) {
+  bound_interrupt = cb;
+}
+
+void QTS_RuntimeEnableInterruptHandler(JSRuntime *rt) {
+  if (bound_interrupt == NULL) {
+    printf(PKG "cannot enable interrupt handler because no QTS_C_To_HostInterruptFunc set");
+    abort();
+  }
+
+  JS_SetInterruptHandler(rt, &qts_interrupt_handler, NULL);
+}
+
+void QTS_RuntimeDisableInterruptHandler(JSRuntime *rt) {
+  JS_SetInterruptHandler(rt, NULL, NULL);
+}
+
+/**
  * Constant pointers. Because we always use JSValue* from the host Javascript environment,
  * we need helper fuctions to return pointers to these constants.
  */
@@ -295,8 +328,12 @@ JSValue *QTS_Eval(JSContext *ctx, const char* js_code) {
 
 char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   const char* result = "unknown";
+  uint32_t tag = JS_VALUE_GET_TAG(*value);
 
   if (JS_IsNumber(*value)) { result = "number"; }
+  else if (tag == JS_TAG_BIG_INT) { result = "bigint"; }
+  else if (JS_IsBigFloat(*value)) { result = "bigfloat"; }
+  else if (JS_IsBigDecimal(*value)) { result = "bigdecimal"; }
   else if (JS_IsFunction(ctx, *value)) { result = "function"; }
   else if (JS_IsBool(*value)) { result = "boolean"; }
   else if (JS_IsNull(*value)) { result = "object"; }

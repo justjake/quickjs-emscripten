@@ -43,4 +43,9 @@ type JSCFunctionPointer = Pointer<'JSCFunction'>
 /**
  * Used internally for C-to-Javascript function calls.
  */
-type QTS_C_To_HostCallbackFuncPointer = Pointer<'C_To_HostCallbackFuncPointer'>
+type QTS_C_To_HostCallbackFuncPointer = Pointer<'C_To_HostCallbackFunc'>
+
+/**
+ * Used internally for C-to-Javascript interrupt handlers.
+ */
+type QTS_C_To_HostInterruptFuncPointer = Pointer<'C_To_HostInterruptFunc'>

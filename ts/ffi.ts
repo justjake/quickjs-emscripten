@@ -45,7 +45,12 @@ export type JSCFunctionPointer = Pointer<'JSCFunction'>
 /**
  * Used internally for C-to-Javascript function calls.
  */
-export type QTS_C_To_HostCallbackFuncPointer = Pointer<'C_To_HostCallbackFuncPointer'>
+export type QTS_C_To_HostCallbackFuncPointer = Pointer<'C_To_HostCallbackFunc'>
+
+/**
+ * Used internally for C-to-Javascript interrupt handlers.
+ */
+export type QTS_C_To_HostInterruptFuncPointer = Pointer<'C_To_HostInterruptFunc'>
 
 
 /**
@@ -72,6 +77,15 @@ export class QuickJSFFI {
 
   QTS_NewError: (ctx: JSContextPointer) => JSValuePointer =
     this.module.cwrap("QTS_NewError", "number", ["number"])
+
+  QTS_SetInterruptCallback: (cb: QTS_C_To_HostInterruptFuncPointer) => void =
+    this.module.cwrap("QTS_SetInterruptCallback", null, ["number"])
+
+  QTS_RuntimeEnableInterruptHandler: (rt: JSRuntimePointer) => void =
+    this.module.cwrap("QTS_RuntimeEnableInterruptHandler", null, ["number"])
+
+  QTS_RuntimeDisableInterruptHandler: (rt: JSRuntimePointer) => void =
+    this.module.cwrap("QTS_RuntimeDisableInterruptHandler", null, ["number"])
 
   QTS_GetUndefined: () => JSValueConstPointer =
     this.module.cwrap("QTS_GetUndefined", "number", [])
