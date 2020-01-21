@@ -2,7 +2,7 @@
  * These tests demonstate some common patterns for using quickjs-emscripten.
  */
 
-import { getQuickJS, QuickJSVm, QuickJSHandle } from './quickjs'
+import { getQuickJS, QuickJSVm, QuickJSHandle, ShouldInterruptHandler } from './quickjs'
 import { it, describe } from 'mocha'
 import assert from 'assert'
 import { VmCallResult } from './vm-interface'
@@ -247,5 +247,54 @@ describe('QuickJSVm', async () => {
       function() {},
       (val: any) => val.toString()
     )
+  })
+
+  describe('interrupt handler', () => {
+    it('is called with the expected VM', () => {
+      let calls = 0
+      const interruptHandler: ShouldInterruptHandler = interruptVm => {
+        assert.strictEqual(interruptVm, vm, 'ShouldInterruptHandler callback VM is the vm')
+        calls++
+        return false
+      }
+      vm.setShouldInterruptHandler(interruptHandler)
+
+      vm.unwrapResult(vm.evalCode('1 + 1')).dispose()
+
+      assert(calls > 0, 'interruptHandler called at least once')
+    })
+
+    it('interrupts infinite loop execution', () => {
+      let calls = 0
+      const interruptHandler: ShouldInterruptHandler = interruptVm => {
+        if (calls > 10) {
+          return true
+        }
+        calls++
+        return false
+      }
+      vm.setShouldInterruptHandler(interruptHandler)
+
+      const result = vm.evalCode('i = 0; while (1) { i++ }')
+
+      // Make sure we actually got to interrupt the loop.
+      const iHandle = vm.getProp(vm.global, 'i')
+      const i = vm.getNumber(iHandle)
+      iHandle.dispose()
+
+      assert(i > 10, 'incremented i')
+      assert(i > calls, 'incremented i more than called the interrupt handler')
+      // console.log('Javascript loop iterrations:', i, 'interrupt handler calls:', calls)
+
+      if (result.error) {
+        const errorJson = vm.dump(result.error)
+        result.error.dispose()
+        assert.equal(errorJson.name, 'InternalError')
+        assert.equal(errorJson.message, 'interrupted')
+      } else {
+        result.value.dispose()
+        assert.fail('Should have returned an interrupt error')
+      }
+    })
   })
 })
