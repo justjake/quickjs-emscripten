@@ -408,8 +408,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * [[setShouldInterruptHandler]]. You can use [[shouldInterruptAfterDeadline]] to
    * create a time-based deadline.
    *
-   * @returns The last statement's value. If the code threw, result `error` be
-   * a handle to the exception.
+   * @returns The last statement's value. If the code threw, result `error` will be
+   * a handle to the exception. If execution was interrupted, the error will
+   * have name `InternalError` and message `interrupted`.
    */
   evalCode(code: string): VmCallResult<QuickJSHandle> {
     const resultPtr = this.ffi.QTS_Eval(this.ctx.value, code)
@@ -684,6 +685,16 @@ export type JSValue = Lifetime<JSValuePointer, QuickJSVm>
 export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
 
 /**
+ * Options for [[QuickJS.evalCode]].
+ */
+export interface QuickJSEvalOptions {
+  /**
+   * Interrupt evaluation if `shouldInterrupt` returns `true`.
+   */
+  shouldInterrupt?: ShouldInterruptHandler
+}
+
+/**
  * QuickJS presents a Javascript interface to QuickJS, a Javascript interpreter that
  * supports ES2019.
  *
@@ -772,8 +783,6 @@ export class QuickJS {
 
   /**
    * One-off evaluate code without needing to create a VM.
-   * The result is coerced to a native Javascript value using JSON
-   * serialization, so values unsupported by JSON will be dropped.
    *
    * To protect against infinite loops, use the `shouldInterrupt` option. The
    * [[shouldInterruptAfterDeadline] will create a time-based deadline
@@ -782,10 +791,16 @@ export class QuickJS {
    * If you need more control over how the code executes, create a
    * [[QuickJSVm]] instance and use its [[QuickJSVm.evalCode]] method.
    *
+   * @returns The result is coerced to a native Javascript value using JSON
+   * serialization, so properties and values unsupported by JSON will be dropped.
+   *
    * @throws If `code` throws during evaluation, the exception will be
-   * converted into a Javascript value and throw.
+   * converted into a native Javascript value and thrown.
+   *
+   * @throws if `options.shouldInterrupt` interrupted execution, will throw a Error
+   * with name `"InternalError"` and  message `"interrupted"`.
    */
-  evalCode(code: string, options: { shouldInterrupt?: ShouldInterruptHandler } = {}): unknown {
+  evalCode(code: string, options: QuickJSEvalOptions = {}): unknown {
     const vm = this.createVm()
 
     if (options.shouldInterrupt) {

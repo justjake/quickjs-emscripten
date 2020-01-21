@@ -153,7 +153,7 @@ ___
 
 ▸ **dispose**(): *void*
 
-*Defined in [quickjs.ts:505](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L505)*
+*Defined in [quickjs.ts:506](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L506)*
 
 Dispose of this VM's underlying resources.
 
@@ -168,7 +168,7 @@ ___
 
 ▸ **dump**(`handle`: [QuickJSHandle](../globals.md#quickjshandle)): *any*
 
-*Defined in [quickjs.ts:430](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L430)*
+*Defined in [quickjs.ts:431](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L431)*
 
 Dump a JSValue to Javascript in a best-effort fashion.
 Returns `handle.toString()` if it cannot be serialized to JSON.
@@ -189,7 +189,7 @@ ___
 
 *Implementation of [LowLevelJavascriptVm](../interfaces/lowleveljavascriptvm.md)*
 
-*Defined in [quickjs.ts:414](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L414)*
+*Defined in [quickjs.ts:415](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L415)*
 
 Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
 Evauatetes the Javascript source `code` in the global scope of this VM.
@@ -209,8 +209,9 @@ Name | Type |
 
 **Returns:** *[VmCallResult](../globals.md#vmcallresult)‹[QuickJSHandle](../globals.md#quickjshandle)›*
 
-The last statement's value. If the code threw, result `error` be
-a handle to the exception.
+The last statement's value. If the code threw, result `error` will be
+a handle to the exception. If execution was interrupted, the error will
+have name `InternalError` and message `interrupted`.
 
 ___
 
@@ -363,7 +364,7 @@ ___
 
 ▸ **removeShouldInterruptHandler**(): *void*
 
-*Defined in [quickjs.ts:492](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L492)*
+*Defined in [quickjs.ts:493](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L493)*
 
 Remove the interrupt handler, if any.
 See [setShouldInterruptHandler](quickjsvm.md#setshouldinterrupthandler).
@@ -401,7 +402,7 @@ ___
 
 ▸ **setShouldInterruptHandler**(`cb`: [ShouldInterruptHandler](../globals.md#shouldinterrupthandler)): *void*
 
-*Defined in [quickjs.ts:480](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L480)*
+*Defined in [quickjs.ts:481](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L481)*
 
 Set a callback which is regularly called by the QuickJS engine when it is
 executing code. This callback can be used to implement an execution
@@ -444,7 +445,7 @@ ___
 
 ▸ **unwrapResult**(`result`: [VmCallResult](../globals.md#vmcallresult)‹[QuickJSHandle](../globals.md#quickjshandle)›): *[QuickJSHandle](../globals.md#quickjshandle)*
 
-*Defined in [quickjs.ts:453](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L453)*
+*Defined in [quickjs.ts:454](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L454)*
 
 Unwrap a VmCallResult, returning it's value on success, and throwing the dumped
 error on failure.
