@@ -404,7 +404,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * See [[unwrapResult]], which will throw if the function returned an error, or
    * return the result handle directly.
    *
-   * *Note: this does not protect against infinite loops*.
+   * *Note*: to protect against infinite loops, provide an interrupt handler to
+   * [[setShouldInterruptHandler]]. You can use [[shouldInterruptAfterDeadline]] to
+   * create a time-based deadline.
    *
    * @returns The last statement's value. If the code threw, result `error` be
    * a handle to the exception.
@@ -473,7 +475,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * executing code. This callback can be used to implement an execution
    * timeout.
    *
-   * The interrupt handler can be removed with [[removeInterruptHandler]].
+   * The interrupt handler can be removed with [[removeShouldInterruptHandler]].
    */
   setShouldInterruptHandler(cb: ShouldInterruptHandler) {
     const prevInterruptHandler = this.interruptHandler
@@ -843,6 +845,9 @@ export class QuickJS {
 
 /**
  * Returns an interrupt handler that interrupts Javascript execution after a deadline time.
+ *
+ * @param deadline - Interrupt execution if it's still running after this time.
+ *   Number values are compared against `Date.now()`
  */
 export function shouldInterruptAfterDeadline(deadline: Date | number): ShouldInterruptHandler {
   const deadlineAsNumber = typeof deadline === 'number' ? deadline : deadline.getTime()
