@@ -773,16 +773,23 @@ export class QuickJS {
    * The result is coerced to a native Javascript value using JSON
    * serialization, so values unsupported by JSON will be dropped.
    *
+   * To protect against infinite loops, use the `shouldInterrupt` option. The
+   * [[shouldInterruptAfterDeadline] will create a time-based deadline
+   * interrupt function.
+   *
    * If you need more control over how the code executes, create a
    * [[QuickJSVm]] instance and use its [[QuickJSVm.evalCode]] method.
-   *
-   * *Note: this does not protect against infinite loops.*
    *
    * @throws If `code` throws during evaluation, the exception will be
    * converted into a Javascript value and throw.
    */
-  evalCode(code: string): unknown {
+  evalCode(code: string, options: { shouldInterrupt?: ShouldInterruptHandler } = {}): unknown {
     const vm = this.createVm()
+
+    if (options.shouldInterrupt) {
+      vm.setShouldInterruptHandler(options.shouldInterrupt)
+    }
+
     const result = vm.evalCode(code)
 
     if (result.error) {
@@ -831,6 +838,17 @@ export class QuickJS {
       console.error('[C to host interrupt: returning error]', error)
       return 1
     }
+  }
+}
+
+/**
+ * Returns an interrupt handler that interrupts Javascript execution after a deadline time.
+ */
+export function shouldInterruptAfterDeadline(deadline: Date | number): ShouldInterruptHandler {
+  const deadlineAsNumber = typeof deadline === 'number' ? deadline : deadline.getTime()
+
+  return function() {
+    return Date.now() > deadlineAsNumber
   }
 }
 
