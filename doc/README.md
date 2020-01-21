@@ -50,14 +50,15 @@ the Emscripten WASM module is ready.
 See [QuickJS.evalCode](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/quickjs.md#evalcode)
 
 ```typescript
-import { getQuickJS } from 'quickjs-emscripten'
+import { getQuickJS, shouldInterruptAfterDeadline } from 'quickjs-emscripten'
 
 getQuickJS.then(QuickJS => {
-  console.log(QuickJS.evalCode('1 + 1'))
+  const result = QuickJS.evalCode('1 + 1', {
+    shouldInterrupt: shouldInterruptAfterDeadline(Date.now() + 1000)
+  })
+  console.log(result)
 })
 ```
-
-_Note: this will not protect you from infinite loops._
 
 ### Interfacing with the interpreter
 
@@ -110,7 +111,6 @@ Ideas for future work:
     in the pool.
   - Pools, etc, should not pollute QuickJSVm interface. Composition!
 - quickjs-emscripten only exposes a small subset of the QuickJS APIs. Add more QuickJS bindings!
-  - Expose the QuickJS interpreter execution hooks to protect against infinite loops.
   - Expose tools for object and array iteration and creation.
   - Stretch goals: class support, an event emitter bridge implementation
 - Higher-level abstractions for translating values into (and out of) QuickJS.
