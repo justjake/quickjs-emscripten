@@ -1,4 +1,5 @@
-import QuickJSModuleLoader from './quickjs-emscripten-module'
+import ModuleLoader  = require('./quickjs-emscripten-module');
+import QuickJSEmscriptenModule = require('./quickjs-emscripten');
 import {
   QuickJSFFI,
   JSContextPointer,
@@ -18,7 +19,7 @@ import {
 
 let isReady = false
 
-const QuickJSModule = QuickJSModuleLoader()
+const QuickJSModule: QuickJSEmscriptenModule = ModuleLoader()
 
 /**
  * This promise will be fufilled when the QuickJS emscripten module has initialized

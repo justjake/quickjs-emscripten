@@ -1,10 +1,4 @@
-/**
- * Typings for the featuers we use to interface with our Empscripten build of
- * QuickJS. */
-export interface QuickJSEmscriptenModule extends EmscriptenModule {
-  addFunction(fn: Function, type: string): number
-  removeFunction(pointer: number): void
-}
+import QuickJSEmscriptenModule from "./quickjs-emscripten"
 
 /**
  *  Emscripten module built from the unmodified [`quickjs/quickjs.h`](../quickjs/quickjs.h)
@@ -17,4 +11,6 @@ export interface QuickJSEmscriptenModule extends EmscriptenModule {
  * See
  */
 declare function ModuleLoader(): QuickJSEmscriptenModule
-export default ModuleLoader
+export = ModuleLoader
+
+
