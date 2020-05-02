@@ -7,6 +7,12 @@ Original code is located at `master` branch
 - `make`
 - `sudo make install` # to use qjs and qjsc outside of repo folder
 
+## Mac
+- `mod` branch contained mac fixes for undefined `environ` in `./quickjs-libc.c`
+- update xcode
+- `make`
+- `sudo make install` # to use qjs and qjsc outside of repo folder
+
 # Getting Started
 ## compile js to binary
 create a hello\_world1.js javascript file
@@ -38,6 +44,8 @@ goto command line and type
 # known issues
 - doesn't support Blob
 - doesn't support WebWorker
+- exceptions in promise are silent. use `./qjs --unhandled-rejection {script.js}` to display exceptions
+- doesn't handle `Maximum call stack size exceeded` for recursive async function correctly. it crashes with segmentation error
 
 # fun facts
 - compiled executable of `qjsc` does not has speed advantage compared with interpreting script with `qjs`
@@ -45,9 +53,9 @@ goto command line and type
 test it yourself
  ```
  # run benchmark with interpretor
- ./qjs tests/microbench
+ ./qjs tests/microbench.js
  
  # run benchmark with compiler
- ./qjsc -o microbench tests/microbench
+ ./qjsc -o microbench tests/microbench.js
  ./microbench
  ```
