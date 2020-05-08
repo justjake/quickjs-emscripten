@@ -72,7 +72,7 @@ ul.no-bullet {list-style: none}
 <ul class="no-bullet">
   <li><a name="toc-Language-support" href="#Language-support">3.1 Language support</a>
   <ul class="no-bullet">
-    <li><a name="toc-ES2019-support" href="#ES2019-support">3.1.1 ES2019 support</a></li>
+    <li><a name="toc-ES2020-support" href="#ES2020-support">3.1.1 ES2020 support</a></li>
     <li><a name="toc-JSON" href="#JSON">3.1.2 JSON</a></li>
     <li><a name="toc-ECMA402" href="#ECMA402">3.1.3 ECMA402</a></li>
     <li><a name="toc-Extensions" href="#Extensions">3.1.4 Extensions</a></li>
@@ -130,7 +130,7 @@ ul.no-bullet {list-style: none}
 <h2 class="chapter">1 Introduction</h2>
 
 <p>QuickJS is a small and embeddable Javascript engine. It supports the
-upcoming ES2020 specification
+ES2020 specification
 <a name="DOCF1" href="#FOOT1"><sup>1</sup></a>
 including modules, asynchronous generators, proxies and BigInt.
 </p>
@@ -146,12 +146,12 @@ and operator overloading.
 
 </li><li> Fast interpreter with very low startup time: runs the 69000 tests of the ECMAScript Test Suite<a name="DOCF2" href="#FOOT2"><sup>2</sup></a> in about 95 seconds on a single core of a desktop PC. The complete life cycle of a runtime instance completes in less than 300 microseconds.
 
-</li><li> Almost complete ES2019 support including modules, asynchronous
+</li><li> Almost complete ES2020 support including modules, asynchronous
 generators and full Annex B support (legacy web compatibility). Many
-features from the upcoming ES2020 specification
+features from the upcoming ES2021 specification
 <a name="DOCF3" href="#FOOT3"><sup>3</sup></a> are also supported.
 
-</li><li> Passes nearly 100% of the ECMAScript Test Suite tests when selecting the ES2019 features.
+</li><li> Passes nearly 100% of the ECMAScript Test Suite tests when selecting the ES2020 features.
 
 </li><li> Compile Javascript sources to executables with no external dependency.
 
@@ -206,7 +206,7 @@ Javascript files and/or expressions as arguments to execute them:
 <a name="qjs-interpreter"></a>
 <h4 class="subsection">2.3.1 <code>qjs</code> interpreter</h4>
 
-<pre class="verbatim">usage: qjs [options] [files]
+<pre class="verbatim">usage: qjs [options] [file [args]]
 </pre>
 <p>Options are:
 </p><dl compact="compact">
@@ -239,6 +239,11 @@ source is <code>import</code>.
 <dt><code>--bignum</code></dt>
 <dd><p>Enable the bignum extensions: BigDecimal object, BigFloat object and
 the <code>&quot;use bigint&quot;</code> and <code>&quot;use math&quot;</code> directives.
+</p>
+</dd>
+<dt><code>-I file</code></dt>
+<dt><code>--include file</code></dt>
+<dd><p>Include an additional file.
 </p>
 </dd>
 </dl>
@@ -389,18 +394,16 @@ about 100 seconds).
 <a name="Language-support"></a>
 <h3 class="section">3.1 Language support</h3>
 
-<a name="ES2019-support"></a>
-<h4 class="subsection">3.1.1 ES2019 support</h4>
+<a name="ES2020-support"></a>
+<h4 class="subsection">3.1.1 ES2020 support</h4>
 
-<p>The ES2019 specification is almost fully supported including the Annex
+<p>The ES2020 specification is almost fully supported including the Annex
 B (legacy web compatibility) and the Unicode related features.
 </p>
 <p>The following features are not supported yet:
 </p>
 <ul>
-<li> Realms (although the C API supports different runtimes and contexts)
-
-</li><li> Tail calls<a name="DOCF6" href="#FOOT6"><sup>6</sup></a>
+<li> Tail calls<a name="DOCF6" href="#FOOT6"><sup>6</sup></a>
 
 </li></ul>
 
@@ -514,50 +517,39 @@ optional properties:
 <dd><p>Evaluate the file <code>filename</code> as a script (global eval).
 </p>
 </dd>
-<dt><code>Error(errno)</code></dt>
-<dd>
-<p><code>std.Error</code> constructor. Error instances contain the field
-<code>errno</code> (error code) and <code>message</code> (result of
-<code>std.Error.strerror(errno)</code>).
-</p>
-<p>The constructor contains the following fields:
-</p>
-<dl compact="compact">
-<dt><code>EINVAL</code></dt>
-<dt><code>EIO</code></dt>
-<dt><code>EACCES</code></dt>
-<dt><code>EEXIST</code></dt>
-<dt><code>ENOSPC</code></dt>
-<dt><code>ENOSYS</code></dt>
-<dt><code>EBUSY</code></dt>
-<dt><code>ENOENT</code></dt>
-<dt><code>EPERM</code></dt>
-<dt><code>EPIPE</code></dt>
-<dd><p>Integer value of common errors (additional error codes may be defined).
-  </p></dd>
-<dt><code>strerror(errno)</code></dt>
-<dd><p>Return a string that describes the error <code>errno</code>.
-  </p></dd>
-</dl>
-
-</dd>
-<dt><code>open(filename, flags)</code></dt>
-<dd><p>Open a file (wrapper to the libc <code>fopen()</code>). Throws 
-<code>std.Error</code> in case of I/O error.
+<dt><code>loadFile(filename)</code></dt>
+<dd><p>Load the file <code>filename</code> and return it as a string assuming UTF-8
+encoding. Return <code>null</code> in case of I/O error.
 </p>
 </dd>
-<dt><code>popen(command, flags)</code></dt>
-<dd><p>Open a process by creating a pipe (wrapper to the libc <code>popen()</code>). Throws 
-<code>std.Error</code> in case of I/O error.
+<dt><code>open(filename, flags, errorObj = undefined)</code></dt>
+<dd><p>Open a file (wrapper to the libc <code>fopen()</code>). Return the FILE
+object or <code>null</code> in case of I/O error. If <code>errorObj</code> is not
+undefined, set its <code>errno</code> property to the error code or to 0 if
+no error occured.
 </p>
 </dd>
-<dt><code>fdopen(fd, flags)</code></dt>
+<dt><code>popen(command, flags, errorObj = undefined)</code></dt>
+<dd><p>Open a process by creating a pipe (wrapper to the libc
+<code>popen()</code>). Return the FILE
+object or <code>null</code> in case of I/O error. If <code>errorObj</code> is not
+undefined, set its <code>errno</code> property to the error code or to 0 if
+no error occured.
+</p>
+</dd>
+<dt><code>fdopen(fd, flags, errorObj = undefined)</code></dt>
 <dd><p>Open a file from a file handle (wrapper to the libc
-<code>fdopen()</code>). Throws <code>std.Error</code> in case of I/O error.
+<code>fdopen()</code>). Return the FILE
+object or <code>null</code> in case of I/O error. If <code>errorObj</code> is not
+undefined, set its <code>errno</code> property to the error code or to 0 if
+no error occured.
 </p>
 </dd>
-<dt><code>tmpfile()</code></dt>
-<dd><p>Open a temporary file. Throws <code>std.Error</code> in case of I/O error.
+<dt><code>tmpfile(errorObj = undefined)</code></dt>
+<dd><p>Open a temporary file. Return the FILE
+object or <code>null</code> in case of I/O error. If <code>errorObj</code> is not
+undefined, set its <code>errno</code> property to the error code or to 0 if
+no error occured.
 </p>
 </dd>
 <dt><code>puts(str)</code></dt>
@@ -582,6 +574,29 @@ optional properties:
 <dt><code>SEEK_CUR</code></dt>
 <dt><code>SEEK_END</code></dt>
 <dd><p>Constants for seek().
+</p>
+</dd>
+<dt><code>Error</code></dt>
+<dd>
+<p>Enumeration object containing the integer value of common errors
+(additional error codes may be defined):
+</p>
+<dl compact="compact">
+<dt><code>EINVAL</code></dt>
+<dt><code>EIO</code></dt>
+<dt><code>EACCES</code></dt>
+<dt><code>EEXIST</code></dt>
+<dt><code>ENOSPC</code></dt>
+<dt><code>ENOSYS</code></dt>
+<dt><code>EBUSY</code></dt>
+<dt><code>ENOENT</code></dt>
+<dt><code>EPERM</code></dt>
+<dt><code>EPIPE</code></dt>
+</dl>
+
+</dd>
+<dt><code>strerror(errno)</code></dt>
+<dd><p>Return a string that describes the error <code>errno</code>.
 </p>
 </dd>
 <dt><code>gc()</code></dt>
@@ -609,12 +624,14 @@ optional properties:
 </p>
 </dd>
 <dt><code>full</code></dt>
-<dd><p>Boolean (default = false). If true, return the an object contains
+<dd>  
+<p>Boolean (default = false). If true, return the an object contains
   the properties <code>response</code> (response content),
   <code>responseHeaders</code> (headers separated by CRLF), <code>status</code>
-  (status code). If <code>full</code> is false, only the response is
-  returned if the status is between 200 and 299. Otherwise an
-  <code>std.Error</code> exception is raised.
+  (status code). <code>response</code> is <code>null</code> is case of protocol or
+  network error. If <code>full</code> is false, only the response is
+  returned if the status is between 200 and 299. Otherwise <code>null</code>
+  is returned.
 </p>
 </dd>
 </dl>
@@ -626,7 +643,7 @@ optional properties:
 </p>
 <dl compact="compact">
 <dt><code>close()</code></dt>
-<dd><p>Close the file.
+<dd><p>Close the file. Return 0 if OK or <code>-errno</code> in case of I/O error.
 </p></dd>
 <dt><code>puts(str)</code></dt>
 <dd><p>Outputs the string with the UTF-8 encoding.
@@ -638,17 +655,27 @@ optional properties:
 <dd><p>Flush the buffered file.
 </p></dd>
 <dt><code>seek(offset, whence)</code></dt>
-<dd><p>Seek to a give file position (whence is <code>std.SEEK_*</code>). Throws a
-<code>std.Error</code> in case of I/O error.
+<dd><p>Seek to a give file position (whence is
+<code>std.SEEK_*</code>). <code>offset</code> can be a number or a bigint. Return
+0 if OK or <code>-errno</code> in case of I/O error.
 </p></dd>
 <dt><code>tell()</code></dt>
 <dd><p>Return the current file position.
+</p></dd>
+<dt><code>tello()</code></dt>
+<dd><p>Return the current file position as a bigint.
 </p></dd>
 <dt><code>eof()</code></dt>
 <dd><p>Return true if end of file.
 </p></dd>
 <dt><code>fileno()</code></dt>
 <dd><p>Return the associated OS handle.
+</p></dd>
+<dt><code>error()</code></dt>
+<dd><p>Return true if there was an error.
+</p></dd>
+<dt><code>clearerr()</code></dt>
+<dd><p>Clear the error indication.
 </p>
 </dd>
 <dt><code>read(buffer, position, length)</code></dt>
@@ -722,7 +749,9 @@ error code.
 </p>
 </dd>
 <dt><code>seek(fd, offset, whence)</code></dt>
-<dd><p>Seek in the file. Use <code>std.SEEK_*</code> for <code>whence</code>.
+<dd><p>Seek in the file. Use <code>std.SEEK_*</code> for
+<code>whence</code>. <code>offset</code> is either a number or a bigint. If
+<code>offset</code> is a bigint, a bigint is returned too.
 </p>
 </dd>
 <dt><code>read(fd, buffer, offset, length)</code></dt>
@@ -750,11 +779,11 @@ Return the number of written bytes or &lt; 0 if error.
 </p>
 </dd>
 <dt><code>remove(filename)</code></dt>
-<dd><p>Remove a file. Return 0 if OK or &lt; 0 if error.
+<dd><p>Remove a file. Return 0 if OK or <code>-errno</code>.
 </p>
 </dd>
 <dt><code>rename(oldname, newname)</code></dt>
-<dd><p>Rename a file. Return 0 if OK or &lt; 0 if error.
+<dd><p>Rename a file. Return 0 if OK or <code>-errno</code>.
 </p>
 </dd>
 <dt><code>realpath(path)</code></dt>
@@ -767,8 +796,12 @@ pathname of <code>path</code> and <code>err</code> the error code.
 and <code>err</code> the error code.
 </p>
 </dd>
+<dt><code>chdir(path)</code></dt>
+<dd><p>Change the current directory. Return 0 if OK or <code>-errno</code>.
+</p>
+</dd>
 <dt><code>mkdir(path, mode = 0o777)</code></dt>
-<dd><p>Create a directory at <code>path</code>. Return the error code.
+<dd><p>Create a directory at <code>path</code>. Return 0 if OK or <code>-errno</code>.
 </p>
 </dd>
 <dt><code>stat(path)</code></dt>
@@ -800,11 +833,11 @@ itself.
 </dd>
 <dt><code>utimes(path, atime, mtime)</code></dt>
 <dd><p>Change the access and modification times of the file <code>path</code>. The
-times are specified in milliseconds since 1970.
+times are specified in milliseconds since 1970. Return 0 if OK or <code>-errno</code>.
 </p>
 </dd>
 <dt><code>symlink(target, linkpath)</code></dt>
-<dd><p>Create a link at <code>linkpath</code> containing the string <code>target</code>.
+<dd><p>Create a link at <code>linkpath</code> containing the string <code>target</code>. Return 0 if OK or <code>-errno</code>.
 </p>
 </dd>
 <dt><code>readlink(path)</code></dt>
@@ -881,13 +914,28 @@ object containing optional parameters:
 <dt><code>stdout</code></dt>
 <dt><code>stderr</code></dt>
 <dd><p>If present, set the handle in the child for stdin, stdout or stderr.
-</p> 
+</p>
+</dd>
+<dt><code>env</code></dt>
+<dd><p>Object. If present, set the process environment from the object
+  key-value pairs. Otherwise use the same environment as the current
+  process.
+</p>
+</dd>
+<dt><code>uid</code></dt>
+<dd><p>Integer. If present, the process uid with <code>setuid</code>.
+</p>
+</dd>
+<dt><code>gid</code></dt>
+<dd><p>Integer. If present, the process gid with <code>setgid</code>.
+</p>
 </dd>
 </dl>
 
 </dd>
 <dt><code>waitpid(pid, options)</code></dt>
-<dd><p><code>waitpid</code> Unix system call. Return the array <code>[ret, status]</code>.
+<dd><p><code>waitpid</code> Unix system call. Return the array <code>[ret,
+status]</code>. <code>ret</code> contains <code>-errno</code> in case of error.
 </p>
 </dd>
 <dt><code>WNOHANG</code></dt>
@@ -1230,7 +1278,7 @@ Bellard and Charlie Gordon.
 <h4 class="footnotes-heading">Footnotes</h4>
 
 <h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
-<p><a href="https://www.ecma-international.org/ecma-262/10.0">https://www.ecma-international.org/ecma-262/10.0</a></p>
+<p><a href="https://tc39.es/ecma262/">https://tc39.es/ecma262/</a></p>
 <h3><a name="FOOT2" href="#DOCF2">(2)</a></h3>
 <p><a href="https://github.com/tc39/test262">https://github.com/tc39/test262</a></p>
 <h3><a name="FOOT3" href="#DOCF3">(3)</a></h3>
