@@ -361,6 +361,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
       // we allocated a string
       quickJSKey.dispose()
     }
+
+    // dispose created functions; or no-op if these are this.undefined
+    get.dispose()
+    set.dispose()
   }
 
   /**
