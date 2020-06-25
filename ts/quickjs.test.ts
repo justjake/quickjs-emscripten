@@ -83,6 +83,19 @@ describe('QuickJSVm', async () => {
     })
   })
 
+  describe('properties', () => {
+    it('defining a property does not leak', () => {
+      vm.defineProp(vm.global, 'Name', {
+        enumerable: false,
+        configurable: false,
+        get: () => vm.newString('World'),
+      })
+      const result = vm.unwrapResult(vm.evalCode('"Hello " + Name'))
+      assert.equal(vm.dump(result), 'Hello World')
+      result.dispose()
+    })
+  })
+
   describe('objects', () => {
     it('can set and get properties by native string', () => {
       const object = vm.newObject()
