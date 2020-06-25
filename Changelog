@@ -1,3 +1,33 @@
+2020-04-12:
+
+- added cross realm support
+- added AggregateError and Promise.any
+- added env, uid and gid options in os.exec()
+- misc bug fixes
+
+2020-03-16:
+
+- reworked error handling in std and os libraries: suppressed I/O
+  exceptions in std FILE functions and return a positive errno value
+  when it is explicit
+- output exception messages to stderr
+- added std.loadFile(), std.strerror(), std.FILE.prototype.tello()
+- added JS_GetRuntimeOpaque(), JS_SetRuntimeOpaque(), JS_NewUint32()
+- updated to Unicode 13.0.0
+- misc bug fixes
+
+2020-01-19:
+
+- keep CONFIG_BIGNUM in the makefile
+- added os.chdir()
+- qjs: added -I option
+- more memory checks in the bignum operations
+- modified operator overloading semantics to be closer to the TC39
+  proposal
+- suppressed "use bigint" mode. Simplified "use math" mode
+- BigDecimal: changed suffix from 'd' to 'm'
+- misc bug fixes
+
 2020-01-05:
 
 - always compile the bignum code. Added '--bignum' option to qjs.
