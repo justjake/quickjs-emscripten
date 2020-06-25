@@ -53,7 +53,7 @@ typedef struct JSClass JSClass;
 typedef uint32_t JSClassID;
 typedef uint32_t JSAtom;
 
-#if defined(__x86_64__) || defined(__aarch64__)
+#if INTPTR_MAX >= INT64_MAX
 #define JS_PTR64
 #define JS_PTR64_DEF(a) a
 #else
@@ -333,8 +333,11 @@ JSRuntime *JS_NewRuntime(void);
 void JS_SetRuntimeInfo(JSRuntime *rt, const char *info);
 void JS_SetMemoryLimit(JSRuntime *rt, size_t limit);
 void JS_SetGCThreshold(JSRuntime *rt, size_t gc_threshold);
+void JS_SetMaxStackSize(JSRuntime *rt, size_t stack_size);
 JSRuntime *JS_NewRuntime2(const JSMallocFunctions *mf, void *opaque);
 void JS_FreeRuntime(JSRuntime *rt);
+void *JS_GetRuntimeOpaque(JSRuntime *rt);
+void JS_SetRuntimeOpaque(JSRuntime *rt, void *opaque);
 typedef void JS_MarkFunc(JSRuntime *rt, JSGCObjectHeader *gp);
 void JS_MarkValue(JSRuntime *rt, JSValueConst val, JS_MarkFunc *mark_func);
 void JS_RunGC(JSRuntime *rt);
@@ -342,10 +345,10 @@ JS_BOOL JS_IsLiveObject(JSRuntime *rt, JSValueConst obj);
 
 JSContext *JS_NewContext(JSRuntime *rt);
 void JS_FreeContext(JSContext *s);
+JSContext *JS_DupContext(JSContext *ctx);
 void *JS_GetContextOpaque(JSContext *ctx);
 void JS_SetContextOpaque(JSContext *ctx, void *opaque);
 JSRuntime *JS_GetRuntime(JSContext *ctx);
-void JS_SetMaxStackSize(JSContext *ctx, size_t stack_size);
 void JS_SetClassProto(JSContext *ctx, JSClassID class_id, JSValue obj);
 JSValue JS_GetClassProto(JSContext *ctx, JSClassID class_id);
 
@@ -366,7 +369,9 @@ void JS_AddIntrinsicPromise(JSContext *ctx);
 void JS_AddIntrinsicBigInt(JSContext *ctx);
 void JS_AddIntrinsicBigFloat(JSContext *ctx);
 void JS_AddIntrinsicBigDecimal(JSContext *ctx);
-/* enable "use bigint", "use math" and operator overloading */
+/* enable operator overloading */
+void JS_AddIntrinsicOperators(JSContext *ctx);
+/* enable "use math" */
 void JS_EnableBignumExt(JSContext *ctx, JS_BOOL enable);
 
 JSValue js_string_codePointRange(JSContext *ctx, JSValueConst this_val,
@@ -506,7 +511,28 @@ static js_force_inline JSValue JS_NewCatchOffset(JSContext *ctx, int32_t val)
     return JS_MKVAL(JS_TAG_CATCH_OFFSET, val);
 }
 
-JSValue JS_NewInt64(JSContext *ctx, int64_t v);
+static js_force_inline JSValue JS_NewInt64(JSContext *ctx, int64_t val)
+{
+    JSValue v;
+    if (val == (int32_t)val) {
+        v = JS_NewInt32(ctx, val);
+    } else {
+        v = __JS_NewFloat64(ctx, val);
+    }
+    return v;
+}
+
+static js_force_inline JSValue JS_NewUint32(JSContext *ctx, uint32_t val)
+{
+    JSValue v;
+    if (val <= 0x7fffffff) {
+        v = JS_NewInt32(ctx, val);
+    } else {
+        v = __JS_NewFloat64(ctx, val);
+    }
+    return v;
+}
+
 JSValue JS_NewBigInt64(JSContext *ctx, int64_t v);
 JSValue JS_NewBigUint64(JSContext *ctx, uint64_t v);
 
@@ -531,12 +557,16 @@ static js_force_inline JSValue JS_NewFloat64(JSContext *ctx, double d)
     return v;
 }
 
-JS_BOOL JS_IsNumber(JSValueConst v);
-
-static inline JS_BOOL JS_IsInteger(JSValueConst v)
+static inline JS_BOOL JS_IsNumber(JSValueConst v)
 {
     int tag = JS_VALUE_GET_TAG(v);
-    return tag == JS_TAG_INT || tag == JS_TAG_BIG_INT;
+    return tag == JS_TAG_INT || JS_TAG_IS_FLOAT64(tag);
+}
+
+static inline JS_BOOL JS_IsBigInt(JSContext *ctx, JSValueConst v)
+{
+    int tag = JS_VALUE_GET_TAG(v);
+    return tag == JS_TAG_BIG_INT;
 }
 
 static inline JS_BOOL JS_IsBigFloat(JSValueConst v)
@@ -644,14 +674,17 @@ static inline JSValue JS_DupValueRT(JSRuntime *rt, JSValueConst v)
 
 int JS_ToBool(JSContext *ctx, JSValueConst val); /* return -1 for JS_EXCEPTION */
 int JS_ToInt32(JSContext *ctx, int32_t *pres, JSValueConst val);
-static int inline JS_ToUint32(JSContext *ctx, uint32_t *pres, JSValueConst val)
+static inline int JS_ToUint32(JSContext *ctx, uint32_t *pres, JSValueConst val)
 {
     return JS_ToInt32(ctx, (int32_t*)pres, val);
 }
 int JS_ToInt64(JSContext *ctx, int64_t *pres, JSValueConst val);
 int JS_ToIndex(JSContext *ctx, uint64_t *plen, JSValueConst val);
 int JS_ToFloat64(JSContext *ctx, double *pres, JSValueConst val);
+/* return an exception if 'val' is a Number */
 int JS_ToBigInt64(JSContext *ctx, int64_t *pres, JSValueConst val);
+/* same as JS_ToInt64() but allow BigInt */
+int JS_ToInt64Ext(JSContext *ctx, int64_t *pres, JSValueConst val);
 
 JSValue JS_NewStringLen(JSContext *ctx, const char *str1, size_t len1);
 JSValue JS_NewString(JSContext *ctx, const char *str);

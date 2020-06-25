@@ -119,7 +119,6 @@ DEF(           eval, 5, 1, 1, npop_u16) /* func args... -> ret_val */
 DEF(     apply_eval, 3, 2, 1, u16) /* func array -> ret_eval */
 DEF(         regexp, 1, 2, 1, none) /* create a RegExp object from the pattern and a
                                        bytecode string */
-DEF( get_super_ctor, 1, 1, 1, none)
 DEF(      get_super, 1, 1, 1, none)
 DEF(         import, 1, 1, 1, none) /* dynamic module import */
 
@@ -260,9 +259,7 @@ DEF(             or, 1, 2, 1, none)
 DEF(is_undefined_or_null, 1, 1, 1, none)
 #ifdef CONFIG_BIGNUM
 DEF(      mul_pow10, 1, 2, 1, none)
-DEF(       math_div, 1, 2, 1, none)
 DEF(       math_mod, 1, 2, 1, none)
-DEF(       math_pow, 1, 2, 1, none)
 #endif
 /* must be the last non short and non temporary opcode */
 DEF(            nop, 1, 0, 0, none) 
@@ -271,7 +268,6 @@ DEF(            nop, 1, 0, 0, none)
 
 def(set_arg_valid_upto, 3, 0, 0, arg) /* emitted in phase 1, removed in phase 2 */
 
-def(close_var_object, 1, 0, 0, none) /* emitted in phase 1, removed in phase 2 */
 def(    enter_scope, 3, 0, 0, u16)  /* emitted in phase 1, removed in phase 2 */
 def(    leave_scope, 3, 0, 0, u16)  /* emitted in phase 1, removed in phase 2 */
 

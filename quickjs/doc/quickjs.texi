@@ -20,8 +20,8 @@
 @chapter Introduction
 
 QuickJS is a small and embeddable Javascript engine. It supports the
-upcoming ES2020 specification
-@footnote{@url{https://www.ecma-international.org/ecma-262/10.0}}
+ES2020 specification
+@footnote{@url{https://tc39.es/ecma262/}}
 including modules, asynchronous generators, proxies and BigInt.
 
 It supports mathematical extensions such as big decimal float float
@@ -36,12 +36,12 @@ and operator overloading.
 
 @item Fast interpreter with very low startup time: runs the 69000 tests of the ECMAScript Test Suite@footnote{@url{https://github.com/tc39/test262}} in about 95 seconds on a single core of a desktop PC. The complete life cycle of a runtime instance completes in less than 300 microseconds.
 
-@item Almost complete ES2019 support including modules, asynchronous
+@item Almost complete ES2020 support including modules, asynchronous
 generators and full Annex B support (legacy web compatibility). Many
-features from the upcoming ES2020 specification
+features from the upcoming ES2021 specification
 @footnote{@url{https://tc39.github.io/ecma262/}} are also supported.
 
-@item Passes nearly 100% of the ECMAScript Test Suite tests when selecting the ES2019 features.
+@item Passes nearly 100% of the ECMAScript Test Suite tests when selecting the ES2020 features.
 
 @item Compile Javascript sources to executables with no external dependency.
 
@@ -92,7 +92,7 @@ generates a @code{hello} executable with no external dependency.
 @subsection @code{qjs} interpreter
 
 @verbatim
-usage: qjs [options] [files]
+usage: qjs [options] [file [args]]
 @end verbatim
 
 Options are:
@@ -121,6 +121,10 @@ Load as ES6 script (default=autodetect).
 @item --bignum
 Enable the bignum extensions: BigDecimal object, BigFloat object and
 the @code{"use bigint"} and @code{"use math"} directives.
+
+@item -I file
+@item --include file
+Include an additional file.
 
 @end table
 
@@ -255,16 +259,14 @@ about 100 seconds).
 
 @section Language support
 
-@subsection ES2019 support
+@subsection ES2020 support
 
-The ES2019 specification is almost fully supported including the Annex
+The ES2020 specification is almost fully supported including the Annex
 B (legacy web compatibility) and the Unicode related features.
 
 The following features are not supported yet:
 
 @itemize
-
-@item Realms (although the C API supports different runtimes and contexts)
 
 @item Tail calls@footnote{We believe the current specification of tails calls is too complicated and presents limited practical interests.}
 
@@ -369,44 +371,35 @@ optional properties:
 @item loadScript(filename)
 Evaluate the file @code{filename} as a script (global eval).
 
-@item Error(errno)
+@item loadFile(filename)
+Load the file @code{filename} and return it as a string assuming UTF-8
+encoding. Return @code{null} in case of I/O error.
 
-@code{std.Error} constructor. Error instances contain the field
-@code{errno} (error code) and @code{message} (result of
-@code{std.Error.strerror(errno)}).
+@item open(filename, flags, errorObj = undefined)
+Open a file (wrapper to the libc @code{fopen()}). Return the FILE
+object or @code{null} in case of I/O error. If @code{errorObj} is not
+undefined, set its @code{errno} property to the error code or to 0 if
+no error occured.
 
-The constructor contains the following fields:
+@item popen(command, flags, errorObj = undefined)
+Open a process by creating a pipe (wrapper to the libc
+@code{popen()}). Return the FILE
+object or @code{null} in case of I/O error. If @code{errorObj} is not
+undefined, set its @code{errno} property to the error code or to 0 if
+no error occured.
 
-  @table @code
-  @item EINVAL
-  @item EIO
-  @item EACCES
-  @item EEXIST
-  @item ENOSPC
-  @item ENOSYS
-  @item EBUSY
-  @item ENOENT
-  @item EPERM
-  @item EPIPE
-    Integer value of common errors (additional error codes may be defined).
-  @item strerror(errno)
-    Return a string that describes the error @code{errno}.
-  @end table
-
-@item open(filename, flags)
-Open a file (wrapper to the libc @code{fopen()}). Throws 
-@code{std.Error} in case of I/O error.
-
-@item popen(command, flags)
-Open a process by creating a pipe (wrapper to the libc @code{popen()}). Throws 
-@code{std.Error} in case of I/O error.
-
-@item fdopen(fd, flags)
+@item fdopen(fd, flags, errorObj = undefined)
 Open a file from a file handle (wrapper to the libc
-@code{fdopen()}). Throws @code{std.Error} in case of I/O error.
+@code{fdopen()}). Return the FILE
+object or @code{null} in case of I/O error. If @code{errorObj} is not
+undefined, set its @code{errno} property to the error code or to 0 if
+no error occured.
 
-@item tmpfile()
-Open a temporary file. Throws @code{std.Error} in case of I/O error.
+@item tmpfile(errorObj = undefined)
+Open a temporary file. Return the FILE
+object or @code{null} in case of I/O error. If @code{errorObj} is not
+undefined, set its @code{errno} property to the error code or to 0 if
+no error occured.
 
 @item puts(str)
 Equivalent to @code{std.out.puts(str)}.
@@ -426,6 +419,27 @@ Wrappers to the libc file @code{stdin}, @code{stdout}, @code{stderr}.
 @item SEEK_CUR
 @item SEEK_END
 Constants for seek().
+
+@item Error
+
+Enumeration object containing the integer value of common errors
+(additional error codes may be defined):
+
+  @table @code
+  @item EINVAL
+  @item EIO
+  @item EACCES
+  @item EEXIST
+  @item ENOSPC
+  @item ENOSYS
+  @item EBUSY
+  @item ENOENT
+  @item EPERM
+  @item EPIPE
+  @end table
+
+@item strerror(errno)
+Return a string that describes the error @code{errno}.
 
 @item gc()
 Manually invoke the cycle removal algorithm. The cycle removal
@@ -449,12 +463,14 @@ optional properties:
   to be UTF-8 encoded.
 
   @item full
+  
   Boolean (default = false). If true, return the an object contains
   the properties @code{response} (response content),
   @code{responseHeaders} (headers separated by CRLF), @code{status}
-  (status code). If @code{full} is false, only the response is
-  returned if the status is between 200 and 299. Otherwise an
-  @code{std.Error} exception is raised.
+  (status code). @code{response} is @code{null} is case of protocol or
+  network error. If @code{full} is false, only the response is
+  returned if the status is between 200 and 299. Otherwise @code{null}
+  is returned.
 
   @end table
 
@@ -464,7 +480,7 @@ FILE prototype:
 
 @table @code
 @item close()
-Close the file.
+Close the file. Return 0 if OK or @code{-errno} in case of I/O error.
 @item puts(str)
 Outputs the string with the UTF-8 encoding.
 @item printf(fmt, ...args)
@@ -472,14 +488,21 @@ Formatted printf, same formats as the libc printf.
 @item flush()
 Flush the buffered file.
 @item seek(offset, whence)
-Seek to a give file position (whence is @code{std.SEEK_*}). Throws a
-@code{std.Error} in case of I/O error.
+Seek to a give file position (whence is
+@code{std.SEEK_*}). @code{offset} can be a number or a bigint. Return
+0 if OK or @code{-errno} in case of I/O error.
 @item tell()
 Return the current file position.
+@item tello()
+Return the current file position as a bigint.
 @item eof()
 Return true if end of file.
 @item fileno()
 Return the associated OS handle.
+@item error()
+Return true if there was an error.
+@item clearerr()
+Clear the error indication.
 
 @item read(buffer, position, length)
 Read @code{length} bytes from the file to the ArrayBuffer @code{buffer} at byte
@@ -541,7 +564,9 @@ POSIX open flags.
 Close the file handle @code{fd}.
 
 @item seek(fd, offset, whence)
-Seek in the file. Use @code{std.SEEK_*} for @code{whence}.
+Seek in the file. Use @code{std.SEEK_*} for
+@code{whence}. @code{offset} is either a number or a bigint. If
+@code{offset} is a bigint, a bigint is returned too.
 
 @item read(fd, buffer, offset, length)
 Read @code{length} bytes from the file handle @code{fd} to the
@@ -563,10 +588,10 @@ Return the TTY size as @code{[width, height]} or @code{null} if not available.
 Set the TTY in raw mode.
 
 @item remove(filename)
-Remove a file. Return 0 if OK or < 0 if error.
+Remove a file. Return 0 if OK or @code{-errno}.
 
 @item rename(oldname, newname)
-Rename a file. Return 0 if OK or < 0 if error.
+Rename a file. Return 0 if OK or @code{-errno}.
 
 @item realpath(path)
 Return @code{[str, err]} where @code{str} is the canonicalized absolute
@@ -576,8 +601,11 @@ pathname of @code{path} and @code{err} the error code.
 Return @code{[str, err]} where @code{str} is the current working directory
 and @code{err} the error code.
 
+@item chdir(path)
+Change the current directory. Return 0 if OK or @code{-errno}.
+
 @item mkdir(path, mode = 0o777)
-Create a directory at @code{path}. Return the error code.
+Create a directory at @code{path}. Return 0 if OK or @code{-errno}.
 
 @item stat(path)
 @item lstat(path)
@@ -606,10 +634,10 @@ Constants to interpret the @code{mode} property returned by
 
 @item utimes(path, atime, mtime)
 Change the access and modification times of the file @code{path}. The
-times are specified in milliseconds since 1970.
+times are specified in milliseconds since 1970. Return 0 if OK or @code{-errno}.
 
 @item symlink(target, linkpath)
-Create a link at @code{linkpath} containing the string @code{target}.
+Create a link at @code{linkpath} containing the string @code{target}. Return 0 if OK or @code{-errno}.
 
 @item readlink(path)
 Return @code{[str, err]} where @code{str} is the link target and @code{err}
@@ -674,11 +702,23 @@ object containing optional parameters:
   @item stdout
   @item stderr
   If present, set the handle in the child for stdin, stdout or stderr.
- 
+
+  @item env
+  Object. If present, set the process environment from the object
+  key-value pairs. Otherwise use the same environment as the current
+  process.
+
+  @item uid
+  Integer. If present, the process uid with @code{setuid}.
+
+  @item gid 
+  Integer. If present, the process gid with @code{setgid}.
+
   @end table
 
 @item waitpid(pid, options)
-@code{waitpid} Unix system call. Return the array @code{[ret, status]}.
+@code{waitpid} Unix system call. Return the array @code{[ret,
+status]}. @code{ret} contains @code{-errno} in case of error.
 
 @item WNOHANG
 Constant for the @code{options} argument of @code{waitpid}.
