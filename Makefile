@@ -52,7 +52,7 @@ $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 $(BUILD_WRAPPER)/symbols.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 	ts-node generate.ts symbols $@
 
-ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts
+ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
 	ts-node generate.ts ffi $@
 
 ### Executables
