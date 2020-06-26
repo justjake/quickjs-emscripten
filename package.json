@@ -2,6 +2,7 @@
   "name": "quickjs-emscripten",
   "version": "0.3.1",
   "main": "dist/quickjs.js",
+  "browser": "dist-web/quickjs.js",
   "license": "MIT",
   "repository": {
     "type": "git",
