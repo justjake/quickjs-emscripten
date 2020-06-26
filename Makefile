@@ -32,6 +32,10 @@ else
 	CFLAGS_EMCC+=--closure 1
 endif
 
+ifdef ENVIRONMENT
+	CFLAGS_EMCC+=-s ENVIRONMENT=$(ENVIRONMENT)
+endif
+
 wasm: $(BUILD_DIR) ts/quickjs-emscripten-module.js  ts/ffi.ts
 native: $(BUILD_WRAPPER)/native/test.exe
 all: wasm native
