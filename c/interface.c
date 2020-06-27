@@ -213,6 +213,10 @@ JSValue *QTS_NewObjectProto(JSContext *ctx, JSValueConst *proto) {
   return jsvalue_to_heap(JS_NewObjectProto(ctx, *proto));
 }
 
+JSValue *QTS_NewArray(JSContext *ctx) {
+  return jsvalue_to_heap(JS_NewArray(ctx));
+}
+
 JSValue *QTS_NewFloat64(JSContext *ctx, double num) {
   return jsvalue_to_heap(JS_NewFloat64(ctx, num));
 }

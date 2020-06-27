@@ -163,6 +163,35 @@ describe('QuickJSVm', async () => {
     })
   })
 
+  describe('arrays', () => {
+    it('can set and get entries by native number', () => {
+      const array = vm.newArray()
+      const val1 = vm.newNumber(101)
+      vm.setProp(array, 0, val1)
+
+      const val2 = vm.getProp(array, 0)
+      assert.strictEqual(vm.getNumber(val2), 101)
+
+      array.dispose()
+      val1.dispose()
+      val2.dispose()
+    })
+
+    it('adding items sets array.length', () => {
+      const vals = [vm.newNumber(0), vm.newNumber(1), vm.newString('cow')]
+      const array = vm.newArray()
+      for (let i = 0; i < vals.length; i++) {
+        vm.setProp(array, i, vals[i])
+      }
+
+      const length = vm.getProp(array, 'length')
+      assert.strictEqual(vm.getNumber(length), 3)
+
+      array.dispose()
+      vals.forEach(val => val.dispose())
+    })
+  })
+
   describe('.unwrapResult', () => {
     it('successful result: returns the value', () => {
       const handle = vm.newString('OK!')

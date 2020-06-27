@@ -48,6 +48,8 @@ type CToHostInterruptImplementation = (rt: JSRuntimePointer) => 0 | 1
  */
 export type ShouldInterruptHandler = (vm: QuickJSVm) => boolean | undefined
 
+export type QuickJSPropertyKey = number | string | QuickJSHandle
+
 /**
  * A lifetime prevents access to a value after the lifetime has been
  * [[dispose]]ed.
@@ -128,7 +130,7 @@ export class StaticLifetime<T, Owner = never> extends Lifetime<T, Owner> {
  *
  * Use [[QuickJS.createVm]] to create a new QuickJSVm.
  *
- * Create QuickJS values with methods like [[newNumber]], [[newString]], [[newObject]], and [[newFunction]].
+ * Create QuickJS values with methods like [[newNumber]], [[newString]], [[newArray]], [[newObject]], and [[newFunction]].
  *
  * Call [[setProp]] or [[defineProp]] to customize objects. Use those methods with [[global]] to expose the
  * values you create to the interior of the interpreter, so they can be used in [[evalCode]].
@@ -296,6 +298,15 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   /**
+   * `[]`.
+   * Create a new QuickJS [array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array).
+   */
+  newArray(): QuickJSHandle {
+    const ptr = this.ffi.QTS_NewArray(this.ctx.value)
+    return this.heapValueHandle(ptr)
+  }
+
+  /**
    * Convert a Javascript function into a QuickJS function value.
    * See [[VmFunctionImplementation]] for more details.
    *
@@ -326,16 +337,16 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * @param key - The property may be specified as a JSValue handle, or as a
    * Javascript string (which will be converted automatically).
    */
-  getProp(handle: QuickJSHandle, key: string | QuickJSHandle): QuickJSHandle {
+  getProp(handle: QuickJSHandle, key: QuickJSPropertyKey): QuickJSHandle {
     this.assertOwned(handle)
-    const quickJSKey = typeof key === 'string' ? this.newString(key) : key
-
+    const quickJSKey = this.borrowPropertyKey(key)
     const ptr = this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value)
     const result = this.heapValueHandle(ptr)
-    if (typeof key === 'string') {
-      // we allocated a string
-      quickJSKey.dispose()
-    }
+
+    // free newly allocated value if key was a string or number. No-op if string was already
+    // a QuickJS handle.
+    quickJSKey.dispose()
+
     return result
   }
 
@@ -348,33 +359,30 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * properties.
    *
    * @param key - The property may be specified as a JSValue handle, or as a
-   * Javascript string (which will be converted automatically).
+   * Javascript string or number (which will be converted automatically to a JSValue).
    */
-  setProp(handle: QuickJSHandle, key: string | QuickJSHandle, value: QuickJSHandle) {
+  setProp(handle: QuickJSHandle, key: QuickJSPropertyKey, value: QuickJSHandle) {
     this.assertOwned(handle)
-    const quickJSKey = typeof key === 'string' ? this.newString(key) : key
-
+    const quickJSKey = this.borrowPropertyKey(key)
     this.ffi.QTS_SetProp(this.ctx.value, handle.value, quickJSKey.value, value.value)
-
-    if (typeof key === 'string') {
-      // we allocated a string
-      quickJSKey.dispose()
-    }
+    // free newly allocated value if key was a string or number. No-op if string was already
+    // a QuickJS handle.
+    quickJSKey.dispose()
   }
 
   /**
    * [`Object.defineProperty(handle, key, descriptor)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty).
    *
    * @param key - The property may be specified as a JSValue handle, or as a
-   * Javascript string (which will be converted automatically).
+   * Javascript string or number (which will be converted automatically to a JSValue).
    */
   defineProp(
     handle: QuickJSHandle,
-    key: string | QuickJSHandle,
+    key: QuickJSPropertyKey,
     descriptor: VmPropertyDescriptor<QuickJSHandle>
   ): void {
     this.assertOwned(handle)
-    const quickJSKey = typeof key === 'string' ? this.newString(key) : key
+    const quickJSKey = this.borrowPropertyKey(key)
 
     const value = descriptor.value || this.undefined
     const configurable = Boolean(descriptor.configurable)
@@ -399,10 +407,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
       hasValue
     )
 
-    if (typeof key === 'string') {
-      // we allocated a string
-      quickJSKey.dispose()
-    }
+    // free newly allocated value if key was a string or number. No-op if string was already
+    // a QuickJS handle.
+    quickJSKey.dispose()
 
     // dispose created functions; or no-op if these are this.undefined
     get.dispose()
@@ -645,6 +652,20 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
   private heapValueHandle(ptr: JSValuePointer): JSValue {
     return new Lifetime(ptr, this.freeJSValue, this)
+  }
+
+  private borrowPropertyKey(key: QuickJSPropertyKey): QuickJSHandle {
+    if (typeof key === 'number') {
+      return this.newNumber(key)
+    }
+
+    if (typeof key === 'string') {
+      return this.newString(key)
+    }
+
+    // key is alerady a JSValue, but we're borrowing it. Return a static handle
+    // for intenal use only.
+    return new StaticLifetime(key.value as JSValueConstPointer, undefined, this)
   }
 
   private toPointerArray(handleArray: QuickJSHandle[]): Lifetime<JSValueConstPointerPointer> {
