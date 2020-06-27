@@ -36,6 +36,18 @@ describe('QuickJSVm', async () => {
     it('can round-trip undefined', () => {
       assert.strictEqual(vm.dump(vm.undefined), undefined)
     })
+
+    it('can round-trip true', () => {
+      assert.strictEqual(vm.dump(vm.true), true)
+    })
+
+    it('can round-trip false', () => {
+      assert.strictEqual(vm.dump(vm.false), false)
+    })
+
+    it('can round-trip null', () => {
+      assert.strictEqual(vm.dump(vm.null), null)
+    })
   })
 
   describe('functions', () => {

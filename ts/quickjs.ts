@@ -140,6 +140,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private readonly module: typeof QuickJSModule
   private readonly ffi: QuickJSFFI
   private _undefined: QuickJSHandle | undefined = undefined
+  private _null: QuickJSHandle | undefined = undefined
+  private _false: QuickJSHandle | undefined = undefined
+  private _true: QuickJSHandle | undefined = undefined
   private _global: QuickJSHandle | undefined = undefined
   private readonly lifetimes: Lifetime<any, any>[] = []
 
@@ -169,6 +172,45 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     // Undefined is a constant, immutable value in QuickJS.
     const ptr = this.ffi.QTS_GetUndefined()
     return (this._undefined = new StaticLifetime(ptr))
+  }
+
+  /**
+   * [`null`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null).
+   */
+  get null(): QuickJSHandle {
+    if (this._null) {
+      return this._null
+    }
+
+    // Null is a constant, immutable value in QuickJS.
+    const ptr = this.ffi.QTS_GetNull()
+    return (this._null = new StaticLifetime(ptr))
+  }
+
+  /**
+   * [`true`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/true).
+   */
+  get true(): QuickJSHandle {
+    if (this._true) {
+      return this._true
+    }
+
+    // True is a constant, immutable value in QuickJS.
+    const ptr = this.ffi.QTS_GetTrue()
+    return (this._true = new StaticLifetime(ptr))
+  }
+
+  /**
+   * [`false`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/false).
+   */
+  get false(): QuickJSHandle {
+    if (this._false) {
+      return this._false
+    }
+
+    // False is a constant, immutable value in QuickJS.
+    const ptr = this.ffi.QTS_GetFalse()
+    return (this._false = new StaticLifetime(ptr))
   }
 
   /**

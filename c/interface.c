@@ -161,6 +161,21 @@ JSValueConst *QTS_GetUndefined() {
   return &QTS_Undefined;
 }
 
+JSValueConst QTS_Null = JS_NULL;
+JSValueConst *QTS_GetNull() {
+  return &QTS_Null;
+}
+
+JSValueConst QTS_False = JS_FALSE;
+JSValueConst *QTS_GetFalse() {
+  return &QTS_False;
+}
+
+JSValueConst QTS_True = JS_TRUE;
+JSValueConst *QTS_GetTrue() {
+  return &QTS_True;
+}
+
 /**
  * Standard FFI functions
  */
