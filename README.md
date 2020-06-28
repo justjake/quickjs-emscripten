@@ -48,7 +48,7 @@ See [QuickJS.evalCode](https://github.com/justjake/quickjs-emscripten/blob/maste
 ```typescript
 import { getQuickJS, shouldInterruptAfterDeadline } from 'quickjs-emscripten'
 
-getQuickJS.then(QuickJS => {
+getQuickJS().then(QuickJS => {
   const result = QuickJS.evalCode('1 + 1', {
     shouldInterrupt: shouldInterruptAfterDeadline(Date.now() + 1000),
   })

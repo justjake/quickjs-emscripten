@@ -3,6 +3,16 @@
   "version": "0.4.0",
   "main": "dist/quickjs.js",
   "license": "MIT",
+  "keywords": [
+    "eval",
+    "quickjs",
+    "vm",
+    "interpreter",
+    "runtime",
+    "safe",
+    "emscripten",
+    "wasm"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/justjake/quickjs-emscripten"
