@@ -25,7 +25,6 @@ jobs:
         # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
         node-version: 12.x 
         
-        
     - name: Install Yarn
       run: 'npm install -g yarn@1.22.4'
     
@@ -36,10 +35,16 @@ jobs:
       run: yarn install --frozen-lockfile --ignore-scripts
 
     - name: Build
-      run: yarn build
+      run: yarn build && yarn tarball
     
     - name: Test
       run: yarn run mocha
     
-    - name: Smoketest
-      run: yarn run tarball && yarn smoketest
+    - name: Smoketest NodeJS/Typescript
+      run: yarn smoketest
+    
+    - name: Smoketest create-react-app/Typescript
+      run: |
+        cd examples/website
+        yarn install
+        yarn build
