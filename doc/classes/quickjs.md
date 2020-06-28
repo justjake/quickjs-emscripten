@@ -34,7 +34,7 @@ and return the result as a native Javascript value.
 
 \+ **new QuickJS**(): *[QuickJS](quickjs.md)*
 
-*Defined in [quickjs.ts:714](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L714)*
+*Defined in [quickjs.ts:781](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L781)*
 
 **Returns:** *[QuickJS](quickjs.md)*
 
@@ -44,7 +44,7 @@ and return the result as a native Javascript value.
 
 ▸ **createVm**(): *[QuickJSVm](quickjsvm.md)*
 
-*Defined in [quickjs.ts:765](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L765)*
+*Defined in [quickjs.ts:832](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L832)*
 
 Create a QuickJS VM.
 
@@ -59,7 +59,7 @@ ___
 
 ▸ **evalCode**(`code`: string, `options`: [QuickJSEvalOptions](../interfaces/quickjsevaloptions.md)): *unknown*
 
-*Defined in [quickjs.ts:803](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L803)*
+*Defined in [quickjs.ts:870](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L870)*
 
 One-off evaluate code without needing to create a VM.
 
