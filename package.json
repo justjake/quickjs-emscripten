@@ -1,6 +1,6 @@
 {
   "name": "quickjs-emscripten",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "main": "dist/quickjs.js",
   "license": "MIT",
   "repository": {
@@ -30,7 +30,7 @@
     "@types/emscripten": "^1.38.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^13.1.4",
-    "mocha": "^7.0.0",
+    "mocha": "7.2.0",
     "prettier": "^1.19.1",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.5.4",
