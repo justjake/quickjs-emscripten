@@ -24,7 +24,7 @@
     "prettier": "prettier --write ./*.json ./**/*.ts ./*.js ./*.md",
     "run-n": "yarn make-debug && ./build/wrapper/native/test.exe",
     "tarball": "yarn pack --filename build/quickjs-emscripten.tgz",
-    "smoketest": "cd ../quickjs-emscripten-examples && yarn add ../quickjs-emscripten/build/quickjs-emscripten.tgz && tsc --lib ES2015,dom index.ts && node index.js"
+    "smoketest": "cd examples/typescript-smoketest && yarn add ../../build/quickjs-emscripten.tgz && tsc --lib ES2015,dom index.ts && node index.js"
   },
   "devDependencies": {
     "@types/emscripten": "^1.38.0",
