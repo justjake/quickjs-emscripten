@@ -3,9 +3,9 @@
 Javascript/Typescript bindings for [QuickJS, a modern Javascript interpreter written in
 C by Fabrice Bellard](https://bellard.org/quickjs/).
 
-* Safely evaluate untrusted Javascript (up to ES2020).
-* Create and manipulate values inside the QuickJS runtime.
-* Expose host functions to the QuickJS runtime.
+- Safely evaluate untrusted Javascript (up to ES2020).
+- Create and manipulate values inside the QuickJS runtime.
+- Expose host functions to the QuickJS runtime.
 
 ```typescript
 import { getQuickJS } from 'quickjs-emscripten'
@@ -50,7 +50,7 @@ import { getQuickJS, shouldInterruptAfterDeadline } from 'quickjs-emscripten'
 
 getQuickJS.then(QuickJS => {
   const result = QuickJS.evalCode('1 + 1', {
-    shouldInterrupt: shouldInterruptAfterDeadline(Date.now() + 1000)
+    shouldInterrupt: shouldInterruptAfterDeadline(Date.now() + 1000),
   })
   console.log(result)
 })
@@ -79,8 +79,8 @@ console.log('vm result:', vm.getNumber(nextId), 'native state:', state)
 
 ### More Documentation
 
-* [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md)
-* [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
+- [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md)
+- [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
 
 ## Background
 
@@ -98,7 +98,6 @@ of development.
 There [are tests](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts), but I haven't built anything
 on top of this. Please use this project carefully in a production
 environment.
-
 
 Ideas for future work:
 
