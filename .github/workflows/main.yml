@@ -41,10 +41,7 @@ jobs:
       run: yarn run mocha
     
     - name: Smoketest NodeJS/Typescript
-      run: yarn smoketest
+      run: yarn smoketest-node
     
     - name: Smoketest create-react-app/Typescript
-      run: |
-        cd examples/website
-        yarn install
-        yarn build
+      run: yarn smoketest-cra
