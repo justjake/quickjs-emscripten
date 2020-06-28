@@ -91,6 +91,15 @@ export class QuickJSFFI {
   QTS_GetUndefined: () => JSValueConstPointer =
     this.module.cwrap("QTS_GetUndefined", "number", [])
 
+  QTS_GetNull: () => JSValueConstPointer =
+    this.module.cwrap("QTS_GetNull", "number", [])
+
+  QTS_GetFalse: () => JSValueConstPointer =
+    this.module.cwrap("QTS_GetFalse", "number", [])
+
+  QTS_GetTrue: () => JSValueConstPointer =
+    this.module.cwrap("QTS_GetTrue", "number", [])
+
   QTS_NewRuntime: () => JSRuntimePointer =
     this.module.cwrap("QTS_NewRuntime", "number", [])
 
@@ -114,6 +123,9 @@ export class QuickJSFFI {
 
   QTS_NewObjectProto: (ctx: JSContextPointer, proto: JSValuePointer | JSValueConstPointer) => JSValuePointer =
     this.module.cwrap("QTS_NewObjectProto", "number", ["number","number"])
+
+  QTS_NewArray: (ctx: JSContextPointer) => JSValuePointer =
+    this.module.cwrap("QTS_NewArray", "number", ["number"])
 
   QTS_NewFloat64: (ctx: JSContextPointer, num: number) => JSValuePointer =
     this.module.cwrap("QTS_NewFloat64", "number", ["number","number"])

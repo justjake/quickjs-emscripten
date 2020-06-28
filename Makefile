@@ -22,6 +22,7 @@ CFLAGS_EMCC+=-s EXPORT_NAME=QuickJSRaw
 CFLAGS_EMCC+=-s INVOKE_RUN=0
 CFLAGS_EMCC+=-s ALLOW_MEMORY_GROWTH=1
 CFLAGS_EMCC+=-s ALLOW_TABLE_GROWTH=1
+CFLAGS_EMCC+=-s FILESYSTEM=0
 ifdef DEBUG
 	CFLAGS=-O0
 	CFLAGS_EMCC+=-g4
@@ -83,8 +84,8 @@ $(BUILD_QUICKJS)/native/%.o: $(QUICKJS_ROOT)/%.c | $(BUILD_ROOT)
 	$(CC) $(CFLAGS) $(QUICKJS_DEFINES) -c -o $@ $<
 
 clean:
-	git checkout -- ./ts/ffi.ts
-	git checkout -- ./ts/quickjs-emscripten-module.js
+	rm -rfv ./ts/ffi.ts
+	rm -rfv ./ts/quickjs-emscripten-module.js
 	rm -rf ./ts/quickjs-emscripten-module.map
 	rm -rf ./ts/quickjs-emscripten-module.wasm
 	rm -rf ./ts/quickjs-emscripten-module.wasm.map
