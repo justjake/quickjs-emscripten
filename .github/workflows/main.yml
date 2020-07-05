@@ -25,6 +25,11 @@ jobs:
         # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
         node-version: 12.x
 
+    - name: Setup Emscripten tools
+      uses: lovasoa/setup-emscripten@v1
+      with:
+        emscripten-version: '1.39.18'
+
     - name: Install Yarn
       run: 'npm install -g yarn@1.22.4'
 
@@ -34,17 +39,20 @@ jobs:
     - name: Install dependencies
       run: yarn install --frozen-lockfile --ignore-scripts
 
-    - name: Build
-      run: yarn build && yarn tarball
-
-    - name: Test
-      run: yarn run mocha
+    - name: Test debug
+      run: make clean && yarn test
 
     - name: Prettier
       run: yarn run prettier-check
 
-    - name: Smoketest NodeJS/Typescript
+    - name: Build release
+      run: yarn make-release && yarn build && yarn tarball
+
+    - name: Test release
+      run: yarn run mocha
+
+    - name: Test release with NodeJS/Typescript example
       run: yarn smoketest-node
 
-    - name: Smoketest create-react-app/Typescript
+    - name: Test release with create-react-app/Typescript example
       run: yarn smoketest-cra
