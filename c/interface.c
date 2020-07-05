@@ -238,6 +238,14 @@ char* QTS_GetString(JSContext *ctx, JSValueConst *value) {
   return result;
 }
 
+JSValue *QTS_ExecutePendingJob(JSRuntime *rt) {
+  JSContext *pctx;
+  int ret = JS_ExecutePendingJob(rt, &pctx);
+  if (ret == -1) {
+    return jsvalue_to_heap(JS_GetException(pctx));
+  }
+  return jsvalue_to_heap(JS_NewFloat64(pctx, ret));
+}
 
 JSValue *QTS_GetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name) {
   JSAtom prop_atom = JS_ValueToAtom(ctx, *prop_name);

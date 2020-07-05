@@ -475,6 +475,20 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return { value: this.heapValueHandle(resultPtr) }
   }
 
+  runEventloop() {
+    let pendingMicrotasks = 1
+    while (pendingMicrotasks === 1) {
+      const ret = this.heapValueHandle(this.ffi.QTS_ExecutePendingJob(this.rt.value))
+      const typeOfRet = this.typeof(ret)
+      if (typeOfRet === 'number') {
+        pendingMicrotasks = this.getNumber(ret)
+      } else {
+        return ret
+      }
+    }
+    return pendingMicrotasks;
+  }
+
   // customizations
 
   /**
