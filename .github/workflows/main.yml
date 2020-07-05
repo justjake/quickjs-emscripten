@@ -28,7 +28,7 @@ jobs:
     - name: Setup Emscripten tools
       uses: lovasoa/setup-emscripten@v1
       with:
-        emscripten-version: '1.39.19'
+        emscripten-version: '1.39.18'
 
     - name: Install Yarn
       run: 'npm install -g yarn@1.22.4'
