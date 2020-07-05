@@ -23,11 +23,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
-        node-version: 12.x 
-        
+        node-version: 12.x
+
     - name: Install Yarn
       run: 'npm install -g yarn@1.22.4'
-    
+
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
@@ -36,12 +36,15 @@ jobs:
 
     - name: Build
       run: yarn build && yarn tarball
-    
+
     - name: Test
       run: yarn run mocha
-    
+
+    - name: Prettier
+      run: yarn run prettier-check
+
     - name: Smoketest NodeJS/Typescript
       run: yarn smoketest-node
-    
+
     - name: Smoketest create-react-app/Typescript
       run: yarn smoketest-cra
