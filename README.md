@@ -1,7 +1,7 @@
 # quickjs-emscripten
 
 Javascript/Typescript bindings for [QuickJS, a modern Javascript interpreter written in
-C by Fabrice Bellard](https://bellard.org/quickjs/).
+C by Fabrice Bellard](https://bellard.org/quickjs/) compiled to WebAssembly.
 
 - Safely evaluate untrusted Javascript (up to ES2020).
 - Create and manipulate values inside the QuickJS runtime.
