@@ -15,20 +15,29 @@ import {
   VmCallResult,
   VmFunctionImplementation,
 } from './vm-interface'
+import { QuickJSEmscriptenModule } from './emscripten-types'
 
-let isReady = false
-
-const QuickJSModule = QuickJSModuleLoader()
+let QuickJSModule: QuickJSEmscriptenModule | undefined = undefined
 
 /**
  * This promise will be fufilled when the QuickJS emscripten module has initialized
  * and the {@link QuickJS} instance can be created.
  */
-const ready = new Promise(resolve => {
-  QuickJSModule.onRuntimeInitialized = resolve
-}).then(() => {
-  isReady = true
+const ready = QuickJSModuleLoader().then(loadedModule => {
+  QuickJSModule = loadedModule
 })
+
+/**
+ * @throws if not ready
+ */
+function getQuickJSEmscriptenModule(): QuickJSEmscriptenModule {
+  if (!QuickJSModule) {
+    throw new Error(
+      'QuickJS WASM module not initialized. Either wait for `ready` or use getQuickJS()'
+    )
+  }
+  return QuickJSModule
+}
 
 type CToHostCallbackFunctionImplementation = (
   ctx: JSContextPointer,
@@ -139,7 +148,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private readonly ctx: Lifetime<JSContextPointer>
   private readonly rt: Lifetime<JSRuntimePointer>
 
-  private readonly module: typeof QuickJSModule
+  private readonly module: ReturnType<typeof getQuickJSEmscriptenModule>
   private readonly ffi: QuickJSFFI
   private _undefined: QuickJSHandle | undefined = undefined
   private _null: QuickJSHandle | undefined = undefined
@@ -152,7 +161,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * Use {@link QuickJS.createVm} to create a QuickJSVm instance.
    */
   constructor(args: {
-    module: typeof QuickJSModule
+    module: ReturnType<typeof getQuickJSEmscriptenModule>
     ffi: QuickJSFFI
     ctx: Lifetime<JSContextPointer>
     rt: Lifetime<JSRuntimePointer>
@@ -775,17 +784,13 @@ export interface QuickJSEvalOptions {
  * and return the result as a native Javascript value.
  */
 export class QuickJS {
-  private ffi = new QuickJSFFI(QuickJSModule)
+  private ffi = new QuickJSFFI(getQuickJSEmscriptenModule())
   private vmMap = new Map<JSContextPointer, QuickJSVm>()
   private rtMap = new Map<JSRuntimePointer, QuickJSVm>()
-  private module = QuickJSModule
+  private module = getQuickJSEmscriptenModule()
 
   constructor() {
-    if (!isReady) {
-      throw new Error(
-        'QuickJS WASM module not initialized. Either wait for `ready` or use getQuickJS()'
-      )
-    }
+    getQuickJSEmscriptenModule()
 
     if (singleton) {
       throw new Error(

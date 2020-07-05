@@ -38,7 +38,6 @@ declare namespace Emscripten {
  * QuickJS.
  */
 export interface QuickJSEmscriptenModule {
-  onRuntimeInitialized: { (): void }
   addFunction(fn: Function, type: string): number
   removeFunction(pointer: number): void
   _malloc(size: number): number
