@@ -267,11 +267,13 @@ describe('QuickJSVm', async () => {
       vm.setProp(vm.global, 'nextId', fnHandle)
       fnHandle.dispose()
 
-      const result = vm.unwrapResult(vm.evalCode(`(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`))
+      const result = vm.unwrapResult(
+        vm.evalCode(`(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`)
+      )
       assert.equal(i, 0)
       vm.runEventloop()
       assert.equal(i, 3)
-      assert.equal(vm.getNumber(result),1)
+      assert.equal(vm.getNumber(result), 1)
     })
   })
 
