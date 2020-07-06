@@ -247,7 +247,7 @@ char* QTS_GetString(JSContext *ctx, JSValueConst *value) {
 
   Returns the executed number of jobs or the exception encountered
 */
-JSValue *QTS_ExecutePendingJob(JSRuntime *rt, double maxJobsToExecute) {
+JSValue *QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute) {
   JSContext *pctx;
   int status = 1;
   int executed = 0;
