@@ -4,10 +4,13 @@ import { QuickJSEmscriptenModule } from './emscripten-types'
  *  and our FFI support functions [c/interface.c](../c/interface.c).
  *
  * Note that emscripten modules returned by a `MODULARIZE=1` emscripten build
- * (like this one). load asynchronously. You must wait until the module is
- * ready to use it.
+ * (like this one). load asynchronously.
  *
- * See
+ * With emcc < 1.39.16, this returned an asynchronously initialized QuickJSEmscriptenModule object.
+ * With emcc >= 1.39.17, this now returns a Promise<QuickJSEmscriptenModule> that resolves once
+ * the module is initialized.
+ *
+ * See https://github.com/justjake/quickjs-emscripten/issues/8 for more info.
  */
-declare function ModuleLoader(): QuickJSEmscriptenModule
+declare function ModuleLoader(): Promise<QuickJSEmscriptenModule>
 export default ModuleLoader
