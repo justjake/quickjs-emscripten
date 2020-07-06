@@ -238,13 +238,27 @@ char* QTS_GetString(JSContext *ctx, JSValueConst *value) {
   return result;
 }
 
-JSValue *QTS_ExecutePendingJob(JSRuntime *rt) {
+/* 
+  runs pending jobs (Promises/async functions) until it encounters
+  an exception or it executed the passed maxJobsToExecute jobs.
+  
+  Passing a negative value will run the loop until there are no more
+  pending jobs or an exception happened
+
+  Returns the executed number of jobs or the exception encountered
+*/
+JSValue *QTS_ExecutePendingJob(JSRuntime *rt, double maxJobsToExecute) {
   JSContext *pctx;
-  int ret = JS_ExecutePendingJob(rt, &pctx);
-  if (ret == -1) {
-    return jsvalue_to_heap(JS_GetException(pctx));
+  int status = 1;
+  int executed = 0;
+  for (;executed != maxJobsToExecute && status == 1; executed++) {
+    status = JS_ExecutePendingJob(rt, &pctx);
   }
-  return jsvalue_to_heap(JS_NewFloat64(pctx, ret));
+  if (status == -1) {
+    return jsvalue_to_heap(JS_GetException(pctx));
+  } else {
+    return jsvalue_to_heap(JS_NewFloat64(pctx, executed));
+  }
 }
 
 JSValue *QTS_GetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name) {

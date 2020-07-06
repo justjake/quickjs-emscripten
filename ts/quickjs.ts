@@ -13,6 +13,7 @@ import {
   LowLevelJavascriptVm,
   VmPropertyDescriptor,
   VmCallResult,
+  VmEventLoopResult,
   VmFunctionImplementation,
 } from './vm-interface'
 
@@ -475,18 +476,28 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return { value: this.heapValueHandle(resultPtr) }
   }
 
-  runEventloop() {
-    let pendingMicrotasks = 1
-    while (pendingMicrotasks === 1) {
-      const ret = this.heapValueHandle(this.ffi.QTS_ExecutePendingJob(this.rt.value))
-      const typeOfRet = this.typeof(ret)
-      if (typeOfRet === 'number') {
-        pendingMicrotasks = this.getNumber(ret)
-      } else {
-        return ret
-      }
+  /**
+   * runEventloop(maxJobsToExecute?: number) Runs pendingJobs on the VM
+   * 
+   * Promises and async functions create pendingJobs these do not execute
+   * immediately and need to triggered to run.
+   * You can pass an optional maxJobsToExecute param if you wish to run only
+   * some of the pendingJobs, by default all pendingJobs are executed until
+   * either the queue is exausted or the runtime encounters an exception
+   * 
+   * return value for success is the number of executed jobs
+   * for error the exception that stopped the execution
+   */
+  runEventloop(maxJobsToExecute?: number): VmEventLoopResult<QuickJSHandle> {
+    const resultValue = this.heapValueHandle(this.ffi.QTS_ExecutePendingJob(this.rt.value, maxJobsToExecute || -1))
+    const typeOfRet = this.typeof(resultValue)
+    if (typeOfRet === 'number') {
+      const executedJobs = this.getNumber(resultValue)
+      resultValue.dispose()
+      return { value: executedJobs }
+    } else {
+      return { error: resultValue }
     }
-    return pendingMicrotasks;
   }
 
   // customizations
