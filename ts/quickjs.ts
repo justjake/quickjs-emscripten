@@ -487,18 +487,20 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
   /**
    * runEventloop(maxJobsToExecute?: number) Runs pendingJobs on the VM
-   * 
+   *
    * Promises and async functions create pendingJobs these do not execute
    * immediately and need to triggered to run.
    * You can pass an optional maxJobsToExecute param if you wish to run only
    * some of the pendingJobs, by default all pendingJobs are executed until
    * either the queue is exausted or the runtime encounters an exception
-   * 
+   *
    * return value for success is the number of executed jobs
    * for error the exception that stopped the execution
    */
   runEventloop(maxJobsToExecute?: number): VmEventLoopResult<QuickJSHandle> {
-    const resultValue = this.heapValueHandle(this.ffi.QTS_ExecutePendingJob(this.rt.value, maxJobsToExecute || -1))
+    const resultValue = this.heapValueHandle(
+      this.ffi.QTS_ExecutePendingJob(this.rt.value, maxJobsToExecute || -1)
+    )
     const typeOfRet = this.typeof(resultValue)
     if (typeOfRet === 'number') {
       const executedJobs = this.getNumber(resultValue)
