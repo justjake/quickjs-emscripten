@@ -964,9 +964,7 @@ export async function getQuickJS(): Promise<QuickJS> {
  */
 export function getQuickJSImmediate(): QuickJS {
   if (!singleton) {
-    throw new Error(
-      'QuickJS not initialized. Either wait for `ready` or use getQuickJS()'
-    )
+    throw new Error('QuickJS not initialized. Either wait for `ready` or use getQuickJS()')
   }
   return singleton
 }
