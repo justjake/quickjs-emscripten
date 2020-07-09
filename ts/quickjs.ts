@@ -962,7 +962,7 @@ export async function getQuickJS(): Promise<QuickJS> {
  * This is the top-level entrypoint for the quickjs-emscripten library.
  * Get the root QuickJS API.
  */
-export async function getQuickJSImmediate(): QuickJS {
+export function getQuickJSImmediate(): QuickJS {
   if (!singleton) {
     throw new Error(
       'QuickJS not initialized. Either wait for `ready` or use getQuickJS()'
