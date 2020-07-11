@@ -16,7 +16,7 @@ export type SuccessOrFail<S, F> =
  * `{ value: VmHandle } | { error: VmHandle }`.
  */
 export type VmCallResult<VmHandle> = SuccessOrFail<VmHandle, VmHandle>
-
+export type VmEventLoopResult<VmHandle> = SuccessOrFail<number, VmHandle>
 /**
  * A VmFunctionImplementation takes handles as arguments.
  * It should return a handle, or be void.

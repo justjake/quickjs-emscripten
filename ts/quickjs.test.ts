@@ -258,6 +258,25 @@ describe('QuickJSVm', async () => {
     })
   })
 
+  describe('.runEventloop', () => {
+    it('promises can run', () => {
+      let i = 0
+      const fnHandle = vm.newFunction('nextId', () => {
+        return vm.newNumber(++i)
+      })
+      vm.setProp(vm.global, 'nextId', fnHandle)
+      fnHandle.dispose()
+
+      const result = vm.unwrapResult(
+        vm.evalCode(`(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`)
+      )
+      assert.equal(i, 0)
+      vm.runEventloop()
+      assert.equal(i, 3)
+      assert.equal(vm.getNumber(result), 1)
+    })
+  })
+
   describe('.dump', () => {
     function dumpTestExample(val: unknown) {
       const json = JSON.stringify(val)
