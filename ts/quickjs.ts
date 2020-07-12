@@ -144,6 +144,9 @@ export class StaticLifetime<T, Owner = never> extends Lifetime<T, Owner> {
  *
  * Call [[setProp]] or [[defineProp]] to customize objects. Use those methods with [[global]] to expose the
  * values you create to the interior of the interpreter, so they can be used in [[evalCode]].
+ *
+ * Use [[evalCode]] or [[callFunction]] to execute Javascript inside the VM.
+ * If you're using asynchronous code inside the QuickJSVm, you may need to also call [[executePendingJobs]].
  */
 export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private readonly ctx: Lifetime<JSContextPointer>
@@ -486,20 +489,22 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   /**
-   * runEventloop(maxJobsToExecute?: number) Runs pendingJobs on the VM
+   * Execute pendingJobs on the VM until `maxJobsToExecute` jobs are executed
+   * (default all pendingJobs), the queue is exhausted, or the runtime
+   * encounters an exception.
    *
-   * Promises and async functions create pendingJobs these do not execute
+   * In QuickJS, promises and async functions create pendingJobs. These do not execute
    * immediately and need to triggered to run.
-   * You can pass an optional maxJobsToExecute param if you wish to run only
-   * some of the pendingJobs, by default all pendingJobs are executed until
-   * either the queue is exausted or the runtime encounters an exception
    *
-   * return value for success is the number of executed jobs
-   * for error the exception that stopped the execution
+   * @param maxJobsToExecute - When negative, run all pending jobs. Otherwise execute
+   * at most `maxJobsToExecute` before returning.
+   *
+   * @return On success, the number of executed jobs. On error, the exception
+   * that stopped execution.
    */
-  runEventloop(maxJobsToExecute?: number): VmEventLoopResult<QuickJSHandle> {
+  executePendingJobs(maxJobsToExecute: number = -1): VmEventLoopResult<QuickJSHandle> {
     const resultValue = this.heapValueHandle(
-      this.ffi.QTS_ExecutePendingJob(this.rt.value, maxJobsToExecute || -1)
+      this.ffi.QTS_ExecutePendingJob(this.rt.value, maxJobsToExecute)
     )
     const typeOfRet = this.typeof(resultValue)
     if (typeOfRet === 'number') {
@@ -509,6 +514,16 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     } else {
       return { error: resultValue }
     }
+  }
+
+  /**
+   * In QuickJS, promises and async functions create pendingJobs. These do not execute
+   * immediately and need to be run by calling [[executePendingJobs]].
+   *
+   * @return true if there is at least one pendingJob queued up.
+   */
+  hasPendingJob(): boolean {
+    return Boolean(this.ffi.QTS_IsJobPending(this.rt.value))
   }
 
   // customizations
