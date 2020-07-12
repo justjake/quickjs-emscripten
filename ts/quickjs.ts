@@ -15,6 +15,7 @@ import {
   VmCallResult,
   VmEventLoopResult,
   VmFunctionImplementation,
+  SuccessOrFail,
 } from './vm-interface'
 import { QuickJSEmscriptenModule } from './emscripten-types'
 
@@ -552,10 +553,12 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   /**
-   * Unwrap a VmCallResult, returning it's value on success, and throwing the dumped
-   * error on failure.
+   * Unwrap a SuccessOrFail result such as a [VmCallResult] or a
+   * [VmEventLoopResult], where the fail branch contains a handle to a QuickJS error value.
+   * If the result is a success, returns the value.
+   * If the result is an error, converts the error to a native object and throws the error.
    */
-  unwrapResult(result: VmCallResult<QuickJSHandle>): QuickJSHandle {
+  unwrapResult<T>(result: SuccessOrFail<T, QuickJSHandle>): T {
     if (result.error) {
       const dumped = this.dump(result.error)
       result.error.dispose()

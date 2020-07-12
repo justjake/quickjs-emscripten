@@ -16,6 +16,13 @@ export type SuccessOrFail<S, F> =
  * `{ value: VmHandle } | { error: VmHandle }`.
  */
 export type VmCallResult<VmHandle> = SuccessOrFail<VmHandle, VmHandle>
+
+/**
+ * Used as an optional for the results of running the event loop.
+ * On success, `value` contains the number of async jobs executed
+ * by the runtime.
+ * `{ value: number } | { error: VmHandle }`.
+ */
 export type VmEventLoopResult<VmHandle> = SuccessOrFail<number, VmHandle>
 /**
  * A VmFunctionImplementation takes handles as arguments.
