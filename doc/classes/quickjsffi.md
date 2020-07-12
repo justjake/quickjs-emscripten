@@ -27,6 +27,7 @@ library.
 * [QTS_DupValue](quickjsffi.md#qts_dupvalue)
 * [QTS_DupValuePointer](quickjsffi.md#qts_dupvaluepointer)
 * [QTS_Eval](quickjsffi.md#qts_eval)
+* [QTS_ExecutePendingJob](quickjsffi.md#qts_executependingjob)
 * [QTS_FreeContext](quickjsffi.md#qts_freecontext)
 * [QTS_FreeRuntime](quickjsffi.md#qts_freeruntime)
 * [QTS_FreeValuePointer](quickjsffi.md#qts_freevaluepointer)
@@ -38,6 +39,7 @@ library.
 * [QTS_GetString](quickjsffi.md#qts_getstring)
 * [QTS_GetTrue](quickjsffi.md#qts_gettrue)
 * [QTS_GetUndefined](quickjsffi.md#qts_getundefined)
+* [QTS_IsJobPending](quickjsffi.md#qts_isjobpending)
 * [QTS_NewArray](quickjsffi.md#qts_newarray)
 * [QTS_NewContext](quickjsffi.md#qts_newcontext)
 * [QTS_NewError](quickjsffi.md#qts_newerror)
@@ -99,7 +101,7 @@ ___
 • **QTS_Call**: *function* = 
     this.module.cwrap("QTS_Call", "number", ["number","number","number","number","number"])
 
-*Defined in [ffi.ts:151](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L151)*
+*Defined in [ffi.ts:157](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L157)*
 
 #### Type declaration:
 
@@ -122,7 +124,7 @@ ___
 • **QTS_DefineProp**: *function* = 
     this.module.cwrap("QTS_DefineProp", null, ["number","number","number","number","number","number","boolean","boolean","boolean"])
 
-*Defined in [ffi.ts:148](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L148)*
+*Defined in [ffi.ts:154](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L154)*
 
 #### Type declaration:
 
@@ -149,7 +151,7 @@ ___
 • **QTS_Dump**: *function* = 
     this.module.cwrap("QTS_Dump", "string", ["number","number"])
 
-*Defined in [ffi.ts:157](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L157)*
+*Defined in [ffi.ts:163](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L163)*
 
 #### Type declaration:
 
@@ -169,7 +171,7 @@ ___
 • **QTS_DupValue**: *function* = 
     this.module.cwrap("QTS_DupValue", "number", ["number","number"])
 
-*Defined in [ffi.ts:166](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L166)*
+*Defined in [ffi.ts:172](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L172)*
 
 #### Type declaration:
 
@@ -209,7 +211,7 @@ ___
 • **QTS_Eval**: *function* = 
     this.module.cwrap("QTS_Eval", "number", ["number","string"])
 
-*Defined in [ffi.ts:160](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L160)*
+*Defined in [ffi.ts:166](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L166)*
 
 #### Type declaration:
 
@@ -221,6 +223,26 @@ Name | Type |
 ------ | ------ |
 `ctx` | [JSContextPointer](../globals.md#jscontextpointer) |
 `js_code` | string |
+
+___
+
+###  QTS_ExecutePendingJob
+
+• **QTS_ExecutePendingJob**: *function* = 
+    this.module.cwrap("QTS_ExecutePendingJob", "number", ["number","number"])
+
+*Defined in [ffi.ts:145](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L145)*
+
+#### Type declaration:
+
+▸ (`rt`: [JSRuntimePointer](../globals.md#jsruntimepointer), `maxJobsToExecute`: number): *[JSValuePointer](../globals.md#jsvaluepointer)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`rt` | [JSRuntimePointer](../globals.md#jsruntimepointer) |
+`maxJobsToExecute` | number |
 
 ___
 
@@ -320,7 +342,7 @@ ___
 • **QTS_GetGlobalObject**: *function* = 
     this.module.cwrap("QTS_GetGlobalObject", "number", ["number"])
 
-*Defined in [ffi.ts:169](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L169)*
+*Defined in [ffi.ts:175](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L175)*
 
 #### Type declaration:
 
@@ -352,7 +374,7 @@ ___
 • **QTS_GetProp**: *function* = 
     this.module.cwrap("QTS_GetProp", "number", ["number","number","number"])
 
-*Defined in [ffi.ts:142](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L142)*
+*Defined in [ffi.ts:148](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L148)*
 
 #### Type declaration:
 
@@ -411,6 +433,25 @@ ___
 #### Type declaration:
 
 ▸ (): *[JSValueConstPointer](../globals.md#jsvalueconstpointer)*
+
+___
+
+###  QTS_IsJobPending
+
+• **QTS_IsJobPending**: *function* = 
+    this.module.cwrap("QTS_IsJobPending", "number", ["number"])
+
+*Defined in [ffi.ts:142](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L142)*
+
+#### Type declaration:
+
+▸ (`rt`: [JSRuntimePointer](../globals.md#jsruntimepointer)): *number*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`rt` | [JSRuntimePointer](../globals.md#jsruntimepointer) |
 
 ___
 
@@ -589,7 +630,7 @@ ___
 • **QTS_ResolveException**: *function* = 
     this.module.cwrap("QTS_ResolveException", "number", ["number","number"])
 
-*Defined in [ffi.ts:154](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L154)*
+*Defined in [ffi.ts:160](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L160)*
 
 #### Type declaration:
 
@@ -685,7 +726,7 @@ ___
 • **QTS_SetProp**: *function* = 
     this.module.cwrap("QTS_SetProp", null, ["number","number","number","number"])
 
-*Defined in [ffi.ts:145](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L145)*
+*Defined in [ffi.ts:151](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L151)*
 
 #### Type declaration:
 
@@ -727,7 +768,7 @@ ___
 • **QTS_Typeof**: *function* = 
     this.module.cwrap("QTS_Typeof", "string", ["number","number"])
 
-*Defined in [ffi.ts:163](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L163)*
+*Defined in [ffi.ts:169](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L169)*
 
 #### Type declaration:
 
