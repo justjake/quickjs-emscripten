@@ -13,7 +13,6 @@ import {
   LowLevelJavascriptVm,
   VmPropertyDescriptor,
   VmCallResult,
-  VmEventLoopResult,
   VmFunctionImplementation,
   SuccessOrFail,
 } from './vm-interface'
@@ -128,6 +127,14 @@ export class StaticLifetime<T, Owner = never> extends Lifetime<T, Owner> {
   // Dispose does nothing.
   dispose() {}
 }
+
+/**
+ * Used as an optional for the results of executing pendingJobs.
+ * On success, `value` contains the number of async jobs executed
+ * by the runtime.
+ * `{ value: number } | { error: QuickJSHandle }`.
+ */
+export type ExecutePendingJobsResult = SuccessOrFail<number, QuickJSHandle>
 
 /**
  * QuickJSVm wraps a QuickJS Javascript runtime (JSRuntime*) and context (JSContext*).
@@ -506,7 +513,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * @return On success, the number of executed jobs. On error, the exception
    * that stopped execution.
    */
-  executePendingJobs(maxJobsToExecute: number = -1): VmEventLoopResult<QuickJSHandle> {
+  executePendingJobs(maxJobsToExecute: number = -1): ExecutePendingJobsResult {
     const resultValue = this.heapValueHandle(
       this.ffi.QTS_ExecutePendingJob(this.rt.value, maxJobsToExecute)
     )
@@ -557,7 +564,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
   /**
    * Unwrap a SuccessOrFail result such as a [[VmCallResult]] or a
-   * [[VmEventLoopResult]], where the fail branch contains a handle to a QuickJS error value.
+   * [[ExecutePendingJobsResult]], where the fail branch contains a handle to a QuickJS error value.
    * If the result is a success, returns the value.
    * If the result is an error, converts the error to a native object and throws the error.
    */
