@@ -40,7 +40,7 @@ A Lifetime that lives forever. Used for constants.
 
 *Inherited from [Lifetime](lifetime.md).[constructor](lifetime.md#constructor)*
 
-*Defined in [quickjs.ts:71](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L71)*
+*Defined in [quickjs.ts:70](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L70)*
 
 When the Lifetime is disposed, it will call `disposer(_value)`. Use the
 disposer function to implement whatever cleanup needs to happen at the end
@@ -67,7 +67,7 @@ Name | Type |
 
 *Inherited from [Lifetime](lifetime.md).[alive](lifetime.md#alive)*
 
-*Defined in [quickjs.ts:87](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L87)*
+*Defined in [quickjs.ts:86](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L86)*
 
 **Returns:** *boolean*
 
@@ -79,7 +79,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[owner](lifetime.md#owner)*
 
-*Defined in [quickjs.ts:102](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L102)*
+*Defined in [quickjs.ts:101](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L101)*
 
 **Returns:** *undefined | Owner*
 
@@ -91,7 +91,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[value](lifetime.md#value)*
 
-*Defined in [quickjs.ts:97](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L97)*
+*Defined in [quickjs.ts:96](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L96)*
 
 The value this Lifetime protects. You must never retain the value - it
 may become invalid, leading to memory errors.
@@ -108,6 +108,6 @@ may become invalid, leading to memory errors.
 
 *Overrides [Lifetime](lifetime.md).[dispose](lifetime.md#dispose)*
 
-*Defined in [quickjs.ts:129](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L129)*
+*Defined in [quickjs.ts:128](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L128)*
 
 **Returns:** *void*

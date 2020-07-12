@@ -41,7 +41,7 @@ Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
 
 \+ **new Lifetime**(`_value`: T, `disposer?`: undefined | function, `_owner?`: Owner): *[Lifetime](lifetime.md)*
 
-*Defined in [quickjs.ts:71](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L71)*
+*Defined in [quickjs.ts:70](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L70)*
 
 When the Lifetime is disposed, it will call `disposer(_value)`. Use the
 disposer function to implement whatever cleanup needs to happen at the end
@@ -66,7 +66,7 @@ Name | Type |
 
 • **get alive**(): *boolean*
 
-*Defined in [quickjs.ts:87](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L87)*
+*Defined in [quickjs.ts:86](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L86)*
 
 **Returns:** *boolean*
 
@@ -76,7 +76,7 @@ ___
 
 • **get owner**(): *undefined | Owner*
 
-*Defined in [quickjs.ts:102](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L102)*
+*Defined in [quickjs.ts:101](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L101)*
 
 **Returns:** *undefined | Owner*
 
@@ -86,7 +86,7 @@ ___
 
 • **get value**(): *T*
 
-*Defined in [quickjs.ts:97](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L97)*
+*Defined in [quickjs.ts:96](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L96)*
 
 The value this Lifetime protects. You must never retain the value - it
 may become invalid, leading to memory errors.
@@ -101,7 +101,7 @@ may become invalid, leading to memory errors.
 
 ▸ **dispose**(): *void*
 
-*Defined in [quickjs.ts:109](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L109)*
+*Defined in [quickjs.ts:108](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L108)*
 
 Dispose of [value](lifetime.md#value) and perform cleanup.
 

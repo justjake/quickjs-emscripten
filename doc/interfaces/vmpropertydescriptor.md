@@ -28,7 +28,7 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 • **configurable**? : *undefined | false | true*
 
-*Defined in [vm-interface.ts:84](https://github.com/justjake/quickjs-emscripten/blob/master/ts/vm-interface.ts#L84)*
+*Defined in [vm-interface.ts:77](https://github.com/justjake/quickjs-emscripten/blob/master/ts/vm-interface.ts#L77)*
 
 ___
 
@@ -36,7 +36,7 @@ ___
 
 • **enumerable**? : *undefined | false | true*
 
-*Defined in [vm-interface.ts:85](https://github.com/justjake/quickjs-emscripten/blob/master/ts/vm-interface.ts#L85)*
+*Defined in [vm-interface.ts:78](https://github.com/justjake/quickjs-emscripten/blob/master/ts/vm-interface.ts#L78)*
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 • **get**? : *undefined | function*
 
-*Defined in [vm-interface.ts:86](https://github.com/justjake/quickjs-emscripten/blob/master/ts/vm-interface.ts#L86)*
+*Defined in [vm-interface.ts:79](https://github.com/justjake/quickjs-emscripten/blob/master/ts/vm-interface.ts#L79)*
 
 ___
 
@@ -52,7 +52,7 @@ ___
 
 • **set**? : *undefined | function*
 
-*Defined in [vm-interface.ts:87](https://github.com/justjake/quickjs-emscripten/blob/master/ts/vm-interface.ts#L87)*
+*Defined in [vm-interface.ts:80](https://github.com/justjake/quickjs-emscripten/blob/master/ts/vm-interface.ts#L80)*
 
 ___
 
@@ -60,4 +60,4 @@ ___
 
 • **value**? : *VmHandle*
 
-*Defined in [vm-interface.ts:83](https://github.com/justjake/quickjs-emscripten/blob/master/ts/vm-interface.ts#L83)*
+*Defined in [vm-interface.ts:76](https://github.com/justjake/quickjs-emscripten/blob/master/ts/vm-interface.ts#L76)*
