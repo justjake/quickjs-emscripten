@@ -467,6 +467,8 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   /**
    * Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
    * Evauatetes the Javascript source `code` in the global scope of this VM.
+   * When working with async code, you many need to call [[executePendingJobs]]
+   * to execute callbacks pending after synchronous evaluation returns.
    *
    * See [[unwrapResult]], which will throw if the function returned an error, or
    * return the result handle directly.
@@ -474,6 +476,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * *Note*: to protect against infinite loops, provide an interrupt handler to
    * [[setShouldInterruptHandler]]. You can use [[shouldInterruptAfterDeadline]] to
    * create a time-based deadline.
+   *
    *
    * @returns The last statement's value. If the code threw, result `error` will be
    * a handle to the exception. If execution was interrupted, the error will
@@ -907,6 +910,9 @@ export class QuickJS {
    *
    * If you need more control over how the code executes, create a
    * [[QuickJSVm]] instance and use its [[QuickJSVm.evalCode]] method.
+   *
+   * Asynchronous callbacks may not run during the first call to `evalCode`. If you need to
+   * work with async code inside QuickJS, you should create a VM and use [[QuickJSVm.executePendingJobs]].
    *
    * @returns The result is coerced to a native Javascript value using JSON
    * serialization, so properties and values unsupported by JSON will be dropped.
