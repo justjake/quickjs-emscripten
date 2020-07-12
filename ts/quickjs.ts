@@ -1004,12 +1004,13 @@ export async function getQuickJS(): Promise<QuickJS> {
 }
 
 /**
- * This is the top-level entrypoint for the quickjs-emscripten library.
- * Get the root QuickJS API.
+ * Provides synchronous access to the QuickJS API once [getQuickJS] has resolved at
+ * least once.
+ * @throws If called before `getQuickJS` resolves.
  */
-export function getQuickJSImmediate(): QuickJS {
+export function getQuickJSSync(): QuickJS {
   if (!singleton) {
-    throw new Error('QuickJS not initialized. Either wait for `ready` or use getQuickJS()')
+    throw new Error('QuickJS not initialized. Await getQuickJS() at least once.')
   }
   return singleton
 }
