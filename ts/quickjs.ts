@@ -556,8 +556,8 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   /**
-   * Unwrap a SuccessOrFail result such as a [VmCallResult] or a
-   * [VmEventLoopResult], where the fail branch contains a handle to a QuickJS error value.
+   * Unwrap a SuccessOrFail result such as a [[VmCallResult]] or a
+   * [[VmEventLoopResult]], where the fail branch contains a handle to a QuickJS error value.
    * If the result is a success, returns the value.
    * If the result is an error, converts the error to a native object and throws the error.
    */
@@ -1010,7 +1010,7 @@ export async function getQuickJS(): Promise<QuickJS> {
 }
 
 /**
- * Provides synchronous access to the QuickJS API once [getQuickJS] has resolved at
+ * Provides synchronous access to the QuickJS API once [[getQuickJS]] has resolved at
  * least once.
  * @throws If called before `getQuickJS` resolves.
  */

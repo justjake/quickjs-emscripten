@@ -548,8 +548,8 @@ ___
 
 *Defined in [quickjs.ts:564](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L564)*
 
-Unwrap a SuccessOrFail result such as a [VmCallResult] or a
-[VmEventLoopResult], where the fail branch contains a handle to a QuickJS error value.
+Unwrap a SuccessOrFail result such as a [VmCallResult](../globals.md#vmcallresult) or a
+[VmEventLoopResult](../globals.md#vmeventloopresult), where the fail branch contains a handle to a QuickJS error value.
 If the result is a success, returns the value.
 If the result is an error, converts the error to a native object and throws the error.
 

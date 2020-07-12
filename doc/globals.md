@@ -323,7 +323,7 @@ ___
 
 *Defined in [quickjs.ts:1017](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L1017)*
 
-Provides synchronous access to the QuickJS API once [getQuickJS] has resolved at
+Provides synchronous access to the QuickJS API once [getQuickJS](globals.md#getquickjs) has resolved at
 least once.
 
 **`throws`** If called before `getQuickJS` resolves.
