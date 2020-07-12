@@ -258,8 +258,8 @@ describe('QuickJSVm', async () => {
     })
   })
 
-  describe('.runEventloop', () => {
-    it('promises can run', () => {
+  describe('.executePendingJobs', () => {
+    it('runs pending jobs', () => {
       let i = 0
       const fnHandle = vm.newFunction('nextId', () => {
         return vm.newNumber(++i)
@@ -271,9 +271,28 @@ describe('QuickJSVm', async () => {
         vm.evalCode(`(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`)
       )
       assert.equal(i, 0)
-      vm.runEventloop()
+      vm.executePendingJobs()
       assert.equal(i, 3)
       assert.equal(vm.getNumber(result), 1)
+    })
+  })
+
+  describe('.hasPendingJob', () => {
+    it('returns true when job pending', () => {
+      let i = 0
+      const fnHandle = vm.newFunction('nextId', () => {
+        return vm.newNumber(++i)
+      })
+      vm.setProp(vm.global, 'nextId', fnHandle)
+      fnHandle.dispose()
+
+      vm.unwrapResult(vm.evalCode(`(new Promise(resolve => resolve(5)).then(nextId));1`)).dispose()
+      assert.strictEqual(vm.hasPendingJob(), true, 'has a pending job after creating a promise')
+
+      const executed = vm.unwrapResult(vm.executePendingJobs())
+      assert.strictEqual(executed, 1, 'executed exactly 1 job')
+
+      assert.strictEqual(vm.hasPendingJob(), false, 'no longer any jobs after execution')
     })
   })
 

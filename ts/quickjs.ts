@@ -13,8 +13,8 @@ import {
   LowLevelJavascriptVm,
   VmPropertyDescriptor,
   VmCallResult,
-  VmEventLoopResult,
   VmFunctionImplementation,
+  SuccessOrFail,
 } from './vm-interface'
 import { QuickJSEmscriptenModule } from './emscripten-types'
 
@@ -129,6 +129,14 @@ export class StaticLifetime<T, Owner = never> extends Lifetime<T, Owner> {
 }
 
 /**
+ * Used as an optional for the results of executing pendingJobs.
+ * On success, `value` contains the number of async jobs executed
+ * by the runtime.
+ * `{ value: number } | { error: QuickJSHandle }`.
+ */
+export type ExecutePendingJobsResult = SuccessOrFail<number, QuickJSHandle>
+
+/**
  * QuickJSVm wraps a QuickJS Javascript runtime (JSRuntime*) and context (JSContext*).
  * This class's methods return {@link QuickJSHandle}, which wrap C pointers (JSValue*).
  * It's the caller's responsibility to call `.dispose()` on any
@@ -144,6 +152,9 @@ export class StaticLifetime<T, Owner = never> extends Lifetime<T, Owner> {
  *
  * Call [[setProp]] or [[defineProp]] to customize objects. Use those methods with [[global]] to expose the
  * values you create to the interior of the interpreter, so they can be used in [[evalCode]].
+ *
+ * Use [[evalCode]] or [[callFunction]] to execute Javascript inside the VM.
+ * If you're using asynchronous code inside the QuickJSVm, you may need to also call [[executePendingJobs]].
  */
 export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private readonly ctx: Lifetime<JSContextPointer>
@@ -463,6 +474,8 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   /**
    * Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
    * Evauatetes the Javascript source `code` in the global scope of this VM.
+   * When working with async code, you many need to call [[executePendingJobs]]
+   * to execute callbacks pending after synchronous evaluation returns.
    *
    * See [[unwrapResult]], which will throw if the function returned an error, or
    * return the result handle directly.
@@ -470,6 +483,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * *Note*: to protect against infinite loops, provide an interrupt handler to
    * [[setShouldInterruptHandler]]. You can use [[shouldInterruptAfterDeadline]] to
    * create a time-based deadline.
+   *
    *
    * @returns The last statement's value. If the code threw, result `error` will be
    * a handle to the exception. If execution was interrupted, the error will
@@ -486,20 +500,22 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   /**
-   * runEventloop(maxJobsToExecute?: number) Runs pendingJobs on the VM
+   * Execute pendingJobs on the VM until `maxJobsToExecute` jobs are executed
+   * (default all pendingJobs), the queue is exhausted, or the runtime
+   * encounters an exception.
    *
-   * Promises and async functions create pendingJobs these do not execute
+   * In QuickJS, promises and async functions create pendingJobs. These do not execute
    * immediately and need to triggered to run.
-   * You can pass an optional maxJobsToExecute param if you wish to run only
-   * some of the pendingJobs, by default all pendingJobs are executed until
-   * either the queue is exausted or the runtime encounters an exception
    *
-   * return value for success is the number of executed jobs
-   * for error the exception that stopped the execution
+   * @param maxJobsToExecute - When negative, run all pending jobs. Otherwise execute
+   * at most `maxJobsToExecute` before returning.
+   *
+   * @return On success, the number of executed jobs. On error, the exception
+   * that stopped execution.
    */
-  runEventloop(maxJobsToExecute?: number): VmEventLoopResult<QuickJSHandle> {
+  executePendingJobs(maxJobsToExecute: number = -1): ExecutePendingJobsResult {
     const resultValue = this.heapValueHandle(
-      this.ffi.QTS_ExecutePendingJob(this.rt.value, maxJobsToExecute || -1)
+      this.ffi.QTS_ExecutePendingJob(this.rt.value, maxJobsToExecute)
     )
     const typeOfRet = this.typeof(resultValue)
     if (typeOfRet === 'number') {
@@ -509,6 +525,16 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     } else {
       return { error: resultValue }
     }
+  }
+
+  /**
+   * In QuickJS, promises and async functions create pendingJobs. These do not execute
+   * immediately and need to be run by calling [[executePendingJobs]].
+   *
+   * @return true if there is at least one pendingJob queued up.
+   */
+  hasPendingJob(): boolean {
+    return Boolean(this.ffi.QTS_IsJobPending(this.rt.value))
   }
 
   // customizations
@@ -537,10 +563,12 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   /**
-   * Unwrap a VmCallResult, returning it's value on success, and throwing the dumped
-   * error on failure.
+   * Unwrap a SuccessOrFail result such as a [[VmCallResult]] or a
+   * [[ExecutePendingJobsResult]], where the fail branch contains a handle to a QuickJS error value.
+   * If the result is a success, returns the value.
+   * If the result is an error, converts the error to a native object and throws the error.
    */
-  unwrapResult(result: VmCallResult<QuickJSHandle>): QuickJSHandle {
+  unwrapResult<T>(result: SuccessOrFail<T, QuickJSHandle>): T {
     if (result.error) {
       const dumped = this.dump(result.error)
       result.error.dispose()
@@ -890,6 +918,9 @@ export class QuickJS {
    * If you need more control over how the code executes, create a
    * [[QuickJSVm]] instance and use its [[QuickJSVm.evalCode]] method.
    *
+   * Asynchronous callbacks may not run during the first call to `evalCode`. If you need to
+   * work with async code inside QuickJS, you should create a VM and use [[QuickJSVm.executePendingJobs]].
+   *
    * @returns The result is coerced to a native Javascript value using JSON
    * serialization, so properties and values unsupported by JSON will be dropped.
    *
@@ -986,12 +1017,13 @@ export async function getQuickJS(): Promise<QuickJS> {
 }
 
 /**
- * This is the top-level entrypoint for the quickjs-emscripten library.
- * Get the root QuickJS API.
+ * Provides synchronous access to the QuickJS API once [[getQuickJS]] has resolved at
+ * least once.
+ * @throws If called before `getQuickJS` resolves.
  */
-export function getQuickJSImmediate(): QuickJS {
+export function getQuickJSSync(): QuickJS {
   if (!singleton) {
-    throw new Error('QuickJS not initialized. Either wait for `ready` or use getQuickJS()')
+    throw new Error('QuickJS not initialized. Await getQuickJS() at least once.')
   }
   return singleton
 }

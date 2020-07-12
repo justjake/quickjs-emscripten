@@ -21,6 +21,7 @@
 
 ### Type aliases
 
+* [ExecutePendingJobsResult](globals.md#executependingjobsresult)
 * [JSCFunctionPointer](globals.md#jscfunctionpointer)
 * [JSContextPointer](globals.md#jscontextpointer)
 * [JSRuntimePointer](globals.md#jsruntimepointer)
@@ -43,9 +44,23 @@
 ### Functions
 
 * [getQuickJS](globals.md#getquickjs)
+* [getQuickJSSync](globals.md#getquickjssync)
 * [shouldInterruptAfterDeadline](globals.md#shouldinterruptafterdeadline)
 
 ## Type aliases
+
+###  ExecutePendingJobsResult
+
+Ƭ **ExecutePendingJobsResult**: *[SuccessOrFail](globals.md#successorfail)‹number, [QuickJSHandle](globals.md#quickjshandle)›*
+
+*Defined in [quickjs.ts:137](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L137)*
+
+Used as an optional for the results of executing pendingJobs.
+On success, `value` contains the number of async jobs executed
+by the runtime.
+`{ value: number } | { error: QuickJSHandle }`.
+
+___
 
 ###  JSCFunctionPointer
 
@@ -81,7 +96,7 @@ ___
 
 Ƭ **JSValue**: *[Lifetime](classes/lifetime.md)‹[JSValuePointer](globals.md#jsvaluepointer), [QuickJSVm](classes/quickjsvm.md)›*
 
-*Defined in [quickjs.ts:743](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L743)*
+*Defined in [quickjs.ts:807](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L807)*
 
 A owned QuickJSHandle that should be disposed or returned.
 
@@ -103,7 +118,7 @@ ___
 
 Ƭ **JSValueConst**: *[Lifetime](classes/lifetime.md)‹[JSValueConstPointer](globals.md#jsvalueconstpointer), [QuickJSVm](classes/quickjsvm.md)›*
 
-*Defined in [quickjs.ts:726](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L726)*
+*Defined in [quickjs.ts:790](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L790)*
 
 A QuickJSHandle to a borrowed value that does not need to be disposed.
 
@@ -185,7 +200,7 @@ ___
 
 Ƭ **QuickJSHandle**: *[StaticJSValue](globals.md#staticjsvalue) | [JSValue](globals.md#jsvalue) | [JSValueConst](globals.md#jsvalueconst)*
 
-*Defined in [quickjs.ts:752](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L752)*
+*Defined in [quickjs.ts:816](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L816)*
 
 Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
 a QuickJS virtual machine.
@@ -199,7 +214,7 @@ ___
 
 Ƭ **QuickJSPropertyKey**: *number | string | [QuickJSHandle](globals.md#quickjshandle)*
 
-*Defined in [quickjs.ts:51](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L51)*
+*Defined in [quickjs.ts:61](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L61)*
 
 ___
 
@@ -207,7 +222,7 @@ ___
 
 Ƭ **ShouldInterruptHandler**: *function*
 
-*Defined in [quickjs.ts:49](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L49)*
+*Defined in [quickjs.ts:59](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L59)*
 
 Determines if a VM's execution should be interrupted.
 
@@ -230,7 +245,7 @@ ___
 
 Ƭ **StaticJSValue**: *[StaticLifetime](classes/staticlifetime.md)‹[JSValueConstPointer](globals.md#jsvalueconstpointer)›*
 
-*Defined in [quickjs.ts:714](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L714)*
+*Defined in [quickjs.ts:778](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L778)*
 
 A QuickJSHandle to a constant that will never change, and does not need to
 be disposed.
@@ -293,7 +308,7 @@ Name | Type |
 
 ▸ **getQuickJS**(): *Promise‹[QuickJS](classes/quickjs.md)›*
 
-*Defined in [quickjs.ts:948](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L948)*
+*Defined in [quickjs.ts:1011](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L1011)*
 
 This is the top-level entrypoint for the quickjs-emscripten library.
 Get the root QuickJS API.
@@ -302,11 +317,26 @@ Get the root QuickJS API.
 
 ___
 
+###  getQuickJSSync
+
+▸ **getQuickJSSync**(): *[QuickJS](classes/quickjs.md)*
+
+*Defined in [quickjs.ts:1024](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L1024)*
+
+Provides synchronous access to the QuickJS API once [getQuickJS](globals.md#getquickjs) has resolved at
+least once.
+
+**`throws`** If called before `getQuickJS` resolves.
+
+**Returns:** *[QuickJS](classes/quickjs.md)*
+
+___
+
 ###  shouldInterruptAfterDeadline
 
 ▸ **shouldInterruptAfterDeadline**(`deadline`: Date | number): *[ShouldInterruptHandler](globals.md#shouldinterrupthandler)*
 
-*Defined in [quickjs.ts:934](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L934)*
+*Defined in [quickjs.ts:997](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L997)*
 
 Returns an interrupt handler that interrupts Javascript execution after a deadline time.
 

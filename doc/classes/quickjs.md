@@ -34,7 +34,7 @@ and return the result as a native Javascript value.
 
 \+ **new QuickJS**(): *[QuickJS](quickjs.md)*
 
-*Defined in [quickjs.ts:781](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L781)*
+*Defined in [quickjs.ts:845](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L845)*
 
 **Returns:** *[QuickJS](quickjs.md)*
 
@@ -44,7 +44,7 @@ and return the result as a native Javascript value.
 
 ▸ **createVm**(): *[QuickJSVm](quickjsvm.md)*
 
-*Defined in [quickjs.ts:832](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L832)*
+*Defined in [quickjs.ts:892](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L892)*
 
 Create a QuickJS VM.
 
@@ -59,7 +59,7 @@ ___
 
 ▸ **evalCode**(`code`: string, `options`: [QuickJSEvalOptions](../interfaces/quickjsevaloptions.md)): *unknown*
 
-*Defined in [quickjs.ts:870](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L870)*
+*Defined in [quickjs.ts:933](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L933)*
 
 One-off evaluate code without needing to create a VM.
 
@@ -68,6 +68,9 @@ To protect against infinite loops, use the `shouldInterrupt` option. The
 
 If you need more control over how the code executes, create a
 [QuickJSVm](quickjsvm.md) instance and use its [QuickJSVm.evalCode](quickjsvm.md#evalcode) method.
+
+Asynchronous callbacks may not run during the first call to `evalCode`. If you need to
+work with async code inside QuickJS, you should create a VM and use [QuickJSVm.executePendingJobs](quickjsvm.md#executependingjobs).
 
 **`throws`** If `code` throws during evaluation, the exception will be
 converted into a native Javascript value and thrown.

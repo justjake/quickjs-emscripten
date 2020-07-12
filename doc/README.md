@@ -5,7 +5,7 @@
 # quickjs-emscripten
 
 Javascript/Typescript bindings for [QuickJS, a modern Javascript interpreter written in
-C by Fabrice Bellard](https://bellard.org/quickjs/).
+C by Fabrice Bellard](https://bellard.org/quickjs/) compiled to WebAssembly.
 
 - Safely evaluate untrusted Javascript (up to ES2020).
 - Create and manipulate values inside the QuickJS runtime.
@@ -44,6 +44,9 @@ Install from `npm`: `npm install --save quickjs-emscripten` or `yarn add quickjs
 The root entrypoint of this library is the `getQuickJS` function, which returns
 a promise that resolves to a [QuickJS singleton](doc/classes/quickjs.md) when
 the Emscripten WASM module is ready.
+
+Once `getQuickJS` has been awaited at least once, you also can use the `getQuickJSSync`
+function to directly access the singleton engine in your synchronous code.
 
 ### Safely evaluate Javascript code
 
@@ -143,8 +146,15 @@ The C code builds as both with `emscripten` (using `emcc`), to produce WASM (or
 ASM.js) and with `clang`. Build outputs are checked in, so
 Intermediate object files from QuickJS end up in ./build/quickjs/{wasm,native}.
 
-You'll need to install `emscripten`. Following the offical instructions here, using `emsdk`:
-https://emscripten.org/docs/getting_started/downloads.html#installation-instructions
+This project uses `emscripten 1.39.18`. First, install `emsdk` by following the official instructions here:
+https://emscripten.org/docs/getting_started/downloads.html#installation-instructions.
+Once you have `emsdk`, install emcc version 1.39.19 with `emsdk install 1.39.18`.
+Your `emcc -v` output should look a little like this:
+
+```
+emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 1.39.18
+clang version 11.0.0 (/b/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project 613c4a87ba9bb39d1927402f4dd4c1ef1f9a02f7)
+```
 
 Related NPM scripts:
 

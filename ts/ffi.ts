@@ -139,6 +139,9 @@ export class QuickJSFFI {
   QTS_GetString: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => string =
     this.module.cwrap("QTS_GetString", "string", ["number","number"])
 
+  QTS_IsJobPending: (rt: JSRuntimePointer) => number =
+    this.module.cwrap("QTS_IsJobPending", "number", ["number"])
+
   QTS_ExecutePendingJob: (rt: JSRuntimePointer, maxJobsToExecute: number) => JSValuePointer =
     this.module.cwrap("QTS_ExecutePendingJob", "number", ["number","number"])
 
