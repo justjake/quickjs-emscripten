@@ -298,7 +298,7 @@ describe('QuickJSVm', async () => {
 
   describe('.dump', () => {
     function dumpTestExample(val: unknown) {
-      const json = JSON.stringify(val)
+      const json = typeof val === 'undefined' ? 'undefined' : JSON.stringify(val)
       const nativeType = typeof val
       it(`supports ${nativeType} (${json})`, () => {
         const handle = vm.unwrapResult(vm.evalCode(`(${json})`))

@@ -22,7 +22,7 @@
 
 #define PKG "quickjs-emscripten: "
 
-#ifdef QTS_DEBUG
+#ifdef QTS_DEBUG_MODE
 #define QTS_DEBUG(msg) qts_log(msg);
 #define QTS_DUMP(value) qts_dump(ctx, value);
 #else
