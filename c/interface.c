@@ -31,9 +31,9 @@
 #endif
 
 void qts_log(char* msg) {
-  fputs(PKG, stdout);
-  fputs(msg, stdout);
-  fputs("\n", stdout);
+  fputs(PKG, stderr);
+  fputs(msg, stderr);
+  fputs("\n", stderr);
 }
 
 void qts_dump(JSContext *ctx, JSValueConst value) {
@@ -42,7 +42,7 @@ void qts_dump(JSContext *ctx, JSValueConst value) {
     QTS_DEBUG("QTS_DUMP: can't dump");
     return;
   }
-  fputs(str, stdout);
+  fputs(str, stderr);
   JS_FreeCString(ctx, str);
   putchar('\n');
 }
@@ -361,8 +361,10 @@ char *QTS_Dump(JSContext *ctx, JSValueConst *obj) {
     }
   }
 
+#ifdef QTS_DEBUG
   qts_log("Error dumping JSON:");
   js_std_dump_error(ctx);
+#endif
 
   // Fallback: convert to string
   return QTS_GetString(ctx, obj);
