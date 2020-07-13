@@ -361,7 +361,7 @@ char *QTS_Dump(JSContext *ctx, JSValueConst *obj) {
     }
   }
 
-#ifdef QTS_DEBUG
+#ifdef QTS_DEBUG_MODE
   qts_log("Error dumping JSON:");
   js_std_dump_error(ctx);
 #endif
