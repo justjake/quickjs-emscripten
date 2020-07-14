@@ -41,6 +41,9 @@ The root entrypoint of this library is the `getQuickJS` function, which returns
 a promise that resolves to a [QuickJS singleton](doc/classes/quickjs.md) when
 the Emscripten WASM module is ready.
 
+Once `getQuickJS` has been awaited at least once, you also can use the `getQuickJSSync`
+function to directly access the singleton engine in your synchronous code.
+
 ### Safely evaluate Javascript code
 
 See [QuickJS.evalCode](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/quickjs.md#evalcode)

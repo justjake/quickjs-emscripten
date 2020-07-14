@@ -26,9 +26,10 @@ jobs:
         node-version: 12.x
 
     - name: Setup Emscripten tools
-      uses: lovasoa/setup-emscripten@v1
+      uses: justjake/setup-emscripten@master
       with:
         emscripten-version: '1.39.18'
+        emsdk-version: '1.39.18'
 
     - name: Install Yarn
       run: 'npm install -g yarn@1.22.4'

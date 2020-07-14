@@ -22,7 +22,7 @@
 
 #define PKG "quickjs-emscripten: "
 
-#ifdef QTS_DEBUG
+#ifdef QTS_DEBUG_MODE
 #define QTS_DEBUG(msg) qts_log(msg);
 #define QTS_DUMP(value) qts_dump(ctx, value);
 #else
@@ -31,9 +31,9 @@
 #endif
 
 void qts_log(char* msg) {
-  fputs(PKG, stdout);
-  fputs(msg, stdout);
-  fputs("\n", stdout);
+  fputs(PKG, stderr);
+  fputs(msg, stderr);
+  fputs("\n", stderr);
 }
 
 void qts_dump(JSContext *ctx, JSValueConst value) {
@@ -42,7 +42,7 @@ void qts_dump(JSContext *ctx, JSValueConst value) {
     QTS_DEBUG("QTS_DUMP: can't dump");
     return;
   }
-  fputs(str, stdout);
+  fputs(str, stderr);
   JS_FreeCString(ctx, str);
   putchar('\n');
 }
@@ -238,6 +238,33 @@ char* QTS_GetString(JSContext *ctx, JSValueConst *value) {
   return result;
 }
 
+int QTS_IsJobPending(JSRuntime *rt) {
+  return JS_IsJobPending(rt);
+}
+
+/*
+  runs pending jobs (Promises/async functions) until it encounters
+  an exception or it executed the passed maxJobsToExecute jobs.
+
+  Passing a negative value will run the loop until there are no more
+  pending jobs or an exception happened
+
+  Returns the executed number of jobs or the exception encountered
+*/
+JSValue *QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute) {
+  JSContext *pctx;
+  int status = 1;
+  int executed = 0;
+  while (executed != maxJobsToExecute && status == 1) {
+    status = JS_ExecutePendingJob(rt, &pctx);
+    if (status == -1) {
+      return jsvalue_to_heap(JS_GetException(pctx));
+    } else if (status == 1) {
+      executed++;
+    }
+  }
+  return jsvalue_to_heap(JS_NewFloat64(pctx, executed));
+}
 
 JSValue *QTS_GetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name) {
   JSAtom prop_atom = JS_ValueToAtom(ctx, *prop_name);
@@ -334,8 +361,10 @@ char *QTS_Dump(JSContext *ctx, JSValueConst *obj) {
     }
   }
 
+#ifdef QTS_DEBUG_MODE
   qts_log("Error dumping JSON:");
   js_std_dump_error(ctx);
+#endif
 
   // Fallback: convert to string
   return QTS_GetString(ctx, obj);

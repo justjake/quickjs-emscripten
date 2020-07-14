@@ -24,7 +24,6 @@ QuickJS.
 * [HEAPU8](quickjsemscriptenmodule.md#heapu8)
 * [TOTAL_MEMORY](quickjsemscriptenmodule.md#total_memory)
 * [TOTAL_STACK](quickjsemscriptenmodule.md#total_stack)
-* [onRuntimeInitialized](quickjsemscriptenmodule.md#onruntimeinitialized)
 
 ### Methods
 
@@ -40,7 +39,7 @@ QuickJS.
 
 • **FAST_MEMORY**: *number*
 
-*Defined in [emscripten-types.ts:65](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L65)*
+*Defined in [emscripten-types.ts:64](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L64)*
 
 ___
 
@@ -48,7 +47,7 @@ ___
 
 • **HEAP16**: *Int16Array*
 
-*Defined in [emscripten-types.ts:55](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L55)*
+*Defined in [emscripten-types.ts:54](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L54)*
 
 ___
 
@@ -56,7 +55,7 @@ ___
 
 • **HEAP32**: *Int32Array*
 
-*Defined in [emscripten-types.ts:56](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L56)*
+*Defined in [emscripten-types.ts:55](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L55)*
 
 ___
 
@@ -64,7 +63,7 @@ ___
 
 • **HEAP8**: *Int8Array*
 
-*Defined in [emscripten-types.ts:54](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L54)*
+*Defined in [emscripten-types.ts:53](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L53)*
 
 ___
 
@@ -72,7 +71,7 @@ ___
 
 • **HEAPF32**: *Float32Array*
 
-*Defined in [emscripten-types.ts:60](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L60)*
+*Defined in [emscripten-types.ts:59](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L59)*
 
 ___
 
@@ -80,7 +79,7 @@ ___
 
 • **HEAPF64**: *Float64Array*
 
-*Defined in [emscripten-types.ts:61](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L61)*
+*Defined in [emscripten-types.ts:60](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L60)*
 
 ___
 
@@ -88,7 +87,7 @@ ___
 
 • **HEAPU16**: *Uint16Array*
 
-*Defined in [emscripten-types.ts:58](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L58)*
+*Defined in [emscripten-types.ts:57](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L57)*
 
 ___
 
@@ -96,7 +95,7 @@ ___
 
 • **HEAPU32**: *Uint32Array*
 
-*Defined in [emscripten-types.ts:59](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L59)*
+*Defined in [emscripten-types.ts:58](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L58)*
 
 ___
 
@@ -104,7 +103,7 @@ ___
 
 • **HEAPU8**: *Uint8Array*
 
-*Defined in [emscripten-types.ts:57](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L57)*
+*Defined in [emscripten-types.ts:56](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L56)*
 
 ___
 
@@ -112,7 +111,7 @@ ___
 
 • **TOTAL_MEMORY**: *number*
 
-*Defined in [emscripten-types.ts:64](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L64)*
+*Defined in [emscripten-types.ts:63](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L63)*
 
 ___
 
@@ -120,19 +119,7 @@ ___
 
 • **TOTAL_STACK**: *number*
 
-*Defined in [emscripten-types.ts:63](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L63)*
-
-___
-
-###  onRuntimeInitialized
-
-• **onRuntimeInitialized**: *function*
-
-*Defined in [emscripten-types.ts:41](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L41)*
-
-#### Type declaration:
-
-▸ (): *void*
+*Defined in [emscripten-types.ts:62](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L62)*
 
 ## Methods
 
@@ -140,7 +127,7 @@ ___
 
 ▸ **_free**(`ptr`: number): *void*
 
-*Defined in [emscripten-types.ts:45](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L45)*
+*Defined in [emscripten-types.ts:44](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L44)*
 
 **Parameters:**
 
@@ -156,7 +143,7 @@ ___
 
 ▸ **_malloc**(`size`: number): *number*
 
-*Defined in [emscripten-types.ts:44](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L44)*
+*Defined in [emscripten-types.ts:43](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L43)*
 
 **Parameters:**
 
@@ -172,7 +159,7 @@ ___
 
 ▸ **addFunction**(`fn`: Function, `type`: string): *number*
 
-*Defined in [emscripten-types.ts:42](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L42)*
+*Defined in [emscripten-types.ts:41](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L41)*
 
 **Parameters:**
 
@@ -189,7 +176,7 @@ ___
 
 ▸ **cwrap**(`ident`: string, `returnType`: Emscripten.ValueType | null, `argTypes`: Emscripten.ValueType[], `opts?`: Emscripten.CCallOpts): *function*
 
-*Defined in [emscripten-types.ts:46](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L46)*
+*Defined in [emscripten-types.ts:45](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L45)*
 
 **Parameters:**
 
@@ -216,7 +203,7 @@ ___
 
 ▸ **removeFunction**(`pointer`: number): *void*
 
-*Defined in [emscripten-types.ts:43](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L43)*
+*Defined in [emscripten-types.ts:42](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L42)*
 
 **Parameters:**
 

@@ -280,9 +280,47 @@ describe('QuickJSVm', async () => {
     })
   })
 
+  describe('.executePendingJobs', () => {
+    it('runs pending jobs', () => {
+      let i = 0
+      const fnHandle = vm.newFunction('nextId', () => {
+        return vm.newNumber(++i)
+      })
+      vm.setProp(vm.global, 'nextId', fnHandle)
+      fnHandle.dispose()
+
+      const result = vm.unwrapResult(
+        vm.evalCode(`(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`)
+      )
+      assert.equal(i, 0)
+      vm.executePendingJobs()
+      assert.equal(i, 3)
+      assert.equal(vm.getNumber(result), 1)
+    })
+  })
+
+  describe('.hasPendingJob', () => {
+    it('returns true when job pending', () => {
+      let i = 0
+      const fnHandle = vm.newFunction('nextId', () => {
+        return vm.newNumber(++i)
+      })
+      vm.setProp(vm.global, 'nextId', fnHandle)
+      fnHandle.dispose()
+
+      vm.unwrapResult(vm.evalCode(`(new Promise(resolve => resolve(5)).then(nextId));1`)).dispose()
+      assert.strictEqual(vm.hasPendingJob(), true, 'has a pending job after creating a promise')
+
+      const executed = vm.unwrapResult(vm.executePendingJobs())
+      assert.strictEqual(executed, 1, 'executed exactly 1 job')
+
+      assert.strictEqual(vm.hasPendingJob(), false, 'no longer any jobs after execution')
+    })
+  })
+
   describe('.dump', () => {
     function dumpTestExample(val: unknown) {
-      const json = JSON.stringify(val)
+      const json = typeof val === 'undefined' ? 'undefined' : JSON.stringify(val)
       const nativeType = typeof val
       it(`supports ${nativeType} (${json})`, () => {
         const handle = vm.unwrapResult(vm.evalCode(`(${json})`))
