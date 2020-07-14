@@ -93,6 +93,28 @@ describe('QuickJSVm', async () => {
       result.dispose()
       fnHandle.dispose()
     })
+
+    it('can see its arguments being cloned', () => {
+      let value: QuickJSHandle | undefined;
+
+      const fnHandle = vm.newFunction('doSomething', arg => {
+        value = arg.dup();
+      })
+
+      const argHandle = vm.newString('something')
+      const callHandle = vm.callFunction(fnHandle, vm.undefined, argHandle);
+
+      argHandle.dispose()
+      vm.unwrapResult(callHandle).dispose()
+
+      if (!value)
+        throw new Error(`Value unset`);
+
+      assert.equal(vm.getString(value), 'something');
+      value.dispose();
+
+      fnHandle.dispose()
+    })
   })
 
   describe('properties', () => {

@@ -65,8 +65,8 @@ export type QuickJSPropertyKey = number | string | QuickJSHandle
  *
  * Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
  */
-export class Lifetime<T, Owner = never> {
-  private _alive: boolean = true
+export class Lifetime<T, TCopy = never, Owner = never> {
+  protected _alive: boolean = true
 
   /**
    * When the Lifetime is disposed, it will call `disposer(_value)`. Use the
@@ -77,9 +77,10 @@ export class Lifetime<T, Owner = never> {
    * the creator.
    */
   constructor(
-    private readonly _value: T,
-    private readonly disposer?: (value: T) => void,
-    private readonly _owner?: Owner
+    protected readonly _value: T,
+    protected readonly copier?: (value: T | TCopy) => TCopy,
+    protected readonly disposer?: (value: T | TCopy) => void,
+    protected readonly _owner?: Owner
   ) {}
 
   get alive() {
@@ -99,6 +100,17 @@ export class Lifetime<T, Owner = never> {
 
   get owner() {
     return this._owner
+  }
+
+  /**
+   * Create a new handle pointing to the same [[value]].
+   */
+  dup() {
+    this.assertAlive()
+    if (!this.copier) {
+      throw new Error('Non-copiable lifetime')
+    }
+    return new Lifetime<TCopy, TCopy, Owner>(this.copier(this._value), this.copier, this.disposer, this._owner)
   }
 
   /**
@@ -122,9 +134,40 @@ export class Lifetime<T, Owner = never> {
 /**
  * A Lifetime that lives forever. Used for constants.
  */
-export class StaticLifetime<T, Owner = never> extends Lifetime<T, Owner> {
+export class StaticLifetime<T, Owner = never> extends Lifetime<T, T, Owner> {
+  constructor(
+    value: T,
+    owner?: Owner
+  ) {
+    super(value, undefined, undefined, owner)
+  }
+
+  // Copy returns the same instance.
+  copy() {
+    return this
+  }
+
   // Dispose does nothing.
   dispose() {}
+}
+
+/**
+ * A Lifetime that lives forever but can still be copied. Used for constants.
+ */
+export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, TCopy, Owner> {
+  constructor(
+    value: T,
+    copier?: (value: T | TCopy) => TCopy,
+    disposer?: (value: TCopy) => void,
+    owner?: Owner
+  ) {
+    // We don't care if the disposer doesn't support freeing T
+    super(value, copier, disposer as ((value: T | TCopy) => void), owner)
+  }
+
+  dispose() {
+    this._alive = false;
+  }
 }
 
 /**
@@ -155,7 +198,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private _false: QuickJSHandle | undefined = undefined
   private _true: QuickJSHandle | undefined = undefined
   private _global: QuickJSHandle | undefined = undefined
-  private readonly lifetimes: Lifetime<any, any>[] = []
+  private readonly lifetimes: Lifetime<any, any, any>[] = []
 
   /**
    * Use {@link QuickJS.createVm} to create a QuickJSVm instance.
@@ -242,9 +285,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     this.lifetimes.push(this.heapValueHandle(ptr))
 
     // This isn't technically a static lifetime, but since it has the same
-    // lifetime as the VM, it's okay to fake one since when the VM iss
+    // lifetime as the VM, it's okay to fake one since when the VM is
     // disposed, no other functions will accept the value.
-    this._global = new StaticLifetime(ptr, undefined, this)
+    this._global = new StaticLifetime(ptr, this)
     return this._global
   }
 
@@ -598,11 +641,11 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
       throw new Error(`QuickJSVm had no callback with id ${fnId}`)
     }
 
-    const thisHandle = new Lifetime(this_ptr, undefined, this)
+    const thisHandle = new WeakLifetime(this_ptr, this.copyJSValue, this.freeJSValue, this)
     const argHandles = new Array<QuickJSHandle>(argc)
     for (let i = 0; i < argc; i++) {
       const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
-      argHandles[i] = new Lifetime(ptr, undefined, this)
+      argHandles[i] = new WeakLifetime(ptr, this.copyJSValue, this.freeJSValue, this)
     }
 
     let ownedResultPtr = 0 as JSValuePointer
@@ -655,12 +698,16 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     }
   }
 
+  private copyJSValue = (ptr: JSValuePointer | JSValueConstPointer) => {
+    return this.ffi.QTS_DupValue(this.ctx.value, ptr)
+  }
+
   private freeJSValue = (ptr: JSValuePointer) => {
     this.ffi.QTS_FreeValuePointer(this.ctx.value, ptr)
   }
 
   private heapValueHandle(ptr: JSValuePointer): JSValue {
-    return new Lifetime(ptr, this.freeJSValue, this)
+    return new Lifetime(ptr, this.copyJSValue, this.freeJSValue, this)
   }
 
   private borrowPropertyKey(key: QuickJSPropertyKey): QuickJSHandle {
@@ -674,7 +721,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
     // key is alerady a JSValue, but we're borrowing it. Return a static handle
     // for intenal use only.
-    return new StaticLifetime(key.value as JSValueConstPointer, undefined, this)
+    return new StaticLifetime(key.value as JSValueConstPointer, this)
   }
 
   private toPointerArray(handleArray: QuickJSHandle[]): Lifetime<JSValueConstPointerPointer> {
@@ -683,7 +730,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     const ptr = this.module._malloc(numBytes) as JSValueConstPointerPointer
     var heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes)
     heapBytes.set(new Uint8Array(typedArray.buffer))
-    return new Lifetime(ptr, ptr => this.module._free(ptr))
+    return new Lifetime(ptr, undefined, ptr => this.module._free(ptr))
   }
 
   private errorToHandle(error: Error | QuickJSHandle) {
@@ -720,7 +767,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
  * A QuickJSHandle to a constant that will never change, and does not need to
  * be disposed.
  */
-export type StaticJSValue = StaticLifetime<JSValueConstPointer>
+export type StaticJSValue = Lifetime<JSValueConstPointer, JSValueConstPointer, QuickJSVm>
 
 /**
  * A QuickJSHandle to a borrowed value that does not need to be disposed.
@@ -732,7 +779,7 @@ export type StaticJSValue = StaticLifetime<JSValueConstPointer>
  *
  * quickjs-emscripten takes care of disposing JSValueConst references.
  */
-export type JSValueConst = Lifetime<JSValueConstPointer, QuickJSVm>
+export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJSVm>
 
 /**
  * A owned QuickJSHandle that should be disposed or returned.
@@ -749,7 +796,7 @@ export type JSValueConst = Lifetime<JSValueConstPointer, QuickJSVm>
  *
  * You can do so from Javascript by calling the .dispose() method.
  */
-export type JSValue = Lifetime<JSValuePointer, QuickJSVm>
+export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSVm>
 
 /**
  * Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
@@ -835,11 +882,11 @@ export class QuickJS {
    * VMs.
    */
   createVm(): QuickJSVm {
-    const rt = new Lifetime(this.ffi.QTS_NewRuntime(), rt_ptr => {
+    const rt = new Lifetime(this.ffi.QTS_NewRuntime(), undefined, rt_ptr => {
       this.rtMap.delete(rt_ptr)
       this.ffi.QTS_FreeRuntime(rt_ptr)
     })
-    const ctx = new Lifetime(this.ffi.QTS_NewContext(rt.value), ctx_ptr => {
+    const ctx = new Lifetime(this.ffi.QTS_NewContext(rt.value), undefined, ctx_ptr => {
       this.vmMap.delete(ctx_ptr)
       this.ffi.QTS_FreeContext(ctx_ptr)
     })
