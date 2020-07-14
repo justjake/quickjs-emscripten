@@ -460,10 +460,6 @@ char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   return out;
 }
 
-JSValue *QTS_DupValue(JSContext *ctx, JSValueConst *value_ptr) {
-  return jsvalue_to_heap(JS_DupValue(ctx, *value_ptr));
-}
-
 JSValue *QTS_GetGlobalObject(JSContext *ctx) {
   return jsvalue_to_heap(JS_GetGlobalObject(ctx));
 }

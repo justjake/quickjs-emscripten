@@ -759,7 +759,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
           throw result.error
         }
         const handle = result instanceof Lifetime ? result : result.value
-        ownedResultPtr = this.ffi.QTS_DupValue(this.ctx.value, handle.value)
+        ownedResultPtr = this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
         handle.dispose()
       }
     } catch (error) {

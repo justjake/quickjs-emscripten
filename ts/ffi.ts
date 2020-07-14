@@ -178,9 +178,6 @@ export class QuickJSFFI {
   QTS_Typeof: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => string =
     this.module.cwrap("QTS_Typeof", "string", ["number","number"])
 
-  QTS_DupValue: (ctx: JSContextPointer, value_ptr: JSValuePointer | JSValueConstPointer) => JSValuePointer =
-    this.module.cwrap("QTS_DupValue", "number", ["number","number"])
-
   QTS_GetGlobalObject: (ctx: JSContextPointer) => JSValuePointer =
     this.module.cwrap("QTS_GetGlobalObject", "number", ["number"])
 }
