@@ -1661,9 +1661,6 @@ fsevents@~2.1.1:
     typedoc: ^0.15.8
     typedoc-plugin-markdown: ^2.2.16
     typescript: ^3.7.4
-  dependenciesMeta:
-    google-closure-compiler-linux:
-      unplugged: true
   languageName: unknown
   linkType: soft
 
