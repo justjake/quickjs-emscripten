@@ -38,7 +38,9 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install dependencies
-      run: yarn install --frozen-lockfile --ignore-scripts
+      run: yarn install --immutable
+      env:
+        YARN_ENABLE_SCRIPTS: 0
 
     - name: Test debug
       run: make clean && yarn test
