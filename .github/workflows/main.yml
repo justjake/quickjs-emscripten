@@ -25,12 +25,6 @@ jobs:
         # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
         node-version: 12.x
 
-    - name: Setup Emscripten tools
-      uses: justjake/setup-emscripten@master
-      with:
-        emscripten-version: '1.39.18'
-        emsdk-version: '1.39.18'
-
     - name: Install Yarn
       run: 'npm install -g yarn@1.22.4'
 
