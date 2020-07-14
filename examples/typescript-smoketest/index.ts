@@ -1,6 +1,6 @@
-import { getQuickJS } from "quickjs-emscripten";
+import { getQuickJS } from 'quickjs-emscripten'
 async function main() {
-  const QuickJS = await getQuickJS();
-  console.log(QuickJS.evalCode('"Smoketest successful"'));
+  const QuickJS = await getQuickJS()
+  console.log(QuickJS.evalCode('"Smoketest successful"'))
 }
-main();
+main()
