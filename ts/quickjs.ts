@@ -111,7 +111,12 @@ export class Lifetime<T, TCopy = never, Owner = never> {
     if (!this.copier) {
       throw new Error('Non-copiable lifetime')
     }
-    return new Lifetime<TCopy, TCopy, Owner>(this.copier(this._value), this.copier, this.disposer, this._owner)
+    return new Lifetime<TCopy, TCopy, Owner>(
+      this.copier(this._value),
+      this.copier,
+      this.disposer,
+      this._owner
+    )
   }
 
   /**
@@ -136,10 +141,7 @@ export class Lifetime<T, TCopy = never, Owner = never> {
  * A Lifetime that lives forever. Used for constants.
  */
 export class StaticLifetime<T, Owner = never> extends Lifetime<T, T, Owner> {
-  constructor(
-    value: T,
-    owner?: Owner
-  ) {
+  constructor(value: T, owner?: Owner) {
     super(value, undefined, undefined, owner)
   }
 
@@ -163,11 +165,11 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
     owner?: Owner
   ) {
     // We don't care if the disposer doesn't support freeing T
-    super(value, copier, disposer as ((value: T | TCopy) => void), owner)
+    super(value, copier, disposer as (value: T | TCopy) => void, owner)
   }
 
   dispose() {
-    this._alive = false;
+    this._alive = false
   }
 }
 
