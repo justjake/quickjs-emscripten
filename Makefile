@@ -1,5 +1,5 @@
 CC=clang
-EMCC=emcc
+EMCC=yarn embin emcc
 QUICKJS_ROOT=quickjs
 WRAPPER_ROOT=c
 BUILD_ROOT=build
