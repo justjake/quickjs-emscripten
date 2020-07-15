@@ -495,9 +495,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"embin-linux@npm:1.39.19-3":
-  version: 1.39.19-3
-  resolution: "embin-linux@npm:1.39.19-3"
+"embin-linux@npm:1.39.19-4":
+  version: 1.39.19-4
+  resolution: "embin-linux@npm:1.39.19-4"
   dependencies:
     acorn: 7.3.1
     google-closure-compiler: 20200224.0.0
@@ -505,9 +505,9 @@ __metadata:
     source-map: 0.5.6
     wasm2c: 1.0.0
   peerDependencies:
-    embin-darwin: 1.39.19-3
-    embin-linux: 1.39.19-3
-    embin-win32: 1.39.19-3
+    embin-darwin: 1.39.19-4
+    embin-linux: 1.39.19-4
+    embin-win32: 1.39.19-4
   peerDependenciesMeta:
     embin-darwin:
       optional: true
@@ -517,7 +517,7 @@ __metadata:
       optional: true
   bin:
     embin: ./embin.js
-  checksum: 504f74858bc5c72a4c4ef5b7fa43292698ac48853860475552a2d91d18b6d0ee3d46256eec42fab23018e9237324ff1c6620e09fb0f01aa144a21f07e6fc2623
+  checksum: 3cc2a4bc45e8d6464bab643d258e4fc336944cb1db02282d393a8b7c6f15402e316d58d35c2afd08fa62795efa1536cf01cc296dde4b2456ea6cc713a64a7e96
   languageName: node
   linkType: hard
 
@@ -1653,7 +1653,7 @@ fsevents@~2.1.1:
     "@types/emscripten": ^1.38.0
     "@types/mocha": ^5.2.7
     "@types/node": ^13.1.4
-    embin-linux: 1.39.19-3
+    embin-linux: 1.39.19-4
     mocha: 7.2.0
     prettier: ^1.19.1
     source-map-support: ^0.5.16
