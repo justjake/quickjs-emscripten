@@ -23,7 +23,7 @@
     "dist/*.map"
   ],
   "scripts": {
-    "prepare": "yarn make-release && yarn build && mocha ./dist/quickjs.test.js && yarn tarball && yarn smoketest-node",
+    "prepare": "yarn prepack && mocha ./dist/quickjs.test.js && yarn tarball && yarn smoketest-node",
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:ldarren/QuickJS.git mod",
     "make-debug": "make DEBUG=1 -j 8",
     "make-release": "embin which emcc && make clean && make -j 8",
@@ -34,6 +34,7 @@
     "prettier": "prettier --write ./*.json ./**/*.ts* ./*.js* ./*.md",
     "prettier-check": "prettier --check ./*.json ./**/*.ts* ./*.js* ./*.md",
     "run-n": "yarn make-debug && ./build/wrapper/native/test.exe",
+    "prepack": "yarn make-release && yarn build",
     "tarball": "mkdir -p build && yarn pack --filename build/quickjs-emscripten.tgz",
     "smoketest-node": "cd examples/typescript-smoketest && YARN_CHECKSUM_BEHAVIOR=update yarn add quickjs-emscripten@../../build/quickjs-emscripten.tgz && tsc --lib ES2015,dom index.ts && node index.js",
     "smoketest-cra": "cd examples/website && YARN_CHECKSUM_BEHAVIOR=update yarn add quickjs-emscripten@../../build/quickjs-emscripten.tgz && yarn build"

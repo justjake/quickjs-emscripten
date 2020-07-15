@@ -11,6 +11,5 @@ npm-error.log
 quickjs/test_fib.c
 quickjs/examples/test_fib
 
-/.yarn/*
+**/.yarn/*
 !/.yarn/releases
-
