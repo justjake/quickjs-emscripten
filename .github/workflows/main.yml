@@ -31,7 +31,7 @@ jobs:
     - name: Cache dependencies
       uses: actions/cache@v2
       with:
-        path: **/.yarn/cache
+        path: "**/.yarn/cache"
         key: dependency-cache
 
     - name: Install dependencies
