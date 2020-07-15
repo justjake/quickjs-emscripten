@@ -25,11 +25,14 @@ jobs:
         # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
         node-version: 12.x
 
-    - name: Install Yarn
-      run: 'npm install -g yarn@1.22.4'
-
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: .yarn/cache
+        key: dependency-cache
 
     - name: Install dependencies
       run: yarn install --immutable
