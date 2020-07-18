@@ -103,6 +103,14 @@ export class Lifetime<T, TCopy = never, Owner = never> {
     return this._owner
   }
 
+  canDup() {
+    return !!this.copier
+  }
+
+  canDispose() {
+    return !!this.disposer
+  }
+
   /**
    * Create a new handle pointing to the same [[value]].
    */
@@ -145,8 +153,17 @@ export class StaticLifetime<T, Owner = never> extends Lifetime<T, T, Owner> {
     super(value, undefined, undefined, owner)
   }
 
+  canDup() {
+    // Static lifetime doesn't need a copier to be copiable
+    return true
+  }
+
+  canDispose() {
+    return false
+  }
+
   // Copy returns the same instance.
-  copy() {
+  dup() {
     return this
   }
 
@@ -166,6 +183,10 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
   ) {
     // We don't care if the disposer doesn't support freeing T
     super(value, copier, disposer as (value: T | TCopy) => void, owner)
+  }
+
+  canDispose() {
+    return false
   }
 
   dispose() {
