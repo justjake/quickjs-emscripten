@@ -14,8 +14,14 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
+    # We'll run the tests on both Linux and OSX
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ ubuntu-latest, macos-latest ]
+
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.platform}}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
