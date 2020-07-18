@@ -495,6 +495,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"embin-darwin@npm:1.39.19-4":
+  version: 1.39.19-4
+  resolution: "embin-darwin@npm:1.39.19-4"
+  dependencies:
+    acorn: 7.3.1
+    google-closure-compiler: 20200224.0.0
+    html-minifier-terser: 5.0.2
+    source-map: 0.5.6
+    wasm2c: 1.0.0
+  peerDependencies:
+    embin-darwin: 1.39.19-4
+    embin-linux: 1.39.19-4
+    embin-win32: 1.39.19-4
+  peerDependenciesMeta:
+    embin-darwin:
+      optional: true
+    embin-linux:
+      optional: true
+    embin-win32:
+      optional: true
+  bin:
+    embin: ./embin.js
+  checksum: d28f1b60d93888289cf633fc50a2b839a60e9027e3e1201bc3a2483474d81e0f120b1bdab9894579ac14011aad44ebda8489990b7fd6bd6c45158cd99b8568dc
+  languageName: node
+  linkType: hard
+
 "embin-linux@npm:1.39.19-4":
   version: 1.39.19-4
   resolution: "embin-linux@npm:1.39.19-4"
@@ -1653,6 +1679,7 @@ fsevents@~2.1.1:
     "@types/emscripten": ^1.38.0
     "@types/mocha": ^5.2.7
     "@types/node": ^13.1.4
+    embin-darwin: 1.39.19-4
     embin-linux: 1.39.19-4
     mocha: 7.2.0
     prettier: ^1.19.1
