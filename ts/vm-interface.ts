@@ -1,15 +1,5 @@
-/**
- * Used as an optional.
- * `{ value: S } | { error: E }`.
- */
-export type SuccessOrFail<S, F> =
-  | {
-      value: S
-      error?: undefined
-    }
-  | {
-      error: F
-    }
+import { SuccessOrFail } from './result'
+export { SuccessOrFail }
 
 /**
  * Used as an optional for results of a Vm call.

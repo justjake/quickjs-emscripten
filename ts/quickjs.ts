@@ -17,6 +17,11 @@ import {
   SuccessOrFail,
 } from './vm-interface'
 import { QuickJSEmscriptenModule } from './emscripten-types'
+import { Failure, Success } from './result'
+
+interface QuickJSError extends Error {
+  quickjsStack?: string
+}
 
 let QuickJSModule: QuickJSEmscriptenModule | undefined = undefined
 
@@ -113,6 +118,15 @@ export class Lifetime<T, Owner = never> {
     this._alive = false
   }
 
+  /**
+   * Perform an operation with [[value]], then dispose that value.
+   */
+  consume<Out>(map: (value: this) => Out): Out {
+    const result = map(this)
+    this.dispose()
+    return result
+  }
+
   private assertAlive() {
     if (!this.alive) {
       throw new Error('Lifetime not alive')
@@ -132,7 +146,6 @@ export class StaticLifetime<T, Owner = never> extends Lifetime<T, Owner> {
  * Used as an optional for the results of executing pendingJobs.
  * On success, `value` contains the number of async jobs executed
  * by the runtime.
- * `{ value: number } | { error: QuickJSHandle }`.
  */
 export type ExecutePendingJobsResult = SuccessOrFail<number, QuickJSHandle>
 
@@ -360,15 +373,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    */
   getProp(handle: QuickJSHandle, key: QuickJSPropertyKey): QuickJSHandle {
     this.assertOwned(handle)
-    const quickJSKey = this.borrowPropertyKey(key)
-    const ptr = this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value)
-    const result = this.heapValueHandle(ptr)
-
-    // free newly allocated value if key was a string or number. No-op if string was already
-    // a QuickJS handle.
-    quickJSKey.dispose()
-
-    return result
+    const ptr = this.borrowPropertyKey(key).consume(keyHandle =>
+      this.ffi.QTS_GetProp(this.ctx.value, handle.value, keyHandle.value)
+    )
+    return this.heapValueHandle(ptr)
   }
 
   /**
@@ -384,11 +392,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    */
   setProp(handle: QuickJSHandle, key: QuickJSPropertyKey, value: QuickJSHandle) {
     this.assertOwned(handle)
-    const quickJSKey = this.borrowPropertyKey(key)
-    this.ffi.QTS_SetProp(this.ctx.value, handle.value, quickJSKey.value, value.value)
-    // free newly allocated value if key was a string or number. No-op if string was already
-    // a QuickJS handle.
-    quickJSKey.dispose()
+    this.borrowPropertyKey(key).consume(keyHandle =>
+      this.ffi.QTS_SetProp(this.ctx.value, handle.value, keyHandle.value, value.value)
+    )
   }
 
   /**
@@ -452,23 +458,17 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     ...args: QuickJSHandle[]
   ): VmCallResult<QuickJSHandle> {
     this.assertOwned(func)
-    const argsArrayPtr = this.toPointerArray(args)
-    const resultPtr = this.ffi.QTS_Call(
-      this.ctx.value,
-      func.value,
-      thisVal.value,
-      args.length,
-      argsArrayPtr.value
+    const resultPtr = this.toPointerArray(args).consume(argsArrayPtr =>
+      this.ffi.QTS_Call(this.ctx.value, func.value, thisVal.value, args.length, argsArrayPtr.value)
     )
-    argsArrayPtr.dispose()
 
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
-      return { error: this.heapValueHandle(errorPtr) }
+      return this.heapValueFailure(errorPtr)
     }
 
-    return { value: this.heapValueHandle(resultPtr) }
+    return new Success(this.heapValueHandle(resultPtr))
   }
 
   /**
@@ -494,9 +494,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
-      return { error: this.heapValueHandle(errorPtr) }
+      return this.heapValueFailure(errorPtr)
     }
-    return { value: this.heapValueHandle(resultPtr) }
+    return new Success(this.heapValueHandle(resultPtr))
   }
 
   /**
@@ -519,11 +519,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     )
     const typeOfRet = this.typeof(resultValue)
     if (typeOfRet === 'number') {
-      const executedJobs = this.getNumber(resultValue)
-      resultValue.dispose()
-      return { value: executedJobs }
+      return new Success(resultValue.consume(this.getNumber))
     } else {
-      return { error: resultValue }
+      return new Failure<QuickJSHandle>(resultValue, this.unwrapError)
     }
   }
 
@@ -563,27 +561,15 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   /**
+   * @deprecated use  `result.unwrap()` instead.
+   *
    * Unwrap a SuccessOrFail result such as a [[VmCallResult]] or a
    * [[ExecutePendingJobsResult]], where the fail branch contains a handle to a QuickJS error value.
    * If the result is a success, returns the value.
    * If the result is an error, converts the error to a native object and throws the error.
    */
   unwrapResult<T>(result: SuccessOrFail<T, QuickJSHandle>): T {
-    if (result.error) {
-      const dumped = this.dump(result.error)
-      result.error.dispose()
-
-      if (dumped && typeof dumped === 'object' && typeof dumped.message === 'string') {
-        const exception = new Error(dumped.message)
-        if (typeof dumped.name === 'string') {
-          exception.name = dumped.name
-        }
-        throw exception
-      }
-      throw dumped
-    }
-
-    return result.value
+    return result.unwrap()
   }
 
   private interruptHandler: ShouldInterruptHandler | undefined
@@ -630,6 +616,31 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     this.rt.dispose()
   }
 
+  /**
+   * Consume `handle` by converting into a native value, preferably
+   * a native `Error` object, and then throws.
+   */
+  private unwrapError = (handle: QuickJSHandle): never => {
+    const dumped = this.dump(handle)
+    handle.dispose()
+
+    if (typeof dumped === 'object') {
+      const error: QuickJSError = new Error(dumped.message)
+
+      if (typeof dumped.name === 'string') {
+        error.name = dumped.name
+      }
+
+      if (typeof dumped.stack === 'string') {
+        error.quickjsStack = dumped.stack
+      }
+
+      throw error
+    }
+
+    throw dumped
+  }
+
   private fnNextId = 0
   private fnMap = new Map<number, VmFunctionImplementation<QuickJSHandle>>()
 
@@ -664,8 +675,8 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     try {
       let result = fn.apply(thisHandle, argHandles)
       if (result) {
-        if ('error' in result && result.error) {
-          throw result.error
+        if (result instanceof Failure) {
+          throw result.failure
         }
         const handle = result instanceof Lifetime ? result : result.value
         ownedResultPtr = this.ffi.QTS_DupValue(this.ctx.value, handle.value)
@@ -718,6 +729,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return new Lifetime(ptr, this.freeJSValue, this)
   }
 
+  private heapValueFailure(ptr: JSValuePointer): Failure<QuickJSHandle> {
+    return new Failure<QuickJSHandle>(this.heapValueHandle(ptr), this.unwrapError)
+  }
+
   private borrowPropertyKey(key: QuickJSPropertyKey): QuickJSHandle {
     if (typeof key === 'number') {
       return this.newNumber(key)
@@ -729,6 +744,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
     // key is alerady a JSValue, but we're borrowing it. Return a static handle
     // for intenal use only.
+    this.assertOwned(key)
     return new StaticLifetime(key.value as JSValueConstPointer, undefined, this)
   }
 
@@ -771,49 +787,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 }
 
-/**
- * A QuickJSHandle to a constant that will never change, and does not need to
- * be disposed.
- */
-export type StaticJSValue = StaticLifetime<JSValueConstPointer>
-
-/**
- * A QuickJSHandle to a borrowed value that does not need to be disposed.
- *
- * In QuickJS, a JSValueConst is a "borrowed" reference that isn't owned by the
- * current scope. That means that the current scope should not `JS_FreeValue`
- * it, or retain a reference to it after the scope exits, because it may be
- * freed by its owner.
- *
- * quickjs-emscripten takes care of disposing JSValueConst references.
- */
-export type JSValueConst = Lifetime<JSValueConstPointer, QuickJSVm>
-
-/**
- * A owned QuickJSHandle that should be disposed or returned.
- *
- * The QuickJS interpreter passes Javascript values between functions as
- * `JSValue` structs that references some internal data. Because passing
- * structs cross the Empscripten FFI interfaces is bothersome, we use pointers
- * to these structs instead.
- *
- * A JSValue reference is "owned" in its scope. before exiting the scope, it
- * should be freed,  by calling `JS_FreeValue(ctx, js_value)`) or returned from
- * the scope. We extend that contract - a JSValuePointer (`JSValue*`) must also
- * be `free`d.
- *
- * You can do so from Javascript by calling the .dispose() method.
- */
-export type JSValue = Lifetime<JSValuePointer, QuickJSVm>
-
-/**
- * Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
- * a QuickJS virtual machine.
- *
- * Values must not be shared between QuickJSVm instances.
- * You must dispose of any handles you create by calling the `.dispose()` method.
- */
-export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
+export type QuickJSHandle = Lifetime<JSValuePointer | JSValueConstPointer, QuickJSVm | undefined>
 
 /**
  * Options for [[QuickJS.evalCode]].
@@ -939,9 +913,9 @@ export class QuickJS {
 
     const result = vm.evalCode(code)
 
-    if (result.error) {
-      const error = vm.dump(result.error)
-      result.error.dispose()
+    if (result.failure) {
+      const error = vm.dump(result.failure)
+      result.failure.dispose()
       vm.dispose()
       throw error
     }

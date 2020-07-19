@@ -2,10 +2,88 @@
  * These tests demonstate some common patterns for using quickjs-emscripten.
  */
 
-import { getQuickJS, QuickJSVm, QuickJSHandle, ShouldInterruptHandler } from './quickjs'
+import { getQuickJS, QuickJSVm, QuickJSHandle, ShouldInterruptHandler, Lifetime } from './quickjs'
 import { it, describe } from 'mocha'
 import assert from 'assert'
 import { VmCallResult } from './vm-interface'
+import { Success } from './result'
+
+interface Spy<T> {
+  (val?: T): number
+  calls: number
+  lastCall?: T
+}
+
+function spy<T>(): Spy<T> {
+  const spy: Spy<T> = Object.assign(
+    (val?: T) => {
+      spy.lastCall = val
+      return ++spy.calls
+    },
+    { calls: 0 }
+  )
+  return spy
+}
+
+describe('Lifetime', () => {
+  let disposer: Spy<any> = undefined as any
+  let value: Spy<any> = undefined as any
+  let lifetime: Lifetime<Spy<any>> = undefined as any
+
+  beforeEach(() => {
+    disposer = spy()
+    value = spy()
+    lifetime = new Lifetime(value, disposer)
+  })
+
+  describe('.value', () => {
+    it('returns the value', () => {
+      assert.strictEqual(lifetime.value, value)
+    })
+
+    it('throws once dispose has been called', () => {
+      lifetime.dispose()
+      assert.throws(() => lifetime.value, /Lifetime not alive/)
+    })
+  })
+
+  describe('.dispose', () => {
+    it('calls the disposer with the value', () => {
+      lifetime.dispose()
+      assert.strictEqual(disposer.calls, 1, 'disposer was called')
+      assert.strictEqual(disposer.lastCall, value, 'disposer was called with the value')
+    })
+
+    it('throws if called twice', () => {
+      lifetime.dispose()
+      assert.throws(() => lifetime.dispose(), /Lifetime not alive/)
+    })
+  })
+
+  describe('.alive', () => {
+    it('is false after being disposed', () => {
+      assert.strictEqual(lifetime.alive, true)
+      lifetime.dispose()
+      assert.strictEqual(lifetime.alive, false)
+    })
+  })
+
+  describe('.consume', () => {
+    it('passes the value to the mapper func and returns the result', () => {
+      const mapper = spy()
+      const result = lifetime.consume(mapper)
+      assert.strictEqual(result, 1, 'result of mapper')
+      assert.strictEqual(mapper.lastCall, value, 'called with value')
+    })
+
+    it('is disposed afterwards', () => {
+      lifetime.consume(spy())
+      assert.strictEqual(lifetime.alive, false, 'lifetime was disposed')
+      assert.strictEqual(disposer.calls, 1, 'disposer was called')
+      assert.strictEqual(disposer.lastCall, value, 'disposer was called with the value')
+    })
+  })
+})
 
 describe('QuickJSVm', async () => {
   let vm: QuickJSVm = undefined as any
@@ -57,7 +135,7 @@ describe('QuickJSVm', async () => {
         return vm.newNumber(some + vm.getNumber(num))
       })
       const result = vm.callFunction(fnHandle, vm.undefined, vm.newNumber(1))
-      if (result.error) {
+      if (result.failure) {
         assert.fail('calling fnHandle must succeed')
       }
       assert.equal(vm.getNumber(result.value), 10)
@@ -70,14 +148,14 @@ describe('QuickJSVm', async () => {
       })
 
       const result = vm.callFunction(fnHandle, vm.undefined)
-      if (!result.error) {
+      if (!result.failure) {
         assert.fail('function call must return error')
       }
-      assert.deepEqual(vm.dump(result.error), {
+      assert.deepEqual(vm.dump(result.failure), {
         name: 'Error',
         message: 'oops',
       })
-      result.error.dispose()
+      result.failure.dispose()
       fnHandle.dispose()
     })
 
@@ -195,24 +273,20 @@ describe('QuickJSVm', async () => {
   describe('.unwrapResult', () => {
     it('successful result: returns the value', () => {
       const handle = vm.newString('OK!')
-      const result: VmCallResult<QuickJSHandle> = {
-        value: handle,
-      }
-
+      const result: VmCallResult<QuickJSHandle> = new Success(handle)
       assert.strictEqual(vm.unwrapResult(result), handle)
     })
 
     it('error result: throws the error as a Javascript value', () => {
-      const handle = vm.newString('ERROR!')
-      const result: VmCallResult<QuickJSHandle> = {
-        error: handle,
-      }
+      const result = vm.evalCode(`throw new Error('ERROR!')`)
 
       try {
         vm.unwrapResult(result)
         assert.fail('vm.unwrapResult(error) must throw')
       } catch (error) {
-        assert.strictEqual(error, 'ERROR!')
+        assert.strictEqual(error.message, 'ERROR!')
+        assert.strictEqual(error.name, 'Error')
+        assert.strictEqual(error.quickjsStack, '    at <eval> (eval.js)\n')
       }
     })
   })
@@ -226,15 +300,15 @@ describe('QuickJSVm', async () => {
 
     it('on failure: returns { error: exception }', () => {
       const result = vm.evalCode(`["this", "should", "fail].join(' ')`)
-      if (!result.error) {
+      if (!result.failure) {
         assert.fail('result should be an error')
       }
-      assert.deepEqual(vm.dump(result.error), {
+      assert.deepEqual(vm.dump(result.failure), {
         name: 'SyntaxError',
         message: 'unexpected end of string',
         stack: '    at eval.js:1\n',
       })
-      result.error.dispose()
+      result.failure.dispose()
     })
 
     it('runs in the global context', () => {
@@ -255,6 +329,17 @@ describe('QuickJSVm', async () => {
       const nextId = vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`))
       assert.equal(i, 3)
       assert.equal(vm.getNumber(nextId), 3)
+    })
+
+    it('can unwrap a success', () => {
+      const result = vm.evalCode('3; 4; 5')
+      const dumped = vm.dump(result.unwrap())
+      result.unwrap().dispose()
+      assert.strictEqual(dumped, 5)
+    })
+
+    it('can unwrap a failure', () => {
+      assert.throws(() => vm.evalCode('what!').unwrap(), /SyntaxError: expecting ';'/)
     })
   })
 
@@ -378,9 +463,9 @@ describe('QuickJSVm', async () => {
       assert(i > calls, 'incremented i more than called the interrupt handler')
       // console.log('Javascript loop iterrations:', i, 'interrupt handler calls:', calls)
 
-      if (result.error) {
-        const errorJson = vm.dump(result.error)
-        result.error.dispose()
+      if (result.failure) {
+        const errorJson = vm.dump(result.failure)
+        result.failure.dispose()
         assert.equal(errorJson.name, 'InternalError')
         assert.equal(errorJson.message, 'interrupted')
       } else {
