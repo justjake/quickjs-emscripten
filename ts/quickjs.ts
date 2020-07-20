@@ -120,6 +120,8 @@ export class Lifetime<T, Owner = never> {
 
   /**
    * Perform an operation with [[value]], then dispose that value.
+   * TODO: only merge this once Typescript fixes this issue:
+   *   https://github.com/microsoft/TypeScript/pull/31023
    */
   consume<Out>(map: (value: this) => Out): Out {
     const result = map(this)
