@@ -10,3 +10,6 @@ npm-error.log
 /dist
 quickjs/test_fib.c
 quickjs/examples/test_fib
+
+**/.yarn/*
+!/.yarn/releases
