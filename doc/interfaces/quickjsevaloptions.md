@@ -20,7 +20,7 @@ Options for [QuickJS.evalCode](../classes/quickjs.md#evalcode).
 
 • **shouldInterrupt**? : *[ShouldInterruptHandler](../globals.md#shouldinterrupthandler)*
 
-*Defined in [quickjs.ts:859](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L859)*
+*Defined in [quickjs.ts:921](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L921)*
 
 Interrupt evaluation if `shouldInterrupt` returns `true`.
 See [shouldInterruptAfterDeadline](../globals.md#shouldinterruptafterdeadline).

@@ -1,65 +1,73 @@
-[quickjs-emscripten](../README.md) › [Globals](../globals.md) › [StaticLifetime](staticlifetime.md)
+[quickjs-emscripten](../README.md) › [Globals](../globals.md) › [WeakLifetime](weaklifetime.md)
 
-# Class: StaticLifetime <**T, Owner**>
+# Class: WeakLifetime <**T, TCopy, Owner**>
 
-A Lifetime that lives forever. Used for constants.
+A Lifetime that does not own its `value`. A WeakLifetime never calls its
+`disposer` function, but can be `dup`ed to produce regular lifetimes that
+do.
+
+Used for function arguments.
 
 ## Type parameters
 
 ▪ **T**
 
+▪ **TCopy**
+
 ▪ **Owner**
 
 ## Hierarchy
 
-* [Lifetime](lifetime.md)‹T, T, Owner›
+* [Lifetime](lifetime.md)‹T, TCopy, Owner›
 
-  ↳ **StaticLifetime**
+  ↳ **WeakLifetime**
 
 ## Index
 
 ### Constructors
 
-* [constructor](staticlifetime.md#constructor)
+* [constructor](weaklifetime.md#constructor)
 
 ### Properties
 
-* [_alive](staticlifetime.md#protected-_alive)
-* [_owner](staticlifetime.md#protected-optional-_owner)
-* [_value](staticlifetime.md#protected-_value)
-* [copier](staticlifetime.md#protected-optional-copier)
-* [disposer](staticlifetime.md#protected-optional-disposer)
+* [_alive](weaklifetime.md#protected-_alive)
+* [_owner](weaklifetime.md#protected-optional-_owner)
+* [_value](weaklifetime.md#protected-_value)
+* [copier](weaklifetime.md#protected-optional-copier)
+* [disposer](weaklifetime.md#protected-optional-disposer)
 
 ### Accessors
 
-* [alive](staticlifetime.md#alive)
-* [dupable](staticlifetime.md#dupable)
-* [owner](staticlifetime.md#owner)
-* [value](staticlifetime.md#value)
+* [alive](weaklifetime.md#alive)
+* [dupable](weaklifetime.md#dupable)
+* [owner](weaklifetime.md#owner)
+* [value](weaklifetime.md#value)
 
 ### Methods
 
-* [dispose](staticlifetime.md#dispose)
-* [dup](staticlifetime.md#dup)
+* [dispose](weaklifetime.md#dispose)
+* [dup](weaklifetime.md#dup)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new StaticLifetime**(`value`: T, `owner?`: Owner): *[StaticLifetime](staticlifetime.md)*
+\+ **new WeakLifetime**(`value`: T, `copier?`: undefined | function, `disposer?`: undefined | function, `owner?`: Owner): *[WeakLifetime](weaklifetime.md)*
 
 *Overrides [Lifetime](lifetime.md).[constructor](lifetime.md#constructor)*
 
-*Defined in [quickjs.ts:147](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L147)*
+*Defined in [quickjs.ts:173](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L173)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `value` | T |
+`copier?` | undefined &#124; function |
+`disposer?` | undefined &#124; function |
 `owner?` | Owner |
 
-**Returns:** *[StaticLifetime](staticlifetime.md)*
+**Returns:** *[WeakLifetime](weaklifetime.md)*
 
 ## Properties
 
@@ -129,9 +137,9 @@ ___
 
 • **get dupable**(): *boolean*
 
-*Overrides [Lifetime](lifetime.md).[dupable](lifetime.md#dupable)*
+*Inherited from [Lifetime](lifetime.md).[dupable](lifetime.md#dupable)*
 
-*Defined in [quickjs.ts:153](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L153)*
+*Defined in [quickjs.ts:106](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L106)*
 
 **Returns:** *boolean*
 
@@ -160,7 +168,7 @@ ___
 The value this Lifetime protects. You must never retain the value - it
 may become invalid, leading to memory errors.
 
-**`throws`** If the lifetime has been [dispose](staticlifetime.md#dispose)d already.
+**`throws`** If the lifetime has been [dispose](weaklifetime.md#dispose)d already.
 
 **Returns:** *T*
 
@@ -172,7 +180,7 @@ may become invalid, leading to memory errors.
 
 *Overrides [Lifetime](lifetime.md).[dispose](lifetime.md#dispose)*
 
-*Defined in [quickjs.ts:163](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L163)*
+*Defined in [quickjs.ts:184](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L184)*
 
 **Returns:** *void*
 
@@ -180,10 +188,12 @@ ___
 
 ###  dup
 
-▸ **dup**(): *this*
+▸ **dup**(): *[Lifetime](lifetime.md)‹TCopy, TCopy, Owner›*
 
-*Overrides [Lifetime](lifetime.md).[dup](lifetime.md#dup)*
+*Inherited from [Lifetime](lifetime.md).[dup](lifetime.md#dup)*
 
-*Defined in [quickjs.ts:158](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L158)*
+*Defined in [quickjs.ts:113](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L113)*
 
-**Returns:** *this*
+Create a new handle pointing to the same [value](weaklifetime.md#value).
+
+**Returns:** *[Lifetime](lifetime.md)‹TCopy, TCopy, Owner›*
