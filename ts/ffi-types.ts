@@ -20,13 +20,35 @@ type JSContextPointer = Pointer<'JSContext'>
 
 /**
  * `JSValue*`.
- * See [[JSValue]].
+ *
+ * A owned JSValue that should be disposed or returned.
+ *
+ * The QuickJS interpreter passes Javascript values between functions as
+ * `JSValue` structs that references some internal data. Because passing
+ * structs cross the Empscripten FFI interfaces is bothersome, we use pointers
+ * to these structs instead.
+ *
+ * A JSValue reference is "owned" in its scope. before exiting the scope, it
+ * should be freed,  by calling `JS_FreeValue(ctx, js_value)`) or returned from
+ * the scope. We extend that contract - a JSValuePointer (`JSValue*`) must also
+ * be `free`d.
+ *
+ * You can do so from Javascript by calling the .dispose() method on a Lifetime
+ * wrapping a JSValuePointer.
+ *
+ * See [[QuickJSHandle]].
  */
 type JSValuePointer = Pointer<'JSValue'>
 
 /**
  * `JSValueConst*
- * See [[JSValueConst]] and [[StaticJSValue]].
+ *
+ * In QuickJS, a JSValueConst is a "borrowed" reference that isn't owned by the
+ * current scope. That means that the current scope should not `JS_FreeValue`
+ * it, or retain a reference to it after the scope exits, because it may be
+ * freed by its owner.
+ *
+ * quickjs-emscripten takes care of disposing JSValueConst references.
  */
 type JSValueConstPointer = Pointer<'JSValueConst'>
 
