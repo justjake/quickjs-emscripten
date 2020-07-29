@@ -103,12 +103,8 @@ export class Lifetime<T, TCopy = never, Owner = never> {
     return this._owner
   }
 
-  canDup() {
+  get dupable() {
     return !!this.copier
-  }
-
-  canDispose() {
-    return !!this.disposer
   }
 
   /**
@@ -117,7 +113,7 @@ export class Lifetime<T, TCopy = never, Owner = never> {
   dup() {
     this.assertAlive()
     if (!this.copier) {
-      throw new Error('Non-copiable lifetime')
+      throw new Error('Non-dupable lifetime')
     }
     return new Lifetime<TCopy, TCopy, Owner>(
       this.copier(this._value),
@@ -153,13 +149,9 @@ export class StaticLifetime<T, Owner = never> extends Lifetime<T, T, Owner> {
     super(value, undefined, undefined, owner)
   }
 
-  canDup() {
-    // Static lifetime doesn't need a copier to be copiable
+  // Static lifetime doesn't need a copier to be copiable
+  get dupable() {
     return true
-  }
-
-  canDispose() {
-    return false
   }
 
   // Copy returns the same instance.
@@ -172,7 +164,11 @@ export class StaticLifetime<T, Owner = never> extends Lifetime<T, T, Owner> {
 }
 
 /**
- * A Lifetime that lives forever but can still be copied. Used for constants.
+ * A Lifetime that does not own its `value`. A WeakLifetime never calls its
+ * `disposer` function, but can be `dup`ed to produce regular lifetimes that
+ * do.
+ *
+ * Used for function arguments.
  */
 export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, TCopy, Owner> {
   constructor(
@@ -183,10 +179,6 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
   ) {
     // We don't care if the disposer doesn't support freeing T
     super(value, copier, disposer as (value: T | TCopy) => void, owner)
-  }
-
-  canDispose() {
-    return false
   }
 
   dispose() {
