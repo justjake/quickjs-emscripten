@@ -620,7 +620,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * JSValue object. Use [[dump]] to convert to a native object.
    * Calling this method will allocate more memory inside the runtime. The information
    * is accurate as of just before the call to `computeMemoryUsage`.
-   * For a human-digestable representation, see [[logMemoryUsage]].
+   * For a human-digestable representation, see [[dumpMemoryUsage]].
    */
   computeMemoryUsage(): QuickJSHandle {
     return this.heapValueHandle(
