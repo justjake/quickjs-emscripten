@@ -46,9 +46,11 @@ If you're using asynchronous code inside the QuickJSVm, you may need to also cal
 ### Methods
 
 * [callFunction](quickjsvm.md#callfunction)
+* [computeMemoryUsage](quickjsvm.md#computememoryusage)
 * [defineProp](quickjsvm.md#defineprop)
 * [dispose](quickjsvm.md#dispose)
 * [dump](quickjsvm.md#dump)
+* [dumpMemoryUsage](quickjsvm.md#dumpmemoryusage)
 * [evalCode](quickjsvm.md#evalcode)
 * [executePendingJobs](quickjsvm.md#executependingjobs)
 * [getNumber](quickjsvm.md#getnumber)
@@ -61,6 +63,7 @@ If you're using asynchronous code inside the QuickJSVm, you may need to also cal
 * [newObject](quickjsvm.md#newobject)
 * [newString](quickjsvm.md#newstring)
 * [removeShouldInterruptHandler](quickjsvm.md#removeshouldinterrupthandler)
+* [setMemoryLimit](quickjsvm.md#setmemorylimit)
 * [setProp](quickjsvm.md#setprop)
 * [setShouldInterruptHandler](quickjsvm.md#setshouldinterrupthandler)
 * [typeof](quickjsvm.md#typeof)
@@ -174,6 +177,22 @@ A result. If the function threw, result `error` be a handle to the exception.
 
 ___
 
+###  computeMemoryUsage
+
+▸ **computeMemoryUsage**(): *[QuickJSHandle](../globals.md#quickjshandle)*
+
+*Defined in [quickjs.ts:625](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L625)*
+
+Compute memory usage for this runtime. Returns the result as a handle to a
+JSValue object. Use [dump](quickjsvm.md#dump) to convert to a native object.
+Calling this method will allocate more memory inside the runtime. The information
+is accurate as of just before the call to `computeMemoryUsage`.
+For a human-digestable representation, see [dumpMemoryUsage](quickjsvm.md#dumpmemoryusage).
+
+**Returns:** *[QuickJSHandle](../globals.md#quickjshandle)*
+
+___
+
 ###  defineProp
 
 ▸ **defineProp**(`handle`: [QuickJSHandle](../globals.md#quickjshandle), `key`: [QuickJSPropertyKey](../globals.md#quickjspropertykey), `descriptor`: [VmPropertyDescriptor](../interfaces/vmpropertydescriptor.md)‹[QuickJSHandle](../globals.md#quickjshandle)›): *void*
@@ -198,7 +217,7 @@ ___
 
 ▸ **dispose**(): *void*
 
-*Defined in [quickjs.ts:623](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L623)*
+*Defined in [quickjs.ts:656](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L656)*
 
 Dispose of this VM's underlying resources.
 
@@ -225,6 +244,19 @@ Name | Type |
 `handle` | [QuickJSHandle](../globals.md#quickjshandle) |
 
 **Returns:** *any*
+
+___
+
+###  dumpMemoryUsage
+
+▸ **dumpMemoryUsage**(): *string*
+
+*Defined in [quickjs.ts:635](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L635)*
+
+**Returns:** *string*
+
+a human-readable description of memory usage in this runtime.
+For programatic access to this information, see [computeMemoryUsage](quickjsvm.md#computememoryusage).
 
 ___
 
@@ -465,10 +497,29 @@ ___
 
 ▸ **removeShouldInterruptHandler**(): *void*
 
-*Defined in [quickjs.ts:610](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L610)*
+*Defined in [quickjs.ts:643](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L643)*
 
 Remove the interrupt handler, if any.
 See [setShouldInterruptHandler](quickjsvm.md#setshouldinterrupthandler).
+
+**Returns:** *void*
+
+___
+
+###  setMemoryLimit
+
+▸ **setMemoryLimit**(`limitBytes`: number): *void*
+
+*Defined in [quickjs.ts:610](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L610)*
+
+Set the max memory this runtime can allocate.
+To remove the limit, set to `-1`.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`limitBytes` | number |
 
 **Returns:** *void*
 

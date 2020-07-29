@@ -50,8 +50,11 @@ library.
 * [QTS_NewRuntime](quickjsffi.md#qts_newruntime)
 * [QTS_NewString](quickjsffi.md#qts_newstring)
 * [QTS_ResolveException](quickjsffi.md#qts_resolveexception)
+* [QTS_RuntimeComputeMemoryUsage](quickjsffi.md#qts_runtimecomputememoryusage)
 * [QTS_RuntimeDisableInterruptHandler](quickjsffi.md#qts_runtimedisableinterrupthandler)
+* [QTS_RuntimeDumpMemoryUsage](quickjsffi.md#qts_runtimedumpmemoryusage)
 * [QTS_RuntimeEnableInterruptHandler](quickjsffi.md#qts_runtimeenableinterrupthandler)
+* [QTS_RuntimeSetMemoryLimit](quickjsffi.md#qts_runtimesetmemorylimit)
 * [QTS_SetHostCallback](quickjsffi.md#qts_sethostcallback)
 * [QTS_SetInterruptCallback](quickjsffi.md#qts_setinterruptcallback)
 * [QTS_SetProp](quickjsffi.md#qts_setprop)
@@ -101,7 +104,7 @@ ___
 • **QTS_Call**: *function* = 
     this.module.cwrap("QTS_Call", "number", ["number","number","number","number","number"])
 
-*Defined in [ffi.ts:157](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L157)*
+*Defined in [ffi.ts:166](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L166)*
 
 #### Type declaration:
 
@@ -124,7 +127,7 @@ ___
 • **QTS_DefineProp**: *function* = 
     this.module.cwrap("QTS_DefineProp", null, ["number","number","number","number","number","number","boolean","boolean","boolean"])
 
-*Defined in [ffi.ts:154](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L154)*
+*Defined in [ffi.ts:163](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L163)*
 
 #### Type declaration:
 
@@ -151,7 +154,7 @@ ___
 • **QTS_Dump**: *function* = 
     this.module.cwrap("QTS_Dump", "string", ["number","number"])
 
-*Defined in [ffi.ts:163](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L163)*
+*Defined in [ffi.ts:172](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L172)*
 
 #### Type declaration:
 
@@ -171,7 +174,7 @@ ___
 • **QTS_DupValue**: *function* = 
     this.module.cwrap("QTS_DupValue", "number", ["number","number"])
 
-*Defined in [ffi.ts:172](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L172)*
+*Defined in [ffi.ts:181](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L181)*
 
 #### Type declaration:
 
@@ -191,7 +194,7 @@ ___
 • **QTS_DupValuePointer**: *function* = 
     this.module.cwrap("QTS_DupValuePointer", "number", ["number","number"])
 
-*Defined in [ffi.ts:118](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L118)*
+*Defined in [ffi.ts:127](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L127)*
 
 #### Type declaration:
 
@@ -211,7 +214,7 @@ ___
 • **QTS_Eval**: *function* = 
     this.module.cwrap("QTS_Eval", "number", ["number","string"])
 
-*Defined in [ffi.ts:166](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L166)*
+*Defined in [ffi.ts:175](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L175)*
 
 #### Type declaration:
 
@@ -231,7 +234,7 @@ ___
 • **QTS_ExecutePendingJob**: *function* = 
     this.module.cwrap("QTS_ExecutePendingJob", "number", ["number","number"])
 
-*Defined in [ffi.ts:145](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L145)*
+*Defined in [ffi.ts:154](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L154)*
 
 #### Type declaration:
 
@@ -251,7 +254,7 @@ ___
 • **QTS_FreeContext**: *function* = 
     this.module.cwrap("QTS_FreeContext", null, ["number"])
 
-*Defined in [ffi.ts:112](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L112)*
+*Defined in [ffi.ts:121](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L121)*
 
 #### Type declaration:
 
@@ -270,7 +273,7 @@ ___
 • **QTS_FreeRuntime**: *function* = 
     this.module.cwrap("QTS_FreeRuntime", null, ["number"])
 
-*Defined in [ffi.ts:106](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L106)*
+*Defined in [ffi.ts:115](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L115)*
 
 #### Type declaration:
 
@@ -289,7 +292,7 @@ ___
 • **QTS_FreeValuePointer**: *function* = 
     this.module.cwrap("QTS_FreeValuePointer", null, ["number","number"])
 
-*Defined in [ffi.ts:115](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L115)*
+*Defined in [ffi.ts:124](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L124)*
 
 #### Type declaration:
 
@@ -309,7 +312,7 @@ ___
 • **QTS_GetFalse**: *function* = 
     this.module.cwrap("QTS_GetFalse", "number", [])
 
-*Defined in [ffi.ts:97](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L97)*
+*Defined in [ffi.ts:106](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L106)*
 
 #### Type declaration:
 
@@ -322,7 +325,7 @@ ___
 • **QTS_GetFloat64**: *function* = 
     this.module.cwrap("QTS_GetFloat64", "number", ["number","number"])
 
-*Defined in [ffi.ts:133](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L133)*
+*Defined in [ffi.ts:142](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L142)*
 
 #### Type declaration:
 
@@ -342,7 +345,7 @@ ___
 • **QTS_GetGlobalObject**: *function* = 
     this.module.cwrap("QTS_GetGlobalObject", "number", ["number"])
 
-*Defined in [ffi.ts:175](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L175)*
+*Defined in [ffi.ts:184](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L184)*
 
 #### Type declaration:
 
@@ -361,7 +364,7 @@ ___
 • **QTS_GetNull**: *function* = 
     this.module.cwrap("QTS_GetNull", "number", [])
 
-*Defined in [ffi.ts:94](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L94)*
+*Defined in [ffi.ts:103](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L103)*
 
 #### Type declaration:
 
@@ -374,7 +377,7 @@ ___
 • **QTS_GetProp**: *function* = 
     this.module.cwrap("QTS_GetProp", "number", ["number","number","number"])
 
-*Defined in [ffi.ts:148](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L148)*
+*Defined in [ffi.ts:157](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L157)*
 
 #### Type declaration:
 
@@ -395,7 +398,7 @@ ___
 • **QTS_GetString**: *function* = 
     this.module.cwrap("QTS_GetString", "string", ["number","number"])
 
-*Defined in [ffi.ts:139](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L139)*
+*Defined in [ffi.ts:148](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L148)*
 
 #### Type declaration:
 
@@ -415,7 +418,7 @@ ___
 • **QTS_GetTrue**: *function* = 
     this.module.cwrap("QTS_GetTrue", "number", [])
 
-*Defined in [ffi.ts:100](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L100)*
+*Defined in [ffi.ts:109](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L109)*
 
 #### Type declaration:
 
@@ -428,7 +431,7 @@ ___
 • **QTS_GetUndefined**: *function* = 
     this.module.cwrap("QTS_GetUndefined", "number", [])
 
-*Defined in [ffi.ts:91](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L91)*
+*Defined in [ffi.ts:100](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L100)*
 
 #### Type declaration:
 
@@ -441,7 +444,7 @@ ___
 • **QTS_IsJobPending**: *function* = 
     this.module.cwrap("QTS_IsJobPending", "number", ["number"])
 
-*Defined in [ffi.ts:142](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L142)*
+*Defined in [ffi.ts:151](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L151)*
 
 #### Type declaration:
 
@@ -460,7 +463,7 @@ ___
 • **QTS_NewArray**: *function* = 
     this.module.cwrap("QTS_NewArray", "number", ["number"])
 
-*Defined in [ffi.ts:127](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L127)*
+*Defined in [ffi.ts:136](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L136)*
 
 #### Type declaration:
 
@@ -479,7 +482,7 @@ ___
 • **QTS_NewContext**: *function* = 
     this.module.cwrap("QTS_NewContext", "number", ["number"])
 
-*Defined in [ffi.ts:109](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L109)*
+*Defined in [ffi.ts:118](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L118)*
 
 #### Type declaration:
 
@@ -517,7 +520,7 @@ ___
 • **QTS_NewFloat64**: *function* = 
     this.module.cwrap("QTS_NewFloat64", "number", ["number","number"])
 
-*Defined in [ffi.ts:130](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L130)*
+*Defined in [ffi.ts:139](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L139)*
 
 #### Type declaration:
 
@@ -558,7 +561,7 @@ ___
 • **QTS_NewObject**: *function* = 
     this.module.cwrap("QTS_NewObject", "number", ["number"])
 
-*Defined in [ffi.ts:121](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L121)*
+*Defined in [ffi.ts:130](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L130)*
 
 #### Type declaration:
 
@@ -577,7 +580,7 @@ ___
 • **QTS_NewObjectProto**: *function* = 
     this.module.cwrap("QTS_NewObjectProto", "number", ["number","number"])
 
-*Defined in [ffi.ts:124](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L124)*
+*Defined in [ffi.ts:133](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L133)*
 
 #### Type declaration:
 
@@ -597,7 +600,7 @@ ___
 • **QTS_NewRuntime**: *function* = 
     this.module.cwrap("QTS_NewRuntime", "number", [])
 
-*Defined in [ffi.ts:103](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L103)*
+*Defined in [ffi.ts:112](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L112)*
 
 #### Type declaration:
 
@@ -610,7 +613,7 @@ ___
 • **QTS_NewString**: *function* = 
     this.module.cwrap("QTS_NewString", "number", ["number","string"])
 
-*Defined in [ffi.ts:136](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L136)*
+*Defined in [ffi.ts:145](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L145)*
 
 #### Type declaration:
 
@@ -630,7 +633,7 @@ ___
 • **QTS_ResolveException**: *function* = 
     this.module.cwrap("QTS_ResolveException", "number", ["number","number"])
 
-*Defined in [ffi.ts:160](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L160)*
+*Defined in [ffi.ts:169](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L169)*
 
 #### Type declaration:
 
@@ -645,6 +648,26 @@ Name | Type |
 
 ___
 
+###  QTS_RuntimeComputeMemoryUsage
+
+• **QTS_RuntimeComputeMemoryUsage**: *function* = 
+    this.module.cwrap("QTS_RuntimeComputeMemoryUsage", "number", ["number","number"])
+
+*Defined in [ffi.ts:94](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L94)*
+
+#### Type declaration:
+
+▸ (`rt`: [JSRuntimePointer](../globals.md#jsruntimepointer), `ctx`: [JSContextPointer](../globals.md#jscontextpointer)): *[JSValuePointer](../globals.md#jsvaluepointer)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`rt` | [JSRuntimePointer](../globals.md#jsruntimepointer) |
+`ctx` | [JSContextPointer](../globals.md#jscontextpointer) |
+
+___
+
 ###  QTS_RuntimeDisableInterruptHandler
 
 • **QTS_RuntimeDisableInterruptHandler**: *function* = 
@@ -655,6 +678,25 @@ ___
 #### Type declaration:
 
 ▸ (`rt`: [JSRuntimePointer](../globals.md#jsruntimepointer)): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`rt` | [JSRuntimePointer](../globals.md#jsruntimepointer) |
+
+___
+
+###  QTS_RuntimeDumpMemoryUsage
+
+• **QTS_RuntimeDumpMemoryUsage**: *function* = 
+    this.module.cwrap("QTS_RuntimeDumpMemoryUsage", "string", ["number"])
+
+*Defined in [ffi.ts:97](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L97)*
+
+#### Type declaration:
+
+▸ (`rt`: [JSRuntimePointer](../globals.md#jsruntimepointer)): *string*
 
 **Parameters:**
 
@@ -680,6 +722,26 @@ ___
 Name | Type |
 ------ | ------ |
 `rt` | [JSRuntimePointer](../globals.md#jsruntimepointer) |
+
+___
+
+###  QTS_RuntimeSetMemoryLimit
+
+• **QTS_RuntimeSetMemoryLimit**: *function* = 
+    this.module.cwrap("QTS_RuntimeSetMemoryLimit", null, ["number","number"])
+
+*Defined in [ffi.ts:91](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L91)*
+
+#### Type declaration:
+
+▸ (`rt`: [JSRuntimePointer](../globals.md#jsruntimepointer), `limit`: number): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`rt` | [JSRuntimePointer](../globals.md#jsruntimepointer) |
+`limit` | number |
 
 ___
 
@@ -726,7 +788,7 @@ ___
 • **QTS_SetProp**: *function* = 
     this.module.cwrap("QTS_SetProp", null, ["number","number","number","number"])
 
-*Defined in [ffi.ts:151](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L151)*
+*Defined in [ffi.ts:160](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L160)*
 
 #### Type declaration:
 
@@ -768,7 +830,7 @@ ___
 • **QTS_Typeof**: *function* = 
     this.module.cwrap("QTS_Typeof", "string", ["number","number"])
 
-*Defined in [ffi.ts:169](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L169)*
+*Defined in [ffi.ts:178](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi.ts#L178)*
 
 #### Type declaration:
 

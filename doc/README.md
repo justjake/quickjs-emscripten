@@ -132,8 +132,7 @@ Ideas for future work:
 ## Developing
 
 This library is implemented in two languages: C (compiled to WASM with
-Emscripten), and Typescript. Emscripten outputs are checked in, so you will
-only need the C compiler if you need to modify C code.
+Emscripten), and Typescript.
 
 ### The C parts
 
@@ -146,10 +145,10 @@ The C code builds as both with `emscripten` (using `emcc`), to produce WASM (or
 ASM.js) and with `clang`. Build outputs are checked in, so
 Intermediate object files from QuickJS end up in ./build/quickjs/{wasm,native}.
 
-This project uses `emscripten 1.39.18`. First, install `emsdk` by following the official instructions here:
-https://emscripten.org/docs/getting_started/downloads.html#installation-instructions.
-Once you have `emsdk`, install emcc version 1.39.19 with `emsdk install 1.39.18`.
-Your `emcc -v` output should look a little like this:
+This project uses `emscripten 1.39.19`. The install should be handled automatically
+if you're working from Linux or OSX (if using Windows, the best is to use WSL to work
+on this repository). If everything is right, running `yarn embin emcc -v` should print
+something like this:
 
 ```
 emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 1.39.18
@@ -174,3 +173,7 @@ or `yarn install`.
 - `yarn build` produces ./dist.
 - `yarn test` runs the tests.
 - `yarn test --watch` watches for changes and re-runs the tests.
+
+### Yarn updates
+
+Just run `yarn set version from sources` to upgrade the Yarn release.

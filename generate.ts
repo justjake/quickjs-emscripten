@@ -85,7 +85,7 @@ function cTypeToTypescriptType(ctype: string) {
   if (type === 'void') {
     ffi = null
   }
-  if (type === 'double' || type === 'int') {
+  if (type === 'double' || type === 'int' || type === 'size_t') {
     ffi = 'number'
     typescript = 'number'
   }

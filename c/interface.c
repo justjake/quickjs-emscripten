@@ -152,6 +152,70 @@ void QTS_RuntimeDisableInterruptHandler(JSRuntime *rt) {
 }
 
 /**
+ * Limits.
+ */
+
+/**
+ * Memory limit. Set to -1 to disable.
+ */
+void QTS_RuntimeSetMemoryLimit(JSRuntime *rt, size_t limit) {
+  JS_SetMemoryLimit(rt, limit);
+}
+
+/**
+ * Memory diagnostics
+ */
+
+JSValue *QTS_RuntimeComputeMemoryUsage(JSRuntime *rt, JSContext *ctx) {
+  JSMemoryUsage s;
+  JS_ComputeMemoryUsage(rt, &s);
+
+  // Note that we're going to allocate more memory just to report the memory usage.
+  // A more sound approach would be to bind JSMemoryUsage struct directly - but that's
+  // a lot of work. This should be okay in the mean time.
+  JSValue result = JS_NewObject(ctx);
+
+  // Manually generated via editor-fu from JSMemoryUsage struct definition in quickjs.h
+  JS_SetPropertyStr(ctx, result, "malloc_limit", JS_NewInt64(ctx, s.malloc_limit));
+  JS_SetPropertyStr(ctx, result, "memory_used_size", JS_NewInt64(ctx, s.memory_used_size));
+  JS_SetPropertyStr(ctx, result, "malloc_count", JS_NewInt64(ctx, s.malloc_count));
+  JS_SetPropertyStr(ctx, result, "memory_used_count", JS_NewInt64(ctx, s.memory_used_count));
+  JS_SetPropertyStr(ctx, result, "atom_count", JS_NewInt64(ctx, s.atom_count));
+  JS_SetPropertyStr(ctx, result, "atom_size", JS_NewInt64(ctx, s.atom_size));
+  JS_SetPropertyStr(ctx, result, "str_count", JS_NewInt64(ctx, s.str_count));
+  JS_SetPropertyStr(ctx, result, "str_size", JS_NewInt64(ctx, s.str_size));
+  JS_SetPropertyStr(ctx, result, "obj_count", JS_NewInt64(ctx, s.obj_count));
+  JS_SetPropertyStr(ctx, result, "obj_size", JS_NewInt64(ctx, s.obj_size));
+  JS_SetPropertyStr(ctx, result, "prop_count", JS_NewInt64(ctx, s.prop_count));
+  JS_SetPropertyStr(ctx, result, "prop_size", JS_NewInt64(ctx, s.prop_size));
+  JS_SetPropertyStr(ctx, result, "shape_count", JS_NewInt64(ctx, s.shape_count));
+  JS_SetPropertyStr(ctx, result, "shape_size", JS_NewInt64(ctx, s.shape_size));
+  JS_SetPropertyStr(ctx, result, "js_func_count", JS_NewInt64(ctx, s.js_func_count));
+  JS_SetPropertyStr(ctx, result, "js_func_size", JS_NewInt64(ctx, s.js_func_size));
+  JS_SetPropertyStr(ctx, result, "js_func_code_size", JS_NewInt64(ctx, s.js_func_code_size));
+  JS_SetPropertyStr(ctx, result, "js_func_pc2line_count", JS_NewInt64(ctx, s.js_func_pc2line_count));
+  JS_SetPropertyStr(ctx, result, "js_func_pc2line_size", JS_NewInt64(ctx, s.js_func_pc2line_size));
+  JS_SetPropertyStr(ctx, result, "c_func_count", JS_NewInt64(ctx, s.c_func_count));
+  JS_SetPropertyStr(ctx, result, "array_count", JS_NewInt64(ctx, s.array_count));
+  JS_SetPropertyStr(ctx, result, "fast_array_count", JS_NewInt64(ctx, s.fast_array_count));
+  JS_SetPropertyStr(ctx, result, "fast_array_elements", JS_NewInt64(ctx, s.fast_array_elements));
+  JS_SetPropertyStr(ctx, result, "binary_object_count", JS_NewInt64(ctx, s.binary_object_count));
+  JS_SetPropertyStr(ctx, result, "binary_object_size", JS_NewInt64(ctx, s.binary_object_size));
+
+  return jsvalue_to_heap(result);
+}
+
+char* QTS_RuntimeDumpMemoryUsage(JSRuntime *rt) {
+  char *result = malloc(sizeof(char) * 1024);
+  FILE *memfile = fmemopen(result, 1024, "w");
+  JSMemoryUsage s;
+  JS_ComputeMemoryUsage(rt, &s);
+  JS_DumpMemoryUsage(memfile, &s, rt);
+  fclose(memfile);
+  return result;
+}
+
+/**
  * Constant pointers. Because we always use JSValue* from the host Javascript environment,
  * we need helper fuctions to return pointers to these constants.
  */

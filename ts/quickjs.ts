@@ -662,6 +662,39 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   /**
+   * Set the max memory this runtime can allocate.
+   * To remove the limit, set to `-1`.
+   */
+  setMemoryLimit(limitBytes: number) {
+    if (limitBytes < 0 && limitBytes !== -1) {
+      throw new Error('Cannot set memory limit to negative number. To unset, pass -1')
+    }
+
+    this.ffi.QTS_RuntimeSetMemoryLimit(this.rt.value, limitBytes)
+  }
+
+  /**
+   * Compute memory usage for this runtime. Returns the result as a handle to a
+   * JSValue object. Use [[dump]] to convert to a native object.
+   * Calling this method will allocate more memory inside the runtime. The information
+   * is accurate as of just before the call to `computeMemoryUsage`.
+   * For a human-digestable representation, see [[dumpMemoryUsage]].
+   */
+  computeMemoryUsage(): QuickJSHandle {
+    return this.heapValueHandle(
+      this.ffi.QTS_RuntimeComputeMemoryUsage(this.rt.value, this.ctx.value)
+    )
+  }
+
+  /**
+   * @returns a human-readable description of memory usage in this runtime.
+   * For programatic access to this information, see [[computeMemoryUsage]].
+   */
+  dumpMemoryUsage(): string {
+    return this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value)
+  }
+
+  /**
    * Remove the interrupt handler, if any.
    * See [[setShouldInterruptHandler]].
    */

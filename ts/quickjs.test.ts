@@ -15,7 +15,7 @@ describe('QuickJSVm', async () => {
     vm = quickjs.createVm()
   })
 
-  afterEach(async () => {
+  afterEach(() => {
     vm.dispose()
     vm = undefined as any
   })
@@ -408,6 +408,80 @@ describe('QuickJSVm', async () => {
         result.value.dispose()
         assert.fail('Should have returned an interrupt error')
       }
+    })
+  })
+
+  describe('.computeMemoryUsage', () => {
+    it('returns an object with JSON memory usage info', () => {
+      const result = vm.computeMemoryUsage()
+      const resultObj = vm.dump(result)
+      result.dispose()
+
+      // Is this test failing? Just commit the new value as long as it seems reasonable.
+      assert.deepEqual(resultObj, {
+        array_count: 1,
+        atom_count: 414,
+        atom_size: 13593,
+        binary_object_count: 0,
+        binary_object_size: 0,
+        c_func_count: 46,
+        fast_array_count: 1,
+        fast_array_elements: 0,
+        js_func_code_size: 0,
+        js_func_count: 0,
+        js_func_pc2line_count: 0,
+        js_func_pc2line_size: 0,
+        js_func_size: 0,
+        malloc_count: 665,
+        malloc_limit: 4294967295,
+        memory_used_count: 665,
+        memory_used_size: 36305,
+        obj_count: 97,
+        obj_size: 4656,
+        prop_count: 654,
+        prop_size: 5936,
+        shape_count: 50,
+        shape_size: 10328,
+        str_count: 0,
+        str_size: 0,
+      })
+    })
+  })
+
+  describe('.setMemoryLimit', () => {
+    it('sets an enforced limit', () => {
+      vm.setMemoryLimit(100)
+      const result = vm.evalCode(`new Uint8Array(101); "ok"`)
+
+      if (!result.error) {
+        result.value.dispose()
+        throw new Error('should be an error')
+      }
+
+      vm.setMemoryLimit(-1) // so we can dump
+      const error = vm.dump(result.error)
+      result.error.dispose()
+
+      assert.strictEqual(error, null)
+    })
+
+    it('removes limit when set to -1', () => {
+      vm.setMemoryLimit(100)
+      vm.setMemoryLimit(-1)
+
+      const result = vm.unwrapResult(vm.evalCode(`new Uint8Array(101); "ok"`))
+      const value = vm.dump(result)
+      result.dispose()
+      assert.strictEqual(value, 'ok')
+    })
+  })
+
+  describe('.dumpMemoryUsage()', () => {
+    it('logs memory usage', () => {
+      assert(
+        vm.dumpMemoryUsage().endsWith('per fast array)\n'),
+        'should end with "per fast array)\\n"'
+      )
     })
   })
 })
