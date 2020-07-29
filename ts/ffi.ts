@@ -88,6 +88,15 @@ export class QuickJSFFI {
   QTS_RuntimeDisableInterruptHandler: (rt: JSRuntimePointer) => void =
     this.module.cwrap("QTS_RuntimeDisableInterruptHandler", null, ["number"])
 
+  QTS_RuntimeSetMemoryLimit: (rt: JSRuntimePointer, limit: number) => void =
+    this.module.cwrap("QTS_RuntimeSetMemoryLimit", null, ["number","number"])
+
+  QTS_RuntimeComputeMemoryUsage: (rt: JSRuntimePointer, ctx: JSContextPointer) => JSValuePointer =
+    this.module.cwrap("QTS_RuntimeComputeMemoryUsage", "number", ["number","number"])
+
+  QTS_RuntimeDumpMemoryUsage: (rt: JSRuntimePointer) => string =
+    this.module.cwrap("QTS_RuntimeDumpMemoryUsage", "string", ["number"])
+
   QTS_GetUndefined: () => JSValueConstPointer =
     this.module.cwrap("QTS_GetUndefined", "number", [])
 
