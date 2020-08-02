@@ -17,7 +17,7 @@ __metadata:
 "quickjs-emscripten@file:../../build/quickjs-emscripten.tgz::locator=quickjs-emscripten-smoketest%40workspace%3A.":
   version: 0.6.1
   resolution: "quickjs-emscripten@file:../../build/quickjs-emscripten.tgz::locator=quickjs-emscripten-smoketest%40workspace%3A."
-  checksum: 590b675b1803a344dcf20c6f7011ef54b73896a800d07c9d974afa8783606f845bba83aff89ec4460b3bfc9be2f553b18396b9437153b02ed9e266d75b7ee093
+  checksum: 1f9aa3b472ce90f70a5022c0537acf17af45c7fe4c7858d381137681cfc42ae04f3190f04c1a8b6196c7d944b264b6d26fe18a78621834b5c1f1144cb44ed7b5
   languageName: node
   linkType: hard
 
