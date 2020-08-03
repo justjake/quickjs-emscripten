@@ -50,7 +50,7 @@ A Lifetime that lives forever. Used for constants.
 
 *Overrides [Lifetime](lifetime.md).[constructor](lifetime.md#constructor)*
 
-*Defined in [quickjs.ts:149](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L149)*
+*Defined in [quickjs.ts:148](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L148)*
 
 **Parameters:**
 
@@ -69,7 +69,7 @@ Name | Type |
 
 *Inherited from [Lifetime](lifetime.md).[_alive](lifetime.md#protected-_alive)*
 
-*Defined in [quickjs.ts:72](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L72)*
+*Defined in [quickjs.ts:71](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L71)*
 
 ___
 
@@ -79,7 +79,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[_owner](lifetime.md#protected-optional-_owner)*
 
-*Defined in [quickjs.ts:86](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L86)*
+*Defined in [quickjs.ts:85](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L85)*
 
 ___
 
@@ -89,7 +89,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[_value](lifetime.md#protected-_value)*
 
-*Defined in [quickjs.ts:83](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L83)*
+*Defined in [quickjs.ts:82](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L82)*
 
 ___
 
@@ -99,7 +99,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[copier](lifetime.md#protected-optional-copier)*
 
-*Defined in [quickjs.ts:84](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L84)*
+*Defined in [quickjs.ts:83](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L83)*
 
 ___
 
@@ -109,7 +109,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[disposer](lifetime.md#protected-optional-disposer)*
 
-*Defined in [quickjs.ts:85](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L85)*
+*Defined in [quickjs.ts:84](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L84)*
 
 ## Accessors
 
@@ -119,7 +119,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[alive](lifetime.md#alive)*
 
-*Defined in [quickjs.ts:89](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L89)*
+*Defined in [quickjs.ts:88](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L88)*
 
 **Returns:** *boolean*
 
@@ -131,7 +131,7 @@ ___
 
 *Overrides [Lifetime](lifetime.md).[dupable](lifetime.md#dupable)*
 
-*Defined in [quickjs.ts:155](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L155)*
+*Defined in [quickjs.ts:154](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L154)*
 
 **Returns:** *boolean*
 
@@ -143,7 +143,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[owner](lifetime.md#owner)*
 
-*Defined in [quickjs.ts:104](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L104)*
+*Defined in [quickjs.ts:103](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L103)*
 
 **Returns:** *undefined | Owner*
 
@@ -155,7 +155,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[value](lifetime.md#value)*
 
-*Defined in [quickjs.ts:99](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L99)*
+*Defined in [quickjs.ts:98](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L98)*
 
 The value this Lifetime protects. You must never retain the value - it
 may become invalid, leading to memory errors.
@@ -172,7 +172,7 @@ may become invalid, leading to memory errors.
 
 *Overrides [Lifetime](lifetime.md).[dispose](lifetime.md#dispose)*
 
-*Defined in [quickjs.ts:165](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L165)*
+*Defined in [quickjs.ts:164](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L164)*
 
 **Returns:** *void*
 
@@ -184,6 +184,6 @@ ___
 
 *Overrides [Lifetime](lifetime.md).[dup](lifetime.md#dup)*
 
-*Defined in [quickjs.ts:160](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L160)*
+*Defined in [quickjs.ts:159](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L159)*
 
 **Returns:** *this*

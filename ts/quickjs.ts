@@ -54,7 +54,6 @@ type CToHostInterruptImplementation = (rt: JSRuntimePointer) => 0 | 1
  * Callback called regularly while the VM executes code.
  * Determines if a VM's execution should be interrupted.
  *
- * @param vm - The VM instance
  * @returns `true` to interrupt JS execution inside the VM.
  * @returns `false` or `undefined` to continue JS execution inside the VM.
  */
