@@ -930,6 +930,11 @@ export interface QuickJSEvalOptions {
    * See [[shouldInterruptAfterDeadline]].
    */
   shouldInterrupt?: InterruptHandler
+
+  /**
+   * Memory limit, in bytes, of WASM heap memory used by the QuickJS VM.
+   */
+  memoryLimitBytes?: number
 }
 
 /**
@@ -1043,7 +1048,16 @@ export class QuickJS {
       vm.setInterruptHandler(options.shouldInterrupt)
     }
 
+    if (options.memoryLimitBytes !== undefined) {
+      vm.setMemoryLimit(options.memoryLimitBytes)
+    }
+
     const result = vm.evalCode(code)
+
+    if (options.memoryLimitBytes !== undefined) {
+      // Remove memory limit so we can dump the result without exceeding it.
+      vm.setMemoryLimit(-1)
+    }
 
     if (result.error) {
       const error = vm.dump(result.error)
