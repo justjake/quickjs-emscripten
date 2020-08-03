@@ -54,6 +54,7 @@ import { getQuickJS, shouldInterruptAfterDeadline } from 'quickjs-emscripten'
 getQuickJS().then(QuickJS => {
   const result = QuickJS.evalCode('1 + 1', {
     shouldInterrupt: shouldInterruptAfterDeadline(Date.now() + 1000),
+    memoryLimitBytes: 1024 * 1024,
   })
   console.log(result)
 })
@@ -64,6 +65,9 @@ getQuickJS().then(QuickJS => {
 You can use [QuickJSVm](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/quickjsvm.md)
 to build a scripting environment by modifying globals and exposing functions
 into the QuickJS interpreter.
+
+Each `QuickJSVm` instance has its own environment, CPU limit, and memory
+limit. See the documentation for details.
 
 ```typescript
 const vm = QuickJS.createVm()
