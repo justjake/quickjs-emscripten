@@ -455,13 +455,8 @@ char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   else if (JS_IsSymbol(*value)) { result = "symbol"; }
   else if (JS_IsObject(*value)) { result = "object"; }
 
-  char* out = malloc(sizeof(char) * strlen(result));
-  strcpy(out, result);
+  char* out = strdup(result);
   return out;
-}
-
-JSValue *QTS_DupValue(JSContext *ctx, JSValueConst *value_ptr) {
-  return jsvalue_to_heap(JS_DupValue(ctx, *value_ptr));
 }
 
 JSValue *QTS_GetGlobalObject(JSContext *ctx) {
