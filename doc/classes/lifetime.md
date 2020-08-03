@@ -55,7 +55,7 @@ Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
 
 \+ **new Lifetime**(`_value`: T, `copier?`: undefined | function, `disposer?`: undefined | function, `_owner?`: Owner): *[Lifetime](lifetime.md)*
 
-*Defined in [quickjs.ts:70](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L70)*
+*Defined in [quickjs.ts:72](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L72)*
 
 When the Lifetime is disposed, it will call `disposer(_value)`. Use the
 disposer function to implement whatever cleanup needs to happen at the end
@@ -81,7 +81,7 @@ Name | Type |
 
 • **_alive**: *boolean* = true
 
-*Defined in [quickjs.ts:70](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L70)*
+*Defined in [quickjs.ts:72](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L72)*
 
 ___
 
@@ -89,7 +89,7 @@ ___
 
 • **_owner**? : *Owner*
 
-*Defined in [quickjs.ts:84](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L84)*
+*Defined in [quickjs.ts:86](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L86)*
 
 ___
 
@@ -97,7 +97,7 @@ ___
 
 • **_value**: *T*
 
-*Defined in [quickjs.ts:81](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L81)*
+*Defined in [quickjs.ts:83](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L83)*
 
 ___
 
@@ -105,7 +105,7 @@ ___
 
 • **copier**? : *undefined | function*
 
-*Defined in [quickjs.ts:82](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L82)*
+*Defined in [quickjs.ts:84](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L84)*
 
 ___
 
@@ -113,7 +113,7 @@ ___
 
 • **disposer**? : *undefined | function*
 
-*Defined in [quickjs.ts:83](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L83)*
+*Defined in [quickjs.ts:85](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L85)*
 
 ## Accessors
 
@@ -121,7 +121,7 @@ ___
 
 • **get alive**(): *boolean*
 
-*Defined in [quickjs.ts:87](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L87)*
+*Defined in [quickjs.ts:89](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L89)*
 
 **Returns:** *boolean*
 
@@ -131,7 +131,7 @@ ___
 
 • **get dupable**(): *boolean*
 
-*Defined in [quickjs.ts:106](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L106)*
+*Defined in [quickjs.ts:108](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L108)*
 
 **Returns:** *boolean*
 
@@ -141,7 +141,7 @@ ___
 
 • **get owner**(): *undefined | Owner*
 
-*Defined in [quickjs.ts:102](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L102)*
+*Defined in [quickjs.ts:104](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L104)*
 
 **Returns:** *undefined | Owner*
 
@@ -151,7 +151,7 @@ ___
 
 • **get value**(): *T*
 
-*Defined in [quickjs.ts:97](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L97)*
+*Defined in [quickjs.ts:99](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L99)*
 
 The value this Lifetime protects. You must never retain the value - it
 may become invalid, leading to memory errors.
@@ -166,7 +166,7 @@ may become invalid, leading to memory errors.
 
 ▸ **dispose**(): *void*
 
-*Defined in [quickjs.ts:129](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L129)*
+*Defined in [quickjs.ts:131](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L131)*
 
 Dispose of [value](lifetime.md#value) and perform cleanup.
 
@@ -178,7 +178,7 @@ ___
 
 ▸ **dup**(): *[Lifetime](lifetime.md)‹TCopy, TCopy, Owner›*
 
-*Defined in [quickjs.ts:113](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L113)*
+*Defined in [quickjs.ts:115](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L115)*
 
 Create a new handle pointing to the same [value](lifetime.md#value).
 
