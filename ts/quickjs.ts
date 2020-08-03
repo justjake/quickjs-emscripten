@@ -802,7 +802,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   private copyJSValue = (ptr: JSValuePointer | JSValueConstPointer) => {
-    return this.ffi.QTS_DupValue(this.ctx.value, ptr)
+    return this.ffi.QTS_DupValuePointer(this.ctx.value, ptr)
   }
 
   private freeJSValue = (ptr: JSValuePointer) => {
