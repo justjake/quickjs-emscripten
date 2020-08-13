@@ -2,7 +2,7 @@
  * These tests demonstate some common patterns for using quickjs-emscripten.
  */
 
-import { getQuickJS, QuickJSVm, QuickJSHandle, ShouldInterruptHandler } from './quickjs'
+import { getQuickJS, QuickJSVm, QuickJSHandle, InterruptHandler } from './quickjs'
 import { it, describe } from 'mocha'
 import assert from 'assert'
 import { VmCallResult } from './vm-interface'
@@ -365,12 +365,12 @@ describe('QuickJSVm', async () => {
   describe('interrupt handler', () => {
     it('is called with the expected VM', () => {
       let calls = 0
-      const interruptHandler: ShouldInterruptHandler = interruptVm => {
+      const interruptHandler: InterruptHandler = interruptVm => {
         assert.strictEqual(interruptVm, vm, 'ShouldInterruptHandler callback VM is the vm')
         calls++
         return false
       }
-      vm.setShouldInterruptHandler(interruptHandler)
+      vm.setInterruptHandler(interruptHandler)
 
       vm.unwrapResult(vm.evalCode('1 + 1')).dispose()
 
@@ -379,14 +379,14 @@ describe('QuickJSVm', async () => {
 
     it('interrupts infinite loop execution', () => {
       let calls = 0
-      const interruptHandler: ShouldInterruptHandler = interruptVm => {
+      const interruptHandler: InterruptHandler = interruptVm => {
         if (calls > 10) {
           return true
         }
         calls++
         return false
       }
-      vm.setShouldInterruptHandler(interruptHandler)
+      vm.setInterruptHandler(interruptHandler)
 
       const result = vm.evalCode('i = 0; while (1) { i++ }')
 

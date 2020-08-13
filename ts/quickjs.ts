@@ -51,12 +51,13 @@ type CToHostCallbackFunctionImplementation = (
 type CToHostInterruptImplementation = (rt: JSRuntimePointer) => 0 | 1
 
 /**
+ * Callback called regularly while the VM executes code.
  * Determines if a VM's execution should be interrupted.
  *
- * Return `true` to interrupt JS execution.
- * Return `false` or `undefined` to continue JS execution.
+ * @returns `true` to interrupt JS execution inside the VM.
+ * @returns `false` or `undefined` to continue JS execution inside the VM.
  */
-export type ShouldInterruptHandler = (vm: QuickJSVm) => boolean | undefined
+export type InterruptHandler = (vm: QuickJSVm) => boolean | undefined
 
 export type QuickJSPropertyKey = number | string | QuickJSHandle
 
@@ -206,13 +207,22 @@ export type ExecutePendingJobsResult = SuccessOrFail<number, QuickJSHandle>
  *
  * Use [[QuickJS.createVm]] to create a new QuickJSVm.
  *
- * Create QuickJS values with methods like [[newNumber]], [[newString]], [[newArray]], [[newObject]], and [[newFunction]].
+ * Create QuickJS values inside the interpreter with methods like
+ * [[newNumber]], [[newString]], [[newArray]], [[newObject]], and
+ * [[newFunction]].
  *
- * Call [[setProp]] or [[defineProp]] to customize objects. Use those methods with [[global]] to expose the
- * values you create to the interior of the interpreter, so they can be used in [[evalCode]].
+ * Call [[setProp]] or [[defineProp]] to customize objects. Use those methods
+ * with [[global]] to expose the values you create to the interior of the
+ * interpreter, so they can be used in [[evalCode]].
  *
- * Use [[evalCode]] or [[callFunction]] to execute Javascript inside the VM.
- * If you're using asynchronous code inside the QuickJSVm, you may need to also call [[executePendingJobs]].
+ * Use [[evalCode]] or [[callFunction]] to execute Javascript inside the VM. If
+ * you're using asynchronous code inside the QuickJSVm, you may need to also
+ * call [[executePendingJobs]].
+ *
+ * Implement memory and CPU constraints with [[setInterruptHandler]]
+ * (called regularly while the interpreter runs) and [[setMemoryLimit]].
+ * Use [[computeMemoryUsage]] or [[dumpMemoryUsage]] to guide memory limit
+ * tuning.
  */
 export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private readonly ctx: Lifetime<JSContextPointer>
@@ -539,7 +549,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * return the result handle directly.
    *
    * *Note*: to protect against infinite loops, provide an interrupt handler to
-   * [[setShouldInterruptHandler]]. You can use [[shouldInterruptAfterDeadline]] to
+   * [[setInterruptHandler]]. You can use [[shouldInterruptAfterDeadline]] to
    * create a time-based deadline.
    *
    *
@@ -644,16 +654,16 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     return result.value
   }
 
-  private interruptHandler: ShouldInterruptHandler | undefined
+  private interruptHandler: InterruptHandler | undefined
 
   /**
    * Set a callback which is regularly called by the QuickJS engine when it is
    * executing code. This callback can be used to implement an execution
    * timeout.
    *
-   * The interrupt handler can be removed with [[removeShouldInterruptHandler]].
+   * The interrupt handler can be removed with [[removeInterruptHandler]].
    */
-  setShouldInterruptHandler(cb: ShouldInterruptHandler) {
+  setInterruptHandler(cb: InterruptHandler) {
     const prevInterruptHandler = this.interruptHandler
     this.interruptHandler = cb
     if (!prevInterruptHandler) {
@@ -696,9 +706,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
 
   /**
    * Remove the interrupt handler, if any.
-   * See [[setShouldInterruptHandler]].
+   * See [[setInterruptHandler]].
    */
-  removeShouldInterruptHandler() {
+  removeInterruptHandler() {
     if (this.interruptHandler) {
       this.ffi.QTS_RuntimeDisableInterruptHandler(this.rt.value)
       this.interruptHandler = undefined
@@ -918,7 +928,12 @@ export interface QuickJSEvalOptions {
    * Interrupt evaluation if `shouldInterrupt` returns `true`.
    * See [[shouldInterruptAfterDeadline]].
    */
-  shouldInterrupt?: ShouldInterruptHandler
+  shouldInterrupt?: InterruptHandler
+
+  /**
+   * Memory limit, in bytes, of WASM heap memory used by the QuickJS VM.
+   */
+  memoryLimitBytes?: number
 }
 
 /**
@@ -1029,10 +1044,19 @@ export class QuickJS {
     const vm = this.createVm()
 
     if (options.shouldInterrupt) {
-      vm.setShouldInterruptHandler(options.shouldInterrupt)
+      vm.setInterruptHandler(options.shouldInterrupt)
+    }
+
+    if (options.memoryLimitBytes !== undefined) {
+      vm.setMemoryLimit(options.memoryLimitBytes)
     }
 
     const result = vm.evalCode(code)
+
+    if (options.memoryLimitBytes !== undefined) {
+      // Remove memory limit so we can dump the result without exceeding it.
+      vm.setMemoryLimit(-1)
+    }
 
     if (result.error) {
       const error = vm.dump(result.error)
@@ -1089,7 +1113,7 @@ export class QuickJS {
  * @param deadline - Interrupt execution if it's still running after this time.
  *   Number values are compared against `Date.now()`
  */
-export function shouldInterruptAfterDeadline(deadline: Date | number): ShouldInterruptHandler {
+export function shouldInterruptAfterDeadline(deadline: Date | number): InterruptHandler {
   const deadlineAsNumber = typeof deadline === 'number' ? deadline : deadline.getTime()
 
   return function() {
