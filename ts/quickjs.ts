@@ -125,6 +125,21 @@ export class Lifetime<T, TCopy = never, Owner = never> {
   }
 
   /**
+   * Call `map` with this lifetime, then dispose the lifetime.
+   * @return the result of `map(this)`.
+   */
+  consume<O>(map: (lifetime: this) => O): O
+  // A specific type definition is needed for our common use-case
+  // https://github.com/microsoft/TypeScript/issues/30271
+  consume<O>(map: (lifetime: QuickJSHandle) => O): O
+  consume<O>(map: (lifetime: any) => O): O {
+    this.assertAlive()
+    const result = map(this)
+    this.dispose()
+    return result
+  }
+
+  /**
    * Dispose of [[value]] and perform cleanup.
    */
   dispose() {
@@ -428,13 +443,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    */
   getProp(handle: QuickJSHandle, key: QuickJSPropertyKey): QuickJSHandle {
     this.assertOwned(handle)
-    const quickJSKey = this.borrowPropertyKey(key)
-    const ptr = this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value)
+    const ptr = this.borrowPropertyKey(key).consume(quickJSKey =>
+      this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value)
+    )
     const result = this.heapValueHandle(ptr)
-
-    // free newly allocated value if key was a string or number. No-op if string was already
-    // a QuickJS handle.
-    quickJSKey.dispose()
 
     return result
   }
@@ -452,11 +464,11 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    */
   setProp(handle: QuickJSHandle, key: QuickJSPropertyKey, value: QuickJSHandle) {
     this.assertOwned(handle)
-    const quickJSKey = this.borrowPropertyKey(key)
-    this.ffi.QTS_SetProp(this.ctx.value, handle.value, quickJSKey.value, value.value)
+    this.borrowPropertyKey(key).consume(quickJSKey =>
+      this.ffi.QTS_SetProp(this.ctx.value, handle.value, quickJSKey.value, value.value)
+    )
     // free newly allocated value if key was a string or number. No-op if string was already
     // a QuickJS handle.
-    quickJSKey.dispose()
   }
 
   /**
@@ -520,15 +532,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     ...args: QuickJSHandle[]
   ): VmCallResult<QuickJSHandle> {
     this.assertOwned(func)
-    const argsArrayPtr = this.toPointerArray(args)
-    const resultPtr = this.ffi.QTS_Call(
-      this.ctx.value,
-      func.value,
-      thisVal.value,
-      args.length,
-      argsArrayPtr.value
+    const resultPtr = this.toPointerArray(args).consume(argsArrayPtr =>
+      this.ffi.QTS_Call(this.ctx.value, func.value, thisVal.value, args.length, argsArrayPtr.value)
     )
-    argsArrayPtr.dispose()
 
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
@@ -638,8 +644,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    */
   unwrapResult<T>(result: SuccessOrFail<T, QuickJSHandle>): T {
     if (result.error) {
-      const dumped = this.dump(result.error)
-      result.error.dispose()
+      const dumped = result.error.consume(error => this.dump(error))
 
       if (dumped && typeof dumped === 'object' && typeof dumped.message === 'string') {
         const exception = new Error(dumped.message)
@@ -773,9 +778,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
         handle.dispose()
       }
     } catch (error) {
-      const errorHandle = this.errorToHandle(error)
-      ownedResultPtr = this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
-      errorHandle.dispose()
+      ownedResultPtr = this.errorToHandle(error).consume(errorHandle =>
+        this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
+      )
     }
 
     // Free the arguments so they can't be retained and re-used after we return.
@@ -854,22 +859,19 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     const errorHandle = this.heapValueHandle(this.ffi.QTS_NewError(this.ctx.value))
 
     if (error.name !== undefined) {
-      const handle = this.newString(error.name)
-      this.setProp(errorHandle, 'name', handle)
-      handle.dispose()
+      this.newString(error.name).consume(handle => this.setProp(errorHandle, 'name', handle))
     }
 
     if (error.message !== undefined) {
-      const handle = this.newString(error.message)
-      this.setProp(errorHandle, 'message', handle)
-      handle.dispose()
+      this.newString(error.message).consume(handle => this.setProp(errorHandle, 'message', handle))
     }
 
+    // Disabled due to security leak concerns
     if (error.stack !== undefined) {
-      const handle = this.newString(error.stack)
+      //const handle = this.newString(error.stack)
       // Set to fullStack...? For debugging.
       //this.setProp(errorHandle, 'fullStack', handle)
-      handle.dispose()
+      //handle.dispose()
     }
 
     return errorHandle
