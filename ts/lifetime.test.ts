@@ -1,4 +1,4 @@
-import { Lifetime } from './lifetime'
+import { Lifetime, Scope } from './lifetime'
 import assert from 'assert'
 
 describe('Lifetime', () => {
@@ -17,6 +17,28 @@ describe('Lifetime', () => {
       lifetime.consume(l => l.value * 2)
       assert.strictEqual(lifetime.alive, false)
       assert.strictEqual(disposed, true)
+    })
+  })
+})
+
+describe('Scope', () => {
+  describe('.withScope', () => {
+    function counter() {
+      let n = 0
+      return {
+        increment: () => n++,
+        count: () => n,
+      }
+    }
+    it('disposes all the lifetimes', () => {
+      const { increment, count } = counter()
+      const secondLifetime = Scope.withScope(scope => {
+        scope.manage(new Lifetime('first', undefined, s => increment()))
+        return scope.manage(new Lifetime('second', undefined, s => increment()))
+      })
+
+      assert.strictEqual(secondLifetime.alive, false)
+      assert.strictEqual(count(), 2)
     })
   })
 })

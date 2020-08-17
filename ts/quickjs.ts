@@ -17,7 +17,7 @@ import {
   SuccessOrFail,
 } from './vm-interface'
 import { QuickJSEmscriptenModule } from './emscripten-types'
-import { Lifetime, WeakLifetime, StaticLifetime } from './lifetime'
+import { Lifetime, WeakLifetime, StaticLifetime, Scope } from './lifetime'
 export { Lifetime, WeakLifetime, StaticLifetime }
 
 let QuickJSModule: QuickJSEmscriptenModule | undefined = undefined
@@ -344,38 +344,32 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     descriptor: VmPropertyDescriptor<QuickJSHandle>
   ): void {
     this.assertOwned(handle)
-    const quickJSKey = this.borrowPropertyKey(key)
+    Scope.withScope(scope => {
+      const quickJSKey = scope.manage(this.borrowPropertyKey(key))
 
-    const value = descriptor.value || this.undefined
-    const configurable = Boolean(descriptor.configurable)
-    const enumerable = Boolean(descriptor.enumerable)
-    const hasValue = Boolean(descriptor.value)
-    const get = descriptor.get
-      ? this.newFunction(descriptor.get.name, descriptor.get)
-      : this.undefined
-    const set = descriptor.set
-      ? this.newFunction(descriptor.set.name, descriptor.set)
-      : this.undefined
+      const value = descriptor.value || this.undefined
+      const configurable = Boolean(descriptor.configurable)
+      const enumerable = Boolean(descriptor.enumerable)
+      const hasValue = Boolean(descriptor.value)
+      const get = descriptor.get
+        ? scope.manage(this.newFunction(descriptor.get.name, descriptor.get))
+        : this.undefined
+      const set = descriptor.set
+        ? scope.manage(this.newFunction(descriptor.set.name, descriptor.set))
+        : this.undefined
 
-    this.ffi.QTS_DefineProp(
-      this.ctx.value,
-      handle.value,
-      quickJSKey.value,
-      value.value,
-      get.value,
-      set.value,
-      configurable,
-      enumerable,
-      hasValue
-    )
-
-    // free newly allocated value if key was a string or number. No-op if string was already
-    // a QuickJS handle.
-    quickJSKey.dispose()
-
-    // dispose created functions; or no-op if these are this.undefined
-    get.dispose()
-    set.dispose()
+      this.ffi.QTS_DefineProp(
+        this.ctx.value,
+        handle.value,
+        quickJSKey.value,
+        value.value,
+        get.value,
+        set.value,
+        configurable,
+        enumerable,
+        hasValue
+      )
+    })
   }
 
   /**
@@ -620,41 +614,36 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
       throw new Error(`QuickJSVm had no callback with id ${fnId}`)
     }
 
-    const thisHandle = new WeakLifetime(this_ptr, this.copyJSValue, this.freeJSValue, this)
-    const argHandles = new Array<QuickJSHandle>(argc)
-    for (let i = 0; i < argc; i++) {
-      const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
-      argHandles[i] = new WeakLifetime(ptr, this.copyJSValue, this.freeJSValue, this)
-    }
-
-    let ownedResultPtr = 0 as JSValuePointer
-    try {
-      let result = fn.apply(thisHandle, argHandles)
-      if (result) {
-        if ('error' in result && result.error) {
-          throw result.error
-        }
-        const handle = result instanceof Lifetime ? result : result.value
-        ownedResultPtr = this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
-        handle.dispose()
-      }
-    } catch (error) {
-      ownedResultPtr = this.errorToHandle(error).consume(errorHandle =>
-        this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
+    return Scope.withScope(scope => {
+      const thisHandle = scope.manage(
+        new WeakLifetime(this_ptr, this.copyJSValue, this.freeJSValue, this)
       )
-    }
-
-    // Free the arguments so they can't be retained and re-used after we return.
-    if (thisHandle.alive) {
-      thisHandle.dispose()
-    }
-    for (const argHandle of argHandles) {
-      if (argHandle.alive) {
-        argHandle.dispose()
+      const argHandles = new Array<QuickJSHandle>(argc)
+      for (let i = 0; i < argc; i++) {
+        const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
+        argHandles[i] = scope.manage(
+          new WeakLifetime(ptr, this.copyJSValue, this.freeJSValue, this)
+        )
       }
-    }
 
-    return ownedResultPtr as JSValuePointer
+      let ownedResultPtr = 0 as JSValuePointer
+      try {
+        let result = fn.apply(thisHandle, argHandles)
+        if (result) {
+          if ('error' in result && result.error) {
+            throw result.error
+          }
+          const handle = scope.manage(result instanceof Lifetime ? result : result.value)
+          ownedResultPtr = this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
+        }
+      } catch (error) {
+        ownedResultPtr = this.errorToHandle(error).consume(errorHandle =>
+          this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
+        )
+      }
+
+      return ownedResultPtr as JSValuePointer
+    })
   }
 
   /** @hidden */

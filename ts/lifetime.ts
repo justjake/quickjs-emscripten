@@ -140,3 +140,47 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
     this._alive = false
   }
 }
+
+/**
+ * Helps dispose Lifetimes. See [[withScome]].
+ */
+export class Scope {
+  /**
+   * Run `block` with a new Scope instance that will be disposed after the block returns.
+   * Inside `block`, call `scope.manage` on each lifetime you create to have the lifetime
+   * automatically disposed after the block returns.
+   */
+  static withScope<R>(block: (scope: Scope) => R): R {
+    const scope = new Scope()
+    try {
+      return block(scope)
+    } finally {
+      scope.dispose()
+    }
+  }
+
+  private _lifetimes: Lifetime<Set<Lifetime<unknown, unknown, unknown>>> = new Lifetime(new Set())
+
+  manage<T extends Lifetime<any, never, never>>(lifetime: T): T
+  manage<T extends Lifetime<any, any, never>>(lifetime: T): T
+  manage<T extends Lifetime<any, never, any>>(lifetime: T): T
+  manage<T extends Lifetime<any, any, any>>(lifetime: T): T
+  manage<T extends Lifetime<any, any | never, any | never>>(lifetime: T): T {
+    this._lifetimes.value.add(lifetime as any)
+    return lifetime
+  }
+
+  dispose() {
+    this.disposeLifetimes()
+    this._lifetimes.dispose()
+  }
+
+  private disposeLifetimes() {
+    const lifetimes = Array.from(this._lifetimes.value.values())
+    for (const lifetime of lifetimes) {
+      if (lifetime.alive) {
+        lifetime.dispose()
+      }
+    }
+  }
+}
