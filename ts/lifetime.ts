@@ -161,6 +161,9 @@ export class Scope {
 
   private _lifetimes: Lifetime<Set<Lifetime<unknown, unknown, unknown>>> = new Lifetime(new Set())
 
+  /**
+   * Track `lifetime` so that it is disposed when this scope is disposed.
+   */
   manage<T extends Lifetime<any, never, never>>(lifetime: T): T
   manage<T extends Lifetime<any, any, never>>(lifetime: T): T
   manage<T extends Lifetime<any, never, any>>(lifetime: T): T
@@ -168,6 +171,10 @@ export class Scope {
   manage<T extends Lifetime<any, any | never, any | never>>(lifetime: T): T {
     this._lifetimes.value.add(lifetime as any)
     return lifetime
+  }
+
+  get alive() {
+    return this._lifetimes.alive
   }
 
   dispose() {
