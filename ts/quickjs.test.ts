@@ -484,4 +484,10 @@ describe('QuickJSVm', async () => {
       )
     })
   })
+
+  describe('.newPromise()', () => {
+    it('dispose does not leak', () => {
+      vm.newPromise().dispose()
+    })
+  })
 })
