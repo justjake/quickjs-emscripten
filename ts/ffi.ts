@@ -36,6 +36,11 @@ export type JSValueConstPointer = Pointer<'JSValueConst'>
 /**
  * Used internally for Javascript-to-C function calls.
  */
+export type JSValuePointerPointer = Pointer<'JSValue[]'>
+
+/**
+ * Used internally for Javascript-to-C function calls.
+ */
 export type JSValueConstPointerPointer = Pointer<'JSValueConst[]'>
 
 /**
@@ -180,4 +185,7 @@ export class QuickJSFFI {
 
   QTS_GetGlobalObject: (ctx: JSContextPointer) => JSValuePointer =
     this.module.cwrap("QTS_GetGlobalObject", "number", ["number"])
+
+  QTS_NewPromiseCapability: (ctx: JSContextPointer, resolve_funcs_out: JSValuePointerPointer) => JSValuePointer =
+    this.module.cwrap("QTS_NewPromiseCapability", "number", ["number","number"])
 }

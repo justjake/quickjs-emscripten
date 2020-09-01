@@ -6,6 +6,7 @@ import {
   JSRuntimePointer,
   JSValueConstPointer,
   JSValueConstPointerPointer,
+  JSValuePointerPointer,
   QTS_C_To_HostCallbackFuncPointer,
   QTS_C_To_HostInterruptFuncPointer,
 } from './ffi'
@@ -17,7 +18,7 @@ import {
   SuccessOrFail,
 } from './vm-interface'
 import { QuickJSEmscriptenModule } from './emscripten-types'
-import { Lifetime, WeakLifetime, StaticLifetime, Scope } from './lifetime'
+import { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable } from './lifetime'
 export { Lifetime, WeakLifetime, StaticLifetime }
 
 let QuickJSModule: QuickJSEmscriptenModule | undefined = undefined
@@ -62,6 +63,82 @@ type CToHostInterruptImplementation = (rt: JSRuntimePointer) => 0 | 1
 export type InterruptHandler = (vm: QuickJSVm) => boolean | undefined
 
 export type QuickJSPropertyKey = number | string | QuickJSHandle
+
+class QuickJSDeferredPromise implements Disposable {
+  public owner: QuickJSVm
+  public promise: QuickJSHandle
+  private resolveHandle: QuickJSHandle
+  private rejectHandle: QuickJSHandle
+
+  constructor(args: {
+    owner: QuickJSVm
+    promiseHandle: QuickJSHandle
+    resolveHandle: QuickJSHandle
+    rejectHandle: QuickJSHandle
+  }) {
+    this.owner = args.owner
+    this.promise = args.promiseHandle
+    this.resolveHandle = args.resolveHandle
+    this.rejectHandle = args.rejectHandle
+  }
+
+  resolve = (value?: QuickJSHandle) => {
+    if (!this.resolveHandle.alive) {
+      return
+    }
+
+    this.owner
+      .unwrapResult(
+        this.owner.callFunction(
+          this.resolveHandle,
+          this.owner.undefined,
+          value || this.owner.undefined
+        )
+      )
+      .dispose()
+
+    this.disposeResolvers()
+  }
+
+  reject = (value?: QuickJSHandle) => {
+    if (!this.rejectHandle.alive) {
+      return
+    }
+
+    this.owner
+      .unwrapResult(
+        this.owner.callFunction(
+          this.rejectHandle,
+          this.owner.undefined,
+          value || this.owner.undefined
+        )
+      )
+      .dispose()
+
+    this.disposeResolvers()
+  }
+
+  get alive() {
+    return this.promise.alive || this.resolveHandle.alive || this.rejectHandle.alive
+  }
+
+  dispose = () => {
+    if (this.promise.alive) {
+      this.promise.dispose()
+    }
+    this.disposeResolvers()
+  }
+
+  private disposeResolvers() {
+    if (this.resolveHandle.alive) {
+      this.resolveHandle.dispose()
+    }
+
+    if (this.rejectHandle.alive) {
+      this.rejectHandle.dispose()
+    }
+  }
+}
 
 /**
  * Used as an optional for the results of executing pendingJobs.
@@ -278,6 +355,16 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * A [[VmFunctionImplementation]] should not free its arguments or its retun
    * value. A VmFunctionImplementation should also not retain any references to
    * its veturn value.
+   *
+   * To implement an async function, create a promise with [[newPromise]], then
+   * return the deferred promise handle from `deferred.promise` from your
+   * function implementation:
+   *
+   * ```
+   * const deferred = vm.newPromise()
+   * someNativeAsyncFunction().then(deferred.resolve)
+   * return deferred.promise
+   * ```
    */
   newFunction(name: string, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
     const fnId = ++this.fnNextId
@@ -293,6 +380,32 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     this.module._free(fnIdHandle.value)
 
     return funcHandle
+  }
+
+  /**
+   * Create a new QuickJSDeferredPromise. Use `deferred.resolve(handle)` and
+   * `deferred.reject(handle)` to fufill the promise handle available at `deferred.promise`.
+   * Note that you are responsible for calling `deferred.dispose()` to free the underlying
+   * resources.
+   */
+  newPromise(): QuickJSDeferredPromise {
+    return Scope.withScope(scope => {
+      const mutablePointerArray = scope.manage(this.newMutablePointerArray(2))
+      const promisePtr = this.ffi.QTS_NewPromiseCapability(
+        this.ctx.value,
+        mutablePointerArray.value.ptr
+      )
+      const promiseHandle = this.heapValueHandle(promisePtr)
+      const [resolveHandle, rejectHandle] = Array.from(
+        mutablePointerArray.value.typedArray
+      ).map(jsvaluePtr => this.heapValueHandle(jsvaluePtr as any))
+      return new QuickJSDeferredPromise({
+        owner: this,
+        promiseHandle,
+        resolveHandle,
+        rejectHandle,
+      })
+    })
   }
 
   /**
@@ -699,6 +812,17 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     var heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes)
     heapBytes.set(new Uint8Array(typedArray.buffer))
     return new Lifetime(ptr, undefined, ptr => this.module._free(ptr))
+  }
+
+  private newMutablePointerArray(
+    length: number
+  ): Lifetime<{ typedArray: Int32Array; ptr: JSValuePointerPointer }> {
+    const zeros = new Int32Array(new Array(length).fill(0))
+    const numBytes = zeros.length * zeros.BYTES_PER_ELEMENT
+    const ptr = this.module._malloc(numBytes) as JSValuePointerPointer
+    const typedArray = new Int32Array(this.module.HEAPU8.buffer, ptr, length)
+    typedArray.set(zeros)
+    return new Lifetime({ typedArray, ptr }, undefined, value => this.module._free(value.ptr))
   }
 
   private errorToHandle(error: Error | QuickJSHandle) {

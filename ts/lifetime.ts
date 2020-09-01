@@ -6,7 +6,7 @@ import { QuickJSHandle } from './quickjs'
  *
  * Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
  */
-export class Lifetime<T, TCopy = never, Owner = never> {
+export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
   protected _alive: boolean = true
 
   /**
@@ -141,6 +141,11 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
   }
 }
 
+export interface Disposable {
+  dispose(): void
+  alive: boolean
+}
+
 /**
  * Helps dispose Lifetimes. See [[withScome]].
  */
@@ -159,35 +164,27 @@ export class Scope {
     }
   }
 
-  private _lifetimes: Lifetime<Set<Lifetime<unknown, unknown, unknown>>> = new Lifetime(new Set())
+  private _disposables: Lifetime<Set<Disposable>> = new Lifetime(new Set())
 
   /**
    * Track `lifetime` so that it is disposed when this scope is disposed.
    */
-  manage<T extends Lifetime<any, never, never>>(lifetime: T): T
-  manage<T extends Lifetime<any, any, never>>(lifetime: T): T
-  manage<T extends Lifetime<any, never, any>>(lifetime: T): T
-  manage<T extends Lifetime<any, any, any>>(lifetime: T): T
-  manage<T extends Lifetime<any, any | never, any | never>>(lifetime: T): T {
-    this._lifetimes.value.add(lifetime as any)
+  manage<T extends Disposable>(lifetime: T): T {
+    this._disposables.value.add(lifetime)
     return lifetime
   }
 
   get alive() {
-    return this._lifetimes.alive
+    return this._disposables.alive
   }
 
   dispose() {
-    this.disposeLifetimes()
-    this._lifetimes.dispose()
-  }
-
-  private disposeLifetimes() {
-    const lifetimes = Array.from(this._lifetimes.value.values())
+    const lifetimes = Array.from(this._disposables.value.values())
     for (const lifetime of lifetimes) {
       if (lifetime.alive) {
         lifetime.dispose()
       }
     }
+    this._disposables.dispose()
   }
 }

@@ -33,6 +33,11 @@ type JSValueConstPointer = Pointer<'JSValueConst'>
 /**
  * Used internally for Javascript-to-C function calls.
  */
+type JSValuePointerPointer = Pointer<'JSValue[]'>
+
+/**
+ * Used internally for Javascript-to-C function calls.
+ */
 type JSValueConstPointerPointer = Pointer<'JSValueConst[]'>
 
 /**
