@@ -1,5 +1,10 @@
 import { QuickJSHandle } from './quickjs'
 
+export interface Disposable {
+  dispose(): void
+  alive: boolean
+}
+
 /**
  * A lifetime prevents access to a value after the lifetime has been
  * [[dispose]]ed.
@@ -141,13 +146,8 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
   }
 }
 
-export interface Disposable {
-  dispose(): void
-  alive: boolean
-}
-
 /**
- * Helps dispose Lifetimes. See [[withScome]].
+ * Helps dispose Lifetimes. See [[withScope]].
  */
 export class Scope {
   /**
@@ -159,6 +159,21 @@ export class Scope {
     const scope = new Scope()
     try {
       return block(scope)
+    } finally {
+      scope.dispose()
+    }
+  }
+
+  /**
+   * Run `block` with a new Scope instance that will be disposed after the
+   * block's promise fufills. Inside `block`, call `scope.manage` on each
+   * lifetime you create to have the lifetime automatically disposed after the
+   * block returns.
+   */
+  static async withScopeAsync<R>(block: (scope: Scope) => Promise<R>): Promise<R> {
+    const scope = new Scope()
+    try {
+      return await block(scope)
     } finally {
       scope.dispose()
     }

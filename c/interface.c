@@ -63,7 +63,7 @@ void copy_prop_if_needed(JSContext* ctx, JSValueConst dest, JSValueConst src, co
 
 JSValue *jsvalue_to_heap(JSValueConst value) {
   JSValue* result = malloc(sizeof(JSValue));
-  if  (result) {
+  if (result) {
     memcpy(result, &value, sizeof(JSValue));
   }
   return result;
@@ -466,7 +466,7 @@ JSValue *QTS_GetGlobalObject(JSContext *ctx) {
 JSValue *QTS_NewPromiseCapability(JSContext *ctx, JSValue **resolve_funcs_out) {
   JSValue resolve_funcs[2];
   JSValue promise = JS_NewPromiseCapability(ctx, resolve_funcs);
-  resolve_funcs_out[1] = jsvalue_to_heap(resolve_funcs[0]);
-  resolve_funcs_out[2] = jsvalue_to_heap(resolve_funcs[1]);
+  resolve_funcs_out[0] = jsvalue_to_heap(resolve_funcs[0]);
+  resolve_funcs_out[1] = jsvalue_to_heap(resolve_funcs[1]);
   return jsvalue_to_heap(promise);
 }
