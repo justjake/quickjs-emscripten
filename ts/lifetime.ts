@@ -149,7 +149,7 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
 /**
  * Helps dispose Lifetimes. See [[withScope]].
  */
-export class Scope {
+export class Scope implements Disposable {
   /**
    * Run `block` with a new Scope instance that will be disposed after the block returns.
    * Inside `block`, call `scope.manage` on each lifetime you create to have the lifetime

@@ -2,7 +2,13 @@
  * These tests demonstate some common patterns for using quickjs-emscripten.
  */
 
-import { getQuickJS, QuickJSVm, QuickJSHandle, InterruptHandler } from './quickjs'
+import {
+  getQuickJS,
+  QuickJSVm,
+  QuickJSHandle,
+  InterruptHandler,
+  QuickJSDeferredPromise,
+} from './quickjs'
 import { it, describe } from 'mocha'
 import assert from 'assert'
 import { VmCallResult } from './vm-interface'
@@ -488,6 +494,42 @@ describe('QuickJSVm', async () => {
   describe('.newPromise()', () => {
     it('dispose does not leak', () => {
       vm.newPromise().dispose()
+    })
+
+    it('passes an end-to-end test', async () => {
+      const expectedValue = Math.random()
+      let deferred: QuickJSDeferredPromise = undefined as any
+
+      function timeout(ms: number) {
+        return new Promise(resolve => {
+          setTimeout(() => resolve(), ms)
+        })
+      }
+
+      const asyncFuncHandle = vm.newFunction('getThingy', () => {
+        deferred = vm.newPromise()
+        timeout(5).then(() => vm.newNumber(expectedValue).consume(val => deferred.resolve(val)))
+        return deferred.promise
+      })
+
+      asyncFuncHandle.consume(func => vm.setProp(vm.global, 'getThingy', func))
+
+      vm.unwrapResult(
+        vm.evalCode(`
+          var globalThingy = 'not set by promise';
+          getThingy().then(thingy => { globalThingy = thingy })
+        `)
+      ).dispose()
+
+      // Wait for the promise to settle
+      await deferred.settled
+
+      // Execute promise callbacks inside the VM
+      vm.executePendingJobs()
+
+      // Check that the promise executed.
+      const vmValue = vm.unwrapResult(vm.evalCode(`globalThingy`)).consume(x => vm.dump(x))
+      assert.equal(vmValue, expectedValue)
     })
   })
 })

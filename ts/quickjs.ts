@@ -64,12 +64,37 @@ export type InterruptHandler = (vm: QuickJSVm) => boolean | undefined
 
 export type QuickJSPropertyKey = number | string | QuickJSHandle
 
-class QuickJSDeferredPromise implements Disposable {
+/**
+ * The `resolve` and `reject` callback handles are freed automatically when the
+ * promise is settled.
+ */
+export class QuickJSDeferredPromise implements Disposable {
+  /**
+   * The QuickJSVm this promise was created by.
+   */
   public owner: QuickJSVm
+
+  /**
+   * The Promise instance inside the QuickJSVm.
+   * You must dispose [[promise]] or the entire QuickJSDeferredPromise once you
+   * are finished with it.
+   */
   public promise: QuickJSHandle
+
+  /**
+   * A native promise that will resolve once this deferred is settled.
+   */
+  public settled: Promise<void>
+
   private resolveHandle: QuickJSHandle
   private rejectHandle: QuickJSHandle
+  private onSettled!: () => void
 
+  /**
+   * Use [[QuickJSVm.newPromise]] to create a new promise instead of calling
+   * this constructor directly.
+   * @unstable
+   */
   constructor(args: {
     owner: QuickJSVm
     promiseHandle: QuickJSHandle
@@ -78,10 +103,16 @@ class QuickJSDeferredPromise implements Disposable {
   }) {
     this.owner = args.owner
     this.promise = args.promiseHandle
+    this.settled = new Promise(resolve => {
+      this.onSettled = resolve
+    })
     this.resolveHandle = args.resolveHandle
     this.rejectHandle = args.rejectHandle
   }
 
+  /**
+   * Resolve [[promise]] with the given value, if any.
+   */
   resolve = (value?: QuickJSHandle) => {
     if (!this.resolveHandle.alive) {
       return
@@ -98,8 +129,12 @@ class QuickJSDeferredPromise implements Disposable {
       .dispose()
 
     this.disposeResolvers()
+    this.onSettled()
   }
 
+  /**
+   * Reject [[promise]] with the given value, if any.
+   */
   reject = (value?: QuickJSHandle) => {
     if (!this.rejectHandle.alive) {
       return
@@ -116,6 +151,7 @@ class QuickJSDeferredPromise implements Disposable {
       .dispose()
 
     this.disposeResolvers()
+    this.onSettled()
   }
 
   get alive() {
