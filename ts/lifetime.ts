@@ -1,7 +1,20 @@
 import { QuickJSHandle } from './quickjs'
 
+/**
+ * An object that can be disposed.
+ * [[Lifetime]] is the canonical implementation of Disposable.
+ * Use [[Scope]] to manage cleaning up multiple disposables.
+ */
 export interface Disposable {
+  /**
+   * Dispose of the underlying resources used by this object.
+   */
   dispose(): void
+
+  /**
+   * @returns true if the object is alive
+   * @returns false after the object has been [[dispose]]d
+   */
   alive: boolean
 }
 
