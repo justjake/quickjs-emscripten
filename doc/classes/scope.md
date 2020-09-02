@@ -2,7 +2,8 @@
 
 # Class: Scope
 
-Helps dispose Lifetimes. See [withScope](scope.md#static-withscope).
+Scope helps reduce the burden of manually tracking and disposing of
+Lifetimes. See [withScope](scope.md#static-withscope). and [withScopeAsync](scope.md#static-withscopeasync).
 
 ## Hierarchy
 
@@ -31,7 +32,7 @@ Helps dispose Lifetimes. See [withScope](scope.md#static-withscope).
 
 • **get alive**(): *boolean*
 
-*Defined in [lifetime.ts:192](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L192)*
+*Defined in [lifetime.ts:195](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L195)*
 
 **Returns:** *boolean*
 
@@ -43,7 +44,7 @@ Helps dispose Lifetimes. See [withScope](scope.md#static-withscope).
 
 *Implementation of [Disposable](../interfaces/disposable.md)*
 
-*Defined in [lifetime.ts:196](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L196)*
+*Defined in [lifetime.ts:199](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L199)*
 
 **Returns:** *void*
 
@@ -53,7 +54,7 @@ ___
 
 ▸ **manage**<**T**>(`lifetime`: T): *T*
 
-*Defined in [lifetime.ts:187](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L187)*
+*Defined in [lifetime.ts:190](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L190)*
 
 Track `lifetime` so that it is disposed when this scope is disposed.
 
@@ -75,11 +76,13 @@ ___
 
 ▸ **withScope**<**R**>(`block`: function): *R*
 
-*Defined in [lifetime.ts:158](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L158)*
+*Defined in [lifetime.ts:161](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L161)*
 
 Run `block` with a new Scope instance that will be disposed after the block returns.
 Inside `block`, call `scope.manage` on each lifetime you create to have the lifetime
 automatically disposed after the block returns.
+
+**`warning`** Do not use with async functions. Instead, use [withScopeAsync](scope.md#static-withscopeasync).
 
 **Type parameters:**
 
@@ -105,10 +108,10 @@ ___
 
 ▸ **withScopeAsync**<**R**>(`block`: function): *Promise‹R›*
 
-*Defined in [lifetime.ts:173](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L173)*
+*Defined in [lifetime.ts:176](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L176)*
 
 Run `block` with a new Scope instance that will be disposed after the
-block's promise fufills. Inside `block`, call `scope.manage` on each
+block's returned promise settles. Inside `block`, call `scope.manage` on each
 lifetime you create to have the lifetime automatically disposed after the
 block returns.
 

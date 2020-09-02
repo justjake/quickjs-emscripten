@@ -65,13 +65,17 @@ export type InterruptHandler = (vm: QuickJSVm) => boolean | undefined
 export type QuickJSPropertyKey = number | string | QuickJSHandle
 
 /**
+ * QuickJSDeferredPromise wraps a QuickJS promise [[handle]] and allows
+ * [[resolve]]ing or [[reject]]ing that promise. Use it to bridge asynchronous
+ * code on the host to APIs inside a QuickJSVm.
+ *
  * Managing the lifetime of promises is tricky. There are three
- * [[QuickJSHandle]] inside of each deferred promise object: (1) the promise
+ * [[QuickJSHandle]]s inside of each deferred promise object: (1) the promise
  * itself, (2) the `resolve` callback, and (3) the `reject` callback.
  *
  * - If the promise will be fufilled before the end of it's [[owner]]'s lifetime,
- *   the only cleanup necessary is `deferred.promise.dispose()`, because
- *   calling [[resolve]] or [[reject]] will dispose of the callbacks automatically.
+ *   the only cleanup necessary is `deferred.handle.dispose()`, because
+ *   calling [[resolve]] or [[reject]] will dispose of both callbacks automatically.
  *
  * - As the return value of a [[VmFunctionImplementation]], return [[handle]],
  *   and ensure that either [[resolve]] or [[reject]] will be called. No other
@@ -125,6 +129,11 @@ export class QuickJSDeferredPromise implements Disposable {
 
   /**
    * Resolve [[handle]] with the given value, if any.
+   * Calling this method after calling [[dispose]] is a no-op.
+   *
+   * Note that after resolving a promise, you may need to call
+   * [[QuickJSVm.executePendingJobs]] to propagate the result to the promise's
+   * callbacks.
    */
   resolve = (value?: QuickJSHandle) => {
     if (!this.resolveHandle.alive) {
@@ -147,6 +156,11 @@ export class QuickJSDeferredPromise implements Disposable {
 
   /**
    * Reject [[handle]] with the given value, if any.
+   * Calling this method after calling [[dispose]] is a no-op.
+   *
+   * Note that after rejecting a promise, you may need to call
+   * [[QuickJSVm.executePendingJobs]] to propagate the result to the promise's
+   * callbacks.
    */
   reject = (value?: QuickJSHandle) => {
     if (!this.rejectHandle.alive) {
@@ -406,13 +420,13 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * its veturn value.
    *
    * To implement an async function, create a promise with [[newPromise]], then
-   * return the deferred promise handle from `deferred.promise` from your
+   * return the deferred promise handle from `deferred.handle` from your
    * function implementation:
    *
    * ```
    * const deferred = vm.newPromise()
    * someNativeAsyncFunction().then(deferred.resolve)
-   * return deferred.promise
+   * return deferred.handle
    * ```
    */
   newFunction(name: string, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
@@ -432,10 +446,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }
 
   /**
-   * Create a new QuickJSDeferredPromise. Use `deferred.resolve(handle)` and
-   * `deferred.reject(handle)` to fufill the promise handle available at `deferred.promise`.
+   * Create a new [[QuickJSDeferredPromise]]. Use `deferred.resolve(handle)` and
+   * `deferred.reject(handle)` to fufill the promise handle available at `deferred.handle`.
    * Note that you are responsible for calling `deferred.dispose()` to free the underlying
-   * resources.
+   * resources; see the documentation on [[QuickJSDeferredPromise]] for details.
    */
   newPromise(): QuickJSDeferredPromise {
     return Scope.withScope(scope => {

@@ -147,13 +147,16 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
 }
 
 /**
- * Helps dispose Lifetimes. See [[withScope]].
+ * Scope helps reduce the burden of manually tracking and disposing of
+ * Lifetimes. See [[withScope]]. and [[withScopeAsync]].
  */
 export class Scope implements Disposable {
   /**
    * Run `block` with a new Scope instance that will be disposed after the block returns.
    * Inside `block`, call `scope.manage` on each lifetime you create to have the lifetime
    * automatically disposed after the block returns.
+   *
+   * @warning Do not use with async functions. Instead, use [[withScopeAsync]].
    */
   static withScope<R>(block: (scope: Scope) => R): R {
     const scope = new Scope()
@@ -166,7 +169,7 @@ export class Scope implements Disposable {
 
   /**
    * Run `block` with a new Scope instance that will be disposed after the
-   * block's promise fufills. Inside `block`, call `scope.manage` on each
+   * block's returned promise settles. Inside `block`, call `scope.manage` on each
    * lifetime you create to have the lifetime automatically disposed after the
    * block returns.
    */
