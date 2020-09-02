@@ -240,7 +240,7 @@ export type ExecutePendingJobsResult = SuccessOrFail<number, QuickJSHandle>
  * Use [[computeMemoryUsage]] or [[dumpMemoryUsage]] to guide memory limit
  * tuning.
  */
-export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
+export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposable {
   private readonly ctx: Lifetime<JSContextPointer>
   private readonly rt: Lifetime<JSRuntimePointer>
 
@@ -251,7 +251,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private _false: QuickJSHandle | undefined = undefined
   private _true: QuickJSHandle | undefined = undefined
   private _global: QuickJSHandle | undefined = undefined
-  private readonly lifetimes: Lifetime<any, any, any>[] = []
+  private _scope = new Scope()
 
   /**
    * Use {@link QuickJS.createVm} to create a QuickJSVm instance.
@@ -264,8 +264,8 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }) {
     this.module = args.module
     this.ffi = args.ffi
-    this.ctx = args.ctx
-    this.rt = args.rt
+    this.rt = this._scope.manage(args.rt)
+    this.ctx = this._scope.manage(args.ctx)
   }
 
   /**
@@ -335,7 +335,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     const ptr = this.ffi.QTS_GetGlobalObject(this.ctx.value)
 
     // Automatically clean up this reference when we dispose(
-    this.lifetimes.push(this.heapValueHandle(ptr))
+    this._scope.manage(this.heapValueHandle(ptr))
 
     // This isn't technically a static lifetime, but since it has the same
     // lifetime as the VM, it's okay to fake one since when the VM is
@@ -751,6 +751,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     }
   }
 
+  get alive() {
+    return this._scope.alive
+  }
+
   /**
    * Dispose of this VM's underlying resources.
    *
@@ -758,13 +762,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * will result in an error.
    */
   dispose() {
-    for (const lifetime of this.lifetimes) {
-      if (lifetime.alive) {
-        lifetime.dispose()
-      }
-    }
-    this.ctx.dispose()
-    this.rt.dispose()
+    this._scope.dispose()
   }
 
   private fnNextId = 0

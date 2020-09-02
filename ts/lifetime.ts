@@ -197,7 +197,7 @@ export class Scope implements Disposable {
   }
 
   dispose() {
-    const lifetimes = Array.from(this._disposables.value.values())
+    const lifetimes = Array.from(this._disposables.value.values()).reverse()
     for (const lifetime of lifetimes) {
       if (lifetime.alive) {
         lifetime.dispose()
