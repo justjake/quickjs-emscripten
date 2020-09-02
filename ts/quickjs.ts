@@ -65,8 +65,21 @@ export type InterruptHandler = (vm: QuickJSVm) => boolean | undefined
 export type QuickJSPropertyKey = number | string | QuickJSHandle
 
 /**
- * The `resolve` and `reject` callback handles are freed automatically when the
- * promise is settled.
+ * Managing the lifetime of promises is tricky. There are three
+ * [[QuickJSHandle]] inside of each deferred promise object: (1) the promise
+ * itself, (2) the `resolve` callback, and (3) the `reject` callback.
+ *
+ * - If the promise will be fufilled before the end of it's [[owner]]'s lifetime,
+ *   the only cleanup necessary is `deferred.promise.dispose()`, because
+ *   calling [[resolve]] or [[reject]] will dispose of the callbacks automatically.
+ *
+ * - As the return value of a [[VmFunctionImplementation]], return [[promise]],
+ *   and ensure that either [[resolve]] or [[reject]] will be called. No other
+ *   clean-up is necessary.
+ *
+ * - In other cases, call [[dispose]], which will dispose [[promise]] as well as the
+ *   QuickJS handles that back [[resolve]] and [[reject]]. For this object,
+ *   [[dispose]] is idempotent.
  */
 export class QuickJSDeferredPromise implements Disposable {
   /**
@@ -75,7 +88,7 @@ export class QuickJSDeferredPromise implements Disposable {
   public owner: QuickJSVm
 
   /**
-   * The Promise instance inside the QuickJSVm.
+   * A handle of the Promise instance inside the QuickJSVm.
    * You must dispose [[promise]] or the entire QuickJSDeferredPromise once you
    * are finished with it.
    */
