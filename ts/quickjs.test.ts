@@ -509,7 +509,7 @@ describe('QuickJSVm', async () => {
       const asyncFuncHandle = vm.newFunction('getThingy', () => {
         deferred = vm.newPromise()
         timeout(5).then(() => vm.newNumber(expectedValue).consume(val => deferred.resolve(val)))
-        return deferred.promise
+        return deferred.handle
       })
 
       asyncFuncHandle.consume(func => vm.setProp(vm.global, 'getThingy', func))

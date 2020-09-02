@@ -23,6 +23,10 @@ Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
 
   ↳ [WeakLifetime](weaklifetime.md)
 
+## Implements
+
+* [Disposable](../interfaces/disposable.md)
+
 ## Index
 
 ### Constructors
@@ -46,6 +50,7 @@ Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
 
 ### Methods
 
+* [consume](lifetime.md#consume)
 * [dispose](lifetime.md#dispose)
 * [dup](lifetime.md#dup)
 
@@ -55,7 +60,7 @@ Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
 
 \+ **new Lifetime**(`_value`: T, `copier?`: undefined | function, `disposer?`: undefined | function, `_owner?`: Owner): *[Lifetime](lifetime.md)*
 
-*Defined in [quickjs.ts:71](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L71)*
+*Defined in [lifetime.ts:15](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L15)*
 
 When the Lifetime is disposed, it will call `disposer(_value)`. Use the
 disposer function to implement whatever cleanup needs to happen at the end
@@ -81,7 +86,7 @@ Name | Type |
 
 • **_alive**: *boolean* = true
 
-*Defined in [quickjs.ts:71](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L71)*
+*Defined in [lifetime.ts:15](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L15)*
 
 ___
 
@@ -89,7 +94,7 @@ ___
 
 • **_owner**? : *Owner*
 
-*Defined in [quickjs.ts:85](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L85)*
+*Defined in [lifetime.ts:29](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L29)*
 
 ___
 
@@ -97,7 +102,7 @@ ___
 
 • **_value**: *T*
 
-*Defined in [quickjs.ts:82](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L82)*
+*Defined in [lifetime.ts:26](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L26)*
 
 ___
 
@@ -105,7 +110,7 @@ ___
 
 • **copier**? : *undefined | function*
 
-*Defined in [quickjs.ts:83](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L83)*
+*Defined in [lifetime.ts:27](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L27)*
 
 ___
 
@@ -113,7 +118,7 @@ ___
 
 • **disposer**? : *undefined | function*
 
-*Defined in [quickjs.ts:84](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L84)*
+*Defined in [lifetime.ts:28](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L28)*
 
 ## Accessors
 
@@ -121,7 +126,7 @@ ___
 
 • **get alive**(): *boolean*
 
-*Defined in [quickjs.ts:88](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L88)*
+*Defined in [lifetime.ts:32](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L32)*
 
 **Returns:** *boolean*
 
@@ -131,7 +136,7 @@ ___
 
 • **get dupable**(): *boolean*
 
-*Defined in [quickjs.ts:107](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L107)*
+*Defined in [lifetime.ts:51](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L51)*
 
 **Returns:** *boolean*
 
@@ -141,7 +146,7 @@ ___
 
 • **get owner**(): *undefined | Owner*
 
-*Defined in [quickjs.ts:103](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L103)*
+*Defined in [lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L47)*
 
 **Returns:** *undefined | Owner*
 
@@ -151,7 +156,7 @@ ___
 
 • **get value**(): *T*
 
-*Defined in [quickjs.ts:98](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L98)*
+*Defined in [lifetime.ts:42](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L42)*
 
 The value this Lifetime protects. You must never retain the value - it
 may become invalid, leading to memory errors.
@@ -162,11 +167,65 @@ may become invalid, leading to memory errors.
 
 ## Methods
 
+###  consume
+
+▸ **consume**<**O**>(`map`: function): *O*
+
+*Defined in [lifetime.ts:75](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L75)*
+
+Call `map` with this lifetime, then dispose the lifetime.
+
+**Type parameters:**
+
+▪ **O**
+
+**Parameters:**
+
+▪ **map**: *function*
+
+▸ (`lifetime`: this): *O*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`lifetime` | this |
+
+**Returns:** *O*
+
+the result of `map(this)`.
+
+▸ **consume**<**O**>(`map`: function): *O*
+
+*Defined in [lifetime.ts:78](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L78)*
+
+**Type parameters:**
+
+▪ **O**
+
+**Parameters:**
+
+▪ **map**: *function*
+
+▸ (`lifetime`: [QuickJSHandle](../globals.md#quickjshandle)): *O*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`lifetime` | [QuickJSHandle](../globals.md#quickjshandle) |
+
+**Returns:** *O*
+
+___
+
 ###  dispose
 
 ▸ **dispose**(): *void*
 
-*Defined in [quickjs.ts:130](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L130)*
+*Implementation of [Disposable](../interfaces/disposable.md)*
+
+*Defined in [lifetime.ts:89](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L89)*
 
 Dispose of [value](lifetime.md#value) and perform cleanup.
 
@@ -178,7 +237,7 @@ ___
 
 ▸ **dup**(): *[Lifetime](lifetime.md)‹TCopy, TCopy, Owner›*
 
-*Defined in [quickjs.ts:114](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L114)*
+*Defined in [lifetime.ts:58](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L58)*
 
 Create a new handle pointing to the same [value](lifetime.md#value).
 

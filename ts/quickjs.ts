@@ -73,11 +73,11 @@ export type QuickJSPropertyKey = number | string | QuickJSHandle
  *   the only cleanup necessary is `deferred.promise.dispose()`, because
  *   calling [[resolve]] or [[reject]] will dispose of the callbacks automatically.
  *
- * - As the return value of a [[VmFunctionImplementation]], return [[promise]],
+ * - As the return value of a [[VmFunctionImplementation]], return [[handle]],
  *   and ensure that either [[resolve]] or [[reject]] will be called. No other
  *   clean-up is necessary.
  *
- * - In other cases, call [[dispose]], which will dispose [[promise]] as well as the
+ * - In other cases, call [[dispose]], which will dispose [[handle]] as well as the
  *   QuickJS handles that back [[resolve]] and [[reject]]. For this object,
  *   [[dispose]] is idempotent.
  */
@@ -89,10 +89,10 @@ export class QuickJSDeferredPromise implements Disposable {
 
   /**
    * A handle of the Promise instance inside the QuickJSVm.
-   * You must dispose [[promise]] or the entire QuickJSDeferredPromise once you
+   * You must dispose [[handle]] or the entire QuickJSDeferredPromise once you
    * are finished with it.
    */
-  public promise: QuickJSHandle
+  public handle: QuickJSHandle
 
   /**
    * A native promise that will resolve once this deferred is settled.
@@ -115,7 +115,7 @@ export class QuickJSDeferredPromise implements Disposable {
     rejectHandle: QuickJSHandle
   }) {
     this.owner = args.owner
-    this.promise = args.promiseHandle
+    this.handle = args.promiseHandle
     this.settled = new Promise(resolve => {
       this.onSettled = resolve
     })
@@ -124,7 +124,7 @@ export class QuickJSDeferredPromise implements Disposable {
   }
 
   /**
-   * Resolve [[promise]] with the given value, if any.
+   * Resolve [[handle]] with the given value, if any.
    */
   resolve = (value?: QuickJSHandle) => {
     if (!this.resolveHandle.alive) {
@@ -146,7 +146,7 @@ export class QuickJSDeferredPromise implements Disposable {
   }
 
   /**
-   * Reject [[promise]] with the given value, if any.
+   * Reject [[handle]] with the given value, if any.
    */
   reject = (value?: QuickJSHandle) => {
     if (!this.rejectHandle.alive) {
@@ -168,12 +168,12 @@ export class QuickJSDeferredPromise implements Disposable {
   }
 
   get alive() {
-    return this.promise.alive || this.resolveHandle.alive || this.rejectHandle.alive
+    return this.handle.alive || this.resolveHandle.alive || this.rejectHandle.alive
   }
 
   dispose = () => {
-    if (this.promise.alive) {
-      this.promise.dispose()
+    if (this.handle.alive) {
+      this.handle.dispose()
     }
     this.disposeResolvers()
   }
