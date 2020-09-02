@@ -1078,35 +1078,32 @@ export class QuickJS {
    * with name `"InternalError"` and  message `"interrupted"`.
    */
   evalCode(code: string, options: QuickJSEvalOptions = {}): unknown {
-    const vm = this.createVm()
+    return Scope.withScope(scope => {
+      const vm = scope.manage(this.createVm())
 
-    if (options.shouldInterrupt) {
-      vm.setInterruptHandler(options.shouldInterrupt)
-    }
+      if (options.shouldInterrupt) {
+        vm.setInterruptHandler(options.shouldInterrupt)
+      }
 
-    if (options.memoryLimitBytes !== undefined) {
-      vm.setMemoryLimit(options.memoryLimitBytes)
-    }
+      if (options.memoryLimitBytes !== undefined) {
+        vm.setMemoryLimit(options.memoryLimitBytes)
+      }
 
-    const result = vm.evalCode(code)
+      const result = vm.evalCode(code)
 
-    if (options.memoryLimitBytes !== undefined) {
-      // Remove memory limit so we can dump the result without exceeding it.
-      vm.setMemoryLimit(-1)
-    }
+      if (options.memoryLimitBytes !== undefined) {
+        // Remove memory limit so we can dump the result without exceeding it.
+        vm.setMemoryLimit(-1)
+      }
 
-    if (result.error) {
-      const error = vm.dump(result.error)
-      result.error.dispose()
-      vm.dispose()
-      throw error
-    }
+      if (result.error) {
+        const error = vm.dump(scope.manage(result.error))
+        throw error
+      }
 
-    const value = vm.dump(result.value)
-    result.value.dispose()
-    vm.dispose()
-
-    return value
+      const value = vm.dump(scope.manage(result.value))
+      return value
+    })
   }
 
   // We need to send this into C-land
