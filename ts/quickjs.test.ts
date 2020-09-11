@@ -13,7 +13,6 @@ import { it, describe } from 'mocha'
 import assert from 'assert'
 import { VmCallResult } from './vm-interface'
 import fs from 'fs'
-import { QuickJSFFI } from './ffi'
 
 describe('QuickJSVm', async () => {
   let vm: QuickJSVm = undefined as any
@@ -541,8 +540,8 @@ describe('QuickJSVm', async () => {
         `${__dirname}/../test/json-generator-dot-com-1024-rows.json`,
         'utf-8'
       )
-      const ffi: QuickJSFFI = (vm as any).ffi
-      ffi.QTS_TestStringArg(jsonString)
+      const stringHandle = vm.newString(jsonString)
+      stringHandle.dispose()
     })
   })
 })

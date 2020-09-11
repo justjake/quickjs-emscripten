@@ -15,7 +15,7 @@ QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\"
 EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=$(shell cat $(BUILD_WRAPPER)/symbols.json)
 
 CFLAGS_EMCC+=-s WASM=1
-CFLAGS_EMCC+=-s EXTRA_EXPORTED_RUNTIME_METHODS='["cwrap", "addFunction", "removeFunction", "_malloc", "_free"]'
+CFLAGS_EMCC+=-s EXTRA_EXPORTED_RUNTIME_METHODS='["cwrap", "addFunction", "removeFunction", "stringToUTF8", "lengthBytesUTF8", "_malloc", "_free"]'
 CFLAGS_EMCC+=-s NODEJS_CATCH_EXIT=0
 CFLAGS_EMCC+=-s MODULARIZE=1
 CFLAGS_EMCC+=-s EXPORT_NAME=QuickJSRaw
