@@ -54,3 +54,9 @@ type QTS_C_To_HostCallbackFuncPointer = Pointer<'C_To_HostCallbackFunc'>
  * Used internally for C-to-Javascript interrupt handlers.
  */
 type QTS_C_To_HostInterruptFuncPointer = Pointer<'C_To_HostInterruptFunc'>
+
+/**
+ * Used internally for Javascript-to-C calls that may contain strings too large
+ * for the Emscripten stack.
+ */
+type HeapCharPointer = Pointer<'char'>

@@ -12,6 +12,8 @@ import {
 import { it, describe } from 'mocha'
 import assert from 'assert'
 import { VmCallResult } from './vm-interface'
+import fs from 'fs'
+import { QuickJSFFI } from './ffi'
 
 describe('QuickJSVm', async () => {
   let vm: QuickJSVm = undefined as any
@@ -530,6 +532,17 @@ describe('QuickJSVm', async () => {
       // Check that the promise executed.
       const vmValue = vm.unwrapResult(vm.evalCode(`globalThingy`)).consume(x => vm.dump(x))
       assert.equal(vmValue, expectedValue)
+    })
+  })
+
+  describe('memory pressure', () => {
+    it('can pass a large string to a C function', async () => {
+      const jsonString = await fs.promises.readFile(
+        `${__dirname}/../test/json-generator-dot-com-1024-rows.json`,
+        'utf-8'
+      )
+      const ffi: QuickJSFFI = (vm as any).ffi
+      ffi.QTS_TestStringArg(jsonString)
     })
   })
 })
