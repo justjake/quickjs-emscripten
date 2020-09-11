@@ -9,6 +9,7 @@ import {
   JSValuePointerPointer,
   QTS_C_To_HostCallbackFuncPointer,
   QTS_C_To_HostInterruptFuncPointer,
+  HeapCharPointer,
 } from './ffi'
 import {
   LowLevelJavascriptVm,
@@ -375,7 +376,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
    * Create a QuickJS [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) value.
    */
   newString(str: string): QuickJSHandle {
-    return this.heapValueHandle(this.ffi.QTS_NewString(this.ctx.value, str))
+    const ptr = this.newHeapCharPointer(str).consume(charHandle =>
+      this.ffi.QTS_NewString(this.ctx.value, charHandle.value)
+    )
+    return this.heapValueHandle(ptr)
   }
 
   /**
@@ -595,7 +599,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
    * have name `InternalError` and message `interrupted`.
    */
   evalCode(code: string): VmCallResult<QuickJSHandle> {
-    const resultPtr = this.ffi.QTS_Eval(this.ctx.value, code)
+    const resultPtr = this.newHeapCharPointer(code).consume(charHandle =>
+      this.ffi.QTS_Eval(this.ctx.value, charHandle.value)
+    )
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
@@ -884,6 +890,13 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
     const typedArray = new Int32Array(this.module.HEAPU8.buffer, ptr, length)
     typedArray.set(zeros)
     return new Lifetime({ typedArray, ptr }, undefined, value => this.module._free(value.ptr))
+  }
+
+  private newHeapCharPointer(string: string): Lifetime<HeapCharPointer> {
+    const numBytes = this.module.lengthBytesUTF8(string) + 1
+    const ptr: HeapCharPointer = this.module._malloc(numBytes) as HeapCharPointer
+    this.module.stringToUTF8(string, ptr, numBytes)
+    return new Lifetime(ptr, undefined, value => this.module._free(value))
   }
 
   private errorToHandle(error: Error | QuickJSHandle) {

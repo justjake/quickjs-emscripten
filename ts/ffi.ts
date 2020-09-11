@@ -58,6 +58,12 @@ export type QTS_C_To_HostCallbackFuncPointer = Pointer<'C_To_HostCallbackFunc'>
  */
 export type QTS_C_To_HostInterruptFuncPointer = Pointer<'C_To_HostInterruptFunc'>
 
+/**
+ * Used internally for Javascript-to-C calls that may contain strings too large
+ * for the Emscripten stack.
+ */
+export type HeapCharPointer = Pointer<'char'>
+
 
 /**
  * Low-level FFI bindings to QuickJS's Emscripten module.
@@ -147,8 +153,8 @@ export class QuickJSFFI {
   QTS_GetFloat64: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => number =
     this.module.cwrap("QTS_GetFloat64", "number", ["number","number"])
 
-  QTS_NewString: (ctx: JSContextPointer, string: string) => JSValuePointer =
-    this.module.cwrap("QTS_NewString", "number", ["number","string"])
+  QTS_NewString: (ctx: JSContextPointer, string: HeapCharPointer) => JSValuePointer =
+    this.module.cwrap("QTS_NewString", "number", ["number","number"])
 
   QTS_GetString: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => string =
     this.module.cwrap("QTS_GetString", "string", ["number","number"])
@@ -177,8 +183,8 @@ export class QuickJSFFI {
   QTS_Dump: (ctx: JSContextPointer, obj: JSValuePointer | JSValueConstPointer) => string =
     this.module.cwrap("QTS_Dump", "string", ["number","number"])
 
-  QTS_Eval: (ctx: JSContextPointer, js_code: string) => JSValuePointer =
-    this.module.cwrap("QTS_Eval", "number", ["number","string"])
+  QTS_Eval: (ctx: JSContextPointer, js_code: HeapCharPointer) => JSValuePointer =
+    this.module.cwrap("QTS_Eval", "number", ["number","number"])
 
   QTS_Typeof: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => string =
     this.module.cwrap("QTS_Typeof", "string", ["number","number"])
@@ -188,4 +194,7 @@ export class QuickJSFFI {
 
   QTS_NewPromiseCapability: (ctx: JSContextPointer, resolve_funcs_out: JSValuePointerPointer) => JSValuePointer =
     this.module.cwrap("QTS_NewPromiseCapability", "number", ["number","number"])
+
+  QTS_TestStringArg: (string: string) => void =
+    this.module.cwrap("QTS_TestStringArg", null, ["string"])
 }

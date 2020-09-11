@@ -30,6 +30,13 @@
 #define QTS_DUMP(value) ;
 #endif
 
+/**
+ * Signal to our FFI code generator that this string argument should be passed as a pointer
+ * allocated by the caller on the heap, not a JS string on the stack.
+ * https://github.com/emscripten-core/emscripten/issues/6860#issuecomment-405818401
+ */
+#define HeapChar const char
+
 void qts_log(char* msg) {
   fputs(PKG, stderr);
   fputs(msg, stderr);
@@ -291,7 +298,7 @@ double QTS_GetFloat64(JSContext *ctx, JSValueConst *value) {
   return result;
 }
 
-JSValue *QTS_NewString(JSContext *ctx, const char* string) {
+JSValue *QTS_NewString(JSContext *ctx, HeapChar *string) {
   return jsvalue_to_heap(JS_NewString(ctx, string));
 }
 
@@ -434,7 +441,7 @@ char *QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   return QTS_GetString(ctx, obj);
 }
 
-JSValue *QTS_Eval(JSContext *ctx, const char* js_code) {
+JSValue *QTS_Eval(JSContext *ctx, HeapChar *js_code) {
   return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), "eval.js", JS_EVAL_TYPE_GLOBAL));
 }
 
@@ -469,4 +476,8 @@ JSValue *QTS_NewPromiseCapability(JSContext *ctx, JSValue **resolve_funcs_out) {
   resolve_funcs_out[0] = jsvalue_to_heap(resolve_funcs[0]);
   resolve_funcs_out[1] = jsvalue_to_heap(resolve_funcs[1]);
   return jsvalue_to_heap(promise);
+}
+
+void QTS_TestStringArg(const char *string) {
+  // pass
 }

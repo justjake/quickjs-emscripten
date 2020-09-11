@@ -40,6 +40,9 @@ declare namespace Emscripten {
 export interface QuickJSEmscriptenModule {
   addFunction(fn: Function, type: string): number
   removeFunction(pointer: number): void
+  stringToUTF8(str: string, outPtr: number, maxBytesToRead?: number): void
+  lengthBytesUTF8(str: string): number
+
   _malloc(size: number): number
   _free(ptr: number): void
   cwrap(
