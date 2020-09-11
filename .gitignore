@@ -8,8 +8,23 @@ npm-error.log
 
 /build
 /dist
-quickjs/test_fib.c
-quickjs/examples/test_fib
+
+# QuickJS build stuff
+/quickjs/test_fib.c
+/quickjs/examples/test_fib
+/quickjs/.obj/
+/quickjs/examples/hello
+/quickjs/examples/hello_module
+/quickjs/hello.c
+/quickjs/libquickjs.a
+/quickjs/libquickjs.lto.a
+/quickjs/qjs
+/quickjs/qjsc
+/quickjs/qjscalc
+/quickjs/qjscalc.c
+/quickjs/repl.c
+/quickjs/run-test262
+
 
 **/.yarn/*
 !/.yarn/releases
