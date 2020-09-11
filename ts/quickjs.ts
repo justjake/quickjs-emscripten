@@ -6,6 +6,7 @@ import {
   JSRuntimePointer,
   JSValueConstPointer,
   JSValueConstPointerPointer,
+  JSValuePointerPointer,
   QTS_C_To_HostCallbackFuncPointer,
   QTS_C_To_HostInterruptFuncPointer,
 } from './ffi'
@@ -17,6 +18,8 @@ import {
   SuccessOrFail,
 } from './vm-interface'
 import { QuickJSEmscriptenModule } from './emscripten-types'
+import { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable } from './lifetime'
+export { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable }
 
 let QuickJSModule: QuickJSEmscriptenModule | undefined = undefined
 
@@ -62,143 +65,141 @@ export type InterruptHandler = (vm: QuickJSVm) => boolean | undefined
 export type QuickJSPropertyKey = number | string | QuickJSHandle
 
 /**
- * A lifetime prevents access to a value after the lifetime has been
- * [[dispose]]ed.
+ * QuickJSDeferredPromise wraps a QuickJS promise [[handle]] and allows
+ * [[resolve]]ing or [[reject]]ing that promise. Use it to bridge asynchronous
+ * code on the host to APIs inside a QuickJSVm.
  *
- * Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
+ * Managing the lifetime of promises is tricky. There are three
+ * [[QuickJSHandle]]s inside of each deferred promise object: (1) the promise
+ * itself, (2) the `resolve` callback, and (3) the `reject` callback.
+ *
+ * - If the promise will be fufilled before the end of it's [[owner]]'s lifetime,
+ *   the only cleanup necessary is `deferred.handle.dispose()`, because
+ *   calling [[resolve]] or [[reject]] will dispose of both callbacks automatically.
+ *
+ * - As the return value of a [[VmFunctionImplementation]], return [[handle]],
+ *   and ensure that either [[resolve]] or [[reject]] will be called. No other
+ *   clean-up is necessary.
+ *
+ * - In other cases, call [[dispose]], which will dispose [[handle]] as well as the
+ *   QuickJS handles that back [[resolve]] and [[reject]]. For this object,
+ *   [[dispose]] is idempotent.
  */
-export class Lifetime<T, TCopy = never, Owner = never> {
-  protected _alive: boolean = true
+export class QuickJSDeferredPromise implements Disposable {
+  /**
+   * The QuickJSVm this promise was created by.
+   */
+  public owner: QuickJSVm
 
   /**
-   * When the Lifetime is disposed, it will call `disposer(_value)`. Use the
-   * disposer function to implement whatever cleanup needs to happen at the end
-   * of `value`'s lifetime.
-   *
-   * `_owner` is not used or controlled by the lifetime. It's just metadata for
-   * the creator.
+   * A handle of the Promise instance inside the QuickJSVm.
+   * You must dispose [[handle]] or the entire QuickJSDeferredPromise once you
+   * are finished with it.
    */
-  constructor(
-    protected readonly _value: T,
-    protected readonly copier?: (value: T | TCopy) => TCopy,
-    protected readonly disposer?: (value: T | TCopy) => void,
-    protected readonly _owner?: Owner
-  ) {}
+  public handle: QuickJSHandle
+
+  /**
+   * A native promise that will resolve once this deferred is settled.
+   */
+  public settled: Promise<void>
+
+  private resolveHandle: QuickJSHandle
+  private rejectHandle: QuickJSHandle
+  private onSettled!: () => void
+
+  /**
+   * Use [[QuickJSVm.newPromise]] to create a new promise instead of calling
+   * this constructor directly.
+   * @unstable
+   */
+  constructor(args: {
+    owner: QuickJSVm
+    promiseHandle: QuickJSHandle
+    resolveHandle: QuickJSHandle
+    rejectHandle: QuickJSHandle
+  }) {
+    this.owner = args.owner
+    this.handle = args.promiseHandle
+    this.settled = new Promise(resolve => {
+      this.onSettled = resolve
+    })
+    this.resolveHandle = args.resolveHandle
+    this.rejectHandle = args.rejectHandle
+  }
+
+  /**
+   * Resolve [[handle]] with the given value, if any.
+   * Calling this method after calling [[dispose]] is a no-op.
+   *
+   * Note that after resolving a promise, you may need to call
+   * [[QuickJSVm.executePendingJobs]] to propagate the result to the promise's
+   * callbacks.
+   */
+  resolve = (value?: QuickJSHandle) => {
+    if (!this.resolveHandle.alive) {
+      return
+    }
+
+    this.owner
+      .unwrapResult(
+        this.owner.callFunction(
+          this.resolveHandle,
+          this.owner.undefined,
+          value || this.owner.undefined
+        )
+      )
+      .dispose()
+
+    this.disposeResolvers()
+    this.onSettled()
+  }
+
+  /**
+   * Reject [[handle]] with the given value, if any.
+   * Calling this method after calling [[dispose]] is a no-op.
+   *
+   * Note that after rejecting a promise, you may need to call
+   * [[QuickJSVm.executePendingJobs]] to propagate the result to the promise's
+   * callbacks.
+   */
+  reject = (value?: QuickJSHandle) => {
+    if (!this.rejectHandle.alive) {
+      return
+    }
+
+    this.owner
+      .unwrapResult(
+        this.owner.callFunction(
+          this.rejectHandle,
+          this.owner.undefined,
+          value || this.owner.undefined
+        )
+      )
+      .dispose()
+
+    this.disposeResolvers()
+    this.onSettled()
+  }
 
   get alive() {
-    return this._alive
+    return this.handle.alive || this.resolveHandle.alive || this.rejectHandle.alive
   }
 
-  /**
-   * The value this Lifetime protects. You must never retain the value - it
-   * may become invalid, leading to memory errors.
-   *
-   * @throws If the lifetime has been [[dispose]]d already.
-   */
-  get value() {
-    this.assertAlive()
-    return this._value
-  }
-
-  get owner() {
-    return this._owner
-  }
-
-  get dupable() {
-    return !!this.copier
-  }
-
-  /**
-   * Create a new handle pointing to the same [[value]].
-   */
-  dup() {
-    this.assertAlive()
-    if (!this.copier) {
-      throw new Error('Non-dupable lifetime')
+  dispose = () => {
+    if (this.handle.alive) {
+      this.handle.dispose()
     }
-    return new Lifetime<TCopy, TCopy, Owner>(
-      this.copier(this._value),
-      this.copier,
-      this.disposer,
-      this._owner
-    )
+    this.disposeResolvers()
   }
 
-  /**
-   * Call `map` with this lifetime, then dispose the lifetime.
-   * @return the result of `map(this)`.
-   */
-  consume<O>(map: (lifetime: this) => O): O
-  // A specific type definition is needed for our common use-case
-  // https://github.com/microsoft/TypeScript/issues/30271
-  consume<O>(map: (lifetime: QuickJSHandle) => O): O
-  consume<O>(map: (lifetime: any) => O): O {
-    this.assertAlive()
-    const result = map(this)
-    this.dispose()
-    return result
-  }
-
-  /**
-   * Dispose of [[value]] and perform cleanup.
-   */
-  dispose() {
-    this.assertAlive()
-    if (this.disposer) {
-      this.disposer(this._value)
+  private disposeResolvers() {
+    if (this.resolveHandle.alive) {
+      this.resolveHandle.dispose()
     }
-    this._alive = false
-  }
 
-  private assertAlive() {
-    if (!this.alive) {
-      throw new Error('Lifetime not alive')
+    if (this.rejectHandle.alive) {
+      this.rejectHandle.dispose()
     }
-  }
-}
-
-/**
- * A Lifetime that lives forever. Used for constants.
- */
-export class StaticLifetime<T, Owner = never> extends Lifetime<T, T, Owner> {
-  constructor(value: T, owner?: Owner) {
-    super(value, undefined, undefined, owner)
-  }
-
-  // Static lifetime doesn't need a copier to be copiable
-  get dupable() {
-    return true
-  }
-
-  // Copy returns the same instance.
-  dup() {
-    return this
-  }
-
-  // Dispose does nothing.
-  dispose() {}
-}
-
-/**
- * A Lifetime that does not own its `value`. A WeakLifetime never calls its
- * `disposer` function, but can be `dup`ed to produce regular lifetimes that
- * do.
- *
- * Used for function arguments.
- */
-export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, TCopy, Owner> {
-  constructor(
-    value: T,
-    copier?: (value: T | TCopy) => TCopy,
-    disposer?: (value: TCopy) => void,
-    owner?: Owner
-  ) {
-    // We don't care if the disposer doesn't support freeing T
-    super(value, copier, disposer as (value: T | TCopy) => void, owner)
-  }
-
-  dispose() {
-    this._alive = false
   }
 }
 
@@ -239,7 +240,7 @@ export type ExecutePendingJobsResult = SuccessOrFail<number, QuickJSHandle>
  * Use [[computeMemoryUsage]] or [[dumpMemoryUsage]] to guide memory limit
  * tuning.
  */
-export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
+export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposable {
   private readonly ctx: Lifetime<JSContextPointer>
   private readonly rt: Lifetime<JSRuntimePointer>
 
@@ -250,7 +251,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   private _false: QuickJSHandle | undefined = undefined
   private _true: QuickJSHandle | undefined = undefined
   private _global: QuickJSHandle | undefined = undefined
-  private readonly lifetimes: Lifetime<any, any, any>[] = []
+  private _scope = new Scope()
 
   /**
    * Use {@link QuickJS.createVm} to create a QuickJSVm instance.
@@ -263,8 +264,8 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
   }) {
     this.module = args.module
     this.ffi = args.ffi
-    this.ctx = args.ctx
-    this.rt = args.rt
+    this.rt = this._scope.manage(args.rt)
+    this.ctx = this._scope.manage(args.ctx)
   }
 
   /**
@@ -334,7 +335,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     const ptr = this.ffi.QTS_GetGlobalObject(this.ctx.value)
 
     // Automatically clean up this reference when we dispose(
-    this.lifetimes.push(this.heapValueHandle(ptr))
+    this._scope.manage(this.heapValueHandle(ptr))
 
     // This isn't technically a static lifetime, but since it has the same
     // lifetime as the VM, it's okay to fake one since when the VM is
@@ -417,6 +418,16 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * A [[VmFunctionImplementation]] should not free its arguments or its retun
    * value. A VmFunctionImplementation should also not retain any references to
    * its veturn value.
+   *
+   * To implement an async function, create a promise with [[newPromise]], then
+   * return the deferred promise handle from `deferred.handle` from your
+   * function implementation:
+   *
+   * ```
+   * const deferred = vm.newPromise()
+   * someNativeAsyncFunction().then(deferred.resolve)
+   * return deferred.handle
+   * ```
    */
   newFunction(name: string, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
     const fnId = ++this.fnNextId
@@ -432,6 +443,32 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     this.module._free(fnIdHandle.value)
 
     return funcHandle
+  }
+
+  /**
+   * Create a new [[QuickJSDeferredPromise]]. Use `deferred.resolve(handle)` and
+   * `deferred.reject(handle)` to fufill the promise handle available at `deferred.handle`.
+   * Note that you are responsible for calling `deferred.dispose()` to free the underlying
+   * resources; see the documentation on [[QuickJSDeferredPromise]] for details.
+   */
+  newPromise(): QuickJSDeferredPromise {
+    return Scope.withScope(scope => {
+      const mutablePointerArray = scope.manage(this.newMutablePointerArray(2))
+      const promisePtr = this.ffi.QTS_NewPromiseCapability(
+        this.ctx.value,
+        mutablePointerArray.value.ptr
+      )
+      const promiseHandle = this.heapValueHandle(promisePtr)
+      const [resolveHandle, rejectHandle] = Array.from(
+        mutablePointerArray.value.typedArray
+      ).map(jsvaluePtr => this.heapValueHandle(jsvaluePtr as any))
+      return new QuickJSDeferredPromise({
+        owner: this,
+        promiseHandle,
+        resolveHandle,
+        rejectHandle,
+      })
+    })
   }
 
   /**
@@ -483,38 +520,32 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     descriptor: VmPropertyDescriptor<QuickJSHandle>
   ): void {
     this.assertOwned(handle)
-    const quickJSKey = this.borrowPropertyKey(key)
+    Scope.withScope(scope => {
+      const quickJSKey = scope.manage(this.borrowPropertyKey(key))
 
-    const value = descriptor.value || this.undefined
-    const configurable = Boolean(descriptor.configurable)
-    const enumerable = Boolean(descriptor.enumerable)
-    const hasValue = Boolean(descriptor.value)
-    const get = descriptor.get
-      ? this.newFunction(descriptor.get.name, descriptor.get)
-      : this.undefined
-    const set = descriptor.set
-      ? this.newFunction(descriptor.set.name, descriptor.set)
-      : this.undefined
+      const value = descriptor.value || this.undefined
+      const configurable = Boolean(descriptor.configurable)
+      const enumerable = Boolean(descriptor.enumerable)
+      const hasValue = Boolean(descriptor.value)
+      const get = descriptor.get
+        ? scope.manage(this.newFunction(descriptor.get.name, descriptor.get))
+        : this.undefined
+      const set = descriptor.set
+        ? scope.manage(this.newFunction(descriptor.set.name, descriptor.set))
+        : this.undefined
 
-    this.ffi.QTS_DefineProp(
-      this.ctx.value,
-      handle.value,
-      quickJSKey.value,
-      value.value,
-      get.value,
-      set.value,
-      configurable,
-      enumerable,
-      hasValue
-    )
-
-    // free newly allocated value if key was a string or number. No-op if string was already
-    // a QuickJS handle.
-    quickJSKey.dispose()
-
-    // dispose created functions; or no-op if these are this.undefined
-    get.dispose()
-    set.dispose()
+      this.ffi.QTS_DefineProp(
+        this.ctx.value,
+        handle.value,
+        quickJSKey.value,
+        value.value,
+        get.value,
+        set.value,
+        configurable,
+        enumerable,
+        hasValue
+      )
+    })
   }
 
   /**
@@ -720,6 +751,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     }
   }
 
+  get alive() {
+    return this._scope.alive
+  }
+
   /**
    * Dispose of this VM's underlying resources.
    *
@@ -727,13 +762,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
    * will result in an error.
    */
   dispose() {
-    for (const lifetime of this.lifetimes) {
-      if (lifetime.alive) {
-        lifetime.dispose()
-      }
-    }
-    this.ctx.dispose()
-    this.rt.dispose()
+    this._scope.dispose()
   }
 
   private fnNextId = 0
@@ -759,41 +788,36 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
       throw new Error(`QuickJSVm had no callback with id ${fnId}`)
     }
 
-    const thisHandle = new WeakLifetime(this_ptr, this.copyJSValue, this.freeJSValue, this)
-    const argHandles = new Array<QuickJSHandle>(argc)
-    for (let i = 0; i < argc; i++) {
-      const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
-      argHandles[i] = new WeakLifetime(ptr, this.copyJSValue, this.freeJSValue, this)
-    }
-
-    let ownedResultPtr = 0 as JSValuePointer
-    try {
-      let result = fn.apply(thisHandle, argHandles)
-      if (result) {
-        if ('error' in result && result.error) {
-          throw result.error
-        }
-        const handle = result instanceof Lifetime ? result : result.value
-        ownedResultPtr = this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
-        handle.dispose()
-      }
-    } catch (error) {
-      ownedResultPtr = this.errorToHandle(error).consume(errorHandle =>
-        this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
+    return Scope.withScope(scope => {
+      const thisHandle = scope.manage(
+        new WeakLifetime(this_ptr, this.copyJSValue, this.freeJSValue, this)
       )
-    }
-
-    // Free the arguments so they can't be retained and re-used after we return.
-    if (thisHandle.alive) {
-      thisHandle.dispose()
-    }
-    for (const argHandle of argHandles) {
-      if (argHandle.alive) {
-        argHandle.dispose()
+      const argHandles = new Array<QuickJSHandle>(argc)
+      for (let i = 0; i < argc; i++) {
+        const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
+        argHandles[i] = scope.manage(
+          new WeakLifetime(ptr, this.copyJSValue, this.freeJSValue, this)
+        )
       }
-    }
 
-    return ownedResultPtr as JSValuePointer
+      let ownedResultPtr = 0 as JSValuePointer
+      try {
+        let result = fn.apply(thisHandle, argHandles)
+        if (result) {
+          if ('error' in result && result.error) {
+            throw result.error
+          }
+          const handle = scope.manage(result instanceof Lifetime ? result : result.value)
+          ownedResultPtr = this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
+        }
+      } catch (error) {
+        ownedResultPtr = this.errorToHandle(error).consume(errorHandle =>
+          this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
+        )
+      }
+
+      return ownedResultPtr as JSValuePointer
+    })
   }
 
   /** @hidden */
@@ -849,6 +873,17 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle> {
     var heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes)
     heapBytes.set(new Uint8Array(typedArray.buffer))
     return new Lifetime(ptr, undefined, ptr => this.module._free(ptr))
+  }
+
+  private newMutablePointerArray(
+    length: number
+  ): Lifetime<{ typedArray: Int32Array; ptr: JSValuePointerPointer }> {
+    const zeros = new Int32Array(new Array(length).fill(0))
+    const numBytes = zeros.length * zeros.BYTES_PER_ELEMENT
+    const ptr = this.module._malloc(numBytes) as JSValuePointerPointer
+    const typedArray = new Int32Array(this.module.HEAPU8.buffer, ptr, length)
+    typedArray.set(zeros)
+    return new Lifetime({ typedArray, ptr }, undefined, value => this.module._free(value.ptr))
   }
 
   private errorToHandle(error: Error | QuickJSHandle) {
@@ -1043,35 +1078,32 @@ export class QuickJS {
    * with name `"InternalError"` and  message `"interrupted"`.
    */
   evalCode(code: string, options: QuickJSEvalOptions = {}): unknown {
-    const vm = this.createVm()
+    return Scope.withScope(scope => {
+      const vm = scope.manage(this.createVm())
 
-    if (options.shouldInterrupt) {
-      vm.setInterruptHandler(options.shouldInterrupt)
-    }
+      if (options.shouldInterrupt) {
+        vm.setInterruptHandler(options.shouldInterrupt)
+      }
 
-    if (options.memoryLimitBytes !== undefined) {
-      vm.setMemoryLimit(options.memoryLimitBytes)
-    }
+      if (options.memoryLimitBytes !== undefined) {
+        vm.setMemoryLimit(options.memoryLimitBytes)
+      }
 
-    const result = vm.evalCode(code)
+      const result = vm.evalCode(code)
 
-    if (options.memoryLimitBytes !== undefined) {
-      // Remove memory limit so we can dump the result without exceeding it.
-      vm.setMemoryLimit(-1)
-    }
+      if (options.memoryLimitBytes !== undefined) {
+        // Remove memory limit so we can dump the result without exceeding it.
+        vm.setMemoryLimit(-1)
+      }
 
-    if (result.error) {
-      const error = vm.dump(result.error)
-      result.error.dispose()
-      vm.dispose()
-      throw error
-    }
+      if (result.error) {
+        const error = vm.dump(scope.manage(result.error))
+        throw error
+      }
 
-    const value = vm.dump(result.value)
-    result.value.dispose()
-    vm.dispose()
-
-    return value
+      const value = vm.dump(scope.manage(result.value))
+      return value
+    })
   }
 
   // We need to send this into C-land
