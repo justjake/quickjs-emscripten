@@ -61,7 +61,7 @@ Used for function arguments.
 
 *Overrides [Lifetime](lifetime.md).[constructor](lifetime.md#constructor)*
 
-*Defined in [lifetime.ts:133](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L133)*
+*Defined in [lifetime.ts:146](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L146)*
 
 **Parameters:**
 
@@ -82,7 +82,7 @@ Name | Type |
 
 *Inherited from [Lifetime](lifetime.md).[_alive](lifetime.md#protected-_alive)*
 
-*Defined in [lifetime.ts:15](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L15)*
+*Defined in [lifetime.ts:28](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L28)*
 
 ___
 
@@ -92,7 +92,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[_owner](lifetime.md#protected-optional-_owner)*
 
-*Defined in [lifetime.ts:29](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L29)*
+*Defined in [lifetime.ts:42](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L42)*
 
 ___
 
@@ -102,7 +102,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[_value](lifetime.md#protected-_value)*
 
-*Defined in [lifetime.ts:26](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L26)*
+*Defined in [lifetime.ts:39](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L39)*
 
 ___
 
@@ -112,7 +112,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[copier](lifetime.md#protected-optional-copier)*
 
-*Defined in [lifetime.ts:27](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L27)*
+*Defined in [lifetime.ts:40](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L40)*
 
 ___
 
@@ -122,7 +122,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[disposer](lifetime.md#protected-optional-disposer)*
 
-*Defined in [lifetime.ts:28](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L28)*
+*Defined in [lifetime.ts:41](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L41)*
 
 ## Accessors
 
@@ -132,7 +132,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[alive](lifetime.md#alive)*
 
-*Defined in [lifetime.ts:32](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L32)*
+*Defined in [lifetime.ts:45](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L45)*
 
 **Returns:** *boolean*
 
@@ -144,7 +144,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[dupable](lifetime.md#dupable)*
 
-*Defined in [lifetime.ts:51](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L51)*
+*Defined in [lifetime.ts:64](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L64)*
 
 **Returns:** *boolean*
 
@@ -156,7 +156,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[owner](lifetime.md#owner)*
 
-*Defined in [lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L47)*
+*Defined in [lifetime.ts:60](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L60)*
 
 **Returns:** *undefined | Owner*
 
@@ -168,7 +168,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[value](lifetime.md#value)*
 
-*Defined in [lifetime.ts:42](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L42)*
+*Defined in [lifetime.ts:55](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L55)*
 
 The value this Lifetime protects. You must never retain the value - it
 may become invalid, leading to memory errors.
@@ -185,7 +185,7 @@ may become invalid, leading to memory errors.
 
 *Inherited from [Lifetime](lifetime.md).[consume](lifetime.md#consume)*
 
-*Defined in [lifetime.ts:75](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L75)*
+*Defined in [lifetime.ts:88](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L88)*
 
 Call `map` with this lifetime, then dispose the lifetime.
 
@@ -213,7 +213,7 @@ the result of `map(this)`.
 
 *Inherited from [Lifetime](lifetime.md).[consume](lifetime.md#consume)*
 
-*Defined in [lifetime.ts:78](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L78)*
+*Defined in [lifetime.ts:91](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L91)*
 
 **Type parameters:**
 
@@ -243,7 +243,7 @@ ___
 
 *Overrides [Lifetime](lifetime.md).[dispose](lifetime.md#dispose)*
 
-*Defined in [lifetime.ts:144](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L144)*
+*Defined in [lifetime.ts:157](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L157)*
 
 **Returns:** *void*
 
@@ -255,7 +255,7 @@ ___
 
 *Inherited from [Lifetime](lifetime.md).[dup](lifetime.md#dup)*
 
-*Defined in [lifetime.ts:58](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L58)*
+*Defined in [lifetime.ts:71](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L71)*
 
 Create a new handle pointing to the same [value](weaklifetime.md#value).
 

@@ -19,7 +19,7 @@ import {
 } from './vm-interface'
 import { QuickJSEmscriptenModule } from './emscripten-types'
 import { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable } from './lifetime'
-export { Lifetime, WeakLifetime, StaticLifetime }
+export { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable }
 
 let QuickJSModule: QuickJSEmscriptenModule | undefined = undefined
 

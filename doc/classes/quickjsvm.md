@@ -37,6 +37,7 @@ tuning.
 ## Implements
 
 * [LowLevelJavascriptVm](../interfaces/lowleveljavascriptvm.md)‹[QuickJSHandle](../globals.md#quickjshandle)›
+* [Disposable](../interfaces/disposable.md)
 
 ## Index
 
@@ -46,6 +47,7 @@ tuning.
 
 ### Accessors
 
+* [alive](quickjsvm.md#alive)
 * [false](quickjsvm.md#false)
 * [global](quickjsvm.md#global)
 * [null](quickjsvm.md#null)
@@ -98,6 +100,16 @@ Name | Type |
 **Returns:** *[QuickJSVm](quickjsvm.md)*
 
 ## Accessors
+
+###  alive
+
+• **get alive**(): *boolean*
+
+*Defined in [quickjs.ts:754](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L754)*
+
+**Returns:** *boolean*
+
+___
 
 ###  false
 
@@ -227,7 +239,9 @@ ___
 
 ▸ **dispose**(): *void*
 
-*Defined in [quickjs.ts:760](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L760)*
+*Implementation of [Disposable](../interfaces/disposable.md)*
+
+*Defined in [quickjs.ts:764](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L764)*
 
 Dispose of this VM's underlying resources.
 
