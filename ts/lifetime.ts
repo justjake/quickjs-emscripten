@@ -159,6 +159,27 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
   }
 }
 
+function scopeFinally(scope: Scope, blockError: Error | undefined) {
+  let disposeError: Error | undefined
+  try {
+    scope.dispose()
+  } catch (error) {
+    disposeError = error
+  }
+
+  if (blockError && disposeError) {
+    Object.assign(blockError, {
+      message: `${blockError.message}\n Then, failed to dispose scope: ${disposeError.message}`,
+      disposeError,
+    })
+    throw blockError
+  }
+
+  if (blockError || disposeError) {
+    throw blockError || disposeError
+  }
+}
+
 /**
  * Scope helps reduce the burden of manually tracking and disposing of
  * Lifetimes. See [[withScope]]. and [[withScopeAsync]].
@@ -173,10 +194,14 @@ export class Scope implements Disposable {
    */
   static withScope<R>(block: (scope: Scope) => R): R {
     const scope = new Scope()
+    let blockError: Error | undefined
     try {
       return block(scope)
+    } catch (error) {
+      blockError = error
+      throw error
     } finally {
-      scope.dispose()
+      scopeFinally(scope, blockError)
     }
   }
 
@@ -188,10 +213,14 @@ export class Scope implements Disposable {
    */
   static async withScopeAsync<R>(block: (scope: Scope) => Promise<R>): Promise<R> {
     const scope = new Scope()
+    let blockError: Error | undefined
     try {
       return await block(scope)
+    } catch (error) {
+      blockError = error
+      throw error
     } finally {
-      scope.dispose()
+      scopeFinally(scope, blockError)
     }
   }
 
