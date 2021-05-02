@@ -58,7 +58,7 @@ itself, (2) the `resolve` callback, and (3) the `reject` callback.
 
 \+ **new QuickJSDeferredPromise**(`args`: object): *[QuickJSDeferredPromise](quickjsdeferredpromise.md)*
 
-*Defined in [quickjs.ts:108](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L108)*
+*Defined in [quickjs.ts:109](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L109)*
 
 Use [QuickJSVm.newPromise](quickjsvm.md#newpromise) to create a new promise instead of calling
 this constructor directly.
@@ -79,7 +79,7 @@ Name | Type |
 
 • **handle**: *[QuickJSHandle](../globals.md#quickjshandle)*
 
-*Defined in [quickjs.ts:99](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L99)*
+*Defined in [quickjs.ts:100](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L100)*
 
 A handle of the Promise instance inside the QuickJSVm.
 You must dispose [handle](quickjsdeferredpromise.md#handle) or the entire QuickJSDeferredPromise once you
@@ -91,7 +91,7 @@ ___
 
 • **owner**: *[QuickJSVm](quickjsvm.md)*
 
-*Defined in [quickjs.ts:92](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L92)*
+*Defined in [quickjs.ts:93](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L93)*
 
 The QuickJSVm this promise was created by.
 
@@ -101,7 +101,7 @@ ___
 
 • **settled**: *Promise‹void›*
 
-*Defined in [quickjs.ts:104](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L104)*
+*Defined in [quickjs.ts:105](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L105)*
 
 A native promise that will resolve once this deferred is settled.
 
@@ -111,7 +111,7 @@ A native promise that will resolve once this deferred is settled.
 
 • **get alive**(): *boolean*
 
-*Defined in [quickjs.ts:184](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L184)*
+*Defined in [quickjs.ts:185](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L185)*
 
 **Returns:** *boolean*
 
@@ -123,7 +123,7 @@ A native promise that will resolve once this deferred is settled.
 
 *Implementation of [Disposable](../interfaces/disposable.md)*
 
-*Defined in [quickjs.ts:188](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L188)*
+*Defined in [quickjs.ts:189](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L189)*
 
 **Returns:** *void*
 
@@ -133,7 +133,7 @@ ___
 
 ▸ **reject**(`value?`: [QuickJSHandle](../globals.md#quickjshandle)): *void*
 
-*Defined in [quickjs.ts:165](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L165)*
+*Defined in [quickjs.ts:166](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L166)*
 
 Reject [handle](quickjsdeferredpromise.md#handle) with the given value, if any.
 Calling this method after calling [dispose](quickjsdeferredpromise.md#dispose) is a no-op.
@@ -156,7 +156,7 @@ ___
 
 ▸ **resolve**(`value?`: [QuickJSHandle](../globals.md#quickjshandle)): *void*
 
-*Defined in [quickjs.ts:138](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L138)*
+*Defined in [quickjs.ts:139](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L139)*
 
 Resolve [handle](quickjsdeferredpromise.md#handle) with the given value, if any.
 Calling this method after calling [dispose](quickjsdeferredpromise.md#dispose) is a no-op.

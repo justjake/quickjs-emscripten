@@ -18,7 +18,7 @@ async function main() {
   const QuickJS = await getQuickJS()
   const vm = QuickJS.createVm()
 
-  const world = vm.createString('world')
+  const world = vm.newString('world')
   vm.setProp(vm.global, 'NAME', world)
   world.dispose()
 

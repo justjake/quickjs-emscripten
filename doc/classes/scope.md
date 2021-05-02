@@ -32,7 +32,7 @@ Lifetimes. See [withScope](scope.md#static-withscope). and [withScopeAsync](scop
 
 • **get alive**(): *boolean*
 
-*Defined in [lifetime.ts:208](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L208)*
+*Defined in [lifetime.ts:237](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L237)*
 
 **Returns:** *boolean*
 
@@ -44,7 +44,7 @@ Lifetimes. See [withScope](scope.md#static-withscope). and [withScopeAsync](scop
 
 *Implementation of [Disposable](../interfaces/disposable.md)*
 
-*Defined in [lifetime.ts:212](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L212)*
+*Defined in [lifetime.ts:241](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L241)*
 
 **Returns:** *void*
 
@@ -54,7 +54,7 @@ ___
 
 ▸ **manage**<**T**>(`lifetime`: T): *T*
 
-*Defined in [lifetime.ts:203](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L203)*
+*Defined in [lifetime.ts:232](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L232)*
 
 Track `lifetime` so that it is disposed when this scope is disposed.
 
@@ -76,7 +76,7 @@ ___
 
 ▸ **withScope**<**R**>(`block`: function): *R*
 
-*Defined in [lifetime.ts:174](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L174)*
+*Defined in [lifetime.ts:195](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L195)*
 
 Run `block` with a new Scope instance that will be disposed after the block returns.
 Inside `block`, call `scope.manage` on each lifetime you create to have the lifetime
@@ -108,7 +108,7 @@ ___
 
 ▸ **withScopeAsync**<**R**>(`block`: function): *Promise‹R›*
 
-*Defined in [lifetime.ts:189](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L189)*
+*Defined in [lifetime.ts:214](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L214)*
 
 Run `block` with a new Scope instance that will be disposed after the
 block's returned promise settles. Inside `block`, call `scope.manage` on each
