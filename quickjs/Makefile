@@ -1,8 +1,8 @@
 #
 # QuickJS Javascript Engine
 # 
-# Copyright (c) 2017-2020 Fabrice Bellard
-# Copyright (c) 2017-2020 Charlie Gordon
+# Copyright (c) 2017-2021 Fabrice Bellard
+# Copyright (c) 2017-2021 Charlie Gordon
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,11 @@ CONFIG_BIGNUM=y
 OBJDIR=.obj
 
 ifdef CONFIG_WIN32
-  CROSS_PREFIX=i686-w64-mingw32-
+  ifdef CONFIG_M32
+    CROSS_PREFIX=i686-w64-mingw32-
+  else
+    CROSS_PREFIX=x86_64-w64-mingw32-
+  endif
   EXE=.exe
 else
   CROSS_PREFIX=
@@ -175,6 +179,7 @@ LIBS=-lm
 ifndef CONFIG_WIN32
 LIBS+=-ldl -lpthread
 endif
+LIBS+=$(EXTRA_LIBS)
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR) $(OBJDIR)/examples $(OBJDIR)/tests
@@ -281,15 +286,12 @@ $(OBJDIR)/%.check.o: %.c | $(OBJDIR)
 regexp_test: libregexp.c libunicode.c cutils.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -DTEST -o $@ libregexp.c libunicode.c cutils.c $(LIBS)
 
-jscompress: jscompress.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ jscompress.c
-
 unicode_gen: $(OBJDIR)/unicode_gen.host.o $(OBJDIR)/cutils.host.o libunicode.c unicode_gen_def.h
 	$(HOST_CC) $(LDFLAGS) $(CFLAGS) -o $@ $(OBJDIR)/unicode_gen.host.o $(OBJDIR)/cutils.host.o
 
 clean:
 	rm -f repl.c qjscalc.c out.c
-	rm -f *.a *.o *.d *~ jscompress unicode_gen regexp_test $(PROGS)
+	rm -f *.a *.o *.d *~ unicode_gen regexp_test $(PROGS)
 	rm -f hello.c test_fib.c
 	rm -f examples/*.so tests/*.so
 	rm -rf $(OBJDIR)/ *.dSYM/ qjs-debug
