@@ -66,7 +66,7 @@ export interface LowLevelJavascriptVm<VmHandle> {
   ): void
 
   callFunction(func: VmHandle, thisVal: VmHandle, ...args: VmHandle[]): VmCallResult<VmHandle>
-  evalCode(code: string): VmCallResult<VmHandle>
+  evalCode(code: string, filename?: string): VmCallResult<VmHandle>
 }
 
 /**

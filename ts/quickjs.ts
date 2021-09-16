@@ -650,9 +650,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
    * interrupted, the error will have name `InternalError` and message
    * `interrupted`.
    */
-  evalCode(code: string): VmCallResult<QuickJSHandle> {
+  evalCode(code: string, filename: string = "eval.js"): VmCallResult<QuickJSHandle> {
     const resultPtr = this.newHeapCharPointer(code).consume(charHandle =>
-      this.ffi.QTS_Eval(this.ctx.value, charHandle.value)
+      this.ffi.QTS_Eval(this.ctx.value, charHandle.value, filename)
     )
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {

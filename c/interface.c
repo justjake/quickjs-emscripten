@@ -441,8 +441,8 @@ char *QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   return QTS_GetString(ctx, obj);
 }
 
-JSValue *QTS_Eval(JSContext *ctx, HeapChar *js_code) {
-  return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), "eval.js", JS_EVAL_TYPE_GLOBAL));
+JSValue *QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *filename) {
+  return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), filename, JS_EVAL_TYPE_GLOBAL));
 }
 
 char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {

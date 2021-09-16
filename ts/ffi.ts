@@ -183,8 +183,8 @@ export class QuickJSFFI {
   QTS_Dump: (ctx: JSContextPointer, obj: JSValuePointer | JSValueConstPointer) => string =
     this.module.cwrap("QTS_Dump", "string", ["number","number"])
 
-  QTS_Eval: (ctx: JSContextPointer, js_code: HeapCharPointer) => JSValuePointer =
-    this.module.cwrap("QTS_Eval", "number", ["number","number"])
+  QTS_Eval: (ctx: JSContextPointer, js_code: HeapCharPointer, filename: string) => JSValuePointer =
+    this.module.cwrap("QTS_Eval", "number", ["number","number","string"])
 
   QTS_Typeof: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => string =
     this.module.cwrap("QTS_Typeof", "string", ["number","number"])
