@@ -130,7 +130,7 @@ export class QuickJSFFI {
     this.module.cwrap("QTS_NewContext", "number", ["number"])
 
   QTS_FreeContext: (ctx: JSContextPointer) => void =
-    this.module.cwrap("QTS_FreeContext", null, ["number"])
+    this.module.cwrap("QTS_FreeContext", null, ["number"], {async: true})
 
   QTS_FreeValuePointer: (ctx: JSContextPointer, value: JSValuePointer) => void =
     this.module.cwrap("QTS_FreeValuePointer", null, ["number","number"])
@@ -178,13 +178,13 @@ export class QuickJSFFI {
     this.module.cwrap("QTS_Call", "number", ["number","number","number","number","number"])
 
   QTS_ResolveException: (ctx: JSContextPointer, maybe_exception: JSValuePointer) => JSValuePointer =
-    this.module.cwrap("QTS_ResolveException", "number", ["number","number"])
+    this.module.cwrap("QTS_ResolveException", "number", ["number","number"], {async: true})
 
   QTS_Dump: (ctx: JSContextPointer, obj: JSValuePointer | JSValueConstPointer) => string =
     this.module.cwrap("QTS_Dump", "string", ["number","number"])
 
   QTS_Eval: (ctx: JSContextPointer, js_code: HeapCharPointer, filename: string) => JSValuePointer =
-    this.module.cwrap("QTS_Eval", "number", ["number","number","string"])
+    this.module.cwrap("QTS_Eval", "number", ["number","number","string"], {async: true})
 
   QTS_Typeof: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => string =
     this.module.cwrap("QTS_Typeof", "string", ["number","number"])

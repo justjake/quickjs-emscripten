@@ -284,6 +284,13 @@ describe('QuickJSVm', async () => {
       assert.equal(i, 3)
       assert.equal(vm.getNumber(nextId), 3)
     })
+
+    it('can handle imports', () => {
+      vm.unwrapResult(vm.evalCode(`import {name} from './foo.js'; var declaredWithEval = name`)).dispose()
+      const declaredWithEval = vm.getProp(vm.global, 'declaredWithEval')
+      assert.equal(vm.getString(declaredWithEval), 'Nice!')
+      declaredWithEval.dispose()
+    })
   })
 
   describe('.executePendingJobs', () => {
