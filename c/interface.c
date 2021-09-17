@@ -19,6 +19,8 @@
 #include <stdbool.h>
 #include "../quickjs/quickjs.h"
 #include "../quickjs/quickjs-libc.h"
+#include "../quickjs/cutils.h"
+#include <emscripten.h>
 
 #define PKG "quickjs-emscripten: "
 
@@ -247,12 +249,80 @@ JSValueConst *QTS_GetTrue() {
   return &QTS_True;
 }
 
+// Adapted from `js_load_file`
+EM_ASYNC_JS(void*, my_js_load_file, (void *pbuf_len, const char *filename), {
+  const jsString = 'export const name = "Nice!";';
+  // 'jsString.length' would return the length of the string as UTF-16
+  // units, but Emscripten C strings operate as UTF-8.
+  const lengthBytes = lengthBytesUTF8(jsString)+1;
+  const stringOnWasmHeap = _malloc(lengthBytes);
+  stringToUTF8(jsString, stringOnWasmHeap, lengthBytes);
+  HEAP32[pbuf_len >> 2] = lengthBytes;
+  return stringOnWasmHeap;
+});
+
+// Adapted from `js_module_loader`
+JSModuleDef *my_js_module_loader(JSContext *ctx,
+                                 const char *module_name, void *opaque)
+{
+    JSModuleDef *m;
+
+    if (has_suffix(module_name, ".so")) {
+        JS_ThrowReferenceError(
+            ctx,
+            "could not load module filename '%s'; .so modules not supported",
+            module_name
+        );
+        return NULL;
+    } else {
+        size_t buf_len;
+        uint8_t *buf;
+        JSValue func_val;
+    
+        buf = my_js_load_file(&buf_len, module_name);
+        if (!buf) {
+            JS_ThrowReferenceError(ctx, "could not load module filename '%s'",
+                                   module_name);
+            return NULL;
+        }
+        
+        /* compile the module */
+        func_val = JS_Eval(ctx, (char *)buf, buf_len, module_name,
+                           JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
+
+        {
+            // IMPORTANT NOTE:
+            //
+            // The original version of this function uses js_malloc(ctx, ...)
+            // inside `js_load_file`, but since we're using `EM_ASYNC_JS` I'm
+            // just using the builtin emscripten JS function `_malloc`, which
+            // corresponds to `malloc`/`free` in C-land.
+            //
+            // That's why I'm using `free` below instead of `js_free`:
+            //
+            // js_free(ctx, buf);
+            free(buf);
+        }
+
+        if (JS_IsException(func_val))
+            return NULL;
+        /* XXX: could propagate the exception */
+        js_module_set_import_meta(ctx, func_val, TRUE, FALSE);
+        /* the module is already referenced, so we must free it */
+        m = JS_VALUE_GET_PTR(func_val);
+        JS_FreeValue(ctx, func_val);
+    }
+    return m;
+}
+
 /**
  * Standard FFI functions
  */
 
 JSRuntime *QTS_NewRuntime() {
-  return JS_NewRuntime();
+  JSRuntime* rt = JS_NewRuntime();
+  JS_SetModuleLoaderFunc(rt, NULL, my_js_module_loader, NULL);
+  return rt;
 }
 
 void QTS_FreeRuntime(JSRuntime *rt) {
@@ -441,8 +511,18 @@ char *QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   return QTS_GetString(ctx, obj);
 }
 
+
 JSValue *QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *filename) {
-  return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), filename, JS_EVAL_TYPE_GLOBAL));
+  int eval_flags;
+  size_t js_code_len = strlen(js_code);
+
+  if (JS_DetectModule((const char *)js_code, js_code_len)) {
+    eval_flags = JS_EVAL_TYPE_MODULE;
+  } else {
+    eval_flags = JS_EVAL_TYPE_GLOBAL;
+  }
+
+  return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), filename, eval_flags));
 }
 
 char* QTS_Typeof(JSContext *ctx, JSValueConst *value) {
