@@ -1,7 +1,8 @@
 CC=clang
-EMCC=yarn embin emcc
 QUICKJS_ROOT=quickjs
 WRAPPER_ROOT=c
+EMSDK_DOCKER_IMAGE=emscripten/emsdk:2.0.30
+EMCC=docker run --rm -v $(shell pwd):$(shell pwd) -u $(shell id -u):$(shell id -g) -w $(shell pwd) $(EMSDK_DOCKER_IMAGE) emcc
 BUILD_ROOT=build
 BUILD_WRAPPER=$(BUILD_ROOT)/wrapper
 BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
@@ -37,11 +38,13 @@ endif
 wasm: $(BUILD_DIR) ts/quickjs-emscripten-module.js  ts/ffi.ts
 native: $(BUILD_WRAPPER)/native/test.exe
 all: wasm native
+emcc:
+	docker pull $(EMSDK_DOCKER_IMAGE)
 
-$(BUILD_WRAPPER):
+$(BUILD_WRAPPER): emcc
 	mkdir -p $(BUILD_WRAPPER)/wasm $(BUILD_WRAPPER)/native
 
-$(BUILD_QUICKJS):
+$(BUILD_QUICKJS): emcc
 	mkdir -p $(BUILD_QUICKJS)/wasm $(BUILD_QUICKJS)/native
 
 $(BUILD_ROOT): $(BUILD_WRAPPER) $(BUILD_QUICKJS)
