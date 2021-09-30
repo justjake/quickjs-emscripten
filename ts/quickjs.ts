@@ -14,7 +14,7 @@ import {
 import {
   LowLevelJavascriptVm,
   VmPropertyDescriptor,
-  VmCallResult,
+  VmCallResult as BaseVmCallResult,
   VmFunctionImplementation,
   SuccessOrFail,
 } from './vm-interface'
@@ -42,6 +42,28 @@ function getQuickJSEmscriptenModule(): QuickJSEmscriptenModule {
     )
   }
   return QuickJSModule
+}
+
+type VmCallResult<T> = BaseVmCallResult<T> & Disposable
+
+function disposableResult<T extends Disposable>(result: BaseVmCallResult<T>): VmCallResult<T> {
+  return {
+    ...result,
+    dispose: () => {
+      if ('value' in result) {
+        return result.value.dispose()
+      }
+
+      return result.error.dispose()
+    },
+    get alive() {
+      if ('value' in result) {
+        return result.value.alive
+      }
+
+      return result.error.alive
+    },
+  }
 }
 
 type CToHostCallbackFunctionImplementation = (
@@ -443,7 +465,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
     )
 
     // We need to free fnIdHandle's pointer, but not the JSValue, which is retained inside
-    // QuickJS for late.
+    // QuickJS for later.
     this.module._free(fnIdHandle.value)
 
     return funcHandle
@@ -574,10 +596,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
-      return { error: this.heapValueHandle(errorPtr) }
+      return disposableResult({ error: this.heapValueHandle(errorPtr) })
     }
 
-    return { value: this.heapValueHandle(resultPtr) }
+    return disposableResult({ value: this.heapValueHandle(resultPtr) })
   }
 
   /**
@@ -605,9 +627,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
-      return { error: this.heapValueHandle(errorPtr) }
+      return disposableResult({ error: this.heapValueHandle(errorPtr) })
     }
-    return { value: this.heapValueHandle(resultPtr) }
+    return disposableResult({ value: this.heapValueHandle(resultPtr) })
   }
 
   /**
