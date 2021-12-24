@@ -2,8 +2,8 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 4
-  cacheKey: 7
+  version: 5
+  cacheKey: 8
 
 "quickjs-emscripten-smoketest@workspace:.":
   version: 0.0.0-use.local
@@ -15,9 +15,9 @@ __metadata:
   linkType: soft
 
 "quickjs-emscripten@file:../../build/quickjs-emscripten.tgz::locator=quickjs-emscripten-smoketest%40workspace%3A.":
-  version: 0.6.1
+  version: 0.15.0
   resolution: "quickjs-emscripten@file:../../build/quickjs-emscripten.tgz::locator=quickjs-emscripten-smoketest%40workspace%3A."
-  checksum: 100fdb515c269d8221328bd8eed1a5bb41d67e46942ca273953e3720d430671bcd465926400d1cc3b96f70c34efc87a64fb11f88b1631d1272f7f06f926eb230
+  checksum: 5106daaa83f57746f1f281c1cb55ad5516104f4db97399a8cac4f025bee70c283343497947b2440da7be3a6bb313e45332946834deb8d88f5c4273a429c183bf
   languageName: node
   linkType: hard
 
@@ -27,16 +27,16 @@ typescript@^3.9.5:
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 15618435493667083eb43dc7b36c4d3dd47fd9e9c8a14f0ac4019bbf6124b6cc518b6ed506400913db1bf50831207ee8201b5d827680076930b562923f4f18a0
+  checksum: 6ebba8deed366a5a47602a7ab6b8489526e615e20dfb3305a49d7c9bed510757f63518225fe03afbadaf3577e08d2aea406fdda23eef3669101d6f7c39e928a1
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^3.9.5#builtin<compat/typescript>":
+"typescript@patch:typescript@^3.9.5#~builtin<compat/typescript>":
   version: 3.9.5
-  resolution: "typescript@patch:typescript@npm%3A3.9.5#builtin<compat/typescript>::version=3.9.5&hash=a45b0e"
+  resolution: "typescript@patch:typescript@npm%3A3.9.5#~builtin<compat/typescript>::version=3.9.5&hash=493e53"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 251df026e882c7d31165ad6f5a2aa8a24b43655766d1f008f4548ccb6944188a251e7d359763e3d330999c200506ab7322b703cf33429c9482cb7013e9a1fdd7
+  checksum: bfea14f536401538736250a512d6c779026e9af89a61be59aaefc35fcef9ed926aac1f90509eaa215023b1823d383090cfcc965bb91cbef47f74e151d723fd78
   languageName: node
   linkType: hard
