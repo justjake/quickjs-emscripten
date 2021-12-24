@@ -872,7 +872,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
           ownedResultPtr = this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
         }
       } catch (error) {
-        ownedResultPtr = this.errorToHandle(error).consume(errorHandle =>
+        ownedResultPtr = this.errorToHandle(error as Error).consume(errorHandle =>
           this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
         )
       }
