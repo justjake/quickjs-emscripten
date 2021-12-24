@@ -535,7 +535,7 @@ describe('QuickJSVm', async () => {
     })
   })
 
-  describe('.resolve()', () => {
+  describe('.resolvePromise()', () => {
     it('retrieves async function return value as a successful VM result', async () => {
       const result = vm.unwrapResult(
         vm.evalCode(`
@@ -583,6 +583,20 @@ describe('QuickJSVm', async () => {
 
       assert.equal(error.name, 'Error')
       assert.equal(error.message, 'oops')
+    })
+
+    it('converts non-promise handles into a promise, too', async () => {
+      const stringHandle = vm.newString('foo')
+      const promise = vm.resolvePromise(stringHandle)
+      stringHandle.dispose()
+
+      vm.executePendingJobs()
+
+      const final = await promise.then(result => {
+        const stringHandle2 = vm.unwrapResult(result)
+        return `unwrapped: ${stringHandle2.consume(stringHandle2 => vm.dump(stringHandle2))}`
+      })
+      assert.equal(final, `unwrapped: foo`)
     })
   })
 
