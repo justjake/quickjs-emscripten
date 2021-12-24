@@ -549,7 +549,7 @@ describe('QuickJSVm', async () => {
 
       assert.equal(vm.typeof(result), 'object', 'Async function returns an object (promise)')
 
-      const promise = result.consume(result => vm.resolve(result))
+      const promise = result.consume(result => vm.resolvePromise(result))
       vm.executePendingJobs()
       const asyncResult = vm.unwrapResult(await promise)
 
@@ -571,7 +571,7 @@ describe('QuickJSVm', async () => {
 
       assert.equal(vm.typeof(result), 'object', 'Async function returns an object (promise)')
 
-      const promise = result.consume(result => vm.resolve(result))
+      const promise = result.consume(result => vm.resolvePromise(result))
       vm.executePendingJobs()
       const asyncResult = await promise
 

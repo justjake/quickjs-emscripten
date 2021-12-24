@@ -225,8 +225,8 @@ export type ExecutePendingJobsResult = SuccessOrFail<number, QuickJSHandle>
  * Use [[QuickJS.createVm]] to create a new QuickJSVm.
  *
  * Create QuickJS values inside the interpreter with methods like
- * [[newNumber]], [[newString]], [[newArray]], [[newObject]], and
- * [[newFunction]].
+ * [[newNumber]], [[newString]], [[newArray]], [[newObject]],
+ * [[newFunction]], and [[newPromise]].
  *
  * Call [[setProp]] or [[defineProp]] to customize objects. Use those methods
  * with [[global]] to expose the values you create to the interior of the
@@ -234,7 +234,9 @@ export type ExecutePendingJobsResult = SuccessOrFail<number, QuickJSHandle>
  *
  * Use [[evalCode]] or [[callFunction]] to execute Javascript inside the VM. If
  * you're using asynchronous code inside the QuickJSVm, you may need to also
- * call [[executePendingJobs]].
+ * call [[executePendingJobs]]. Executing code inside the runtime returns a
+ * result object representing successful execution or an error. You must dispose
+ * of any such results to avoid leaking memory inside the VM.
  *
  * Implement memory and CPU constraints with [[setInterruptHandler]]
  * (called regularly while the interpreter runs) and [[setMemoryLimit]].
@@ -477,15 +479,15 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
 
   /**
    * `Promise.resolve(value)`.
-   * Convert a handle containing a Promise-like value inside the VM into an actual promise
-   * on the host.
+   * Convert a handle containing a Promise-like value inside the VM into an
+   * actual promise on the host.
    *
    * @remarks
-   * You may need to call [[runPendingJobs]] to ensure that the promise is resolved.
+   * You may need to call [[executePendingJobs]] to ensure that the promise is resolved.
    *
    * @param promiseLikeHandle - A handle to a Promise-like value with a `.then(onSuccess, onError)` method.
    */
-  resolve(promiseLikeHandle: QuickJSHandle): Promise<VmCallResult<QuickJSHandle>> {
+  resolvePromise(promiseLikeHandle: QuickJSHandle): Promise<VmCallResult<QuickJSHandle>> {
     this.assertOwned(promiseLikeHandle)
     const vmResolveResult = Scope.withScope(scope => {
       const vmPromise = scope.manage(this.getProp(this.global, 'Promise'))
@@ -601,9 +603,13 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
    * Call a JSValue as a function.
    *
    * See [[unwrapResult]], which will throw if the function returned an error, or
-   * return the result handle directly.
+   * return the result handle directly. If evaluation returned a handle containing
+   * a promise, use [[resolvePromise]] to convert it to a native promise and
+   * [[executePendingJobs]] to finish evaluating the promise.
    *
-   * @returns A result. If the function threw, result `error` be a handle to the exception.
+   * @returns A result. If the function threw synchronously, `result.error` be a
+   * handle to the exception. Otherwise `result.value` will be a handle to the
+   * value.
    */
   callFunction(
     func: QuickJSHandle,
@@ -631,16 +637,18 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
    * to execute callbacks pending after synchronous evaluation returns.
    *
    * See [[unwrapResult]], which will throw if the function returned an error, or
-   * return the result handle directly.
+   * return the result handle directly. If evaluation returned a handle containing
+   * a promise, use [[resolvePromise]] to convert it to a native promise and
+   * [[executePendingJobs]] to finish evaluating the promise.
    *
    * *Note*: to protect against infinite loops, provide an interrupt handler to
    * [[setInterruptHandler]]. You can use [[shouldInterruptAfterDeadline]] to
    * create a time-based deadline.
    *
-   *
-   * @returns The last statement's value. If the code threw, result `error` will be
-   * a handle to the exception. If execution was interrupted, the error will
-   * have name `InternalError` and message `interrupted`.
+   * @returns The last statement's value. If the code threw synchronously,
+   * `result.error` will be a handle to the exception. If execution was
+   * interrupted, the error will have name `InternalError` and message
+   * `interrupted`.
    */
   evalCode(code: string): VmCallResult<QuickJSHandle> {
     const resultPtr = this.newHeapCharPointer(code).consume(charHandle =>
@@ -666,7 +674,10 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
    * at most `maxJobsToExecute` before returning.
    *
    * @return On success, the number of executed jobs. On error, the exception
-   * that stopped execution.
+   * that stopped execution. Note that executePendingJobs will not normally return
+   * errors thrown inside async functions or rejected promises. Those errors are
+   * available by calling [[resolvePromise]] on the promise handle returned by
+   * the async function.
    */
   executePendingJobs(maxJobsToExecute: number = -1): ExecutePendingJobsResult {
     const resultValue = this.heapValueHandle(
