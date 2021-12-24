@@ -1,5 +1,5 @@
 /**
- * These tests demonstate some common patterns for using quickjs-emscripten.
+ * These tests demonstrate some common patterns for using quickjs-emscripten.
  */
 
 import {
@@ -503,7 +503,7 @@ describe('QuickJSVm', async () => {
       let deferred: QuickJSDeferredPromise = undefined as any
 
       function timeout(ms: number) {
-        return new Promise(resolve => {
+        return new Promise<void>(resolve => {
           setTimeout(() => resolve(), ms)
         })
       }
@@ -532,6 +532,71 @@ describe('QuickJSVm', async () => {
       // Check that the promise executed.
       const vmValue = vm.unwrapResult(vm.evalCode(`globalThingy`)).consume(x => vm.dump(x))
       assert.equal(vmValue, expectedValue)
+    })
+  })
+
+  describe('.resolvePromise()', () => {
+    it('retrieves async function return value as a successful VM result', async () => {
+      const result = vm.unwrapResult(
+        vm.evalCode(`
+        async function return1() {
+          return 1
+        }
+
+        return1()
+        `)
+      )
+
+      assert.equal(vm.typeof(result), 'object', 'Async function returns an object (promise)')
+
+      const promise = result.consume(result => vm.resolvePromise(result))
+      vm.executePendingJobs()
+      const asyncResult = vm.unwrapResult(await promise)
+
+      assert.equal(vm.dump(asyncResult), 1, 'Awaited promise returns 1')
+
+      asyncResult.dispose()
+    })
+
+    it('retrieves async function error as a error VM result', async () => {
+      const result = vm.unwrapResult(
+        vm.evalCode(`
+        async function throwOops() {
+          throw new Error('oops')
+        }
+
+        throwOops()
+        `)
+      )
+
+      assert.equal(vm.typeof(result), 'object', 'Async function returns an object (promise)')
+
+      const promise = result.consume(result => vm.resolvePromise(result))
+      vm.executePendingJobs()
+      const asyncResult = await promise
+
+      if (!asyncResult.error) {
+        throw new Error('Should have returned an error')
+      }
+      const error = vm.dump(asyncResult.error)
+      asyncResult.error.dispose()
+
+      assert.equal(error.name, 'Error')
+      assert.equal(error.message, 'oops')
+    })
+
+    it('converts non-promise handles into a promise, too', async () => {
+      const stringHandle = vm.newString('foo')
+      const promise = vm.resolvePromise(stringHandle)
+      stringHandle.dispose()
+
+      vm.executePendingJobs()
+
+      const final = await promise.then(result => {
+        const stringHandle2 = vm.unwrapResult(result)
+        return `unwrapped: ${stringHandle2.consume(stringHandle2 => vm.dump(stringHandle2))}`
+      })
+      assert.equal(final, `unwrapped: foo`)
     })
   })
 

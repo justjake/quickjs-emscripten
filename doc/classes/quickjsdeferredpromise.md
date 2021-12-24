@@ -10,7 +10,7 @@ Managing the lifetime of promises is tricky. There are three
 [QuickJSHandle](../globals.md#quickjshandle)s inside of each deferred promise object: (1) the promise
 itself, (2) the `resolve` callback, and (3) the `reject` callback.
 
-- If the promise will be fufilled before the end of it's [owner](quickjsdeferredpromise.md#owner)'s lifetime,
+- If the promise will be fulfilled before the end of it's [owner](quickjsdeferredpromise.md#owner)'s lifetime,
   the only cleanup necessary is `deferred.handle.dispose()`, because
   calling [resolve](quickjsdeferredpromise.md#resolve) or [reject](quickjsdeferredpromise.md#reject) will dispose of both callbacks automatically.
 

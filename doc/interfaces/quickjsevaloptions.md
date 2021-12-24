@@ -21,7 +21,7 @@ Options for [QuickJS.evalCode](../classes/quickjs.md#evalcode).
 
 • **memoryLimitBytes**? : *undefined | number*
 
-*Defined in [quickjs.ts:986](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L986)*
+*Defined in [quickjs.ts:1041](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L1041)*
 
 Memory limit, in bytes, of WASM heap memory used by the QuickJS VM.
 
@@ -31,7 +31,7 @@ ___
 
 • **shouldInterrupt**? : *[InterruptHandler](../globals.md#interrupthandler)*
 
-*Defined in [quickjs.ts:981](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L981)*
+*Defined in [quickjs.ts:1036](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L1036)*
 
 Interrupt evaluation if `shouldInterrupt` returns `true`.
 See [shouldInterruptAfterDeadline](../globals.md#shouldinterruptafterdeadline).
