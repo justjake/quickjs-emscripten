@@ -1,5 +1,5 @@
 /**
- * These tests demonstate some common patterns for using quickjs-emscripten.
+ * These tests demonstrate some common patterns for using quickjs-emscripten.
  */
 
 import {
