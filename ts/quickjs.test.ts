@@ -535,6 +535,57 @@ describe('QuickJSVm', async () => {
     })
   })
 
+  describe('.resolve()', () => {
+    it('retrieves async function return value as a successful VM result', async () => {
+      const result = vm.unwrapResult(
+        vm.evalCode(`
+        async function return1() {
+          return 1
+        }
+
+        return1()
+        `)
+      )
+
+      assert.equal(vm.typeof(result), 'object', 'Async function returns an object (promise)')
+
+      const promise = result.consume(result => vm.resolve(result))
+      vm.executePendingJobs()
+      const asyncResult = vm.unwrapResult(await promise)
+
+      assert.equal(vm.dump(asyncResult), 1, 'Awaited promise returns 1')
+
+      asyncResult.dispose()
+    })
+
+    it('retrieves async function error as a error VM result', async () => {
+      const result = vm.unwrapResult(
+        vm.evalCode(`
+        async function throwOops() {
+          throw new Error('oops')
+        }
+
+        throwOops()
+        `)
+      )
+
+      assert.equal(vm.typeof(result), 'object', 'Async function returns an object (promise)')
+
+      const promise = result.consume(result => vm.resolve(result))
+      vm.executePendingJobs()
+      const asyncResult = await promise
+
+      if (!asyncResult.error) {
+        throw new Error('Should have returned an error')
+      }
+      const error = vm.dump(asyncResult.error)
+      asyncResult.error.dispose()
+
+      assert.equal(error.name, 'Error')
+      assert.equal(error.message, 'oops')
+    })
+  })
+
   describe('memory pressure', () => {
     it('can pass a large string to a C function', async () => {
       const jsonString = await fs.promises.readFile(

@@ -25,7 +25,7 @@ export { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable }
 let QuickJSModule: QuickJSEmscriptenModule | undefined = undefined
 
 /**
- * This promise will be fufilled when the QuickJS emscripten module has initialized
+ * This promise will be fulfilled when the QuickJS emscripten module has initialized
  * and the {@link QuickJS} instance can be created.
  */
 const ready = QuickJSModuleLoader().then(loadedModule => {
@@ -74,7 +74,7 @@ export type QuickJSPropertyKey = number | string | QuickJSHandle
  * [[QuickJSHandle]]s inside of each deferred promise object: (1) the promise
  * itself, (2) the `resolve` callback, and (3) the `reject` callback.
  *
- * - If the promise will be fufilled before the end of it's [[owner]]'s lifetime,
+ * - If the promise will be fulfilled before the end of it's [[owner]]'s lifetime,
  *   the only cleanup necessary is `deferred.handle.dispose()`, because
  *   calling [[resolve]] or [[reject]] will dispose of both callbacks automatically.
  *
@@ -220,7 +220,7 @@ export type ExecutePendingJobsResult = SuccessOrFail<number, QuickJSHandle>
  *
  * Each QuickJSVm instance is isolated. You cannot share handles between different
  * QuickJSVm instances. You should create separate QuickJSVm instances for
- * untrusted code from different souces for isolation.
+ * untrusted code from different sources for isolation.
  *
  * Use [[QuickJS.createVm]] to create a new QuickJSVm.
  *
@@ -357,7 +357,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
   }
 
   /**
-   * Converts a Javascript number into a QuckJS value.
+   * Converts a Javascript number into a QuickJS value.
    */
   newNumber(num: number): QuickJSHandle {
     return this.heapValueHandle(this.ffi.QTS_NewFloat64(this.ctx.value, num))
@@ -365,7 +365,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
 
   /**
    * Converts `handle` into a Javascript number.
-   * @returns `NaN` on error, othewise a `number`.
+   * @returns `NaN` on error, otherwise a `number`.
    */
   getNumber(handle: QuickJSHandle) {
     this.assertOwned(handle)
@@ -419,9 +419,9 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
    * Convert a Javascript function into a QuickJS function value.
    * See [[VmFunctionImplementation]] for more details.
    *
-   * A [[VmFunctionImplementation]] should not free its arguments or its retun
+   * A [[VmFunctionImplementation]] should not free its arguments or its return
    * value. A VmFunctionImplementation should also not retain any references to
-   * its veturn value.
+   * its return value.
    *
    * To implement an async function, create a promise with [[newPromise]], then
    * return the deferred promise handle from `deferred.handle` from your
@@ -451,7 +451,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
 
   /**
    * Create a new [[QuickJSDeferredPromise]]. Use `deferred.resolve(handle)` and
-   * `deferred.reject(handle)` to fufill the promise handle available at `deferred.handle`.
+   * `deferred.reject(handle)` to fulfill the promise handle available at `deferred.handle`.
    * Note that you are responsible for calling `deferred.dispose()` to free the underlying
    * resources; see the documentation on [[QuickJSDeferredPromise]] for details.
    */
@@ -471,6 +471,50 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
         promiseHandle,
         resolveHandle,
         rejectHandle,
+      })
+    })
+  }
+
+  /**
+   * `Promise.resolve(value)`.
+   * Convert a handle containing a Promise-like value inside the VM into an actual promise
+   * on the host.
+   *
+   * @remarks
+   * You may need to call [[runPendingJobs]] to ensure that the promise is resolved.
+   *
+   * @param promiseLikeHandle - A handle to a Promise-like value with a `.then(onSuccess, onError)` method.
+   */
+  resolve(promiseLikeHandle: QuickJSHandle): Promise<VmCallResult<QuickJSHandle>> {
+    this.assertOwned(promiseLikeHandle)
+    const vmResolveResult = Scope.withScope(scope => {
+      const vmPromise = scope.manage(this.getProp(this.global, 'Promise'))
+      const vmPromiseResolve = scope.manage(this.getProp(vmPromise, 'resolve'))
+      return this.callFunction(vmPromiseResolve, vmPromise, promiseLikeHandle)
+    })
+    if (vmResolveResult.error) {
+      return Promise.resolve(vmResolveResult)
+    }
+
+    return new Promise<VmCallResult<QuickJSHandle>>(resolve => {
+      Scope.withScope(scope => {
+        const resolveHandle = scope.manage(
+          this.newFunction('resolve', value => {
+            resolve({ value: value && value.dup() })
+          })
+        )
+
+        const rejectHandle = scope.manage(
+          this.newFunction('reject', error => {
+            resolve({ error: error && error.dup() })
+          })
+        )
+
+        const promiseHandle = scope.manage(vmResolveResult.value)
+        const promiseThenHandle = scope.manage(this.getProp(promiseHandle, 'then'))
+        this.unwrapResult(
+          this.callFunction(promiseThenHandle, promiseHandle, resolveHandle, rejectHandle)
+        ).dispose()
       })
     })
   }
@@ -582,7 +626,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
 
   /**
    * Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
-   * Evauatetes the Javascript source `code` in the global scope of this VM.
+   * Evaluates the Javascript source `code` in the global scope of this VM.
    * When working with async code, you many need to call [[executePendingJobs]]
    * to execute callbacks pending after synchronous evaluation returns.
    *
@@ -730,7 +774,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
    * JSValue object. Use [[dump]] to convert to a native object.
    * Calling this method will allocate more memory inside the runtime. The information
    * is accurate as of just before the call to `computeMemoryUsage`.
-   * For a human-digestable representation, see [[dumpMemoryUsage]].
+   * For a human-digestible representation, see [[dumpMemoryUsage]].
    */
   computeMemoryUsage(): QuickJSHandle {
     return this.heapValueHandle(
@@ -740,7 +784,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
 
   /**
    * @returns a human-readable description of memory usage in this runtime.
-   * For programatic access to this information, see [[computeMemoryUsage]].
+   * For programmatic access to this information, see [[computeMemoryUsage]].
    */
   dumpMemoryUsage(): string {
     return this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value)
@@ -867,8 +911,8 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
       return this.newString(key)
     }
 
-    // key is alerady a JSValue, but we're borrowing it. Return a static handle
-    // for intenal use only.
+    // key is already a JSValue, but we're borrowing it. Return a static handle
+    // for internal use only.
     return new StaticLifetime(key.value as JSValueConstPointer, this)
   }
 
@@ -1033,7 +1077,7 @@ export class QuickJS {
     this.ffi.QTS_SetHostCallback(funcCallbackFp)
 
     const interruptCallbackWasmTypes = [
-      intType, // return 0 no interrupt, !=0 interrrupt
+      intType, // return 0 no interrupt, !=0 interrupt
       pointerType, // rt_ptr
     ]
     const interruptCallbackFp = this.module.addFunction(
