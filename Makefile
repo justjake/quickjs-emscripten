@@ -48,6 +48,8 @@ ifdef DEBUG
 # Need to use -O3 - otherwise ASYNCIFY leads to stack overflows (why?)
 	CFLAGS_EMCC_ASYNCIFY+=-O3
 # CFLAGS_EMCC+=-s ASYNCIFY_STACK_SIZE=65535
+
+	GENERATE_TS_ENV+=DEBUG=true
 else
 	CFLAGS=-Oz
 
@@ -82,11 +84,11 @@ $(BUILD_WRAPPER)/symbols.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 	ts-node generate.ts symbols $@
 
 ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
-	ts-node generate.ts ffi $@
+	$(GENERATE_TS_ENV) ts-node generate.ts ffi $@
 	prettier --write $@
 
 ts/ffi-asyncify.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
-	ts-node generate.ts ffi-asyncify $@
+	$(GENERATE_TS_ENV) ASYNCIFY=true ts-node generate.ts ffi $@
 	prettier --write $@
 
 ### Executables
