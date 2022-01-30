@@ -80,7 +80,6 @@ $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 # generate.ts not listed because it changes more often for other reasons
 $(BUILD_WRAPPER)/symbols.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 	ts-node generate.ts symbols $@
-	prettier --write $@
 
 ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
 	ts-node generate.ts ffi $@

@@ -15,13 +15,14 @@
 
 #ifdef QTS_ASYNCIFY
 #include <emscripten.h>
+
+#include "../quickjs/cutis.h"
 #endif
 #include <math.h>  // For NAN
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "../quickjs/cutils.h"
 #include "../quickjs/quickjs-libc.h"
 #include "../quickjs/quickjs.h"
 
@@ -521,14 +522,14 @@ MaybeAsync(char *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
 }
 
 MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *filename) {
-  int eval_flags;
+  int eval_flags = JS_EVAL_TYPE_GLOBAL;
   size_t js_code_len = strlen(js_code);
 
+#ifdef QTS_ASYNCIFY
   if (JS_DetectModule((const char *)js_code, js_code_len)) {
     eval_flags = JS_EVAL_TYPE_MODULE;
-  } else {
-    eval_flags = JS_EVAL_TYPE_GLOBAL;
   }
+#endif
 
   return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), filename, eval_flags));
 }
