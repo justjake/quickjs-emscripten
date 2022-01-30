@@ -58,3 +58,13 @@ export type QTS_C_To_HostInterruptFuncPointer = Pointer<'C_To_HostInterruptFunc'
  * for the Emscripten stack.
  */
 export type HeapCharPointer = Pointer<'char'>
+
+export function assertSync<Args extends any[], R>(fn: (...args: Args) => R): (...args: Args) => R {
+  return function mustBeSync(...args: Args): R {
+    const result = fn(...args)
+    if (result && typeof result === 'object' && result instanceof Promise) {
+      throw new Error('Function unexpectedly returned a Promise')
+    }
+    return result
+  }
+}
