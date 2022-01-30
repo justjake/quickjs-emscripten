@@ -4,7 +4,7 @@
  *
  * @unstable This type is considered private and may change.
  */
-export type Pointer<CType extends string> = number & { ctype: CType }
+type Pointer<CType extends string> = number & { ctype: CType }
 
 /**
  * `JSRuntime*`.
@@ -41,7 +41,7 @@ export type JSValueConstPointerPointer = Pointer<'JSValueConst[]'>
 /**
  * Used internally for C-to-Javascript function calls.
  */
-export type JSCFunctionPointer = Pointer<'JSCFunction'>
+type JSCFunctionPointer = Pointer<'JSCFunction'>
 
 /**
  * Used internally for C-to-Javascript function calls.

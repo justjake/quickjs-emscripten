@@ -164,7 +164,7 @@ function scopeFinally(scope: Scope, blockError: Error | undefined) {
   try {
     scope.dispose()
   } catch (error) {
-    disposeError = error
+    disposeError = error as any
   }
 
   if (blockError && disposeError) {
@@ -198,7 +198,7 @@ export class Scope implements Disposable {
     try {
       return block(scope)
     } catch (error) {
-      blockError = error
+      blockError = error as any
       throw error
     } finally {
       scopeFinally(scope, blockError)
@@ -217,7 +217,7 @@ export class Scope implements Disposable {
     try {
       return await block(scope)
     } catch (error) {
-      blockError = error
+      blockError = error as any
       throw error
     } finally {
       scopeFinally(scope, blockError)

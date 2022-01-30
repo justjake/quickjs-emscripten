@@ -146,17 +146,17 @@ export interface QuickJSEvalOptions {
  * tuning.
  */
 export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposable {
-  private readonly ctx: Lifetime<JSContextPointer>
-  private readonly rt: Lifetime<JSRuntimePointer>
+  protected readonly ctx: Lifetime<JSContextPointer>
+  protected readonly rt: Lifetime<JSRuntimePointer>
 
-  private readonly module: QuickJSEmscriptenModule
-  private readonly ffi: QuickJSFFI
-  private _undefined: QuickJSHandle | undefined = undefined
-  private _null: QuickJSHandle | undefined = undefined
-  private _false: QuickJSHandle | undefined = undefined
-  private _true: QuickJSHandle | undefined = undefined
-  private _global: QuickJSHandle | undefined = undefined
-  private _scope = new Scope()
+  protected readonly module: QuickJSEmscriptenModule
+  protected readonly ffi: QuickJSFFI
+  protected _undefined: QuickJSHandle | undefined = undefined
+  protected _null: QuickJSHandle | undefined = undefined
+  protected _false: QuickJSHandle | undefined = undefined
+  protected _true: QuickJSHandle | undefined = undefined
+  protected _global: QuickJSHandle | undefined = undefined
+  protected _scope = new Scope()
 
   /**
    * Use {@link QuickJS.createVm} to create a QuickJSVm instance.

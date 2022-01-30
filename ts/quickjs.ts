@@ -22,7 +22,9 @@ import {
   QuickJSVm,
   StaticJSValue,
 } from './quickjsvm'
-import { QuickJSAsyncFFI } from './ffi-asyncify'
+import type { QuickJSAsyncFFI } from './ffi-asyncify'
+import type { QuickJSAsyncVm } from './quickjsasyncvm'
+import { QuickJSDeferredPromise } from './deferred-promise'
 
 // Exports of types moved out of this file
 export { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable }
@@ -36,6 +38,7 @@ export {
   QuickJSPropertyKey,
   ExecutePendingJobsResult,
   QuickJSEvalOptions,
+  QuickJSDeferredPromise,
 }
 
 /**
@@ -174,6 +177,36 @@ export class QuickJS {
       ctx,
     })
     this.syncCallbacks.addVM(rt.value, ctx.value, vm)
+    return vm
+  }
+
+  /**
+   * Create an asyncified QuickJS VM.
+   * @todo Better docs
+   */
+  async createAsyncVm(): Promise<QuickJSAsyncVm> {
+    const { default: createModule } = await import('./quickjs-emscripten-module-asyncify')
+    const { QuickJSAsyncFFI } = await import('./ffi-asyncify')
+    const { QuickJSAsyncVm } = await import('./quickjsasyncvm')
+    const module = await createModule()
+    const ffi = new QuickJSFFI(module)
+    const asyncFFI = new QuickJSAsyncFFI(module)
+    const callbacks = new QuickJSModuleCallbacks(module, asyncFFI)
+    const rt = new Lifetime(asyncFFI.QTS_NewRuntime(), undefined, rt_ptr => {
+      callbacks.deleteRuntime(rt_ptr)
+      asyncFFI.QTS_FreeRuntime(rt_ptr)
+    })
+    const ctx = new Lifetime(asyncFFI.QTS_NewContext(rt.value), undefined, ctx_ptr => {
+      callbacks.deleteContext(ctx_ptr)
+      asyncFFI.QTS_FreeContext(ctx_ptr)
+    })
+    const vm = new QuickJSAsyncVm({
+      module,
+      ffi,
+      asyncFFI,
+      rt,
+      ctx,
+    })
     return vm
   }
 
