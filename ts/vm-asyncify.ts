@@ -1,19 +1,19 @@
-import { QuickJSEmscriptenModule, QuickJSEmscriptenModuleAsyncify } from './emscripten-types'
+import { QuickJSAsyncEmscriptenModule } from './emscripten-types'
 import { QuickJSFFI } from './ffi'
 import { QuickJSAsyncFFI } from './ffi-asyncify'
 import { JSContextPointer, JSRuntimePointer } from './ffi-types'
 import { Lifetime } from './lifetime'
-import { QuickJSVm } from './vm'
+import { PureQuickJSVm } from './vm'
 
-export class QuickJSAsyncVm extends QuickJSVm {
-  protected readonly module: QuickJSEmscriptenModuleAsyncify
+export class QuickJSAsyncVm extends PureQuickJSVm {
+  protected readonly module: QuickJSAsyncEmscriptenModule
   protected readonly asyncFFI: QuickJSAsyncFFI
 
   /**
    * Use {@link QuickJS.createAsyncVm} to create a QuickJSAsyncVm instance.
    */
   constructor(args: {
-    module: QuickJSEmscriptenModule
+    module: QuickJSAsyncEmscriptenModule
     ffi: QuickJSFFI
     asyncFFI: QuickJSAsyncFFI
     ctx: Lifetime<JSContextPointer>

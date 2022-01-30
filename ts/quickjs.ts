@@ -7,7 +7,7 @@ import {
   QTS_C_To_HostInterruptFuncPointer,
 } from './ffi-types'
 import { QuickJSFFI } from './ffi'
-import { QuickJSEmscriptenModule, QuickJSEmscriptenModuleAsyncify } from './emscripten-types'
+import { QuickJSEmscriptenModule, EitherModule } from './emscripten-types'
 import { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable } from './lifetime'
 import {
   CToHostCallbackFunctionImplementation,
@@ -23,7 +23,6 @@ import {
   StaticJSValue,
 } from './vm'
 import type { QuickJSAsyncFFI } from './ffi-asyncify'
-import type { QuickJSAsyncVm } from './vm-asyncify'
 import { QuickJSDeferredPromise } from './deferred-promise'
 
 // Exports of types moved out of this file
@@ -45,13 +44,13 @@ export {
  * Each Emscripten module of QuickJS needs a single C callback dispatcher.
  */
 class QuickJSModuleCallbacks {
-  private module: QuickJSEmscriptenModule | QuickJSEmscriptenModuleAsyncify
+  private module: EitherModule
   private ffi: QuickJSFFI | QuickJSAsyncFFI
   private vmMap = new Map<JSContextPointer, QuickJSVm>()
   private rtMap = new Map<JSRuntimePointer, QuickJSVm>()
 
   constructor(
-    module: QuickJSEmscriptenModule | QuickJSEmscriptenModuleAsyncify,
+    module: EitherModule,
     ffi: QuickJSFFI | QuickJSAsyncFFI
   ) {
     this.module = module
@@ -186,31 +185,31 @@ class QuickJS {
    * Create an asyncified QuickJS VM.
    * @todo Better docs
    */
-  async createAsyncVm(): Promise<QuickJSAsyncVm> {
-    const { default: createModule } = await import('./quickjs-emscripten-module-asyncify')
-    const { QuickJSAsyncFFI } = await import('./ffi-asyncify')
-    const { QuickJSAsyncVm } = await import('./vm-asyncify')
-    const module = await createModule()
-    const ffi = new QuickJSFFI(module)
-    const asyncFFI = new QuickJSAsyncFFI(module)
-    const callbacks = new QuickJSModuleCallbacks(module, asyncFFI)
-    const rt = new Lifetime(asyncFFI.QTS_NewRuntime(), undefined, rt_ptr => {
-      callbacks.deleteRuntime(rt_ptr)
-      asyncFFI.QTS_FreeRuntime(rt_ptr)
-    })
-    const ctx = new Lifetime(asyncFFI.QTS_NewContext(rt.value), undefined, ctx_ptr => {
-      callbacks.deleteContext(ctx_ptr)
-      asyncFFI.QTS_FreeContext(ctx_ptr)
-    })
-    const vm = new QuickJSAsyncVm({
-      module,
-      ffi,
-      asyncFFI,
-      rt,
-      ctx,
-    })
-    return vm
-  }
+  // async createAsyncVm(): Promise<QuickJSAsyncVm> {
+  //   const { default: createModule } = await import('./quickjs-emscripten-module-asyncify')
+  //   const { QuickJSAsyncFFI } = await import('./ffi-asyncify')
+  //   const { QuickJSAsyncVm } = await import('./quickjsasyncvm')
+  //   const module = await createModule()
+  //   const ffi = new QuickJSFFI(module)
+  //   const asyncFFI = new QuickJSAsyncFFI(module)
+  //   const callbacks = new QuickJSModuleCallbacks(module, asyncFFI)
+  //   const rt = new Lifetime(asyncFFI.QTS_NewRuntime(), undefined, rt_ptr => {
+  //     callbacks.deleteRuntime(rt_ptr)
+  //     asyncFFI.QTS_FreeRuntime(rt_ptr)
+  //   })
+  //   const ctx = new Lifetime(asyncFFI.QTS_NewContext(rt.value), undefined, ctx_ptr => {
+  //     callbacks.deleteContext(ctx_ptr)
+  //     asyncFFI.QTS_FreeContext(ctx_ptr)
+  //   })
+  //   const vm = new QuickJSAsyncVm({
+  //     module,
+  //     ffi,
+  //     asyncFFI,
+  //     rt,
+  //     ctx,
+  //   })
+  //   return vm
+  // }
 
   /**
    * One-off evaluate code without needing to create a VM.
@@ -263,7 +262,7 @@ class QuickJS {
   }
 }
 
-export type { QuickJS }
+// export type { QuickJS }
 
 /**
  * Returns an interrupt handler that interrupts Javascript execution after a deadline time.

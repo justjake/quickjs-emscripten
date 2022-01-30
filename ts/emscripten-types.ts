@@ -34,10 +34,10 @@ declare namespace Emscripten {
 }
 
 /**
- * Typings for the featuers we use to interface with our Emscripten build of
+ * Typings for the features we use to interface with our Emscripten build of
  * QuickJS.
  */
-export interface QuickJSEmscriptenModule {
+interface EmscriptenModule {
   addFunction(fn: Function, type: string): number
   removeFunction(pointer: number): void
   stringToUTF8(str: string, outPtr: number, maxBytesToRead?: number): void
@@ -67,7 +67,17 @@ export interface QuickJSEmscriptenModule {
   FAST_MEMORY: number
 }
 
-export interface QuickJSEmscriptenModuleAsyncify extends QuickJSEmscriptenModule {
+export interface QuickJSEmscriptenModule extends EmscriptenModule {
+  /** @todo Implement this field */
+  type: 'sync'
+}
+
+export interface QuickJSAsyncEmscriptenModule extends EmscriptenModule {
+  /** @todo Implement this field */
+  type: 'async'
+
   // TODO: asyncify stuff, eg Asyncify.handleSleep()
   // https://emscripten.org/docs/porting/asyncify.html#ways-to-use-async-apis-in-older-engines
 }
+
+export type EitherModule = QuickJSEmscriptenModule | QuickJSAsyncEmscriptenModule
