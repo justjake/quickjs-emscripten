@@ -11,6 +11,26 @@
  * Functions starting with "QTS_" are exported by generate.ts to:
  * - interface.h for native C code.
  * - ffi.ts for emscripten.
+ * 
+ * We support building the following build outputs:
+ * 
+ * ## 1. Native machine code
+ * For internal development testing purposes.
+ * 
+ * ## 2. WASM via Emscripten
+ * For general production use.
+ * 
+ * ## 3. Experimental: Asyncified WASM via Emscripten with -s ASYNCIFY=1.
+ * This variant supports treating async host Javascript calls as synchronous
+ * from the perspective of the WASM c code.
+ * 
+ * The way this works is described here:
+ * https://emscripten.org/docs/porting/asyncify.html
+ * 
+ * In this variant, any call into our C code could return a promise if it ended
+ * up suspended. We mark the methods we suspect might suspend due to users' code
+ * as returning MaybeAsync(T). This information is ignored for the regular
+ * build.
  */
 
 #ifdef QTS_ASYNCIFY
