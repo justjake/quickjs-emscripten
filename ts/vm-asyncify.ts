@@ -3,7 +3,7 @@ import { QuickJSFFI } from './ffi'
 import { QuickJSAsyncFFI } from './ffi-asyncify'
 import { JSContextPointer, JSRuntimePointer } from './ffi-types'
 import { Lifetime } from './lifetime'
-import { QuickJSVm } from './quickjsvm'
+import { QuickJSVm } from './vm'
 
 export class QuickJSAsyncVm extends QuickJSVm {
   protected readonly module: QuickJSEmscriptenModuleAsyncify
