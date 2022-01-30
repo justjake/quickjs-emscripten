@@ -66,3 +66,8 @@ export interface QuickJSEmscriptenModule {
   TOTAL_MEMORY: number
   FAST_MEMORY: number
 }
+
+export interface QuickJSEmscriptenModuleAsyncify extends QuickJSEmscriptenModule {
+  // TODO: asyncify stuff, eg Asyncify.handleSleep()
+  // https://emscripten.org/docs/porting/asyncify.html#ways-to-use-async-apis-in-older-engines
+}

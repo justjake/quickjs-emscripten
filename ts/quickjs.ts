@@ -1,6 +1,5 @@
 import QuickJSModuleLoader from './quickjs-emscripten-module'
 import {
-  QuickJSFFI,
   JSContextPointer,
   JSValuePointer,
   JSRuntimePointer,
@@ -10,7 +9,8 @@ import {
   QTS_C_To_HostCallbackFuncPointer,
   QTS_C_To_HostInterruptFuncPointer,
   HeapCharPointer,
-} from './ffi'
+} from './ffi-types'
+import { QuickJSFFI } from './ffi'
 import {
   LowLevelJavascriptVm,
   VmPropertyDescriptor,
@@ -650,7 +650,7 @@ export class QuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposabl
    * interrupted, the error will have name `InternalError` and message
    * `interrupted`.
    */
-  evalCode(code: string, filename: string = "eval.js"): VmCallResult<QuickJSHandle> {
+  evalCode(code: string, filename: string = 'eval.js'): VmCallResult<QuickJSHandle> {
     const resultPtr = this.newHeapCharPointer(code).consume(charHandle =>
       this.ffi.QTS_Eval(this.ctx.value, charHandle.value, filename)
     )
