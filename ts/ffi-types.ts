@@ -41,7 +41,7 @@ export type JSValueConstPointerPointer = Pointer<'JSValueConst[]'>
 /**
  * Used internally for C-to-Javascript function calls.
  */
-type JSCFunctionPointer = Pointer<'JSCFunction'>
+// type JSCFunctionPointer = Pointer<'JSCFunction'>
 
 /**
  * Used internally for C-to-Javascript function calls.
