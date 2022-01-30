@@ -29,7 +29,7 @@
     "make-release": "make clean && make -j 8",
     "clean": "make clean",
     "build": "tsc",
-    "doc": "typedoc --plugin typedoc-plugin-markdown ts",
+    "doc": "typedoc",
     "test": "yarn make-debug && mocha",
     "prettier": "prettier --write ./*.json ./**/*.ts* ./*.js* ./*.md",
     "prettier-check": "prettier --check ./*.json ./**/*.ts* ./*.js* ./*.md",
@@ -47,8 +47,8 @@
     "prettier": "^1.19.1",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.5.4",
-    "typedoc": "^0.15.8",
-    "typedoc-plugin-markdown": "^2.2.16",
+    "typedoc": "^0.22.0",
+    "typedoc-plugin-markdown": "^3.11.12",
     "typescript": "^4.5.5"
   }
 }

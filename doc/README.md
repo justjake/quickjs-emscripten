@@ -1,6 +1,4 @@
-[quickjs-emscripten](README.md) › [Globals](globals.md)
-
-# quickjs-emscripten
+quickjs-emscripten / [Exports](modules.md)
 
 # quickjs-emscripten
 
