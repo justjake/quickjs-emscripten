@@ -38,28 +38,6 @@ export {
   QuickJSEvalOptions,
 }
 
-let QuickJSModule: QuickJSEmscriptenModule | undefined = undefined
-
-/**
- * This promise will be fulfilled when the QuickJS emscripten module has initialized
- * and the {@link QuickJS} instance can be created.
- */
-const ready = QuickJSModuleLoader().then(loadedModule => {
-  QuickJSModule = loadedModule
-})
-
-/**
- * @throws if not ready
- */
-function getQuickJSEmscriptenModule(): QuickJSEmscriptenModule {
-  if (!QuickJSModule) {
-    throw new Error(
-      'QuickJS WASM module not initialized. Either wait for `ready` or use getQuickJS()'
-    )
-  }
-  return QuickJSModule
-}
-
 /**
  * Each Emscripten module of QuickJS needs a single C callback dispatcher.
  */
@@ -164,19 +142,14 @@ class QuickJSModuleCallbacks {
  * and return the result as a native Javascript value.
  */
 export class QuickJS {
-  private ffi = new QuickJSFFI(getQuickJSEmscriptenModule())
-  private module = getQuickJSEmscriptenModule()
-  private callbacks = new QuickJSModuleCallbacks(this.module, this.ffi)
+  private syncFFI: QuickJSFFI
+  private syncModule: QuickJSEmscriptenModule
+  private syncCallbacks: QuickJSModuleCallbacks
 
-  constructor() {
-    getQuickJSEmscriptenModule()
-
-    if (singleton) {
-      throw new Error(
-        'Cannot create another QuickJS instance. Use the instance already created (try getQuickJS())'
-      )
-    }
-    singleton = this
+  constructor(module: QuickJSEmscriptenModule) {
+    this.syncModule = module
+    this.syncFFI = new QuickJSFFI(this.syncModule)
+    this.syncCallbacks = new QuickJSModuleCallbacks(module, this.syncFFI)
   }
 
   /**
@@ -186,21 +159,21 @@ export class QuickJS {
    * VMs.
    */
   createVm(): QuickJSVm {
-    const rt = new Lifetime(this.ffi.QTS_NewRuntime(), undefined, rt_ptr => {
-      this.callbacks.deleteRuntime(rt_ptr)
-      this.ffi.QTS_FreeRuntime(rt_ptr)
+    const rt = new Lifetime(this.syncFFI.QTS_NewRuntime(), undefined, rt_ptr => {
+      this.syncCallbacks.deleteRuntime(rt_ptr)
+      this.syncFFI.QTS_FreeRuntime(rt_ptr)
     })
-    const ctx = new Lifetime(this.ffi.QTS_NewContext(rt.value), undefined, ctx_ptr => {
-      this.callbacks.deleteContext(ctx_ptr)
-      this.ffi.QTS_FreeContext(ctx_ptr)
+    const ctx = new Lifetime(this.syncFFI.QTS_NewContext(rt.value), undefined, ctx_ptr => {
+      this.syncCallbacks.deleteContext(ctx_ptr)
+      this.syncFFI.QTS_FreeContext(ctx_ptr)
     })
     const vm = new QuickJSVm({
-      module: this.module,
-      ffi: this.ffi,
+      module: this.syncModule,
+      ffi: this.syncFFI,
       rt,
       ctx,
     })
-    this.callbacks.addVM(rt.value, ctx.value, vm)
+    this.syncCallbacks.addVM(rt.value, ctx.value, vm)
     return vm
   }
 
@@ -270,17 +243,17 @@ export function shouldInterruptAfterDeadline(deadline: Date | number): Interrupt
 }
 
 let singleton: QuickJS | undefined = undefined
+const singletonPromise = QuickJSModuleLoader().then(module => {
+  singleton = new QuickJS(module)
+  return singleton
+})
 
 /**
  * This is the top-level entrypoint for the quickjs-emscripten library.
  * Get the root QuickJS API.
  */
 export async function getQuickJS(): Promise<QuickJS> {
-  await ready
-  if (!singleton) {
-    singleton = new QuickJS()
-  }
-  return singleton
+  return await singletonPromise
 }
 
 /**
