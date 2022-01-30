@@ -21,9 +21,9 @@ import {
   QuickJSPropertyKey,
   QuickJSVm,
   StaticJSValue,
-} from './quickjsvm'
+} from './vm'
 import type { QuickJSAsyncFFI } from './ffi-asyncify'
-import type { QuickJSAsyncVm } from './quickjsasyncvm'
+import type { QuickJSAsyncVm } from './vm-asyncify'
 import { QuickJSDeferredPromise } from './deferred-promise'
 
 // Exports of types moved out of this file
@@ -143,8 +143,10 @@ class QuickJSModuleCallbacks {
  *
  * Use the {@link QuickJS.evalCode} method as a shortcut evaluate Javascript safely
  * and return the result as a native Javascript value.
+ * 
+ * @public
  */
-export class QuickJS {
+class QuickJS {
   private syncFFI: QuickJSFFI
   private syncModule: QuickJSEmscriptenModule
   private syncCallbacks: QuickJSModuleCallbacks
@@ -187,7 +189,7 @@ export class QuickJS {
   async createAsyncVm(): Promise<QuickJSAsyncVm> {
     const { default: createModule } = await import('./quickjs-emscripten-module-asyncify')
     const { QuickJSAsyncFFI } = await import('./ffi-asyncify')
-    const { QuickJSAsyncVm } = await import('./quickjsasyncvm')
+    const { QuickJSAsyncVm } = await import('./vm-asyncify')
     const module = await createModule()
     const ffi = new QuickJSFFI(module)
     const asyncFFI = new QuickJSAsyncFFI(module)
@@ -260,6 +262,8 @@ export class QuickJS {
     })
   }
 }
+
+export type { QuickJS }
 
 /**
  * Returns an interrupt handler that interrupts Javascript execution after a deadline time.
