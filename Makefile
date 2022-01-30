@@ -59,7 +59,7 @@ endif
 default: wasm wasm-asyncify
 all: wasm wasm-asyncify native
 wasm: $(BUILD_DIR) ts/quickjs-emscripten-module.js ts/ffi.ts
-wasm-asyncify: $(BUILD_DIR) ts/quickjs-emscripten-module-asyncify.js ts/ffi.ts
+wasm-asyncify: $(BUILD_DIR) ts/quickjs-emscripten-module-asyncify.js ts/ffi-asyncify.ts
 native: $(BUILD_WRAPPER)/native/test.exe
 
 emcc:
@@ -83,6 +83,9 @@ $(BUILD_WRAPPER)/symbols.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 
 ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
 	ts-node generate.ts ffi $@
+
+ts/ffi-asyncify.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
+	ts-node generate.ts ffi-asyncify $@
 
 ### Executables
 # The WASM module we'll link to typescript

@@ -42,6 +42,12 @@
  */
 #define HeapChar const char
 
+/**
+ * Signal to our FFI code generator that this function should be called
+ * asynchronously when compiled with ASYNCIFY.
+ */
+#define MaybeAsync(T) T
+
 void qts_log(char *msg) {
   fputs(PKG, stderr);
   fputs(msg, stderr);
@@ -396,7 +402,7 @@ int QTS_IsJobPending(JSRuntime *rt) {
 
   Returns the executed number of jobs or the exception encountered
 */
-JSValue *QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute) {
+MaybeAsync(JSValue *) QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute) {
   JSContext *pctx;
   int status = 1;
   int executed = 0;
@@ -411,14 +417,14 @@ JSValue *QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute) {
   return jsvalue_to_heap(JS_NewFloat64(pctx, executed));
 }
 
-JSValue *QTS_GetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name) {
+MaybeAsync(JSValue *) QTS_GetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name) {
   JSAtom prop_atom = JS_ValueToAtom(ctx, *prop_name);
   JSValue prop_val = JS_GetProperty(ctx, *this_val, prop_atom);
   JS_FreeAtom(ctx, prop_atom);
   return jsvalue_to_heap(prop_val);
 }
 
-void QTS_SetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name, JSValueConst *prop_value) {
+MaybeAsync(void) QTS_SetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name, JSValueConst *prop_value) {
   JSAtom prop_atom = JS_ValueToAtom(ctx, *prop_name);
   JSValue extra_prop_value = JS_DupValue(ctx, *prop_value);
   // TODO: should we use DefineProperty internally if this object doesn't have the property yet?
@@ -456,7 +462,7 @@ void QTS_DefineProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_n
   JS_FreeAtom(ctx, prop_atom);
 }
 
-JSValue *QTS_Call(JSContext *ctx, JSValueConst *func_obj, JSValueConst *this_obj, int argc, JSValueConst **argv_ptrs) {
+MaybeAsync(JSValue *) QTS_Call(JSContext *ctx, JSValueConst *func_obj, JSValueConst *this_obj, int argc, JSValueConst **argv_ptrs) {
   // convert array of pointers to array of values
   JSValueConst argv[argc];
   int i;
@@ -479,7 +485,7 @@ JSValue *QTS_ResolveException(JSContext *ctx, JSValue *maybe_exception) {
   return NULL;
 }
 
-char *QTS_Dump(JSContext *ctx, JSValueConst *obj) {
+MaybeAsync(char *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   JSValue obj_json_value = JS_JSONStringify(ctx, *obj, JS_UNDEFINED, JS_UNDEFINED);
   if (!JS_IsException(obj_json_value)) {
     const char *obj_json_chars = JS_ToCString(ctx, obj_json_value);
@@ -514,7 +520,7 @@ char *QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   return QTS_GetString(ctx, obj);
 }
 
-JSValue *QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *filename) {
+MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *filename) {
   int eval_flags;
   size_t js_code_len = strlen(js_code);
 

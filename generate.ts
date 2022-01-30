@@ -5,7 +5,8 @@ const INTERFACE_FILE_PATH = process.env.HEADER_FILE_PATH || './c/interface.c'
 const FFI_TYPES_PATH = process.env.FFI_TYPES_PATH || './ts/ffi-types.ts'
 const INCLUDE_RE = /^#include.*$/gm
 const TYPEDEF_RE = /^\s*typedef\s+(.+)$/gm
-const DECL_RE = /^([\w*]+[\s*]+)(QTS_\w+)(\((.*?)\)) ?{$/gm
+const DECL_RE = /^([\w\(\)* ]+[\s*]+)(QTS_\w+)(\((.*?)\)) ?{$/gm
+const USAGE = 'Usage: generate.ts [symbols | header | ffi | ffi-asyncify] WRITE_PATH'
 
 function writeFile(filename: string, content: string) {
   if (filename === '-') {
@@ -20,7 +21,7 @@ function main() {
   const [, , command, destination] = process.argv
 
   if (!command || !destination) {
-    throw new Error('Usage: generate.ts [symbols | header | ffi] WRITE_PATH')
+    throw new Error(USAGE)
   }
 
   const interfaceFile = fs.readFileSync(INTERFACE_FILE_PATH, 'utf-8')
@@ -54,15 +55,17 @@ function main() {
     return
   }
 
-  if (command === 'ffi') {
-    writeFile(destination, buildFFI(matches))
+  if (command === 'ffi' || command === 'ffi-asyncify') {
+    writeFile(destination, buildFFI(matches, { asyncify: command === 'ffi-asyncify' }))
     return
   }
 
-  throw new Error('Bad command. Usage: generate.ts [symbols | header | ffi] WRITE_PATH')
+  throw new Error(`Bad command "${command}". ${USAGE}`)
 }
 
-function cTypeToTypescriptType(ctype: string) {
+const MaybeAsync = 'MaybeAsync('
+
+function cTypeToTypescriptType(ctype: string, asyncify = false) {
   // simplify
   let type = ctype
   // remove const: ignored in JS
@@ -70,9 +73,16 @@ function cTypeToTypescriptType(ctype: string) {
   // collapse spaces (around a *, maybe)
   type = type.split(' ').join('')
 
+  let async = false
+  if (type.startsWith(MaybeAsync) && type.endsWith(')')) {
+    async = true
+    type = type.slice(MaybeAsync.length, -1)
+  }
+  const maybeAsync = (type: string) => (async && asyncify ? `Promise<${type}>` : type)
+
   // mapping
   if (type.includes('char*')) {
-    return { ffi: 'string', typescript: 'string', ctype }
+    return { ffi: 'string', typescript: maybeAsync('string'), ctype, async }
   }
 
   let typescript = type.replace(/\*/g, 'Pointer')
@@ -93,14 +103,14 @@ function cTypeToTypescriptType(ctype: string) {
     ffi = 'number'
   }
 
-  return { typescript, ffi, ctype }
+  return { typescript: maybeAsync(typescript), ffi, ctype, async }
 }
 
-function buildFFI(matches: RegExpExecArray[]) {
+function buildFFI(matches: RegExpExecArray[], { asyncify = false } = {}) {
   const parsed = matches.map(match => {
     const [, returnType, functionName, , rawParams] = match
     const params = parseParams(rawParams)
-    return { functionName, returnType: cTypeToTypescriptType(returnType.trim()), params }
+    return { functionName, returnType: cTypeToTypescriptType(returnType.trim(), asyncify), params }
   })
   const decls = parsed.map(fn => {
     const typescriptParams = fn.params
@@ -116,9 +126,16 @@ function buildFFI(matches: RegExpExecArray[]) {
       .join(', ')
     const typescriptFnType = `(${typescriptParams}) => ${fn.returnType.typescript}`
     const ffiParams = JSON.stringify(fn.params.map(param => param.type.ffi))
-    const cwrap = `this.module.cwrap(${JSON.stringify(fn.functionName)}, ${JSON.stringify(
-      fn.returnType.ffi
-    )}, ${ffiParams})`
+    const cwrapArgs = [
+      JSON.stringify(fn.functionName),
+      JSON.stringify(fn.returnType.ffi),
+      ffiParams,
+    ]
+    if (asyncify && fn.returnType.async) {
+      // https://emscripten.org/docs/porting/asyncify.html#usage-with-ccall
+      cwrapArgs.push('{ async: true }')
+    }
+    const cwrap = `this.module.cwrap(${cwrapArgs.join(', ')})`
     return `  ${fn.functionName}: ${typescriptFnType} =\n    ${cwrap}`
   })
   const ffiTypes = fs.readFileSync(FFI_TYPES_PATH, 'utf-8').replace(/\btype\b/g, 'export type')
