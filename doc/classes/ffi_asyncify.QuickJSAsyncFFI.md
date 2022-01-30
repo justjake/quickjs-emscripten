@@ -5,7 +5,7 @@
 [ffi-asyncify](../modules/ffi_asyncify.md).QuickJSAsyncFFI
 
 Low-level FFI bindings to QuickJS's Emscripten module.
-See instead [QuickJSVm](quickjsvm.QuickJSVm.md), the public Javascript interface exposed by this
+See instead [QuickJSVm](vm.QuickJSVm.md), the public Javascript interface exposed by this
 library.
 
 **`unstable`** The FFI interface is considered private and may change.
@@ -70,11 +70,11 @@ library.
 
 | Name | Type |
 | :------ | :------ |
-| `module` | [`QuickJSEmscriptenModuleAsyncify`](../interfaces/emscripten_types.QuickJSEmscriptenModuleAsyncify.md) |
+| `module` | [`QuickJSAsyncEmscriptenModule`](../interfaces/emscripten_types.QuickJSAsyncEmscriptenModule.md) |
 
 #### Defined in
 
-[ffi-asyncify.ts:13](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L13)
+[ffi-asyncify.ts:23](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L23)
 
 ## Properties
 
@@ -99,7 +99,7 @@ library.
 
 #### Defined in
 
-[ffi-asyncify.ts:18](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L18)
+[ffi-asyncify.ts:29](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L29)
 
 ___
 
@@ -127,7 +127,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:114](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L114)
+[ffi-asyncify.ts:219](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L219)
 
 ___
 
@@ -159,7 +159,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:111](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L111)
+[ffi-asyncify.ts:197](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L197)
 
 ___
 
@@ -184,7 +184,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:120](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L120)
+[ffi-asyncify.ts:237](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L237)
 
 ___
 
@@ -209,7 +209,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:75](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L75)
+[ffi-asyncify.ts:116](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L116)
 
 ___
 
@@ -235,7 +235,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:123](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L123)
+[ffi-asyncify.ts:244](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L244)
 
 ___
 
@@ -260,7 +260,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:102](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L102)
+[ffi-asyncify.ts:164](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L164)
 
 ___
 
@@ -284,7 +284,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:69](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L69)
+[ffi-asyncify.ts:107](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L107)
 
 ___
 
@@ -308,7 +308,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:63](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L63)
+[ffi-asyncify.ts:97](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L97)
 
 ___
 
@@ -333,7 +333,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:72](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L72)
+[ffi-asyncify.ts:111](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L111)
 
 ___
 
@@ -351,7 +351,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:54](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L54)
+[ffi-asyncify.ts:91](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L91)
 
 ___
 
@@ -376,7 +376,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:90](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L90)
+[ffi-asyncify.ts:143](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L143)
 
 ___
 
@@ -400,7 +400,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:129](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L129)
+[ffi-asyncify.ts:260](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L260)
 
 ___
 
@@ -418,7 +418,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:51](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L51)
+[ffi-asyncify.ts:89](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L89)
 
 ___
 
@@ -444,7 +444,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:105](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L105)
+[ffi-asyncify.ts:174](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L174)
 
 ___
 
@@ -469,7 +469,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:96](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L96)
+[ffi-asyncify.ts:153](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L153)
 
 ___
 
@@ -487,7 +487,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:57](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L57)
+[ffi-asyncify.ts:93](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L93)
 
 ___
 
@@ -505,7 +505,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:48](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L48)
+[ffi-asyncify.ts:87](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L87)
 
 ___
 
@@ -529,7 +529,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:99](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L99)
+[ffi-asyncify.ts:158](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L158)
 
 ___
 
@@ -553,7 +553,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:84](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L84)
+[ffi-asyncify.ts:132](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L132)
 
 ___
 
@@ -577,7 +577,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:66](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L66)
+[ffi-asyncify.ts:101](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L101)
 
 ___
 
@@ -601,7 +601,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:27](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L27)
+[ffi-asyncify.ts:52](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L52)
 
 ___
 
@@ -626,7 +626,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:87](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L87)
+[ffi-asyncify.ts:138](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L138)
 
 ___
 
@@ -652,7 +652,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:21](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L21)
+[ffi-asyncify.ts:37](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L37)
 
 ___
 
@@ -676,7 +676,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:78](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L78)
+[ffi-asyncify.ts:121](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L121)
 
 ___
 
@@ -701,7 +701,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:81](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L81)
+[ffi-asyncify.ts:127](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L127)
 
 ___
 
@@ -726,7 +726,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:132](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L132)
+[ffi-asyncify.ts:264](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L264)
 
 ___
 
@@ -744,7 +744,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:60](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L60)
+[ffi-asyncify.ts:95](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L95)
 
 ___
 
@@ -769,7 +769,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:93](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L93)
+[ffi-asyncify.ts:148](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L148)
 
 ___
 
@@ -794,7 +794,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:117](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L117)
+[ffi-asyncify.ts:232](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L232)
 
 ___
 
@@ -819,7 +819,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:42](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L42)
+[ffi-asyncify.ts:75](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L75)
 
 ___
 
@@ -843,7 +843,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:36](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L36)
+[ffi-asyncify.ts:66](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L66)
 
 ___
 
@@ -867,7 +867,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:45](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L45)
+[ffi-asyncify.ts:83](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L83)
 
 ___
 
@@ -891,7 +891,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:33](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L33)
+[ffi-asyncify.ts:62](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L62)
 
 ___
 
@@ -916,7 +916,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:39](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L39)
+[ffi-asyncify.ts:70](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L70)
 
 ___
 
@@ -940,7 +940,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:15](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L15)
+[ffi-asyncify.ts:25](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L25)
 
 ___
 
@@ -964,7 +964,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:30](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L30)
+[ffi-asyncify.ts:58](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L58)
 
 ___
 
@@ -991,7 +991,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:108](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L108)
+[ffi-asyncify.ts:185](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L185)
 
 ___
 
@@ -1015,7 +1015,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:135](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L135)
+[ffi-asyncify.ts:272](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L272)
 
 ___
 
@@ -1040,7 +1040,7 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:24](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L24)
+[ffi-asyncify.ts:47](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L47)
 
 ___
 
@@ -1065,4 +1065,4 @@ ___
 
 #### Defined in
 
-[ffi-asyncify.ts:126](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L126)
+[ffi-asyncify.ts:255](https://github.com/justjake/quickjs-emscripten/blob/master/ts/ffi-asyncify.ts#L255)

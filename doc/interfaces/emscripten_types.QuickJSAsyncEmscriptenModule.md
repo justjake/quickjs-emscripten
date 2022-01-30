@@ -1,40 +1,41 @@
-[quickjs-emscripten](../README.md) / [Exports](../modules.md) / [emscripten-types](../modules/emscripten_types.md) / QuickJSEmscriptenModuleAsyncify
+[quickjs-emscripten](../README.md) / [Exports](../modules.md) / [emscripten-types](../modules/emscripten_types.md) / QuickJSAsyncEmscriptenModule
 
-# Interface: QuickJSEmscriptenModuleAsyncify
+# Interface: QuickJSAsyncEmscriptenModule
 
-[emscripten-types](../modules/emscripten_types.md).QuickJSEmscriptenModuleAsyncify
+[emscripten-types](../modules/emscripten_types.md).QuickJSAsyncEmscriptenModule
 
 ## Hierarchy
 
-- [`QuickJSEmscriptenModule`](emscripten_types.QuickJSEmscriptenModule.md)
+- `EmscriptenModule`
 
-  ↳ **`QuickJSEmscriptenModuleAsyncify`**
+  ↳ **`QuickJSAsyncEmscriptenModule`**
 
 ## Table of contents
 
 ### Properties
 
-- [FAST\_MEMORY](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#fast_memory)
-- [HEAP16](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#heap16)
-- [HEAP32](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#heap32)
-- [HEAP8](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#heap8)
-- [HEAPF32](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#heapf32)
-- [HEAPF64](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#heapf64)
-- [HEAPU16](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#heapu16)
-- [HEAPU32](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#heapu32)
-- [HEAPU8](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#heapu8)
-- [TOTAL\_MEMORY](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#total_memory)
-- [TOTAL\_STACK](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#total_stack)
+- [FAST\_MEMORY](emscripten_types.QuickJSAsyncEmscriptenModule.md#fast_memory)
+- [HEAP16](emscripten_types.QuickJSAsyncEmscriptenModule.md#heap16)
+- [HEAP32](emscripten_types.QuickJSAsyncEmscriptenModule.md#heap32)
+- [HEAP8](emscripten_types.QuickJSAsyncEmscriptenModule.md#heap8)
+- [HEAPF32](emscripten_types.QuickJSAsyncEmscriptenModule.md#heapf32)
+- [HEAPF64](emscripten_types.QuickJSAsyncEmscriptenModule.md#heapf64)
+- [HEAPU16](emscripten_types.QuickJSAsyncEmscriptenModule.md#heapu16)
+- [HEAPU32](emscripten_types.QuickJSAsyncEmscriptenModule.md#heapu32)
+- [HEAPU8](emscripten_types.QuickJSAsyncEmscriptenModule.md#heapu8)
+- [TOTAL\_MEMORY](emscripten_types.QuickJSAsyncEmscriptenModule.md#total_memory)
+- [TOTAL\_STACK](emscripten_types.QuickJSAsyncEmscriptenModule.md#total_stack)
+- [type](emscripten_types.QuickJSAsyncEmscriptenModule.md#type)
 
 ### Methods
 
-- [\_free](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#_free)
-- [\_malloc](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#_malloc)
-- [addFunction](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#addfunction)
-- [cwrap](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#cwrap)
-- [lengthBytesUTF8](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#lengthbytesutf8)
-- [removeFunction](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#removefunction)
-- [stringToUTF8](emscripten_types.QuickJSEmscriptenModuleAsyncify.md#stringtoutf8)
+- [\_free](emscripten_types.QuickJSAsyncEmscriptenModule.md#_free)
+- [\_malloc](emscripten_types.QuickJSAsyncEmscriptenModule.md#_malloc)
+- [addFunction](emscripten_types.QuickJSAsyncEmscriptenModule.md#addfunction)
+- [cwrap](emscripten_types.QuickJSAsyncEmscriptenModule.md#cwrap)
+- [lengthBytesUTF8](emscripten_types.QuickJSAsyncEmscriptenModule.md#lengthbytesutf8)
+- [removeFunction](emscripten_types.QuickJSAsyncEmscriptenModule.md#removefunction)
+- [stringToUTF8](emscripten_types.QuickJSAsyncEmscriptenModule.md#stringtoutf8)
 
 ## Properties
 
@@ -44,7 +45,7 @@
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[FAST_MEMORY](emscripten_types.QuickJSEmscriptenModule.md#fast_memory)
+EmscriptenModule.FAST\_MEMORY
 
 #### Defined in
 
@@ -58,7 +59,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[HEAP16](emscripten_types.QuickJSEmscriptenModule.md#heap16)
+EmscriptenModule.HEAP16
 
 #### Defined in
 
@@ -72,7 +73,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[HEAP32](emscripten_types.QuickJSEmscriptenModule.md#heap32)
+EmscriptenModule.HEAP32
 
 #### Defined in
 
@@ -86,7 +87,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[HEAP8](emscripten_types.QuickJSEmscriptenModule.md#heap8)
+EmscriptenModule.HEAP8
 
 #### Defined in
 
@@ -100,7 +101,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[HEAPF32](emscripten_types.QuickJSEmscriptenModule.md#heapf32)
+EmscriptenModule.HEAPF32
 
 #### Defined in
 
@@ -114,7 +115,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[HEAPF64](emscripten_types.QuickJSEmscriptenModule.md#heapf64)
+EmscriptenModule.HEAPF64
 
 #### Defined in
 
@@ -128,7 +129,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[HEAPU16](emscripten_types.QuickJSEmscriptenModule.md#heapu16)
+EmscriptenModule.HEAPU16
 
 #### Defined in
 
@@ -142,7 +143,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[HEAPU32](emscripten_types.QuickJSEmscriptenModule.md#heapu32)
+EmscriptenModule.HEAPU32
 
 #### Defined in
 
@@ -156,7 +157,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[HEAPU8](emscripten_types.QuickJSEmscriptenModule.md#heapu8)
+EmscriptenModule.HEAPU8
 
 #### Defined in
 
@@ -170,7 +171,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[TOTAL_MEMORY](emscripten_types.QuickJSEmscriptenModule.md#total_memory)
+EmscriptenModule.TOTAL\_MEMORY
 
 #### Defined in
 
@@ -184,11 +185,23 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[TOTAL_STACK](emscripten_types.QuickJSEmscriptenModule.md#total_stack)
+EmscriptenModule.TOTAL\_STACK
 
 #### Defined in
 
 [emscripten-types.ts:65](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L65)
+
+___
+
+### type
+
+• **type**: ``"async"``
+
+**`todo`** Implement this field
+
+#### Defined in
+
+[emscripten-types.ts:77](https://github.com/justjake/quickjs-emscripten/blob/master/ts/emscripten-types.ts#L77)
 
 ## Methods
 
@@ -208,7 +221,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[_free](emscripten_types.QuickJSEmscriptenModule.md#_free)
+EmscriptenModule.\_free
 
 #### Defined in
 
@@ -232,7 +245,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[_malloc](emscripten_types.QuickJSEmscriptenModule.md#_malloc)
+EmscriptenModule.\_malloc
 
 #### Defined in
 
@@ -257,7 +270,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[addFunction](emscripten_types.QuickJSEmscriptenModule.md#addfunction)
+EmscriptenModule.addFunction
 
 #### Defined in
 
@@ -296,7 +309,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[cwrap](emscripten_types.QuickJSEmscriptenModule.md#cwrap)
+EmscriptenModule.cwrap
 
 #### Defined in
 
@@ -320,7 +333,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[lengthBytesUTF8](emscripten_types.QuickJSEmscriptenModule.md#lengthbytesutf8)
+EmscriptenModule.lengthBytesUTF8
 
 #### Defined in
 
@@ -344,7 +357,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[removeFunction](emscripten_types.QuickJSEmscriptenModule.md#removefunction)
+EmscriptenModule.removeFunction
 
 #### Defined in
 
@@ -370,7 +383,7 @@ ___
 
 #### Inherited from
 
-[QuickJSEmscriptenModule](emscripten_types.QuickJSEmscriptenModule.md).[stringToUTF8](emscripten_types.QuickJSEmscriptenModule.md#stringtoutf8)
+EmscriptenModule.stringToUTF8
 
 #### Defined in
 

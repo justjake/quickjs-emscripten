@@ -286,7 +286,7 @@ the result of `map(this)`.
 
 | Name | Type |
 | :------ | :------ |
-| `map` | (`lifetime`: [`QuickJSHandle`](../modules/quickjsvm.md#quickjshandle)) => `O` |
+| `map` | (`lifetime`: [`QuickJSHandle`](../modules/vm.md#quickjshandle)) => `O` |
 
 #### Returns
 

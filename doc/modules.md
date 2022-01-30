@@ -17,6 +17,6 @@
 - [quickjs-emscripten-module](modules/quickjs_emscripten_module.md)
 - [quickjs-emscripten-module-asyncify](modules/quickjs_emscripten_module_asyncify.md)
 - [quickjs-emscripten-module-asyncify](modules/quickjs_emscripten_module_asyncify.md)
-- [quickjsasyncvm](modules/quickjsasyncvm.md)
-- [quickjsvm](modules/quickjsvm.md)
+- [vm](modules/vm.md)
+- [vm-asyncify](modules/vm_asyncify.md)
 - [vm-interface](modules/vm_interface.md)

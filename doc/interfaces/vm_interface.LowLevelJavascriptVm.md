@@ -19,7 +19,7 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 ## Implemented by
 
-- [`QuickJSVm`](../classes/quickjsvm.QuickJSVm.md)
+- [`QuickJSVm`](../classes/vm.QuickJSVm.md)
 
 ## Table of contents
 

@@ -5,7 +5,7 @@
 [ffi](../modules/ffi.md).QuickJSFFI
 
 Low-level FFI bindings to QuickJS's Emscripten module.
-See instead [QuickJSVm](quickjsvm.QuickJSVm.md), the public Javascript interface exposed by this
+See instead [QuickJSVm](vm.QuickJSVm.md), the public Javascript interface exposed by this
 library.
 
 **`unstable`** The FFI interface is considered private and may change.

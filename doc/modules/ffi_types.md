@@ -60,7 +60,7 @@ ___
 Ƭ **JSValueConstPointer**: `Pointer`<``"JSValueConst"``\>
 
 `JSValueConst*
-See [JSValueConst](quickjsvm.md#jsvalueconst) and [StaticJSValue](quickjsvm.md#staticjsvalue).
+See [JSValueConst](vm.md#jsvalueconst) and [StaticJSValue](vm.md#staticjsvalue).
 
 #### Defined in
 
@@ -85,7 +85,7 @@ ___
 Ƭ **JSValuePointer**: `Pointer`<``"JSValue"``\>
 
 `JSValue*`.
-See [JSValue](quickjsvm.md#jsvalue).
+See [JSValue](vm.md#jsvalue).
 
 #### Defined in
 

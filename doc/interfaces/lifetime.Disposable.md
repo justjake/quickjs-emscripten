@@ -12,7 +12,7 @@ Use [Scope](../classes/lifetime.Scope.md) to manage cleaning up multiple disposa
 
 - [`Lifetime`](../classes/lifetime.Lifetime.md)
 - [`QuickJSDeferredPromise`](../classes/deferred_promise.QuickJSDeferredPromise.md)
-- [`QuickJSVm`](../classes/quickjsvm.QuickJSVm.md)
+- [`QuickJSVm`](../classes/vm.QuickJSVm.md)
 - [`Scope`](../classes/lifetime.Scope.md)
 
 ## Table of contents

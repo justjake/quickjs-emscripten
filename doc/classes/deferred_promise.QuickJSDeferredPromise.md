@@ -9,7 +9,7 @@ QuickJSDeferredPromise wraps a QuickJS promise [handle](deferred_promise.QuickJS
 code on the host to APIs inside a QuickJSVm.
 
 Managing the lifetime of promises is tricky. There are three
-[QuickJSHandle](../modules/quickjsvm.md#quickjshandle)s inside of each deferred promise object: (1) the promise
+[QuickJSHandle](../modules/vm.md#quickjshandle)s inside of each deferred promise object: (1) the promise
 itself, (2) the `resolve` callback, and (3) the `reject` callback.
 
 - If the promise will be fulfilled before the end of it's [owner](deferred_promise.QuickJSDeferredPromise.md#owner)'s lifetime,
@@ -56,7 +56,7 @@ itself, (2) the `resolve` callback, and (3) the `reject` callback.
 
 • **new QuickJSDeferredPromise**(`args`)
 
-Use [QuickJSVm.newPromise](quickjsvm.QuickJSVm.md#newpromise) to create a new promise instead of calling
+Use [QuickJSVm.newPromise](vm.QuickJSVm.md#newpromise) to create a new promise instead of calling
 this constructor directly.
 
 **`unstable`**
@@ -66,10 +66,10 @@ this constructor directly.
 | Name | Type |
 | :------ | :------ |
 | `args` | `Object` |
-| `args.owner` | [`QuickJSVm`](quickjsvm.QuickJSVm.md) |
-| `args.promiseHandle` | [`QuickJSHandle`](../modules/quickjsvm.md#quickjshandle) |
-| `args.rejectHandle` | [`QuickJSHandle`](../modules/quickjsvm.md#quickjshandle) |
-| `args.resolveHandle` | [`QuickJSHandle`](../modules/quickjsvm.md#quickjshandle) |
+| `args.owner` | [`QuickJSVm`](vm.QuickJSVm.md) |
+| `args.promiseHandle` | [`QuickJSHandle`](../modules/vm.md#quickjshandle) |
+| `args.rejectHandle` | [`QuickJSHandle`](../modules/vm.md#quickjshandle) |
+| `args.resolveHandle` | [`QuickJSHandle`](../modules/vm.md#quickjshandle) |
 
 #### Defined in
 
@@ -79,7 +79,7 @@ this constructor directly.
 
 ### handle
 
-• **handle**: [`QuickJSHandle`](../modules/quickjsvm.md#quickjshandle)
+• **handle**: [`QuickJSHandle`](../modules/vm.md#quickjshandle)
 
 A handle of the Promise instance inside the QuickJSVm.
 You must dispose [handle](deferred_promise.QuickJSDeferredPromise.md#handle) or the entire QuickJSDeferredPromise once you
@@ -93,7 +93,7 @@ ___
 
 ### owner
 
-• **owner**: [`QuickJSVm`](quickjsvm.QuickJSVm.md)
+• **owner**: [`QuickJSVm`](vm.QuickJSVm.md)
 
 The QuickJSVm this promise was created by.
 
@@ -161,14 +161,14 @@ Reject [handle](deferred_promise.QuickJSDeferredPromise.md#handle) with the give
 Calling this method after calling [dispose](deferred_promise.QuickJSDeferredPromise.md#dispose) is a no-op.
 
 Note that after rejecting a promise, you may need to call
-[QuickJSVm.executePendingJobs](quickjsvm.QuickJSVm.md#executependingjobs) to propagate the result to the promise's
+[QuickJSVm.executePendingJobs](vm.QuickJSVm.md#executependingjobs) to propagate the result to the promise's
 callbacks.
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value?` | [`QuickJSHandle`](../modules/quickjsvm.md#quickjshandle) |
+| `value?` | [`QuickJSHandle`](../modules/vm.md#quickjshandle) |
 
 #### Returns
 
@@ -188,14 +188,14 @@ Resolve [handle](deferred_promise.QuickJSDeferredPromise.md#handle) with the giv
 Calling this method after calling [dispose](deferred_promise.QuickJSDeferredPromise.md#dispose) is a no-op.
 
 Note that after resolving a promise, you may need to call
-[QuickJSVm.executePendingJobs](quickjsvm.QuickJSVm.md#executependingjobs) to propagate the result to the promise's
+[QuickJSVm.executePendingJobs](vm.QuickJSVm.md#executependingjobs) to propagate the result to the promise's
 callbacks.
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value?` | [`QuickJSHandle`](../modules/quickjsvm.md#quickjshandle) |
+| `value?` | [`QuickJSHandle`](../modules/vm.md#quickjshandle) |
 
 #### Returns
 

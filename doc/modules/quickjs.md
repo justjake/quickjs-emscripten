@@ -22,10 +22,6 @@
 - [StaticLifetime](quickjs.md#staticlifetime)
 - [WeakLifetime](quickjs.md#weaklifetime)
 
-### Classes
-
-- [QuickJS](../classes/quickjs.QuickJS.md)
-
 ### Functions
 
 - [getQuickJS](quickjs.md#getquickjs)
@@ -42,25 +38,25 @@ ___
 
 ### ExecutePendingJobsResult
 
-Re-exports [ExecutePendingJobsResult](quickjsvm.md#executependingjobsresult)
+Re-exports [ExecutePendingJobsResult](vm.md#executependingjobsresult)
 
 ___
 
 ### InterruptHandler
 
-Re-exports [InterruptHandler](quickjsvm.md#interrupthandler)
+Re-exports [InterruptHandler](vm.md#interrupthandler)
 
 ___
 
 ### JSValue
 
-Re-exports [JSValue](quickjsvm.md#jsvalue)
+Re-exports [JSValue](vm.md#jsvalue)
 
 ___
 
 ### JSValueConst
 
-Re-exports [JSValueConst](quickjsvm.md#jsvalueconst)
+Re-exports [JSValueConst](vm.md#jsvalueconst)
 
 ___
 
@@ -78,25 +74,25 @@ ___
 
 ### QuickJSEvalOptions
 
-Re-exports [QuickJSEvalOptions](../interfaces/quickjsvm.QuickJSEvalOptions.md)
+Re-exports [QuickJSEvalOptions](../interfaces/vm.QuickJSEvalOptions.md)
 
 ___
 
 ### QuickJSHandle
 
-Re-exports [QuickJSHandle](quickjsvm.md#quickjshandle)
+Re-exports [QuickJSHandle](vm.md#quickjshandle)
 
 ___
 
 ### QuickJSPropertyKey
 
-Re-exports [QuickJSPropertyKey](quickjsvm.md#quickjspropertykey)
+Re-exports [QuickJSPropertyKey](vm.md#quickjspropertykey)
 
 ___
 
 ### QuickJSVm
 
-Re-exports [QuickJSVm](../classes/quickjsvm.QuickJSVm.md)
+Re-exports [QuickJSVm](../classes/vm.QuickJSVm.md)
 
 ___
 
@@ -108,7 +104,7 @@ ___
 
 ### StaticJSValue
 
-Re-exports [StaticJSValue](quickjsvm.md#staticjsvalue)
+Re-exports [StaticJSValue](vm.md#staticjsvalue)
 
 ___
 
@@ -126,24 +122,24 @@ Re-exports [WeakLifetime](../classes/lifetime.WeakLifetime.md)
 
 ### getQuickJS
 
-▸ **getQuickJS**(): `Promise`<[`QuickJS`](../classes/quickjs.QuickJS.md)\>
+▸ **getQuickJS**(): `Promise`<`QuickJS`\>
 
 This is the top-level entrypoint for the quickjs-emscripten library.
 Get the root QuickJS API.
 
 #### Returns
 
-`Promise`<[`QuickJS`](../classes/quickjs.QuickJS.md)\>
+`Promise`<`QuickJS`\>
 
 #### Defined in
 
-[quickjs.ts:292](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L292)
+[quickjs.ts:291](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L291)
 
 ___
 
 ### getQuickJSSync
 
-▸ **getQuickJSSync**(): [`QuickJS`](../classes/quickjs.QuickJS.md)
+▸ **getQuickJSSync**(): `QuickJS`
 
 Provides synchronous access to the QuickJS API once [getQuickJS](quickjs.md#getquickjs) has resolved at
 least once.
@@ -152,17 +148,17 @@ least once.
 
 #### Returns
 
-[`QuickJS`](../classes/quickjs.QuickJS.md)
+`QuickJS`
 
 #### Defined in
 
-[quickjs.ts:301](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L301)
+[quickjs.ts:300](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L300)
 
 ___
 
 ### shouldInterruptAfterDeadline
 
-▸ **shouldInterruptAfterDeadline**(`deadline`): [`InterruptHandler`](quickjsvm.md#interrupthandler)
+▸ **shouldInterruptAfterDeadline**(`deadline`): [`InterruptHandler`](vm.md#interrupthandler)
 
 Returns an interrupt handler that interrupts Javascript execution after a deadline time.
 
@@ -174,8 +170,8 @@ Returns an interrupt handler that interrupts Javascript execution after a deadli
 
 #### Returns
 
-[`InterruptHandler`](quickjsvm.md#interrupthandler)
+[`InterruptHandler`](vm.md#interrupthandler)
 
 #### Defined in
 
-[quickjs.ts:274](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L274)
+[quickjs.ts:273](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.ts#L273)
