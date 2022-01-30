@@ -13,7 +13,9 @@
  * - ffi.ts for emscripten.
  */
 
+#ifdef QTS_ASYNCIFY
 #include <emscripten.h>
+#endif
 #include <math.h>  // For NAN
 #include <stdbool.h>
 #include <stdio.h>
@@ -249,6 +251,7 @@ JSValueConst *QTS_GetTrue() {
   return &QTS_True;
 }
 
+#ifdef QTS_ASYNCIFY
 // Adapted from `js_load_file`
 EM_ASYNC_JS(void *, my_js_load_file, (void *pbuf_len, const char *filename), {
   const jsString = 'export const name = "Nice!";';
@@ -312,6 +315,7 @@ JSModuleDef *my_js_module_loader(JSContext *ctx,
   }
   return m;
 }
+#endif
 
 /**
  * Standard FFI functions
@@ -319,7 +323,9 @@ JSModuleDef *my_js_module_loader(JSContext *ctx,
 
 JSRuntime *QTS_NewRuntime() {
   JSRuntime *rt = JS_NewRuntime();
+#ifdef QTS_ASYNCIFY
   JS_SetModuleLoaderFunc(rt, NULL, my_js_module_loader, NULL);
+#endif
   return rt;
 }
 

@@ -23,7 +23,7 @@ EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=$(shell cat $(BUILD_WRAPPER)/symbols.
 
 # Emscripten options
 CFLAGS_EMCC+=-s WASM=1
-CFLAGS_EMCC+=-s EXTRA_EXPORTED_RUNTIME_METHODS='["cwrap", "addFunction", "removeFunction", "stringToUTF8", "lengthBytesUTF8", "_malloc", "_free"]'
+CFLAGS_EMCC+=-s EXPORTED_RUNTIME_METHODS='["cwrap", "addFunction", "removeFunction", "stringToUTF8", "lengthBytesUTF8"]'
 CFLAGS_EMCC+=-s NODEJS_CATCH_EXIT=0
 CFLAGS_EMCC+=-s MODULARIZE=1
 CFLAGS_EMCC+=-s EXPORT_NAME=QuickJSRaw
@@ -56,10 +56,11 @@ else
 endif
 
 
+default: wasm wasm-asyncify
+all: wasm wasm-asyncify native
 wasm: $(BUILD_DIR) ts/quickjs-emscripten-module.js ts/ffi.ts
-asyncify: $(BUILD_DIR) ts/quickjs-emscripten-module-asyncify.js ts/ffi.ts
+wasm-asyncify: $(BUILD_DIR) ts/quickjs-emscripten-module-asyncify.js ts/ffi.ts
 native: $(BUILD_WRAPPER)/native/test.exe
-all: wasm native asyncify
 
 emcc:
 	docker pull $(EMSDK_DOCKER_IMAGE)
@@ -68,7 +69,7 @@ $(BUILD_WRAPPER): emcc
 	mkdir -p $(BUILD_WRAPPER)/wasm $(BUILD_WRAPPER)/native $(BUILD_WRAPPER)/wasm-asyncify
 
 $(BUILD_QUICKJS): emcc
-	mkdir -p $(BUILD_QUICKJS)/wasm $(BUILD_QUICKJS)/native
+	mkdir -p $(BUILD_QUICKJS)/wasm $(BUILD_QUICKJS)/native $(BUILD_QUICKJS)/wasm-asyncify
 
 $(BUILD_ROOT): $(BUILD_WRAPPER) $(BUILD_QUICKJS)
 
@@ -88,8 +89,9 @@ ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
 ts/quickjs-emscripten-module.js: $(BUILD_WRAPPER)/wasm/interface.o $(QUICKJS_OBJS_WASM)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(QUICKJS_OBJS_WASM)
 
+
 ts/quickjs-emscripten-module-asyncify.js: $(BUILD_WRAPPER)/wasm-asyncify/interface.o $(QUICKJS_OBJS_WASM_ASYNCIFY)
-	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(QUICKJS_OBJS_WASM_ASYNCIFY) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(QUICKJS_OBJS_WASM)
+	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_EMCC_ASYNCIFY) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(QUICKJS_OBJS_WASM_ASYNCIFY)
 
 # Trying to debug C...
 $(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(BUILD_WRAPPER)/native/interface.o $(WRAPPER_ROOT) $(QUICKJS_OBJS_NATIVE)
