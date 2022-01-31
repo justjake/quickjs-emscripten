@@ -8,7 +8,7 @@ const FFI_TYPES_PATH = process.env.FFI_TYPES_PATH || './ts/ffi-types.ts'
 const DEBUG = process.env.DEBUG === 'true'
 const ASYNCIFY = process.env.ASYNCIFY === 'true'
 
-const ASSERT_SYNC_FN = 'assertSync'
+// const ASSERT_SYNC_FN = 'assertSync'
 
 const INCLUDE_RE = /^#include.*$/gm
 const TYPEDEF_RE = /^\s*typedef\s+(.+)$/gm
@@ -85,7 +85,7 @@ function cTypeToTypescriptType(ctype: string) {
     async = true
     type = type.slice(MaybeAsync.length, -1)
   }
-  const maybeAsync = (type: string) => (async && ASYNCIFY ? `Promise<${type}>` : type)
+  const maybeAsync = (type: string) => (async && ASYNCIFY ? `${type} | Promise<${type}>` : type)
 
   // mapping
   if (type.includes('char*')) {
@@ -138,22 +138,35 @@ function buildFFI(matches: RegExpExecArray[]) {
       JSON.stringify(fn.returnType.ffi),
       ffiParams,
     ]
-    if (ASYNCIFY && fn.returnType.async) {
+    if (ASYNCIFY && DEBUG && fn.returnType.async) {
       // https://emscripten.org/docs/porting/asyncify.html#usage-with-ccall
+      // Passing {async:true} to cwrap/ccall will wrap all return values in
+      // Promise.resolve(...), even if the c code doesn't suspend and returns a
+      // primitive value.
+      //
+      // When compiled with -s ASSERTIONS=1, Emscripten will throw if the
+      // function suspends and {async: true} wasn't passed.
+      //
+      // However, we'd like to avoid Promise/async overhead if the call can
+      // return a primitive value directly. So, we compile in {async:true}
+      // only in DEBUG mode, where assertions are enabled.
+      //
+      // Then we rely on our type system to ensure our code supports both
+      // primitive and promise-wrapped return values in production mode.
       cwrapArgs.push('{ async: true }')
     }
     let cwrap = `this.module.cwrap(${cwrapArgs.join(', ')})`
-    if (DEBUG && ASYNCIFY && !fn.returnType.async) {
-      cwrap = `${ASSERT_SYNC_FN}(${cwrap})`
-    }
+    // if (DEBUG && ASYNCIFY && !fn.returnType.async) {
+    //   cwrap = `${ASSERT_SYNC_FN}(${cwrap})`
+    // }
     return `  ${fn.functionName}: ${typescriptFnType} =\n    ${cwrap}`
   })
 
   const ffiTypes = fs.readFileSync(FFI_TYPES_PATH, 'utf-8')
   const importFromFfiTypes = matchAll(TS_EXPORT_TYPE_RE, ffiTypes).map(match => match[1])
-  if (DEBUG && ASYNCIFY) {
-    importFromFfiTypes.push(ASSERT_SYNC_FN)
-  }
+  // if (DEBUG && ASYNCIFY) {
+  //   importFromFfiTypes.push(ASSERT_SYNC_FN)
+  // }
 
   const ffiClassName = ASYNCIFY ? 'QuickJSAsyncFFI' : 'QuickJSFFI'
   const moduleTypeName = ASYNCIFY ? 'QuickJSAsyncEmscriptenModule' : 'QuickJSEmscriptenModule'

@@ -3,13 +3,16 @@ import { QuickJSAsyncEmscriptenModule } from './emscripten-types'
 import {
   JSRuntimePointer,
   JSContextPointer,
+  JSModuleDefPointer,
   JSValuePointer,
   JSValueConstPointer,
   JSValuePointerPointer,
   JSValueConstPointerPointer,
   QTS_C_To_HostCallbackFuncPointer,
   QTS_C_To_HostInterruptFuncPointer,
+  QTS_C_To_HostLoadModuleFuncPointer,
   HeapCharPointer,
+  JSVoidPointer,
 } from './ffi-types'
 
 /**
@@ -67,6 +70,28 @@ export class QuickJSAsyncFFI {
     rt: JSRuntimePointer
   ) => void = this.module.cwrap('QTS_RuntimeDisableInterruptHandler', null, ['number'])
 
+  QTS_SetLoadModuleFunc: (
+    cb: QTS_C_To_HostLoadModuleFuncPointer
+  ) => void = this.module.cwrap('QTS_SetLoadModuleFunc', null, ['number'])
+
+  QTS_RuntimeEnableModuleLoader: (
+    rt: JSRuntimePointer
+  ) => void = this.module.cwrap('QTS_RuntimeEnableModuleLoader', null, ['number'])
+
+  QTS_RuntimeDisableModuleLoader: (
+    rt: JSRuntimePointer
+  ) => void = this.module.cwrap('QTS_RuntimeDisableModuleLoader', null, ['number'])
+
+  QTS_CompileModule: (
+    ctx: JSContextPointer,
+    module_name: string,
+    module_body: HeapCharPointer
+  ) => JSModuleDefPointer = this.module.cwrap('QTS_CompileModule', 'number', [
+    'number',
+    'string',
+    'number',
+  ])
+
   QTS_RuntimeSetMemoryLimit: (
     rt: JSRuntimePointer,
     limit: number
@@ -112,6 +137,11 @@ export class QuickJSAsyncFFI {
     ctx: JSContextPointer,
     value: JSValuePointer
   ) => void = this.module.cwrap('QTS_FreeValuePointer', null, ['number', 'number'])
+
+  QTS_FreeVoidPointer: (
+    ctx: JSContextPointer,
+    ptr: JSVoidPointer
+  ) => void = this.module.cwrap('QTS_FreeVoidPointer', null, ['number', 'number'])
 
   QTS_DupValuePointer: (
     ctx: JSContextPointer,
@@ -164,7 +194,7 @@ export class QuickJSAsyncFFI {
   QTS_ExecutePendingJob: (
     rt: JSRuntimePointer,
     maxJobsToExecute: number
-  ) => Promise<JSValuePointer> = this.module.cwrap(
+  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
     'QTS_ExecutePendingJob',
     'number',
     ['number', 'number'],
@@ -175,7 +205,7 @@ export class QuickJSAsyncFFI {
     ctx: JSContextPointer,
     this_val: JSValuePointer | JSValueConstPointer,
     prop_name: JSValuePointer | JSValueConstPointer
-  ) => Promise<JSValuePointer> = this.module.cwrap(
+  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
     'QTS_GetProp',
     'number',
     ['number', 'number', 'number'],
@@ -187,7 +217,7 @@ export class QuickJSAsyncFFI {
     this_val: JSValuePointer | JSValueConstPointer,
     prop_name: JSValuePointer | JSValueConstPointer,
     prop_value: JSValuePointer | JSValueConstPointer
-  ) => Promise<void> = this.module.cwrap(
+  ) => void | Promise<void> = this.module.cwrap(
     'QTS_SetProp',
     null,
     ['number', 'number', 'number', 'number'],
@@ -222,7 +252,7 @@ export class QuickJSAsyncFFI {
     this_obj: JSValuePointer | JSValueConstPointer,
     argc: number,
     argv_ptrs: JSValueConstPointerPointer
-  ) => Promise<JSValuePointer> = this.module.cwrap(
+  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
     'QTS_Call',
     'number',
     ['number', 'number', 'number', 'number', 'number'],
@@ -237,7 +267,7 @@ export class QuickJSAsyncFFI {
   QTS_Dump: (
     ctx: JSContextPointer,
     obj: JSValuePointer | JSValueConstPointer
-  ) => Promise<string> = this.module.cwrap('QTS_Dump', 'string', ['number', 'number'], {
+  ) => string | Promise<string> = this.module.cwrap('QTS_Dump', 'string', ['number', 'number'], {
     async: true,
   })
 
@@ -245,7 +275,7 @@ export class QuickJSAsyncFFI {
     ctx: JSContextPointer,
     js_code: HeapCharPointer,
     filename: string
-  ) => Promise<JSValuePointer> = this.module.cwrap(
+  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
     'QTS_Eval',
     'number',
     ['number', 'number', 'string'],

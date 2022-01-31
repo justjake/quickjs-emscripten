@@ -69,6 +69,8 @@
  */
 #define MaybeAsync(T) T
 
+#define JSVoid void
+
 void qts_log(char *msg) {
   fputs(PKG, stderr);
   fputs(msg, stderr);
@@ -187,6 +189,54 @@ void QTS_RuntimeEnableInterruptHandler(JSRuntime *rt) {
 
 void QTS_RuntimeDisableInterruptHandler(JSRuntime *rt) {
   JS_SetInterruptHandler(rt, NULL, NULL);
+}
+
+/**
+ * Module loading
+ */
+typedef JSModuleDef *QTS_C_To_HostLoadModuleFunc(JSRuntime *rt, JSContext *ctx, const char *module_name);
+QTS_C_To_HostLoadModuleFunc *bound_load_module = NULL;
+
+// See js_module_loader in quickjs/quickjs-libc.c:567
+JSModuleDef *qts_load_module(JSContext *ctx, const char *module_name, void *_unused) {
+  if (bound_load_module == NULL) {
+    printf(PKG "cannot load module because no QTS_C_To_HostLoadModuleFunc set");
+    abort();
+  }
+
+  JSRuntime *rt = JS_GetRuntime(ctx);
+  // TODO: this will need to suspend.
+  JSModuleDef *result_ptr = (*bound_load_module)(rt, ctx, module_name);
+  return result_ptr;
+}
+
+void QTS_SetLoadModuleFunc(QTS_C_To_HostLoadModuleFunc *cb) {
+  bound_load_module = cb;
+}
+
+void QTS_RuntimeEnableModuleLoader(JSRuntime *rt) {
+  if (bound_load_module == NULL) {
+    printf(PKG "cannot enable module loader because no QTS_C_To_HostLoadModuleFunc set");
+    abort();
+  }
+
+  JS_SetModuleLoaderFunc(rt, /* use default name normalizer */ NULL, &qts_load_module, NULL);
+}
+
+void QTS_RuntimeDisableModuleLoader(JSRuntime *rt) {
+  JS_SetModuleLoaderFunc(rt, NULL, NULL, NULL);
+}
+
+JSModuleDef *QTS_CompileModule(JSContext *ctx, const char *module_name, HeapChar *module_body) {
+  JSValue func_val = JS_Eval(ctx, module_body, strlen(module_body), module_name, JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
+  if (JS_IsException(func_val)) {
+    return NULL;
+  }
+  // TODO: Is exception ok?
+  // TODO: set import.meta?
+  JSModuleDef *module = JS_VALUE_GET_PTR(func_val);
+  JS_FreeValue(ctx, func_val);
+  return module;
 }
 
 /**
@@ -371,6 +421,10 @@ void QTS_FreeContext(JSContext *ctx) {
 void QTS_FreeValuePointer(JSContext *ctx, JSValue *value) {
   JS_FreeValue(ctx, *value);
   free(value);
+}
+
+void QTS_FreeVoidPointer(JSContext *ctx, JSVoid *ptr) {
+  js_free(ctx, ptr);
 }
 
 JSValue *QTS_DupValuePointer(JSContext *ctx, JSValueConst *val) {

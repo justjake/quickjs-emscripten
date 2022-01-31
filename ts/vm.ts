@@ -12,6 +12,7 @@ import {
   HeapCharPointer,
 } from './ffi-types'
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from './lifetime'
+import { CToHostCallbackFunctionImplementation, CToHostInterruptImplementation } from './quickjs-module'
 import {
   SuccessOrFail,
   LowLevelJavascriptVm,
@@ -64,21 +65,7 @@ export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSVm>
  */
 export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
 
-/**
- * @hidden
- */
-export type CToHostCallbackFunctionImplementation = (
-  ctx: JSContextPointer,
-  this_ptr: JSValueConstPointer,
-  argc: number,
-  argv: JSValueConstPointer,
-  fn_data_ptr: JSValueConstPointer
-) => JSValuePointer
 
-/**
- * @hidden
- */
-export type CToHostInterruptImplementation = (rt: JSRuntimePointer) => 0 | 1
 
 /**
  * Callback called regularly while the VM executes code.
@@ -511,6 +498,23 @@ export class PureQuickJSVm implements Disposable {
   dumpMemoryUsage(): string {
     return this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value)
   }
+
+  /**
+   * @private
+   */
+  protected borrowPropertyKey(key: QuickJSPropertyKey): QuickJSHandle {
+    if (typeof key === 'number') {
+      return this.newNumber(key)
+    }
+
+    if (typeof key === 'string') {
+      return this.newString(key)
+    }
+
+    // key is already a JSValue, but we're borrowing it. Return a static handle
+    // for internal use only.
+    return new StaticLifetime(key.value as JSValueConstPointer, this.owner)
+  }
 }
 
 /**
@@ -564,34 +568,7 @@ export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<Qui
     this.ffi = args.ffi
  }
 
-  /**
-   * `typeof` operator. **Not** [standards compliant](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof).
-   *
-   * @remarks
-   * Does not support BigInt values correctly.
-   */
-  typeof(handle: QuickJSHandle) {
-    this.memory.assertOwned(handle)
-    return this.ffi.QTS_Typeof(this.ctx.value, handle.value)
-  }
-
-
-  /**
-   * Converts `handle` into a Javascript number.
-   * @returns `NaN` on error, otherwise a `number`.
-   */
-  getNumber(handle: QuickJSHandle) {
-    this.memory.assertOwned(handle)
-    return this.ffi.QTS_GetFloat64(this.ctx.value, handle.value)
-  }
-
-  /**
-   * Converts `handle` to a Javascript string.
-   */
-  getString(handle: QuickJSHandle) {
-    this.memory.assertOwned(handle)
-    return this.ffi.QTS_GetString(this.ctx.value, handle.value)
-  }
+  // New values ---------------------------------------------------------------
 
   /**
    * Convert a Javascript function into a QuickJS function value.
@@ -625,6 +602,38 @@ export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<Qui
     this.module._free(fnIdHandle.value)
 
     return funcHandle
+  }
+
+
+  // Read values --------------------------------------------------------------
+
+  /**
+   * `typeof` operator. **Not** [standards compliant](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof).
+   *
+   * @remarks
+   * Does not support BigInt values correctly.
+   */
+  typeof(handle: QuickJSHandle) {
+    this.memory.assertOwned(handle)
+    return this.ffi.QTS_Typeof(this.ctx.value, handle.value)
+  }
+
+
+  /**
+   * Converts `handle` into a Javascript number.
+   * @returns `NaN` on error, otherwise a `number`.
+   */
+  getNumber(handle: QuickJSHandle): number {
+    this.memory.assertOwned(handle)
+    return this.ffi.QTS_GetFloat64(this.ctx.value, handle.value)
+  }
+
+  /**
+   * Converts `handle` to a Javascript string.
+   */
+  getString(handle: QuickJSHandle): string {
+    this.memory.assertOwned(handle)
+    return this.ffi.QTS_GetString(this.ctx.value, handle.value)
   }
 
   /**
@@ -670,6 +679,8 @@ export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<Qui
       })
     })
   }
+
+  // Properties ---------------------------------------------------------------
 
   /**
    * `handle[key]`.
@@ -747,6 +758,8 @@ export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<Qui
       )
     })
   }
+
+  // Evaluation ---------------------------------------------------------------
 
   /**
    * [`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call).
@@ -842,6 +855,8 @@ export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<Qui
       return { error: resultValue }
     }
   }
+
+  // Utilities ----------------------------------------------------------------
 
   // customizations
 
@@ -944,20 +959,6 @@ export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<Qui
 
       return ownedResultPtr as JSValuePointer
     })
-  }
-
-  private borrowPropertyKey(key: QuickJSPropertyKey): QuickJSHandle {
-    if (typeof key === 'number') {
-      return this.newNumber(key)
-    }
-
-    if (typeof key === 'string') {
-      return this.newString(key)
-    }
-
-    // key is already a JSValue, but we're borrowing it. Return a static handle
-    // for internal use only.
-    return new StaticLifetime(key.value as JSValueConstPointer, this)
   }
 
   private errorToHandle(error: Error | QuickJSHandle) {

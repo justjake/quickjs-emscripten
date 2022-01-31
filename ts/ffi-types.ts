@@ -17,6 +17,11 @@ export type JSRuntimePointer = Pointer<'JSRuntime'>
 export type JSContextPointer = Pointer<'JSContext'>
 
 /**
+ * `JSModuleDef*`.
+ */
+export type JSModuleDefPointer = Pointer<'JSModuleDef'>
+
+/**
  * `JSValue*`.
  * See [[JSValue]].
  */
@@ -54,10 +59,20 @@ export type QTS_C_To_HostCallbackFuncPointer = Pointer<'C_To_HostCallbackFunc'>
 export type QTS_C_To_HostInterruptFuncPointer = Pointer<'C_To_HostInterruptFunc'>
 
 /**
+ * Used internally for C-to-Javascript module loading.
+ */
+export type QTS_C_To_HostLoadModuleFuncPointer = Pointer<'C_To_HostLoadModuleFunc'>
+
+/**
  * Used internally for Javascript-to-C calls that may contain strings too large
  * for the Emscripten stack.
  */
 export type HeapCharPointer = Pointer<'char'>
+
+/**
+ * Opaque pointer that was allocated by js_malloc.
+ */
+export type JSVoidPointer = Pointer<any>
 
 export function assertSync<Args extends any[], R>(fn: (...args: Args) => R): (...args: Args) => R {
   return function mustBeSync(...args: Args): R {
