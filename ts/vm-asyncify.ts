@@ -1,9 +1,20 @@
 import { QuickJSAsyncEmscriptenModule } from './emscripten-types'
 import { QuickJSAsyncFFI } from './ffi-asyncify'
-import { JSContextPointer, JSModuleDefPointer, JSRuntimePointer, JSValuePointer, JSVoidPointer } from './ffi-types'
+import {
+  JSContextPointer,
+  JSModuleDefPointer,
+  JSRuntimePointer,
+  JSValuePointer,
+  JSVoidPointer,
+} from './ffi-types'
 import { Lifetime, WeakLifetime } from './lifetime'
 import { Disposable, Scope } from './quickjs'
-import { ContextCallbacks, CToHostCallbackFunctionImplementation, CToHostModuleLoaderImplementation, QuickJSModuleCallbacks } from './quickjs-module'
+import {
+  ContextCallbacks,
+  CToHostCallbackFunctionImplementation,
+  CToHostModuleLoaderImplementation,
+  QuickJSModuleCallbacks,
+} from './quickjs-module'
 import { PureQuickJSVm, QuickJSHandle, QuickJSPropertyKey, QuickJSVm } from './vm'
 import { SuccessOrFail, VmFunctionImplementation } from './vm-interface'
 
@@ -38,22 +49,22 @@ function assertSync<T>(value: T | Promise<T>): T {
   return value
 }
 
-export type ModuleExport = 
-  | { type: 'function', name: string, implementation: (vm: QuickJSVm) => VmFunctionImplementation<QuickJSHandle> }
-  | { type: 'value', name: string, value: (vm: QuickJSVm) => QuickJSHandle }
+export type ModuleExport =
+  | {
+      type: 'function'
+      name: string
+      implementation: (vm: QuickJSVm) => VmFunctionImplementation<QuickJSHandle>
+    }
+  | { type: 'value'; name: string; value: (vm: QuickJSVm) => QuickJSHandle }
 
 export interface ModuleDefinition {
   name: string
   exports: ModuleExport[]
 }
 
-export type ModuleLoadSuccess = 
-  | string 
-  | /** TODO */ ModuleDefinition
+export type ModuleLoadSuccess = string | /** TODO */ ModuleDefinition
 
-export type ModuleLoadFailure =
-  | Error
-  | QuickJSHandle
+export type ModuleLoadFailure = Error | QuickJSHandle
 
 export type ModuleLoadResult = SuccessOrFail<ModuleLoadSuccess, ModuleLoadFailure>
 
@@ -71,7 +82,10 @@ export interface RuntimeOptions {
   memoryLimit?: TODO<'JS_SetMemoryLimit', number>
   gcThreshold?: TODO<'JS_SetGCThreshold', number>
   maxStackSize?: TODO<'JS_SetMaxStackSize', number>
-  sharedArrayBufferFunctions?: TODO<'JS_SetJSSharedArrayBufferFunctions', { sab_alloc: TODO, sab_free: TODO, sab_dup: TODO, sab_opaque: TODO }>
+  sharedArrayBufferFunctions?: TODO<
+    'JS_SetJSSharedArrayBufferFunctions',
+    { sab_alloc: TODO; sab_free: TODO; sab_dup: TODO; sab_opaque: TODO }
+  >
 }
 
 export type Intrinsic =
@@ -106,7 +120,7 @@ const DefaultIntrinsicsList = [
   'Promise',
 ] as const
 
-export const DefaultIntrinsics = Symbol('DefaultIntrinsics') 
+export const DefaultIntrinsics = Symbol('DefaultIntrinsics')
 
 export interface ContextOptions {
   /**
@@ -119,7 +133,7 @@ export interface ContextOptions {
 
 /**
  * Create a new [QuickJSAsyncRuntime].
- * 
+ *
  * Each runtime is isolated in a separate WebAssembly module, so that errors in
  * one runtime cannot contaminate another runtime.
  */
@@ -128,22 +142,22 @@ export async function newRuntime(options: RuntimeOptions = {}): Promise<QuickJSA
   const module = await newModule()
   const ffi = new QuickJSAsyncFFI(module)
   const callbacks = new QuickJSModuleCallbacks(module, ffi)
-    const rt = new Lifetime(ffi.QTS_NewRuntime(), undefined, rt_ptr => {
-      callbacks.deleteRuntime(rt_ptr)
-      ffi.QTS_FreeRuntime(rt_ptr)
-    })
-    const runtime = new QuickJSAsyncRuntime({
-      module,
-      ffi,
-      rt,
-      callbacks,
-    })
+  const rt = new Lifetime(ffi.QTS_NewRuntime(), undefined, rt_ptr => {
+    callbacks.deleteRuntime(rt_ptr)
+    ffi.QTS_FreeRuntime(rt_ptr)
+  })
+  const runtime = new QuickJSAsyncRuntime({
+    module,
+    ffi,
+    rt,
+    callbacks,
+  })
 
-    if (options.moduleLoader) {
-      runtime.setModuleLoader(options.moduleLoader)
-    }
+  if (options.moduleLoader) {
+    runtime.setModuleLoader(options.moduleLoader)
+  }
 
-    return runtime
+  return runtime
 }
 
 /**
@@ -272,12 +286,17 @@ export class QuickJSAsyncContext extends PureQuickJSVm implements ContextCallbac
     this.ffi = ffi
   }
 
-  compileModule(moduleName: string, source: string): Lifetime<JSModuleDefPointer, never, QuickJSAsyncContext> {
+  compileModule(
+    moduleName: string,
+    source: string
+  ): Lifetime<JSModuleDefPointer, never, QuickJSAsyncContext> {
     return Scope.withScope(scope => {
       const sourcePtr = scope.manage(this.memory.newHeapCharPointer(source))
       const moduleDefPtr = this.ffi.QTS_CompileModule(this.ctx.value, moduleName, sourcePtr.value)
       // uh... how do we free this?
-      return new Lifetime(moduleDefPtr, undefined, ptr => this.ffi.QTS_FreeVoidPointer(this.ctx.value, ptr as JSVoidPointer))
+      return new Lifetime(moduleDefPtr, undefined, ptr =>
+        this.ffi.QTS_FreeVoidPointer(this.ctx.value, ptr as JSVoidPointer)
+      )
     })
   }
 
@@ -289,7 +308,9 @@ export class QuickJSAsyncContext extends PureQuickJSVm implements ContextCallbac
   }
 
   throw(error: Error | QuickJSHandle) {
-    return this.errorToHandle(error).consume(handle => this.ffi.QTS_Throw(this.ctx.value, handle.value))
+    return this.errorToHandle(error).consume(handle =>
+      this.ffi.QTS_Throw(this.ctx.value, handle.value)
+    )
   }
 
   /** @private */
@@ -302,12 +323,16 @@ export class QuickJSAsyncContext extends PureQuickJSVm implements ContextCallbac
 
     if (error.name !== undefined) {
       // TODO: assertSync won't work, because in DEBUG, setProp's FFI will always return `Promise`.
-      this.newString(error.name).consume(handle => assertSync(this.setProp(errorHandle, 'name', handle)))
+      this.newString(error.name).consume(handle =>
+        assertSync(this.setProp(errorHandle, 'name', handle))
+      )
     }
 
     if (error.message !== undefined) {
       // TODO: assertSync won't work, because in DEBUG, setProp's FFI will always return `Promise`.
-      this.newString(error.message).consume(handle => assertSync(this.setProp(errorHandle, 'message', handle)))
+      this.newString(error.message).consume(handle =>
+        assertSync(this.setProp(errorHandle, 'message', handle))
+      )
     }
 
     // Disabled due to security leak concerns
@@ -343,7 +368,12 @@ export class QuickJSAsyncContext extends PureQuickJSVm implements ContextCallbac
 
     return Scope.withScope(scope => {
       const thisHandle = scope.manage(
-        new WeakLifetime(this_ptr, this.memory.copyJSValue, this.memory.freeJSValue, this.memory.owner)
+        new WeakLifetime(
+          this_ptr,
+          this.memory.copyJSValue,
+          this.memory.freeJSValue,
+          this.memory.owner
+        )
       )
       const argHandles = new Array<QuickJSHandle>(argc)
       for (let i = 0; i < argc; i++) {

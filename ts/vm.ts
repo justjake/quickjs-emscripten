@@ -12,7 +12,10 @@ import {
   HeapCharPointer,
 } from './ffi-types'
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from './lifetime'
-import { CToHostCallbackFunctionImplementation, CToHostInterruptImplementation } from './quickjs-module'
+import {
+  CToHostCallbackFunctionImplementation,
+  CToHostInterruptImplementation,
+} from './quickjs-module'
 import {
   SuccessOrFail,
   LowLevelJavascriptVm,
@@ -64,8 +67,6 @@ export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSVm>
  * You must dispose of any handles you create by calling the `.dispose()` method.
  */
 export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
-
-
 
 /**
  * Callback called regularly while the VM executes code.
@@ -195,10 +196,10 @@ class QuickJSVmMemory implements Disposable {
   }
 }
 
-/** 
+/**
  * Implements methods that are always synchronous - such methods should never
  * call into a function that suspends when built with ASYNCIFY.
- * 
+ *
  * @private
  */
 export class PureQuickJSVm implements Disposable {
@@ -337,7 +338,7 @@ export class PureQuickJSVm implements Disposable {
     // disposed, no other functions will accept the value.
     this._global = new StaticLifetime(ptr, this.owner)
     return this._global
-  } 
+  }
 
   // New values ---------------------------------------------------------------
 
@@ -352,9 +353,9 @@ export class PureQuickJSVm implements Disposable {
    * Create a QuickJS [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) value.
    */
   newString(str: string): QuickJSHandle {
-    const ptr = this.memory.newHeapCharPointer(str).consume(charHandle =>
-      this.ffi.QTS_NewString(this.ctx.value, charHandle.value)
-    )
+    const ptr = this.memory
+      .newHeapCharPointer(str)
+      .consume(charHandle => this.ffi.QTS_NewString(this.ctx.value, charHandle.value))
     return this.memory.heapValueHandle(ptr)
   }
 
@@ -397,9 +398,9 @@ export class PureQuickJSVm implements Disposable {
         mutablePointerArray.value.ptr
       )
       const promiseHandle = this.memory.heapValueHandle(promisePtr)
-      const [resolveHandle, rejectHandle] = Array.from(
-        mutablePointerArray.value.typedArray
-      ).map(jsvaluePtr => this.memory.heapValueHandle(jsvaluePtr as any))
+      const [resolveHandle, rejectHandle] = Array.from(mutablePointerArray.value.typedArray).map(
+        jsvaluePtr => this.memory.heapValueHandle(jsvaluePtr as any)
+      )
       return new QuickJSDeferredPromise({
         owner: this.owner,
         promiseHandle,
@@ -420,7 +421,6 @@ export class PureQuickJSVm implements Disposable {
   hasPendingJob(): boolean {
     return Boolean(this.ffi.QTS_IsJobPending(this.rt.value))
   }
-
 
   private interruptHandler: InterruptHandler | undefined
 
@@ -548,9 +548,12 @@ export class PureQuickJSVm implements Disposable {
  * Use [[computeMemoryUsage]] or [[dumpMemoryUsage]] to guide memory limit
  * tuning.
  */
-export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<QuickJSHandle>, Disposable {
+export class QuickJSVm
+  extends PureQuickJSVm
+  implements LowLevelJavascriptVm<QuickJSHandle>, Disposable
+{
   /** @private */
-   readonly module: QuickJSEmscriptenModule
+  readonly module: QuickJSEmscriptenModule
   /** @private */
   protected readonly ffi: QuickJSFFI
 
@@ -566,7 +569,7 @@ export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<Qui
     super(args)
     this.module = args.module
     this.ffi = args.ffi
- }
+  }
 
   // New values ---------------------------------------------------------------
 
@@ -604,7 +607,6 @@ export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<Qui
     return funcHandle
   }
 
-
   // Read values --------------------------------------------------------------
 
   /**
@@ -617,7 +619,6 @@ export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<Qui
     this.memory.assertOwned(handle)
     return this.ffi.QTS_Typeof(this.ctx.value, handle.value)
   }
-
 
   /**
    * Converts `handle` into a Javascript number.
@@ -780,9 +781,17 @@ export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<Qui
     ...args: QuickJSHandle[]
   ): VmCallResult<QuickJSHandle> {
     this.memory.assertOwned(func)
-    const resultPtr = this.memory.toPointerArray(args).consume(argsArrayPtr =>
-      this.ffi.QTS_Call(this.ctx.value, func.value, thisVal.value, args.length, argsArrayPtr.value)
-    )
+    const resultPtr = this.memory
+      .toPointerArray(args)
+      .consume(argsArrayPtr =>
+        this.ffi.QTS_Call(
+          this.ctx.value,
+          func.value,
+          thisVal.value,
+          args.length,
+          argsArrayPtr.value
+        )
+      )
 
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
@@ -814,9 +823,9 @@ export class QuickJSVm extends PureQuickJSVm implements LowLevelJavascriptVm<Qui
    * `interrupted`.
    */
   evalCode(code: string, filename: string = 'eval.js'): VmCallResult<QuickJSHandle> {
-    const resultPtr = this.memory.newHeapCharPointer(code).consume(charHandle =>
-      this.ffi.QTS_Eval(this.ctx.value, charHandle.value, filename)
-    )
+    const resultPtr = this.memory
+      .newHeapCharPointer(code)
+      .consume(charHandle => this.ffi.QTS_Eval(this.ctx.value, charHandle.value, filename))
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)

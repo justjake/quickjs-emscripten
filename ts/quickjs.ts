@@ -154,7 +154,7 @@ class QuickJS {
 export function shouldInterruptAfterDeadline(deadline: Date | number): InterruptHandler {
   const deadlineAsNumber = typeof deadline === 'number' ? deadline : deadline.getTime()
 
-  return function() {
+  return function () {
     return Date.now() > deadlineAsNumber
   }
 }

@@ -374,7 +374,7 @@ describe('QuickJSVm', async () => {
     typeofTestExample({ cow: true })
     typeofTestExample([1, 2, 3])
     typeofTestExample(
-      function() {},
+      function () {},
       (val: any) => val.toString()
     )
   })

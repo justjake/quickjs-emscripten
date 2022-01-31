@@ -1,5 +1,5 @@
-import type { Disposable } from "./lifetime"
-import type { QuickJSHandle, QuickJSVm } from "./quickjs"
+import type { Disposable } from './lifetime'
+import type { QuickJSHandle, QuickJSVm } from './quickjs'
 
 /**
  * QuickJSDeferredPromise wraps a QuickJS promise [[handle]] and allows
