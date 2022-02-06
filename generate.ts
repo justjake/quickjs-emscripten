@@ -141,9 +141,7 @@ function renderFunction(args: {
   const markAsync = async && returnType.async
 
   let typescriptFunctionName = functionName
-  if (forceSync) {
-    typescriptFunctionName += '_AssertSync'
-  } else if (markAsync) {
+  if (markAsync) {
     typescriptFunctionName += '_MaybeAsync'
   }
 
