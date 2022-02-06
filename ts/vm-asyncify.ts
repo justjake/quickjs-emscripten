@@ -18,37 +18,6 @@ import {
 import { PureQuickJSVm, QuickJSHandle, QuickJSPropertyKey, QuickJSVm } from './vm'
 import { SuccessOrFail, VmFunctionImplementation } from './vm-interface'
 
-class SyncPromise<T> {
-  constructor(public value: T) {}
-
-  then<R>(fn: (value: T) => R): SyncPromise<R> {
-    return new SyncPromise(fn(this.value))
-  }
-}
-
-function intoPromise<T>(value: T | Promise<T>): SyncPromise<T> | Promise<T> {
-  if (value instanceof Promise) {
-    return value
-  }
-
-  return new SyncPromise(value)
-}
-
-function unwrapPromise<T>(promise: SyncPromise<T> | Promise<T>): T | Promise<T> {
-  if (promise instanceof SyncPromise) {
-    return promise.value
-  }
-
-  return promise
-}
-
-function assertSync<T>(value: T | Promise<T>): T {
-  if (value && typeof value === 'object' && value instanceof Promise) {
-    throw new Error('Function unexpectedly returned a Promise')
-  }
-  return value
-}
-
 export type ModuleExport =
   | {
       type: 'function'
