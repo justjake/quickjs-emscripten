@@ -8,7 +8,7 @@ const FFI_TYPES_PATH = process.env.FFI_TYPES_PATH || './ts/ffi-types.ts'
 const DEBUG = process.env.DEBUG === 'true'
 const ASYNCIFY = process.env.ASYNCIFY === 'true'
 
-// const ASSERT_SYNC_FN = 'assertSync'
+const ASSERT_SYNC_FN = 'assertSync'
 
 const INCLUDE_RE = /^#include.*$/gm
 const TYPEDEF_RE = /^\s*typedef\s+(.+)$/gm
@@ -72,7 +72,14 @@ function main() {
 
 const MaybeAsync = 'MaybeAsync('
 
-function cTypeToTypescriptType(ctype: string) {
+interface ParsedType {
+  typescript: string
+  ffi: string | null
+  ctype: string
+  async: boolean
+}
+
+function cTypeToTypescriptType(ctype: string): ParsedType {
   // simplify
   let type = ctype
   // remove const: ignored in JS
@@ -85,11 +92,10 @@ function cTypeToTypescriptType(ctype: string) {
     async = true
     type = type.slice(MaybeAsync.length, -1)
   }
-  const maybeAsync = (type: string) => (async && ASYNCIFY ? `${type} | Promise<${type}>` : type)
 
   // mapping
   if (type.includes('char*')) {
-    return { ffi: 'string', typescript: maybeAsync('string'), ctype, async }
+    return { ffi: 'string', typescript: 'string', ctype, async }
   }
 
   let typescript = type.replace(/\*/g, 'Pointer')
@@ -110,7 +116,69 @@ function cTypeToTypescriptType(ctype: string) {
     ffi = 'number'
   }
 
-  return { typescript: maybeAsync(typescript), ffi, ctype, async }
+  return { typescript: typescript, ffi, ctype, async }
+}
+
+function renderFunction(args: {
+  functionName: string
+  returnType: ParsedType
+  params: Array<{ name: string; type: ParsedType }>
+  async: boolean
+}) {
+  const { functionName, returnType, params, async } = args
+  const typescriptParams = params
+    .map(param => {
+      // Allow JSValue wherever JSValueConst is accepted.
+      const tsType =
+        param.type.typescript === 'JSValueConstPointer'
+          ? 'JSValuePointer | JSValueConstPointer'
+          : param.type.typescript
+      return `${param.name}: ${tsType}`
+    })
+    .join(', ')
+
+  const forceSync = ASYNCIFY && !async && returnType.async
+  const markAsync = async && returnType.async
+
+  let typescriptFunctionName = functionName
+  if (forceSync) {
+    typescriptFunctionName += '_AssertSync'
+  } else if (markAsync) {
+    typescriptFunctionName += '_MaybeAsync'
+  }
+
+  const typescriptReturnType =
+    async && returnType.async
+      ? `${returnType.typescript} | Promise<${returnType.typescript}>`
+      : returnType.typescript
+  const typescriptFunctionType = `(${typescriptParams}) => ${typescriptReturnType}`
+
+  const ffiParams = JSON.stringify(params.map(param => param.type.ffi))
+  const cwrapArgs = [JSON.stringify(functionName), JSON.stringify(returnType.ffi), ffiParams]
+  if (DEBUG && async) {
+    // https://emscripten.org/docs/porting/asyncify.html#usage-with-ccall
+    // Passing {async:true} to cwrap/ccall will wrap all return values in
+    // Promise.resolve(...), even if the c code doesn't suspend and returns a
+    // primitive value.
+    //
+    // When compiled with -s ASSERTIONS=1, Emscripten will throw if the
+    // function suspends and {async: true} wasn't passed.
+    //
+    // However, we'd like to avoid Promise/async overhead if the call can
+    // return a primitive value directly. So, we compile in {async:true}
+    // only in DEBUG mode, where assertions are enabled.
+    //
+    // Then we rely on our type system to ensure our code supports both
+    // primitive and promise-wrapped return values in production mode.
+    cwrapArgs.push('{ async: true }')
+  }
+
+  let cwrap = `this.module.cwrap(${cwrapArgs.join(', ')})`
+  if (forceSync) {
+    cwrap = `${ASSERT_SYNC_FN}(${cwrap})`
+  }
+
+  return `  ${typescriptFunctionName}: ${typescriptFunctionType} =\n    ${cwrap}`
 }
 
 function buildFFI(matches: RegExpExecArray[]) {
@@ -119,54 +187,19 @@ function buildFFI(matches: RegExpExecArray[]) {
     const params = parseParams(rawParams)
     return { functionName, returnType: cTypeToTypescriptType(returnType.trim()), params }
   })
-  const decls = parsed.map(fn => {
-    const typescriptParams = fn.params
-      .map(param => {
-        // Allow JSValue wherever JSValueConst is accepted.
-        const tsType =
-          param.type.typescript === 'JSValueConstPointer'
-            ? 'JSValuePointer | JSValueConstPointer'
-            : param.type.typescript
-
-        return `${param.name}: ${tsType}`
-      })
-      .join(', ')
-    const typescriptFnType = `(${typescriptParams}) => ${fn.returnType.typescript}`
-    const ffiParams = JSON.stringify(fn.params.map(param => param.type.ffi))
-    const cwrapArgs = [
-      JSON.stringify(fn.functionName),
-      JSON.stringify(fn.returnType.ffi),
-      ffiParams,
-    ]
-    if (ASYNCIFY && DEBUG && fn.returnType.async) {
-      // https://emscripten.org/docs/porting/asyncify.html#usage-with-ccall
-      // Passing {async:true} to cwrap/ccall will wrap all return values in
-      // Promise.resolve(...), even if the c code doesn't suspend and returns a
-      // primitive value.
-      //
-      // When compiled with -s ASSERTIONS=1, Emscripten will throw if the
-      // function suspends and {async: true} wasn't passed.
-      //
-      // However, we'd like to avoid Promise/async overhead if the call can
-      // return a primitive value directly. So, we compile in {async:true}
-      // only in DEBUG mode, where assertions are enabled.
-      //
-      // Then we rely on our type system to ensure our code supports both
-      // primitive and promise-wrapped return values in production mode.
-      cwrapArgs.push('{ async: true }')
+  const decls: string[] = []
+  parsed.forEach(fn => {
+    decls.push(renderFunction({ ...fn, async: false }))
+    if (fn.returnType.async && ASYNCIFY) {
+      decls.push(renderFunction({ ...fn, async: true }))
     }
-    let cwrap = `this.module.cwrap(${cwrapArgs.join(', ')})`
-    // if (DEBUG && ASYNCIFY && !fn.returnType.async) {
-    //   cwrap = `${ASSERT_SYNC_FN}(${cwrap})`
-    // }
-    return `  ${fn.functionName}: ${typescriptFnType} =\n    ${cwrap}`
   })
 
   const ffiTypes = fs.readFileSync(FFI_TYPES_PATH, 'utf-8')
   const importFromFfiTypes = matchAll(TS_EXPORT_TYPE_RE, ffiTypes).map(match => match[1])
-  // if (DEBUG && ASYNCIFY) {
-  //   importFromFfiTypes.push(ASSERT_SYNC_FN)
-  // }
+  if (ASYNCIFY) {
+    importFromFfiTypes.push(ASSERT_SYNC_FN)
+  }
 
   const ffiClassName = ASYNCIFY ? 'QuickJSAsyncFFI' : 'QuickJSFFI'
   const moduleTypeName = ASYNCIFY ? 'QuickJSAsyncEmscriptenModule' : 'QuickJSEmscriptenModule'

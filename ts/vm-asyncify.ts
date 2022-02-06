@@ -300,10 +300,28 @@ export class QuickJSAsyncContext extends PureQuickJSVm implements ContextCallbac
     })
   }
 
-  setProp(handle: QuickJSHandle, key: QuickJSPropertyKey, value: QuickJSHandle) {
+  setProp(
+    handle: QuickJSHandle,
+    key: QuickJSPropertyKey,
+    value: QuickJSHandle,
+    options?: { sync: false }
+  ): void | Promise<void>
+  setProp(
+    handle: QuickJSHandle,
+    key: QuickJSPropertyKey,
+    value: QuickJSHandle,
+    options: { sync: true }
+  ): void
+  setProp(
+    handle: QuickJSHandle,
+    key: QuickJSPropertyKey,
+    value: QuickJSHandle,
+    options?: { sync: boolean }
+  ): void | Promise<void> {
     this.memory.assertOwned(handle)
+    const impl = options?.sync ? this.ffi.QTS_SetProp_AssertSync : this.ffi.QTS_SetProp_MaybeAsync
     return this.borrowPropertyKey(key).consume(quickJSKey =>
-      this.ffi.QTS_SetProp(this.ctx.value, handle.value, quickJSKey.value, value.value)
+      impl(this.ctx.value, handle.value, quickJSKey.value, value.value)
     )
   }
 
@@ -322,16 +340,14 @@ export class QuickJSAsyncContext extends PureQuickJSVm implements ContextCallbac
     const errorHandle = this.memory.heapValueHandle(this.ffi.QTS_NewError(this.ctx.value))
 
     if (error.name !== undefined) {
-      // TODO: assertSync won't work, because in DEBUG, setProp's FFI will always return `Promise`.
       this.newString(error.name).consume(handle =>
-        assertSync(this.setProp(errorHandle, 'name', handle))
+        this.setProp(errorHandle, 'name', handle, { sync: true })
       )
     }
 
     if (error.message !== undefined) {
-      // TODO: assertSync won't work, because in DEBUG, setProp's FFI will always return `Promise`.
       this.newString(error.message).consume(handle =>
-        assertSync(this.setProp(errorHandle, 'message', handle))
+        this.setProp(errorHandle, 'message', handle, { sync: true })
       )
     }
 
