@@ -2,24 +2,19 @@
  * These tests demonstrate some common patterns for using quickjs-emscripten.
  */
 
-import {
-  getQuickJS,
-  QuickJSVm,
-  QuickJSHandle,
-  InterruptHandler,
-  QuickJSDeferredPromise,
-} from './quickjs'
+import { getQuickJS, QuickJSHandle, InterruptHandler, QuickJSDeferredPromise } from './quickjs'
 import { it, describe } from 'mocha'
 import assert from 'assert'
 import { VmCallResult } from './vm-interface'
 import fs from 'fs'
+import { QuickJSContext } from './context'
+import { QuickJSContextAsync } from './context-asyncify'
 
-describe('QuickJSVm', async () => {
-  let vm: QuickJSVm = undefined as any
+function contextTests(getContext: () => Promise<QuickJSContext>) {
+  let vm: QuickJSContext = undefined as any
 
   beforeEach(async () => {
-    const quickjs = await getQuickJS()
-    vm = quickjs.newContext()
+    vm = await getContext()
   })
 
   afterEach(() => {
@@ -620,4 +615,51 @@ describe('QuickJSVm', async () => {
       stringHandle.dispose()
     })
   })
+}
+
+function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
+  let vm: QuickJSContextAsync = undefined as any
+
+  beforeEach(async () => {
+    vm = await getContext()
+  })
+
+  afterEach(() => {
+    vm.dispose()
+    vm = undefined as any
+  })
+
+  // TODO: tests
+}
+
+describe('QuickJS.newContext', () => {
+  contextTests(async () => {
+    const quickjs = await getQuickJS()
+    return quickjs.newContext()
+  })
 })
+
+describe('QuickJS.createVM', () => {
+  contextTests(async () => {
+    const quickjs = await getQuickJS()
+    return quickjs.createVM()
+  })
+})
+
+describe('QuickJS.newAsyncContext', () => {
+  const getContext = async () => {
+    const quickjs = await getQuickJS()
+    return quickjs.newAsyncContext()
+  }
+
+  describe('sync API', () => {
+    contextTests(getContext)
+  })
+
+  describe('async API', () => {
+    asyncContextTests(getContext)
+  })
+})
+
+// TODO: test newRuntime
+// TODO: test newAsyncRuntime
