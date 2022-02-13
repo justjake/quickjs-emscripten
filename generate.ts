@@ -37,12 +37,7 @@ function main() {
   const typedefMatches = matchAll(TYPEDEF_RE, interfaceFile)
 
   if (command === 'symbols') {
-    const symbols = matches
-      .map(match => {
-        const name = match[2]
-        return `_${name}`
-      })
-      .concat('_malloc', '_free')
+    const symbols = buildSymbols(matches)
     writeFile(destination, JSON.stringify(symbols))
     return
   }
@@ -70,32 +65,46 @@ function main() {
   throw new Error(`Bad command "${command}". ${USAGE}`)
 }
 
-const MaybeAsync = 'MaybeAsync('
+// $1: attribute name
+// $2: inner type
+const ATTRIBUTE_REGEX = /^(\w+)\((.+)\)$/
+type Attribute = 'MaybeAsync' | 'AsyncifyOnly'
+
+function parseAttributes(type: string) {
+  let text = type
+  let match: RegExpExecArray | null = null
+  const attributes = new Set<Attribute>()
+  while ((match = ATTRIBUTE_REGEX.exec(text.trim())) !== null) {
+    attributes.add(match[1] as Attribute)
+    text = match[2]
+  }
+
+  if (text.includes(')')) {
+    throw new Error(`parseAttributes should consume all attributes, but did not: ${text}`)
+  }
+
+  return { type: text, attributes }
+}
 
 interface ParsedType {
   typescript: string
   ffi: string | null
   ctype: string
-  async: boolean
+  attributes: Set<Attribute>
 }
 
 function cTypeToTypescriptType(ctype: string): ParsedType {
+  let { type, attributes } = parseAttributes(ctype)
+
   // simplify
-  let type = ctype
   // remove const: ignored in JS
-  type = ctype.replace(/\bconst\b/, '').trim()
+  type = type.replace(/\bconst\b/, '').trim()
   // collapse spaces (around a *, maybe)
   type = type.split(' ').join('')
 
-  let async = false
-  if (type.startsWith(MaybeAsync) && type.endsWith(')')) {
-    async = true
-    type = type.slice(MaybeAsync.length, -1)
-  }
-
   // mapping
   if (type.includes('char*')) {
-    return { ffi: 'string', typescript: 'string', ctype, async }
+    return { ffi: 'string', typescript: 'string', ctype, attributes }
   }
 
   let typescript = type.replace(/\*/g, 'Pointer')
@@ -116,7 +125,7 @@ function cTypeToTypescriptType(ctype: string): ParsedType {
     ffi = 'number'
   }
 
-  return { typescript: typescript, ffi, ctype, async }
+  return { typescript, ffi, ctype, attributes }
 }
 
 function renderFunction(args: {
@@ -137,8 +146,8 @@ function renderFunction(args: {
     })
     .join(', ')
 
-  const forceSync = ASYNCIFY && !async && returnType.async
-  const markAsync = async && returnType.async
+  const forceSync = ASYNCIFY && !async && returnType.attributes.has('MaybeAsync')
+  const markAsync = async && returnType.attributes.has('MaybeAsync')
 
   let typescriptFunctionName = functionName
   if (markAsync) {
@@ -146,7 +155,7 @@ function renderFunction(args: {
   }
 
   const typescriptReturnType =
-    async && returnType.async
+    async && returnType.attributes.has('MaybeAsync')
       ? `${returnType.typescript} | Promise<${returnType.typescript}>`
       : returnType.typescript
   const typescriptFunctionType = `(${typescriptParams}) => ${typescriptReturnType}`
@@ -179,6 +188,17 @@ function renderFunction(args: {
   return `  ${typescriptFunctionName}: ${typescriptFunctionType} =\n    ${cwrap}`
 }
 
+function buildSymbols(matches: RegExpMatchArray[]) {
+  const parsed = matches.map(match => {
+    const [, returnType, functionName, , rawParams] = match
+    const params = parseParams(rawParams)
+    return { functionName, returnType: cTypeToTypescriptType(returnType.trim()), params }
+  })
+  const filtered = parsed.filter(fn => !fn.returnType.attributes.has('AsyncifyOnly') || ASYNCIFY)
+  const names = filtered.map(fn => '_' + fn.functionName)
+  return names.concat('_malloc', '_free')
+}
+
 function buildFFI(matches: RegExpExecArray[]) {
   const parsed = matches.map(match => {
     const [, returnType, functionName, , rawParams] = match
@@ -187,8 +207,11 @@ function buildFFI(matches: RegExpExecArray[]) {
   })
   const decls: string[] = []
   parsed.forEach(fn => {
-    decls.push(renderFunction({ ...fn, async: false }))
-    if (fn.returnType.async && ASYNCIFY) {
+    if (!fn.returnType.attributes.has('AsyncifyOnly') || ASYNCIFY) {
+      decls.push(renderFunction({ ...fn, async: false }))
+    }
+
+    if (fn.returnType.attributes.has('MaybeAsync') && ASYNCIFY) {
       decls.push(renderFunction({ ...fn, async: true }))
     }
   })

@@ -20,6 +20,7 @@ QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\"
 
 # quickjs-emscripten
 EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=$(shell cat $(BUILD_WRAPPER)/symbols.json)
+EMCC_EXPORTED_FUNCS_ASYNCIFY+=-s EXPORTED_FUNCTIONS=$(shell cat $(BUILD_WRAPPER)/symbols.asyncify.json)
 
 # Emscripten options
 CFLAGS_EMCC+=-s WASM=1
@@ -60,8 +61,9 @@ endif
 
 default: wasm wasm-asyncify
 all: wasm wasm-asyncify native
-wasm: $(BUILD_DIR) ts/quickjs-emscripten-module.js ts/ffi.ts
-wasm-asyncify: $(BUILD_DIR) ts/quickjs-emscripten-module-asyncify.js ts/ffi-asyncify.ts
+generate: ts/ffi.ts ts/ffi-asyncify.ts
+wasm: $(BUILD_DIR) ts/quickjs.emscripten-module.js ts/ffi.ts
+wasm-asyncify: $(BUILD_DIR) ts/quickjs-asyncify.emscripten-module.js ts/ffi-asyncify.ts
 native: $(BUILD_WRAPPER)/native/test.exe
 
 emcc:
@@ -83,6 +85,9 @@ $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 $(BUILD_WRAPPER)/symbols.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 	ts-node generate.ts symbols $@
 
+$(BUILD_WRAPPER)/symbols.asyncify.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
+	ts-node generate.ts symbols $@
+
 ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
 	$(GENERATE_TS_ENV) ts-node generate.ts ffi $@
 	prettier --write $@
@@ -93,11 +98,11 @@ ts/ffi-asyncify.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
 
 ### Executables
 # The WASM module we'll link to typescript
-ts/quickjs-emscripten-module.js: $(BUILD_WRAPPER)/wasm/interface.o $(QUICKJS_OBJS_WASM)
+ts/quickjs.emscripten-module.js: $(BUILD_WRAPPER)/wasm/interface.o $(QUICKJS_OBJS_WASM)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(QUICKJS_OBJS_WASM)
 
-ts/quickjs-emscripten-module-asyncify.js: $(BUILD_WRAPPER)/wasm-asyncify/interface.o $(QUICKJS_OBJS_WASM_ASYNCIFY)
-	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_EMCC_ASYNCIFY) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(QUICKJS_OBJS_WASM_ASYNCIFY)
+ts/quickjs-asyncify.emscripten-module.js: $(BUILD_WRAPPER)/wasm-asyncify/interface.o $(QUICKJS_OBJS_WASM_ASYNCIFY)
+	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_EMCC_ASYNCIFY) $(EMCC_EXPORTED_FUNCS_ASYNCIFY) -o $@ $< $(QUICKJS_OBJS_WASM_ASYNCIFY)
 
 # Trying to debug C...
 $(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(BUILD_WRAPPER)/native/interface.o $(WRAPPER_ROOT) $(QUICKJS_OBJS_NATIVE)
@@ -108,7 +113,7 @@ $(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(BUILD_WRAPPER
 $(BUILD_WRAPPER)/wasm/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.json $(BUILD_ROOT)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -c -o $@ $<
 
-$(BUILD_WRAPPER)/wasm-asyncify/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.json $(BUILD_ROOT)
+$(BUILD_WRAPPER)/wasm-asyncify/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.asyncify.json $(BUILD_ROOT)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_EMCC_ASYNCIFY) $(EMCC_EXPORTED_FUNCS) -c -o $@ $<
 
 $(BUILD_WRAPPER)/native/test.o: $(WRAPPER_ROOT)/test.c $(WRAPPER_ROOT)/interface.h
@@ -129,9 +134,16 @@ $(BUILD_QUICKJS)/native/%.o: $(QUICKJS_ROOT)/%.c | $(BUILD_ROOT)
 
 clean:
 	rm -rfv ./ts/ffi.ts
-	rm -rfv ./ts/quickjs-emscripten-module.js
-	rm -rf ./ts/quickjs-emscripten-module.map
-	rm -rf ./ts/quickjs-emscripten-module.wasm
-	rm -rf ./ts/quickjs-emscripten-module.wasm.map
+	rm -rfv ./ts/quickjs.emscripten-module.js
+	rm -rf  ./ts/quickjs.emscripten-module.map
+	rm -rf  ./ts/quickjs.emscripten-module.wasm
+	rm -rf  ./ts/quickjs.emscripten-module.wasm.map
+
+	rm -rfv ./ts/ffi-asyncify.ts
+	rm -rfv ./ts/quickjs-asyncify.emscripten-module.js
+	rm -rf  ./ts/quickjs-asyncify.emscripten-module.map
+	rm -rf  ./ts/quickjs-asyncify.emscripten-module.wasm
+	rm -rf  ./ts/quickjs-asyncify.emscripten-module.wasm.map
+
 	rm -rfv $(BUILD_ROOT)
-	rm -rf $(WRAPPER_ROOT)/interface.h
+	rm -rf  $(WRAPPER_ROOT)/interface.h

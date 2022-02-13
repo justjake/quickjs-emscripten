@@ -1,0 +1,2 @@
+# Don't diff generated .emscripten-module files
+*.emscripten-module.js -diff

@@ -1,5 +1,4 @@
 ts/ffi.ts
 ts/ffi-asyncify.ts
-ts/quickjs-emscripten-module-asyncify.js
-ts/quickjs-emscripten-module.js
+*.emscripten-module.js
 dist/*
