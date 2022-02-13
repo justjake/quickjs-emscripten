@@ -1,5 +1,10 @@
+import { newPromiseLike, unwrapPromiseLike } from './asyncify-helpers'
 import { QuickJSDeferredPromise } from './deferred-promise'
-import type { QuickJSAsyncEmscriptenModule, QuickJSEmscriptenModule } from './emscripten-types'
+import type {
+  EitherModule,
+  QuickJSAsyncEmscriptenModule,
+  QuickJSEmscriptenModule,
+} from './emscripten-types'
 import type { QuickJSFFI } from './ffi'
 import type { QuickJSAsyncFFI } from './ffi-asyncify'
 import {
@@ -10,12 +15,15 @@ import {
   JSValueConstPointerPointer,
   JSValuePointerPointer,
   HeapCharPointer,
+  JSModuleDefPointer,
+  JSVoidPointer,
 } from './ffi-types'
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from './lifetime'
 import {
   CToHostCallbackFunctionImplementation,
   CToHostInterruptImplementation,
 } from './quickjs-module'
+import { QuickJSAsyncContext } from './vm-asyncify'
 import {
   SuccessOrFail,
   LowLevelJavascriptVm,
@@ -28,7 +36,7 @@ import {
  * A QuickJSHandle to a constant that will never change, and does not need to
  * be disposed.
  */
-export type StaticJSValue = Lifetime<JSValueConstPointer, JSValueConstPointer, QuickJSVm>
+export type StaticJSValue = Lifetime<JSValueConstPointer, JSValueConstPointer, QuickJSContext>
 
 /**
  * A QuickJSHandle to a borrowed value that does not need to be disposed.
@@ -40,7 +48,7 @@ export type StaticJSValue = Lifetime<JSValueConstPointer, JSValueConstPointer, Q
  *
  * quickjs-emscripten takes care of disposing JSValueConst references.
  */
-export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJSVm>
+export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJSContext>
 
 /**
  * A owned QuickJSHandle that should be disposed or returned.
@@ -57,7 +65,7 @@ export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJS
  *
  * You can do so from Javascript by calling the .dispose() method.
  */
-export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSVm>
+export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSContext>
 
 /**
  * Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
@@ -75,7 +83,7 @@ export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
  * @returns `true` to interrupt JS execution inside the VM.
  * @returns `false` or `undefined` to continue JS execution inside the VM.
  */
-export type InterruptHandler = (vm: QuickJSVm) => boolean | undefined
+export type InterruptHandler = (vm: QuickJSContext) => boolean | undefined
 
 /**
  * Property key for getting or setting a property on a handle with
@@ -113,8 +121,8 @@ type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
 /**
  * @private
  */
-class QuickJSVmMemory implements Disposable {
-  readonly owner: QuickJSVm
+class QuickJSContextMemory implements Disposable {
+  readonly owner: QuickJSContext
   readonly ctx: Lifetime<JSContextPointer>
   readonly rt: Lifetime<JSRuntimePointer>
   readonly module: EitherEmscriptenModule
@@ -122,16 +130,17 @@ class QuickJSVmMemory implements Disposable {
   readonly scope = new Scope()
 
   constructor(args: {
-    owner: QuickJSVm
+    owner: QuickJSContext
     module: EitherEmscriptenModule
     ffi: EitherFFI
     ctx: Lifetime<JSContextPointer>
+    manageRt: boolean
     rt: Lifetime<JSRuntimePointer>
   }) {
     this.owner = args.owner
     this.module = args.module
     this.ffi = args.ffi
-    this.rt = this.scope.manage(args.rt)
+    this.rt = args.manageRt ? this.scope.manage(args.rt) : args.rt
     this.ctx = this.scope.manage(args.ctx)
   }
 
@@ -197,13 +206,40 @@ class QuickJSVmMemory implements Disposable {
 }
 
 /**
- * Implements methods that are always synchronous - such methods should never
- * call into a function that suspends when built with ASYNCIFY.
+ * QuickJSVm wraps a QuickJS Javascript runtime (JSRuntime*) and context (JSContext*).
+ * This class's methods return {@link QuickJSHandle}, which wrap C pointers (JSValue*).
+ * It's the caller's responsibility to call `.dispose()` on any
+ * handles you create to free memory once you're done with the handle.
  *
- * @private
+ * Each QuickJSVm instance is isolated. You cannot share handles between different
+ * QuickJSVm instances. You should create separate QuickJSVm instances for
+ * untrusted code from different sources for isolation.
+ *
+ * Use [[QuickJS.createVm]] to create a new QuickJSVm.
+ *
+ * Create QuickJS values inside the interpreter with methods like
+ * [[newNumber]], [[newString]], [[newArray]], [[newObject]],
+ * [[newFunction]], and [[newPromise]].
+ *
+ * Call [[setProp]] or [[defineProp]] to customize objects. Use those methods
+ * with [[global]] to expose the values you create to the interior of the
+ * interpreter, so they can be used in [[evalCode]].
+ *
+ * Use [[evalCode]] or [[callFunction]] to execute Javascript inside the VM. If
+ * you're using asynchronous code inside the QuickJSVm, you may need to also
+ * call [[executePendingJobs]]. Executing code inside the runtime returns a
+ * result object representing successful execution or an error. You must dispose
+ * of any such results to avoid leaking memory inside the VM.
+ *
+ * Implement memory and CPU constraints with [[setInterruptHandler]]
+ * (called regularly while the interpreter runs) and [[setMemoryLimit]].
+ * Use [[computeMemoryUsage]] or [[dumpMemoryUsage]] to guide memory limit
+ * tuning.
  */
-export class PureQuickJSVm implements Disposable {
-  private owner: QuickJSVm
+// TODO: Manage own callback registration
+export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disposable {
+  /** @private */
+  protected owner: QuickJSContext
   /** @private */
   protected readonly ctx: Lifetime<JSContextPointer>
   /** @private */
@@ -213,7 +249,7 @@ export class PureQuickJSVm implements Disposable {
   /** @private */
   protected readonly ffi: EitherFFI
   /** @private */
-  protected memory: QuickJSVmMemory
+  protected memory: QuickJSContextMemory
 
   /** @private */
   protected _undefined: QuickJSHandle | undefined = undefined
@@ -233,14 +269,16 @@ export class PureQuickJSVm implements Disposable {
     module: EitherEmscriptenModule
     ffi: EitherFFI
     ctx: Lifetime<JSContextPointer>
+    manageRt: boolean
     rt: Lifetime<JSRuntimePointer>
   }) {
-    this.owner = this as unknown as QuickJSVm
+    // TODO: RuntimeCallbacks
+    this.owner = this as unknown as QuickJSContext
     this.module = args.module
     this.ffi = args.ffi
     this.rt = args.rt
     this.ctx = args.ctx
-    this.memory = new QuickJSVmMemory({
+    this.memory = new QuickJSContextMemory({
       ...args,
       owner: this.owner,
     })
@@ -410,169 +448,6 @@ export class PureQuickJSVm implements Disposable {
     })
   }
 
-  // Runtime management -------------------------------------------------------
-
-  /**
-   * In QuickJS, promises and async functions create pendingJobs. These do not execute
-   * immediately and need to be run by calling [[executePendingJobs]].
-   *
-   * @return true if there is at least one pendingJob queued up.
-   */
-  hasPendingJob(): boolean {
-    return Boolean(this.ffi.QTS_IsJobPending(this.rt.value))
-  }
-
-  private interruptHandler: InterruptHandler | undefined
-
-  /**
-   * Set a callback which is regularly called by the QuickJS engine when it is
-   * executing code. This callback can be used to implement an execution
-   * timeout.
-   *
-   * The interrupt handler can be removed with [[removeInterruptHandler]].
-   */
-  setInterruptHandler(cb: InterruptHandler) {
-    const prevInterruptHandler = this.interruptHandler
-    this.interruptHandler = cb
-    if (!prevInterruptHandler) {
-      this.ffi.QTS_RuntimeEnableInterruptHandler(this.rt.value)
-    }
-  }
-
-  /**
-   * Remove the interrupt handler, if any.
-   * See [[setInterruptHandler]].
-   */
-  removeInterruptHandler() {
-    if (this.interruptHandler) {
-      this.ffi.QTS_RuntimeDisableInterruptHandler(this.rt.value)
-      this.interruptHandler = undefined
-    }
-  }
-
-  /**
-   * @hidden
-   */
-  cToHostInterrupt: CToHostInterruptImplementation = rt => {
-    if (rt !== this.rt.value) {
-      throw new Error('QuickJSVm instance received C -> JS interrupt with mismatched rt')
-    }
-
-    const fn = this.interruptHandler
-    if (!fn) {
-      throw new Error('QuickJSVm had no interrupt handler')
-    }
-
-    return fn(this.owner) ? 1 : 0
-  }
-
-  /**
-   * Set the max memory this runtime can allocate.
-   * To remove the limit, set to `-1`.
-   */
-  setMemoryLimit(limitBytes: number) {
-    if (limitBytes < 0 && limitBytes !== -1) {
-      throw new Error('Cannot set memory limit to negative number. To unset, pass -1')
-    }
-
-    this.ffi.QTS_RuntimeSetMemoryLimit(this.rt.value, limitBytes)
-  }
-
-  /**
-   * Compute memory usage for this runtime. Returns the result as a handle to a
-   * JSValue object. Use [[dump]] to convert to a native object.
-   * Calling this method will allocate more memory inside the runtime. The information
-   * is accurate as of just before the call to `computeMemoryUsage`.
-   * For a human-digestible representation, see [[dumpMemoryUsage]].
-   */
-  computeMemoryUsage(): QuickJSHandle {
-    return this.memory.heapValueHandle(
-      this.ffi.QTS_RuntimeComputeMemoryUsage(this.rt.value, this.ctx.value)
-    )
-  }
-
-  /**
-   * @returns a human-readable description of memory usage in this runtime.
-   * For programmatic access to this information, see [[computeMemoryUsage]].
-   */
-  dumpMemoryUsage(): string {
-    return this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value)
-  }
-
-  /**
-   * @private
-   */
-  protected borrowPropertyKey(key: QuickJSPropertyKey): QuickJSHandle {
-    if (typeof key === 'number') {
-      return this.newNumber(key)
-    }
-
-    if (typeof key === 'string') {
-      return this.newString(key)
-    }
-
-    // key is already a JSValue, but we're borrowing it. Return a static handle
-    // for internal use only.
-    return new StaticLifetime(key.value as JSValueConstPointer, this.owner)
-  }
-}
-
-/**
- * QuickJSVm wraps a QuickJS Javascript runtime (JSRuntime*) and context (JSContext*).
- * This class's methods return {@link QuickJSHandle}, which wrap C pointers (JSValue*).
- * It's the caller's responsibility to call `.dispose()` on any
- * handles you create to free memory once you're done with the handle.
- *
- * Each QuickJSVm instance is isolated. You cannot share handles between different
- * QuickJSVm instances. You should create separate QuickJSVm instances for
- * untrusted code from different sources for isolation.
- *
- * Use [[QuickJS.createVm]] to create a new QuickJSVm.
- *
- * Create QuickJS values inside the interpreter with methods like
- * [[newNumber]], [[newString]], [[newArray]], [[newObject]],
- * [[newFunction]], and [[newPromise]].
- *
- * Call [[setProp]] or [[defineProp]] to customize objects. Use those methods
- * with [[global]] to expose the values you create to the interior of the
- * interpreter, so they can be used in [[evalCode]].
- *
- * Use [[evalCode]] or [[callFunction]] to execute Javascript inside the VM. If
- * you're using asynchronous code inside the QuickJSVm, you may need to also
- * call [[executePendingJobs]]. Executing code inside the runtime returns a
- * result object representing successful execution or an error. You must dispose
- * of any such results to avoid leaking memory inside the VM.
- *
- * Implement memory and CPU constraints with [[setInterruptHandler]]
- * (called regularly while the interpreter runs) and [[setMemoryLimit]].
- * Use [[computeMemoryUsage]] or [[dumpMemoryUsage]] to guide memory limit
- * tuning.
- */
-export class QuickJSVm
-  extends PureQuickJSVm
-  implements LowLevelJavascriptVm<QuickJSHandle>, Disposable
-{
-  /** @private */
-  readonly module: QuickJSEmscriptenModule
-  /** @private */
-  protected readonly ffi: QuickJSFFI
-
-  /**
-   * Use {@link QuickJS.createVm} to create a QuickJSVm instance.
-   */
-  constructor(args: {
-    module: QuickJSEmscriptenModule
-    ffi: QuickJSFFI
-    ctx: Lifetime<JSContextPointer>
-    rt: Lifetime<JSRuntimePointer>
-  }) {
-    super(args)
-    this.module = args.module
-    this.ffi = args.ffi
-  }
-
-  // New values ---------------------------------------------------------------
-
   /**
    * Convert a Javascript function into a QuickJS function value.
    * See [[VmFunctionImplementation]] for more details.
@@ -594,17 +469,25 @@ export class QuickJSVm
   newFunction(name: string, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
     const fnId = ++this.fnNextId
     this.fnMap.set(fnId, fn)
+    return this.memory.heapValueHandle(this.ffi.QTS_NewFunction(this.ctx.value, fnId, name))
+  }
 
-    const fnIdHandle = this.newNumber(fnId)
-    const funcHandle = this.memory.heapValueHandle(
-      this.ffi.QTS_NewFunction(this.ctx.value, fnIdHandle.value, name)
-    )
-
-    // We need to free fnIdHandle's pointer, but not the JSValue, which is retained inside
-    // QuickJS for later.
-    this.module._free(fnIdHandle.value)
-
-    return funcHandle
+  /**
+   * Compile a module.
+   * @experimental
+   */
+  compileModule(
+    moduleName: string,
+    source: string
+  ): Lifetime<JSModuleDefPointer, never, QuickJSContext> {
+    return Scope.withScope(scope => {
+      const sourcePtr = scope.manage(this.memory.newHeapCharPointer(source))
+      const moduleDefPtr = this.ffi.QTS_CompileModule(this.ctx.value, moduleName, sourcePtr.value)
+      // TODO: uh... how do we free this?
+      return new Lifetime(moduleDefPtr, undefined, ptr =>
+        this.ffi.QTS_FreeVoidPointer(this.ctx.value, ptr as JSVoidPointer)
+      )
+    })
   }
 
   // Read values --------------------------------------------------------------
@@ -835,6 +718,16 @@ export class QuickJSVm
   }
 
   /**
+   * Throw an error in the VM, interrupted whatever current execution is in progress when execution resumes.
+   * @experimental
+   */
+  throw(error: Error | QuickJSHandle) {
+    return this.errorToHandle(error).consume(handle =>
+      this.ffi.QTS_Throw(this.ctx.value, handle.value)
+    )
+  }
+
+  /**
    * Execute pendingJobs on the VM until `maxJobsToExecute` jobs are executed
    * (default all pendingJobs), the queue is exhausted, or the runtime
    * encounters an exception.
@@ -863,6 +756,112 @@ export class QuickJSVm
     } else {
       return { error: resultValue }
     }
+  }
+
+  // Runtime management -------------------------------------------------------
+
+  /**
+   * In QuickJS, promises and async functions create pendingJobs. These do not execute
+   * immediately and need to be run by calling [[executePendingJobs]].
+   *
+   * @return true if there is at least one pendingJob queued up.
+   */
+  hasPendingJob(): boolean {
+    return Boolean(this.ffi.QTS_IsJobPending(this.rt.value))
+  }
+
+  private interruptHandler: InterruptHandler | undefined
+
+  /**
+   * Set a callback which is regularly called by the QuickJS engine when it is
+   * executing code. This callback can be used to implement an execution
+   * timeout.
+   *
+   * The interrupt handler can be removed with [[removeInterruptHandler]].
+   */
+  setInterruptHandler(cb: InterruptHandler) {
+    const prevInterruptHandler = this.interruptHandler
+    this.interruptHandler = cb
+    if (!prevInterruptHandler) {
+      this.ffi.QTS_RuntimeEnableInterruptHandler(this.rt.value)
+    }
+  }
+
+  /**
+   * Remove the interrupt handler, if any.
+   * See [[setInterruptHandler]].
+   */
+  removeInterruptHandler() {
+    if (this.interruptHandler) {
+      this.ffi.QTS_RuntimeDisableInterruptHandler(this.rt.value)
+      this.interruptHandler = undefined
+    }
+  }
+
+  /**
+   * @hidden
+   */
+  cToHostInterrupt: CToHostInterruptImplementation = rt => {
+    if (rt !== this.rt.value) {
+      throw new Error('QuickJSVm instance received C -> JS interrupt with mismatched rt')
+    }
+
+    const fn = this.interruptHandler
+    if (!fn) {
+      throw new Error('QuickJSVm had no interrupt handler')
+    }
+
+    return fn(this.owner) ? 1 : 0
+  }
+
+  /**
+   * Set the max memory this runtime can allocate.
+   * To remove the limit, set to `-1`.
+   */
+  setMemoryLimit(limitBytes: number) {
+    if (limitBytes < 0 && limitBytes !== -1) {
+      throw new Error('Cannot set memory limit to negative number. To unset, pass -1')
+    }
+
+    this.ffi.QTS_RuntimeSetMemoryLimit(this.rt.value, limitBytes)
+  }
+
+  /**
+   * Compute memory usage for this runtime. Returns the result as a handle to a
+   * JSValue object. Use [[dump]] to convert to a native object.
+   * Calling this method will allocate more memory inside the runtime. The information
+   * is accurate as of just before the call to `computeMemoryUsage`.
+   * For a human-digestible representation, see [[dumpMemoryUsage]].
+   */
+  computeMemoryUsage(): QuickJSHandle {
+    return this.memory.heapValueHandle(
+      this.ffi.QTS_RuntimeComputeMemoryUsage(this.rt.value, this.ctx.value)
+    )
+  }
+
+  /**
+   * @returns a human-readable description of memory usage in this runtime.
+   * For programmatic access to this information, see [[computeMemoryUsage]].
+   */
+  dumpMemoryUsage(): string {
+    return this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value)
+  }
+
+  /**
+   * @private
+   */
+  protected borrowPropertyKey(key: QuickJSPropertyKey): QuickJSHandle {
+    if (typeof key === 'number') {
+      return this.newNumber(key)
+    }
+
+    if (typeof key === 'string') {
+      return this.newString(key)
+    }
+
+    // key is already a JSValue, but we're borrowing it. Return a static handle
+    // for internal use only.
+    return new StaticLifetime(key.value as JSValueConstPointer, this.owner)
   }
 
   // Utilities ----------------------------------------------------------------
@@ -926,19 +925,18 @@ export class QuickJSVm
     this_ptr,
     argc,
     argv,
-    fn_data
+    fn_id
   ) => {
     if (ctx !== this.ctx.value) {
       throw new Error('QuickJSVm instance received C -> JS call with mismatched ctx')
     }
 
-    const fnId = this.ffi.QTS_GetFloat64(ctx, fn_data)
-    const fn = this.fnMap.get(fnId)
+    const fn = this.fnMap.get(fn_id)
     if (!fn) {
-      throw new Error(`QuickJSVm had no callback with id ${fnId}`)
+      throw new Error(`QuickJSVm had no callback with id ${fn_id}`)
     }
 
-    return Scope.withScope(scope => {
+    return Scope.withScopeMaybeAsync(scope => {
       const thisHandle = scope.manage(
         new WeakLifetime(this_ptr, this.memory.copyJSValue, this.memory.freeJSValue, this)
       )
@@ -950,24 +948,25 @@ export class QuickJSVm
         )
       }
 
-      let ownedResultPtr = 0 as JSValuePointer
-      try {
-        let result = fn.apply(thisHandle, argHandles)
-        if (result) {
-          if ('error' in result && result.error) {
-            throw result.error
+      const maybeAsync = newPromiseLike(() => fn.apply(thisHandle, argHandles))
+        .then(result => {
+          if (result) {
+            if ('error' in result && result.error) {
+              throw result.error
+            }
+            const handle = scope.manage(result instanceof Lifetime ? result : result.value)
+            return this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
           }
-          const handle = scope.manage(result instanceof Lifetime ? result : result.value)
-          ownedResultPtr = this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
-        }
-      } catch (error) {
-        ownedResultPtr = this.errorToHandle(error as Error).consume(errorHandle =>
-          this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
+          return 0
+        })
+        .catch(error =>
+          this.errorToHandle(error as Error).consume(errorHandle =>
+            this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
+          )
         )
-      }
 
-      return ownedResultPtr as JSValuePointer
-    })
+      return unwrapPromiseLike(maybeAsync) as JSValuePointer
+    }) as JSValuePointer
   }
 
   private errorToHandle(error: Error | QuickJSHandle) {

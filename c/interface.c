@@ -11,22 +11,22 @@
  * Functions starting with "QTS_" are exported by generate.ts to:
  * - interface.h for native C code.
  * - ffi.ts for emscripten.
- * 
+ *
  * We support building the following build outputs:
- * 
+ *
  * ## 1. Native machine code
  * For internal development testing purposes.
- * 
+ *
  * ## 2. WASM via Emscripten
  * For general production use.
- * 
+ *
  * ## 3. Experimental: Asyncified WASM via Emscripten with -s ASYNCIFY=1.
  * This variant supports treating async host Javascript calls as synchronous
  * from the perspective of the WASM c code.
- * 
+ *
  * The way this works is described here:
  * https://emscripten.org/docs/porting/asyncify.html
- * 
+ *
  * In this variant, any call into our C code could return a promise if it ended
  * up suspended. We mark the methods we suspect might suspend due to users' code
  * as returning MaybeAsync(T). This information is ignored for the regular
@@ -36,7 +36,7 @@
 #ifdef QTS_ASYNCIFY
 #include <emscripten.h>
 
-#include "../quickjs/cutis.h"
+#include "../quickjs/cutils.h"
 #endif
 #include <math.h>  // For NAN
 #include <stdbool.h>
@@ -68,6 +68,12 @@
  * asynchronously when compiled with ASYNCIFY.
  */
 #define MaybeAsync(T) T
+
+/**
+ * Signal to our FFI code generator that this function is only available in
+ * ASYNCIFY builds.
+ */
+#define AsyncifyOnly(T) T
 
 #define JSVoid void
 
@@ -115,7 +121,7 @@ JSValue *jsvalue_to_heap(JSValueConst value) {
  */
 
 // When host javascript loads this Emscripten module, it should set `bound_callback` to a dispatcher function.
-typedef JSValue *QTS_C_To_HostCallbackFunc(JSContext *ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, JSValueConst *fn_data_ptr);
+typedef JSValue *QTS_C_To_HostCallbackFunc(JSContext *ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, int magic_func_id);
 QTS_C_To_HostCallbackFunc *bound_callback = NULL;
 
 void QTS_SetHostCallback(QTS_C_To_HostCallbackFunc *fp) {
@@ -124,13 +130,13 @@ void QTS_SetHostCallback(QTS_C_To_HostCallbackFunc *fp) {
 
 // We always use a pointer to this function with NewCFunctionData.
 // The host JS should do it's own dispatch based on the value of *func_data.
-JSValue qts_quickjs_to_c_callback(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic, JSValue *func_data) {
+JSValue qts_quickjs_to_c_callback(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic) {
   if (bound_callback == NULL) {
     printf(PKG "callback from C, but no QTS_C_To_HostCallback set");
     abort();
   }
 
-  JSValue *result_ptr = (*bound_callback)(ctx, &this_val, argc, argv, func_data);
+  JSValue *result_ptr = (*bound_callback)(ctx, &this_val, argc, argv, magic);
   if (result_ptr == NULL) {
     return JS_UNDEFINED;
   }
@@ -143,11 +149,40 @@ JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
   return &argv[index];
 }
 
-JSValue *QTS_NewFunction(JSContext *ctx, JSValueConst *func_data, const char *name) {
-  JSValue func_obj = JS_NewCFunctionData(ctx, &qts_quickjs_to_c_callback, /* min argc */ 0, /* unused magic */ 0, /* func_data len */ 1, func_data);
-  JS_DefinePropertyValueStr(ctx, func_obj, "name", JS_NewString(ctx, name), JS_PROP_CONFIGURABLE);
+JSValue *qts_new_function(JSContext *ctx, int func_id, const char *name, JSCFunctionMagic *c_func_impl) {
+  JSValue func_obj = JS_NewCFunctionMagic(
+      /* context */ ctx,
+      /* JSCFunctionMagic* */ c_func_impl,
+      /* name */ name,
+      /* min argc */ 0,
+      /* function type */ JS_CFUNC_generic_magic,
+      /* magic: fn id */ func_id);
   return jsvalue_to_heap(func_obj);
 }
+
+JSValue *QTS_NewFunction(JSContext *ctx, int func_id, const char *name) {
+  return qts_new_function(ctx, func_id, name, &qts_quickjs_to_c_callback);
+}
+
+#ifdef QTS_ASYNCIFY
+EM_ASYNC_JS(JSValue *, qts_quickjs_to_c_callback_asyncify_inner, (JSContext * ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic), {
+  return Module.cToHostAsyncCallback(ctx, this_val, argc, argv, magic);
+})
+
+JSValue qts_quickjs_to_c_callback_asyncify(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic) {
+  JSValue *result_ptr = qts_quickjs_to_c_callback_asyncify_inner(ctx, &this_val, argc, argv, func_data);
+  if (result_ptr == NULL) {
+    return JS_UNDEFINED;
+  }
+  JSValue result = *result_ptr;
+  free(result_ptr);
+  return result;
+}
+
+AsyncifyOnly(JSValue *) QTS_NewAsyncFunction(JSContext *ctx, int func_id, const char *name) {
+  return qts_new_function(ctx, func_id, name, &qts_quickjs_to_c_callback_asyncify);
+}
+#endif
 
 JSValue *QTS_Throw(JSContext *ctx, JSValueConst *error) {
   JSValue copy = JS_DupValue(ctx, *error);

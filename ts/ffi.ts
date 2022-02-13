@@ -18,7 +18,7 @@ export class QuickJSFFI {
   QTS_ArgvGetJSValueConstPointer: (argv: JSValuePointer | JSValueConstPointer, index: number) => JSValueConstPointer =
     this.module.cwrap("QTS_ArgvGetJSValueConstPointer", "number", ["number","number"])
 
-  QTS_NewFunction: (ctx: JSContextPointer, func_data: JSValuePointer | JSValueConstPointer, name: string) => JSValuePointer =
+  QTS_NewFunction: (ctx: JSContextPointer, func_id: number, name: string) => JSValuePointer =
     this.module.cwrap("QTS_NewFunction", "number", ["number","number","string"])
 
   QTS_Throw: (ctx: JSContextPointer, error: JSValuePointer | JSValueConstPointer) => JSValuePointer =

@@ -19,7 +19,7 @@ describe('QuickJSVm', async () => {
 
   beforeEach(async () => {
     const quickjs = await getQuickJS()
-    vm = quickjs.createVm()
+    vm = quickjs.newContext()
   })
 
   afterEach(() => {

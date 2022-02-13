@@ -18,8 +18,11 @@ export class QuickJSAsyncFFI {
   QTS_ArgvGetJSValueConstPointer: (argv: JSValuePointer | JSValueConstPointer, index: number) => JSValueConstPointer =
     this.module.cwrap("QTS_ArgvGetJSValueConstPointer", "number", ["number","number"])
 
-  QTS_NewFunction: (ctx: JSContextPointer, func_data: JSValuePointer | JSValueConstPointer, name: string) => JSValuePointer =
+  QTS_NewFunction: (ctx: JSContextPointer, func_id: number, name: string) => JSValuePointer =
     this.module.cwrap("QTS_NewFunction", "number", ["number","number","string"])
+
+  QTS_NewAsyncFunction: (ctx: JSContextPointer, func_id: number, name: string) => JSValuePointer =
+    this.module.cwrap("QTS_NewAsyncFunction", "number", ["number","number","string"])
 
   QTS_Throw: (ctx: JSContextPointer, error: JSValuePointer | JSValueConstPointer) => JSValuePointer =
     this.module.cwrap("QTS_Throw", "number", ["number","number"])
@@ -118,19 +121,19 @@ export class QuickJSAsyncFFI {
     assertSync(this.module.cwrap("QTS_ExecutePendingJob", "number", ["number","number"]))
 
   QTS_ExecutePendingJob_MaybeAsync: (rt: JSRuntimePointer, maxJobsToExecute: number) => JSValuePointer | Promise<JSValuePointer> =
-    this.module.cwrap("QTS_ExecutePendingJob", "number", ["number","number"])
+    this.module.cwrap("QTS_ExecutePendingJob", "number", ["number","number"], { async: true })
 
   QTS_GetProp: (ctx: JSContextPointer, this_val: JSValuePointer | JSValueConstPointer, prop_name: JSValuePointer | JSValueConstPointer) => JSValuePointer =
     assertSync(this.module.cwrap("QTS_GetProp", "number", ["number","number","number"]))
 
   QTS_GetProp_MaybeAsync: (ctx: JSContextPointer, this_val: JSValuePointer | JSValueConstPointer, prop_name: JSValuePointer | JSValueConstPointer) => JSValuePointer | Promise<JSValuePointer> =
-    this.module.cwrap("QTS_GetProp", "number", ["number","number","number"])
+    this.module.cwrap("QTS_GetProp", "number", ["number","number","number"], { async: true })
 
   QTS_SetProp: (ctx: JSContextPointer, this_val: JSValuePointer | JSValueConstPointer, prop_name: JSValuePointer | JSValueConstPointer, prop_value: JSValuePointer | JSValueConstPointer) => void =
     assertSync(this.module.cwrap("QTS_SetProp", null, ["number","number","number","number"]))
 
   QTS_SetProp_MaybeAsync: (ctx: JSContextPointer, this_val: JSValuePointer | JSValueConstPointer, prop_name: JSValuePointer | JSValueConstPointer, prop_value: JSValuePointer | JSValueConstPointer) => void | Promise<void> =
-    this.module.cwrap("QTS_SetProp", null, ["number","number","number","number"])
+    this.module.cwrap("QTS_SetProp", null, ["number","number","number","number"], { async: true })
 
   QTS_DefineProp: (ctx: JSContextPointer, this_val: JSValuePointer | JSValueConstPointer, prop_name: JSValuePointer | JSValueConstPointer, prop_value: JSValuePointer | JSValueConstPointer, get: JSValuePointer | JSValueConstPointer, set: JSValuePointer | JSValueConstPointer, configurable: boolean, enumerable: boolean, has_value: boolean) => void =
     this.module.cwrap("QTS_DefineProp", null, ["number","number","number","number","number","number","boolean","boolean","boolean"])
@@ -139,7 +142,7 @@ export class QuickJSAsyncFFI {
     assertSync(this.module.cwrap("QTS_Call", "number", ["number","number","number","number","number"]))
 
   QTS_Call_MaybeAsync: (ctx: JSContextPointer, func_obj: JSValuePointer | JSValueConstPointer, this_obj: JSValuePointer | JSValueConstPointer, argc: number, argv_ptrs: JSValueConstPointerPointer) => JSValuePointer | Promise<JSValuePointer> =
-    this.module.cwrap("QTS_Call", "number", ["number","number","number","number","number"])
+    this.module.cwrap("QTS_Call", "number", ["number","number","number","number","number"], { async: true })
 
   QTS_ResolveException: (ctx: JSContextPointer, maybe_exception: JSValuePointer) => JSValuePointer =
     this.module.cwrap("QTS_ResolveException", "number", ["number","number"])
@@ -148,13 +151,13 @@ export class QuickJSAsyncFFI {
     assertSync(this.module.cwrap("QTS_Dump", "string", ["number","number"]))
 
   QTS_Dump_MaybeAsync: (ctx: JSContextPointer, obj: JSValuePointer | JSValueConstPointer) => string | Promise<string> =
-    this.module.cwrap("QTS_Dump", "string", ["number","number"])
+    this.module.cwrap("QTS_Dump", "string", ["number","number"], { async: true })
 
   QTS_Eval: (ctx: JSContextPointer, js_code: HeapCharPointer, filename: string) => JSValuePointer =
     assertSync(this.module.cwrap("QTS_Eval", "number", ["number","number","string"]))
 
   QTS_Eval_MaybeAsync: (ctx: JSContextPointer, js_code: HeapCharPointer, filename: string) => JSValuePointer | Promise<JSValuePointer> =
-    this.module.cwrap("QTS_Eval", "number", ["number","number","string"])
+    this.module.cwrap("QTS_Eval", "number", ["number","number","string"], { async: true })
 
   QTS_Typeof: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => string =
     this.module.cwrap("QTS_Typeof", "string", ["number","number"])

@@ -9,7 +9,6 @@ import {
   JSModuleDefPointer,
   QTS_C_To_HostLoadModuleFuncPointer,
 } from './ffi-types'
-import { Scope } from './quickjs'
 import { EitherFFI } from './types'
 
 /**
@@ -20,8 +19,19 @@ export type CToHostCallbackFunctionImplementation = (
   this_ptr: JSValueConstPointer,
   argc: number,
   argv: JSValueConstPointer,
-  fn_data_ptr: JSValueConstPointer
+  fn_id: number
 ) => JSValuePointer
+
+/**
+ * @private
+ */
+export type CToHostAsyncCallbackFunctionImplementation = (
+  ctx: JSContextPointer,
+  this_ptr: JSValueConstPointer,
+  argc: number,
+  argv: JSValueConstPointer,
+  fn_id: number
+) => JSValuePointer | Promise<JSValuePointer>
 
 /**
  * @private
@@ -35,7 +45,7 @@ export type CToHostModuleLoaderImplementation = (
   rt: JSRuntimePointer,
   ctx: JSContextPointer,
   moduleName: string
-) => JSModuleDefPointer
+) => JSModuleDefPointer | Promise<JSModuleDefPointer>
 
 /**
  * @private
@@ -138,15 +148,14 @@ export class QuickJSModuleCallbacks {
     this_ptr,
     argc,
     argv,
-    fn_data_ptr
+    fn_id
   ) => {
     try {
       const vm = this.contextCallbacks.get(ctx)
       if (!vm) {
-        const fn_name = this.ffi.QTS_GetString(ctx, fn_data_ptr)
-        throw new Error(`QuickJSVm(ctx = ${ctx}) not found for C function call "${fn_name}"`)
+        throw new Error(`QuickJSVm(ctx = ${ctx}) not found for C function call "${fn_id}"`)
       }
-      return vm.cToHostCallbackFunction(ctx, this_ptr, argc, argv, fn_data_ptr)
+      return vm.cToHostCallbackFunction(ctx, this_ptr, argc, argv, fn_id)
     } catch (error) {
       console.error('[C to host error: returning null]', error)
       return 0 as JSValuePointer

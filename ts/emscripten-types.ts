@@ -11,6 +11,11 @@
 // - some upstream types reference web-only ambient types like WebGL stuff, which
 //   we don't use.
 
+import {
+  CToHostAsyncCallbackFunctionImplementation,
+  CToHostCallbackFunctionImplementation,
+} from './quickjs-module'
+
 declare namespace Emscripten {
   interface FileSystemType {}
   type EnvironmentType = 'WEB' | 'NODE' | 'SHELL' | 'WORKER'
@@ -78,6 +83,7 @@ export interface QuickJSAsyncEmscriptenModule extends EmscriptenModule {
 
   // TODO: asyncify stuff, eg Asyncify.handleSleep()
   // https://emscripten.org/docs/porting/asyncify.html#ways-to-use-async-apis-in-older-engines
+  cToHostAsyncCallback?: CToHostAsyncCallbackFunctionImplementation
 }
 
 export type EitherModule = QuickJSEmscriptenModule | QuickJSAsyncEmscriptenModule

@@ -1,5 +1,10 @@
 import { isSuccess, SuccessOrFail } from './vm-interface'
 
+/**
+ * @private
+ *
+ * Idea for a way to write function implementations to be both async and sync.
+ */
 export class SyncPromise<T> {
   constructor(public state: SuccessOrFail<T, unknown>) {}
 
@@ -26,9 +31,23 @@ export class SyncPromise<T> {
       error => fail(error)
     )
   }
+
+  finally(callback: () => void): SyncPromise<T> {
+    callback()
+    return this
+  }
+}
+/** @private */
+export function newPromiseLike<T>(fn: () => T | Promise<T>): SyncPromise<T> | Promise<T> {
+  try {
+    return intoPromiseLike(fn())
+  } catch (error) {
+    return new SyncPromise({ error })
+  }
 }
 
-export function intoPromise<T>(value: T | Promise<T>): SyncPromise<T> | Promise<T> {
+/** @private */
+export function intoPromiseLike<T>(value: T | Promise<T>): SyncPromise<T> | Promise<T> {
   if (value instanceof Promise) {
     return value
   }
@@ -36,7 +55,8 @@ export function intoPromise<T>(value: T | Promise<T>): SyncPromise<T> | Promise<
   return new SyncPromise({ value })
 }
 
-export function unwrapPromise<T>(promise: SyncPromise<T> | Promise<T>): T | Promise<T> {
+/** @private */
+export function unwrapPromiseLike<T>(promise: SyncPromise<T> | Promise<T>): T | Promise<T> {
   if (promise instanceof SyncPromise) {
     if (isSuccess(promise.state)) {
       return promise.state.value
@@ -46,11 +66,4 @@ export function unwrapPromise<T>(promise: SyncPromise<T> | Promise<T>): T | Prom
   }
 
   return promise
-}
-
-function assertSync<T>(value: T | Promise<T>): T {
-  if (value && typeof value === 'object' && value instanceof Promise) {
-    throw new Error('Function unexpectedly returned a Promise')
-  }
-  return value
 }

@@ -1,3 +1,4 @@
+import { newPromiseLike, unwrapPromiseLike } from './asyncify-helpers'
 import { QuickJSHandle } from './quickjs'
 
 /**
@@ -203,6 +204,20 @@ export class Scope implements Disposable {
     } finally {
       scopeFinally(scope, blockError)
     }
+  }
+
+  static withScopeMaybeAsync<R>(block: (scope: Scope) => R | Promise<R>): R | Promise<R> {
+    const scope = new Scope()
+    let blockError: Error | undefined
+    const maybeAsync = newPromiseLike(() => block(scope))
+      .catch(error => {
+        blockError = error
+        throw error
+      })
+      .finally(() => {
+        scopeFinally(scope, blockError)
+      })
+    return unwrapPromiseLike(maybeAsync)
   }
 
   /**

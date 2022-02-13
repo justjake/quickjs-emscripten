@@ -1,4 +1,4 @@
-import QuickJSModuleLoader from './quickjs-emscripten-module'
+import QuickJSModuleLoader from './quickjs.emscripten-module'
 import { QuickJSFFI } from './ffi'
 import { QuickJSEmscriptenModule } from './emscripten-types'
 import { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable } from './lifetime'
@@ -10,17 +10,18 @@ import {
   QuickJSEvalOptions,
   QuickJSHandle,
   QuickJSPropertyKey,
-  QuickJSVm,
+  QuickJSContext,
   StaticJSValue,
-} from './vm'
-import { newRuntime, QuickJSAsyncContext } from './vm-asyncify'
+} from './context'
 import { QuickJSDeferredPromise } from './deferred-promise'
 import { QuickJSModuleCallbacks } from './quickjs-module'
+import { newAsyncRuntime, QuickJSRuntimeAsync } from './runtime-asyncify'
+import { QuickJSContextAsync } from './context-asyncify'
 
 // Exports of types moved out of this file
 export { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable }
 export {
-  QuickJSVm,
+  QuickJSContext as QuickJSVm,
   InterruptHandler,
   StaticJSValue,
   JSValueConst,
@@ -39,7 +40,7 @@ export {
  * QuickJS is a singleton. Use the [[getQuickJS]] function to instantiate
  * or retrieve an instance.
  *
- * Use the {@link QuickJS.createVm} method to create a {@link QuickJSVm}.
+ * Use the {@link QuickJS.newContext} method to create a {@link QuickJSVm}.
  *
  * Use the {@link QuickJS.evalCode} method as a shortcut evaluate Javascript safely
  * and return the result as a native Javascript value.
@@ -63,7 +64,7 @@ class QuickJS {
    * Each VM is completely independent - you cannot share handles between
    * VMs.
    */
-  createVm(): QuickJSVm {
+  newContext(): QuickJSContext {
     const rt = new Lifetime(this.syncFFI.QTS_NewRuntime(), undefined, rt_ptr => {
       this.syncCallbacks.deleteRuntime(rt_ptr)
       this.syncFFI.QTS_FreeRuntime(rt_ptr)
@@ -72,9 +73,10 @@ class QuickJS {
       this.syncCallbacks.deleteContext(ctx_ptr)
       this.syncFFI.QTS_FreeContext(ctx_ptr)
     })
-    const vm = new QuickJSVm({
+    const vm = new QuickJSContext({
       module: this.syncModule,
       ffi: this.syncFFI,
+      manageRt: true,
       rt,
       ctx,
     })
@@ -83,13 +85,21 @@ class QuickJS {
     return vm
   }
 
-  /**
-   * Create an asyncified QuickJS VM.
-   * @todo Better docs
-   */
-  async newAsyncVM(): Promise<QuickJSAsyncContext> {
-    const runtime = await newRuntime()
-    return runtime.newContext()
+  /** @deprecated use [newContext] instead. */
+  createVM(): QuickJSContext {
+    return this.newContext()
+  }
+
+  /** @experimental */
+  async newAsyncRuntime(): Promise<QuickJSRuntimeAsync> {
+    return newAsyncRuntime()
+  }
+
+  async newAsyncContext(): Promise<QuickJSContextAsync> {
+    const runtime = await this.newAsyncRuntime()
+    const context = runtime.newContext()
+    // TODO: context should manage lifetime of runtime
+    return context
   }
 
   /**
@@ -115,7 +125,7 @@ class QuickJS {
    */
   evalCode(code: string, options: QuickJSEvalOptions = {}): unknown {
     return Scope.withScope(scope => {
-      const vm = scope.manage(this.createVm())
+      const vm = scope.manage(this.newContext())
 
       if (options.shouldInterrupt) {
         vm.setInterruptHandler(options.shouldInterrupt)
@@ -161,6 +171,7 @@ export function shouldInterruptAfterDeadline(deadline: Date | number): Interrupt
 
 let singleton: QuickJS | undefined = undefined
 const singletonPromise = QuickJSModuleLoader().then(module => {
+  module.type = 'sync'
   singleton = new QuickJS(module)
   return singleton
 })
