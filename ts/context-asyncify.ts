@@ -44,9 +44,6 @@ export class QuickJSContextAsync extends QuickJSContext {
     return { value: this.memory.heapValueHandle(resultPtr) }
   }
 
-  private asyncFnId = 0
-  private asyncFnMap = new Map<number, AsyncFunctionImplementation>()
-
   /**
    * Similar to [newFunction].
    * Convert an async host Javascript function into a synchronous QuickJS function value.
@@ -61,8 +58,8 @@ export class QuickJSContextAsync extends QuickJSContext {
    * See [Emscripten's docs on Asyncify](https://emscripten.org/docs/porting/asyncify.html).
    */
   newAsyncifiedFunction(name: string, fn: AsyncFunctionImplementation): QuickJSHandle {
-    const fnId = ++this.asyncFnId
-    this.asyncFnMap.set(fnId, fn)
+    const fnId = ++this.fnNextId
+    this.fnMap.set(fnId, fn as any)
     return this.memory.heapValueHandle(this.ffi.QTS_NewAsyncFunction(this.ctx.value, fnId, name))
   }
 }

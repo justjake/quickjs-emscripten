@@ -42,6 +42,12 @@ function main() {
     return
   }
 
+  if (command === 'sync-symbols') {
+    const symbols = buildSyncSymbols(matches)
+    writeFile(destination, JSON.stringify(symbols))
+    return
+  }
+
   if (command === 'header') {
     const includes = includeMatches.map(match => match[0]).join('\n')
     const typedefs = typedefMatches.map(match => match[0]).join('\n')
@@ -188,23 +194,29 @@ function renderFunction(args: {
   return `  ${typescriptFunctionName}: ${typescriptFunctionType} =\n    ${cwrap}`
 }
 
-function buildSymbols(matches: RegExpMatchArray[]) {
+function getAvailableDefinitions(matches: RegExpMatchArray[]) {
   const parsed = matches.map(match => {
     const [, returnType, functionName, , rawParams] = match
     const params = parseParams(rawParams)
     return { functionName, returnType: cTypeToTypescriptType(returnType.trim()), params }
   })
   const filtered = parsed.filter(fn => !fn.returnType.attributes.has('AsyncifyOnly') || ASYNCIFY)
-  const names = filtered.map(fn => '_' + fn.functionName)
+  return filtered
+}
+
+function buildSymbols(matches: RegExpMatchArray[]) {
+  const names = getAvailableDefinitions(matches).map(fn => '_' + fn.functionName)
   return names.concat('_malloc', '_free')
 }
 
+function buildSyncSymbols(matches: RegExpMatchArray[]) {
+  const parsed = getAvailableDefinitions(matches)
+  const filtered = parsed.filter(fn => !fn.returnType.attributes.has('MaybeAsync'))
+  return filtered.map(fn => '_' + fn.functionName)
+}
+
 function buildFFI(matches: RegExpExecArray[]) {
-  const parsed = matches.map(match => {
-    const [, returnType, functionName, , rawParams] = match
-    const params = parseParams(rawParams)
-    return { functionName, returnType: cTypeToTypescriptType(returnType.trim()), params }
-  })
+  const parsed = getAvailableDefinitions(matches)
   const decls: string[] = []
   parsed.forEach(fn => {
     if (!fn.returnType.attributes.has('AsyncifyOnly') || ASYNCIFY) {

@@ -2,6 +2,7 @@
 CC=clang
 EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.2
 EMCC=docker run --rm -v $(shell pwd):$(shell pwd) -u $(shell id -u):$(shell id -g) -w $(shell pwd) $(EMSDK_DOCKER_IMAGE) emcc
+GENERATE_TS=$(GENERATE_TS_ENV) ts-node generate.ts
 
 # Paths
 QUICKJS_ROOT=quickjs
@@ -36,7 +37,8 @@ CFLAGS_EMCC+=-s FILESYSTEM=0
 # Empscripten options for asyncify variant
 # https://emscripten.org/docs/porting/asyncify.html
 CFLAGS_EMCC_ASYNCIFY+=-s ASYNCIFY=1
-CLFAGS_EMCC_ASYNCIFY+=-DQTS_ASYNCIFY=1
+CFLAGS_EMCC_ASYNCIFY+=-DQTS_ASYNCIFY=1
+CFLAGS_EMCC_ASYNCIFY+=-s ASYNCIFY_REMOVE=$(shell cat $(BUILD_WRAPPER)/symbols.sync.json)
 
 ifdef DEBUG
 	CFLAGS=-O0
@@ -79,21 +81,24 @@ $(BUILD_ROOT): $(BUILD_WRAPPER) $(BUILD_QUICKJS)
 
 # Generated source files
 $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
-	ts-node generate.ts header $@
+	$(GENERATE_TS) header $@
 
 # generate.ts not listed because it changes more often for other reasons
 $(BUILD_WRAPPER)/symbols.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
-	ts-node generate.ts symbols $@
+	$(GENERATE_TS) symbols $@
 
-$(BUILD_WRAPPER)/symbols.asyncify.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
-	ts-node generate.ts symbols $@
+$(BUILD_WRAPPER)/symbols.asyncify.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT) $(BUILD_WRAPPER)/symbols.sync.json
+	ASYNCIFY=true $(GENERATE_TS) symbols $@
+
+$(BUILD_WRAPPER)/symbols.sync.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
+	ASYNCIFY=true $(GENERATE_TS) sync-symbols $@
 
 ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
-	$(GENERATE_TS_ENV) ts-node generate.ts ffi $@
+	$(GENERATE_TS) ffi $@
 	prettier --write $@
 
 ts/ffi-asyncify.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
-	$(GENERATE_TS_ENV) ASYNCIFY=true ts-node generate.ts ffi $@
+	ASYNCIFY=true $(GENERATE_TS) ffi $@
 	prettier --write $@
 
 ### Executables

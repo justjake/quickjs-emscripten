@@ -16,6 +16,7 @@ import { ContextOptions, DefaultIntrinsics, RuntimeOptions } from './types'
 export async function newAsyncRuntime(options: RuntimeOptions = {}): Promise<QuickJSRuntimeAsync> {
   const { default: newModule } = await import('./quickjs-asyncify.emscripten-module')
   const module = await newModule()
+  module.type = 'async'
   const ffi = new QuickJSAsyncFFI(module)
   const callbacks = new QuickJSModuleCallbacks(module, ffi)
   const rt = new Lifetime(ffi.QTS_NewRuntime(), undefined, rt_ptr => {

@@ -9,6 +9,7 @@ import { VmCallResult } from './vm-interface'
 import fs from 'fs'
 import { QuickJSContext } from './context'
 import { QuickJSContextAsync } from './context-asyncify'
+import { hasUncaughtExceptionCaptureCallback } from 'process'
 
 function contextTests(getContext: () => Promise<QuickJSContext>) {
   let vm: QuickJSContext = undefined as any
@@ -629,7 +630,29 @@ function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
     vm = undefined as any
   })
 
-  // TODO: tests
+  it('async function support smoketest', async () => {
+    const asyncFn = async () => {
+      console.log('before sleep')
+      await new Promise(resolve => setTimeout(resolve, 50))
+      console.log('after sleep')
+      return vm.newString('hello from async')
+    }
+    const fnHandle = vm.newAsyncifiedFunction('asyncFn', asyncFn)
+    vm.setProp(vm.global, 'asyncFn', fnHandle)
+    fnHandle.dispose()
+
+    const callResultPromise = vm.evalCodeAsync('asyncFn()')
+    assert(callResultPromise instanceof Promise)
+
+    const callResult = await callResultPromise
+    console.log('callResult', callResult)
+
+    const unwrapped = vm.unwrapResult(callResult)
+    console.log('unwrapped', unwrapped)
+
+    const dumped = unwrapped.consume(vm.dump)
+    assert.equal(dumped, 'hello from async')
+  })
 }
 
 describe('QuickJS.newContext', () => {

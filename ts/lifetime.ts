@@ -161,6 +161,7 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
 }
 
 function scopeFinally(scope: Scope, blockError: Error | undefined) {
+  // console.log('scopeFinally', scope, blockError)
   let disposeError: Error | undefined
   try {
     scope.dispose()

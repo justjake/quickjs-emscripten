@@ -122,8 +122,11 @@ export class QuickJSModuleCallbacks {
       MODULE_LOADER_CALLBACK_WASM_TYPES_STRING
     ) as QTS_C_To_HostLoadModuleFuncPointer
     this.ffi.QTS_SetLoadModuleFunc(moduleLoaderCallbackFp)
-
     // TODO: should we removeFunction on dispose?
+
+    if (module.type === 'async') {
+      module.cToHostAsyncCallback = this.cToHostCallbackFunction
+    }
   }
 
   setRuntimeCallbacks(rt: JSRuntimePointer, callbacks: RuntimeCallbacks) {

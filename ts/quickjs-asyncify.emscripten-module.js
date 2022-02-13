@@ -51,6 +51,12 @@ Module['ready'] = new Promise(function(resolve, reject) {
       }
     
 
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_NewAsyncFunction')) {
+        Object.defineProperty(Module['ready'], '_QTS_NewAsyncFunction', { configurable: true, get: function() { abort('You are getting _QTS_NewAsyncFunction on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_NewAsyncFunction', { configurable: true, set: function() { abort('You are setting _QTS_NewAsyncFunction on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
       if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_Throw')) {
         Object.defineProperty(Module['ready'], '_QTS_Throw', { configurable: true, get: function() { abort('You are getting _QTS_Throw on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
         Object.defineProperty(Module['ready'], '_QTS_Throw', { configurable: true, set: function() { abort('You are setting _QTS_Throw on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
@@ -2044,7 +2050,8 @@ var tempI64;
 var ASM_CONSTS = {
   
 };
-
+function __asyncjs__my_js_load_file(pbuf_len,filename){ return Asyncify.handleAsync(async () => { const jsString = 'export const name = "Nice!";'; const lengthBytes = lengthBytesUTF8(jsString) + 1; const stringOnWasmHeap = _malloc(lengthBytes); stringToUTF8(jsString, stringOnWasmHeap, lengthBytes); HEAP32[pbuf_len >> 2] = lengthBytes; return stringOnWasmHeap; }); }
+function __asyncjs__qts_quickjs_to_c_callback_asyncify_inner(ctx,this_val,argc,argv,magic){ return Asyncify.handleAsync(async () => { return Module.cToHostAsyncCallback(ctx, this_val, argc, argv, magic); }); }
 
 
 
@@ -2146,6 +2153,37 @@ var ASM_CONSTS = {
       abort('Assertion failed: ' + UTF8ToString(condition) + ', at: ' + [filename ? UTF8ToString(filename) : 'unknown filename', line, func ? UTF8ToString(func) : 'unknown function']);
     }
 
+  var SYSCALLS = {mappings:{},buffers:[null,[],[]],printChar:function(stream, curr) {
+        var buffer = SYSCALLS.buffers[stream];
+        assert(buffer);
+        if (curr === 0 || curr === 10) {
+          (stream === 1 ? out : err)(UTF8ArrayToString(buffer, 0));
+          buffer.length = 0;
+        } else {
+          buffer.push(curr);
+        }
+      },varargs:undefined,get:function() {
+        assert(SYSCALLS.varargs != undefined);
+        SYSCALLS.varargs += 4;
+        var ret = HEAP32[(((SYSCALLS.varargs)-(4))>>2)];
+        return ret;
+      },getStr:function(ptr) {
+        var ret = UTF8ToString(ptr);
+        return ret;
+      },get64:function(low, high) {
+        if (low >= 0) assert(high === 0);
+        else assert(high === -1);
+        return low;
+      }};
+  function ___syscall_getcwd(buf, size) {
+  abort('it should not be possible to operate on streams when !SYSCALLS_REQUIRE_FILESYSTEM');
+  }
+
+  function ___syscall_readlink(path, buf, bufsize) {
+      path = SYSCALLS.getStr(path);
+      return SYSCALLS.doReadlink(path, buf, bufsize);
+    }
+
   function _abort() {
       abort('native code called abort()');
     }
@@ -2212,28 +2250,6 @@ var ASM_CONSTS = {
       return false;
     }
 
-  var SYSCALLS = {mappings:{},buffers:[null,[],[]],printChar:function(stream, curr) {
-        var buffer = SYSCALLS.buffers[stream];
-        assert(buffer);
-        if (curr === 0 || curr === 10) {
-          (stream === 1 ? out : err)(UTF8ArrayToString(buffer, 0));
-          buffer.length = 0;
-        } else {
-          buffer.push(curr);
-        }
-      },varargs:undefined,get:function() {
-        assert(SYSCALLS.varargs != undefined);
-        SYSCALLS.varargs += 4;
-        var ret = HEAP32[(((SYSCALLS.varargs)-(4))>>2)];
-        return ret;
-      },getStr:function(ptr) {
-        var ret = UTF8ToString(ptr);
-        return ret;
-      },get64:function(low, high) {
-        if (low >= 0) assert(high === 0);
-        else assert(high === -1);
-        return low;
-      }};
   function _fd_close(fd) {
       abort('it should not be possible to operate on streams when !SYSCALLS_REQUIRE_FILESYSTEM');
       return 0;
@@ -2630,6 +2646,10 @@ function intArrayToString(array) {
 
 var asmLibraryArg = {
   "__assert_fail": ___assert_fail,
+  "__asyncjs__my_js_load_file": __asyncjs__my_js_load_file,
+  "__asyncjs__qts_quickjs_to_c_callback_asyncify_inner": __asyncjs__qts_quickjs_to_c_callback_asyncify_inner,
+  "__syscall_getcwd": ___syscall_getcwd,
+  "__syscall_readlink": ___syscall_readlink,
   "abort": _abort,
   "emscripten_memcpy_big": _emscripten_memcpy_big,
   "emscripten_resize_heap": _emscripten_resize_heap,
@@ -2659,6 +2679,9 @@ var _QTS_ArgvGetJSValueConstPointer = Module["_QTS_ArgvGetJSValueConstPointer"] 
 
 /** @type {function(...*):?} */
 var _QTS_NewFunction = Module["_QTS_NewFunction"] = createExportWrapper("QTS_NewFunction");
+
+/** @type {function(...*):?} */
+var _QTS_NewAsyncFunction = Module["_QTS_NewAsyncFunction"] = createExportWrapper("QTS_NewAsyncFunction");
 
 /** @type {function(...*):?} */
 var _QTS_Throw = Module["_QTS_Throw"] = createExportWrapper("QTS_Throw");
@@ -2857,6 +2880,12 @@ var dynCall_ii = Module["dynCall_ii"] = createExportWrapper("dynCall_ii");
 var dynCall_jijjiii = Module["dynCall_jijjiii"] = createExportWrapper("dynCall_jijjiii");
 
 /** @type {function(...*):?} */
+var dynCall_jiii = Module["dynCall_jiii"] = createExportWrapper("dynCall_jiii");
+
+/** @type {function(...*):?} */
+var dynCall_jijiiii = Module["dynCall_jijiiii"] = createExportWrapper("dynCall_jijiiii");
+
+/** @type {function(...*):?} */
 var dynCall_vii = Module["dynCall_vii"] = createExportWrapper("dynCall_vii");
 
 /** @type {function(...*):?} */
@@ -2869,19 +2898,13 @@ var dynCall_jijiiiii = Module["dynCall_jijiiiii"] = createExportWrapper("dynCall
 var dynCall_jijj = Module["dynCall_jijj"] = createExportWrapper("dynCall_jijj");
 
 /** @type {function(...*):?} */
-var dynCall_jiii = Module["dynCall_jiii"] = createExportWrapper("dynCall_jiii");
-
-/** @type {function(...*):?} */
-var dynCall_jijiiii = Module["dynCall_jijiiii"] = createExportWrapper("dynCall_jijiiii");
-
-/** @type {function(...*):?} */
-var dynCall_viii = Module["dynCall_viii"] = createExportWrapper("dynCall_viii");
+var dynCall_viji = Module["dynCall_viji"] = createExportWrapper("dynCall_viji");
 
 /** @type {function(...*):?} */
 var dynCall_vij = Module["dynCall_vij"] = createExportWrapper("dynCall_vij");
 
 /** @type {function(...*):?} */
-var dynCall_viji = Module["dynCall_viji"] = createExportWrapper("dynCall_viji");
+var dynCall_viii = Module["dynCall_viii"] = createExportWrapper("dynCall_viii");
 
 /** @type {function(...*):?} */
 var dynCall_iijijjji = Module["dynCall_iijijjji"] = createExportWrapper("dynCall_iijijjji");

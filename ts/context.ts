@@ -118,6 +118,11 @@ export interface QuickJSEvalOptions {
 type EitherEmscriptenModule = QuickJSEmscriptenModule | QuickJSAsyncEmscriptenModule
 type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
 
+type FnMapEntry = {
+  type: 'sync'
+  impl: VmFunctionImplementation<QuickJSHandle>
+}
+
 /**
  * @private
  */
@@ -282,6 +287,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       ...args,
       owner: this.owner,
     })
+    this.dump = this.dump.bind(this)
   }
 
   // @implement Disposable ----------------------------------------------------
@@ -914,8 +920,10 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     return result.value
   }
 
-  private fnNextId = 0
-  private fnMap = new Map<number, VmFunctionImplementation<QuickJSHandle>>()
+  /** @private */
+  protected fnNextId = 0
+  /** @private */
+  protected fnMap = new Map<number, VmFunctionImplementation<QuickJSHandle>>()
 
   /**
    * @hidden

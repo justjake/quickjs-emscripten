@@ -128,8 +128,6 @@ void QTS_SetHostCallback(QTS_C_To_HostCallbackFunc *fp) {
   bound_callback = fp;
 }
 
-// We always use a pointer to this function with NewCFunctionData.
-// The host JS should do it's own dispatch based on the value of *func_data.
 JSValue qts_quickjs_to_c_callback(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic) {
   if (bound_callback == NULL) {
     printf(PKG "callback from C, but no QTS_C_To_HostCallback set");
@@ -150,6 +148,11 @@ JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
 }
 
 JSValue *qts_new_function(JSContext *ctx, int func_id, const char *name, JSCFunctionMagic *c_func_impl) {
+#ifdef QTS_DEBUG_MODE
+  char msg[500];
+  sprintf(msg, "new_function(name: %s, magic: %d)", name, func_id);
+  QTS_DEBUG(msg)
+#endif
   JSValue func_obj = JS_NewCFunctionMagic(
       /* context */ ctx,
       /* JSCFunctionMagic* */ c_func_impl,
@@ -165,12 +168,17 @@ JSValue *QTS_NewFunction(JSContext *ctx, int func_id, const char *name) {
 }
 
 #ifdef QTS_ASYNCIFY
-EM_ASYNC_JS(JSValue *, qts_quickjs_to_c_callback_asyncify_inner, (JSContext * ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic), {
+EM_ASYNC_JS(JSValue *, qts_quickjs_to_c_callback_asyncify_inner, (JSContext * ctx, JSValueConst *this_val, int argc, JSValueConst *argv, int magic), {
   return Module.cToHostAsyncCallback(ctx, this_val, argc, argv, magic);
 })
 
 JSValue qts_quickjs_to_c_callback_asyncify(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic) {
-  JSValue *result_ptr = qts_quickjs_to_c_callback_asyncify_inner(ctx, &this_val, argc, argv, func_data);
+#ifdef QTS_DEBUG_MODE
+  char msg[500];
+  sprintf(msg, "qts_quickjs_to_c_callback_asyncify(magic: %d)", magic);
+  QTS_DEBUG(msg)
+#endif
+  JSValue *result_ptr = qts_quickjs_to_c_callback_asyncify_inner(ctx, &this_val, argc, argv, magic);
   if (result_ptr == NULL) {
     return JS_UNDEFINED;
   }
@@ -182,6 +190,7 @@ JSValue qts_quickjs_to_c_callback_asyncify(JSContext *ctx, JSValueConst this_val
 AsyncifyOnly(JSValue *) QTS_NewAsyncFunction(JSContext *ctx, int func_id, const char *name) {
   return qts_new_function(ctx, func_id, name, &qts_quickjs_to_c_callback_asyncify);
 }
+
 #endif
 
 JSValue *QTS_Throw(JSContext *ctx, JSValueConst *error) {
