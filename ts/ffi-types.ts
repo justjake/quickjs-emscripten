@@ -17,6 +17,11 @@ export type JSRuntimePointer = Pointer<'JSRuntime'>
 export type JSContextPointer = Pointer<'JSContext'>
 
 /**
+ * `JSContext**`. Used internally for execute pending jobs.
+ */
+export type JSContextPointerPointer = Pointer<'JSContext'>
+
+/**
  * `JSModuleDef*`.
  */
 export type JSModuleDefPointer = Pointer<'JSModuleDef'>

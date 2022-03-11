@@ -4,6 +4,7 @@ import { QuickJSAsyncFFI } from './ffi-asyncify'
 import { JSRuntimePointer } from './ffi-types'
 import { Lifetime } from './quickjs'
 import { QuickJSModuleCallbacks } from './quickjs-module'
+import { QuickJSRuntimeAsync } from './runtime-asyncify'
 import { VmCallResult } from './vm-interface'
 
 export type AsyncFunctionImplementation = (
@@ -19,6 +20,7 @@ export type AsyncFunctionImplementation = (
  * host functions as though they were synchronous.
  */
 export class QuickJSContextAsync extends QuickJSContext {
+  public declare runtime: QuickJSRuntimeAsync
   protected declare module: QuickJSAsyncEmscriptenModule
   protected declare ffi: QuickJSAsyncFFI
   protected declare rt: Lifetime<JSRuntimePointer>

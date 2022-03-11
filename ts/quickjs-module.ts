@@ -169,7 +169,7 @@ export class QuickJSModuleCallbacks {
     try {
       const vm = this.runtimeCallbacks.get(rt)
       if (!vm) {
-        throw new Error(`QuickJSVm(rt = ${rt}) not found for C interrupt`)
+        throw new Error(`QuickJSRuntime(rt = ${rt}) not found for C interrupt`)
       }
       return vm.cToHostInterrupt(rt)
     } catch (error) {

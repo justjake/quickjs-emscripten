@@ -521,14 +521,13 @@ int QTS_IsJobPending(JSRuntime *rt) {
 
   Returns the executed number of jobs or the exception encountered
 */
-MaybeAsync(JSValue *) QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute) {
-  JSContext *pctx;
+MaybeAsync(JSValue *) QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute, JSContext **pctx) {
   int status = 1;
   int executed = 0;
   while (executed != maxJobsToExecute && status == 1) {
-    status = JS_ExecutePendingJob(rt, &pctx);
+    status = JS_ExecutePendingJob(rt, pctx);
     if (status == -1) {
-      return jsvalue_to_heap(JS_GetException(pctx));
+      return jsvalue_to_heap(JS_GetException(*pctx));
     } else if (status == 1) {
       executed++;
     }

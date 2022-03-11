@@ -3,8 +3,8 @@ async function main() {
   const QuickJS = await getQuickJS()
   console.log(QuickJS.evalCode('"QuickJS.evalCode successful"'))
 
-  const vm = QuickJS.createVm()
-  const memoryUsage = vm.dumpMemoryUsage()
+  const vm = QuickJS.createContext()
+  const memoryUsage = vm.runtime.dumpMemoryUsage()
   console.log('Empty VM memory usage:', memoryUsage)
 }
 main()

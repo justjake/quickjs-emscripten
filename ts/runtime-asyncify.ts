@@ -1,7 +1,7 @@
 import { QuickJSContextAsync } from './context-asyncify'
 import { QuickJSAsyncEmscriptenModule } from './emscripten-types'
 import { QuickJSAsyncFFI } from './ffi-asyncify'
-import { JSRuntimePointer } from './ffi-types'
+import { JSContextPointer, JSRuntimePointer } from './ffi-types'
 import { Lifetime } from './quickjs'
 import { QuickJSModuleCallbacks } from './quickjs-module'
 import { QuickJSRuntime } from './runtime'
@@ -38,8 +38,9 @@ export async function newAsyncRuntime(options: RuntimeOptions = {}): Promise<Qui
   return runtime
 }
 
-// TODO: RuntimeCallbacks
 export class QuickJSRuntimeAsync extends QuickJSRuntime {
+  public context: QuickJSContextAsync | undefined
+
   /** @private */
   protected declare module: QuickJSAsyncEmscriptenModule
   /** @private */
@@ -48,6 +49,8 @@ export class QuickJSRuntimeAsync extends QuickJSRuntime {
   protected declare rt: Lifetime<JSRuntimePointer>
   /** @private */
   protected declare callbacks: QuickJSModuleCallbacks
+  /** @private */
+  protected declare contextMap: Map<JSContextPointer, QuickJSContextAsync>
 
   constructor(args: {
     module: QuickJSAsyncEmscriptenModule
@@ -56,7 +59,6 @@ export class QuickJSRuntimeAsync extends QuickJSRuntime {
     callbacks: QuickJSModuleCallbacks
   }) {
     super(args)
-    // TODO: RuntimeCallbacks
   }
 
   override newContext(options: ContextOptions = {}): QuickJSContextAsync {
@@ -75,11 +77,16 @@ export class QuickJSRuntimeAsync extends QuickJSRuntime {
       ctx,
       ffi: this.ffi,
       rt: this.rt,
-      manageRt: false,
+      ownedLifetimes: [],
+      runtime: this,
     })
     this.contextMap.set(ctx.value, context)
     this.callbacks.setContextCallbacks(ctx.value, context)
 
     return context
+  }
+
+  public override getContexts(): IterableIterator<QuickJSContextAsync> {
+    return this.contextMap.values()
   }
 }

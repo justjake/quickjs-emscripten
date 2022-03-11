@@ -13,8 +13,10 @@ import { hasUncaughtExceptionCaptureCallback } from 'process'
 
 function contextTests(getContext: () => Promise<QuickJSContext>) {
   let vm: QuickJSContext = undefined as any
+  let testId = 0
 
   beforeEach(async () => {
+    testId++
     vm = await getContext()
   })
 
@@ -22,6 +24,8 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     vm.dispose()
     vm = undefined as any
   })
+
+  const getTestId = () => `test-${getContext.name}-${testId}`
 
   describe('primitives', () => {
     it('can round-trip a number', () => {
@@ -305,7 +309,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         vm.evalCode(`(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`)
       )
       assert.equal(i, 0)
-      vm.executePendingJobs()
+      vm.runtime.executePendingJobs()
       assert.equal(i, 3)
       assert.equal(vm.getNumber(result), 1)
     })
@@ -321,12 +325,16 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       fnHandle.dispose()
 
       vm.unwrapResult(vm.evalCode(`(new Promise(resolve => resolve(5)).then(nextId));1`)).dispose()
-      assert.strictEqual(vm.hasPendingJob(), true, 'has a pending job after creating a promise')
+      assert.strictEqual(
+        vm.runtime.hasPendingJob(),
+        true,
+        'has a pending job after creating a promise'
+      )
 
-      const executed = vm.unwrapResult(vm.executePendingJobs())
+      const executed = vm.unwrapResult(vm.runtime.executePendingJobs())
       assert.strictEqual(executed, 1, 'executed exactly 1 job')
 
-      assert.strictEqual(vm.hasPendingJob(), false, 'no longer any jobs after execution')
+      assert.strictEqual(vm.runtime.hasPendingJob(), false, 'no longer any jobs after execution')
     })
   })
 
@@ -378,12 +386,20 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
   describe('interrupt handler', () => {
     it('is called with the expected VM', () => {
       let calls = 0
+      const interruptId = getTestId()
       const interruptHandler: InterruptHandler = interruptVm => {
-        assert.strictEqual(interruptVm, vm, 'ShouldInterruptHandler callback VM is the vm')
+        assert.strictEqual(
+          interruptVm,
+          vm.runtime,
+          'ShouldInterruptHandler callback runtime is the runtime'
+        )
+        console.log('interruptHandler called', interruptId)
         calls++
         return false
       }
-      vm.setInterruptHandler(interruptHandler)
+
+      console.log('setInterruptHandler', interruptId)
+      vm.runtime.setInterruptHandler(interruptHandler)
 
       vm.unwrapResult(vm.evalCode('1 + 1')).dispose()
 
@@ -392,14 +408,18 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
     it('interrupts infinite loop execution', () => {
       let calls = 0
+      const interruptId = getTestId()
       const interruptHandler: InterruptHandler = interruptVm => {
+        console.log('interruptHandler called', interruptId)
         if (calls > 10) {
           return true
         }
         calls++
         return false
       }
-      vm.setInterruptHandler(interruptHandler)
+
+      console.log('setInterruptHandler', interruptId)
+      vm.runtime.setInterruptHandler(interruptHandler)
 
       const result = vm.evalCode('i = 0; while (1) { i++ }')
 
@@ -426,7 +446,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
   describe('.computeMemoryUsage', () => {
     it('returns an object with JSON memory usage info', () => {
-      const result = vm.computeMemoryUsage()
+      const result = vm.runtime.computeMemoryUsage()
       const resultObj = vm.dump(result)
       result.dispose()
 
@@ -464,7 +484,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
   describe('.setMemoryLimit', () => {
     it('sets an enforced limit', () => {
-      vm.setMemoryLimit(100)
+      vm.runtime.setMemoryLimit(100)
       const result = vm.evalCode(`new Uint8Array(101); "ok"`)
 
       if (!result.error) {
@@ -472,7 +492,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         throw new Error('should be an error')
       }
 
-      vm.setMemoryLimit(-1) // so we can dump
+      vm.runtime.setMemoryLimit(-1) // so we can dump
       const error = vm.dump(result.error)
       result.error.dispose()
 
@@ -480,8 +500,8 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     })
 
     it('removes limit when set to -1', () => {
-      vm.setMemoryLimit(100)
-      vm.setMemoryLimit(-1)
+      vm.runtime.setMemoryLimit(100)
+      vm.runtime.setMemoryLimit(-1)
 
       const result = vm.unwrapResult(vm.evalCode(`new Uint8Array(101); "ok"`))
       const value = vm.dump(result)
@@ -533,7 +553,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       await deferred.settled
 
       // Execute promise callbacks inside the VM
-      vm.executePendingJobs()
+      vm.runtime.executePendingJobs()
 
       // Check that the promise executed.
       const vmValue = vm.unwrapResult(vm.evalCode(`globalThingy`)).consume(x => vm.dump(x))
@@ -556,7 +576,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       assert.equal(vm.typeof(result), 'object', 'Async function returns an object (promise)')
 
       const promise = result.consume(result => vm.resolvePromise(result))
-      vm.executePendingJobs()
+      vm.runtime.executePendingJobs()
       const asyncResult = vm.unwrapResult(await promise)
 
       assert.equal(vm.dump(asyncResult), 1, 'Awaited promise returns 1')
@@ -578,7 +598,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       assert.equal(vm.typeof(result), 'object', 'Async function returns an object (promise)')
 
       const promise = result.consume(result => vm.resolvePromise(result))
-      vm.executePendingJobs()
+      vm.runtime.executePendingJobs()
       const asyncResult = await promise
 
       if (!asyncResult.error) {
@@ -596,7 +616,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       const promise = vm.resolvePromise(stringHandle)
       stringHandle.dispose()
 
-      vm.executePendingJobs()
+      vm.runtime.executePendingJobs()
 
       const final = await promise.then(result => {
         const stringHandle2 = vm.unwrapResult(result)
@@ -632,9 +652,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
 
   it('async function support smoketest', async () => {
     const asyncFn = async () => {
-      console.log('before sleep')
       await new Promise(resolve => setTimeout(resolve, 50))
-      console.log('after sleep')
       return vm.newString('hello from async')
     }
     const fnHandle = vm.newAsyncifiedFunction('asyncFn', asyncFn)
@@ -645,10 +663,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
     assert(callResultPromise instanceof Promise)
 
     const callResult = await callResultPromise
-    console.log('callResult', callResult)
-
     const unwrapped = vm.unwrapResult(callResult)
-    console.log('unwrapped', unwrapped)
 
     const dumped = unwrapped.consume(vm.dump)
     assert.equal(dumped, 'hello from async')
@@ -659,13 +674,6 @@ describe('QuickJS.newContext', () => {
   contextTests(async () => {
     const quickjs = await getQuickJS()
     return quickjs.newContext()
-  })
-})
-
-describe('QuickJS.createVM', () => {
-  contextTests(async () => {
-    const quickjs = await getQuickJS()
-    return quickjs.createVM()
   })
 })
 

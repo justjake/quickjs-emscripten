@@ -19,11 +19,12 @@ import {
   JSVoidPointer,
 } from './ffi-types'
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from './lifetime'
+import { ModuleMemory } from './memory'
 import {
   CToHostCallbackFunctionImplementation,
   CToHostInterruptImplementation,
 } from './quickjs-module'
-import { QuickJSAsyncContext } from './vm-asyncify'
+import { QuickJSRuntime } from './runtime'
 import {
   SuccessOrFail,
   LowLevelJavascriptVm,
@@ -83,7 +84,16 @@ export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
  * @returns `true` to interrupt JS execution inside the VM.
  * @returns `false` or `undefined` to continue JS execution inside the VM.
  */
-export type InterruptHandler = (vm: QuickJSContext) => boolean | undefined
+export type InterruptHandler = (runtime: QuickJSRuntime) => boolean | undefined
+
+/**
+ * Callback called regularly while the VM executes code.
+ * Determines if a VM's execution should be interrupted.
+ *
+ * @returns `true` to interrupt JS execution inside the VM.
+ * @returns `false` or `undefined` to continue JS execution inside the VM.
+ */
+export type ContextInterruptHandler = (context: QuickJSContext) => boolean | undefined
 
 /**
  * Property key for getting or setting a property on a handle with
@@ -126,7 +136,7 @@ type FnMapEntry = {
 /**
  * @private
  */
-class QuickJSContextMemory implements Disposable {
+class QuickJSContextMemory extends ModuleMemory implements Disposable {
   readonly owner: QuickJSContext
   readonly ctx: Lifetime<JSContextPointer>
   readonly rt: Lifetime<JSRuntimePointer>
@@ -139,13 +149,15 @@ class QuickJSContextMemory implements Disposable {
     module: EitherEmscriptenModule
     ffi: EitherFFI
     ctx: Lifetime<JSContextPointer>
-    manageRt: boolean
     rt: Lifetime<JSRuntimePointer>
+    ownedLifetimes: Disposable[]
   }) {
+    super(args.module)
+    args.ownedLifetimes.forEach(lifetime => this.scope.manage(lifetime))
     this.owner = args.owner
     this.module = args.module
     this.ffi = args.ffi
-    this.rt = args.manageRt ? this.scope.manage(args.rt) : args.rt
+    this.rt = args.rt
     this.ctx = this.scope.manage(args.ctx)
   }
 
@@ -180,33 +192,6 @@ class QuickJSContextMemory implements Disposable {
 
   heapValueHandle(ptr: JSValuePointer): JSValue {
     return new Lifetime(ptr, this.copyJSValue, this.freeJSValue, this.owner)
-  }
-
-  toPointerArray(handleArray: QuickJSHandle[]): Lifetime<JSValueConstPointerPointer> {
-    const typedArray = new Int32Array(handleArray.map(handle => handle.value))
-    const numBytes = typedArray.length * typedArray.BYTES_PER_ELEMENT
-    const ptr = this.module._malloc(numBytes) as JSValueConstPointerPointer
-    var heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes)
-    heapBytes.set(new Uint8Array(typedArray.buffer))
-    return new Lifetime(ptr, undefined, ptr => this.module._free(ptr))
-  }
-
-  newMutablePointerArray(
-    length: number
-  ): Lifetime<{ typedArray: Int32Array; ptr: JSValuePointerPointer }> {
-    const zeros = new Int32Array(new Array(length).fill(0))
-    const numBytes = zeros.length * zeros.BYTES_PER_ELEMENT
-    const ptr = this.module._malloc(numBytes) as JSValuePointerPointer
-    const typedArray = new Int32Array(this.module.HEAPU8.buffer, ptr, length)
-    typedArray.set(zeros)
-    return new Lifetime({ typedArray, ptr }, undefined, value => this.module._free(value.ptr))
-  }
-
-  newHeapCharPointer(string: string): Lifetime<HeapCharPointer> {
-    const numBytes = this.module.lengthBytesUTF8(string) + 1
-    const ptr: HeapCharPointer = this.module._malloc(numBytes) as HeapCharPointer
-    this.module.stringToUTF8(string, ptr, numBytes)
-    return new Lifetime(ptr, undefined, value => this.module._free(value))
   }
 }
 
@@ -243,6 +228,11 @@ class QuickJSContextMemory implements Disposable {
  */
 // TODO: Manage own callback registration
 export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disposable {
+  /**
+   * The runtime that created this context.
+   */
+  public readonly runtime: QuickJSRuntime
+
   /** @private */
   protected owner: QuickJSContext
   /** @private */
@@ -274,10 +264,10 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     module: EitherEmscriptenModule
     ffi: EitherFFI
     ctx: Lifetime<JSContextPointer>
-    manageRt: boolean
     rt: Lifetime<JSRuntimePointer>
+    runtime: QuickJSRuntime
+    ownedLifetimes: Disposable[]
   }) {
-    // TODO: RuntimeCallbacks
     this.owner = this as unknown as QuickJSContext
     this.module = args.module
     this.ffi = args.ffi
@@ -288,6 +278,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       owner: this.owner,
     })
     this.dump = this.dump.bind(this)
+    this.runtime = args.runtime
   }
 
   // @implement Disposable ----------------------------------------------------
@@ -436,7 +427,9 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   newPromise(): QuickJSDeferredPromise {
     return Scope.withScope(scope => {
-      const mutablePointerArray = scope.manage(this.memory.newMutablePointerArray(2))
+      const mutablePointerArray = scope.manage(
+        this.memory.newMutablePointerArray<JSValuePointerPointer>(2)
+      )
       const promisePtr = this.ffi.QTS_NewPromiseCapability(
         this.ctx.value,
         mutablePointerArray.value.ptr
@@ -734,118 +727,6 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   }
 
   /**
-   * Execute pendingJobs on the VM until `maxJobsToExecute` jobs are executed
-   * (default all pendingJobs), the queue is exhausted, or the runtime
-   * encounters an exception.
-   *
-   * In QuickJS, promises and async functions create pendingJobs. These do not execute
-   * immediately and need to triggered to run.
-   *
-   * @param maxJobsToExecute - When negative, run all pending jobs. Otherwise execute
-   * at most `maxJobsToExecute` before returning.
-   *
-   * @return On success, the number of executed jobs. On error, the exception
-   * that stopped execution. Note that executePendingJobs will not normally return
-   * errors thrown inside async functions or rejected promises. Those errors are
-   * available by calling [[resolvePromise]] on the promise handle returned by
-   * the async function.
-   */
-  executePendingJobs(maxJobsToExecute: number = -1): ExecutePendingJobsResult {
-    const resultValue = this.memory.heapValueHandle(
-      this.ffi.QTS_ExecutePendingJob(this.rt.value, maxJobsToExecute)
-    )
-    const typeOfRet = this.typeof(resultValue)
-    if (typeOfRet === 'number') {
-      const executedJobs = this.getNumber(resultValue)
-      resultValue.dispose()
-      return { value: executedJobs }
-    } else {
-      return { error: resultValue }
-    }
-  }
-
-  // Runtime management -------------------------------------------------------
-
-  /**
-   * In QuickJS, promises and async functions create pendingJobs. These do not execute
-   * immediately and need to be run by calling [[executePendingJobs]].
-   *
-   * @return true if there is at least one pendingJob queued up.
-   */
-  hasPendingJob(): boolean {
-    return Boolean(this.ffi.QTS_IsJobPending(this.rt.value))
-  }
-
-  private interruptHandler: InterruptHandler | undefined
-
-  /**
-   * Set a callback which is regularly called by the QuickJS engine when it is
-   * executing code. This callback can be used to implement an execution
-   * timeout.
-   *
-   * The interrupt handler can be removed with [[removeInterruptHandler]].
-   */
-  setInterruptHandler(cb: InterruptHandler) {
-    const prevInterruptHandler = this.interruptHandler
-    this.interruptHandler = cb
-    if (!prevInterruptHandler) {
-      this.ffi.QTS_RuntimeEnableInterruptHandler(this.rt.value)
-    }
-  }
-
-  /**
-   * Remove the interrupt handler, if any.
-   * See [[setInterruptHandler]].
-   */
-  removeInterruptHandler() {
-    if (this.interruptHandler) {
-      this.ffi.QTS_RuntimeDisableInterruptHandler(this.rt.value)
-      this.interruptHandler = undefined
-    }
-  }
-
-  /**
-   * @hidden
-   */
-  cToHostInterrupt: CToHostInterruptImplementation = rt => {
-    if (rt !== this.rt.value) {
-      throw new Error('QuickJSVm instance received C -> JS interrupt with mismatched rt')
-    }
-
-    const fn = this.interruptHandler
-    if (!fn) {
-      throw new Error('QuickJSVm had no interrupt handler')
-    }
-
-    return fn(this.owner) ? 1 : 0
-  }
-
-  /**
-   * Set the max memory this runtime can allocate.
-   * To remove the limit, set to `-1`.
-   */
-  setMemoryLimit(limitBytes: number) {
-    if (limitBytes < 0 && limitBytes !== -1) {
-      throw new Error('Cannot set memory limit to negative number. To unset, pass -1')
-    }
-
-    this.ffi.QTS_RuntimeSetMemoryLimit(this.rt.value, limitBytes)
-  }
-
-  /**
-   * Compute memory usage for this runtime. Returns the result as a handle to a
-   * JSValue object. Use [[dump]] to convert to a native object.
-   * Calling this method will allocate more memory inside the runtime. The information
-   * is accurate as of just before the call to `computeMemoryUsage`.
-   * For a human-digestible representation, see [[dumpMemoryUsage]].
-   */
-  computeMemoryUsage(): QuickJSHandle {
-    return this.memory.heapValueHandle(
-      this.ffi.QTS_RuntimeComputeMemoryUsage(this.rt.value, this.ctx.value)
-    )
-  }
-
-  /**
    * @returns a human-readable description of memory usage in this runtime.
    * For programmatic access to this information, see [[computeMemoryUsage]].
    */
@@ -868,6 +749,17 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     // key is already a JSValue, but we're borrowing it. Return a static handle
     // for internal use only.
     return new StaticLifetime(key.value as JSValueConstPointer, this.owner)
+  }
+
+  /**
+   * @private
+   */
+  getMemory(rt: JSRuntimePointer): QuickJSContextMemory {
+    if (rt === this.rt.value) {
+      return this.memory
+    } else {
+      throw new Error('Private API. Cannot get memory from a different runtime')
+    }
   }
 
   // Utilities ----------------------------------------------------------------

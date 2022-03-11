@@ -2,7 +2,8 @@
 CC=clang
 EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.7
 EMCC=docker run --rm -v $(shell pwd):$(shell pwd) -u $(shell id -u):$(shell id -g) -w $(shell pwd) $(EMSDK_DOCKER_IMAGE) emcc
-GENERATE_TS=$(GENERATE_TS_ENV) ts-node generate.ts
+GENERATE_TS=$(GENERATE_TS_ENV) npx ts-node generate.ts
+PRETTIER=npx prettier
 
 # Paths
 QUICKJS_ROOT=quickjs
@@ -95,11 +96,11 @@ $(BUILD_WRAPPER)/symbols.sync.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 
 ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
 	$(GENERATE_TS) ffi $@
-	prettier --write $@
+	$(PRETTIER) --write $@
 
 ts/ffi-asyncify.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
 	ASYNCIFY=true $(GENERATE_TS) ffi $@
-	prettier --write $@
+	$(PRETTIER) --write $@
 
 ### Executables
 # The WASM module we'll link to typescript

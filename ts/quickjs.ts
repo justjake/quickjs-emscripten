@@ -17,6 +17,7 @@ import { QuickJSDeferredPromise } from './deferred-promise'
 import { QuickJSModuleCallbacks } from './quickjs-module'
 import { newAsyncRuntime, QuickJSRuntimeAsync } from './runtime-asyncify'
 import { QuickJSContextAsync } from './context-asyncify'
+import { QuickJSRuntime } from './runtime'
 
 // Exports of types moved out of this file
 export { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable }
@@ -58,6 +59,19 @@ class QuickJS {
     this.syncCallbacks = new QuickJSModuleCallbacks(module, this.syncFFI)
   }
 
+  newRuntime(): QuickJSRuntime {
+    const rt = new Lifetime(this.syncFFI.QTS_NewRuntime(), undefined, rt_ptr => {
+      this.syncCallbacks.deleteRuntime(rt_ptr)
+      this.syncFFI.QTS_FreeRuntime(rt_ptr)
+    })
+    return new QuickJSRuntime({
+      module: this.syncModule,
+      callbacks: this.syncCallbacks,
+      ffi: this.syncFFI,
+      rt,
+    })
+  }
+
   /**
    * Create a QuickJS VM.
    *
@@ -65,29 +79,10 @@ class QuickJS {
    * VMs.
    */
   newContext(): QuickJSContext {
-    const rt = new Lifetime(this.syncFFI.QTS_NewRuntime(), undefined, rt_ptr => {
-      this.syncCallbacks.deleteRuntime(rt_ptr)
-      this.syncFFI.QTS_FreeRuntime(rt_ptr)
-    })
-    const ctx = new Lifetime(this.syncFFI.QTS_NewContext(rt.value), undefined, ctx_ptr => {
-      this.syncCallbacks.deleteContext(ctx_ptr)
-      this.syncFFI.QTS_FreeContext(ctx_ptr)
-    })
-    const vm = new QuickJSContext({
-      module: this.syncModule,
-      ffi: this.syncFFI,
-      manageRt: true,
-      rt,
-      ctx,
-    })
-    this.syncCallbacks.setRuntimeCallbacks(rt.value, vm)
-    this.syncCallbacks.setContextCallbacks(ctx.value, vm)
-    return vm
-  }
-
-  /** @deprecated use [newContext] instead. */
-  createVM(): QuickJSContext {
-    return this.newContext()
+    const runtime = this.newRuntime()
+    const context = runtime.newContext({ ownedLifetimes: [runtime] })
+    runtime.context = context
+    return context
   }
 
   /** @experimental */
@@ -97,8 +92,8 @@ class QuickJS {
 
   async newAsyncContext(): Promise<QuickJSContextAsync> {
     const runtime = await this.newAsyncRuntime()
-    const context = runtime.newContext()
-    // TODO: context should manage lifetime of runtime
+    const context = runtime.newContext({ ownedLifetimes: [runtime] })
+    runtime.context = context
     return context
   }
 
@@ -128,18 +123,18 @@ class QuickJS {
       const vm = scope.manage(this.newContext())
 
       if (options.shouldInterrupt) {
-        vm.setInterruptHandler(options.shouldInterrupt)
+        vm.runtime.setInterruptHandler(options.shouldInterrupt)
       }
 
       if (options.memoryLimitBytes !== undefined) {
-        vm.setMemoryLimit(options.memoryLimitBytes)
+        vm.runtime.setMemoryLimit(options.memoryLimitBytes)
       }
 
       const result = vm.evalCode(code)
 
       if (options.memoryLimitBytes !== undefined) {
         // Remove memory limit so we can dump the result without exceeding it.
-        vm.setMemoryLimit(-1)
+        vm.runtime.setMemoryLimit(-1)
       }
 
       if (result.error) {

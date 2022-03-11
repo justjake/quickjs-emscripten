@@ -3,6 +3,8 @@ import type { QuickJSAsyncFFI } from './ffi-asyncify'
 import { QuickJSHandle, QuickJSContext } from './context'
 import { QuickJSAsyncContext } from './vm-asyncify'
 import { SuccessOrFail, VmFunctionImplementation } from './vm-interface'
+import { Disposable } from './lifetime'
+import { JSContextPointer } from './ffi-types'
 
 export type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
 
@@ -89,4 +91,15 @@ export interface ContextOptions {
    * To omit all intrinsics, pass an empty array.
    */
   intrinsics?: Intrinsic[] | typeof DefaultIntrinsics
+
+  /**
+   * Wrap the provided context instead of constructing a new one.
+   */
+  contextPointer?: JSContextPointer
+
+  /**
+   * Extra lifetimes the context should dispose of after it is destroyed.
+   * @private
+   */
+  ownedLifetimes?: Disposable[]
 }
