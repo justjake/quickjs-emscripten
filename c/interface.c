@@ -467,6 +467,11 @@ void QTS_FreeValuePointer(JSContext *ctx, JSValue *value) {
   free(value);
 }
 
+void QTS_FreeValuePointerRuntime(JSRuntime *rt, JSValue *value) {
+  JS_FreeValueRT(rt, *value);
+  free(value);
+}
+
 void QTS_FreeVoidPointer(JSContext *ctx, JSVoid *ptr) {
   js_free(ctx, ptr);
 }
@@ -521,17 +526,25 @@ int QTS_IsJobPending(JSRuntime *rt) {
 
   Returns the executed number of jobs or the exception encountered
 */
-MaybeAsync(JSValue *) QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute, JSContext **pctx) {
+MaybeAsync(JSValue *) QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute, JSContext **lastJobContext) {
+  JSContext *pctx;
   int status = 1;
   int executed = 0;
   while (executed != maxJobsToExecute && status == 1) {
-    status = JS_ExecutePendingJob(rt, pctx);
+    status = JS_ExecutePendingJob(rt, &pctx);
     if (status == -1) {
-      return jsvalue_to_heap(JS_GetException(*pctx));
+      *lastJobContext = pctx;
+      return jsvalue_to_heap(JS_GetException(pctx));
     } else if (status == 1) {
+      *lastJobContext = pctx;
       executed++;
     }
   }
+#ifdef QTS_DEBUG_MODE
+  char msg[500];
+  sprintf(msg, "QTS_ExecutePendingJob(executed: %d, pctx: %p, lastJobExecuted: %p)", executed, pctx, *lastJobContext);
+  QTS_DEBUG(msg)
+#endif
   return jsvalue_to_heap(JS_NewFloat64(pctx, executed));
 }
 

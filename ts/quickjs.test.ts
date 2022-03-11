@@ -19,6 +19,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
   beforeEach(async () => {
     testId++
     vm = await getContext()
+    assertBuildIsConsistent(vm)
   })
 
   afterEach(() => {
@@ -27,25 +28,6 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
   })
 
   const getTestId = () => `test-${getContext.name}-${testId}`
-
-  describe('build consistency', () => {
-    it('has DEBUG in both FFI and C code, or in neither', () => {
-      const ffi: QuickJSFFI = (vm as any).ffi
-      if (ffi.DEBUG) {
-        assert.strictEqual(
-          ffi.QTS_BuildIsDebug(),
-          1,
-          'when FFI is generated with DEBUG, C code is compiled with DEBUG'
-        )
-      } else {
-        assert.strictEqual(
-          ffi.QTS_BuildIsDebug(),
-          0,
-          'when FFI is generated without DEBUG, C code is compiled without DEBUG'
-        )
-      }
-    })
-  })
 
   describe('primitives', () => {
     it('can round-trip a number', () => {
@@ -714,3 +696,20 @@ describe('QuickJS.newAsyncContext', () => {
 
 // TODO: test newRuntime
 // TODO: test newAsyncRuntime
+
+function assertBuildIsConsistent(vm: QuickJSContext) {
+  const ffi: QuickJSFFI = (vm as any).ffi
+  if (ffi.DEBUG) {
+    assert.strictEqual(
+      ffi.QTS_BuildIsDebug(),
+      1,
+      'when FFI is generated with DEBUG, C code is compiled with DEBUG'
+    )
+  } else {
+    assert.strictEqual(
+      ffi.QTS_BuildIsDebug(),
+      0,
+      'when FFI is generated without DEBUG, C code is compiled without DEBUG'
+    )
+  }
+}

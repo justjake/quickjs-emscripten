@@ -185,10 +185,13 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
 
     const ctxPtr = ctxPtrOut.value.typedArray[0] as JSContextPointer
     if (ctxPtr === 0) {
-      throw new Error('QTS_ExecutePendingJob returned null JSContext pointer')
+      // No jobs executed.
+      this.ffi.QTS_FreeValuePointerRuntime(this.rt.value, valuePtr)
+      return { value: 0 }
     }
+
     const ctx =
-      this.contextMap.get(ctxPtr) ||
+      this.contextMap.get(ctxPtr) ??
       this.newContext({
         contextPointer: ctxPtr,
       })
@@ -224,8 +227,7 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
    * For a human-digestible representation, see [[dumpMemoryUsage]].
    */
   computeMemoryUsage(): QuickJSHandle {
-    this.context ||= this.newContext()
-    const serviceContextMemory = this.context.getMemory(this.rt.value)
+    const serviceContextMemory = this.getSystemContext().getMemory(this.rt.value)
     return serviceContextMemory.heapValueHandle(
       this.ffi.QTS_RuntimeComputeMemoryUsage(this.rt.value, serviceContextMemory.ctx.value)
     )
@@ -286,5 +288,12 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
       })
 
     return unwrapPromiseLike(maybeAsync)
+  }
+
+  private getSystemContext() {
+    if (!this.context) {
+      this.context = this.newContext()
+    }
+    return this.context
   }
 }
