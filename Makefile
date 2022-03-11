@@ -1,6 +1,6 @@
 # Tools
 CC=clang
-EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.2
+EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.7
 EMCC=docker run --rm -v $(shell pwd):$(shell pwd) -u $(shell id -u):$(shell id -g) -w $(shell pwd) $(EMSDK_DOCKER_IMAGE) emcc
 GENERATE_TS=$(GENERATE_TS_ENV) ts-node generate.ts
 
