@@ -700,3 +700,19 @@ JSValue *QTS_NewPromiseCapability(JSContext *ctx, JSValue **resolve_funcs_out) {
 void QTS_TestStringArg(const char *string) {
   // pass
 }
+
+int QTS_BuildIsDebug() {
+#ifdef QTS_DEBUG_MODE
+  return 1;
+#else
+  return 0;
+#endif
+}
+
+int QTS_BuildIsAsyncify() {
+#ifdef QTS_ASYNCIFY
+  return 1;
+#else
+  return 0;
+#endif
+}

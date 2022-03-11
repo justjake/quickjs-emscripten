@@ -138,14 +138,16 @@ $(BUILD_QUICKJS)/wasm-asyncify/%.o: $(QUICKJS_ROOT)/%.c $(BUILD_ROOT)
 $(BUILD_QUICKJS)/native/%.o: $(QUICKJS_ROOT)/%.c | $(BUILD_ROOT)
 	$(CC) $(CFLAGS) $(QUICKJS_DEFINES) -c -o $@ $<
 
-clean:
+clean-generate:
 	rm -rfv ./ts/ffi.ts
+	rm -rfv ./ts/ffi-asyncify.ts
+
+clean: clean-generate
 	rm -rfv ./ts/quickjs.emscripten-module.js
 	rm -rf  ./ts/quickjs.emscripten-module.map
 	rm -rf  ./ts/quickjs.emscripten-module.wasm
 	rm -rf  ./ts/quickjs.emscripten-module.wasm.map
 
-	rm -rfv ./ts/ffi-asyncify.ts
 	rm -rfv ./ts/quickjs-asyncify.emscripten-module.js
 	rm -rf  ./ts/quickjs-asyncify.emscripten-module.map
 	rm -rf  ./ts/quickjs-asyncify.emscripten-module.wasm

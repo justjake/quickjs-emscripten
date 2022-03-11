@@ -251,6 +251,8 @@ import { ${importFromFfiTypes.join(', ')} } from "./ffi-types"
  */
 export class ${ffiClassName} {
   constructor(private module: ${moduleTypeName}) {}
+  /** Set at compile time. */
+  readonly DEBUG = ${DEBUG}
 
 ${decls.join('\n\n')}
 }

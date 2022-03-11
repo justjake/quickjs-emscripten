@@ -10,6 +10,7 @@ import fs from 'fs'
 import { QuickJSContext } from './context'
 import { QuickJSContextAsync } from './context-asyncify'
 import { hasUncaughtExceptionCaptureCallback } from 'process'
+import { QuickJSFFI } from './ffi'
 
 function contextTests(getContext: () => Promise<QuickJSContext>) {
   let vm: QuickJSContext = undefined as any
@@ -26,6 +27,25 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
   })
 
   const getTestId = () => `test-${getContext.name}-${testId}`
+
+  describe('build consistency', () => {
+    it('has DEBUG in both FFI and C code, or in neither', () => {
+      const ffi: QuickJSFFI = (vm as any).ffi
+      if (ffi.DEBUG) {
+        assert.strictEqual(
+          ffi.QTS_BuildIsDebug(),
+          1,
+          'when FFI is generated with DEBUG, C code is compiled with DEBUG'
+        )
+      } else {
+        assert.strictEqual(
+          ffi.QTS_BuildIsDebug(),
+          0,
+          'when FFI is generated without DEBUG, C code is compiled without DEBUG'
+        )
+      }
+    })
+  })
 
   describe('primitives', () => {
     it('can round-trip a number', () => {
