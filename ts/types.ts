@@ -4,7 +4,7 @@ import { QuickJSHandle, QuickJSContext } from './context'
 import { QuickJSAsyncContext } from './vm-asyncify'
 import { SuccessOrFail, VmFunctionImplementation } from './vm-interface'
 import { Disposable } from './lifetime'
-import { JSContextPointer } from './ffi-types'
+import { EvalFlags, JSContextPointer } from './ffi-types'
 
 export type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
 
@@ -25,13 +25,15 @@ export type JSModuleLoadSuccess = string | /** TODO */ JSModuleDefinition
 
 export type JSModuleLoadFailure = Error | QuickJSHandle
 
-export type JSModuleLoadResult = SuccessOrFail<JSModuleLoadSuccess, JSModuleLoadFailure>
+export type JSModuleLoadResult =
+  | JSModuleLoadSuccess
+  | SuccessOrFail<JSModuleLoadSuccess, JSModuleLoadFailure>
 
 export interface JSModuleLoader {
   /** Load module (sync) */
   (vm: QuickJSContext, moduleName: string): JSModuleLoadResult
   /** Load module (async) */
-  (vm: QuickJSAsyncContext, moduleName: string): Promise<JSModuleLoadResult>
+  (vm: QuickJSAsyncContext, moduleName: string): JSModuleLoadResult | Promise<JSModuleLoadResult>
 }
 
 type TODO<hint extends string = '?', typeHint = unknown> = never
@@ -94,6 +96,7 @@ export interface ContextOptions {
 
   /**
    * Wrap the provided context instead of constructing a new one.
+   * @private
    */
   contextPointer?: JSContextPointer
 
@@ -102,4 +105,42 @@ export interface ContextOptions {
    * @private
    */
   ownedLifetimes?: Disposable[]
+}
+
+export interface ContextEvalOptions {
+  /** Global code (default) */
+  type?: 'global' | 'module'
+  /** Force "strict" mode */
+  strict?: boolean
+  /** Force "strip" mode */
+  strip?: boolean
+  /**
+   * compile but do not run. The result is an object with a
+   * JS_TAG_FUNCTION_BYTECODE or JS_TAG_MODULE tag. It can be executed
+   * with JS_EvalFunction().
+   */
+  compileOnly?: boolean
+  /** don't include the stack frames before this eval in the Error() backtraces */
+  backtraceBarrier?: boolean
+}
+
+/** Convert [[EvalOptions]] to a bitfield flags */
+export function evalOptionsToFlags(evalOptions: ContextEvalOptions | number | undefined): number {
+  if (typeof evalOptions === 'number') {
+    return evalOptions
+  }
+
+  if (evalOptions === undefined) {
+    return 0
+  }
+
+  const { type, strict, strip, compileOnly, backtraceBarrier } = evalOptions
+  let flags = 0
+  if (type === 'global') flags |= EvalFlags.JS_EVAL_TYPE_GLOBAL
+  if (type === 'module') flags |= EvalFlags.JS_EVAL_TYPE_MODULE
+  if (strict) flags |= EvalFlags.JS_EVAL_FLAG_STRICT
+  if (strip) flags |= EvalFlags.JS_EVAL_FLAG_STRIP
+  if (compileOnly) flags |= EvalFlags.JS_EVAL_FLAG_COMPILE_ONLY
+  if (backtraceBarrier) flags |= EvalFlags.JS_EVAL_FLAG_BACKTRACE_BARRIER
+  return flags
 }

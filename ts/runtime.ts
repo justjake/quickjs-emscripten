@@ -97,9 +97,9 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
       rt: this.rt,
       ownedLifetimes: [],
       runtime: this,
+      callbacks: this.callbacks,
     })
     this.contextMap.set(ctx.value, context)
-    this.callbacks.setContextCallbacks(ctx.value, context)
 
     return context
   }
@@ -252,7 +252,7 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
   /**
    * @private
    */
-  cToHostModuleLoader: CToHostModuleLoaderImplementation = (rt, ctx, moduleName) => {
+  cToHostLoadModule: CToHostModuleLoaderImplementation = (rt, ctx, moduleName) => {
     const moduleLoader = this.moduleLoader
     if (!moduleLoader) {
       throw new Error('Runtime has no module loader')
@@ -262,20 +262,23 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
       throw new Error('Runtime pointer mismatch')
     }
 
-    const context = this.contextMap.get(ctx)
-    if (!context) {
-      // TODO
-      throw new Error(`QuickJSContext not found for pointer ${ctx}`)
-    }
+    const context =
+      this.contextMap.get(ctx) ??
+      this.newContext({
+        contextPointer: ctx,
+      })
 
     const maybeAsync = newPromiseLike(() => moduleLoader(context, moduleName))
       .then(result => {
-        if ('error' in result && result.error) {
+        if (typeof result === 'object' && 'error' in result && result.error) {
           throw result.error
         }
 
-        if (typeof result.value === 'string') {
-          const compiledModule = context.compileModule(moduleName, result.value)
+        const moduleDef =
+          typeof result === 'string' ? result : 'value' in result ? result.value : result
+
+        if (typeof moduleDef === 'string') {
+          const compiledModule = context.compileModule(moduleName, moduleDef)
           return compiledModule.value
         }
 

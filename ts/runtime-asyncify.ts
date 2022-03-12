@@ -12,6 +12,13 @@ import { ContextOptions, DefaultIntrinsics, RuntimeOptions } from './types'
  *
  * Each runtime is isolated in a separate WebAssembly module, so that errors in
  * one runtime cannot contaminate another runtime.
+ *
+ * Note that there is a hard limit on the number of WebAssembly modules in older
+ * versions of v8:
+ * https://bugs.chromium.org/p/v8/issues/detail?id=12076
+ *
+ * TODO: Allow passing a WASM module if it's okay to share it between multiple
+ * async runtimes.
  */
 export async function newAsyncRuntime(options: RuntimeOptions = {}): Promise<QuickJSRuntimeAsync> {
   const { default: newModule } = await import('./quickjs-asyncify.emscripten-module')
@@ -79,9 +86,9 @@ export class QuickJSRuntimeAsync extends QuickJSRuntime {
       rt: this.rt,
       ownedLifetimes: [],
       runtime: this,
+      callbacks: this.callbacks,
     })
     this.contextMap.set(ctx.value, context)
-    this.callbacks.setContextCallbacks(ctx.value, context)
 
     return context
   }

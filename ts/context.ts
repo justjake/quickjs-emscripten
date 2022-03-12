@@ -17,14 +17,18 @@ import {
   HeapCharPointer,
   JSModuleDefPointer,
   JSVoidPointer,
+  EvalDetectModule,
+  EvalFlags,
 } from './ffi-types'
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from './lifetime'
 import { ModuleMemory } from './memory'
 import {
   CToHostCallbackFunctionImplementation,
   CToHostInterruptImplementation,
+  QuickJSModuleCallbacks,
 } from './quickjs-module'
 import { QuickJSRuntime } from './runtime'
+import { ContextEvalOptions, evalOptionsToFlags } from './types'
 import {
   SuccessOrFail,
   LowLevelJavascriptVm,
@@ -267,6 +271,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     rt: Lifetime<JSRuntimePointer>
     runtime: QuickJSRuntime
     ownedLifetimes: Disposable[]
+    callbacks: QuickJSModuleCallbacks
   }) {
     this.owner = this as unknown as QuickJSContext
     this.module = args.module
@@ -279,6 +284,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     })
     this.dump = this.dump.bind(this)
     this.runtime = args.runtime
+    args.callbacks.setContextCallbacks(this.ctx.value, this)
   }
 
   // @implement Disposable ----------------------------------------------------
@@ -704,10 +710,19 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * interrupted, the error will have name `InternalError` and message
    * `interrupted`.
    */
-  evalCode(code: string, filename: string = 'eval.js'): VmCallResult<QuickJSHandle> {
+  evalCode(
+    code: string,
+    filename: string = 'eval.js',
+    /** See [[EvalFlags]] for number semantics */
+    options?: number | ContextEvalOptions
+  ): VmCallResult<QuickJSHandle> {
+    const detectModule = (options === undefined ? 1 : 0) as EvalDetectModule
+    const flags = evalOptionsToFlags(options) as EvalFlags
     const resultPtr = this.memory
       .newHeapCharPointer(code)
-      .consume(charHandle => this.ffi.QTS_Eval(this.ctx.value, charHandle.value, filename))
+      .consume(charHandle =>
+        this.ffi.QTS_Eval(this.ctx.value, charHandle.value, filename, detectModule, flags)
+      )
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)

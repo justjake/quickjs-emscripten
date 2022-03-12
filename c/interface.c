@@ -77,6 +77,9 @@
 
 #define JSVoid void
 
+#define EvalFlags int
+#define EvalDetectModule int
+
 void qts_log(char *msg) {
   fputs(PKG, stderr);
   fputs(msg, stderr);
@@ -651,17 +654,14 @@ MaybeAsync(char *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   return QTS_GetString(ctx, obj);
 }
 
-MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *filename) {
-  int eval_flags = JS_EVAL_TYPE_GLOBAL;
+MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
   size_t js_code_len = strlen(js_code);
 
-#ifdef QTS_ASYNCIFY
-  if (JS_DetectModule((const char *)js_code, js_code_len)) {
-    eval_flags = JS_EVAL_TYPE_MODULE;
+  if (detectModule && JS_DetectModule((const char *)js_code, js_code_len)) {
+    evalFlags &= JS_EVAL_TYPE_MODULE;
   }
-#endif
 
-  return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), filename, eval_flags));
+  return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), filename, evalFlags));
 }
 
 char *QTS_Typeof(JSContext *ctx, JSValueConst *value) {

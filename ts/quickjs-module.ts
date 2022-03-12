@@ -59,7 +59,7 @@ export interface ContextCallbacks {
  */
 export interface RuntimeCallbacks {
   cToHostInterrupt: CToHostInterruptImplementation
-  cToHostLoadModule?: CToHostModuleLoaderImplementation
+  cToHostLoadModule: CToHostModuleLoaderImplementation
 }
 
 const POINTER_TYPE = 'i'
@@ -180,11 +180,14 @@ export class QuickJSModuleCallbacks {
 
   private cToHostModuleLoader: CToHostModuleLoaderImplementation = (rt, ctx, moduleName) => {
     try {
-      const loadModule = this.runtimeCallbacks.get(rt)?.cToHostLoadModule
+      const runtimeCallbacks = this.runtimeCallbacks.get(rt)
+      if (!runtimeCallbacks) {
+        throw new Error(`QuickJSRuntime(rt = ${rt}) not fond for C module loader`)
+      }
+
+      const loadModule = runtimeCallbacks.cToHostLoadModule
       if (!loadModule) {
-        throw new Error(
-          `QuickJSRuntime(rt = ${rt}) not found for C module loader, or does not implement module loading`
-        )
+        throw new Error(`QuickJSRuntime(rt = ${rt}) does not support module loading`)
       }
       return loadModule(rt, ctx, moduleName)
     } catch (error) {

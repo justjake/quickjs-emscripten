@@ -190,7 +190,6 @@ export class QuickJSAsyncRuntime implements Disposable {
       rt: this.rt,
     })
     this.contextMap.set(ctx.value, context)
-    // this.callbacks.setContextCallbacks(ctx.value, context)
 
     return context
   }

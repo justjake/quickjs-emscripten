@@ -9,8 +9,14 @@ import { VmCallResult } from './vm-interface'
 import fs from 'fs'
 import { QuickJSContext } from './context'
 import { QuickJSContextAsync } from './context-asyncify'
-import { hasUncaughtExceptionCaptureCallback } from 'process'
 import { QuickJSFFI } from './ffi'
+
+const DEBUG = false
+function debug(...msgs: unknown[]) {
+  if (DEBUG) {
+    console.error(...msgs)
+  }
+}
 
 function contextTests(getContext: () => Promise<QuickJSContext>) {
   let vm: QuickJSContext = undefined as any
@@ -288,12 +294,19 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     })
 
     // TODO: bring back import support.
-    it.skip('can handle imports', () => {
+    it.only('can handle imports', () => {
+      vm.runtime.setModuleLoader(() => `export const name = "from import";`)
       vm.unwrapResult(
-        vm.evalCode(`import {name} from './foo.js'; var declaredWithEval = name`)
+        vm.evalCode(
+          `import {name} from './foo.js'; globalThis.declaredWithEval = name`,
+          'importer.js',
+          {
+            type: 'module',
+          }
+        )
       ).dispose()
       const declaredWithEval = vm.getProp(vm.global, 'declaredWithEval')
-      assert.equal(vm.getString(declaredWithEval), 'Nice!')
+      assert.equal(vm.getString(declaredWithEval), 'from import')
       declaredWithEval.dispose()
     })
   })
@@ -395,12 +408,12 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
           vm.runtime,
           'ShouldInterruptHandler callback runtime is the runtime'
         )
-        console.log('interruptHandler called', interruptId)
+        debug('interruptHandler called', interruptId)
         calls++
         return false
       }
 
-      console.log('setInterruptHandler', interruptId)
+      debug('setInterruptHandler', interruptId)
       vm.runtime.setInterruptHandler(interruptHandler)
 
       vm.unwrapResult(vm.evalCode('1 + 1')).dispose()
@@ -412,7 +425,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       let calls = 0
       const interruptId = getTestId()
       const interruptHandler: InterruptHandler = interruptVm => {
-        console.log('interruptHandler called', interruptId)
+        debug('interruptHandler called', interruptId)
         if (calls > 10) {
           return true
         }
@@ -420,7 +433,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         return false
       }
 
-      console.log('setInterruptHandler', interruptId)
+      debug('setInterruptHandler', interruptId)
       vm.runtime.setInterruptHandler(interruptHandler)
 
       const result = vm.evalCode('i = 0; while (1) { i++ }')
@@ -432,7 +445,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
       assert(i > 10, 'incremented i')
       assert(i > calls, 'incremented i more than called the interrupt handler')
-      // console.log('Javascript loop iterrations:', i, 'interrupt handler calls:', calls)
+      // debug('Javascript loop iterrations:', i, 'interrupt handler calls:', calls)
 
       if (result.error) {
         const errorJson = vm.dump(result.error)
