@@ -41,7 +41,7 @@ export {
  * QuickJS is a singleton. Use the [[getQuickJS]] function to instantiate
  * or retrieve an instance.
  *
- * Use the {@link QuickJS.newContext} method to create a {@link QuickJSVm}.
+ * Use the {@link QuickJS.newContext} method to create a {@link QuickJSContext}.
  *
  * Use the {@link QuickJS.evalCode} method as a shortcut evaluate Javascript safely
  * and return the result as a native Javascript value.
@@ -104,10 +104,10 @@ class QuickJS {
    * [[shouldInterruptAfterDeadline]] function will create a time-based deadline.
    *
    * If you need more control over how the code executes, create a
-   * [[QuickJSVm]] instance and use its [[QuickJSVm.evalCode]] method.
+   * [[QuickJSContext]] instance and use its [[QuickJSContext.evalCode]] method.
    *
    * Asynchronous callbacks may not run during the first call to `evalCode`. If you need to
-   * work with async code inside QuickJS, you should create a VM and use [[QuickJSVm.executePendingJobs]].
+   * work with async code inside QuickJS, you should create a VM and use [[QuickJSContext.executePendingJobs]].
    *
    * @returns The result is coerced to a native Javascript value using JSON
    * serialization, so properties and values unsupported by JSON will be dropped.

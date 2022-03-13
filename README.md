@@ -62,11 +62,11 @@ getQuickJS().then((QuickJS) => {
 
 ### Interfacing with the interpreter
 
-You can use [QuickJSVm](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/quickjsvm.md)
+You can use [QuickJSContext](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/QuickJSContext.md)
 to build a scripting environment by modifying globals and exposing functions
 into the QuickJS interpreter.
 
-Each `QuickJSVm` instance has its own environment, CPU limit, and memory
+Each `QuickJSContext` instance has its own environment, CPU limit, and memory
 limit. See the documentation for details.
 
 ```typescript
@@ -96,7 +96,7 @@ Javascript. Instead, you must manually manage their memory by calling a
 disposed, it cannot be used anymore. Note that in the example above, we call
 `.dispose()` on each handle once it is no longer needed.
 
-Calling `QuickJSVm.dispose()` will throw a RuntimeError if you've forgotten to
+Calling `QuickJSContext.dispose()` will throw a RuntimeError if you've forgotten to
 dispose any handles associated with that VM, so it's good practice to create a
 new VM instance for each of your tests, and to call `vm.dispose()` at the end
 of every test.

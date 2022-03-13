@@ -154,7 +154,7 @@ export class QuickJSModuleCallbacks {
         try {
           const vm = this.contextCallbacks.get(ctx)
           if (!vm) {
-            throw new Error(`QuickJSVm(ctx = ${ctx}) not found for C function call "${fn_id}"`)
+            throw new Error(`QuickJSContext(ctx = ${ctx}) not found for C function call "${fn_id}"`)
           }
           return vm.cToHostCallbackFunction(ctx, this_ptr, argc, argv, fn_id)
         } catch (error) {

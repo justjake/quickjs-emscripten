@@ -67,7 +67,7 @@ export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSRuntime>
  * Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
  * a QuickJS virtual machine.
  *
- * Values must not be shared between QuickJSVm instances.
+ * Values must not be shared between QuickJSContext instances.
  * You must dispose of any handles you create by calling the `.dispose()` method.
  */
 export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
@@ -92,7 +92,7 @@ export type ContextInterruptHandler = (context: QuickJSContext) => boolean | und
 
 /**
  * Property key for getting or setting a property on a handle with
- * [QuickJSVm.getProp], [QuickJSVm.setProp], or [QuickJSVm.defineProp].
+ * [QuickJSContext.getProp], [QuickJSContext.setProp], or [QuickJSContext.defineProp].
  */
 export type QuickJSPropertyKey = number | string | QuickJSHandle
 
@@ -185,16 +185,16 @@ class QuickJSContextMemory extends ModuleMemory implements Disposable {
 }
 
 /**
- * QuickJSVm wraps a QuickJS Javascript runtime (JSRuntime*) and context (JSContext*).
+ * QuickJSContext wraps a QuickJS Javascript runtime (JSRuntime*) and context (JSContext*).
  * This class's methods return {@link QuickJSHandle}, which wrap C pointers (JSValue*).
  * It's the caller's responsibility to call `.dispose()` on any
  * handles you create to free memory once you're done with the handle.
  *
- * Each QuickJSVm instance is isolated. You cannot share handles between different
- * QuickJSVm instances. You should create separate QuickJSVm instances for
+ * Each QuickJSContext instance is isolated. You cannot share handles between different
+ * QuickJSContext instances. You should create separate QuickJSContext instances for
  * untrusted code from different sources for isolation.
  *
- * Use [[QuickJS.createVm]] to create a new QuickJSVm.
+ * Use [[QuickJS.createVm]] to create a new QuickJSContext.
  *
  * Create QuickJS values inside the interpreter with methods like
  * [[newNumber]], [[newString]], [[newArray]], [[newObject]],
@@ -205,7 +205,7 @@ class QuickJSContextMemory extends ModuleMemory implements Disposable {
  * interpreter, so they can be used in [[evalCode]].
  *
  * Use [[evalCode]] or [[callFunction]] to execute Javascript inside the VM. If
- * you're using asynchronous code inside the QuickJSVm, you may need to also
+ * you're using asynchronous code inside the QuickJSContext, you may need to also
  * call [[executePendingJobs]]. Executing code inside the runtime returns a
  * result object representing successful execution or an error. You must dispose
  * of any such results to avoid leaking memory inside the VM.
@@ -245,7 +245,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   protected _global: QuickJSHandle | undefined = undefined
 
   /**
-   * Use {@link QuickJS.createVm} to create a QuickJSVm instance.
+   * Use {@link QuickJS.createVm} to create a QuickJSContext instance.
    */
   constructor(args: {
     module: EitherEmscriptenModule
@@ -827,12 +827,12 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     fn_id
   ) => {
     if (ctx !== this.ctx.value) {
-      throw new Error("QuickJSVm instance received C -> JS call with mismatched ctx")
+      throw new Error("QuickJSContext instance received C -> JS call with mismatched ctx")
     }
 
     const fn = this.fnMap.get(fn_id)
     if (!fn) {
-      throw new Error(`QuickJSVm had no callback with id ${fn_id}`)
+      throw new Error(`QuickJSContext had no callback with id ${fn_id}`)
     }
 
     return Scope.withScopeMaybeAsync((scope) => {

@@ -265,7 +265,7 @@ import { ${importFromFfiTypes.join(", ")} } from "./ffi-types"
 
 /**
  * Low-level FFI bindings to QuickJS's Emscripten module.
- * See instead [[QuickJSVm]], the public Javascript interface exposed by this
+ * See instead [[QuickJSContext]], the public Javascript interface exposed by this
  * library.
  *
  * @unstable The FFI interface is considered private and may change.

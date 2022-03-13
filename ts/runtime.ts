@@ -257,12 +257,12 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
    */
   cToHostInterrupt: CToHostInterruptImplementation = (rt) => {
     if (rt !== this.rt.value) {
-      throw new Error("QuickJSVm instance received C -> JS interrupt with mismatched rt")
+      throw new Error("QuickJSContext instance received C -> JS interrupt with mismatched rt")
     }
 
     const fn = this.interruptHandler
     if (!fn) {
-      throw new Error("QuickJSVm had no interrupt handler")
+      throw new Error("QuickJSContext had no interrupt handler")
     }
 
     return fn(this) ? 1 : 0

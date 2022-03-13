@@ -5,7 +5,7 @@ import { QuickJSRuntime } from "./runtime"
 /**
  * QuickJSDeferredPromise wraps a QuickJS promise [[handle]] and allows
  * [[resolve]]ing or [[reject]]ing that promise. Use it to bridge asynchronous
- * code on the host to APIs inside a QuickJSVm.
+ * code on the host to APIs inside a QuickJSContext.
  *
  * Managing the lifetime of promises is tricky. There are three
  * [[QuickJSHandle]]s inside of each deferred promise object: (1) the promise
@@ -28,7 +28,7 @@ export class QuickJSDeferredPromise implements Disposable {
   public context: QuickJSContext
 
   /**
-   * A handle of the Promise instance inside the QuickJSVm.
+   * A handle of the Promise instance inside the QuickJSContext.
    * You must dispose [[handle]] or the entire QuickJSDeferredPromise once you
    * are finished with it.
    */
@@ -44,7 +44,7 @@ export class QuickJSDeferredPromise implements Disposable {
   private onSettled!: () => void
 
   /**
-   * Use [[QuickJSVm.newPromise]] to create a new promise instead of calling
+   * Use [[QuickJSContext.newPromise]] to create a new promise instead of calling
    * this constructor directly.
    * @unstable
    */
@@ -69,7 +69,7 @@ export class QuickJSDeferredPromise implements Disposable {
    * Calling this method after calling [[dispose]] is a no-op.
    *
    * Note that after resolving a promise, you may need to call
-   * [[QuickJSVm.executePendingJobs]] to propagate the result to the promise's
+   * [[QuickJSContext.executePendingJobs]] to propagate the result to the promise's
    * callbacks.
    */
   resolve = (value?: QuickJSHandle) => {
@@ -96,7 +96,7 @@ export class QuickJSDeferredPromise implements Disposable {
    * Calling this method after calling [[dispose]] is a no-op.
    *
    * Note that after rejecting a promise, you may need to call
-   * [[QuickJSVm.executePendingJobs]] to propagate the result to the promise's
+   * [[QuickJSContext.executePendingJobs]] to propagate the result to the promise's
    * callbacks.
    */
   reject = (value?: QuickJSHandle) => {
