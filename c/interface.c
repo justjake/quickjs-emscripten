@@ -520,16 +520,19 @@ int QTS_BuildIsAsyncify() {
 
 // ----------------------------------------------------------------------------
 // C -> Host Callbacks
+// Note: inside EM_JS, we need to use ['...'] subscript syntax for accessing JS
+// objects, because in optimized builds, Closure compiler will mangle all the
+// names.
 
 // -------------------
 // function: C -> Host
 EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, int magic_func_id), {
 #ifdef QTS_ASYNCIFY
-  const asyncify = Asyncify;
+  const asyncify = {['handleSleep'] : Asyncify.handleSleep};
 #else
   const asyncify = undefined;
 #endif
-  return Module.callbacks.callFunction(asyncify, ctx, this_ptr, argc, argv, magic_func_id);
+  return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id);
 });
 
 // Function: QuickJS -> C
@@ -573,7 +576,7 @@ EM_JS(int, qts_host_interrupt_handler, (JSRuntime * rt), {
   // #else
   const asyncify = undefined;
   // #endif
-  return Module.callbacks.shouldInterrupt(asyncify, rt);
+  return Module['callbacks']['shouldInterrupt'](asyncify, rt);
 });
 
 // interrupt: QuickJS -> C
@@ -594,11 +597,11 @@ void QTS_RuntimeDisableInterruptHandler(JSRuntime *rt) {
 // load module: C -> Host
 EM_JS(MaybeAsync(JSModuleDef *), qts_host_load_module, (JSRuntime * rt, JSContext *ctx, const char *module_name), {
 #ifdef QTS_ASYNCIFY
-  const asyncify = Asyncify;
+  const asyncify = {['handleSleep'] : Asyncify.handleSleep};
 #else
   const asyncify = undefined;
 #endif
-  return Module.callbacks.loadModule(asyncify, rt, ctx, module_name);
+  return Module['callbacks']['loadModule'](asyncify, rt, ctx, module_name);
 });
 
 // load module: QuickJS -> C
