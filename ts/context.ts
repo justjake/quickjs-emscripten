@@ -766,11 +766,9 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
         }
         return 0 as JSValuePointer
       } catch (error) {
-        debug("caught error", error)
-        this.errorToHandle(error as Error).consume((errorHandle) =>
+        return this.errorToHandle(error as Error).consume((errorHandle) =>
           this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
         )
-        return 0 as JSValuePointer
       }
     }) as JSValuePointer
   }
