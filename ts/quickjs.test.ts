@@ -2,13 +2,19 @@
  * These tests demonstrate some common patterns for using quickjs-emscripten.
  */
 
-import { getQuickJS, QuickJSHandle, InterruptHandler, QuickJSDeferredPromise } from "./quickjs"
+import {
+  getQuickJS,
+  QuickJSHandle,
+  InterruptHandler,
+  QuickJSDeferredPromise,
+  newQuickJSAsyncWASMModule,
+} from "."
 import { it, describe } from "mocha"
 import assert from "assert"
 import { VmCallResult } from "./vm-interface"
 import fs from "fs"
 import { QuickJSContext } from "./context"
-import { QuickJSContextAsync } from "./context-asyncify"
+import { QuickJSAsyncContext } from "./context-asyncify"
 import { QuickJSFFI } from "./ffi"
 import { QuickJSUnwrapError } from "./errors"
 import { debug } from "./debug"
@@ -674,8 +680,8 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
   })
 }
 
-function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
-  let vm: QuickJSContextAsync = undefined as any
+function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
+  let vm: QuickJSAsyncContext = undefined as any
 
   beforeEach(async () => {
     vm = await getContext()
@@ -770,9 +776,10 @@ describe("QuickJS.newContext", () => {
 
 if (!TEST_NO_ASYNC) {
   describe("QuickJS.newAsyncContext", () => {
+    const wasmPromise = newQuickJSAsyncWASMModule()
     const getContext = async () => {
-      const quickjs = await getQuickJS()
-      return quickjs.newAsyncContext()
+      const wasm = await wasmPromise
+      return wasm.newContext()
     }
 
     describe("sync API", () => {

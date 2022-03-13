@@ -1,58 +1,14 @@
-import { QuickJSContextAsync } from "./context-asyncify"
+import { Lifetime } from "."
+import { QuickJSAsyncContext } from "./context-asyncify"
 import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
 import { QuickJSAsyncFFI } from "./ffi-asyncify"
 import { JSContextPointer, JSRuntimePointer } from "./ffi-types"
-import { Lifetime } from "./quickjs"
-import { QuickJSModuleCallbacks } from "./quickjs-module"
+import { QuickJSModuleCallbacks } from "./module"
 import { QuickJSRuntime } from "./runtime"
-import {
-  ContextOptions,
-  DefaultIntrinsics,
-  JSModuleLoader,
-  JSModuleLoaderAsync,
-  RuntimeOptions,
-} from "./types"
+import { ContextOptions, DefaultIntrinsics, JSModuleLoader, JSModuleLoaderAsync } from "./types"
 
-/**
- * Create a new [QuickJSAsyncRuntime].
- *
- * Each runtime is isolated in a separate WebAssembly module, so that errors in
- * one runtime cannot contaminate another runtime.
- *
- * Note that there is a hard limit on the number of WebAssembly modules in older
- * versions of v8:
- * https://bugs.chromium.org/p/v8/issues/detail?id=12076
- *
- * TODO: Allow passing a WASM module if it's okay to share it between multiple
- * async runtimes.
- */
-export async function newAsyncRuntime(options: RuntimeOptions = {}): Promise<QuickJSRuntimeAsync> {
-  const { default: newModule } = await import("./quickjs-asyncify.emscripten-module")
-  const module = await newModule()
-  module.type = "async"
-  const ffi = new QuickJSAsyncFFI(module)
-  const callbacks = new QuickJSModuleCallbacks(module, ffi)
-  const rt = new Lifetime(ffi.QTS_NewRuntime(), undefined, (rt_ptr) => {
-    callbacks.deleteRuntime(rt_ptr)
-    ffi.QTS_FreeRuntime(rt_ptr)
-  })
-
-  const runtime = new QuickJSRuntimeAsync({
-    module,
-    ffi,
-    rt,
-    callbacks,
-  })
-
-  if (options.moduleLoader) {
-    runtime.setModuleLoader(options.moduleLoader)
-  }
-
-  return runtime
-}
-
-export class QuickJSRuntimeAsync extends QuickJSRuntime {
-  public context: QuickJSContextAsync | undefined
+export class QuickJSAsyncRuntime extends QuickJSRuntime {
+  public context: QuickJSAsyncContext | undefined
 
   /** @private */
   protected declare module: QuickJSAsyncEmscriptenModule
@@ -63,8 +19,9 @@ export class QuickJSRuntimeAsync extends QuickJSRuntime {
   /** @private */
   protected declare callbacks: QuickJSModuleCallbacks
   /** @private */
-  protected declare contextMap: Map<JSContextPointer, QuickJSContextAsync>
+  protected declare contextMap: Map<JSContextPointer, QuickJSAsyncContext>
 
+  /** @private */
   constructor(args: {
     module: QuickJSAsyncEmscriptenModule
     ffi: QuickJSAsyncFFI
@@ -74,7 +31,7 @@ export class QuickJSRuntimeAsync extends QuickJSRuntime {
     super(args)
   }
 
-  override newContext(options: ContextOptions = {}): QuickJSContextAsync {
+  override newContext(options: ContextOptions = {}): QuickJSAsyncContext {
     if (options.intrinsics && options.intrinsics !== DefaultIntrinsics) {
       throw new Error("TODO: Custom intrinsics are not supported yet")
     }
@@ -85,7 +42,7 @@ export class QuickJSRuntimeAsync extends QuickJSRuntime {
       this.ffi.QTS_FreeContext(ctx_ptr)
     })
 
-    const context = new QuickJSContextAsync({
+    const context = new QuickJSAsyncContext({
       module: this.module,
       ctx,
       ffi: this.ffi,

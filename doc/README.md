@@ -2,30 +2,33 @@ quickjs-emscripten / [Exports](modules.md)
 
 # quickjs-emscripten
 
-Javascript/Typescript bindings for [QuickJS, a modern Javascript interpreter written in
-C by Fabrice Bellard](https://bellard.org/quickjs/) compiled to WebAssembly.
+Javascript/Typescript bindings for QuickJS, a modern Javascript interpreter,
+compiled to WebAssembly.
 
 - Safely evaluate untrusted Javascript (up to ES2020).
 - Create and manipulate values inside the QuickJS runtime.
 - Expose host functions to the QuickJS runtime.
+- Write synchronous code that uses asynchronous functions ([asyncify]()).
+
+[Github](https://github.com/justjake/quickjs-emscripten) | [NPM](https://www.npmjs.com/package/quickjs-emscripten) | [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md) | [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
 
 ```typescript
-import { getQuickJS } from 'quickjs-emscripten'
+import { getQuickJS } from "quickjs-emscripten"
 
 async function main() {
   const QuickJS = await getQuickJS()
-  const vm = QuickJS.createVm()
+  const vm = QuickJS.newContext()
 
-  const world = vm.newString('world')
-  vm.setProp(vm.global, 'NAME', world)
+  const world = vm.newString("world")
+  vm.setProp(vm.global, "NAME", world)
   world.dispose()
 
   const result = vm.evalCode(`"Hello " + NAME + "!"`)
   if (result.error) {
-    console.log('Execution failed:', vm.dump(result.error))
+    console.log("Execution failed:", vm.dump(result.error))
     result.error.dispose()
   } else {
-    console.log('Success:', vm.dump(result.value))
+    console.log("Success:", vm.dump(result.value))
     result.value.dispose()
   }
 
@@ -40,8 +43,8 @@ main()
 Install from `npm`: `npm install --save quickjs-emscripten` or `yarn add quickjs-emscripten`.
 
 The root entrypoint of this library is the `getQuickJS` function, which returns
-a promise that resolves to a [QuickJS singleton](doc/classes/quickjs.md) when
-the Emscripten WASM module is ready.
+a promise that resolves to a [QuickJS singleton](./doc/classes/quickjs.md) when
+the QuickJS WASM module is ready.
 
 Once `getQuickJS` has been awaited at least once, you also can use the `getQuickJSSync`
 function to directly access the singleton engine in your synchronous code.
@@ -51,10 +54,10 @@ function to directly access the singleton engine in your synchronous code.
 See [QuickJS.evalCode](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/quickjs.md#evalcode)
 
 ```typescript
-import { getQuickJS, shouldInterruptAfterDeadline } from 'quickjs-emscripten'
+import { getQuickJS, shouldInterruptAfterDeadline } from "quickjs-emscripten"
 
-getQuickJS().then(QuickJS => {
-  const result = QuickJS.evalCode('1 + 1', {
+getQuickJS().then((QuickJS) => {
+  const result = QuickJS.evalCode("1 + 1", {
     shouldInterrupt: shouldInterruptAfterDeadline(Date.now() + 1000),
     memoryLimitBytes: 1024 * 1024,
   })
@@ -64,26 +67,26 @@ getQuickJS().then(QuickJS => {
 
 ### Interfacing with the interpreter
 
-You can use [QuickJSVm](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/quickjsvm.md)
+You can use [QuickJSContext](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/QuickJSContext.md)
 to build a scripting environment by modifying globals and exposing functions
 into the QuickJS interpreter.
 
-Each `QuickJSVm` instance has its own environment, CPU limit, and memory
+Each `QuickJSContext` instance has its own environment, CPU limit, and memory
 limit. See the documentation for details.
 
 ```typescript
-const vm = QuickJS.createVm()
+const vm = QuickJS.newContext()
 let state = 0
 
-const fnHandle = vm.newFunction('nextId', () => {
+const fnHandle = vm.newFunction("nextId", () => {
   return vm.newNumber(++state)
 })
 
-vm.setProp(vm.global, 'nextId', fnHandle)
+vm.setProp(vm.global, "nextId", fnHandle)
 fnHandle.dispose()
 
 const nextId = vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`))
-console.log('vm result:', vm.getNumber(nextId), 'native state:', state)
+console.log("vm result:", vm.getNumber(nextId), "native state:", state)
 
 nextId.dispose()
 vm.dispose()
@@ -98,13 +101,13 @@ Javascript. Instead, you must manually manage their memory by calling a
 disposed, it cannot be used anymore. Note that in the example above, we call
 `.dispose()` on each handle once it is no longer needed.
 
-Calling `QuickJSVm.dispose()` will throw a RuntimeError if you've forgotten to
+Calling `QuickJSContext.dispose()` will throw a RuntimeError if you've forgotten to
 dispose any handles associated with that VM, so it's good practice to create a
 new VM instance for each of your tests, and to call `vm.dispose()` at the end
 of every test.
 
 ```typescript
-const vm = QuickJS.createVm()
+const vm = QuickJS.newContext()
 const numberHandle = vm.newNumber(42)
 // Note: numberHandle not disposed, so it leaks memory.
 vm.dispose()
@@ -123,20 +126,20 @@ method in the reverse order in which they're added to the scope. Here's the
 "Interfacing with the interpreter" example re-written using `Scope`:
 
 ```typescript
-Scope.withScope(scope => {
-  const vm = scope.manage(QuickJS.createVm())
+Scope.withScope((scope) => {
+  const vm = scope.manage(QuickJS.newContext())
   let state = 0
 
   const fnHandle = scope.manage(
-    vm.newFunction('nextId', () => {
+    vm.newFunction("nextId", () => {
       return vm.newNumber(++state)
     })
   )
 
-  vm.setProp(vm.global, 'nextId', fnHandle)
+  vm.setProp(vm.global, "nextId", fnHandle)
 
   const nextId = scope.manage(vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`)))
-  console.log('vm result:', vm.getNumber(nextId), 'native state:', state)
+  console.log("vm result:", vm.getNumber(nextId), "native state:", state)
 
   // When the withScope block exits, it calls scope.dispose(), which in turn calls
   // the .dispose() methods of all the disposables managed by the scope.
@@ -157,15 +160,15 @@ then the handle is disposed, then the result is returned.
 Here's the "Interfacing with interpreter" example re-written using `.consume()`:
 
 ```typescript
-const vm = QuickJS.createVm()
+const vm = QuickJS.newContext()
 let state = 0
 
-vm.newFunction('nextId', () => {
+vm.newFunction("nextId", () => {
   return vm.newNumber(++state)
-}).consume(fnHandle => vm.setProp(vm.global, 'nextId', fnHandle))
+}).consume((fnHandle) => vm.setProp(vm.global, "nextId", fnHandle))
 
-vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`)).consume(nextId =>
-  console.log('vm result:', vm.getNumber(nextId), 'native state:', state)
+vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`)).consume((nextId) =>
+  console.log("vm result:", vm.getNumber(nextId), "native state:", state)
 )
 
 vm.dispose()
@@ -176,8 +179,8 @@ Generally working with `Scope` leads to more straight-forward code, but
 
 ### More Documentation
 
-- [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md)
-- [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
+- [API Documentation]()
+- [Examples]()
 
 ## Background
 

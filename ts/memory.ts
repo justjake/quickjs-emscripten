@@ -1,4 +1,3 @@
-import { QuickJSHandle } from "./context"
 import { EitherModule } from "./emscripten-types"
 import {
   HeapCharPointer,
@@ -7,7 +6,7 @@ import {
   JSValuePointerPointer,
 } from "./ffi-types"
 import { Lifetime } from "./lifetime"
-import { EitherFFI } from "./types"
+import { EitherFFI, QuickJSHandle } from "./types"
 
 /**
  * @private

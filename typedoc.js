@@ -4,7 +4,7 @@ const NO_THANKS = ["**/node_modules/**", "./quickjs/**"]
 module.exports = {
   // disable package version in doc headers
   name,
-  entryPoints: ["./ts"],
+  entryPoints: ["./ts/index.ts"],
   entryPointStrategy: "expand",
   // link to master instead of the current git SHA
   // which is borked with our strategy of deploying the docs

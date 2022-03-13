@@ -1,12 +1,57 @@
 import type { QuickJSFFI } from "./ffi"
 import type { QuickJSAsyncFFI } from "./ffi-asyncify"
-import { QuickJSHandle, QuickJSContext } from "./context"
-import { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
-import { Disposable } from "./lifetime"
-import { EvalFlags, JSContextPointer } from "./ffi-types"
-import { QuickJSContextAsync } from "./context-asyncify"
+import type { QuickJSContext } from "./context"
+import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
+import type { Disposable, Lifetime } from "./lifetime"
+import type { QuickJSAsyncContext } from "./context-asyncify"
+import type { QuickJSRuntime } from "./runtime"
+import { EvalFlags, JSContextPointer, JSValueConstPointer, JSValuePointer } from "./ffi-types"
 
 export type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
+
+/**
+ * A QuickJSHandle to a constant that will never change, and does not need to
+ * be disposed.
+ */
+export type StaticJSValue = Lifetime<JSValueConstPointer, JSValueConstPointer, QuickJSRuntime>
+
+/**
+ * A QuickJSHandle to a borrowed value that does not need to be disposed.
+ *
+ * In QuickJS, a JSValueConst is a "borrowed" reference that isn't owned by the
+ * current scope. That means that the current scope should not `JS_FreeValue`
+ * it, or retain a reference to it after the scope exits, because it may be
+ * freed by its owner.
+ *
+ * quickjs-emscripten takes care of disposing JSValueConst references.
+ */
+export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJSRuntime>
+
+/**
+ * A owned QuickJSHandle that should be disposed or returned.
+ *
+ * The QuickJS interpreter passes Javascript values between functions as
+ * `JSValue` structs that references some internal data. Because passing
+ * structs cross the Empscripten FFI interfaces is bothersome, we use pointers
+ * to these structs instead.
+ *
+ * A JSValue reference is "owned" in its scope. before exiting the scope, it
+ * should be freed,  by calling `JS_FreeValue(ctx, js_value)`) or returned from
+ * the scope. We extend that contract - a JSValuePointer (`JSValue*`) must also
+ * be `free`d.
+ *
+ * You can do so from Javascript by calling the .dispose() method.
+ */
+export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSRuntime>
+
+/**
+ * Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
+ * a QuickJS virtual machine.
+ *
+ * Values must not be shared between QuickJSContext instances.
+ * You must dispose of any handles you create by calling the `.dispose()` method.
+ */
+export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
 
 export type JSModuleExport =
   | {
@@ -31,7 +76,7 @@ export type JSModuleLoadResult =
 
 export interface JSModuleLoaderAsync {
   /** Load module (async) */
-  (vm: QuickJSContextAsync, moduleName: string): JSModuleLoadResult | Promise<JSModuleLoadResult>
+  (vm: QuickJSAsyncContext, moduleName: string): JSModuleLoadResult | Promise<JSModuleLoadResult>
 }
 export interface JSModuleLoader extends JSModuleLoaderAsync {
   /** Load module (sync) */

@@ -5,6 +5,8 @@ import { isSuccess, SuccessOrFail } from "./vm-interface"
  * @private
  *
  * Idea for a way to write function implementations to be both async and sync.
+ *
+ * TODO: write a generator replacement for this.
  */
 export class SyncPromise<T> {
   constructor(public state: SuccessOrFail<T, unknown>) {}

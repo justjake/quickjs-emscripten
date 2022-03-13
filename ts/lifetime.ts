@@ -1,8 +1,7 @@
 import { newPromiseLike, unwrapPromiseLike } from "./asyncify-helpers"
+import { QTS_DEBUG } from "./debug"
 import { QuickJSUseAfterFree } from "./errors"
-import { QuickJSHandle } from "./quickjs"
-
-const DEBUG = false
+import type { QuickJSHandle } from "./types"
 
 /**
  * An object that can be disposed.
@@ -30,7 +29,7 @@ export interface Disposable {
  */
 export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
   protected _alive: boolean = true
-  protected constructorStack = DEBUG ? new Error("Lifetime constructed").stack : undefined
+  protected _constructorStack = QTS_DEBUG ? new Error("Lifetime constructed").stack : undefined
 
   /**
    * When the Lifetime is disposed, it will call `disposer(_value)`. Use the
@@ -114,8 +113,10 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
 
   private assertAlive() {
     if (!this.alive) {
-      if (this.constructorStack) {
-        throw new QuickJSUseAfterFree(`Lifetime not alive\n${this.constructorStack}\nLifetime used`)
+      if (this._constructorStack) {
+        throw new QuickJSUseAfterFree(
+          `Lifetime not alive\n${this._constructorStack}\nLifetime used`
+        )
       }
       throw new QuickJSUseAfterFree("Lifetime not alive")
     }

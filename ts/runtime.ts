@@ -9,26 +9,64 @@ import {
   JSModuleDefPointer,
   JSRuntimePointer,
 } from "./ffi-types"
+import { Disposable, Lifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
-import {
-  Disposable,
-  ExecutePendingJobsResult,
-  InterruptHandler,
-  Lifetime,
-  QuickJSHandle,
-} from "./quickjs"
 import {
   CToHostInterruptImplementation,
   CToHostModuleLoaderImplementation,
   QuickJSModuleCallbacks,
   RuntimeCallbacks,
-} from "./quickjs-module"
-import { ContextOptions, DefaultIntrinsics, EitherFFI, JSModuleLoader } from "./types"
+} from "./module"
+import {
+  ContextOptions,
+  DefaultIntrinsics,
+  EitherFFI,
+  JSModuleLoader,
+  QuickJSHandle,
+} from "./types"
+import { SuccessOrFail } from "./vm-interface"
+
+/**
+ * Callback called regularly while the VM executes code.
+ * Determines if a VM's execution should be interrupted.
+ *
+ * @returns `true` to interrupt JS execution inside the VM.
+ * @returns `false` or `undefined` to continue JS execution inside the VM.
+ */
+export type InterruptHandler = (runtime: QuickJSRuntime) => boolean | undefined
+
+/**
+ * Used as an optional for the results of executing pendingJobs.
+ * On success, `value` contains the number of async jobs executed
+ * by the runtime.
+ * @source
+ */
+export type ExecutePendingJobsResult = SuccessOrFail<
+  /** Number of jobs successfully executed. */
+  number,
+  /** The error that occurred. */
+  QuickJSHandle & {
+    /** The context where the error occurred. */
+    context: QuickJSContext
+  }
+>
 
 /**
  * A runtime represents a Javascript runtime corresponding to an object heap.
  * Several runtimes can exist at the same time but they cannot exchange objects.
  * Inside a given runtime, no multi-threading is supported.
+ *
+ * You should create separate runtime instances for untrusted code from
+ * different sources for isolation, or for better guarantees (at the cost of
+ * memory usage), further isolate untrusted code into separate WebAssembly
+ * modules using {@link newQuickJSWASMModule}.
+ *
+ * Implement memory and CPU constraints with [[setInterruptHandler]]
+ * (called regularly while the interpreter runs) and [[setMemoryLimit]].
+ * Use [[computeMemoryUsage]] or [[dumpMemoryUsage]] to guide memory limit
+ * tuning.
+ *
+ * Configure ES module loading with [[setModuleLoader]].
  */
 export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
   /**
@@ -56,6 +94,7 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
   /** @private */
   protected moduleLoader: JSModuleLoader | undefined
 
+  /** @private */
   constructor(args: {
     module: EitherModule
     ffi: EitherFFI
@@ -107,11 +146,20 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
     return context
   }
 
+  /**
+   * Set the loader for EcmasScript modules requested by any context in this
+   * runtime.
+   *
+   * The loader can be removed with [[removeModuleLoader]].
+   */
   setModuleLoader(moduleLoader: JSModuleLoader): void {
     this.moduleLoader = moduleLoader
     this.ffi.QTS_RuntimeEnableModuleLoader(this.rt.value)
   }
 
+  /**
+   * Remove the the loader set by [[setModuleLoader]]. This disables module loading.
+   */
   removeModuleLoader(): void {
     this.moduleLoader = undefined
     this.ffi.QTS_RuntimeDisableModuleLoader(this.rt.value)
@@ -158,21 +206,21 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
   }
 
   /**
-   * Execute pendingJobs on the VM until `maxJobsToExecute` jobs are executed
-   * (default all pendingJobs), the queue is exhausted, or the runtime
+   * Execute pendingJobs on the runtime until `maxJobsToExecute` jobs are
+   * executed (default all pendingJobs), the queue is exhausted, or the runtime
    * encounters an exception.
    *
-   * In QuickJS, promises and async functions create pendingJobs. These do not execute
-   * immediately and need to triggered to run.
+   * In QuickJS, promises and async functions *inside the runtime* create
+   * pendingJobs. These do not execute immediately and need to triggered to run.
    *
    * @param maxJobsToExecute - When negative, run all pending jobs. Otherwise execute
    * at most `maxJobsToExecute` before returning.
    *
    * @return On success, the number of executed jobs. On error, the exception
-   * that stopped execution. Note that executePendingJobs will not normally return
-   * errors thrown inside async functions or rejected promises. Those errors are
-   * available by calling [[resolvePromise]] on the promise handle returned by
-   * the async function.
+   * that stopped execution, and the context it occurred in. Note that
+   * executePendingJobs will not normally return errors thrown inside async
+   * functions or rejected promises. Those errors are available by calling
+   * [[resolvePromise]] on the promise handle returned by the async function.
    */
   executePendingJobs(maxJobsToExecute: number = -1): ExecutePendingJobsResult {
     const ctxPtrOut = this.memory.newMutablePointerArray<JSContextPointerPointer>(1)
@@ -189,20 +237,23 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
       return { value: 0 }
     }
 
-    const ctx =
+    const context =
       this.contextMap.get(ctxPtr) ??
       this.newContext({
         contextPointer: ctxPtr,
       })
 
-    const resultValue = ctx.getMemory(this.rt.value).heapValueHandle(valuePtr)
-    const typeOfRet = ctx.typeof(resultValue)
+    const resultValue = context.getMemory(this.rt.value).heapValueHandle(valuePtr)
+    const typeOfRet = context.typeof(resultValue)
     if (typeOfRet === "number") {
-      const executedJobs = ctx.getNumber(resultValue)
+      const executedJobs = context.getNumber(resultValue)
       resultValue.dispose()
       return { value: executedJobs }
     } else {
-      return { error: resultValue }
+      const error = Object.assign(resultValue, { context })
+      return {
+        error,
+      }
     }
   }
 
@@ -245,7 +296,7 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
    * @throws QuickJSWrongOwner if owned by a different runtime.
    */
   assertOwned(handle: QuickJSHandle) {
-    if (handle.owner && handle.owner.rt.value !== this.rt.value) {
+    if (handle.owner && handle.owner.rt !== this.rt) {
       throw new QuickJSWrongOwner(
         `Handle is not owned by this runtime: ${handle.owner.rt.value} != ${this.rt.value}`
       )

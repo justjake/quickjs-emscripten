@@ -1,18 +1,21 @@
 # quickjs-emscripten
 
-Javascript/Typescript bindings for [QuickJS, a modern Javascript interpreter written in
-C by Fabrice Bellard](https://bellard.org/quickjs/) compiled to WebAssembly.
+Javascript/Typescript bindings for QuickJS, a modern Javascript interpreter,
+compiled to WebAssembly.
 
 - Safely evaluate untrusted Javascript (up to ES2020).
 - Create and manipulate values inside the QuickJS runtime.
 - Expose host functions to the QuickJS runtime.
+- Write synchronous code that uses asynchronous functions ([asyncify]()).
+
+[Github](https://github.com/justjake/quickjs-emscripten) | [NPM](https://www.npmjs.com/package/quickjs-emscripten) | [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md) | [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
 
 ```typescript
 import { getQuickJS } from "quickjs-emscripten"
 
 async function main() {
   const QuickJS = await getQuickJS()
-  const vm = QuickJS.createVm()
+  const vm = QuickJS.newContext()
 
   const world = vm.newString("world")
   vm.setProp(vm.global, "NAME", world)
@@ -38,8 +41,8 @@ main()
 Install from `npm`: `npm install --save quickjs-emscripten` or `yarn add quickjs-emscripten`.
 
 The root entrypoint of this library is the `getQuickJS` function, which returns
-a promise that resolves to a [QuickJS singleton](doc/classes/quickjs.md) when
-the Emscripten WASM module is ready.
+a promise that resolves to a [QuickJS singleton](./doc/classes/quickjs.md) when
+the QuickJS WASM module is ready.
 
 Once `getQuickJS` has been awaited at least once, you also can use the `getQuickJSSync`
 function to directly access the singleton engine in your synchronous code.
@@ -70,7 +73,7 @@ Each `QuickJSContext` instance has its own environment, CPU limit, and memory
 limit. See the documentation for details.
 
 ```typescript
-const vm = QuickJS.createVm()
+const vm = QuickJS.newContext()
 let state = 0
 
 const fnHandle = vm.newFunction("nextId", () => {
@@ -102,7 +105,7 @@ new VM instance for each of your tests, and to call `vm.dispose()` at the end
 of every test.
 
 ```typescript
-const vm = QuickJS.createVm()
+const vm = QuickJS.newContext()
 const numberHandle = vm.newNumber(42)
 // Note: numberHandle not disposed, so it leaks memory.
 vm.dispose()
@@ -122,7 +125,7 @@ method in the reverse order in which they're added to the scope. Here's the
 
 ```typescript
 Scope.withScope((scope) => {
-  const vm = scope.manage(QuickJS.createVm())
+  const vm = scope.manage(QuickJS.newContext())
   let state = 0
 
   const fnHandle = scope.manage(
@@ -155,7 +158,7 @@ then the handle is disposed, then the result is returned.
 Here's the "Interfacing with interpreter" example re-written using `.consume()`:
 
 ```typescript
-const vm = QuickJS.createVm()
+const vm = QuickJS.newContext()
 let state = 0
 
 vm.newFunction("nextId", () => {
@@ -174,8 +177,8 @@ Generally working with `Scope` leads to more straight-forward code, but
 
 ### More Documentation
 
-- [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md)
-- [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
+- [API Documentation]()
+- [Examples]()
 
 ## Background
 

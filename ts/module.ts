@@ -1,3 +1,4 @@
+import { QuickJSContext } from "./context"
 import { debug } from "./debug"
 import {
   Asyncify,
@@ -7,15 +8,14 @@ import {
 } from "./emscripten-types"
 import {
   JSContextPointer,
-  JSRuntimePointer,
-  QTS_C_To_HostCallbackFuncPointer,
-  QTS_C_To_HostInterruptFuncPointer,
-  JSValuePointer,
-  JSValueConstPointer,
   JSModuleDefPointer,
-  QTS_C_To_HostLoadModuleFuncPointer,
+  JSRuntimePointer,
+  JSValueConstPointer,
+  JSValuePointer,
 } from "./ffi-types"
-import { EitherFFI } from "./types"
+import { Lifetime, Scope } from "./lifetime"
+import { InterruptHandler, QuickJSRuntime } from "./runtime"
+import { ContextOptions, EitherFFI, JSModuleLoader, RuntimeOptions } from "./types"
 
 /**
  * @private
@@ -80,6 +80,27 @@ class QuickJSEmscriptenModuleCallbacks implements EmscriptenModuleCallbacks {
 }
 
 /**
+ * Options for [[QuickJSWASMModule.evalCode]].
+ */
+export interface ModuleEvalOptions {
+  /**
+   * Interrupt evaluation if `shouldInterrupt` returns `true`.
+   * See [[shouldInterruptAfterDeadline]].
+   */
+  shouldInterrupt?: InterruptHandler
+
+  /**
+   * Memory limit, in bytes, of WebAssembly heap memory used by the QuickJS VM.
+   */
+  memoryLimitBytes?: number
+
+  /**
+   * Module loader for any `import` statements or expressions.
+   */
+  moduleLoader?: JSModuleLoader
+}
+
+/**
  * We use static functions per module to dispatch runtime or context calls from
  * C to the host.  This class manages the indirection from a specific runtime or
  * context pointer to the appropriate callback handler.
@@ -88,13 +109,11 @@ class QuickJSEmscriptenModuleCallbacks implements EmscriptenModuleCallbacks {
  */
 export class QuickJSModuleCallbacks {
   private module: EitherModule
-  private ffi: EitherFFI
   private contextCallbacks = new Map<JSContextPointer, ContextCallbacks>()
   private runtimeCallbacks = new Map<JSRuntimePointer, RuntimeCallbacks>()
 
-  constructor(module: EitherModule, ffi: EitherFFI) {
+  constructor(module: EitherModule) {
     this.module = module
-    this.ffi = ffi
     this.module.callbacks = this.cToHostCallbacks
   }
 
@@ -196,4 +215,133 @@ export class QuickJSModuleCallbacks {
         }
       }),
   })
+}
+
+/**
+ * This class presents a Javascript interface to QuickJS, a Javascript interpreter
+ * that supports EcmaScript 2020 (ES2020).
+ *
+ * It wraps a single WebAssembly module containing the QuickJS library and
+ * associated helper C code. WebAssembly modules are completely isolated from
+ * each other by the host's WebAssembly runtime. Separate WebAssembly modules
+ * have the most isolation guarantees possible with this library.
+ *
+ * The simplest way to start running code is {@link evalCode}. This shortcut
+ * method will evaluate Javascript safely and return the result as a native
+ * Javascript value.
+ *
+ * For more control over the execution environment, or to interact with values
+ * inside QuickJS, create a context with {@link newContext} or a runtime with
+ * {@link newRuntime}.
+ */
+export class QuickJSWASMModule {
+  /** @private */
+  protected ffi: EitherFFI
+  /** @private */
+  protected callbacks: QuickJSModuleCallbacks
+  /** @private */
+  protected module: EitherModule
+
+  /** @private */
+  constructor(module: EitherModule, ffi: EitherFFI) {
+    this.module = module
+    this.ffi = ffi
+    this.callbacks = new QuickJSModuleCallbacks(module)
+  }
+
+  /**
+   * Create a runtime.
+   * Use the runtime to set limits on CPU and memory usage and configure module
+   * loading for one or more [[QuickJSContext]]s inside the runtime.
+   */
+  newRuntime(options: RuntimeOptions = {}): QuickJSRuntime {
+    const rt = new Lifetime(this.ffi.QTS_NewRuntime(), undefined, (rt_ptr) => {
+      this.callbacks.deleteRuntime(rt_ptr)
+      this.ffi.QTS_FreeRuntime(rt_ptr)
+    })
+
+    const runtime = new QuickJSRuntime({
+      module: this.module,
+      callbacks: this.callbacks,
+      ffi: this.ffi,
+      rt,
+    })
+
+    if (options.moduleLoader) {
+      runtime.setModuleLoader(options.moduleLoader)
+    }
+
+    return runtime
+  }
+
+  /**
+   * A simplified API to create a new [[QuickJSRuntime]] and a
+   * [[QuickJSContext]] inside that runtime at the same time. The runtime will
+   * be disposed when the context is disposed.
+   */
+  newContext(options: ContextOptions = {}): QuickJSContext {
+    const runtime = this.newRuntime()
+    const lifetimes = options.ownedLifetimes ? options.ownedLifetimes.concat([runtime]) : [runtime]
+    const context = runtime.newContext({ ...options, ownedLifetimes: lifetimes })
+    runtime.context = context
+    return context
+  }
+
+  /**
+   * One-off evaluate code without needing to create a [[QuickJSRuntime]] or
+   * [[QuickJSContext]] explicitly.
+   *
+   * To protect against infinite loops, use the `shouldInterrupt` option. The
+   * [[shouldInterruptAfterDeadline]] function will create a time-based deadline.
+   *
+   * If you need more control over how the code executes, create a
+   * [[QuickJSRuntime]] (with [[newRuntime]]) or a [[QuickJSContext]] (with
+   * [[newContext]] or [[QuickJSRuntime.newContext]]), and use its
+   * [[QuickJSContext.evalCode]] method.
+   *
+   * Asynchronous callbacks may not run during the first call to `evalCode`. If
+   * you need to work with async code inside QuickJS, create a runtime and use
+   * [[QuickJSRuntime.executePendingJobs]].
+   *
+   * @returns The result is coerced to a native Javascript value using JSON
+   * serialization, so properties and values unsupported by JSON will be dropped.
+   *
+   * @throws If `code` throws during evaluation, the exception will be
+   * converted into a native Javascript value and thrown.
+   *
+   * @throws if `options.shouldInterrupt` interrupted execution, will throw a Error
+   * with name `"InternalError"` and  message `"interrupted"`.
+   */
+  evalCode(code: string, options: ModuleEvalOptions = {}): unknown {
+    return Scope.withScope((scope) => {
+      const vm = scope.manage(this.newContext())
+
+      if (options.moduleLoader) {
+        vm.runtime.setModuleLoader(options.moduleLoader)
+      }
+
+      if (options.shouldInterrupt) {
+        vm.runtime.setInterruptHandler(options.shouldInterrupt)
+      }
+
+      if (options.memoryLimitBytes !== undefined) {
+        vm.runtime.setMemoryLimit(options.memoryLimitBytes)
+      }
+
+      const result = vm.evalCode(code, "eval.js")
+
+      if (options.memoryLimitBytes !== undefined) {
+        // Remove memory limit so we can dump the result without exceeding it.
+        vm.runtime.setMemoryLimit(-1)
+      }
+
+      if (result.error) {
+        const error = vm.dump(scope.manage(result.error))
+        throw error
+      }
+
+      const value = vm.dump(scope.manage(result.value))
+      return value
+    })
+  }
 }

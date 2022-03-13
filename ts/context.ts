@@ -1,9 +1,7 @@
 import { newPromiseLike, unwrapPromiseLike } from "./asyncify-helpers"
 import { QuickJSDeferredPromise } from "./deferred-promise"
-import type { QuickJSAsyncEmscriptenModule, QuickJSEmscriptenModule } from "./emscripten-types"
+import type { EitherModule } from "./emscripten-types"
 import { QuickJSUnwrapError } from "./errors"
-import type { QuickJSFFI } from "./ffi"
-import type { QuickJSAsyncFFI } from "./ffi-asyncify"
 import {
   EvalDetectModule,
   EvalFlags,
@@ -17,9 +15,9 @@ import {
 } from "./ffi-types"
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
-import { CToHostCallbackFunctionImplementation, QuickJSModuleCallbacks } from "./quickjs-module"
+import { CToHostCallbackFunctionImplementation, QuickJSModuleCallbacks } from "./module"
 import { QuickJSRuntime } from "./runtime"
-import { ContextEvalOptions, evalOptionsToFlags } from "./types"
+import { ContextEvalOptions, EitherFFI, evalOptionsToFlags, JSValue, QuickJSHandle } from "./types"
 import {
   LowLevelJavascriptVm,
   SuccessOrFail,
@@ -29,119 +27,26 @@ import {
 } from "./vm-interface"
 
 /**
- * A QuickJSHandle to a constant that will never change, and does not need to
- * be disposed.
- */
-export type StaticJSValue = Lifetime<JSValueConstPointer, JSValueConstPointer, QuickJSRuntime>
-
-/**
- * A QuickJSHandle to a borrowed value that does not need to be disposed.
- *
- * In QuickJS, a JSValueConst is a "borrowed" reference that isn't owned by the
- * current scope. That means that the current scope should not `JS_FreeValue`
- * it, or retain a reference to it after the scope exits, because it may be
- * freed by its owner.
- *
- * quickjs-emscripten takes care of disposing JSValueConst references.
- */
-export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJSRuntime>
-
-/**
- * A owned QuickJSHandle that should be disposed or returned.
- *
- * The QuickJS interpreter passes Javascript values between functions as
- * `JSValue` structs that references some internal data. Because passing
- * structs cross the Empscripten FFI interfaces is bothersome, we use pointers
- * to these structs instead.
- *
- * A JSValue reference is "owned" in its scope. before exiting the scope, it
- * should be freed,  by calling `JS_FreeValue(ctx, js_value)`) or returned from
- * the scope. We extend that contract - a JSValuePointer (`JSValue*`) must also
- * be `free`d.
- *
- * You can do so from Javascript by calling the .dispose() method.
- */
-export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSRuntime>
-
-/**
- * Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
- * a QuickJS virtual machine.
- *
- * Values must not be shared between QuickJSContext instances.
- * You must dispose of any handles you create by calling the `.dispose()` method.
- */
-export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
-
-/**
- * Callback called regularly while the VM executes code.
- * Determines if a VM's execution should be interrupted.
- *
- * @returns `true` to interrupt JS execution inside the VM.
- * @returns `false` or `undefined` to continue JS execution inside the VM.
- */
-export type InterruptHandler = (runtime: QuickJSRuntime) => boolean | undefined
-
-/**
- * Callback called regularly while the VM executes code.
- * Determines if a VM's execution should be interrupted.
- *
- * @returns `true` to interrupt JS execution inside the VM.
- * @returns `false` or `undefined` to continue JS execution inside the VM.
- */
-export type ContextInterruptHandler = (context: QuickJSContext) => boolean | undefined
-
-/**
  * Property key for getting or setting a property on a handle with
  * [QuickJSContext.getProp], [QuickJSContext.setProp], or [QuickJSContext.defineProp].
  */
 export type QuickJSPropertyKey = number | string | QuickJSHandle
 
 /**
- * Used as an optional for the results of executing pendingJobs.
- * On success, `value` contains the number of async jobs executed
- * by the runtime.
- * `{ value: number } | { error: QuickJSHandle }`.
- */
-export type ExecutePendingJobsResult = SuccessOrFail<number, QuickJSHandle>
-
-/**
- * Options for [[QuickJS.evalCode]].
- */
-export interface QuickJSEvalOptions {
-  /**
-   * Interrupt evaluation if `shouldInterrupt` returns `true`.
-   * See [[shouldInterruptAfterDeadline]].
-   */
-  shouldInterrupt?: InterruptHandler
-
-  /**
-   * Memory limit, in bytes, of WASM heap memory used by the QuickJS VM.
-   */
-  memoryLimitBytes?: number
-}
-
-type EitherEmscriptenModule = QuickJSEmscriptenModule | QuickJSAsyncEmscriptenModule
-type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
-
-type FnMapEntry = {
-  type: "sync"
-  impl: VmFunctionImplementation<QuickJSHandle>
-}
-
-/**
  * @private
  */
-class QuickJSContextMemory extends ModuleMemory implements Disposable {
+class ContextMemory extends ModuleMemory implements Disposable {
   readonly owner: QuickJSRuntime
   readonly ctx: Lifetime<JSContextPointer>
   readonly rt: Lifetime<JSRuntimePointer>
-  readonly module: EitherEmscriptenModule
+  readonly module: EitherModule
   readonly ffi: EitherFFI
   readonly scope = new Scope()
 
+  /** @private */
   constructor(args: {
     owner: QuickJSRuntime
-    module: EitherEmscriptenModule
+    module: EitherModule
     ffi: EitherFFI
     ctx: Lifetime<JSContextPointer>
     rt: Lifetime<JSRuntimePointer>
@@ -185,16 +90,15 @@ class QuickJSContextMemory extends ModuleMemory implements Disposable {
 }
 
 /**
- * QuickJSContext wraps a QuickJS Javascript runtime (JSRuntime*) and context (JSContext*).
+ * QuickJSContext wraps a QuickJS Javascript context (JSContext*) within a
+ * runtime. The contexts within the same runtime may exchange objects freely.
+ *
  * This class's methods return {@link QuickJSHandle}, which wrap C pointers (JSValue*).
  * It's the caller's responsibility to call `.dispose()` on any
  * handles you create to free memory once you're done with the handle.
  *
- * Each QuickJSContext instance is isolated. You cannot share handles between different
- * QuickJSContext instances. You should create separate QuickJSContext instances for
- * untrusted code from different sources for isolation.
- *
- * Use [[QuickJS.createVm]] to create a new QuickJSContext.
+ * Use {@link QuickJSRuntime.newContext} or {@link QuickJSWASMModule.newContext}
+ * to create a new QuickJSContext.
  *
  * Create QuickJS values inside the interpreter with methods like
  * [[newNumber]], [[newString]], [[newArray]], [[newObject]],
@@ -210,10 +114,9 @@ class QuickJSContextMemory extends ModuleMemory implements Disposable {
  * result object representing successful execution or an error. You must dispose
  * of any such results to avoid leaking memory inside the VM.
  *
- * Implement memory and CPU constraints with [[setInterruptHandler]]
- * (called regularly while the interpreter runs) and [[setMemoryLimit]].
- * Use [[computeMemoryUsage]] or [[dumpMemoryUsage]] to guide memory limit
- * tuning.
+ * Implement memory and CPU constraints at the runtime level, using [[runtime]].
+ * See {@link QuickJSRuntime} for more information.
+ *
  */
 // TODO: Manage own callback registration
 export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disposable {
@@ -227,11 +130,11 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   /** @private */
   protected readonly rt: Lifetime<JSRuntimePointer>
   /** @private */
-  protected readonly module: EitherEmscriptenModule
+  protected readonly module: EitherModule
   /** @private */
   protected readonly ffi: EitherFFI
   /** @private */
-  protected memory: QuickJSContextMemory
+  protected memory: ContextMemory
 
   /** @private */
   protected _undefined: QuickJSHandle | undefined = undefined
@@ -248,7 +151,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * Use {@link QuickJS.createVm} to create a QuickJSContext instance.
    */
   constructor(args: {
-    module: EitherEmscriptenModule
+    module: EitherModule
     ffi: EitherFFI
     ctx: Lifetime<JSContextPointer>
     rt: Lifetime<JSRuntimePointer>
@@ -261,7 +164,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     this.ffi = args.ffi
     this.rt = args.rt
     this.ctx = args.ctx
-    this.memory = new QuickJSContextMemory({
+    this.memory = new ContextMemory({
       ...args,
       owner: this.runtime,
     })
@@ -583,11 +486,11 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   setProp(handle: QuickJSHandle, key: QuickJSPropertyKey, value: QuickJSHandle) {
     this.runtime.assertOwned(handle)
+    // free newly allocated value if key was a string or number. No-op if string was already
+    // a QuickJS handle.
     this.borrowPropertyKey(key).consume((quickJSKey) =>
       this.ffi.QTS_SetProp(this.ctx.value, handle.value, quickJSKey.value, value.value)
     )
-    // free newly allocated value if key was a string or number. No-op if string was already
-    // a QuickJS handle.
   }
 
   /**
@@ -748,7 +651,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   /**
    * @private
    */
-  getMemory(rt: JSRuntimePointer): QuickJSContextMemory {
+  getMemory(rt: JSRuntimePointer): ContextMemory {
     if (rt === this.rt.value) {
       return this.memory
     } else {
@@ -757,8 +660,6 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   }
 
   // Utilities ----------------------------------------------------------------
-
-  // customizations
 
   /**
    * Dump a JSValue to Javascript in a best-effort fashion.
@@ -791,21 +692,27 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   unwrapResult<T>(result: SuccessOrFail<T, QuickJSHandle>): T {
     if (result.error) {
-      const dumped = result.error.consume((error) => this.dump(error))
+      const context: QuickJSContext =
+        "context" in result.error ? (result.error as { context: QuickJSContext }).context : this
+      const cause = result.error.consume((error) => this.dump(error))
 
-      if (dumped && typeof dumped === "object" && typeof dumped.message === "string") {
-        const exception = new Error(dumped.message)
-        if (typeof dumped.name === "string") {
-          exception.name = dumped.name
+      if (cause && typeof cause === "object" && typeof cause.message === "string") {
+        const { message, name, stack } = cause
+        const exception = new Error(message)
+
+        if (typeof name === "string") {
+          exception.name = cause.name
         }
-        if (typeof dumped.stack === "string") {
-          exception.stack = `VM: ${dumped.stack}\nHost: ${exception.stack}`
+
+        if (typeof stack === "string") {
+          exception.stack = `VM: ${cause.stack}\nHost: ${exception.stack}`
         }
-        Object.assign(exception, { cause: dumped })
+
+        Object.assign(exception, { cause, context })
         throw exception
       }
 
-      throw new QuickJSUnwrapError(dumped)
+      throw new QuickJSUnwrapError(cause, context)
     }
 
     return result.value
@@ -868,7 +775,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     }) as JSValuePointer
   }
 
-  private errorToHandle(error: Error | QuickJSHandle) {
+  private errorToHandle(error: Error | QuickJSHandle): QuickJSHandle {
     if (error instanceof Lifetime) {
       return error
     }

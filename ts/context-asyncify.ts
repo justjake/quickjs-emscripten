@@ -1,12 +1,12 @@
-import { QuickJSContext, QuickJSHandle } from "./context"
+import { QuickJSContext } from "./context"
 import { debug } from "./debug"
 import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
 import { QuickJSAsyncFFI } from "./ffi-asyncify"
 import { EvalDetectModule, EvalFlags, JSRuntimePointer, JSValuePointer } from "./ffi-types"
-import { Lifetime } from "./quickjs"
-import { QuickJSModuleCallbacks } from "./quickjs-module"
-import { QuickJSRuntimeAsync } from "./runtime-asyncify"
-import { ContextEvalOptions, evalOptionsToFlags } from "./types"
+import { Lifetime } from "./lifetime"
+import { QuickJSModuleCallbacks } from "./module"
+import { QuickJSAsyncRuntime } from "./runtime-asyncify"
+import { ContextEvalOptions, evalOptionsToFlags, QuickJSHandle } from "./types"
 import { VmCallResult } from "./vm-interface"
 
 export type AsyncFunctionImplementation = (
@@ -21,8 +21,8 @@ export type AsyncFunctionImplementation = (
  * or callbacks. The asyncified version of QuickJSContext can wait for async
  * host functions as though they were synchronous.
  */
-export class QuickJSContextAsync extends QuickJSContext {
-  public declare runtime: QuickJSRuntimeAsync
+export class QuickJSAsyncContext extends QuickJSContext {
+  public declare runtime: QuickJSAsyncRuntime
   protected declare module: QuickJSAsyncEmscriptenModule
   protected declare ffi: QuickJSAsyncFFI
   protected declare rt: Lifetime<JSRuntimePointer>

@@ -1,6 +1,7 @@
 import type { Disposable } from "./lifetime"
-import type { QuickJSHandle, QuickJSContext } from "./quickjs"
-import { QuickJSRuntime } from "./runtime"
+import type { QuickJSHandle } from "./types"
+import type { QuickJSRuntime } from "./runtime"
+import type { QuickJSContext } from "./context"
 
 /**
  * QuickJSDeferredPromise wraps a QuickJS promise [[handle]] and allows
