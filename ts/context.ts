@@ -1,4 +1,4 @@
-import { newPromiseLike, unwrapPromiseLike } from "./asyncify-helpers"
+import { debug } from "console"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 import type { EitherModule } from "./emscripten-types"
 import { QuickJSUnwrapError } from "./errors"
@@ -742,7 +742,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       throw new Error(`QuickJSContext had no callback with id ${fn_id}`)
     }
 
-    return Scope.withScopeMaybeAsync((scope) => {
+    return Scope.withScopeMaybeAsync(this, function* (awaited, scope) {
       const thisHandle = scope.manage(
         new WeakLifetime(this_ptr, this.memory.copyJSValue, this.memory.freeJSValue, this.runtime)
       )
@@ -754,24 +754,24 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
         )
       }
 
-      const maybeAsync = newPromiseLike(() => fn.apply(thisHandle, argHandles))
-        .then((result) => {
-          if (result) {
-            if ("error" in result && result.error) {
-              throw result.error
-            }
-            const handle = scope.manage(result instanceof Lifetime ? result : result.value)
-            return this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
+      try {
+        const result = yield* awaited(fn.apply(thisHandle, argHandles))
+        if (result) {
+          if ("error" in result && result.error) {
+            debug("throw error", result.error)
+            throw result.error
           }
-          return 0
-        })
-        .catch((error) =>
-          this.errorToHandle(error as Error).consume((errorHandle) =>
-            this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
-          )
+          const handle = scope.manage(result instanceof Lifetime ? result : result.value)
+          return this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
+        }
+        return 0 as JSValuePointer
+      } catch (error) {
+        debug("caught error", error)
+        this.errorToHandle(error as Error).consume((errorHandle) =>
+          this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
         )
-
-      return unwrapPromiseLike(maybeAsync) as JSValuePointer
+        return 0 as JSValuePointer
+      }
     }) as JSValuePointer
   }
 

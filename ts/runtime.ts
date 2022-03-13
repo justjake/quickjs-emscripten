@@ -1,4 +1,4 @@
-import { newPromiseLike, unwrapPromiseLike } from "./asyncify-helpers"
+import { maybeAsyncFn } from "./asyncify-helpers"
 import { QuickJSContext } from "./context"
 import { debug } from "./debug"
 import { EitherModule } from "./emscripten-types"
@@ -322,24 +322,27 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
   /**
    * @private
    */
-  cToHostLoadModule: CToHostModuleLoaderImplementation = (rt, ctx, moduleName) => {
-    const moduleLoader = this.moduleLoader
-    if (!moduleLoader) {
-      throw new Error("Runtime has no module loader")
-    }
+  cToHostLoadModule: CToHostModuleLoaderImplementation = maybeAsyncFn(
+    this,
+    function* (awaited, rt, ctx, moduleName) {
+      const moduleLoader = this.moduleLoader
+      if (!moduleLoader) {
+        throw new Error("Runtime has no module loader")
+      }
 
-    if (rt !== this.rt.value) {
-      throw new Error("Runtime pointer mismatch")
-    }
+      if (rt !== this.rt.value) {
+        throw new Error("Runtime pointer mismatch")
+      }
 
-    const context =
-      this.contextMap.get(ctx) ??
-      this.newContext({
-        contextPointer: ctx,
-      })
+      const context =
+        this.contextMap.get(ctx) ??
+        this.newContext({
+          contextPointer: ctx,
+        })
 
-    const maybeAsync = newPromiseLike(() => moduleLoader(context, moduleName))
-      .then((result) => {
+      try {
+        const result = yield* awaited(moduleLoader(context, moduleName))
+
         if (typeof result === "object" && "error" in result && result.error) {
           debug("cToHostLoadModule: loader returned error", result.error)
           throw result.error
@@ -355,15 +358,13 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
 
         // TODO
         throw new Error(`TODO: module definition not implemented.`)
-      })
-      .catch((error) => {
+      } catch (error) {
         debug("cToHostLoadModule: caught error", error)
         context.throw(error as any)
         return 0 as JSModuleDefPointer
-      })
-
-    return unwrapPromiseLike(maybeAsync)
-  }
+      }
+    }
+  )
 
   private getSystemContext() {
     if (!this.context) {

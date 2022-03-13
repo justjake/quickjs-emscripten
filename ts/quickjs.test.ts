@@ -82,7 +82,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       fnHandle.dispose()
     })
 
-    it("passes through native exceptions", () => {
+    it.only("passes through native exceptions", () => {
       const fnHandle = vm.newFunction("jsOops", () => {
         throw new Error("oops")
       })

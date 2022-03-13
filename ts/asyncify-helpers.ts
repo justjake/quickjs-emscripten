@@ -1,76 +1,93 @@
-import { debug } from "./debug"
-import { isSuccess, SuccessOrFail } from "./vm-interface"
+function* awaitYield<T>(value: T | Promise<T>) {
+  return (yield value) as T
+}
+
+function awaitYieldOf<T, Yielded>(
+  generator: Generator<Yielded | Promise<Yielded>, T, Yielded>
+): Generator<T | Promise<T>, T, T> {
+  return awaitYield(awaitEachYieldedPromise(generator))
+}
+
+export type AwaitYield = typeof awaitYield & {
+  of: typeof awaitYieldOf
+}
+
+const AwaitYield: AwaitYield = awaitYield as AwaitYield
+AwaitYield.of = awaitYieldOf
 
 /**
- * @private
+ * Create a function that may or may not be async, using a generator
  *
- * Idea for a way to write function implementations to be both async and sync.
+ * Within the generator, call `yield* awaited(maybePromise)` to await a value
+ * that may or may not be a promise.
  *
- * TODO: write a generator replacement for this.
+ * If the inner function never yields a promise, it will return synchronously.
  */
-export class SyncPromise<T> {
-  constructor(public state: SuccessOrFail<T, unknown>) {}
+export function maybeAsyncFn<
+  /** Function arguments */
+  Args extends any[],
+  This,
+  /** Function return type */
+  Return,
+  /** Yields to unwrap */
+  Yielded
+>(
+  that: This,
+  fn: (
+    this: This,
+    awaited: AwaitYield,
+    ...args: Args
+  ) => Generator<Yielded | Promise<Yielded>, Return, Yielded>
+): (...args: Args) => Return | Promise<Return> {
+  return (...args: Args) => {
+    const generator = fn.call(that, AwaitYield, ...args)
+    return awaitEachYieldedPromise(generator)
+  }
+}
 
-  then<R, R2 = never>(
-    onSuccess: (value: T) => R,
-    onFail?: (error: unknown) => R2
-  ): SyncPromise<R | R2> {
-    try {
-      if (isSuccess(this.state)) {
-        return new SyncPromise({ value: onSuccess(this.state.value) })
-      } else if (onFail) {
-        return new SyncPromise({ value: onFail(this.state.error) })
-      } else {
-        return new SyncPromise(this.state)
-      }
-    } catch (error) {
-      return new SyncPromise({ error })
+class Example {
+  private maybeAsyncMethod = maybeAsyncFn(this, function* (awaited, a: number) {
+    yield* awaited(new Promise((resolve) => setTimeout(resolve, a)))
+    return 5
+  })
+}
+
+export type MaybeAsyncBlock<Return, This, Yielded, Args extends any[] = []> = (
+  this: This,
+  awaited: AwaitYield,
+  ...args: Args
+) => Generator<Yielded | Promise<Yielded>, Return, Yielded>
+
+export function maybeAsync<Return, This, Yielded>(
+  that: This,
+  startGenerator: (
+    this: This,
+    await: AwaitYield
+  ) => Generator<Yielded | Promise<Yielded>, Return, Yielded>
+): Return | Promise<Return> {
+  const generator = startGenerator.call(that, AwaitYield)
+  return awaitEachYieldedPromise(generator)
+}
+
+export function awaitEachYieldedPromise<Yielded, Returned>(
+  gen: Generator<Yielded | Promise<Yielded>, Returned, Yielded>
+): Returned | Promise<Returned> {
+  type NextResult = ReturnType<typeof gen.next>
+
+  function handleNextStep(step: NextResult): Returned | Promise<Returned> {
+    if (step.done) {
+      return step.value
     }
-  }
 
-  catch<R>(fail: (error: unknown) => R): SyncPromise<T | R> {
-    return this.then(
-      (value) => value,
-      (error) => fail(error)
-    )
-  }
-
-  finally(callback: () => void): SyncPromise<T> {
-    callback()
-    return this
-  }
-}
-/** @private */
-export function newPromiseLike<T>(fn: () => T | Promise<T>): SyncPromise<T> | Promise<T> {
-  try {
-    return intoPromiseLike(fn())
-  } catch (error) {
-    return new SyncPromise({ error })
-  }
-}
-
-/** @private */
-export function intoPromiseLike<T>(value: T | Promise<T>): SyncPromise<T> | Promise<T> {
-  if (value instanceof Promise) {
-    debug("intoPromiseLike: async", value)
-    return value
-  }
-
-  debug("intoPromiseLike: sync", value)
-  return new SyncPromise({ value })
-}
-
-/** @private */
-export function unwrapPromiseLike<T>(promise: SyncPromise<T> | Promise<T>): T | Promise<T> {
-  if (promise instanceof SyncPromise) {
-    debug("unwrapPromiseLike: sync", promise.state)
-    if (isSuccess(promise.state)) {
-      return promise.state.value
-    } else {
-      throw promise.state.error
+    if (step.value instanceof Promise) {
+      return step.value.then(
+        (value) => handleNextStep(gen.next(value)),
+        (error) => handleNextStep(gen.throw(error))
+      )
     }
+
+    return handleNextStep(gen.next(step.value))
   }
 
-  debug("unwrapPromiseLike: async", promise)
-  return promise
+  return handleNextStep(gen.next())
 }

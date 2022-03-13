@@ -133,7 +133,7 @@ export class QuickJSModuleCallbacks {
     this.contextCallbacks.delete(ctx)
   }
 
-  private maybeSuspendOrResumeAsync<T>(
+  private handleAsyncify<T>(
     asyncify: Asyncify | undefined,
     fn: () => T | Promise<T>
   ): T | AsyncifySleepResult<T> {
@@ -169,7 +169,7 @@ export class QuickJSModuleCallbacks {
 
   private cToHostCallbacks = new QuickJSEmscriptenModuleCallbacks({
     callFunction: (asyncify, ctx, this_ptr, argc, argv, fn_id) =>
-      this.maybeSuspendOrResumeAsync(asyncify, () => {
+      this.handleAsyncify(asyncify, () => {
         try {
           const vm = this.contextCallbacks.get(ctx)
           if (!vm) {
@@ -183,7 +183,7 @@ export class QuickJSModuleCallbacks {
       }),
 
     shouldInterrupt: (asyncify, rt) =>
-      this.maybeSuspendOrResumeAsync(asyncify, () => {
+      this.handleAsyncify(asyncify, () => {
         try {
           const vm = this.runtimeCallbacks.get(rt)
           if (!vm) {
@@ -197,7 +197,7 @@ export class QuickJSModuleCallbacks {
       }),
 
     loadModule: (asyncify, rt, ctx, moduleName) =>
-      this.maybeSuspendOrResumeAsync(asyncify, () => {
+      this.handleAsyncify(asyncify, () => {
         try {
           const runtimeCallbacks = this.runtimeCallbacks.get(rt)
           if (!runtimeCallbacks) {

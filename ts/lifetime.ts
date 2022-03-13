@@ -1,4 +1,4 @@
-import { newPromiseLike, unwrapPromiseLike } from "./asyncify-helpers"
+import { maybeAsync, MaybeAsyncBlock } from "./asyncify-helpers"
 import { QTS_DEBUG } from "./debug"
 import { QuickJSUseAfterFree } from "./errors"
 import type { QuickJSHandle } from "./types"
@@ -215,18 +215,22 @@ export class Scope implements Disposable {
     }
   }
 
-  static withScopeMaybeAsync<R>(block: (scope: Scope) => R | Promise<R>): R | Promise<R> {
-    const scope = new Scope()
-    let blockError: Error | undefined
-    const maybeAsync = newPromiseLike(() => block(scope))
-      .catch((error) => {
-        blockError = error
+  static withScopeMaybeAsync<Return, This, Yielded>(
+    _this: This,
+    block: MaybeAsyncBlock<Return, This, Yielded, [Scope]>
+  ): Return | Promise<Return> {
+    return maybeAsync(undefined, function* (awaited) {
+      const scope = new Scope()
+      let blockError: Error | undefined
+      try {
+        return yield* awaited.of(block.call(_this, awaited, scope))
+      } catch (error) {
+        blockError = error as any
         throw error
-      })
-      .finally(() => {
+      } finally {
         scopeFinally(scope, blockError)
-      })
-    return unwrapPromiseLike(maybeAsync)
+      }
+    })
   }
 
   /**

@@ -8,7 +8,7 @@ compiled to WebAssembly.
 - Expose host functions to the QuickJS runtime.
 - Write synchronous code that uses asynchronous functions ([asyncify]()).
 
-[Github](https://github.com/justjake/quickjs-emscripten) | [NPM](https://www.npmjs.com/package/quickjs-emscripten) | [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md) | [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
+[Github](https://github.com/justjake/quickjs-emscripten) | [NPM](https://www.npmjs.com/package/quickjs-emscripten) | [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md) | [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
 
 ```typescript
 import { getQuickJS } from "quickjs-emscripten"
@@ -177,8 +177,7 @@ Generally working with `Scope` leads to more straight-forward code, but
 
 ### More Documentation
 
-- [API Documentation]()
-- [Examples]()
+[Github](https://github.com/justjake/quickjs-emscripten) | [NPM](https://www.npmjs.com/package/quickjs-emscripten) | [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md) | [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
 
 ## Background
 
@@ -191,14 +190,18 @@ blogposts about using building a Javascript plugin runtime:
 
 ## Status & TODOs
 
+Because the version number of this project is below `1.0.0`, expect occasional
+breaking API changes.
+
+- There is a test suite for most APIs reachable from `QuickJSContext`, but the suite could be more thorough.
+- 
+
 Both the original project quickjs and this project are still in the early stage
 of development.
 There [are tests](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts), but I haven't built anything
 on top of this. Please use this project carefully in a production
 environment.
 
-Because the version number of this project is below `1.0.0`, expect occasional
-breaking API changes.
 
 Ideas for future work:
 
