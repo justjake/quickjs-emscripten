@@ -22,6 +22,7 @@ import { ContextOptions, DefaultIntrinsics, EitherFFI, JSModuleLoader } from './
 import { QuickJSContext } from './context'
 import { intoPromiseLike, newPromiseLike, unwrapPromiseLike } from './asyncify-helpers'
 import { ModuleMemory } from './memory'
+import { debug } from './debug'
 
 /**
  * A runtime represents a Javascript runtime corresponding to an object heap.
@@ -102,10 +103,6 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
     this.contextMap.set(ctx.value, context)
 
     return context
-  }
-
-  public getContexts(): IterableIterator<QuickJSContext> {
-    return this.contextMap.values()
   }
 
   setModuleLoader(moduleLoader: JSModuleLoader): void {
@@ -271,6 +268,7 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
     const maybeAsync = newPromiseLike(() => moduleLoader(context, moduleName))
       .then(result => {
         if (typeof result === 'object' && 'error' in result && result.error) {
+          debug('cToHostLoadModule: loader returned error', result.error)
           throw result.error
         }
 
@@ -286,6 +284,7 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
         throw new Error(`TODO: module definition not implemented.`)
       })
       .catch(error => {
+        debug('cToHostLoadModule: caught error', error)
         context.throw(error as any)
         return 0 as JSModuleDefPointer
       })

@@ -14,6 +14,7 @@ const INCLUDE_RE = /^#include.*$/gm
 const TYPEDEF_RE = /^\s*typedef\s+(.+)$/gm
 const DECL_RE = /^([\w\(\)* ]+[\s*]+)(QTS_\w+)(\((.*?)\)) ?{$/gm
 const TS_EXPORT_TYPE_RE = /^export type (\w+)/gm
+const EM_JS_RE = /^\s*EM_JS\((.+), ?\{$/gm
 
 function writeFile(filename: string, content: string) {
   if (filename === '-') {
@@ -35,6 +36,7 @@ function main() {
   const matches = matchAll(DECL_RE, interfaceFile)
   const includeMatches = matchAll(INCLUDE_RE, interfaceFile)
   const typedefMatches = matchAll(TYPEDEF_RE, interfaceFile)
+  const emJsMatches = matchAll(EM_JS_RE, interfaceFile)
 
   if (command === 'symbols') {
     const symbols = buildSymbols(matches)
@@ -44,6 +46,12 @@ function main() {
 
   if (command === 'sync-symbols') {
     const symbols = buildSyncSymbols(matches)
+    writeFile(destination, JSON.stringify(symbols))
+    return
+  }
+
+  if (command === 'async-callback-symbols') {
+    const symbols = buildAsyncifySymbols(emJsMatches)
     writeFile(destination, JSON.stringify(symbols))
     return
   }
@@ -213,6 +221,19 @@ function buildSyncSymbols(matches: RegExpMatchArray[]) {
   const parsed = getAvailableDefinitions(matches)
   const filtered = parsed.filter(fn => !fn.returnType.attributes.has('MaybeAsync'))
   return filtered.map(fn => '_' + fn.functionName)
+}
+
+// Input: EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, int magic_func_id), {
+// Match: MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, int magic_func_id)
+function buildAsyncifySymbols(matches: RegExpMatchArray[]) {
+  const parsed = matches.map(match => {
+    const [, contents] = match
+    const [returnType, functionName] = contents.split(/\s*,/g).map(x => x.trim())
+    return { functionName, returnType: cTypeToTypescriptType(returnType) }
+  })
+  const filtered = parsed.filter(fn => fn.returnType.attributes.has('MaybeAsync'))
+  // TODO: does this need _?
+  return filtered.map(fn => fn.functionName)
 }
 
 function buildFFI(matches: RegExpExecArray[]) {

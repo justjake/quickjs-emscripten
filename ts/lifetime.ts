@@ -1,6 +1,8 @@
 import { newPromiseLike, unwrapPromiseLike } from './asyncify-helpers'
 import { QuickJSHandle } from './quickjs'
 
+const DEBUG = true
+
 /**
  * An object that can be disposed.
  * [[Lifetime]] is the canonical implementation of Disposable.
@@ -27,6 +29,7 @@ export interface Disposable {
  */
 export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
   protected _alive: boolean = true
+  protected constructorStack = DEBUG ? new Error('Lifetime constructed').stack : undefined
 
   /**
    * When the Lifetime is disposed, it will call `disposer(_value)`. Use the
@@ -110,6 +113,9 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
 
   private assertAlive() {
     if (!this.alive) {
+      if (this.constructorStack) {
+        throw new Error(`Lifetime not alive\n${this.constructorStack}\nLifetime used`)
+      }
       throw new Error('Lifetime not alive')
     }
   }

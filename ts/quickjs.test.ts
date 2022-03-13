@@ -10,8 +10,11 @@ import fs from 'fs'
 import { QuickJSContext } from './context'
 import { QuickJSContextAsync } from './context-asyncify'
 import { QuickJSFFI } from './ffi'
+import { QuickJSUnwrapError } from './errors'
 
-const DEBUG = false
+const DEBUG = true
+const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
+
 function debug(...msgs: unknown[]) {
   if (DEBUG) {
     console.error(...msgs)
@@ -248,7 +251,11 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         vm.unwrapResult(result)
         assert.fail('vm.unwrapResult(error) must throw')
       } catch (error) {
-        assert.strictEqual(error, 'ERROR!')
+        if (error instanceof QuickJSUnwrapError) {
+          assert.strictEqual(error.cause, 'ERROR!', 'QuickJSUnwrapError.cause set correctly')
+        } else {
+          assert.fail('Not instanceof QuickJSUnwrapError')
+        }
       }
     })
   })
@@ -294,20 +301,26 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     })
 
     // TODO: bring back import support.
-    it.only('can handle imports', () => {
-      vm.runtime.setModuleLoader(() => `export const name = "from import";`)
+    it('can handle imports', () => {
+      let moduleLoaderCalls = 0
+      vm.runtime.setModuleLoader(() => {
+        moduleLoaderCalls++
+        return `export const name = "from import";`
+      })
       vm.unwrapResult(
         vm.evalCode(
-          `import {name} from './foo.js'; globalThis.declaredWithEval = name`,
-          'importer.js',
-          {
-            type: 'module',
-          }
+          `
+          import {name} from './foo.js'
+          globalThis.declaredWithEval = name
+          `,
+          'importer.js'
         )
       ).dispose()
       const declaredWithEval = vm.getProp(vm.global, 'declaredWithEval')
       assert.equal(vm.getString(declaredWithEval), 'from import')
       declaredWithEval.dispose()
+
+      assert.equal(moduleLoaderCalls, 1, 'Only called once')
     })
   })
 
@@ -658,6 +671,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
 
   beforeEach(async () => {
     vm = await getContext()
+    assertBuildIsConsistent(vm)
   })
 
   afterEach(() => {
@@ -665,8 +679,10 @@ function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
     vm = undefined as any
   })
 
-  it('async function support smoketest', async () => {
+  it.only('async function support smoketest', async () => {
+    let asyncFunctionCalls = 0
     const asyncFn = async () => {
+      asyncFunctionCalls++
       await new Promise(resolve => setTimeout(resolve, 50))
       return vm.newString('hello from async')
     }
@@ -682,6 +698,61 @@ function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
 
     const dumped = unwrapped.consume(vm.dump)
     assert.equal(dumped, 'hello from async')
+
+    assert.equal(asyncFunctionCalls, 1, 'one call')
+  })
+
+  describe('module loading', () => {
+    // This is broken.
+    it.skip('supports async module loading', async () => {
+      async function testBody() {
+        let moduleLoaderCalls = 0
+        const moduleLoader = async () => {
+          moduleLoaderCalls++
+          if (moduleLoaderCalls > 1) {
+            throw new Error('Module loader should only be called once')
+          }
+          console.trace('moduleLoader called')
+          debug('moduleLoader: sleeping')
+          await new Promise(resolve => setTimeout(resolve, 50))
+          debug('moduleLoader: done sleeping')
+          return 'export default function() { return "hello from module" }'
+          // After we rewind, it appears moduleLoader is immediately called again??
+          // WTF
+        }
+        debug('defined module loader')
+        vm.runtime.setModuleLoader(moduleLoader)
+        let suspended = false
+        setImmediate(() => {
+          suspended = true
+        })
+        debug('set module loader')
+        const promise = vm.evalCodeAsync(`
+        import otherModule from './other-module'
+        globalThis.stuff = otherModule()
+      `)
+        debug('promise', promise)
+        const result = await promise
+        debug('awaited vm.evalCodeAsync', result, { alive: vm.alive })
+        // assert.strictEqual(suspended, true, 'Did suspend')
+        const unwrapped = vm.unwrapResult(result)
+        debug('unwrapped result')
+        const dumped = unwrapped.consume(vm.dump)
+        debug('consumed result')
+        assert.strictEqual(dumped, undefined)
+        debug('asserted result')
+
+        const stuff = vm.getProp(vm.global, 'stuff').consume(vm.dump)
+        assert.strictEqual(stuff, 'hello from module')
+      }
+
+      try {
+        await testBody()
+      } catch (error) {
+        debug('test body threw', error)
+        throw error
+      }
+    })
   })
 }
 
@@ -692,20 +763,22 @@ describe('QuickJS.newContext', () => {
   })
 })
 
-describe('QuickJS.newAsyncContext', () => {
-  const getContext = async () => {
-    const quickjs = await getQuickJS()
-    return quickjs.newAsyncContext()
-  }
+if (!TEST_NO_ASYNC) {
+  describe('QuickJS.newAsyncContext', () => {
+    const getContext = async () => {
+      const quickjs = await getQuickJS()
+      return quickjs.newAsyncContext()
+    }
 
-  describe('sync API', () => {
-    contextTests(getContext)
-  })
+    describe('sync API', () => {
+      contextTests(getContext)
+    })
 
-  describe('async API', () => {
-    asyncContextTests(getContext)
+    describe('async API', () => {
+      asyncContextTests(getContext)
+    })
   })
-})
+}
 
 // TODO: test newRuntime
 // TODO: test newAsyncRuntime

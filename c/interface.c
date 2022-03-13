@@ -33,16 +33,13 @@
  * build.
  */
 
-#ifdef QTS_ASYNCIFY
 #include <emscripten.h>
-
-#include "../quickjs/cutils.h"
-#endif
 #include <math.h>  // For NAN
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "../quickjs/cutils.h"
 #include "../quickjs/quickjs-libc.h"
 #include "../quickjs/quickjs.h"
 
@@ -119,83 +116,6 @@ JSValue *jsvalue_to_heap(JSValueConst value) {
   return result;
 }
 
-/**
- * C -> Host JS calls support
- */
-
-// When host javascript loads this Emscripten module, it should set `bound_callback` to a dispatcher function.
-typedef JSValue *QTS_C_To_HostCallbackFunc(JSContext *ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, int magic_func_id);
-QTS_C_To_HostCallbackFunc *bound_callback = NULL;
-
-void QTS_SetHostCallback(QTS_C_To_HostCallbackFunc *fp) {
-  bound_callback = fp;
-}
-
-JSValue qts_quickjs_to_c_callback(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic) {
-  if (bound_callback == NULL) {
-    printf(PKG "callback from C, but no QTS_C_To_HostCallback set");
-    abort();
-  }
-
-  JSValue *result_ptr = (*bound_callback)(ctx, &this_val, argc, argv, magic);
-  if (result_ptr == NULL) {
-    return JS_UNDEFINED;
-  }
-  JSValue result = *result_ptr;
-  free(result_ptr);
-  return result;
-}
-
-JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
-  return &argv[index];
-}
-
-JSValue *qts_new_function(JSContext *ctx, int func_id, const char *name, JSCFunctionMagic *c_func_impl) {
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  sprintf(msg, "new_function(name: %s, magic: %d)", name, func_id);
-  QTS_DEBUG(msg)
-#endif
-  JSValue func_obj = JS_NewCFunctionMagic(
-      /* context */ ctx,
-      /* JSCFunctionMagic* */ c_func_impl,
-      /* name */ name,
-      /* min argc */ 0,
-      /* function type */ JS_CFUNC_generic_magic,
-      /* magic: fn id */ func_id);
-  return jsvalue_to_heap(func_obj);
-}
-
-JSValue *QTS_NewFunction(JSContext *ctx, int func_id, const char *name) {
-  return qts_new_function(ctx, func_id, name, &qts_quickjs_to_c_callback);
-}
-
-#ifdef QTS_ASYNCIFY
-EM_ASYNC_JS(JSValue *, qts_quickjs_to_c_callback_asyncify_inner, (JSContext * ctx, JSValueConst *this_val, int argc, JSValueConst *argv, int magic), {
-  return Module.cToHostAsyncCallback(ctx, this_val, argc, argv, magic);
-})
-
-JSValue qts_quickjs_to_c_callback_asyncify(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic) {
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  sprintf(msg, "qts_quickjs_to_c_callback_asyncify(magic: %d)", magic);
-  QTS_DEBUG(msg)
-#endif
-  JSValue *result_ptr = qts_quickjs_to_c_callback_asyncify_inner(ctx, &this_val, argc, argv, magic);
-  if (result_ptr == NULL) {
-    return JS_UNDEFINED;
-  }
-  JSValue result = *result_ptr;
-  free(result_ptr);
-  return result;
-}
-
-AsyncifyOnly(JSValue *) QTS_NewAsyncFunction(JSContext *ctx, int func_id, const char *name) {
-  return qts_new_function(ctx, func_id, name, &qts_quickjs_to_c_callback_asyncify);
-}
-
-#endif
-
 JSValue *QTS_Throw(JSContext *ctx, JSValueConst *error) {
   JSValue copy = JS_DupValue(ctx, *error);
   return jsvalue_to_heap(JS_Throw(ctx, copy));
@@ -203,75 +123,6 @@ JSValue *QTS_Throw(JSContext *ctx, JSValueConst *error) {
 
 JSValue *QTS_NewError(JSContext *ctx) {
   return jsvalue_to_heap(JS_NewError(ctx));
-}
-
-/**
- * Interrupt handler - called regularly from QuickJS. Return !=0 to interrupt.
- * TODO: because this is perf critical, really send a new func pointer for each
- * call to QTS_RuntimeEnableInterruptHandler instead of using dispatch.
- */
-typedef int QTS_C_To_HostInterruptFunc(JSRuntime *rt);
-QTS_C_To_HostInterruptFunc *bound_interrupt = NULL;
-
-int qts_interrupt_handler(JSRuntime *rt, void *_unused) {
-  if (bound_interrupt == NULL) {
-    printf(PKG "cannot call interrupt handler because no QTS_C_To_HostInterruptFunc set");
-    abort();
-  }
-  return (*bound_interrupt)(rt);
-}
-
-void QTS_SetInterruptCallback(QTS_C_To_HostInterruptFunc *cb) {
-  bound_interrupt = cb;
-}
-
-void QTS_RuntimeEnableInterruptHandler(JSRuntime *rt) {
-  if (bound_interrupt == NULL) {
-    printf(PKG "cannot enable interrupt handler because no QTS_C_To_HostInterruptFunc set");
-    abort();
-  }
-
-  JS_SetInterruptHandler(rt, &qts_interrupt_handler, NULL);
-}
-
-void QTS_RuntimeDisableInterruptHandler(JSRuntime *rt) {
-  JS_SetInterruptHandler(rt, NULL, NULL);
-}
-
-/**
- * Module loading
- */
-typedef JSModuleDef *QTS_C_To_HostLoadModuleFunc(JSRuntime *rt, JSContext *ctx, const char *module_name);
-QTS_C_To_HostLoadModuleFunc *bound_load_module = NULL;
-
-// See js_module_loader in quickjs/quickjs-libc.c:567
-JSModuleDef *qts_load_module(JSContext *ctx, const char *module_name, void *_unused) {
-  if (bound_load_module == NULL) {
-    printf(PKG "cannot load module because no QTS_C_To_HostLoadModuleFunc set");
-    abort();
-  }
-
-  JSRuntime *rt = JS_GetRuntime(ctx);
-  // TODO: this will need to suspend.
-  JSModuleDef *result_ptr = (*bound_load_module)(rt, ctx, module_name);
-  return result_ptr;
-}
-
-void QTS_SetLoadModuleFunc(QTS_C_To_HostLoadModuleFunc *cb) {
-  bound_load_module = cb;
-}
-
-void QTS_RuntimeEnableModuleLoader(JSRuntime *rt) {
-  if (bound_load_module == NULL) {
-    printf(PKG "cannot enable module loader because no QTS_C_To_HostLoadModuleFunc set");
-    abort();
-  }
-
-  JS_SetModuleLoaderFunc(rt, /* use default name normalizer */ NULL, &qts_load_module, NULL);
-}
-
-void QTS_RuntimeDisableModuleLoader(JSRuntime *rt) {
-  JS_SetModuleLoaderFunc(rt, NULL, NULL, NULL);
 }
 
 JSModuleDef *QTS_CompileModule(JSContext *ctx, const char *module_name, HeapChar *module_body) {
@@ -375,82 +226,12 @@ JSValueConst *QTS_GetTrue() {
   return &QTS_True;
 }
 
-#ifdef QTS_ASYNCIFY
-// Adapted from `js_load_file`
-EM_ASYNC_JS(void *, my_js_load_file, (void *pbuf_len, const char *filename), {
-  const jsString = 'export const name = "Nice!";';
-  // 'jsString.length' would return the length of the string as UTF-16
-  // units, but Emscripten C strings operate as UTF-8.
-  const lengthBytes = lengthBytesUTF8(jsString) + 1;
-  const stringOnWasmHeap = _malloc(lengthBytes);
-  stringToUTF8(jsString, stringOnWasmHeap, lengthBytes);
-  HEAP32[pbuf_len >> 2] = lengthBytes;
-  return stringOnWasmHeap;
-});
-
-// Adapted from `js_module_loader`
-JSModuleDef *my_js_module_loader(JSContext *ctx,
-                                 const char *module_name, void *opaque) {
-  JSModuleDef *m;
-
-  if (has_suffix(module_name, ".so")) {
-    JS_ThrowReferenceError(
-        ctx,
-        "could not load module filename '%s'; .so modules not supported",
-        module_name);
-    return NULL;
-  } else {
-    size_t buf_len;
-    uint8_t *buf;
-    JSValue func_val;
-
-    buf = my_js_load_file(&buf_len, module_name);
-    if (!buf) {
-      JS_ThrowReferenceError(ctx, "could not load module filename '%s'",
-                             module_name);
-      return NULL;
-    }
-
-    /* compile the module */
-    func_val = JS_Eval(ctx, (char *)buf, buf_len, module_name,
-                       JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
-
-    {
-      // IMPORTANT NOTE:
-      //
-      // The original version of this function uses js_malloc(ctx, ...)
-      // inside `js_load_file`, but since we're using `EM_ASYNC_JS` I'm
-      // just using the builtin emscripten JS function `_malloc`, which
-      // corresponds to `malloc`/`free` in C-land.
-      //
-      // That's why I'm using `free` below instead of `js_free`:
-      //
-      // js_free(ctx, buf);
-      free(buf);
-    }
-
-    if (JS_IsException(func_val))
-      return NULL;
-    /* XXX: could propagate the exception */
-    js_module_set_import_meta(ctx, func_val, TRUE, FALSE);
-    /* the module is already referenced, so we must free it */
-    m = JS_VALUE_GET_PTR(func_val);
-    JS_FreeValue(ctx, func_val);
-  }
-  return m;
-}
-#endif
-
 /**
  * Standard FFI functions
  */
 
 JSRuntime *QTS_NewRuntime() {
-  JSRuntime *rt = JS_NewRuntime();
-#ifdef QTS_ASYNCIFY
-  JS_SetModuleLoaderFunc(rt, NULL, my_js_module_loader, NULL);
-#endif
-  return rt;
+  return JS_NewRuntime();
 }
 
 void QTS_FreeRuntime(JSRuntime *rt) {
@@ -657,8 +438,15 @@ MaybeAsync(char *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
 MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
   size_t js_code_len = strlen(js_code);
 
-  if (detectModule && JS_DetectModule((const char *)js_code, js_code_len)) {
-    evalFlags &= JS_EVAL_TYPE_MODULE;
+  if (detectModule) {
+    if (JS_DetectModule((const char *)js_code, js_code_len)) {
+      QTS_DEBUG("QTS_Eval: Detected module = true");
+      evalFlags |= JS_EVAL_TYPE_MODULE;
+    } else {
+      QTS_DEBUG("QTS_Eval: Detected module = false");
+    }
+  } else {
+    QTS_DEBUG("QTS_Eval: do not detect module");
   }
 
   return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), filename, evalFlags));
@@ -728,4 +516,108 @@ int QTS_BuildIsAsyncify() {
 #else
   return 0;
 #endif
+}
+
+// ----------------------------------------------------------------------------
+// C -> Host Callbacks
+
+// -------------------
+// function: C -> Host
+EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, int magic_func_id), {
+#ifdef QTS_ASYNCIFY
+  const asyncify = Asyncify;
+#else
+  const asyncify = undefined;
+#endif
+  return Module.callbacks.callFunction(asyncify, ctx, this_ptr, argc, argv, magic_func_id);
+});
+
+// Function: QuickJS -> C
+JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic) {
+  JSValue *result_ptr = qts_host_call_function(ctx, &this_val, argc, argv, magic);
+  if (result_ptr == NULL) {
+    return JS_UNDEFINED;
+  }
+  JSValue result = *result_ptr;
+  free(result_ptr);
+  return result;
+}
+
+// Function: Host -> QuickJS
+JSValue *QTS_NewFunction(JSContext *ctx, int func_id, const char *name) {
+#ifdef QTS_DEBUG_MODE
+  char msg[500];
+  sprintf(msg, "new_function(name: %s, magic: %d)", name, func_id);
+  QTS_DEBUG(msg)
+#endif
+  JSValue func_obj = JS_NewCFunctionMagic(
+      /* context */ ctx,
+      /* JSCFunctionMagic* */ &qts_call_function,
+      /* name */ name,
+      /* min argc */ 0,
+      /* function type */ JS_CFUNC_generic_magic,
+      /* magic: fn id */ func_id);
+  return jsvalue_to_heap(func_obj);
+}
+
+JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
+  return &argv[index];
+}
+
+// --------------------
+// interrupt: C -> Host
+EM_JS(int, qts_host_interrupt_handler, (JSRuntime * rt), {
+  // Async not supported here.
+  // #ifdef QTS_ASYNCIFY
+  //   const asyncify = Asyncify;
+  // #else
+  const asyncify = undefined;
+  // #endif
+  return Module.callbacks.shouldInterrupt(asyncify, rt);
+});
+
+// interrupt: QuickJS -> C
+int qts_interrupt_handler(JSRuntime *rt, void *_unused) {
+  return qts_host_interrupt_handler(rt);
+}
+
+// interrupt: Host -> QuickJS
+void QTS_RuntimeEnableInterruptHandler(JSRuntime *rt) {
+  JS_SetInterruptHandler(rt, &qts_interrupt_handler, NULL);
+}
+
+void QTS_RuntimeDisableInterruptHandler(JSRuntime *rt) {
+  JS_SetInterruptHandler(rt, NULL, NULL);
+}
+
+// --------------------
+// load module: C -> Host
+EM_JS(MaybeAsync(JSModuleDef *), qts_host_load_module, (JSRuntime * rt, JSContext *ctx, const char *module_name), {
+#ifdef QTS_ASYNCIFY
+  const asyncify = Asyncify;
+#else
+  const asyncify = undefined;
+#endif
+  return Module.callbacks.loadModule(asyncify, rt, ctx, module_name);
+});
+
+// load module: QuickJS -> C
+// See js_module_loader in quickjs/quickjs-libc.c:567
+JSModuleDef *qts_load_module(JSContext *ctx, const char *module_name, void *_unused) {
+  JSRuntime *rt = JS_GetRuntime(ctx);
+#ifdef QTS_DEBUG_MODE
+  char msg[500];
+  sprintf(msg, "qts_load_module(rt: %p, ctx: %p, name: %s)", rt, ctx, module_name);
+  QTS_DEBUG(msg)
+#endif
+  return qts_host_load_module(rt, ctx, module_name);
+}
+
+// Load module: Host -> QuickJS
+void QTS_RuntimeEnableModuleLoader(JSRuntime *rt) {
+  JS_SetModuleLoaderFunc(rt, /* use default name normalizer */ NULL, &qts_load_module, NULL);
+}
+
+void QTS_RuntimeDisableModuleLoader(JSRuntime *rt) {
+  JS_SetModuleLoaderFunc(rt, NULL, NULL, NULL);
 }

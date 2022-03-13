@@ -1,7 +1,8 @@
 import { QuickJSContext, QuickJSHandle } from './context'
+import { debug } from './debug'
 import { QuickJSAsyncEmscriptenModule } from './emscripten-types'
 import { QuickJSAsyncFFI } from './ffi-asyncify'
-import { EvalDetectModule, EvalFlags, JSRuntimePointer } from './ffi-types'
+import { EvalDetectModule, EvalFlags, JSRuntimePointer, JSValuePointer } from './ffi-types'
 import { Lifetime } from './quickjs'
 import { QuickJSModuleCallbacks } from './quickjs-module'
 import { QuickJSRuntimeAsync } from './runtime-asyncify'
@@ -38,17 +39,23 @@ export class QuickJSContextAsync extends QuickJSContext {
   ): Promise<VmCallResult<QuickJSHandle>> {
     const detectModule = (options === undefined ? 1 : 0) as EvalDetectModule
     const flags = evalOptionsToFlags(options) as EvalFlags
-    const resultPtr = await this.memory
-      .newHeapCharPointer(code)
-      .consume(charHandle =>
-        this.ffi.QTS_Eval_MaybeAsync(
-          this.ctx.value,
-          charHandle.value,
-          filename,
-          detectModule,
-          flags
+    let resultPtr = 0 as JSValuePointer
+    try {
+      resultPtr = await this.memory
+        .newHeapCharPointer(code)
+        .consume(charHandle =>
+          this.ffi.QTS_Eval_MaybeAsync(
+            this.ctx.value,
+            charHandle.value,
+            filename,
+            detectModule,
+            flags
+          )
         )
-      )
+    } catch (error) {
+      debug('QTS_Eval_MaybeAsync threw', error)
+      throw error
+    }
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
@@ -71,8 +78,6 @@ export class QuickJSContextAsync extends QuickJSContext {
    * See [Emscripten's docs on Asyncify](https://emscripten.org/docs/porting/asyncify.html).
    */
   newAsyncifiedFunction(name: string, fn: AsyncFunctionImplementation): QuickJSHandle {
-    const fnId = ++this.fnNextId
-    this.fnMap.set(fnId, fn as any)
-    return this.memory.heapValueHandle(this.ffi.QTS_NewAsyncFunction(this.ctx.value, fnId, name))
+    return this.newFunction(name, fn as any)
   }
 }

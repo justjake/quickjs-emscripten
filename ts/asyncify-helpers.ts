@@ -1,3 +1,4 @@
+import { debug } from './debug'
 import { isSuccess, SuccessOrFail } from './vm-interface'
 
 /**
@@ -49,18 +50,18 @@ export function newPromiseLike<T>(fn: () => T | Promise<T>): SyncPromise<T> | Pr
 /** @private */
 export function intoPromiseLike<T>(value: T | Promise<T>): SyncPromise<T> | Promise<T> {
   if (value instanceof Promise) {
-    // console.log('intoPromiseLike: is promise', value)
+    debug('intoPromiseLike: async', value)
     return value
   }
 
-  // console.log('intoPromiseLike: sync', value)
+  debug('intoPromiseLike: sync', value)
   return new SyncPromise({ value })
 }
 
 /** @private */
 export function unwrapPromiseLike<T>(promise: SyncPromise<T> | Promise<T>): T | Promise<T> {
   if (promise instanceof SyncPromise) {
-    // console.log('unwrapPromiseLike: is sync', promise.state)
+    debug('unwrapPromiseLike: sync', promise.state)
     if (isSuccess(promise.state)) {
       return promise.state.value
     } else {
@@ -68,6 +69,6 @@ export function unwrapPromiseLike<T>(promise: SyncPromise<T> | Promise<T>): T | 
     }
   }
 
-  // console.log('unwrapPromiseLike: is promise', promise)
+  debug('unwrapPromiseLike: async', promise)
   return promise
 }

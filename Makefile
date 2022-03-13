@@ -40,6 +40,7 @@ CFLAGS_EMCC+=-s FILESYSTEM=0
 CFLAGS_EMCC_ASYNCIFY+=-s ASYNCIFY=1
 CFLAGS_EMCC_ASYNCIFY+=-DQTS_ASYNCIFY=1
 CFLAGS_EMCC_ASYNCIFY+=-s ASYNCIFY_REMOVE=$(shell cat $(BUILD_WRAPPER)/symbols.sync.json)
+CFLAGS_EMCC_ASYNCIFY+=-s ASYNCIFY_IMPORTS=$(shell cat $(BUILD_WRAPPER)/symbols.asyncify-imports.json)
 
 ifdef DEBUG
 	CFLAGS=-O0
@@ -93,6 +94,9 @@ $(BUILD_WRAPPER)/symbols.asyncify.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT
 
 $(BUILD_WRAPPER)/symbols.sync.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 	ASYNCIFY=true $(GENERATE_TS) sync-symbols $@
+	
+$(BUILD_WRAPPER)/symbols.asyncify-imports.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT) $(BUILD_WRAPPER)/symbols.sync.json
+	ASYNCIFY=true $(GENERATE_TS) async-callback-symbols $@
 
 ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
 	$(GENERATE_TS) ffi $@
@@ -119,7 +123,7 @@ $(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(BUILD_WRAPPER
 $(BUILD_WRAPPER)/wasm/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.json $(BUILD_ROOT)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -c -o $@ $<
 
-$(BUILD_WRAPPER)/wasm-asyncify/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.asyncify.json $(BUILD_ROOT)
+$(BUILD_WRAPPER)/wasm-asyncify/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.asyncify.json $(BUILD_WRAPPER)/symbols.asyncify-imports.json $(BUILD_ROOT)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_EMCC_ASYNCIFY) $(EMCC_EXPORTED_FUNCS) -c -o $@ $<
 
 $(BUILD_WRAPPER)/native/test.o: $(WRAPPER_ROOT)/test.c $(WRAPPER_ROOT)/interface.h

@@ -5,7 +5,13 @@ import { JSContextPointer, JSRuntimePointer } from './ffi-types'
 import { Lifetime } from './quickjs'
 import { QuickJSModuleCallbacks } from './quickjs-module'
 import { QuickJSRuntime } from './runtime'
-import { ContextOptions, DefaultIntrinsics, RuntimeOptions } from './types'
+import {
+  ContextOptions,
+  DefaultIntrinsics,
+  JSModuleLoader,
+  JSModuleLoaderAsync,
+  RuntimeOptions,
+} from './types'
 
 /**
  * Create a new [QuickJSAsyncRuntime].
@@ -93,7 +99,7 @@ export class QuickJSRuntimeAsync extends QuickJSRuntime {
     return context
   }
 
-  public override getContexts(): IterableIterator<QuickJSContextAsync> {
-    return this.contextMap.values()
+  public override setModuleLoader(moduleLoader: JSModuleLoader | JSModuleLoaderAsync): void {
+    super.setModuleLoader(moduleLoader as JSModuleLoader)
   }
 }

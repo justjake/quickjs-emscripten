@@ -14,38 +14,11 @@ export class QuickJSFFI {
   /** Set at compile time. */
   readonly DEBUG = true
 
-  QTS_SetHostCallback: (fp: QTS_C_To_HostCallbackFuncPointer) => void =
-    this.module.cwrap("QTS_SetHostCallback", null, ["number"])
-
-  QTS_ArgvGetJSValueConstPointer: (argv: JSValuePointer | JSValueConstPointer, index: number) => JSValueConstPointer =
-    this.module.cwrap("QTS_ArgvGetJSValueConstPointer", "number", ["number","number"])
-
-  QTS_NewFunction: (ctx: JSContextPointer, func_id: number, name: string) => JSValuePointer =
-    this.module.cwrap("QTS_NewFunction", "number", ["number","number","string"])
-
   QTS_Throw: (ctx: JSContextPointer, error: JSValuePointer | JSValueConstPointer) => JSValuePointer =
     this.module.cwrap("QTS_Throw", "number", ["number","number"])
 
   QTS_NewError: (ctx: JSContextPointer) => JSValuePointer =
     this.module.cwrap("QTS_NewError", "number", ["number"])
-
-  QTS_SetInterruptCallback: (cb: QTS_C_To_HostInterruptFuncPointer) => void =
-    this.module.cwrap("QTS_SetInterruptCallback", null, ["number"])
-
-  QTS_RuntimeEnableInterruptHandler: (rt: JSRuntimePointer) => void =
-    this.module.cwrap("QTS_RuntimeEnableInterruptHandler", null, ["number"])
-
-  QTS_RuntimeDisableInterruptHandler: (rt: JSRuntimePointer) => void =
-    this.module.cwrap("QTS_RuntimeDisableInterruptHandler", null, ["number"])
-
-  QTS_SetLoadModuleFunc: (cb: QTS_C_To_HostLoadModuleFuncPointer) => void =
-    this.module.cwrap("QTS_SetLoadModuleFunc", null, ["number"])
-
-  QTS_RuntimeEnableModuleLoader: (rt: JSRuntimePointer) => void =
-    this.module.cwrap("QTS_RuntimeEnableModuleLoader", null, ["number"])
-
-  QTS_RuntimeDisableModuleLoader: (rt: JSRuntimePointer) => void =
-    this.module.cwrap("QTS_RuntimeDisableModuleLoader", null, ["number"])
 
   QTS_CompileModule: (ctx: JSContextPointer, module_name: string, module_body: HeapCharPointer) => JSModuleDefPointer =
     this.module.cwrap("QTS_CompileModule", "number", ["number","string","number"])
@@ -160,4 +133,22 @@ export class QuickJSFFI {
 
   QTS_BuildIsAsyncify: () => number =
     this.module.cwrap("QTS_BuildIsAsyncify", "number", [])
+
+  QTS_NewFunction: (ctx: JSContextPointer, func_id: number, name: string) => JSValuePointer =
+    this.module.cwrap("QTS_NewFunction", "number", ["number","number","string"])
+
+  QTS_ArgvGetJSValueConstPointer: (argv: JSValuePointer | JSValueConstPointer, index: number) => JSValueConstPointer =
+    this.module.cwrap("QTS_ArgvGetJSValueConstPointer", "number", ["number","number"])
+
+  QTS_RuntimeEnableInterruptHandler: (rt: JSRuntimePointer) => void =
+    this.module.cwrap("QTS_RuntimeEnableInterruptHandler", null, ["number"])
+
+  QTS_RuntimeDisableInterruptHandler: (rt: JSRuntimePointer) => void =
+    this.module.cwrap("QTS_RuntimeDisableInterruptHandler", null, ["number"])
+
+  QTS_RuntimeEnableModuleLoader: (rt: JSRuntimePointer) => void =
+    this.module.cwrap("QTS_RuntimeEnableModuleLoader", null, ["number"])
+
+  QTS_RuntimeDisableModuleLoader: (rt: JSRuntimePointer) => void =
+    this.module.cwrap("QTS_RuntimeDisableModuleLoader", null, ["number"])
 }

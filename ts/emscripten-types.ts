@@ -12,9 +12,12 @@
 //   we don't use.
 
 import {
-  CToHostAsyncCallbackFunctionImplementation,
-  CToHostCallbackFunctionImplementation,
-} from './quickjs-module'
+  JSContextPointer,
+  JSModuleDefPointer,
+  JSRuntimePointer,
+  JSValueConstPointer,
+  JSValuePointer,
+} from './ffi-types'
 
 declare namespace Emscripten {
   interface FileSystemType {}
@@ -72,18 +75,66 @@ interface EmscriptenModule {
   FAST_MEMORY: number
 }
 
+// This isn't the real return type of handleAsync, but it's better to treat it this way.
+declare const AsyncifySleepReturnValue: unique symbol
+type AsyncifySleepResult<T> = T & typeof AsyncifySleepReturnValue
+
+/**
+ * Allows us to optionally suspend the Emscripten runtime to wait for a promise.
+ * https://emscripten.org/docs/porting/asyncify.html#ways-to-use-async-apis-in-older-engines
+ * ```
+ * EM_JS(int, do_fetch, (), {
+ *   return Asyncify.handleAsync(function () {
+ *     out("waiting for a fetch");
+ *     return fetch("a.html").then(function (response) {
+ *       out("got the fetch response");
+ *       // (normally you would do something with the fetch here)
+ *       return 42;
+ *     });
+ *   });
+ * });
+ * ```
+ * @private
+ */
+export interface Asyncify {
+  handleAsync<T>(asyncFn: () => Promise<T>): AsyncifySleepResult<T>
+}
+
+/**
+ * @private
+ */
+export interface EmscriptenModuleCallbacks {
+  callFunction: (
+    asyncify: Asyncify | undefined,
+    ctx: JSContextPointer,
+    this_ptr: JSValueConstPointer,
+    argc: number,
+    argv: JSValueConstPointer,
+    fn_id: number
+  ) => JSValuePointer | AsyncifySleepResult<JSValuePointer>
+
+  loadModule: (
+    asyncify: Asyncify | undefined,
+    rt: JSRuntimePointer,
+    ctx: JSContextPointer,
+    module_name: string
+  ) => JSModuleDefPointer | AsyncifySleepResult<JSModuleDefPointer>
+
+  shouldInterrupt: (
+    asyncify: Asyncify | undefined,
+    rt: JSRuntimePointer
+  ) => 0 | 1 | AsyncifySleepResult<0 | 1>
+}
+
 export interface QuickJSEmscriptenModule extends EmscriptenModule {
-  /** @todo Implement this field */
   type: 'sync'
+  callbacks: EmscriptenModuleCallbacks
 }
 
 export interface QuickJSAsyncEmscriptenModule extends EmscriptenModule {
   /** @todo Implement this field */
   type: 'async'
-
-  // TODO: asyncify stuff, eg Asyncify.handleSleep()
-  // https://emscripten.org/docs/porting/asyncify.html#ways-to-use-async-apis-in-older-engines
-  cToHostAsyncCallback?: CToHostAsyncCallbackFunctionImplementation
+  callbacks: EmscriptenModuleCallbacks
 }
 
 export type EitherModule = QuickJSEmscriptenModule | QuickJSAsyncEmscriptenModule

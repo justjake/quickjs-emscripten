@@ -1,10 +1,12 @@
 import { newPromiseLike, unwrapPromiseLike } from './asyncify-helpers'
+import { debug } from './debug'
 import { QuickJSDeferredPromise } from './deferred-promise'
 import type {
   EitherModule,
   QuickJSAsyncEmscriptenModule,
   QuickJSEmscriptenModule,
 } from './emscripten-types'
+import { QuickJSUnwrapError } from './errors'
 import type { QuickJSFFI } from './ffi'
 import type { QuickJSAsyncFFI } from './ffi-asyncify'
 import {
@@ -824,9 +826,14 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
         if (typeof dumped.name === 'string') {
           exception.name = dumped.name
         }
+        if (typeof dumped.stack === 'string') {
+          exception.stack = `VM: ${dumped.stack}\nHost: ${exception.stack}`
+        }
+        Object.assign(exception, { cause: dumped })
         throw exception
       }
-      throw dumped
+
+      throw new QuickJSUnwrapError(dumped)
     }
 
     return result.value

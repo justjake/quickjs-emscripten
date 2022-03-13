@@ -1,10 +1,10 @@
 import type { QuickJSFFI } from './ffi'
 import type { QuickJSAsyncFFI } from './ffi-asyncify'
 import { QuickJSHandle, QuickJSContext } from './context'
-import { QuickJSAsyncContext } from './vm-asyncify'
 import { SuccessOrFail, VmFunctionImplementation } from './vm-interface'
 import { Disposable } from './lifetime'
 import { EvalFlags, JSContextPointer } from './ffi-types'
+import { QuickJSContextAsync } from './context-asyncify'
 
 export type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
 
@@ -21,7 +21,7 @@ export interface JSModuleDefinition {
   exports: JSModuleExport[]
 }
 
-export type JSModuleLoadSuccess = string | /** TODO */ JSModuleDefinition
+export type JSModuleLoadSuccess = string | /** TODO */ PartiallyImplemented<JSModuleDefinition>
 
 export type JSModuleLoadFailure = Error | QuickJSHandle
 
@@ -29,14 +29,22 @@ export type JSModuleLoadResult =
   | JSModuleLoadSuccess
   | SuccessOrFail<JSModuleLoadSuccess, JSModuleLoadFailure>
 
-export interface JSModuleLoader {
+export interface JSModuleLoaderAsync {
+  /** Load module (async) */
+  (vm: QuickJSContextAsync, moduleName: string): JSModuleLoadResult | Promise<JSModuleLoadResult>
+}
+export interface JSModuleLoader extends JSModuleLoaderAsync {
   /** Load module (sync) */
   (vm: QuickJSContext, moduleName: string): JSModuleLoadResult
-  /** Load module (async) */
-  (vm: QuickJSAsyncContext, moduleName: string): JSModuleLoadResult | Promise<JSModuleLoadResult>
 }
 
 type TODO<hint extends string = '?', typeHint = unknown> = never
+
+const UnstableSymbol = Symbol('Unstable')
+
+export type PartiallyImplemented<T> = T & {
+  [UnstableSymbol]: 'This feature may unimplemented, broken, throw errors, etc.'
+}
 
 export interface RuntimeOptions {
   moduleLoader?: JSModuleLoader
@@ -92,7 +100,7 @@ export interface ContextOptions {
    * If unset, the default intrinsics will be used.
    * To omit all intrinsics, pass an empty array.
    */
-  intrinsics?: Intrinsic[] | typeof DefaultIntrinsics
+  intrinsics?: PartiallyImplemented<Intrinsic[]> | typeof DefaultIntrinsics
 
   /**
    * Wrap the provided context instead of constructing a new one.
