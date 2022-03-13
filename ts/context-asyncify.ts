@@ -1,13 +1,13 @@
-import { QuickJSContext, QuickJSHandle } from './context'
-import { debug } from './debug'
-import { QuickJSAsyncEmscriptenModule } from './emscripten-types'
-import { QuickJSAsyncFFI } from './ffi-asyncify'
-import { EvalDetectModule, EvalFlags, JSRuntimePointer, JSValuePointer } from './ffi-types'
-import { Lifetime } from './quickjs'
-import { QuickJSModuleCallbacks } from './quickjs-module'
-import { QuickJSRuntimeAsync } from './runtime-asyncify'
-import { ContextEvalOptions, evalOptionsToFlags } from './types'
-import { VmCallResult } from './vm-interface'
+import { QuickJSContext, QuickJSHandle } from "./context"
+import { debug } from "./debug"
+import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
+import { QuickJSAsyncFFI } from "./ffi-asyncify"
+import { EvalDetectModule, EvalFlags, JSRuntimePointer, JSValuePointer } from "./ffi-types"
+import { Lifetime } from "./quickjs"
+import { QuickJSModuleCallbacks } from "./quickjs-module"
+import { QuickJSRuntimeAsync } from "./runtime-asyncify"
+import { ContextEvalOptions, evalOptionsToFlags } from "./types"
+import { VmCallResult } from "./vm-interface"
 
 export type AsyncFunctionImplementation = (
   this: QuickJSHandle,
@@ -33,7 +33,7 @@ export class QuickJSContextAsync extends QuickJSContext {
    */
   async evalCodeAsync(
     code: string,
-    filename: string = 'eval.js',
+    filename: string = "eval.js",
     /** See [[EvalFlags]] for number semantics */
     options?: number | ContextEvalOptions
   ): Promise<VmCallResult<QuickJSHandle>> {
@@ -43,7 +43,7 @@ export class QuickJSContextAsync extends QuickJSContext {
     try {
       resultPtr = await this.memory
         .newHeapCharPointer(code)
-        .consume(charHandle =>
+        .consume((charHandle) =>
           this.ffi.QTS_Eval_MaybeAsync(
             this.ctx.value,
             charHandle.value,
@@ -53,7 +53,7 @@ export class QuickJSContextAsync extends QuickJSContext {
           )
         )
     } catch (error) {
-      debug('QTS_Eval_MaybeAsync threw', error)
+      debug("QTS_Eval_MaybeAsync threw", error)
       throw error
     }
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)

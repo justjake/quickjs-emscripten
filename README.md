@@ -8,22 +8,22 @@ C by Fabrice Bellard](https://bellard.org/quickjs/) compiled to WebAssembly.
 - Expose host functions to the QuickJS runtime.
 
 ```typescript
-import { getQuickJS } from 'quickjs-emscripten'
+import { getQuickJS } from "quickjs-emscripten"
 
 async function main() {
   const QuickJS = await getQuickJS()
   const vm = QuickJS.createVm()
 
-  const world = vm.newString('world')
-  vm.setProp(vm.global, 'NAME', world)
+  const world = vm.newString("world")
+  vm.setProp(vm.global, "NAME", world)
   world.dispose()
 
   const result = vm.evalCode(`"Hello " + NAME + "!"`)
   if (result.error) {
-    console.log('Execution failed:', vm.dump(result.error))
+    console.log("Execution failed:", vm.dump(result.error))
     result.error.dispose()
   } else {
-    console.log('Success:', vm.dump(result.value))
+    console.log("Success:", vm.dump(result.value))
     result.value.dispose()
   }
 
@@ -49,10 +49,10 @@ function to directly access the singleton engine in your synchronous code.
 See [QuickJS.evalCode](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/quickjs.md#evalcode)
 
 ```typescript
-import { getQuickJS, shouldInterruptAfterDeadline } from 'quickjs-emscripten'
+import { getQuickJS, shouldInterruptAfterDeadline } from "quickjs-emscripten"
 
-getQuickJS().then(QuickJS => {
-  const result = QuickJS.evalCode('1 + 1', {
+getQuickJS().then((QuickJS) => {
+  const result = QuickJS.evalCode("1 + 1", {
     shouldInterrupt: shouldInterruptAfterDeadline(Date.now() + 1000),
     memoryLimitBytes: 1024 * 1024,
   })
@@ -73,15 +73,15 @@ limit. See the documentation for details.
 const vm = QuickJS.createVm()
 let state = 0
 
-const fnHandle = vm.newFunction('nextId', () => {
+const fnHandle = vm.newFunction("nextId", () => {
   return vm.newNumber(++state)
 })
 
-vm.setProp(vm.global, 'nextId', fnHandle)
+vm.setProp(vm.global, "nextId", fnHandle)
 fnHandle.dispose()
 
 const nextId = vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`))
-console.log('vm result:', vm.getNumber(nextId), 'native state:', state)
+console.log("vm result:", vm.getNumber(nextId), "native state:", state)
 
 nextId.dispose()
 vm.dispose()
@@ -121,20 +121,20 @@ method in the reverse order in which they're added to the scope. Here's the
 "Interfacing with the interpreter" example re-written using `Scope`:
 
 ```typescript
-Scope.withScope(scope => {
+Scope.withScope((scope) => {
   const vm = scope.manage(QuickJS.createVm())
   let state = 0
 
   const fnHandle = scope.manage(
-    vm.newFunction('nextId', () => {
+    vm.newFunction("nextId", () => {
       return vm.newNumber(++state)
     })
   )
 
-  vm.setProp(vm.global, 'nextId', fnHandle)
+  vm.setProp(vm.global, "nextId", fnHandle)
 
   const nextId = scope.manage(vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`)))
-  console.log('vm result:', vm.getNumber(nextId), 'native state:', state)
+  console.log("vm result:", vm.getNumber(nextId), "native state:", state)
 
   // When the withScope block exits, it calls scope.dispose(), which in turn calls
   // the .dispose() methods of all the disposables managed by the scope.
@@ -158,12 +158,12 @@ Here's the "Interfacing with interpreter" example re-written using `.consume()`:
 const vm = QuickJS.createVm()
 let state = 0
 
-vm.newFunction('nextId', () => {
+vm.newFunction("nextId", () => {
   return vm.newNumber(++state)
-}).consume(fnHandle => vm.setProp(vm.global, 'nextId', fnHandle))
+}).consume((fnHandle) => vm.setProp(vm.global, "nextId", fnHandle))
 
-vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`)).consume(nextId =>
-  console.log('vm result:', vm.getNumber(nextId), 'native state:', state)
+vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`)).consume((nextId) =>
+  console.log("vm result:", vm.getNumber(nextId), "native state:", state)
 )
 
 vm.dispose()

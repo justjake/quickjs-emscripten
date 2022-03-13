@@ -11,44 +11,44 @@ type Brand<T, B> = T & { brand: B }
 /**
  * `JSRuntime*`.
  */
-export type JSRuntimePointer = Pointer<'JSRuntime'>
+export type JSRuntimePointer = Pointer<"JSRuntime">
 
 /**
  * `JSContext*`.
  */
-export type JSContextPointer = Pointer<'JSContext'>
+export type JSContextPointer = Pointer<"JSContext">
 
 /**
  * `JSContext**`. Used internally for execute pending jobs.
  */
-export type JSContextPointerPointer = Pointer<'JSContext'>
+export type JSContextPointerPointer = Pointer<"JSContext">
 
 /**
  * `JSModuleDef*`.
  */
-export type JSModuleDefPointer = Pointer<'JSModuleDef'>
+export type JSModuleDefPointer = Pointer<"JSModuleDef">
 
 /**
  * `JSValue*`.
  * See [[JSValue]].
  */
-export type JSValuePointer = Pointer<'JSValue'>
+export type JSValuePointer = Pointer<"JSValue">
 
 /**
  * `JSValueConst*
  * See [[JSValueConst]] and [[StaticJSValue]].
  */
-export type JSValueConstPointer = Pointer<'JSValueConst'>
+export type JSValueConstPointer = Pointer<"JSValueConst">
 
 /**
  * Used internally for Javascript-to-C function calls.
  */
-export type JSValuePointerPointer = Pointer<'JSValue[]'>
+export type JSValuePointerPointer = Pointer<"JSValue[]">
 
 /**
  * Used internally for Javascript-to-C function calls.
  */
-export type JSValueConstPointerPointer = Pointer<'JSValueConst[]'>
+export type JSValueConstPointerPointer = Pointer<"JSValueConst[]">
 
 /**
  * Used internally for C-to-Javascript function calls.
@@ -58,23 +58,23 @@ export type JSValueConstPointerPointer = Pointer<'JSValueConst[]'>
 /**
  * Used internally for C-to-Javascript function calls.
  */
-export type QTS_C_To_HostCallbackFuncPointer = Pointer<'C_To_HostCallbackFunc'>
+export type QTS_C_To_HostCallbackFuncPointer = Pointer<"C_To_HostCallbackFunc">
 
 /**
  * Used internally for C-to-Javascript interrupt handlers.
  */
-export type QTS_C_To_HostInterruptFuncPointer = Pointer<'C_To_HostInterruptFunc'>
+export type QTS_C_To_HostInterruptFuncPointer = Pointer<"C_To_HostInterruptFunc">
 
 /**
  * Used internally for C-to-Javascript module loading.
  */
-export type QTS_C_To_HostLoadModuleFuncPointer = Pointer<'C_To_HostLoadModuleFunc'>
+export type QTS_C_To_HostLoadModuleFuncPointer = Pointer<"C_To_HostLoadModuleFunc">
 
 /**
  * Used internally for Javascript-to-C calls that may contain strings too large
  * for the Emscripten stack.
  */
-export type HeapCharPointer = Pointer<'char'>
+export type HeapCharPointer = Pointer<"char">
 
 /**
  * Opaque pointer that was allocated by js_malloc.
@@ -84,18 +84,18 @@ export type JSVoidPointer = Pointer<any>
 /**
  * @private
  */
-export type EvalFlags = Brand<number, 'EvalFlags'>
+export type EvalFlags = Brand<number, "EvalFlags">
 
 /**
  * @private
  */
-export type EvalDetectModule = Brand<number, 'EvalDetectModule'>
+export type EvalDetectModule = Brand<number, "EvalDetectModule">
 
 export function assertSync<Args extends any[], R>(fn: (...args: Args) => R): (...args: Args) => R {
   return function mustBeSync(...args: Args): R {
     const result = fn(...args)
-    if (result && typeof result === 'object' && result instanceof Promise) {
-      throw new Error('Function unexpectedly returned a Promise')
+    if (result && typeof result === "object" && result instanceof Promise) {
+      throw new Error("Function unexpectedly returned a Promise")
     }
     return result
   }

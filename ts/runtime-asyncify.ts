@@ -1,17 +1,17 @@
-import { QuickJSContextAsync } from './context-asyncify'
-import { QuickJSAsyncEmscriptenModule } from './emscripten-types'
-import { QuickJSAsyncFFI } from './ffi-asyncify'
-import { JSContextPointer, JSRuntimePointer } from './ffi-types'
-import { Lifetime } from './quickjs'
-import { QuickJSModuleCallbacks } from './quickjs-module'
-import { QuickJSRuntime } from './runtime'
+import { QuickJSContextAsync } from "./context-asyncify"
+import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
+import { QuickJSAsyncFFI } from "./ffi-asyncify"
+import { JSContextPointer, JSRuntimePointer } from "./ffi-types"
+import { Lifetime } from "./quickjs"
+import { QuickJSModuleCallbacks } from "./quickjs-module"
+import { QuickJSRuntime } from "./runtime"
 import {
   ContextOptions,
   DefaultIntrinsics,
   JSModuleLoader,
   JSModuleLoaderAsync,
   RuntimeOptions,
-} from './types'
+} from "./types"
 
 /**
  * Create a new [QuickJSAsyncRuntime].
@@ -27,12 +27,12 @@ import {
  * async runtimes.
  */
 export async function newAsyncRuntime(options: RuntimeOptions = {}): Promise<QuickJSRuntimeAsync> {
-  const { default: newModule } = await import('./quickjs-asyncify.emscripten-module')
+  const { default: newModule } = await import("./quickjs-asyncify.emscripten-module")
   const module = await newModule()
-  module.type = 'async'
+  module.type = "async"
   const ffi = new QuickJSAsyncFFI(module)
   const callbacks = new QuickJSModuleCallbacks(module, ffi)
-  const rt = new Lifetime(ffi.QTS_NewRuntime(), undefined, rt_ptr => {
+  const rt = new Lifetime(ffi.QTS_NewRuntime(), undefined, (rt_ptr) => {
     callbacks.deleteRuntime(rt_ptr)
     ffi.QTS_FreeRuntime(rt_ptr)
   })
@@ -76,10 +76,10 @@ export class QuickJSRuntimeAsync extends QuickJSRuntime {
 
   override newContext(options: ContextOptions = {}): QuickJSContextAsync {
     if (options.intrinsics && options.intrinsics !== DefaultIntrinsics) {
-      throw new Error('TODO: Custom intrinsics are not supported yet')
+      throw new Error("TODO: Custom intrinsics are not supported yet")
     }
 
-    const ctx = new Lifetime(this.ffi.QTS_NewContext(this.rt.value), undefined, ctx_ptr => {
+    const ctx = new Lifetime(this.ffi.QTS_NewContext(this.rt.value), undefined, (ctx_ptr) => {
       this.contextMap.delete(ctx_ptr)
       this.callbacks.deleteContext(ctx_ptr)
       this.ffi.QTS_FreeContext(ctx_ptr)

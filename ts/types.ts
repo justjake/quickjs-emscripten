@@ -1,20 +1,20 @@
-import type { QuickJSFFI } from './ffi'
-import type { QuickJSAsyncFFI } from './ffi-asyncify'
-import { QuickJSHandle, QuickJSContext } from './context'
-import { SuccessOrFail, VmFunctionImplementation } from './vm-interface'
-import { Disposable } from './lifetime'
-import { EvalFlags, JSContextPointer } from './ffi-types'
-import { QuickJSContextAsync } from './context-asyncify'
+import type { QuickJSFFI } from "./ffi"
+import type { QuickJSAsyncFFI } from "./ffi-asyncify"
+import { QuickJSHandle, QuickJSContext } from "./context"
+import { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
+import { Disposable } from "./lifetime"
+import { EvalFlags, JSContextPointer } from "./ffi-types"
+import { QuickJSContextAsync } from "./context-asyncify"
 
 export type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
 
 export type JSModuleExport =
   | {
-      type: 'function'
+      type: "function"
       name: string
       implementation: (vm: QuickJSContext) => VmFunctionImplementation<QuickJSHandle>
     }
-  | { type: 'value'; name: string; value: (vm: QuickJSContext) => QuickJSHandle }
+  | { type: "value"; name: string; value: (vm: QuickJSContext) => QuickJSHandle }
 
 export interface JSModuleDefinition {
   name: string
@@ -38,61 +38,61 @@ export interface JSModuleLoader extends JSModuleLoaderAsync {
   (vm: QuickJSContext, moduleName: string): JSModuleLoadResult
 }
 
-type TODO<hint extends string = '?', typeHint = unknown> = never
+type TODO<hint extends string = "?", typeHint = unknown> = never
 
-const UnstableSymbol = Symbol('Unstable')
+const UnstableSymbol = Symbol("Unstable")
 
 export type PartiallyImplemented<T> = T & {
-  [UnstableSymbol]: 'This feature may unimplemented, broken, throw errors, etc.'
+  [UnstableSymbol]: "This feature may unimplemented, broken, throw errors, etc."
 }
 
 export interface RuntimeOptions {
   moduleLoader?: JSModuleLoader
-  interruptHandler?: TODO<'JS_SetInterruptHandler'>
-  promiseRejectionHandler?: TODO<'JSHostPromiseRejectionTracker'>
-  runtimeInfo?: TODO<'JS_SetRuntimeInfo', string>
-  memoryLimit?: TODO<'JS_SetMemoryLimit', number>
-  gcThreshold?: TODO<'JS_SetGCThreshold', number>
-  maxStackSize?: TODO<'JS_SetMaxStackSize', number>
+  interruptHandler?: TODO<"JS_SetInterruptHandler">
+  promiseRejectionHandler?: TODO<"JSHostPromiseRejectionTracker">
+  runtimeInfo?: TODO<"JS_SetRuntimeInfo", string>
+  memoryLimit?: TODO<"JS_SetMemoryLimit", number>
+  gcThreshold?: TODO<"JS_SetGCThreshold", number>
+  maxStackSize?: TODO<"JS_SetMaxStackSize", number>
   sharedArrayBufferFunctions?: TODO<
-    'JS_SetJSSharedArrayBufferFunctions',
+    "JS_SetJSSharedArrayBufferFunctions",
     { sab_alloc: TODO; sab_free: TODO; sab_dup: TODO; sab_opaque: TODO }
   >
 }
 
 export type Intrinsic =
-  | 'BaseObjects'
-  | 'Date'
-  | 'Eval'
-  | 'StringNormalize'
-  | 'RegExp'
-  | 'RegExpCompiler'
-  | 'JSON'
-  | 'Proxy'
-  | 'MapSet'
-  | 'TypedArrays'
-  | 'Promise'
-  | 'BigInt'
-  | 'BigFloat'
-  | 'BigDecimal'
-  | 'OperatorOverloading'
-  | 'BignumExt'
+  | "BaseObjects"
+  | "Date"
+  | "Eval"
+  | "StringNormalize"
+  | "RegExp"
+  | "RegExpCompiler"
+  | "JSON"
+  | "Proxy"
+  | "MapSet"
+  | "TypedArrays"
+  | "Promise"
+  | "BigInt"
+  | "BigFloat"
+  | "BigDecimal"
+  | "OperatorOverloading"
+  | "BignumExt"
 
 // For informational purposes
 const DefaultIntrinsicsList = [
-  'BaseObjects',
-  'Date',
-  'Eval',
-  'StringNormalize',
-  'RegExp',
-  'JSON',
-  'Proxy',
-  'MapSet',
-  'TypedArrays',
-  'Promise',
+  "BaseObjects",
+  "Date",
+  "Eval",
+  "StringNormalize",
+  "RegExp",
+  "JSON",
+  "Proxy",
+  "MapSet",
+  "TypedArrays",
+  "Promise",
 ] as const
 
-export const DefaultIntrinsics = Symbol('DefaultIntrinsics')
+export const DefaultIntrinsics = Symbol("DefaultIntrinsics")
 
 export interface ContextOptions {
   /**
@@ -117,7 +117,7 @@ export interface ContextOptions {
 
 export interface ContextEvalOptions {
   /** Global code (default) */
-  type?: 'global' | 'module'
+  type?: "global" | "module"
   /** Force "strict" mode */
   strict?: boolean
   /** Force "strip" mode */
@@ -134,7 +134,7 @@ export interface ContextEvalOptions {
 
 /** Convert [[EvalOptions]] to a bitfield flags */
 export function evalOptionsToFlags(evalOptions: ContextEvalOptions | number | undefined): number {
-  if (typeof evalOptions === 'number') {
+  if (typeof evalOptions === "number") {
     return evalOptions
   }
 
@@ -144,8 +144,8 @@ export function evalOptionsToFlags(evalOptions: ContextEvalOptions | number | un
 
   const { type, strict, strip, compileOnly, backtraceBarrier } = evalOptions
   let flags = 0
-  if (type === 'global') flags |= EvalFlags.JS_EVAL_TYPE_GLOBAL
-  if (type === 'module') flags |= EvalFlags.JS_EVAL_TYPE_MODULE
+  if (type === "global") flags |= EvalFlags.JS_EVAL_TYPE_GLOBAL
+  if (type === "module") flags |= EvalFlags.JS_EVAL_TYPE_MODULE
   if (strict) flags |= EvalFlags.JS_EVAL_FLAG_STRICT
   if (strip) flags |= EvalFlags.JS_EVAL_FLAG_STRIP
   if (compileOnly) flags |= EvalFlags.JS_EVAL_FLAG_COMPILE_ONLY

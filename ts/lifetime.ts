@@ -1,5 +1,5 @@
-import { newPromiseLike, unwrapPromiseLike } from './asyncify-helpers'
-import { QuickJSHandle } from './quickjs'
+import { newPromiseLike, unwrapPromiseLike } from "./asyncify-helpers"
+import { QuickJSHandle } from "./quickjs"
 
 const DEBUG = true
 
@@ -29,7 +29,7 @@ export interface Disposable {
  */
 export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
   protected _alive: boolean = true
-  protected constructorStack = DEBUG ? new Error('Lifetime constructed').stack : undefined
+  protected constructorStack = DEBUG ? new Error("Lifetime constructed").stack : undefined
 
   /**
    * When the Lifetime is disposed, it will call `disposer(_value)`. Use the
@@ -75,7 +75,7 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
   dup() {
     this.assertAlive()
     if (!this.copier) {
-      throw new Error('Non-dupable lifetime')
+      throw new Error("Non-dupable lifetime")
     }
     return new Lifetime<TCopy, TCopy, Owner>(
       this.copier(this._value),
@@ -116,7 +116,7 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
       if (this.constructorStack) {
         throw new Error(`Lifetime not alive\n${this.constructorStack}\nLifetime used`)
       }
-      throw new Error('Lifetime not alive')
+      throw new Error("Lifetime not alive")
     }
   }
 }
@@ -217,7 +217,7 @@ export class Scope implements Disposable {
     const scope = new Scope()
     let blockError: Error | undefined
     const maybeAsync = newPromiseLike(() => block(scope))
-      .catch(error => {
+      .catch((error) => {
         blockError = error
         throw error
       })

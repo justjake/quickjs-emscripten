@@ -56,12 +56,12 @@ runtime limits, memory limits, and pending jobs moved to `QuickJSRuntime`.
 
 1. Replace usages with QuickJSContext.
 2. Replace the following methods:
-    - `vm.hasPendingJob` -> `context.runtime.hasPendingJob`
-    - `vm.setInterruptHandler` -> `context.runtime.setInterruptHandler`
-    - `vm.removeInterruptHandler` -> `context.runtime.removeInterruptHandler`
-    - `vm.executePendingJobs` -> `context.runtime.executePendingJobs`
-    - `vm.setMemoryLimit` -> `context.runtime.setMemoryLimit`
-    - `vm.computeMemoryUsage` -> `context.runtime.computeMemoryUsage`
+   - `vm.hasPendingJob` -> `context.runtime.hasPendingJob`
+   - `vm.setInterruptHandler` -> `context.runtime.setInterruptHandler`
+   - `vm.removeInterruptHandler` -> `context.runtime.removeInterruptHandler`
+   - `vm.executePendingJobs` -> `context.runtime.executePendingJobs`
+   - `vm.setMemoryLimit` -> `context.runtime.setMemoryLimit`
+   - `vm.computeMemoryUsage` -> `context.runtime.computeMemoryUsage`
 
 **`QuickJS.createVm()` is removed.**
 

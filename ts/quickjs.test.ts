@@ -2,16 +2,16 @@
  * These tests demonstrate some common patterns for using quickjs-emscripten.
  */
 
-import { getQuickJS, QuickJSHandle, InterruptHandler, QuickJSDeferredPromise } from './quickjs'
-import { it, describe } from 'mocha'
-import assert from 'assert'
-import { VmCallResult } from './vm-interface'
-import fs from 'fs'
-import { QuickJSContext } from './context'
-import { QuickJSContextAsync } from './context-asyncify'
-import { QuickJSFFI } from './ffi'
-import { QuickJSUnwrapError } from './errors'
-import { debug } from './debug'
+import { getQuickJS, QuickJSHandle, InterruptHandler, QuickJSDeferredPromise } from "./quickjs"
+import { it, describe } from "mocha"
+import assert from "assert"
+import { VmCallResult } from "./vm-interface"
+import fs from "fs"
+import { QuickJSContext } from "./context"
+import { QuickJSContextAsync } from "./context-asyncify"
+import { QuickJSFFI } from "./ffi"
+import { QuickJSUnwrapError } from "./errors"
+import { debug } from "./debug"
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
 
@@ -32,88 +32,88 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
   const getTestId = () => `test-${getContext.name}-${testId}`
 
-  describe('primitives', () => {
-    it('can round-trip a number', () => {
+  describe("primitives", () => {
+    it("can round-trip a number", () => {
       const jsNumber = 42
       const numHandle = vm.newNumber(jsNumber)
       assert.equal(vm.getNumber(numHandle), jsNumber)
     })
 
-    it('can round-trip a string', () => {
-      const jsString = 'an example 🤔 string with unicode 🎉'
+    it("can round-trip a string", () => {
+      const jsString = "an example 🤔 string with unicode 🎉"
       const stringHandle = vm.newString(jsString)
       assert.equal(vm.getString(stringHandle), jsString)
     })
 
-    it('can round-trip undefined', () => {
+    it("can round-trip undefined", () => {
       assert.strictEqual(vm.dump(vm.undefined), undefined)
     })
 
-    it('can round-trip true', () => {
+    it("can round-trip true", () => {
       assert.strictEqual(vm.dump(vm.true), true)
     })
 
-    it('can round-trip false', () => {
+    it("can round-trip false", () => {
       assert.strictEqual(vm.dump(vm.false), false)
     })
 
-    it('can round-trip null', () => {
+    it("can round-trip null", () => {
       assert.strictEqual(vm.dump(vm.null), null)
     })
   })
 
-  describe('functions', () => {
-    it('can wrap a Javascript function and call it', () => {
+  describe("functions", () => {
+    it("can wrap a Javascript function and call it", () => {
       const some = 9
-      const fnHandle = vm.newFunction('addSome', num => {
+      const fnHandle = vm.newFunction("addSome", (num) => {
         return vm.newNumber(some + vm.getNumber(num))
       })
       const result = vm.callFunction(fnHandle, vm.undefined, vm.newNumber(1))
       if (result.error) {
-        assert.fail('calling fnHandle must succeed')
+        assert.fail("calling fnHandle must succeed")
       }
       assert.equal(vm.getNumber(result.value), 10)
       fnHandle.dispose()
     })
 
-    it('passes through native exceptions', () => {
-      const fnHandle = vm.newFunction('jsOops', () => {
-        throw new Error('oops')
+    it("passes through native exceptions", () => {
+      const fnHandle = vm.newFunction("jsOops", () => {
+        throw new Error("oops")
       })
 
       const result = vm.callFunction(fnHandle, vm.undefined)
       if (!result.error) {
-        assert.fail('function call must return error')
+        assert.fail("function call must return error")
       }
       assert.deepEqual(vm.dump(result.error), {
-        name: 'Error',
-        message: 'oops',
+        name: "Error",
+        message: "oops",
       })
       result.error.dispose()
       fnHandle.dispose()
     })
 
-    it('can return undefined twice', () => {
-      const fnHandle = vm.newFunction('returnUndef', () => {
+    it("can return undefined twice", () => {
+      const fnHandle = vm.newFunction("returnUndef", () => {
         return vm.undefined
       })
 
       vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined)).dispose()
       const result = vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined))
 
-      assert.equal(vm.typeof(result), 'undefined')
+      assert.equal(vm.typeof(result), "undefined")
       result.dispose()
       fnHandle.dispose()
     })
 
-    it('can see its arguments being cloned', () => {
+    it("can see its arguments being cloned", () => {
       let value: QuickJSHandle | undefined
 
-      const fnHandle = vm.newFunction('doSomething', arg => {
+      const fnHandle = vm.newFunction("doSomething", (arg) => {
         value = arg.dup()
       })
 
-      const argHandle = vm.newString('something')
+      const argHandle = vm.newString("something")
       const callHandle = vm.callFunction(fnHandle, vm.undefined, argHandle)
 
       argHandle.dispose()
@@ -121,33 +121,33 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
       if (!value) throw new Error(`Value unset`)
 
-      assert.equal(vm.getString(value), 'something')
+      assert.equal(vm.getString(value), "something")
       value.dispose()
 
       fnHandle.dispose()
     })
   })
 
-  describe('properties', () => {
-    it('defining a property does not leak', () => {
-      vm.defineProp(vm.global, 'Name', {
+  describe("properties", () => {
+    it("defining a property does not leak", () => {
+      vm.defineProp(vm.global, "Name", {
         enumerable: false,
         configurable: false,
-        get: () => vm.newString('World'),
+        get: () => vm.newString("World"),
       })
       const result = vm.unwrapResult(vm.evalCode('"Hello " + Name'))
-      assert.equal(vm.dump(result), 'Hello World')
+      assert.equal(vm.dump(result), "Hello World")
       result.dispose()
     })
   })
 
-  describe('objects', () => {
-    it('can set and get properties by native string', () => {
+  describe("objects", () => {
+    it("can set and get properties by native string", () => {
       const object = vm.newObject()
       const value = vm.newNumber(42)
-      vm.setProp(object, 'propName', value)
+      vm.setProp(object, "propName", value)
 
-      const value2 = vm.getProp(object, 'propName')
+      const value2 = vm.getProp(object, "propName")
       assert.equal(vm.getNumber(value2), 42)
 
       object.dispose()
@@ -155,9 +155,9 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       value2.dispose()
     })
 
-    it('can set and get properties by handle string', () => {
+    it("can set and get properties by handle string", () => {
       const object = vm.newObject()
-      const key = vm.newString('prop as a QuickJS string')
+      const key = vm.newString("prop as a QuickJS string")
       const value = vm.newNumber(42)
       vm.setProp(object, key, value)
 
@@ -170,25 +170,25 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       value2.dispose()
     })
 
-    it('can create objects with a prototype', () => {
-      const defaultGreeting = vm.newString('SUP DAWG')
+    it("can create objects with a prototype", () => {
+      const defaultGreeting = vm.newString("SUP DAWG")
       const greeterPrototype = vm.newObject()
-      vm.setProp(greeterPrototype, 'greeting', defaultGreeting)
+      vm.setProp(greeterPrototype, "greeting", defaultGreeting)
       defaultGreeting.dispose()
       const greeter = vm.newObject(greeterPrototype)
 
       // Gets something from the prototype
-      const getGreeting = vm.getProp(greeter, 'greeting')
-      assert.equal(vm.getString(getGreeting), 'SUP DAWG')
+      const getGreeting = vm.getProp(greeter, "greeting")
+      assert.equal(vm.getString(getGreeting), "SUP DAWG")
       getGreeting.dispose()
 
       // But setting a property from the prototype does not modify the prototype
-      const newGreeting = vm.newString('How do you do?')
-      vm.setProp(greeter, 'greeting', newGreeting)
+      const newGreeting = vm.newString("How do you do?")
+      vm.setProp(greeter, "greeting", newGreeting)
       newGreeting.dispose()
 
-      const originalGreeting = vm.getProp(greeterPrototype, 'greeting')
-      assert.equal(vm.getString(originalGreeting), 'SUP DAWG')
+      const originalGreeting = vm.getProp(greeterPrototype, "greeting")
+      assert.equal(vm.getString(originalGreeting), "SUP DAWG")
       originalGreeting.dispose()
 
       greeterPrototype.dispose()
@@ -196,8 +196,8 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     })
   })
 
-  describe('arrays', () => {
-    it('can set and get entries by native number', () => {
+  describe("arrays", () => {
+    it("can set and get entries by native number", () => {
       const array = vm.newArray()
       const val1 = vm.newNumber(101)
       vm.setProp(array, 0, val1)
@@ -210,24 +210,24 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       val2.dispose()
     })
 
-    it('adding items sets array.length', () => {
-      const vals = [vm.newNumber(0), vm.newNumber(1), vm.newString('cow')]
+    it("adding items sets array.length", () => {
+      const vals = [vm.newNumber(0), vm.newNumber(1), vm.newString("cow")]
       const array = vm.newArray()
       for (let i = 0; i < vals.length; i++) {
         vm.setProp(array, i, vals[i])
       }
 
-      const length = vm.getProp(array, 'length')
+      const length = vm.getProp(array, "length")
       assert.strictEqual(vm.getNumber(length), 3)
 
       array.dispose()
-      vals.forEach(val => val.dispose())
+      vals.forEach((val) => val.dispose())
     })
   })
 
-  describe('.unwrapResult', () => {
-    it('successful result: returns the value', () => {
-      const handle = vm.newString('OK!')
+  describe(".unwrapResult", () => {
+    it("successful result: returns the value", () => {
+      const handle = vm.newString("OK!")
       const result: VmCallResult<QuickJSHandle> = {
         value: handle,
       }
@@ -235,18 +235,18 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       assert.strictEqual(vm.unwrapResult(result), handle)
     })
 
-    it('error result: throws the error as a Javascript value', () => {
-      const handle = vm.newString('ERROR!')
+    it("error result: throws the error as a Javascript value", () => {
+      const handle = vm.newString("ERROR!")
       const result: VmCallResult<QuickJSHandle> = {
         error: handle,
       }
 
       try {
         vm.unwrapResult(result)
-        assert.fail('vm.unwrapResult(error) must throw')
+        assert.fail("vm.unwrapResult(error) must throw")
       } catch (error) {
         if (error instanceof QuickJSUnwrapError) {
-          assert.strictEqual(error.cause, 'ERROR!', 'QuickJSUnwrapError.cause set correctly')
+          assert.strictEqual(error.cause, "ERROR!", "QuickJSUnwrapError.cause set correctly")
           return
         }
         throw error
@@ -254,39 +254,39 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     })
   })
 
-  describe('.evalCode', () => {
-    it('on success: returns { value: success }', () => {
+  describe(".evalCode", () => {
+    it("on success: returns { value: success }", () => {
       const value = vm.unwrapResult(vm.evalCode(`["this", "should", "work"].join(' ')`))
-      assert.equal(vm.getString(value), 'this should work')
+      assert.equal(vm.getString(value), "this should work")
       value.dispose()
     })
 
-    it('on failure: returns { error: exception }', () => {
+    it("on failure: returns { error: exception }", () => {
       const result = vm.evalCode(`["this", "should", "fail].join(' ')`)
       if (!result.error) {
-        assert.fail('result should be an error')
+        assert.fail("result should be an error")
       }
       assert.deepEqual(vm.dump(result.error), {
-        name: 'SyntaxError',
-        message: 'unexpected end of string',
-        stack: '    at eval.js:1\n',
+        name: "SyntaxError",
+        message: "unexpected end of string",
+        stack: "    at eval.js:1\n",
       })
       result.error.dispose()
     })
 
-    it('runs in the global context', () => {
+    it("runs in the global context", () => {
       vm.unwrapResult(vm.evalCode(`var declaredWithEval = 'Nice!'`)).dispose()
-      const declaredWithEval = vm.getProp(vm.global, 'declaredWithEval')
-      assert.equal(vm.getString(declaredWithEval), 'Nice!')
+      const declaredWithEval = vm.getProp(vm.global, "declaredWithEval")
+      assert.equal(vm.getString(declaredWithEval), "Nice!")
       declaredWithEval.dispose()
     })
 
-    it('can access assigned globals', () => {
+    it("can access assigned globals", () => {
       let i = 0
-      const fnHandle = vm.newFunction('nextId', () => {
+      const fnHandle = vm.newFunction("nextId", () => {
         return vm.newNumber(++i)
       })
-      vm.setProp(vm.global, 'nextId', fnHandle)
+      vm.setProp(vm.global, "nextId", fnHandle)
       fnHandle.dispose()
 
       const nextId = vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`))
@@ -295,7 +295,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     })
 
     // TODO: bring back import support.
-    it('can handle imports', () => {
+    it("can handle imports", () => {
       let moduleLoaderCalls = 0
       vm.runtime.setModuleLoader(() => {
         moduleLoaderCalls++
@@ -307,24 +307,24 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
           import {name} from './foo.js'
           globalThis.declaredWithEval = name
           `,
-          'importer.js'
+          "importer.js"
         )
       ).dispose()
-      const declaredWithEval = vm.getProp(vm.global, 'declaredWithEval')
-      assert.equal(vm.getString(declaredWithEval), 'from import')
+      const declaredWithEval = vm.getProp(vm.global, "declaredWithEval")
+      assert.equal(vm.getString(declaredWithEval), "from import")
       declaredWithEval.dispose()
 
-      assert.equal(moduleLoaderCalls, 1, 'Only called once')
+      assert.equal(moduleLoaderCalls, 1, "Only called once")
     })
   })
 
-  describe('.executePendingJobs', () => {
-    it('runs pending jobs', () => {
+  describe(".executePendingJobs", () => {
+    it("runs pending jobs", () => {
       let i = 0
-      const fnHandle = vm.newFunction('nextId', () => {
+      const fnHandle = vm.newFunction("nextId", () => {
         return vm.newNumber(++i)
       })
-      vm.setProp(vm.global, 'nextId', fnHandle)
+      vm.setProp(vm.global, "nextId", fnHandle)
       fnHandle.dispose()
 
       const result = vm.unwrapResult(
@@ -337,32 +337,32 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     })
   })
 
-  describe('.hasPendingJob', () => {
-    it('returns true when job pending', () => {
+  describe(".hasPendingJob", () => {
+    it("returns true when job pending", () => {
       let i = 0
-      const fnHandle = vm.newFunction('nextId', () => {
+      const fnHandle = vm.newFunction("nextId", () => {
         return vm.newNumber(++i)
       })
-      vm.setProp(vm.global, 'nextId', fnHandle)
+      vm.setProp(vm.global, "nextId", fnHandle)
       fnHandle.dispose()
 
       vm.unwrapResult(vm.evalCode(`(new Promise(resolve => resolve(5)).then(nextId));1`)).dispose()
       assert.strictEqual(
         vm.runtime.hasPendingJob(),
         true,
-        'has a pending job after creating a promise'
+        "has a pending job after creating a promise"
       )
 
       const executed = vm.unwrapResult(vm.runtime.executePendingJobs())
-      assert.strictEqual(executed, 1, 'executed exactly 1 job')
+      assert.strictEqual(executed, 1, "executed exactly 1 job")
 
-      assert.strictEqual(vm.runtime.hasPendingJob(), false, 'no longer any jobs after execution')
+      assert.strictEqual(vm.runtime.hasPendingJob(), false, "no longer any jobs after execution")
     })
   })
 
-  describe('.dump', () => {
+  describe(".dump", () => {
     function dumpTestExample(val: unknown) {
-      const json = typeof val === 'undefined' ? 'undefined' : JSON.stringify(val)
+      const json = typeof val === "undefined" ? "undefined" : JSON.stringify(val)
       const nativeType = typeof val
       it(`supports ${nativeType} (${json})`, () => {
         const handle = vm.unwrapResult(vm.evalCode(`(${json})`))
@@ -371,7 +371,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       })
     }
     dumpTestExample(1)
-    dumpTestExample('hi')
+    dumpTestExample("hi")
     dumpTestExample(true)
     dumpTestExample(false)
     dumpTestExample(undefined)
@@ -380,7 +380,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     dumpTestExample([1, 2, 3])
   })
 
-  describe('.typeof', () => {
+  describe(".typeof", () => {
     function typeofTestExample(val: unknown, toCode = JSON.stringify) {
       const json = toCode(val)
       const nativeType = typeof val
@@ -392,7 +392,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     }
 
     typeofTestExample(1)
-    typeofTestExample('hi')
+    typeofTestExample("hi")
     typeofTestExample(true)
     typeofTestExample(false)
     typeofTestExample(undefined)
@@ -405,34 +405,34 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     )
   })
 
-  describe('interrupt handler', () => {
-    it('is called with the expected VM', () => {
+  describe("interrupt handler", () => {
+    it("is called with the expected VM", () => {
       let calls = 0
       const interruptId = getTestId()
-      const interruptHandler: InterruptHandler = interruptVm => {
+      const interruptHandler: InterruptHandler = (interruptVm) => {
         assert.strictEqual(
           interruptVm,
           vm.runtime,
-          'ShouldInterruptHandler callback runtime is the runtime'
+          "ShouldInterruptHandler callback runtime is the runtime"
         )
-        debug('interruptHandler called', interruptId)
+        debug("interruptHandler called", interruptId)
         calls++
         return false
       }
 
-      debug('setInterruptHandler', interruptId)
+      debug("setInterruptHandler", interruptId)
       vm.runtime.setInterruptHandler(interruptHandler)
 
-      vm.unwrapResult(vm.evalCode('1 + 1')).dispose()
+      vm.unwrapResult(vm.evalCode("1 + 1")).dispose()
 
-      assert(calls > 0, 'interruptHandler called at least once')
+      assert(calls > 0, "interruptHandler called at least once")
     })
 
-    it('interrupts infinite loop execution', () => {
+    it("interrupts infinite loop execution", () => {
       let calls = 0
       const interruptId = getTestId()
-      const interruptHandler: InterruptHandler = interruptVm => {
-        debug('interruptHandler called', interruptId)
+      const interruptHandler: InterruptHandler = (interruptVm) => {
+        debug("interruptHandler called", interruptId)
         if (calls > 10) {
           return true
         }
@@ -440,34 +440,34 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         return false
       }
 
-      debug('setInterruptHandler', interruptId)
+      debug("setInterruptHandler", interruptId)
       vm.runtime.setInterruptHandler(interruptHandler)
 
-      const result = vm.evalCode('i = 0; while (1) { i++ }')
+      const result = vm.evalCode("i = 0; while (1) { i++ }")
 
       // Make sure we actually got to interrupt the loop.
-      const iHandle = vm.getProp(vm.global, 'i')
+      const iHandle = vm.getProp(vm.global, "i")
       const i = vm.getNumber(iHandle)
       iHandle.dispose()
 
-      assert(i > 10, 'incremented i')
-      assert(i > calls, 'incremented i more than called the interrupt handler')
+      assert(i > 10, "incremented i")
+      assert(i > calls, "incremented i more than called the interrupt handler")
       // debug('Javascript loop iterrations:', i, 'interrupt handler calls:', calls)
 
       if (result.error) {
         const errorJson = vm.dump(result.error)
         result.error.dispose()
-        assert.equal(errorJson.name, 'InternalError')
-        assert.equal(errorJson.message, 'interrupted')
+        assert.equal(errorJson.name, "InternalError")
+        assert.equal(errorJson.message, "interrupted")
       } else {
         result.value.dispose()
-        assert.fail('Should have returned an interrupt error')
+        assert.fail("Should have returned an interrupt error")
       }
     })
   })
 
-  describe('.computeMemoryUsage', () => {
-    it('returns an object with JSON memory usage info', () => {
+  describe(".computeMemoryUsage", () => {
+    it("returns an object with JSON memory usage info", () => {
       const result = vm.runtime.computeMemoryUsage()
       const resultObj = vm.dump(result)
       result.dispose()
@@ -504,14 +504,14 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     })
   })
 
-  describe('.setMemoryLimit', () => {
-    it('sets an enforced limit', () => {
+  describe(".setMemoryLimit", () => {
+    it("sets an enforced limit", () => {
       vm.runtime.setMemoryLimit(100)
       const result = vm.evalCode(`new Uint8Array(101); "ok"`)
 
       if (!result.error) {
         result.value.dispose()
-        throw new Error('should be an error')
+        throw new Error("should be an error")
       }
 
       vm.runtime.setMemoryLimit(-1) // so we can dump
@@ -521,48 +521,48 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       assert.strictEqual(error, null)
     })
 
-    it('removes limit when set to -1', () => {
+    it("removes limit when set to -1", () => {
       vm.runtime.setMemoryLimit(100)
       vm.runtime.setMemoryLimit(-1)
 
       const result = vm.unwrapResult(vm.evalCode(`new Uint8Array(101); "ok"`))
       const value = vm.dump(result)
       result.dispose()
-      assert.strictEqual(value, 'ok')
+      assert.strictEqual(value, "ok")
     })
   })
 
-  describe('.dumpMemoryUsage()', () => {
-    it('logs memory usage', () => {
+  describe(".dumpMemoryUsage()", () => {
+    it("logs memory usage", () => {
       assert(
-        vm.dumpMemoryUsage().endsWith('per fast array)\n'),
+        vm.dumpMemoryUsage().endsWith("per fast array)\n"),
         'should end with "per fast array)\\n"'
       )
     })
   })
 
-  describe('.newPromise()', () => {
-    it('dispose does not leak', () => {
+  describe(".newPromise()", () => {
+    it("dispose does not leak", () => {
       vm.newPromise().dispose()
     })
 
-    it('passes an end-to-end test', async () => {
+    it("passes an end-to-end test", async () => {
       const expectedValue = Math.random()
       let deferred: QuickJSDeferredPromise = undefined as any
 
       function timeout(ms: number) {
-        return new Promise<void>(resolve => {
+        return new Promise<void>((resolve) => {
           setTimeout(() => resolve(), ms)
         })
       }
 
-      const asyncFuncHandle = vm.newFunction('getThingy', () => {
+      const asyncFuncHandle = vm.newFunction("getThingy", () => {
         deferred = vm.newPromise()
-        timeout(5).then(() => vm.newNumber(expectedValue).consume(val => deferred.resolve(val)))
+        timeout(5).then(() => vm.newNumber(expectedValue).consume((val) => deferred.resolve(val)))
         return deferred.handle
       })
 
-      asyncFuncHandle.consume(func => vm.setProp(vm.global, 'getThingy', func))
+      asyncFuncHandle.consume((func) => vm.setProp(vm.global, "getThingy", func))
 
       vm.unwrapResult(
         vm.evalCode(`
@@ -578,13 +578,13 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       vm.runtime.executePendingJobs()
 
       // Check that the promise executed.
-      const vmValue = vm.unwrapResult(vm.evalCode(`globalThingy`)).consume(x => vm.dump(x))
+      const vmValue = vm.unwrapResult(vm.evalCode(`globalThingy`)).consume((x) => vm.dump(x))
       assert.equal(vmValue, expectedValue)
     })
   })
 
-  describe('.resolvePromise()', () => {
-    it('retrieves async function return value as a successful VM result', async () => {
+  describe(".resolvePromise()", () => {
+    it("retrieves async function return value as a successful VM result", async () => {
       const result = vm.unwrapResult(
         vm.evalCode(`
         async function return1() {
@@ -595,18 +595,18 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         `)
       )
 
-      assert.equal(vm.typeof(result), 'object', 'Async function returns an object (promise)')
+      assert.equal(vm.typeof(result), "object", "Async function returns an object (promise)")
 
-      const promise = result.consume(result => vm.resolvePromise(result))
+      const promise = result.consume((result) => vm.resolvePromise(result))
       vm.runtime.executePendingJobs()
       const asyncResult = vm.unwrapResult(await promise)
 
-      assert.equal(vm.dump(asyncResult), 1, 'Awaited promise returns 1')
+      assert.equal(vm.dump(asyncResult), 1, "Awaited promise returns 1")
 
       asyncResult.dispose()
     })
 
-    it('retrieves async function error as a error VM result', async () => {
+    it("retrieves async function error as a error VM result", async () => {
       const result = vm.unwrapResult(
         vm.evalCode(`
         async function throwOops() {
@@ -617,42 +617,42 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         `)
       )
 
-      assert.equal(vm.typeof(result), 'object', 'Async function returns an object (promise)')
+      assert.equal(vm.typeof(result), "object", "Async function returns an object (promise)")
 
-      const promise = result.consume(result => vm.resolvePromise(result))
+      const promise = result.consume((result) => vm.resolvePromise(result))
       vm.runtime.executePendingJobs()
       const asyncResult = await promise
 
       if (!asyncResult.error) {
-        throw new Error('Should have returned an error')
+        throw new Error("Should have returned an error")
       }
       const error = vm.dump(asyncResult.error)
       asyncResult.error.dispose()
 
-      assert.equal(error.name, 'Error')
-      assert.equal(error.message, 'oops')
+      assert.equal(error.name, "Error")
+      assert.equal(error.message, "oops")
     })
 
-    it('converts non-promise handles into a promise, too', async () => {
-      const stringHandle = vm.newString('foo')
+    it("converts non-promise handles into a promise, too", async () => {
+      const stringHandle = vm.newString("foo")
       const promise = vm.resolvePromise(stringHandle)
       stringHandle.dispose()
 
       vm.runtime.executePendingJobs()
 
-      const final = await promise.then(result => {
+      const final = await promise.then((result) => {
         const stringHandle2 = vm.unwrapResult(result)
-        return `unwrapped: ${stringHandle2.consume(stringHandle2 => vm.dump(stringHandle2))}`
+        return `unwrapped: ${stringHandle2.consume((stringHandle2) => vm.dump(stringHandle2))}`
       })
       assert.equal(final, `unwrapped: foo`)
     })
   })
 
-  describe('memory pressure', () => {
-    it('can pass a large string to a C function', async () => {
+  describe("memory pressure", () => {
+    it("can pass a large string to a C function", async () => {
       const jsonString = await fs.promises.readFile(
         `${__dirname}/../test/json-generator-dot-com-1024-rows.json`,
-        'utf-8'
+        "utf-8"
       )
       const stringHandle = vm.newString(jsonString)
       stringHandle.dispose()
@@ -673,81 +673,81 @@ function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
     vm = undefined as any
   })
 
-  it('async function support smoketest', async () => {
+  it("async function support smoketest", async () => {
     let asyncFunctionCalls = 0
     const asyncFn = async () => {
       asyncFunctionCalls++
-      await new Promise(resolve => setTimeout(resolve, 50))
-      return vm.newString('hello from async')
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      return vm.newString("hello from async")
     }
-    const fnHandle = vm.newAsyncifiedFunction('asyncFn', asyncFn)
-    vm.setProp(vm.global, 'asyncFn', fnHandle)
+    const fnHandle = vm.newAsyncifiedFunction("asyncFn", asyncFn)
+    vm.setProp(vm.global, "asyncFn", fnHandle)
     fnHandle.dispose()
 
-    const callResultPromise = vm.evalCodeAsync('asyncFn()')
+    const callResultPromise = vm.evalCodeAsync("asyncFn()")
     assert(callResultPromise instanceof Promise)
 
     const callResult = await callResultPromise
     const unwrapped = vm.unwrapResult(callResult)
 
     const dumped = unwrapped.consume(vm.dump)
-    assert.equal(dumped, 'hello from async')
+    assert.equal(dumped, "hello from async")
 
-    assert.equal(asyncFunctionCalls, 1, 'one call')
+    assert.equal(asyncFunctionCalls, 1, "one call")
   })
 
-  describe('module loading', () => {
-    it('supports async module loading', async () => {
+  describe("module loading", () => {
+    it("supports async module loading", async () => {
       async function testBody() {
         let moduleLoaderCalls = 0
         const moduleLoader = async () => {
           moduleLoaderCalls++
           if (moduleLoaderCalls > 1) {
-            throw new Error('Module loader should only be called once')
+            throw new Error("Module loader should only be called once")
           }
-          debug('moduleLoader: sleeping')
-          await new Promise(resolve => setTimeout(resolve, 50))
-          debug('moduleLoader: done sleeping')
+          debug("moduleLoader: sleeping")
+          await new Promise((resolve) => setTimeout(resolve, 50))
+          debug("moduleLoader: done sleeping")
           return 'export default function() { return "hello from module" }'
         }
-        debug('defined module loader')
+        debug("defined module loader")
 
         vm.runtime.setModuleLoader(moduleLoader)
-        debug('set module loader')
+        debug("set module loader")
 
         const promise = vm.evalCodeAsync(`
         import otherModule from './other-module'
         globalThis.stuff = otherModule()
       `)
-        debug('promise', promise)
+        debug("promise", promise)
 
         const result = await promise
-        debug('awaited vm.evalCodeAsync', result, { alive: vm.alive })
+        debug("awaited vm.evalCodeAsync", result, { alive: vm.alive })
 
         const unwrapped = vm.unwrapResult(result)
-        debug('unwrapped result')
+        debug("unwrapped result")
 
         const dumped = unwrapped.consume(vm.dump)
-        debug('consumed result')
+        debug("consumed result")
 
         assert.strictEqual(dumped, undefined)
-        debug('asserted result')
+        debug("asserted result")
 
-        const stuff = vm.getProp(vm.global, 'stuff').consume(vm.dump)
-        assert.strictEqual(stuff, 'hello from module')
+        const stuff = vm.getProp(vm.global, "stuff").consume(vm.dump)
+        assert.strictEqual(stuff, "hello from module")
       }
 
       try {
         await testBody()
       } catch (error) {
-        debug('test body threw', error)
+        debug("test body threw", error)
         throw error
       }
     })
   })
 }
 
-describe('QuickJS.newContext', () => {
+describe("QuickJS.newContext", () => {
   contextTests(async () => {
     const quickjs = await getQuickJS()
     return quickjs.newContext()
@@ -755,17 +755,17 @@ describe('QuickJS.newContext', () => {
 })
 
 if (!TEST_NO_ASYNC) {
-  describe('QuickJS.newAsyncContext', () => {
+  describe("QuickJS.newAsyncContext", () => {
     const getContext = async () => {
       const quickjs = await getQuickJS()
       return quickjs.newAsyncContext()
     }
 
-    describe('sync API', () => {
+    describe("sync API", () => {
       contextTests(getContext)
     })
 
-    describe('async API', () => {
+    describe("async API", () => {
       asyncContextTests(getContext)
     })
   })
@@ -780,13 +780,13 @@ function assertBuildIsConsistent(vm: QuickJSContext) {
     assert.strictEqual(
       ffi.QTS_BuildIsDebug(),
       1,
-      'when FFI is generated with DEBUG, C code is compiled with DEBUG'
+      "when FFI is generated with DEBUG, C code is compiled with DEBUG"
     )
   } else {
     assert.strictEqual(
       ffi.QTS_BuildIsDebug(),
       0,
-      'when FFI is generated without DEBUG, C code is compiled without DEBUG'
+      "when FFI is generated without DEBUG, C code is compiled without DEBUG"
     )
   }
 }

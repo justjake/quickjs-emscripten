@@ -1,8 +1,5 @@
 {
-  "cSpell.words": [
-    "Asyncified",
-    "ASYNCIFY"
-  ],
+  "cSpell.words": ["Asyncified", "ASYNCIFY"],
   "files.associations": {
     "cutils.h": "c",
     "quickjs.h": "c",

@@ -1,16 +1,16 @@
-const name = require('./package.json').name
-const NO_THANKS = ['**/node_modules/**', './quickjs/**']
+const name = require("./package.json").name
+const NO_THANKS = ["**/node_modules/**", "./quickjs/**"]
 
 module.exports = {
   // disable package version in doc headers
   name,
-  entryPoints: ['./ts'],
-  entryPointStrategy: 'expand',
+  entryPoints: ["./ts"],
+  entryPointStrategy: "expand",
   // link to master instead of the current git SHA
   // which is borked with our strategy of deploying the docs
   // in the repo.
-  gitRevision: 'master',
-  out: './doc',
+  gitRevision: "master",
+  out: "./doc",
   // mode: 'file',
   exclude: NO_THANKS,
   externalPattern: NO_THANKS[0],
@@ -18,5 +18,5 @@ module.exports = {
   excludePrivate: true,
   categorizeByGroup: true,
   listInvalidSymbolLinks: true,
-  plugin: ['typedoc-plugin-markdown'],
+  plugin: ["typedoc-plugin-markdown"],
 }

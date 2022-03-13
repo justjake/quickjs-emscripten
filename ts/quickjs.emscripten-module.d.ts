@@ -1,4 +1,4 @@
-import { QuickJSEmscriptenModule } from './emscripten-types'
+import { QuickJSEmscriptenModule } from "./emscripten-types"
 /**
  *  Emscripten module built from the unmodified [`quickjs/quickjs.h`](../quickjs/quickjs.h)
  *  and our FFI support functions [c/interface.c](../c/interface.c).
