@@ -1,7 +1,7 @@
-import QuickJSModuleLoader from './quickjs.emscripten-module'
-import { QuickJSFFI } from './ffi'
-import { QuickJSEmscriptenModule } from './emscripten-types'
-import { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable } from './lifetime'
+import QuickJSModuleLoader from "./quickjs.emscripten-module"
+import { QuickJSFFI } from "./ffi"
+import { QuickJSEmscriptenModule } from "./emscripten-types"
+import { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable } from "./lifetime"
 import {
   ExecutePendingJobsResult,
   InterruptHandler,
@@ -12,12 +12,12 @@ import {
   QuickJSPropertyKey,
   QuickJSContext,
   StaticJSValue,
-} from './context'
-import { QuickJSDeferredPromise } from './deferred-promise'
-import { QuickJSModuleCallbacks } from './quickjs-module'
-import { newAsyncRuntime, QuickJSRuntimeAsync } from './runtime-asyncify'
-import { QuickJSContextAsync } from './context-asyncify'
-import { QuickJSRuntime } from './runtime'
+} from "./context"
+import { QuickJSDeferredPromise } from "./deferred-promise"
+import { QuickJSModuleCallbacks } from "./quickjs-module"
+import { newAsyncRuntime, QuickJSRuntimeAsync } from "./runtime-asyncify"
+import { QuickJSContextAsync } from "./context-asyncify"
+import { QuickJSRuntime } from "./runtime"
 
 // Exports of types moved out of this file
 export { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable }
@@ -60,7 +60,7 @@ class QuickJS {
   }
 
   newRuntime(): QuickJSRuntime {
-    const rt = new Lifetime(this.syncFFI.QTS_NewRuntime(), undefined, rt_ptr => {
+    const rt = new Lifetime(this.syncFFI.QTS_NewRuntime(), undefined, (rt_ptr) => {
       this.syncCallbacks.deleteRuntime(rt_ptr)
       this.syncFFI.QTS_FreeRuntime(rt_ptr)
     })
@@ -119,7 +119,7 @@ class QuickJS {
    * with name `"InternalError"` and  message `"interrupted"`.
    */
   evalCode(code: string, options: QuickJSEvalOptions = {}): unknown {
-    return Scope.withScope(scope => {
+    return Scope.withScope((scope) => {
       const vm = scope.manage(this.newContext())
 
       if (options.shouldInterrupt) {
@@ -130,7 +130,7 @@ class QuickJS {
         vm.runtime.setMemoryLimit(options.memoryLimitBytes)
       }
 
-      const result = vm.evalCode(code)
+      const result = vm.evalCode(code, "eval.js", 0)
 
       if (options.memoryLimitBytes !== undefined) {
         // Remove memory limit so we can dump the result without exceeding it.
@@ -157,7 +157,7 @@ class QuickJS {
  *   Number values are compared against `Date.now()`
  */
 export function shouldInterruptAfterDeadline(deadline: Date | number): InterruptHandler {
-  const deadlineAsNumber = typeof deadline === 'number' ? deadline : deadline.getTime()
+  const deadlineAsNumber = typeof deadline === "number" ? deadline : deadline.getTime()
 
   return function () {
     return Date.now() > deadlineAsNumber
@@ -165,8 +165,8 @@ export function shouldInterruptAfterDeadline(deadline: Date | number): Interrupt
 }
 
 let singleton: QuickJS | undefined = undefined
-const singletonPromise = QuickJSModuleLoader().then(module => {
-  module.type = 'sync'
+const singletonPromise = QuickJSModuleLoader().then((module) => {
+  module.type = "sync"
   singleton = new QuickJS(module)
   return singleton
 })
@@ -186,7 +186,7 @@ export async function getQuickJS(): Promise<QuickJS> {
  */
 export function getQuickJSSync(): QuickJS {
   if (!singleton) {
-    throw new Error('QuickJS not initialized. Await getQuickJS() at least once.')
+    throw new Error("QuickJS not initialized. Await getQuickJS() at least once.")
   }
   return singleton
 }

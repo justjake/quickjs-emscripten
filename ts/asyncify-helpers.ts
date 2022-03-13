@@ -1,5 +1,5 @@
-import { debug } from './debug'
-import { isSuccess, SuccessOrFail } from './vm-interface'
+import { debug } from "./debug"
+import { isSuccess, SuccessOrFail } from "./vm-interface"
 
 /**
  * @private
@@ -28,8 +28,8 @@ export class SyncPromise<T> {
 
   catch<R>(fail: (error: unknown) => R): SyncPromise<T | R> {
     return this.then(
-      value => value,
-      error => fail(error)
+      (value) => value,
+      (error) => fail(error)
     )
   }
 
@@ -50,18 +50,18 @@ export function newPromiseLike<T>(fn: () => T | Promise<T>): SyncPromise<T> | Pr
 /** @private */
 export function intoPromiseLike<T>(value: T | Promise<T>): SyncPromise<T> | Promise<T> {
   if (value instanceof Promise) {
-    debug('intoPromiseLike: async', value)
+    debug("intoPromiseLike: async", value)
     return value
   }
 
-  debug('intoPromiseLike: sync', value)
+  debug("intoPromiseLike: sync", value)
   return new SyncPromise({ value })
 }
 
 /** @private */
 export function unwrapPromiseLike<T>(promise: SyncPromise<T> | Promise<T>): T | Promise<T> {
   if (promise instanceof SyncPromise) {
-    debug('unwrapPromiseLike: sync', promise.state)
+    debug("unwrapPromiseLike: sync", promise.state)
     if (isSuccess(promise.state)) {
       return promise.state.value
     } else {
@@ -69,6 +69,6 @@ export function unwrapPromiseLike<T>(promise: SyncPromise<T> | Promise<T>): T | 
     }
   }
 
-  debug('unwrapPromiseLike: async', promise)
+  debug("unwrapPromiseLike: async", promise)
   return promise
 }

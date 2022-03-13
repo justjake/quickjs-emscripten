@@ -1,43 +1,32 @@
-import { newPromiseLike, unwrapPromiseLike } from './asyncify-helpers'
-import { debug } from './debug'
-import { QuickJSDeferredPromise } from './deferred-promise'
-import type {
-  EitherModule,
-  QuickJSAsyncEmscriptenModule,
-  QuickJSEmscriptenModule,
-} from './emscripten-types'
-import { QuickJSUnwrapError } from './errors'
-import type { QuickJSFFI } from './ffi'
-import type { QuickJSAsyncFFI } from './ffi-asyncify'
+import { newPromiseLike, unwrapPromiseLike } from "./asyncify-helpers"
+import { QuickJSDeferredPromise } from "./deferred-promise"
+import type { QuickJSAsyncEmscriptenModule, QuickJSEmscriptenModule } from "./emscripten-types"
+import { QuickJSUnwrapError } from "./errors"
+import type { QuickJSFFI } from "./ffi"
+import type { QuickJSAsyncFFI } from "./ffi-asyncify"
 import {
-  JSContextPointer,
-  JSValueConstPointer,
-  JSValuePointer,
-  JSRuntimePointer,
-  JSValueConstPointerPointer,
-  JSValuePointerPointer,
-  HeapCharPointer,
-  JSModuleDefPointer,
-  JSVoidPointer,
   EvalDetectModule,
   EvalFlags,
-} from './ffi-types'
-import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from './lifetime'
-import { ModuleMemory } from './memory'
+  JSContextPointer,
+  JSModuleDefPointer,
+  JSRuntimePointer,
+  JSValueConstPointer,
+  JSValuePointer,
+  JSValuePointerPointer,
+  JSVoidPointer,
+} from "./ffi-types"
+import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
+import { ModuleMemory } from "./memory"
+import { CToHostCallbackFunctionImplementation, QuickJSModuleCallbacks } from "./quickjs-module"
+import { QuickJSRuntime } from "./runtime"
+import { ContextEvalOptions, evalOptionsToFlags } from "./types"
 import {
-  CToHostCallbackFunctionImplementation,
-  CToHostInterruptImplementation,
-  QuickJSModuleCallbacks,
-} from './quickjs-module'
-import { QuickJSRuntime } from './runtime'
-import { ContextEvalOptions, evalOptionsToFlags } from './types'
-import {
-  SuccessOrFail,
   LowLevelJavascriptVm,
-  VmFunctionImplementation,
+  SuccessOrFail,
   VmCallResult,
+  VmFunctionImplementation,
   VmPropertyDescriptor,
-} from './vm-interface'
+} from "./vm-interface"
 
 /**
  * A QuickJSHandle to a constant that will never change, and does not need to
@@ -135,7 +124,7 @@ type EitherEmscriptenModule = QuickJSEmscriptenModule | QuickJSAsyncEmscriptenMo
 type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
 
 type FnMapEntry = {
-  type: 'sync'
+  type: "sync"
   impl: VmFunctionImplementation<QuickJSHandle>
 }
 
@@ -159,7 +148,7 @@ class QuickJSContextMemory extends ModuleMemory implements Disposable {
     ownedLifetimes: Disposable[]
   }) {
     super(args.module)
-    args.ownedLifetimes.forEach(lifetime => this.scope.manage(lifetime))
+    args.ownedLifetimes.forEach((lifetime) => this.scope.manage(lifetime))
     this.owner = args.owner
     this.module = args.module
     this.ffi = args.ffi
@@ -184,7 +173,7 @@ class QuickJSContextMemory extends ModuleMemory implements Disposable {
 
   assertOwned(handle: QuickJSHandle) {
     if (handle.owner && handle.owner !== this.owner) {
-      throw new Error('Given handle created by a different VM')
+      throw new Error("Given handle created by a different VM")
     }
   }
 
@@ -398,7 +387,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   newString(str: string): QuickJSHandle {
     const ptr = this.memory
       .newHeapCharPointer(str)
-      .consume(charHandle => this.ffi.QTS_NewString(this.ctx.value, charHandle.value))
+      .consume((charHandle) => this.ffi.QTS_NewString(this.ctx.value, charHandle.value))
     return this.memory.heapValueHandle(ptr)
   }
 
@@ -434,7 +423,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * resources; see the documentation on [[QuickJSDeferredPromise]] for details.
    */
   newPromise(): QuickJSDeferredPromise {
-    return Scope.withScope(scope => {
+    return Scope.withScope((scope) => {
       const mutablePointerArray = scope.manage(
         this.memory.newMutablePointerArray<JSValuePointerPointer>(2)
       )
@@ -444,7 +433,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       )
       const promiseHandle = this.memory.heapValueHandle(promisePtr)
       const [resolveHandle, rejectHandle] = Array.from(mutablePointerArray.value.typedArray).map(
-        jsvaluePtr => this.memory.heapValueHandle(jsvaluePtr as any)
+        (jsvaluePtr) => this.memory.heapValueHandle(jsvaluePtr as any)
       )
       return new QuickJSDeferredPromise({
         owner: this.owner,
@@ -487,11 +476,11 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     moduleName: string,
     source: string
   ): Lifetime<JSModuleDefPointer, never, QuickJSContext> {
-    return Scope.withScope(scope => {
+    return Scope.withScope((scope) => {
       const sourcePtr = scope.manage(this.memory.newHeapCharPointer(source))
       const moduleDefPtr = this.ffi.QTS_CompileModule(this.ctx.value, moduleName, sourcePtr.value)
       // TODO: uh... how do we free this?
-      return new Lifetime(moduleDefPtr, undefined, ptr =>
+      return new Lifetime(moduleDefPtr, undefined, (ptr) =>
         this.ffi.QTS_FreeVoidPointer(this.ctx.value, ptr as JSVoidPointer)
       )
     })
@@ -539,31 +528,31 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   resolvePromise(promiseLikeHandle: QuickJSHandle): Promise<VmCallResult<QuickJSHandle>> {
     this.memory.assertOwned(promiseLikeHandle)
-    const vmResolveResult = Scope.withScope(scope => {
-      const vmPromise = scope.manage(this.getProp(this.global, 'Promise'))
-      const vmPromiseResolve = scope.manage(this.getProp(vmPromise, 'resolve'))
+    const vmResolveResult = Scope.withScope((scope) => {
+      const vmPromise = scope.manage(this.getProp(this.global, "Promise"))
+      const vmPromiseResolve = scope.manage(this.getProp(vmPromise, "resolve"))
       return this.callFunction(vmPromiseResolve, vmPromise, promiseLikeHandle)
     })
     if (vmResolveResult.error) {
       return Promise.resolve(vmResolveResult)
     }
 
-    return new Promise<VmCallResult<QuickJSHandle>>(resolve => {
-      Scope.withScope(scope => {
+    return new Promise<VmCallResult<QuickJSHandle>>((resolve) => {
+      Scope.withScope((scope) => {
         const resolveHandle = scope.manage(
-          this.newFunction('resolve', value => {
+          this.newFunction("resolve", (value) => {
             resolve({ value: value && value.dup() })
           })
         )
 
         const rejectHandle = scope.manage(
-          this.newFunction('reject', error => {
+          this.newFunction("reject", (error) => {
             resolve({ error: error && error.dup() })
           })
         )
 
         const promiseHandle = scope.manage(vmResolveResult.value)
-        const promiseThenHandle = scope.manage(this.getProp(promiseHandle, 'then'))
+        const promiseThenHandle = scope.manage(this.getProp(promiseHandle, "then"))
         this.unwrapResult(
           this.callFunction(promiseThenHandle, promiseHandle, resolveHandle, rejectHandle)
         ).dispose()
@@ -582,7 +571,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   getProp(handle: QuickJSHandle, key: QuickJSPropertyKey): QuickJSHandle {
     this.memory.assertOwned(handle)
-    const ptr = this.borrowPropertyKey(key).consume(quickJSKey =>
+    const ptr = this.borrowPropertyKey(key).consume((quickJSKey) =>
       this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value)
     )
     const result = this.memory.heapValueHandle(ptr)
@@ -603,7 +592,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   setProp(handle: QuickJSHandle, key: QuickJSPropertyKey, value: QuickJSHandle) {
     this.memory.assertOwned(handle)
-    this.borrowPropertyKey(key).consume(quickJSKey =>
+    this.borrowPropertyKey(key).consume((quickJSKey) =>
       this.ffi.QTS_SetProp(this.ctx.value, handle.value, quickJSKey.value, value.value)
     )
     // free newly allocated value if key was a string or number. No-op if string was already
@@ -622,7 +611,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     descriptor: VmPropertyDescriptor<QuickJSHandle>
   ): void {
     this.memory.assertOwned(handle)
-    Scope.withScope(scope => {
+    Scope.withScope((scope) => {
       const quickJSKey = scope.manage(this.borrowPropertyKey(key))
 
       const value = descriptor.value || this.undefined
@@ -673,7 +662,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     this.memory.assertOwned(func)
     const resultPtr = this.memory
       .toPointerArray(args)
-      .consume(argsArrayPtr =>
+      .consume((argsArrayPtr) =>
         this.ffi.QTS_Call(
           this.ctx.value,
           func.value,
@@ -714,7 +703,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   evalCode(
     code: string,
-    filename: string = 'eval.js',
+    filename: string = "eval.js",
     /**
      * If no options are passed, a heuristic will be used to detect if `code` is
      * an ES module.
@@ -727,7 +716,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     const flags = evalOptionsToFlags(options) as EvalFlags
     const resultPtr = this.memory
       .newHeapCharPointer(code)
-      .consume(charHandle =>
+      .consume((charHandle) =>
         this.ffi.QTS_Eval(this.ctx.value, charHandle.value, filename, detectModule, flags)
       )
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
@@ -743,28 +732,20 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * @experimental
    */
   throw(error: Error | QuickJSHandle) {
-    return this.errorToHandle(error).consume(handle =>
+    return this.errorToHandle(error).consume((handle) =>
       this.ffi.QTS_Throw(this.ctx.value, handle.value)
     )
-  }
-
-  /**
-   * @returns a human-readable description of memory usage in this runtime.
-   * For programmatic access to this information, see [[computeMemoryUsage]].
-   */
-  dumpMemoryUsage(): string {
-    return this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value)
   }
 
   /**
    * @private
    */
   protected borrowPropertyKey(key: QuickJSPropertyKey): QuickJSHandle {
-    if (typeof key === 'number') {
+    if (typeof key === "number") {
       return this.newNumber(key)
     }
 
-    if (typeof key === 'string') {
+    if (typeof key === "string") {
       return this.newString(key)
     }
 
@@ -780,7 +761,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     if (rt === this.rt.value) {
       return this.memory
     } else {
-      throw new Error('Private API. Cannot get memory from a different runtime')
+      throw new Error("Private API. Cannot get memory from a different runtime")
     }
   }
 
@@ -795,11 +776,11 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   dump(handle: QuickJSHandle) {
     this.memory.assertOwned(handle)
     const type = this.typeof(handle)
-    if (type === 'string') {
+    if (type === "string") {
       return this.getString(handle)
-    } else if (type === 'number') {
+    } else if (type === "number") {
       return this.getNumber(handle)
-    } else if (type === 'undefined') {
+    } else if (type === "undefined") {
       return undefined
     }
 
@@ -819,14 +800,14 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   unwrapResult<T>(result: SuccessOrFail<T, QuickJSHandle>): T {
     if (result.error) {
-      const dumped = result.error.consume(error => this.dump(error))
+      const dumped = result.error.consume((error) => this.dump(error))
 
-      if (dumped && typeof dumped === 'object' && typeof dumped.message === 'string') {
+      if (dumped && typeof dumped === "object" && typeof dumped.message === "string") {
         const exception = new Error(dumped.message)
-        if (typeof dumped.name === 'string') {
+        if (typeof dumped.name === "string") {
           exception.name = dumped.name
         }
-        if (typeof dumped.stack === 'string') {
+        if (typeof dumped.stack === "string") {
           exception.stack = `VM: ${dumped.stack}\nHost: ${exception.stack}`
         }
         Object.assign(exception, { cause: dumped })
@@ -855,7 +836,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     fn_id
   ) => {
     if (ctx !== this.ctx.value) {
-      throw new Error('QuickJSVm instance received C -> JS call with mismatched ctx')
+      throw new Error("QuickJSVm instance received C -> JS call with mismatched ctx")
     }
 
     const fn = this.fnMap.get(fn_id)
@@ -863,7 +844,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       throw new Error(`QuickJSVm had no callback with id ${fn_id}`)
     }
 
-    return Scope.withScopeMaybeAsync(scope => {
+    return Scope.withScopeMaybeAsync((scope) => {
       const thisHandle = scope.manage(
         new WeakLifetime(this_ptr, this.memory.copyJSValue, this.memory.freeJSValue, this)
       )
@@ -876,9 +857,9 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       }
 
       const maybeAsync = newPromiseLike(() => fn.apply(thisHandle, argHandles))
-        .then(result => {
+        .then((result) => {
           if (result) {
-            if ('error' in result && result.error) {
+            if ("error" in result && result.error) {
               throw result.error
             }
             const handle = scope.manage(result instanceof Lifetime ? result : result.value)
@@ -886,8 +867,8 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
           }
           return 0
         })
-        .catch(error =>
-          this.errorToHandle(error as Error).consume(errorHandle =>
+        .catch((error) =>
+          this.errorToHandle(error as Error).consume((errorHandle) =>
             this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
           )
         )
@@ -904,11 +885,13 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     const errorHandle = this.memory.heapValueHandle(this.ffi.QTS_NewError(this.ctx.value))
 
     if (error.name !== undefined) {
-      this.newString(error.name).consume(handle => this.setProp(errorHandle, 'name', handle))
+      this.newString(error.name).consume((handle) => this.setProp(errorHandle, "name", handle))
     }
 
     if (error.message !== undefined) {
-      this.newString(error.message).consume(handle => this.setProp(errorHandle, 'message', handle))
+      this.newString(error.message).consume((handle) =>
+        this.setProp(errorHandle, "message", handle)
+      )
     }
 
     // Disabled due to security leak concerns

@@ -17,12 +17,12 @@ import {
   JSRuntimePointer,
   JSValueConstPointer,
   JSValuePointer,
-} from './ffi-types'
+} from "./ffi-types"
 
 declare namespace Emscripten {
   interface FileSystemType {}
-  type EnvironmentType = 'WEB' | 'NODE' | 'SHELL' | 'WORKER'
-  type ValueType = 'number' | 'string' | 'array' | 'boolean'
+  type EnvironmentType = "WEB" | "NODE" | "SHELL" | "WORKER"
+  type ValueType = "number" | "string" | "array" | "boolean"
   type TypeCompatibleWithC = number | string | any[] | boolean
 
   type WebAssemblyImports = Array<{
@@ -132,13 +132,13 @@ export interface EmscriptenModuleCallbacks {
 }
 
 export interface QuickJSEmscriptenModule extends EmscriptenModule {
-  type: 'sync'
+  type: "sync"
   callbacks: EmscriptenModuleCallbacks
 }
 
 export interface QuickJSAsyncEmscriptenModule extends EmscriptenModule {
   /** @todo Implement this field */
-  type: 'async'
+  type: "async"
   callbacks: EmscriptenModuleCallbacks
 }
 

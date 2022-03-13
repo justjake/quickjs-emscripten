@@ -1,31 +1,32 @@
-import { EitherModule, QuickJSAsyncEmscriptenModule } from './emscripten-types'
+import { EitherModule, QuickJSAsyncEmscriptenModule } from "./emscripten-types"
 import {
   JSRuntimePointer,
   JSContextPointer,
   JSModuleDefPointer,
   JSContextPointerPointer,
-} from './ffi-types'
+} from "./ffi-types"
 import {
   Disposable,
   ExecutePendingJobsResult,
   InterruptHandler,
   Lifetime,
   QuickJSHandle,
-} from './quickjs'
+} from "./quickjs"
 import {
   QuickJSModuleCallbacks,
   CToHostModuleLoaderImplementation,
   RuntimeCallbacks,
   CToHostInterruptImplementation,
-} from './quickjs-module'
-import { ContextOptions, DefaultIntrinsics, EitherFFI, JSModuleLoader } from './types'
-import { QuickJSContext } from './context'
-import { intoPromiseLike, newPromiseLike, unwrapPromiseLike } from './asyncify-helpers'
-import { ModuleMemory } from './memory'
-import { debug } from './debug'
+} from "./quickjs-module"
+import { ContextOptions, DefaultIntrinsics, EitherFFI, JSModuleLoader } from "./types"
+import { QuickJSContext } from "./context"
+import { intoPromiseLike, newPromiseLike, unwrapPromiseLike } from "./asyncify-helpers"
+import { ModuleMemory } from "./memory"
+import { debug } from "./debug"
 
 /**
  * A runtime represents a Javascript runtime corresponding to an object heap.
+ * Several runtimes can exist at the same time but they cannot exchange objects.
  * Inside a given runtime, no multi-threading is supported.
  */
 export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
@@ -78,13 +79,13 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
 
   newContext(options: ContextOptions = {}): QuickJSContext {
     if (options.intrinsics && options.intrinsics !== DefaultIntrinsics) {
-      throw new Error('TODO: Custom intrinsics are not supported yet')
+      throw new Error("TODO: Custom intrinsics are not supported yet")
     }
 
     const ctx = new Lifetime(
       options.contextPointer || this.ffi.QTS_NewContext(this.rt.value),
       undefined,
-      ctx_ptr => {
+      (ctx_ptr) => {
         this.contextMap.delete(ctx_ptr)
         this.callbacks.deleteContext(ctx_ptr)
         this.ffi.QTS_FreeContext(ctx_ptr)
@@ -195,7 +196,7 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
 
     const resultValue = ctx.getMemory(this.rt.value).heapValueHandle(valuePtr)
     const typeOfRet = ctx.typeof(resultValue)
-    if (typeOfRet === 'number') {
+    if (typeOfRet === "number") {
       const executedJobs = ctx.getNumber(resultValue)
       resultValue.dispose()
       return { value: executedJobs }
@@ -210,7 +211,7 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
    */
   setMemoryLimit(limitBytes: number) {
     if (limitBytes < 0 && limitBytes !== -1) {
-      throw new Error('Cannot set memory limit to negative number. To unset, pass -1')
+      throw new Error("Cannot set memory limit to negative number. To unset, pass -1")
     }
 
     this.ffi.QTS_RuntimeSetMemoryLimit(this.rt.value, limitBytes)
@@ -233,14 +234,14 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
   /**
    * @hidden
    */
-  cToHostInterrupt: CToHostInterruptImplementation = rt => {
+  cToHostInterrupt: CToHostInterruptImplementation = (rt) => {
     if (rt !== this.rt.value) {
-      throw new Error('QuickJSVm instance received C -> JS interrupt with mismatched rt')
+      throw new Error("QuickJSVm instance received C -> JS interrupt with mismatched rt")
     }
 
     const fn = this.interruptHandler
     if (!fn) {
-      throw new Error('QuickJSVm had no interrupt handler')
+      throw new Error("QuickJSVm had no interrupt handler")
     }
 
     return fn(this) ? 1 : 0
@@ -252,11 +253,11 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
   cToHostLoadModule: CToHostModuleLoaderImplementation = (rt, ctx, moduleName) => {
     const moduleLoader = this.moduleLoader
     if (!moduleLoader) {
-      throw new Error('Runtime has no module loader')
+      throw new Error("Runtime has no module loader")
     }
 
     if (rt !== this.rt.value) {
-      throw new Error('Runtime pointer mismatch')
+      throw new Error("Runtime pointer mismatch")
     }
 
     const context =
@@ -266,16 +267,16 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
       })
 
     const maybeAsync = newPromiseLike(() => moduleLoader(context, moduleName))
-      .then(result => {
-        if (typeof result === 'object' && 'error' in result && result.error) {
-          debug('cToHostLoadModule: loader returned error', result.error)
+      .then((result) => {
+        if (typeof result === "object" && "error" in result && result.error) {
+          debug("cToHostLoadModule: loader returned error", result.error)
           throw result.error
         }
 
         const moduleDef =
-          typeof result === 'string' ? result : 'value' in result ? result.value : result
+          typeof result === "string" ? result : "value" in result ? result.value : result
 
-        if (typeof moduleDef === 'string') {
+        if (typeof moduleDef === "string") {
           const compiledModule = context.compileModule(moduleName, moduleDef)
           return compiledModule.value
         }
@@ -283,8 +284,8 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
         // TODO
         throw new Error(`TODO: module definition not implemented.`)
       })
-      .catch(error => {
-        debug('cToHostLoadModule: caught error', error)
+      .catch((error) => {
+        debug("cToHostLoadModule: caught error", error)
         context.throw(error as any)
         return 0 as JSModuleDefPointer
       })
