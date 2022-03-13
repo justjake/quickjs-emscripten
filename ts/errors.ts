@@ -7,3 +7,11 @@ export class QuickJSUnwrapError extends Error {
     super(String(cause))
   }
 }
+
+export class QuickJSWrongOwner extends Error {
+  name = "QuickJSWrongOwner"
+}
+
+export class QuickJSUseAfterFree extends Error {
+  name = "QuickJSUseAfterFree"
+}

@@ -32,7 +32,7 @@ import {
  * A QuickJSHandle to a constant that will never change, and does not need to
  * be disposed.
  */
-export type StaticJSValue = Lifetime<JSValueConstPointer, JSValueConstPointer, QuickJSContext>
+export type StaticJSValue = Lifetime<JSValueConstPointer, JSValueConstPointer, QuickJSRuntime>
 
 /**
  * A QuickJSHandle to a borrowed value that does not need to be disposed.
@@ -44,7 +44,7 @@ export type StaticJSValue = Lifetime<JSValueConstPointer, JSValueConstPointer, Q
  *
  * quickjs-emscripten takes care of disposing JSValueConst references.
  */
-export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJSContext>
+export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJSRuntime>
 
 /**
  * A owned QuickJSHandle that should be disposed or returned.
@@ -61,7 +61,7 @@ export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJS
  *
  * You can do so from Javascript by calling the .dispose() method.
  */
-export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSContext>
+export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSRuntime>
 
 /**
  * Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
@@ -132,7 +132,7 @@ type FnMapEntry = {
  * @private
  */
 class QuickJSContextMemory extends ModuleMemory implements Disposable {
-  readonly owner: QuickJSContext
+  readonly owner: QuickJSRuntime
   readonly ctx: Lifetime<JSContextPointer>
   readonly rt: Lifetime<JSRuntimePointer>
   readonly module: EitherEmscriptenModule
@@ -140,7 +140,7 @@ class QuickJSContextMemory extends ModuleMemory implements Disposable {
   readonly scope = new Scope()
 
   constructor(args: {
-    owner: QuickJSContext
+    owner: QuickJSRuntime
     module: EitherEmscriptenModule
     ffi: EitherFFI
     ctx: Lifetime<JSContextPointer>
@@ -169,12 +169,6 @@ class QuickJSContextMemory extends ModuleMemory implements Disposable {
    */
   manage<T extends Disposable>(lifetime: T): T {
     return this.scope.manage(lifetime)
-  }
-
-  assertOwned(handle: QuickJSHandle) {
-    if (handle.owner && handle.owner !== this.owner) {
-      throw new Error("Given handle created by a different VM")
-    }
   }
 
   copyJSValue = (ptr: JSValuePointer | JSValueConstPointer) => {
@@ -229,8 +223,6 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   public readonly runtime: QuickJSRuntime
 
   /** @private */
-  protected owner: QuickJSContext
-  /** @private */
   protected readonly ctx: Lifetime<JSContextPointer>
   /** @private */
   protected readonly rt: Lifetime<JSRuntimePointer>
@@ -264,17 +256,16 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     ownedLifetimes: Disposable[]
     callbacks: QuickJSModuleCallbacks
   }) {
-    this.owner = this as unknown as QuickJSContext
+    this.runtime = args.runtime
     this.module = args.module
     this.ffi = args.ffi
     this.rt = args.rt
     this.ctx = args.ctx
     this.memory = new QuickJSContextMemory({
       ...args,
-      owner: this.owner,
+      owner: this.runtime,
     })
     this.dump = this.dump.bind(this)
-    this.runtime = args.runtime
     args.callbacks.setContextCallbacks(this.ctx.value, this)
   }
 
@@ -368,7 +359,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     // This isn't technically a static lifetime, but since it has the same
     // lifetime as the VM, it's okay to fake one since when the VM is
     // disposed, no other functions will accept the value.
-    this._global = new StaticLifetime(ptr, this.owner)
+    this._global = new StaticLifetime(ptr, this.runtime)
     return this._global
   }
 
@@ -399,7 +390,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   newObject(prototype?: QuickJSHandle): QuickJSHandle {
     if (prototype) {
-      this.memory.assertOwned(prototype)
+      this.runtime.assertOwned(prototype)
     }
     const ptr = prototype
       ? this.ffi.QTS_NewObjectProto(this.ctx.value, prototype.value)
@@ -436,7 +427,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
         (jsvaluePtr) => this.memory.heapValueHandle(jsvaluePtr as any)
       )
       return new QuickJSDeferredPromise({
-        owner: this.owner,
+        context: this,
         promiseHandle,
         resolveHandle,
         rejectHandle,
@@ -495,7 +486,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * Does not support BigInt values correctly.
    */
   typeof(handle: QuickJSHandle) {
-    this.memory.assertOwned(handle)
+    this.runtime.assertOwned(handle)
     return this.ffi.QTS_Typeof(this.ctx.value, handle.value)
   }
 
@@ -504,7 +495,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * @returns `NaN` on error, otherwise a `number`.
    */
   getNumber(handle: QuickJSHandle): number {
-    this.memory.assertOwned(handle)
+    this.runtime.assertOwned(handle)
     return this.ffi.QTS_GetFloat64(this.ctx.value, handle.value)
   }
 
@@ -512,7 +503,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * Converts `handle` to a Javascript string.
    */
   getString(handle: QuickJSHandle): string {
-    this.memory.assertOwned(handle)
+    this.runtime.assertOwned(handle)
     return this.ffi.QTS_GetString(this.ctx.value, handle.value)
   }
 
@@ -527,7 +518,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * @param promiseLikeHandle - A handle to a Promise-like value with a `.then(onSuccess, onError)` method.
    */
   resolvePromise(promiseLikeHandle: QuickJSHandle): Promise<VmCallResult<QuickJSHandle>> {
-    this.memory.assertOwned(promiseLikeHandle)
+    this.runtime.assertOwned(promiseLikeHandle)
     const vmResolveResult = Scope.withScope((scope) => {
       const vmPromise = scope.manage(this.getProp(this.global, "Promise"))
       const vmPromiseResolve = scope.manage(this.getProp(vmPromise, "resolve"))
@@ -570,7 +561,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * Javascript string (which will be converted automatically).
    */
   getProp(handle: QuickJSHandle, key: QuickJSPropertyKey): QuickJSHandle {
-    this.memory.assertOwned(handle)
+    this.runtime.assertOwned(handle)
     const ptr = this.borrowPropertyKey(key).consume((quickJSKey) =>
       this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value)
     )
@@ -591,7 +582,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * Javascript string or number (which will be converted automatically to a JSValue).
    */
   setProp(handle: QuickJSHandle, key: QuickJSPropertyKey, value: QuickJSHandle) {
-    this.memory.assertOwned(handle)
+    this.runtime.assertOwned(handle)
     this.borrowPropertyKey(key).consume((quickJSKey) =>
       this.ffi.QTS_SetProp(this.ctx.value, handle.value, quickJSKey.value, value.value)
     )
@@ -610,7 +601,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     key: QuickJSPropertyKey,
     descriptor: VmPropertyDescriptor<QuickJSHandle>
   ): void {
-    this.memory.assertOwned(handle)
+    this.runtime.assertOwned(handle)
     Scope.withScope((scope) => {
       const quickJSKey = scope.manage(this.borrowPropertyKey(key))
 
@@ -659,7 +650,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     thisVal: QuickJSHandle,
     ...args: QuickJSHandle[]
   ): VmCallResult<QuickJSHandle> {
-    this.memory.assertOwned(func)
+    this.runtime.assertOwned(func)
     const resultPtr = this.memory
       .toPointerArray(args)
       .consume((argsArrayPtr) =>
@@ -751,7 +742,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
 
     // key is already a JSValue, but we're borrowing it. Return a static handle
     // for internal use only.
-    return new StaticLifetime(key.value as JSValueConstPointer, this.owner)
+    return new StaticLifetime(key.value as JSValueConstPointer, this.runtime)
   }
 
   /**
@@ -774,7 +765,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * Returns `handle.toString()` if it cannot be serialized to JSON.
    */
   dump(handle: QuickJSHandle) {
-    this.memory.assertOwned(handle)
+    this.runtime.assertOwned(handle)
     const type = this.typeof(handle)
     if (type === "string") {
       return this.getString(handle)
@@ -846,13 +837,13 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
 
     return Scope.withScopeMaybeAsync((scope) => {
       const thisHandle = scope.manage(
-        new WeakLifetime(this_ptr, this.memory.copyJSValue, this.memory.freeJSValue, this)
+        new WeakLifetime(this_ptr, this.memory.copyJSValue, this.memory.freeJSValue, this.runtime)
       )
       const argHandles = new Array<QuickJSHandle>(argc)
       for (let i = 0; i < argc; i++) {
         const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
         argHandles[i] = scope.manage(
-          new WeakLifetime(ptr, this.memory.copyJSValue, this.memory.freeJSValue, this)
+          new WeakLifetime(ptr, this.memory.copyJSValue, this.memory.freeJSValue, this.runtime)
         )
       }
 

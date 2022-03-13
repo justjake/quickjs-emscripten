@@ -1,10 +1,15 @@
-import { EitherModule, QuickJSAsyncEmscriptenModule } from "./emscripten-types"
+import { newPromiseLike, unwrapPromiseLike } from "./asyncify-helpers"
+import { QuickJSContext } from "./context"
+import { debug } from "./debug"
+import { EitherModule } from "./emscripten-types"
+import { QuickJSWrongOwner } from "./errors"
 import {
-  JSRuntimePointer,
   JSContextPointer,
-  JSModuleDefPointer,
   JSContextPointerPointer,
+  JSModuleDefPointer,
+  JSRuntimePointer,
 } from "./ffi-types"
+import { ModuleMemory } from "./memory"
 import {
   Disposable,
   ExecutePendingJobsResult,
@@ -13,16 +18,12 @@ import {
   QuickJSHandle,
 } from "./quickjs"
 import {
-  QuickJSModuleCallbacks,
-  CToHostModuleLoaderImplementation,
-  RuntimeCallbacks,
   CToHostInterruptImplementation,
+  CToHostModuleLoaderImplementation,
+  QuickJSModuleCallbacks,
+  RuntimeCallbacks,
 } from "./quickjs-module"
 import { ContextOptions, DefaultIntrinsics, EitherFFI, JSModuleLoader } from "./types"
-import { QuickJSContext } from "./context"
-import { intoPromiseLike, newPromiseLike, unwrapPromiseLike } from "./asyncify-helpers"
-import { ModuleMemory } from "./memory"
-import { debug } from "./debug"
 
 /**
  * A runtime represents a Javascript runtime corresponding to an object heap.
@@ -219,7 +220,7 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
 
   /**
    * Compute memory usage for this runtime. Returns the result as a handle to a
-   * JSValue object. Use [[dump]] to convert to a native object.
+   * JSValue object. Use [[QuickJSContext.dump]] to convert to a native object.
    * Calling this method will allocate more memory inside the runtime. The information
    * is accurate as of just before the call to `computeMemoryUsage`.
    * For a human-digestible representation, see [[dumpMemoryUsage]].
@@ -229,6 +230,26 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
     return serviceContextMemory.heapValueHandle(
       this.ffi.QTS_RuntimeComputeMemoryUsage(this.rt.value, serviceContextMemory.ctx.value)
     )
+  }
+
+  /**
+   * @returns a human-readable description of memory usage in this runtime.
+   * For programmatic access to this information, see [[computeMemoryUsage]].
+   */
+  dumpMemoryUsage(): string {
+    return this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value)
+  }
+
+  /**
+   * Assert that `handle` is owned by this runtime.
+   * @throws QuickJSWrongOwner if owned by a different runtime.
+   */
+  assertOwned(handle: QuickJSHandle) {
+    if (handle.owner && handle.owner.rt.value !== this.rt.value) {
+      throw new QuickJSWrongOwner(
+        `Handle is not owned by this runtime: ${handle.owner.rt.value} != ${this.rt.value}`
+      )
+    }
   }
 
   /**

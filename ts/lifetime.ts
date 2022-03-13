@@ -1,7 +1,8 @@
 import { newPromiseLike, unwrapPromiseLike } from "./asyncify-helpers"
+import { QuickJSUseAfterFree } from "./errors"
 import { QuickJSHandle } from "./quickjs"
 
-const DEBUG = true
+const DEBUG = false
 
 /**
  * An object that can be disposed.
@@ -114,9 +115,9 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
   private assertAlive() {
     if (!this.alive) {
       if (this.constructorStack) {
-        throw new Error(`Lifetime not alive\n${this.constructorStack}\nLifetime used`)
+        throw new QuickJSUseAfterFree(`Lifetime not alive\n${this.constructorStack}\nLifetime used`)
       }
-      throw new Error("Lifetime not alive")
+      throw new QuickJSUseAfterFree("Lifetime not alive")
     }
   }
 }

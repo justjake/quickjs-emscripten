@@ -1,5 +1,6 @@
 import type { Disposable } from "./lifetime"
-import type { QuickJSHandle, QuickJSVm } from "./quickjs"
+import type { QuickJSHandle, QuickJSContext } from "./quickjs"
+import { QuickJSRuntime } from "./runtime"
 
 /**
  * QuickJSDeferredPromise wraps a QuickJS promise [[handle]] and allows
@@ -23,10 +24,8 @@ import type { QuickJSHandle, QuickJSVm } from "./quickjs"
  *   [[dispose]] is idempotent.
  */
 export class QuickJSDeferredPromise implements Disposable {
-  /**
-   * The QuickJSVm this promise was created by.
-   */
-  public owner: QuickJSVm
+  public owner: QuickJSRuntime
+  public context: QuickJSContext
 
   /**
    * A handle of the Promise instance inside the QuickJSVm.
@@ -50,12 +49,13 @@ export class QuickJSDeferredPromise implements Disposable {
    * @unstable
    */
   constructor(args: {
-    owner: QuickJSVm
+    context: QuickJSContext
     promiseHandle: QuickJSHandle
     resolveHandle: QuickJSHandle
     rejectHandle: QuickJSHandle
   }) {
-    this.owner = args.owner
+    this.context = args.context
+    this.owner = args.context.runtime
     this.handle = args.promiseHandle
     this.settled = new Promise((resolve) => {
       this.onSettled = resolve
@@ -77,12 +77,12 @@ export class QuickJSDeferredPromise implements Disposable {
       return
     }
 
-    this.owner
+    this.context
       .unwrapResult(
-        this.owner.callFunction(
+        this.context.callFunction(
           this.resolveHandle,
-          this.owner.undefined,
-          value || this.owner.undefined
+          this.context.undefined,
+          value || this.context.undefined
         )
       )
       .dispose()
@@ -104,12 +104,12 @@ export class QuickJSDeferredPromise implements Disposable {
       return
     }
 
-    this.owner
+    this.context
       .unwrapResult(
-        this.owner.callFunction(
+        this.context.callFunction(
           this.rejectHandle,
-          this.owner.undefined,
-          value || this.owner.undefined
+          this.context.undefined,
+          value || this.context.undefined
         )
       )
       .dispose()

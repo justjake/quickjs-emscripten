@@ -535,9 +535,23 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
   describe(".dumpMemoryUsage()", () => {
     it("logs memory usage", () => {
       assert(
-        vm.dumpMemoryUsage().endsWith("per fast array)\n"),
+        vm.runtime.dumpMemoryUsage().endsWith("per fast array)\n"),
         'should end with "per fast array)\\n"'
       )
+    })
+  })
+
+  describe("sharing objects between contexts", () => {
+    it("can share objects between same runtime", () => {
+      const otherContext = vm.runtime.newContext()
+
+      const object = vm.newObject()
+      vm.newString("bar").consume((it) => vm.setProp(object, "foo", it))
+      otherContext.setProp(otherContext.global, "myObject", object)
+      object.dispose()
+
+      const value = vm.unwrapResult(otherContext.evalCode(`myObject`)).consume(otherContext.dump)
+      assert.deepStrictEqual(value, { foo: "bar" }, "ok")
     })
   })
 

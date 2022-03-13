@@ -22,7 +22,7 @@ import { QuickJSRuntime } from "./runtime"
 // Exports of types moved out of this file
 export { Lifetime, WeakLifetime, StaticLifetime, Scope, Disposable }
 export {
-  QuickJSContext as QuickJSVm,
+  QuickJSContext,
   InterruptHandler,
   StaticJSValue,
   JSValueConst,

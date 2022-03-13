@@ -1,8 +1,9 @@
 ts/ffi.ts
 ts/ffi-asyncify.ts
 *.emscripten-module.js
-dist/*
 quickjs
 .yarn
 doc
 test/json-generator-dot-com-1024-rows.json
+dist/*
+build
