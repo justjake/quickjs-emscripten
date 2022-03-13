@@ -713,7 +713,12 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   evalCode(
     code: string,
     filename: string = 'eval.js',
-    /** See [[EvalFlags]] for number semantics */
+    /**
+     * If no options are passed, a heuristic will be used to detect if `code` is
+     * an ES module.
+     *
+     * See [[EvalFlags]] for number semantics.
+     */
     options?: number | ContextEvalOptions
   ): VmCallResult<QuickJSHandle> {
     const detectModule = (options === undefined ? 1 : 0) as EvalDetectModule
