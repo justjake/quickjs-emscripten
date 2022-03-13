@@ -11,15 +11,9 @@ import { QuickJSContext } from './context'
 import { QuickJSContextAsync } from './context-asyncify'
 import { QuickJSFFI } from './ffi'
 import { QuickJSUnwrapError } from './errors'
+import { debug } from './debug'
 
-const DEBUG = true
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
-
-function debug(...msgs: unknown[]) {
-  if (DEBUG) {
-    console.error(...msgs)
-  }
-}
 
 function contextTests(getContext: () => Promise<QuickJSContext>) {
   let vm: QuickJSContext = undefined as any
@@ -253,9 +247,9 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       } catch (error) {
         if (error instanceof QuickJSUnwrapError) {
           assert.strictEqual(error.cause, 'ERROR!', 'QuickJSUnwrapError.cause set correctly')
-        } else {
-          assert.fail('Not instanceof QuickJSUnwrapError')
+          return
         }
+        throw error
       }
     })
   })
@@ -679,7 +673,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
     vm = undefined as any
   })
 
-  it.only('async function support smoketest', async () => {
+  it('async function support smoketest', async () => {
     let asyncFunctionCalls = 0
     const asyncFn = async () => {
       asyncFunctionCalls++
@@ -703,8 +697,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
   })
 
   describe('module loading', () => {
-    // This is broken.
-    it.skip('supports async module loading', async () => {
+    it('supports async module loading', async () => {
       async function testBody() {
         let moduleLoaderCalls = 0
         const moduleLoader = async () => {
@@ -712,33 +705,31 @@ function asyncContextTests(getContext: () => Promise<QuickJSContextAsync>) {
           if (moduleLoaderCalls > 1) {
             throw new Error('Module loader should only be called once')
           }
-          console.trace('moduleLoader called')
           debug('moduleLoader: sleeping')
           await new Promise(resolve => setTimeout(resolve, 50))
           debug('moduleLoader: done sleeping')
           return 'export default function() { return "hello from module" }'
-          // After we rewind, it appears moduleLoader is immediately called again??
-          // WTF
         }
         debug('defined module loader')
+
         vm.runtime.setModuleLoader(moduleLoader)
-        let suspended = false
-        setImmediate(() => {
-          suspended = true
-        })
         debug('set module loader')
+
         const promise = vm.evalCodeAsync(`
         import otherModule from './other-module'
         globalThis.stuff = otherModule()
       `)
         debug('promise', promise)
+
         const result = await promise
         debug('awaited vm.evalCodeAsync', result, { alive: vm.alive })
-        // assert.strictEqual(suspended, true, 'Did suspend')
+
         const unwrapped = vm.unwrapResult(result)
         debug('unwrapped result')
+
         const dumped = unwrapped.consume(vm.dump)
         debug('consumed result')
+
         assert.strictEqual(dumped, undefined)
         debug('asserted result')
 

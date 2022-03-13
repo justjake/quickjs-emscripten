@@ -1,5 +1,10 @@
 import { debug } from './debug'
-import { Asyncify, EitherModule, EmscriptenModuleCallbacks } from './emscripten-types'
+import {
+  Asyncify,
+  AsyncifySleepResult,
+  EitherModule,
+  EmscriptenModuleCallbacks,
+} from './emscripten-types'
 import {
   JSContextPointer,
   JSRuntimePointer,
@@ -109,63 +114,86 @@ export class QuickJSModuleCallbacks {
     this.contextCallbacks.delete(ctx)
   }
 
-  private maybeSuspend<T>(asyncify: Asyncify | undefined, value: T | Promise<T>) {
+  private maybeSuspendOrResumeAsync<T>(
+    asyncify: Asyncify | undefined,
+    fn: () => T | Promise<T>
+  ): T | AsyncifySleepResult<T> {
+    if (asyncify) {
+      // We must always call asyncify.handleSync around our function.
+      // This allows asyncify to resume suspended execution on the second call.
+      // Asyncify internally can detect sync behavior, and avoid suspending.
+      return asyncify.handleSleep(done => {
+        try {
+          const result = fn()
+          if (result instanceof Promise) {
+            result.then(done)
+            result.catch(error =>
+              console.error('QuickJS: cannot handle error in suspended function', error)
+            )
+          } else {
+            done(result)
+          }
+        } catch (error) {
+          debug('asyncify.handleSleep error', error)
+          throw error
+        }
+      })
+    }
+
+    // No asyncify - we should never return a promise.
+    const value = fn()
     if (value instanceof Promise) {
-      if (!asyncify) {
-        throw new Error('Promise return value not supported in non-asyncify context.')
-      }
-      debug('cToHostCallbacks: suspending', value)
-      return asyncify.handleAsync(() => value)
+      throw new Error('Promise return value not supported in non-asyncify context.')
     }
     return value
   }
 
   private cToHostCallbacks = new QuickJSEmscriptenModuleCallbacks({
-    callFunction: (asyncify, ctx, this_ptr, argc, argv, fn_id) => {
-      try {
-        const vm = this.contextCallbacks.get(ctx)
-        if (!vm) {
-          throw new Error(`QuickJSVm(ctx = ${ctx}) not found for C function call "${fn_id}"`)
+    callFunction: (asyncify, ctx, this_ptr, argc, argv, fn_id) =>
+      this.maybeSuspendOrResumeAsync(asyncify, () => {
+        try {
+          const vm = this.contextCallbacks.get(ctx)
+          if (!vm) {
+            throw new Error(`QuickJSVm(ctx = ${ctx}) not found for C function call "${fn_id}"`)
+          }
+          return vm.cToHostCallbackFunction(ctx, this_ptr, argc, argv, fn_id)
+        } catch (error) {
+          console.error('[C to host error: returning null]', error)
+          return 0 as JSValuePointer
         }
-        return this.maybeSuspend(
-          asyncify,
-          vm.cToHostCallbackFunction(ctx, this_ptr, argc, argv, fn_id)
-        )
-      } catch (error) {
-        console.error('[C to host error: returning null]', error)
-        return 0 as JSValuePointer
-      }
-    },
+      }),
 
-    shouldInterrupt: (asyncify, rt) => {
-      try {
-        const vm = this.runtimeCallbacks.get(rt)
-        if (!vm) {
-          throw new Error(`QuickJSRuntime(rt = ${rt}) not found for C interrupt`)
+    shouldInterrupt: (asyncify, rt) =>
+      this.maybeSuspendOrResumeAsync(asyncify, () => {
+        try {
+          const vm = this.runtimeCallbacks.get(rt)
+          if (!vm) {
+            throw new Error(`QuickJSRuntime(rt = ${rt}) not found for C interrupt`)
+          }
+          return vm.cToHostInterrupt(rt)
+        } catch (error) {
+          console.error('[C to host interrupt: returning error]', error)
+          return 1
         }
-        return this.maybeSuspend(asyncify, vm.cToHostInterrupt(rt))
-      } catch (error) {
-        console.error('[C to host interrupt: returning error]', error)
-        return 1
-      }
-    },
+      }),
 
-    loadModule: (asyncify, rt, ctx, moduleName) => {
-      try {
-        const runtimeCallbacks = this.runtimeCallbacks.get(rt)
-        if (!runtimeCallbacks) {
-          throw new Error(`QuickJSRuntime(rt = ${rt}) not fond for C module loader`)
-        }
+    loadModule: (asyncify, rt, ctx, moduleName) =>
+      this.maybeSuspendOrResumeAsync(asyncify, () => {
+        try {
+          const runtimeCallbacks = this.runtimeCallbacks.get(rt)
+          if (!runtimeCallbacks) {
+            throw new Error(`QuickJSRuntime(rt = ${rt}) not fond for C module loader`)
+          }
 
-        const loadModule = runtimeCallbacks.cToHostLoadModule
-        if (!loadModule) {
-          throw new Error(`QuickJSRuntime(rt = ${rt}) does not support module loading`)
+          const loadModule = runtimeCallbacks.cToHostLoadModule
+          if (!loadModule) {
+            throw new Error(`QuickJSRuntime(rt = ${rt}) does not support module loading`)
+          }
+          return loadModule(rt, ctx, moduleName)
+        } catch (error) {
+          console.error('[C to host module loader error: returning null]', error)
+          return 0 as JSModuleDefPointer
         }
-        return this.maybeSuspend(asyncify, loadModule(rt, ctx, moduleName))
-      } catch (error) {
-        console.error('[C to host module loader error: returning null]', error)
-        return 0 as JSModuleDefPointer
-      }
-    },
+      }),
   })
 }

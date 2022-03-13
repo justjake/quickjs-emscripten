@@ -77,19 +77,20 @@ interface EmscriptenModule {
 
 // This isn't the real return type of handleAsync, but it's better to treat it this way.
 declare const AsyncifySleepReturnValue: unique symbol
-type AsyncifySleepResult<T> = T & typeof AsyncifySleepReturnValue
+/** @private */
+export type AsyncifySleepResult<T> = T & typeof AsyncifySleepReturnValue
 
 /**
  * Allows us to optionally suspend the Emscripten runtime to wait for a promise.
  * https://emscripten.org/docs/porting/asyncify.html#ways-to-use-async-apis-in-older-engines
  * ```
  * EM_JS(int, do_fetch, (), {
- *   return Asyncify.handleAsync(function () {
+ *   return Asyncify.handleSleep(function (wakeUp) {
  *     out("waiting for a fetch");
- *     return fetch("a.html").then(function (response) {
+ *     fetch("a.html").then(function (response) {
  *       out("got the fetch response");
  *       // (normally you would do something with the fetch here)
- *       return 42;
+ *       wakeUp(42);
  *     });
  *   });
  * });
@@ -97,7 +98,11 @@ type AsyncifySleepResult<T> = T & typeof AsyncifySleepReturnValue
  * @private
  */
 export interface Asyncify {
-  handleAsync<T>(asyncFn: () => Promise<T>): AsyncifySleepResult<T>
+  handleSleep<T>(maybeAsyncFn: (wakeUp: (result: T) => void) => void): AsyncifySleepResult<T>
+  // Because this one requires a promise, it's going to be less efficient than
+  // the callback system. Plus it seems like we'd need to use SyncPromise to
+  // avoid suspending.
+  // handleAsync<T>(asyncFn: () => T | Promise<T>): AsyncifySleepResult<T>
 }
 
 /**
