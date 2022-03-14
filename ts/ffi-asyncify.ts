@@ -164,8 +164,8 @@ export class QuickJSAsyncFFI {
   QTS_RuntimeDisableInterruptHandler: (rt: JSRuntimePointer) => void =
     this.module.cwrap("QTS_RuntimeDisableInterruptHandler", null, ["number"])
 
-  QTS_RuntimeEnableModuleLoader: (rt: JSRuntimePointer) => void =
-    this.module.cwrap("QTS_RuntimeEnableModuleLoader", null, ["number"])
+  QTS_RuntimeEnableModuleLoader: (rt: JSRuntimePointer, use_custom_normalize: number) => void =
+    this.module.cwrap("QTS_RuntimeEnableModuleLoader", null, ["number","number"])
 
   QTS_RuntimeDisableModuleLoader: (rt: JSRuntimePointer) => void =
     this.module.cwrap("QTS_RuntimeDisableModuleLoader", null, ["number"])

@@ -12,6 +12,7 @@
 //   we don't use.
 
 import {
+  HeapCharPointer,
   JSContextPointer,
   JSModuleDefPointer,
   JSRuntimePointer,
@@ -124,6 +125,14 @@ export interface EmscriptenModuleCallbacks {
     ctx: JSContextPointer,
     module_name: string
   ) => JSModuleDefPointer | AsyncifySleepResult<JSModuleDefPointer>
+
+  normalizeModule: (
+    asyncify: Asyncify | undefined,
+    rt: JSRuntimePointer,
+    ctx: JSContextPointer,
+    module_base_name: string,
+    module_name: string
+  ) => HeapCharPointer | AsyncifySleepResult<HeapCharPointer>
 
   shouldInterrupt: (
     asyncify: Asyncify | undefined,

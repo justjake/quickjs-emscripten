@@ -601,7 +601,21 @@ EM_JS(MaybeAsync(JSModuleDef *), qts_host_load_module, (JSRuntime * rt, JSContex
 #else
   const asyncify = undefined;
 #endif
-  return Module['callbacks']['loadModule'](asyncify, rt, ctx, module_name);
+  // https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
+  const moduleNameString = UTF8ToString(module_name);
+  return Module['callbacks']['loadModule'](asyncify, rt, ctx, moduleNameString);
+});
+
+EM_JS(MaybeAsync(JSModuleDef *), qts_host_normalize_module, (JSRuntime * rt, JSContext *ctx, const char *module_base_name, const char *module_name), {
+#ifdef QTS_ASYNCIFY
+  const asyncify = {['handleSleep'] : Asyncify.handleSleep};
+#else
+  const asyncify = undefined;
+#endif
+  // https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
+  const moduleBaseNameString = UTF8ToString(module_base_name);
+  const moduleNameString = UTF8ToString(module_name);
+  return Module['callbacks']['normalizeModule'](asyncify, rt, ctx, moduleBaseNameString, moduleNameString);
 });
 
 // load module: QuickJS -> C
@@ -616,9 +630,23 @@ JSModuleDef *qts_load_module(JSContext *ctx, const char *module_name, void *_unu
   return qts_host_load_module(rt, ctx, module_name);
 }
 
+const char *qts_normalize_module(JSContext *ctx, const char *module_base_name, const char *module_name, void *_unused) {
+  JSRuntime *rt = JS_GetRuntime(ctx);
+#ifdef QTS_DEBUG_MODE
+  char msg[500];
+  sprintf(msg, "qts_normalize_module(rt: %p, ctx: %p, base_name: %s, name: %s)", rt, ctx, module_base_name, module_name);
+  QTS_DEBUG(msg)
+#endif
+  return qts_host_normalize_module(rt, ctx, module_base_name, module_name);
+}
+
 // Load module: Host -> QuickJS
-void QTS_RuntimeEnableModuleLoader(JSRuntime *rt) {
-  JS_SetModuleLoaderFunc(rt, /* use default name normalizer */ NULL, &qts_load_module, NULL);
+void QTS_RuntimeEnableModuleLoader(JSRuntime *rt, int use_custom_normalize) {
+  JSModuleNormalizeFunc *module_normalize = NULL; /* use default name normalizer */
+  if (use_custom_normalize) {
+    module_normalize = &qts_normalize_module;
+  }
+  JS_SetModuleLoaderFunc(rt, module_normalize, &qts_load_module, NULL);
 }
 
 void QTS_RuntimeDisableModuleLoader(JSRuntime *rt) {

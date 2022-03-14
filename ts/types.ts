@@ -67,9 +67,7 @@ export interface JSModuleDefinition {
 }
 
 export type JSModuleLoadSuccess = string | /** TODO */ PartiallyImplemented<JSModuleDefinition>
-
 export type JSModuleLoadFailure = Error | QuickJSHandle
-
 export type JSModuleLoadResult =
   | JSModuleLoadSuccess
   | SuccessOrFail<JSModuleLoadSuccess, JSModuleLoadFailure>
@@ -81,6 +79,25 @@ export interface JSModuleLoaderAsync {
 export interface JSModuleLoader extends JSModuleLoaderAsync {
   /** Load module (sync) */
   (vm: QuickJSContext, moduleName: string): JSModuleLoadResult
+}
+
+export type JSModuleNormalizeSuccess = string
+export type JSModuleNormalizeFailure = Error | QuickJSHandle
+export type JSModuleNormalizeResult =
+  | JSModuleNormalizeSuccess
+  | SuccessOrFail<JSModuleNormalizeSuccess, JSModuleNormalizeFailure>
+
+export interface JSModuleNormalizerAsync {
+  (vm: QuickJSAsyncContext, moduleNameBaseName: string, moduleNameRequest: string):
+    | JSModuleNormalizeResult
+    | Promise<JSModuleNormalizeResult>
+}
+export interface JSModuleNormalizer extends JSModuleNormalizerAsync {
+  (
+    vm: QuickJSContext,
+    moduleNameBaseName: string,
+    moduleNameRequest: string
+  ): JSModuleNormalizeResult
 }
 
 type TODO<hint extends string = "?", typeHint = unknown> = never
@@ -103,6 +120,11 @@ export interface RuntimeOptions {
     "JS_SetJSSharedArrayBufferFunctions",
     { sab_alloc: TODO; sab_free: TODO; sab_dup: TODO; sab_opaque: TODO }
   >
+  /**
+   * Extra lifetimes the runtime should dispose of after it is destroyed.
+   * @private
+   */
+  ownedLifetimes?: Disposable[]
 }
 
 export type Intrinsic =
@@ -197,3 +219,8 @@ export function evalOptionsToFlags(evalOptions: ContextEvalOptions | number | un
   if (backtraceBarrier) flags |= EvalFlags.JS_EVAL_FLAG_BACKTRACE_BARRIER
   return flags
 }
+
+export type PromiseExecutor<ResolveT, RejectT> = (
+  resolve: (value: ResolveT | PromiseLike<ResolveT>) => void,
+  reject: (reason: RejectT) => void
+) => void

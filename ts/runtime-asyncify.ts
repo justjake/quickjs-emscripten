@@ -5,7 +5,14 @@ import { QuickJSAsyncFFI } from "./ffi-asyncify"
 import { JSContextPointer, JSRuntimePointer } from "./ffi-types"
 import { QuickJSModuleCallbacks } from "./module"
 import { QuickJSRuntime } from "./runtime"
-import { ContextOptions, DefaultIntrinsics, JSModuleLoader, JSModuleLoaderAsync } from "./types"
+import {
+  ContextOptions,
+  DefaultIntrinsics,
+  JSModuleLoader,
+  JSModuleLoaderAsync,
+  JSModuleNormalizer,
+  JSModuleNormalizerAsync,
+} from "./types"
 
 export class QuickJSAsyncRuntime extends QuickJSRuntime {
   public context: QuickJSAsyncContext | undefined
@@ -56,7 +63,13 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
     return context
   }
 
-  public override setModuleLoader(moduleLoader: JSModuleLoader | JSModuleLoaderAsync): void {
-    super.setModuleLoader(moduleLoader as JSModuleLoader)
+  public override setModuleLoader(
+    moduleLoader: JSModuleLoader | JSModuleLoaderAsync,
+    moduleNormalizer?: JSModuleNormalizer | JSModuleNormalizerAsync
+  ): void {
+    super.setModuleLoader(
+      moduleLoader as JSModuleLoader,
+      moduleNormalizer as JSModuleNormalizer | undefined
+    )
   }
 }

@@ -15,9 +15,16 @@ import {
 } from "./ffi-types"
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
-import { CToHostCallbackFunctionImplementation, QuickJSModuleCallbacks } from "./module"
+import { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
 import { QuickJSRuntime } from "./runtime"
-import { ContextEvalOptions, EitherFFI, evalOptionsToFlags, JSValue, QuickJSHandle } from "./types"
+import {
+  ContextEvalOptions,
+  EitherFFI,
+  evalOptionsToFlags,
+  JSValue,
+  PromiseExecutor,
+  QuickJSHandle,
+} from "./types"
 import {
   LowLevelJavascriptVm,
   SuccessOrFail,
@@ -50,10 +57,10 @@ class ContextMemory extends ModuleMemory implements Disposable {
     ffi: EitherFFI
     ctx: Lifetime<JSContextPointer>
     rt: Lifetime<JSRuntimePointer>
-    ownedLifetimes: Disposable[]
+    ownedLifetimes?: Disposable[]
   }) {
     super(args.module)
-    args.ownedLifetimes.forEach((lifetime) => this.scope.manage(lifetime))
+    args.ownedLifetimes?.forEach((lifetime) => this.scope.manage(lifetime))
     this.owner = args.owner
     this.module = args.module
     this.ffi = args.ffi
@@ -92,6 +99,9 @@ class ContextMemory extends ModuleMemory implements Disposable {
 /**
  * QuickJSContext wraps a QuickJS Javascript context (JSContext*) within a
  * runtime. The contexts within the same runtime may exchange objects freely.
+ * You can think of separate runtimes like different domains in a browser, and
+ * the contexts within a runtime like the different windows open to the same
+ * domain. The {@link runtime} references the context's runtime.
  *
  * This class's methods return {@link QuickJSHandle}, which wrap C pointers (JSValue*).
  * It's the caller's responsibility to call `.dispose()` on any
@@ -168,8 +178,11 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       ...args,
       owner: this.runtime,
     })
+    args.callbacks.setContextCallbacks(this.ctx.value, this.cToHostCallbacks)
     this.dump = this.dump.bind(this)
-    args.callbacks.setContextCallbacks(this.ctx.value, this)
+    this.getString = this.getString.bind(this)
+    this.getNumber = this.getNumber.bind(this)
+    this.resolvePromise = this.resolvePromise.bind(this)
   }
 
   // @implement Disposable ----------------------------------------------------
@@ -316,8 +329,28 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * Note that you are responsible for calling `deferred.dispose()` to free the underlying
    * resources; see the documentation on [[QuickJSDeferredPromise]] for details.
    */
-  newPromise(): QuickJSDeferredPromise {
-    return Scope.withScope((scope) => {
+  newPromise(): QuickJSDeferredPromise
+  /**
+   * Create a new [[QuickJSDeferredPromise]] that resolves when the
+   * given native Promise<QuickJSHandle> resolves. Rejections will be coerced
+   * to a QuickJS error.
+   *
+   * You can still resolve/reject the created promise "early" using its methods.
+   */
+  newPromise(promise: Promise<QuickJSHandle>): QuickJSDeferredPromise
+  /**
+   * Construct a new native Promise<QuickJSHandle>, and then convert it into a
+   * [[QuickJSDeferredPromise]].
+   *
+   * You can still resolve/reject the created promise "early" using its methods.
+   */
+  newPromise(
+    newPromiseFn: PromiseExecutor<QuickJSHandle, Error | QuickJSHandle>
+  ): QuickJSDeferredPromise
+  newPromise(
+    value?: PromiseExecutor<QuickJSHandle, Error | QuickJSHandle> | Promise<QuickJSHandle>
+  ): QuickJSDeferredPromise {
+    const deferredPromise = Scope.withScope((scope) => {
       const mutablePointerArray = scope.manage(
         this.memory.newMutablePointerArray<JSValuePointerPointer>(2)
       )
@@ -336,6 +369,20 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
         rejectHandle,
       })
     })
+
+    if (value && typeof value === "function") {
+      value = new Promise(value)
+    }
+
+    if (value) {
+      Promise.resolve(value).then(deferredPromise.resolve, (error) =>
+        error instanceof Lifetime
+          ? deferredPromise.reject(error)
+          : this.newError(error).consume(deferredPromise.reject)
+      )
+    }
+
+    return deferredPromise
   }
 
   /**
@@ -378,6 +425,34 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
         this.ffi.QTS_FreeVoidPointer(this.ctx.value, ptr as JSVoidPointer)
       )
     })
+  }
+
+  newError(error: { name: string; message: string }): QuickJSHandle
+  newError(message: string): QuickJSHandle
+  newError(): QuickJSHandle
+  newError(error?: string | { name: string; message: string }): QuickJSHandle {
+    const errorHandle = this.memory.heapValueHandle(this.ffi.QTS_NewError(this.ctx.value))
+
+    if (error && typeof error === "object") {
+      if (error.name !== undefined) {
+        this.newString(error.name).consume((handle) => this.setProp(errorHandle, "name", handle))
+      }
+
+      if (error.message !== undefined) {
+        this.newString(error.message).consume((handle) =>
+          this.setProp(errorHandle, "message", handle)
+        )
+      }
+    } else if (typeof error === "string") {
+      this.newString(error).consume((handle) => this.setProp(errorHandle, "message", handle))
+    } else if (error !== undefined) {
+      // This isn't supported in the type signature but maybe it will make life easier.
+      this.newString(String(error)).consume((handle) =>
+        this.setProp(errorHandle, "message", handle)
+      )
+    }
+
+    return errorHandle
   }
 
   // Read values --------------------------------------------------------------
@@ -698,17 +773,18 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
 
       if (cause && typeof cause === "object" && typeof cause.message === "string") {
         const { message, name, stack } = cause
-        const exception = new Error(message)
+        const exception = new QuickJSUnwrapError("")
+        const hostStack = exception.stack
 
         if (typeof name === "string") {
           exception.name = cause.name
         }
 
         if (typeof stack === "string") {
-          exception.stack = `VM: ${cause.stack}\nHost: ${exception.stack}`
+          exception.stack = `${name}: ${message}\n${cause.stack}Host: ${hostStack}`
         }
 
-        Object.assign(exception, { cause, context })
+        Object.assign(exception, { cause, context, message })
         throw exception
       }
 
@@ -726,51 +802,47 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   /**
    * @hidden
    */
-  cToHostCallbackFunction: CToHostCallbackFunctionImplementation = (
-    ctx,
-    this_ptr,
-    argc,
-    argv,
-    fn_id
-  ) => {
-    if (ctx !== this.ctx.value) {
-      throw new Error("QuickJSContext instance received C -> JS call with mismatched ctx")
-    }
-
-    const fn = this.fnMap.get(fn_id)
-    if (!fn) {
-      throw new Error(`QuickJSContext had no callback with id ${fn_id}`)
-    }
-
-    return Scope.withScopeMaybeAsync(this, function* (awaited, scope) {
-      const thisHandle = scope.manage(
-        new WeakLifetime(this_ptr, this.memory.copyJSValue, this.memory.freeJSValue, this.runtime)
-      )
-      const argHandles = new Array<QuickJSHandle>(argc)
-      for (let i = 0; i < argc; i++) {
-        const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
-        argHandles[i] = scope.manage(
-          new WeakLifetime(ptr, this.memory.copyJSValue, this.memory.freeJSValue, this.runtime)
-        )
+  private cToHostCallbacks: ContextCallbacks = {
+    callFunction: (ctx, this_ptr, argc, argv, fn_id) => {
+      if (ctx !== this.ctx.value) {
+        throw new Error("QuickJSContext instance received C -> JS call with mismatched ctx")
       }
 
-      try {
-        const result = yield* awaited(fn.apply(thisHandle, argHandles))
-        if (result) {
-          if ("error" in result && result.error) {
-            debug("throw error", result.error)
-            throw result.error
-          }
-          const handle = scope.manage(result instanceof Lifetime ? result : result.value)
-          return this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
+      const fn = this.fnMap.get(fn_id)
+      if (!fn) {
+        throw new Error(`QuickJSContext had no callback with id ${fn_id}`)
+      }
+
+      return Scope.withScopeMaybeAsync(this, function* (awaited, scope) {
+        const thisHandle = scope.manage(
+          new WeakLifetime(this_ptr, this.memory.copyJSValue, this.memory.freeJSValue, this.runtime)
+        )
+        const argHandles = new Array<QuickJSHandle>(argc)
+        for (let i = 0; i < argc; i++) {
+          const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
+          argHandles[i] = scope.manage(
+            new WeakLifetime(ptr, this.memory.copyJSValue, this.memory.freeJSValue, this.runtime)
+          )
         }
-        return 0 as JSValuePointer
-      } catch (error) {
-        return this.errorToHandle(error as Error).consume((errorHandle) =>
-          this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
-        )
-      }
-    }) as JSValuePointer
+
+        try {
+          const result = yield* awaited(fn.apply(thisHandle, argHandles))
+          if (result) {
+            if ("error" in result && result.error) {
+              debug("throw error", result.error)
+              throw result.error
+            }
+            const handle = scope.manage(result instanceof Lifetime ? result : result.value)
+            return this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
+          }
+          return 0 as JSValuePointer
+        } catch (error) {
+          return this.errorToHandle(error as Error).consume((errorHandle) =>
+            this.ffi.QTS_Throw(this.ctx.value, errorHandle.value)
+          )
+        }
+      }) as JSValuePointer
+    },
   }
 
   private errorToHandle(error: Error | QuickJSHandle): QuickJSHandle {
@@ -778,26 +850,6 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       return error
     }
 
-    const errorHandle = this.memory.heapValueHandle(this.ffi.QTS_NewError(this.ctx.value))
-
-    if (error.name !== undefined) {
-      this.newString(error.name).consume((handle) => this.setProp(errorHandle, "name", handle))
-    }
-
-    if (error.message !== undefined) {
-      this.newString(error.message).consume((handle) =>
-        this.setProp(errorHandle, "message", handle)
-      )
-    }
-
-    // Disabled due to security leak concerns
-    if (error.stack !== undefined) {
-      //const handle = this.newString(error.stack)
-      // Set to fullStack...? For debugging.
-      //this.setProp(errorHandle, 'fullStack', handle)
-      //handle.dispose()
-    }
-
-    return errorHandle
+    return this.newError(error)
   }
 }

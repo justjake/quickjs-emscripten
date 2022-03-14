@@ -4,11 +4,12 @@ Javascript/Typescript bindings for QuickJS, a modern Javascript interpreter,
 compiled to WebAssembly.
 
 - Safely evaluate untrusted Javascript (up to ES2020).
-- Create and manipulate values inside the QuickJS runtime.
-- Expose host functions to the QuickJS runtime.
-- Write synchronous code that uses asynchronous functions ([asyncify]()).
+- Create and manipulate values inside the QuickJS runtime ([more][values]).
+- Expose host functions to the QuickJS runtime ([more][functions]).
+- Execute synchronous code that uses asynchronous functions, with [asyncify][asyncify].
 
-[Github](https://github.com/justjake/quickjs-emscripten) | [NPM](https://www.npmjs.com/package/quickjs-emscripten) | [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md) | [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
+[Github] | [NPM] | [API Documentation][API] | [Examples][tests]
+
 
 ```typescript
 import { getQuickJS } from "quickjs-emscripten"
@@ -35,6 +36,14 @@ async function main() {
 
 main()
 ```
+
+[Github]: https://github.com/justjake/quickjs-emscripten
+[NPM]: https://www.npmjs.com/package/quickjs-emscripten
+[API]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md
+[tests]: https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts
+[values]: #interfacing-with-the-interpreter
+[asyncify]: #asyncify
+[functons]: #exposing-apis
 
 ## Usage
 
@@ -69,8 +78,14 @@ You can use [QuickJSContext](https://github.com/justjake/quickjs-emscripten/blob
 to build a scripting environment by modifying globals and exposing functions
 into the QuickJS interpreter.
 
-Each `QuickJSContext` instance has its own environment, CPU limit, and memory
-limit. See the documentation for details.
+Each `QuickJSContext` instance has its own environment -- globals, built-in
+classes -- and actions from one context won't leak into other contexts or
+runtimes (with one exception, see [Asyncify][asyncify]).
+
+Every context is created inside a
+[QuickJSRuntime](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/QuickJSRuntime.md).
+A runtime represents a Javascript heap, and you can even share values between
+contexts in the same runtime.
 
 ```typescript
 const vm = QuickJS.newContext()
@@ -89,6 +104,130 @@ console.log("vm result:", vm.getNumber(nextId), "native state:", state)
 nextId.dispose()
 vm.dispose()
 ```
+
+When you create a context from a top-level API like in the example above,
+instead of by calling `runtime.newContext()`, a runtime is automatically created
+for the lifetime of the context, and disposed of when you dispose the context.
+
+#### Runtime
+
+The runtime has APIs for CPU and memory limits that apply to all contexts within
+the runtime in aggregate. You can also use the runtime to configure EcmaScript
+module loading.
+
+```typescript
+const runtime = QuickJS.newRuntime()
+// "Should be enough for everyone" -- attributed to B. Gates
+runtime.setMemoryLimit(1024 * 640)
+// Interrupt computation after 1024 calls to the interrupt handler
+let interruptCycles = 0
+runtime.setInterruptHandler(() => ++interruptCycles > 1024)
+// Toy module system that always returns the module name
+// as the default export
+runtime.setModuleLoader((context, moduleName) =>
+  `export default '${moduleName}'`)
+const context = runtime.newContext()
+const ok = context.evalCode(`
+import fooName from './foo.js'
+globalThis.result = fooName
+`)
+context.unwrapResult(ok).dispose()
+// logs "foo.js"
+console.log(
+  context
+    .getProp(context.global, 'result')
+    .consume(context.dump)
+)
+context.dispose()
+runtime.dispose()
+```
+
+### Exposing APIs
+
+To add APIs inside the QuickJS environment, you'll need to create objects to
+define the shape of your API, and add properties and functions to those objects
+to allow code inside QuickJS to call code on the host.
+
+By default, no host functionality is exposed to code running inside QuickJS.
+
+```typescript
+const vm = QuickJS.newContext()
+// `console.log`
+const logHandle = vm.newFunction("log", (...args) => {
+  const nativeArgs = args.map(vm.dump)
+  console.log("QuickJS:", ...nativeArgs)
+})
+// Partially implement `console` object
+const consoleHandle = vm.newObject()
+vm.setProp(consoleHandle, "log", logHandle)
+vm.setProp(vm.global, "console", consoleHandle)
+consoleHandle.dispose()
+logHandle.dispose()
+
+vm.unwrapResult(vm.evalCode(`console.log("Hello from QuickJS!")`)).dispose()
+```
+
+#### Promises
+
+To expose an asynchronous function that *returns a promise* to callers within
+QuickJS, your function can return the handle of a `QuickJSDeferredPromise`
+created via `context.newPromise()`.
+
+When you resolve a `QuickJSDeferredPromise` -- and generally whenever async
+behavior completes for the VM -- pending listeners inside QuickJS may not
+execute immediately. Your code needs to explicitly call
+`runtime.executePendingJobs()` to resume execution inside QuickJS.  This API
+gives your code maximum control to *schedule* when QuickJS will block the host's
+event loop by resuming execution.
+
+To work with QuickJS handles that contain a promise inside the environment, you
+can convert the QuickJSHandle into a native promise using
+`context.resolvePromise()`. Take care with this API to avoid 'deadlocks' where
+the host awaits a guest promise, but the guest cannot make progress until the
+host calls `runtime.executePendingJobs()`. The simplest way to avoid this kind
+of deadlock is to always schedule `executePendingJobs` after any promise is
+settled.
+
+```typescript
+const vm = QuickJS.newContext()
+const fakeFileSystem = new Map([["example.txt", "Example file content"]])
+
+// Function that simulates reading data asynchronously
+const readFileHandle = vm.newFunction("readFile", (pathHandle) => {
+  const path = vm.getString(pathHandle)
+  const promise = vm.newPromise()
+  setTimeout(() => {
+    const content = fakeFileSystem.get(path)
+    promise.resolve(vm.newString(content || ""))
+  }, 100)
+  // IMPORTANT: Once you resolve an async action inside QuickJS,
+  // call runtime.executePendingJobs() to run any code that was
+  // waiting on the promise or callback.
+  promise.settled.then(vm.runtime.executePendingJobs)
+  return promise.handle
+})
+readFileHandle.consume((handle) => vm.setProp(vm.global, "readFile", handle))
+
+// Evaluate code that uses `readFile`, which returns a promise
+const result = vm.evalCode(`(async () => {
+  const content = await readFile('example.txt')
+  return content.toUpperCase()
+})()`)
+const promiseHandle = vm.unwrapResult(result)
+
+// Convert the promise handle into a native promise and await it.
+// If code like this deadlocks, make sure you are calling
+// runtime.executePendingJobs appropriately.
+const resolvedResult = await vm.resolvePromise(promiseHandle)
+promiseHandle.dispose()
+const resolvedHandle = vm.unwrapResult(resolvedResult)
+console.log("Result:", vm.getString(resolvedHandle))
+resolvedHandle.dispose()
+```
+
+#### Asyncify
+
+TODO.
 
 ### Memory Management
 

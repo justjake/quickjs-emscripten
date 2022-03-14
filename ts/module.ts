@@ -6,76 +6,55 @@ import {
   EitherModule,
   EmscriptenModuleCallbacks,
 } from "./emscripten-types"
+import { QuickJSNotImplemented } from "./errors"
 import {
+  HeapCharPointer,
   JSContextPointer,
   JSModuleDefPointer,
   JSRuntimePointer,
-  JSValueConstPointer,
   JSValuePointer,
 } from "./ffi-types"
 import { Lifetime, Scope } from "./lifetime"
 import { InterruptHandler, QuickJSRuntime } from "./runtime"
 import { ContextOptions, EitherFFI, JSModuleLoader, RuntimeOptions } from "./types"
 
-/**
- * @private
- */
-export type CToHostCallbackFunctionImplementation = (
-  ctx: JSContextPointer,
-  this_ptr: JSValueConstPointer,
-  argc: number,
-  argv: JSValueConstPointer,
-  fn_id: number
-) => JSValuePointer
-
-/**
- * @private
- */
-export type CToHostAsyncCallbackFunctionImplementation = (
-  ctx: JSContextPointer,
-  this_ptr: JSValueConstPointer,
-  argc: number,
-  argv: JSValueConstPointer,
-  fn_id: number
-) => JSValuePointer | Promise<JSValuePointer>
-
-/**
- * @private
- */
-export type CToHostInterruptImplementation = (rt: JSRuntimePointer) => 0 | 1
-
-/**
- * @private
- */
-export type CToHostModuleLoaderImplementation = (
-  rt: JSRuntimePointer,
-  ctx: JSContextPointer,
-  moduleName: string
-) => JSModuleDefPointer | Promise<JSModuleDefPointer>
+type EmscriptenCallback<BaseArgs extends any[], Result> = (
+  ...args: [Asyncify | undefined, ...BaseArgs]
+) => Result | AsyncifySleepResult<Result>
+type MaybeAsyncEmscriptenCallback<T extends EmscriptenCallback<any, any>> =
+  T extends EmscriptenCallback<infer Args, infer Result>
+    ? (...args: Args) => Result | Promise<Result>
+    : never
+type MaybeAsyncEmscriptenCallbacks = {
+  [K in keyof EmscriptenModuleCallbacks]: MaybeAsyncEmscriptenCallback<EmscriptenModuleCallbacks[K]>
+}
 
 /**
  * @private
  */
 export interface ContextCallbacks {
-  cToHostCallbackFunction: CToHostCallbackFunctionImplementation
+  callFunction: MaybeAsyncEmscriptenCallbacks["callFunction"]
 }
 
 /**
  * @private
  */
 export interface RuntimeCallbacks {
-  cToHostInterrupt: CToHostInterruptImplementation
-  cToHostLoadModule: CToHostModuleLoaderImplementation
+  shouldInterrupt: MaybeAsyncEmscriptenCallbacks["shouldInterrupt"]
+  loadModule: MaybeAsyncEmscriptenCallbacks["loadModule"]
+  normalizeModule: MaybeAsyncEmscriptenCallbacks["normalizeModule"]
 }
 
 class QuickJSEmscriptenModuleCallbacks implements EmscriptenModuleCallbacks {
   public callFunction: EmscriptenModuleCallbacks["callFunction"]
   public shouldInterrupt: EmscriptenModuleCallbacks["shouldInterrupt"]
   public loadModule: EmscriptenModuleCallbacks["loadModule"]
+  public normalizeModule: EmscriptenModuleCallbacks["normalizeModule"]
   constructor(args: EmscriptenModuleCallbacks) {
     this.callFunction = args.callFunction
     this.shouldInterrupt = args.shouldInterrupt
     this.loadModule = args.loadModule
+    this.normalizeModule = args.normalizeModule
   }
 }
 
@@ -175,7 +154,7 @@ export class QuickJSModuleCallbacks {
           if (!vm) {
             throw new Error(`QuickJSContext(ctx = ${ctx}) not found for C function call "${fn_id}"`)
           }
-          return vm.cToHostCallbackFunction(ctx, this_ptr, argc, argv, fn_id)
+          return vm.callFunction(ctx, this_ptr, argc, argv, fn_id)
         } catch (error) {
           console.error("[C to host error: returning null]", error)
           return 0 as JSValuePointer
@@ -189,7 +168,7 @@ export class QuickJSModuleCallbacks {
           if (!vm) {
             throw new Error(`QuickJSRuntime(rt = ${rt}) not found for C interrupt`)
           }
-          return vm.cToHostInterrupt(rt)
+          return vm.shouldInterrupt(rt)
         } catch (error) {
           console.error("[C to host interrupt: returning error]", error)
           return 1
@@ -201,10 +180,10 @@ export class QuickJSModuleCallbacks {
         try {
           const runtimeCallbacks = this.runtimeCallbacks.get(rt)
           if (!runtimeCallbacks) {
-            throw new Error(`QuickJSRuntime(rt = ${rt}) not fond for C module loader`)
+            throw new Error(`QuickJSRuntime(rt = ${rt}) not found for C module loader`)
           }
 
-          const loadModule = runtimeCallbacks.cToHostLoadModule
+          const loadModule = runtimeCallbacks.loadModule
           if (!loadModule) {
             throw new Error(`QuickJSRuntime(rt = ${rt}) does not support module loading`)
           }
@@ -212,6 +191,25 @@ export class QuickJSModuleCallbacks {
         } catch (error) {
           console.error("[C to host module loader error: returning null]", error)
           return 0 as JSModuleDefPointer
+        }
+      }),
+
+    normalizeModule: (asyncify, rt, ctx, moduleBaseName, moduleName) =>
+      this.handleAsyncify(asyncify, () => {
+        try {
+          const runtimeCallbacks = this.runtimeCallbacks.get(rt)
+          if (!runtimeCallbacks) {
+            throw new Error(`QuickJSRuntime(rt = ${rt}) not found for C module loader`)
+          }
+
+          const normalizeModule = runtimeCallbacks.normalizeModule
+          if (!normalizeModule) {
+            throw new Error(`QuickJSRuntime(rt = ${rt}) does not support module loading`)
+          }
+          return normalizeModule(rt, ctx, moduleBaseName, moduleName)
+        } catch (error) {
+          console.error("[C to host module loader error: returning null]", error)
+          return 0 as HeapCharPointer
         }
       }),
   })

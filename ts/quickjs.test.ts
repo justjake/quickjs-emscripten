@@ -11,7 +11,7 @@ import {
 } from "."
 import { it, describe } from "mocha"
 import assert from "assert"
-import { VmCallResult } from "./vm-interface"
+import { isFail, VmCallResult } from "./vm-interface"
 import fs from "fs"
 import { QuickJSContext } from "./context"
 import { QuickJSAsyncContext } from "./context-asyncify"
@@ -82,7 +82,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       fnHandle.dispose()
     })
 
-    it.only("passes through native exceptions", () => {
+    it("passes through native exceptions", () => {
       const fnHandle = vm.newFunction("jsOops", () => {
         throw new Error("oops")
       })
@@ -693,27 +693,48 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
     vm = undefined as any
   })
 
-  it("async function support smoketest", async () => {
-    let asyncFunctionCalls = 0
-    const asyncFn = async () => {
-      asyncFunctionCalls++
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      return vm.newString("hello from async")
-    }
-    const fnHandle = vm.newAsyncifiedFunction("asyncFn", asyncFn)
-    vm.setProp(vm.global, "asyncFn", fnHandle)
-    fnHandle.dispose()
+  describe("asyncify functions", () => {
+    it("sees Promise<handle> as synchronous", async () => {
+      let asyncFunctionCalls = 0
+      const asyncFn = async () => {
+        asyncFunctionCalls++
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        return vm.newString("hello from async")
+      }
+      const fnHandle = vm.newAsyncifiedFunction("asyncFn", asyncFn)
+      vm.setProp(vm.global, "asyncFn", fnHandle)
+      fnHandle.dispose()
 
-    const callResultPromise = vm.evalCodeAsync("asyncFn()")
-    assert(callResultPromise instanceof Promise)
+      const callResultPromise = vm.evalCodeAsync("asyncFn()")
+      assert(callResultPromise instanceof Promise)
 
-    const callResult = await callResultPromise
-    const unwrapped = vm.unwrapResult(callResult)
+      const callResult = await callResultPromise
+      const unwrapped = vm.unwrapResult(callResult)
 
-    const dumped = unwrapped.consume(vm.dump)
-    assert.equal(dumped, "hello from async")
+      const dumped = unwrapped.consume(vm.dump)
+      assert.equal(dumped, "hello from async")
 
-    assert.equal(asyncFunctionCalls, 1, "one call")
+      assert.equal(asyncFunctionCalls, 1, "one call")
+    })
+
+    it("passes through native promise rejection", async () => {
+      const asyncFn = async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        throw new Error("async oops")
+      }
+
+      vm.newAsyncifiedFunction("asyncFn", asyncFn).consume((fn) =>
+        vm.setProp(vm.global, "asyncFn", fn)
+      )
+
+      const callResultPromise = vm.evalCodeAsync("asyncFn()")
+      assert(callResultPromise instanceof Promise)
+
+      const result = await callResultPromise
+      assert(isFail(result), "VM eval call errored")
+
+      assert.throws(() => vm.unwrapResult(result), /async oops/)
+    })
   })
 
   describe("module loading", () => {
@@ -763,6 +784,64 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
         debug("test body threw", error)
         throw error
       }
+    })
+
+    it("passes through the module name", () => {
+      let callCtx: QuickJSAsyncContext
+      let callModuleName: string
+      vm.runtime.setModuleLoader((moduleVM: QuickJSAsyncContext, moduleName: string) => {
+        callCtx = moduleVM
+        callModuleName = moduleName
+        return `export default 5`
+      })
+
+      const result = vm.evalCode("import otherModule from './other-module.js'")
+
+      // Asserts that the eval worked without incident
+      const unwrapped = vm.unwrapResult(result).consume(vm.dump)
+      assert.strictEqual(unwrapped, undefined)
+
+      assert.strictEqual(callCtx!, vm, "expected VM")
+      assert.strictEqual(
+        callModuleName!,
+        "other-module.js",
+        `expected module name, got ${callModuleName!}`
+      )
+    })
+
+    it("calls the module loader with the name returned from the module normalizer", async () => {
+      const EVAL_FILE_NAME = "EVAL FILE NAME.ts"
+      const NORMALIZED_NAME = "VERY NORMAL NAME"
+      const IMPORT_PATH = "./other-module/index.js"
+      let requestedBaseName: string | undefined
+      let requestedName: string | undefined
+      let loadedName: string | undefined
+
+      vm.runtime.setModuleLoader(
+        function load(moduleVM: QuickJSAsyncContext, moduleName: string) {
+          loadedName = moduleName
+          return `export default 5`
+        },
+        function normalize(moduleVM: QuickJSAsyncContext, baseName: string, name: string) {
+          requestedBaseName = baseName
+          requestedName = name
+          return NORMALIZED_NAME
+        }
+      )
+
+      // Asserts that the eval worked without incident
+      const result = vm.evalCode(`import otherModule from '${IMPORT_PATH}'`, EVAL_FILE_NAME)
+      const unwrapped = vm.unwrapResult(result).consume(vm.dump)
+      assert.strictEqual(unwrapped, undefined)
+
+      // Check our request
+      assert.strictEqual(requestedName, IMPORT_PATH, "requested name is the literal import string")
+      assert.strictEqual(requestedBaseName, EVAL_FILE_NAME, "base name is our eval file name")
+      assert.strictEqual(
+        loadedName,
+        NORMALIZED_NAME,
+        "loader received the normalized name we returned"
+      )
     })
   })
 }

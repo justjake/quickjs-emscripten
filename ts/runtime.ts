@@ -4,24 +4,21 @@ import { debug } from "./debug"
 import { EitherModule } from "./emscripten-types"
 import { QuickJSWrongOwner } from "./errors"
 import {
+  HeapCharPointer,
   JSContextPointer,
   JSContextPointerPointer,
   JSModuleDefPointer,
   JSRuntimePointer,
 } from "./ffi-types"
-import { Disposable, Lifetime } from "./lifetime"
+import { Disposable, Lifetime, Scope } from "./lifetime"
 import { ModuleMemory } from "./memory"
-import {
-  CToHostInterruptImplementation,
-  CToHostModuleLoaderImplementation,
-  QuickJSModuleCallbacks,
-  RuntimeCallbacks,
-} from "./module"
+import { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
 import {
   ContextOptions,
   DefaultIntrinsics,
   EitherFFI,
   JSModuleLoader,
+  JSModuleNormalizer,
   QuickJSHandle,
 } from "./types"
 import { SuccessOrFail } from "./vm-interface"
@@ -56,10 +53,17 @@ export type ExecutePendingJobsResult = SuccessOrFail<
  * Several runtimes can exist at the same time but they cannot exchange objects.
  * Inside a given runtime, no multi-threading is supported.
  *
+ * You can think of separate runtimes like different domains in a browser, and
+ * the contexts within a runtime like the different windows open to the same
+ * domain.
+ *
+ * Create a runtime via {@link QuickJSWASMModule.newRuntime}.
+ *
  * You should create separate runtime instances for untrusted code from
- * different sources for isolation, or for better guarantees (at the cost of
- * memory usage), further isolate untrusted code into separate WebAssembly
- * modules using {@link newQuickJSWASMModule}.
+ * different sources for isolation. However, stronger isolation is also
+ * available (at the cost of memory usage), by creating separate WebAssembly
+ * modules to further isolate untrusted code.
+ * See {@link newQuickJSWASMModule}.
  *
  * Implement memory and CPU constraints with [[setInterruptHandler]]
  * (called regularly while the interpreter runs) and [[setMemoryLimit]].
@@ -68,7 +72,7 @@ export type ExecutePendingJobsResult = SuccessOrFail<
  *
  * Configure ES module loading with [[setModuleLoader]].
  */
-export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
+export class QuickJSRuntime implements Disposable {
   /**
    * If this runtime was created as as part of a context, points to the context
    * associated with the runtime.
@@ -88,11 +92,15 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
   protected rt: Lifetime<JSRuntimePointer>
   /** @private */
   protected callbacks: QuickJSModuleCallbacks
+  /** @private */
+  protected scope = new Scope()
 
   /** @private */
   protected contextMap = new Map<JSContextPointer, QuickJSContext>()
   /** @private */
   protected moduleLoader: JSModuleLoader | undefined
+  /** @private */
+  protected moduleNormalizer: JSModuleNormalizer | undefined
 
   /** @private */
   constructor(args: {
@@ -100,21 +108,26 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
     ffi: EitherFFI
     rt: Lifetime<JSRuntimePointer>
     callbacks: QuickJSModuleCallbacks
+    ownedLifetimes?: Disposable[]
   }) {
+    args.ownedLifetimes?.forEach((lifetime) => this.scope.manage(lifetime))
     this.module = args.module
     this.memory = new ModuleMemory(this.module)
     this.ffi = args.ffi
     this.rt = args.rt
     this.callbacks = args.callbacks
-    this.callbacks.setRuntimeCallbacks(this.rt.value, this)
+    this.scope.manage(this.rt)
+    this.callbacks.setRuntimeCallbacks(this.rt.value, this.cToHostCallbacks)
+
+    this.executePendingJobs = this.executePendingJobs.bind(this)
   }
 
   get alive() {
-    return this.rt.alive
+    return this.scope.alive
   }
 
   dispose() {
-    return this.rt.dispose()
+    return this.scope.dispose()
   }
 
   newContext(options: ContextOptions = {}): QuickJSContext {
@@ -147,14 +160,15 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
   }
 
   /**
-   * Set the loader for EcmasScript modules requested by any context in this
+   * Set the loader for EcmaScript modules requested by any context in this
    * runtime.
    *
    * The loader can be removed with [[removeModuleLoader]].
    */
-  setModuleLoader(moduleLoader: JSModuleLoader): void {
+  setModuleLoader(moduleLoader: JSModuleLoader, moduleNormalizer?: JSModuleNormalizer): void {
     this.moduleLoader = moduleLoader
-    this.ffi.QTS_RuntimeEnableModuleLoader(this.rt.value)
+    this.moduleNormalizer = moduleNormalizer
+    this.ffi.QTS_RuntimeEnableModuleLoader(this.rt.value, this.moduleNormalizer ? 1 : 0)
   }
 
   /**
@@ -222,11 +236,11 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
    * functions or rejected promises. Those errors are available by calling
    * [[resolvePromise]] on the promise handle returned by the async function.
    */
-  executePendingJobs(maxJobsToExecute: number = -1): ExecutePendingJobsResult {
+  executePendingJobs(maxJobsToExecute: number | void = -1): ExecutePendingJobsResult {
     const ctxPtrOut = this.memory.newMutablePointerArray<JSContextPointerPointer>(1)
     const valuePtr = this.ffi.QTS_ExecutePendingJob(
       this.rt.value,
-      maxJobsToExecute,
+      maxJobsToExecute ?? -1,
       ctxPtrOut.value.ptr
     )
 
@@ -303,28 +317,29 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
     }
   }
 
-  /**
-   * @hidden
-   */
-  cToHostInterrupt: CToHostInterruptImplementation = (rt) => {
-    if (rt !== this.rt.value) {
-      throw new Error("QuickJSContext instance received C -> JS interrupt with mismatched rt")
+  private getSystemContext() {
+    if (!this.context) {
+      // We own this context and should dispose of it.
+      this.context = this.scope.manage(this.newContext())
     }
-
-    const fn = this.interruptHandler
-    if (!fn) {
-      throw new Error("QuickJSContext had no interrupt handler")
-    }
-
-    return fn(this) ? 1 : 0
+    return this.context
   }
 
-  /**
-   * @private
-   */
-  cToHostLoadModule: CToHostModuleLoaderImplementation = maybeAsyncFn(
-    this,
-    function* (awaited, rt, ctx, moduleName) {
+  private cToHostCallbacks: RuntimeCallbacks = {
+    shouldInterrupt: (rt) => {
+      if (rt !== this.rt.value) {
+        throw new Error("QuickJSContext instance received C -> JS interrupt with mismatched rt")
+      }
+
+      const fn = this.interruptHandler
+      if (!fn) {
+        throw new Error("QuickJSContext had no interrupt handler")
+      }
+
+      return fn(this) ? 1 : 0
+    },
+
+    loadModule: maybeAsyncFn(this, function* (awaited, rt, ctx, moduleName) {
       const moduleLoader = this.moduleLoader
       if (!moduleLoader) {
         throw new Error("Runtime has no module loader")
@@ -363,13 +378,45 @@ export class QuickJSRuntime implements Disposable, RuntimeCallbacks {
         context.throw(error as any)
         return 0 as JSModuleDefPointer
       }
-    }
-  )
+    }),
 
-  private getSystemContext() {
-    if (!this.context) {
-      this.context = this.newContext()
-    }
-    return this.context
+    normalizeModule: maybeAsyncFn(
+      this,
+      function* (awaited, rt, ctx, baseModuleName, moduleNameRequest) {
+        const moduleNormalizer = this.moduleNormalizer
+        if (!moduleNormalizer) {
+          throw new Error("Runtime has no module normalizer")
+        }
+
+        if (rt !== this.rt.value) {
+          throw new Error("Runtime pointer mismatch")
+        }
+
+        const context =
+          this.contextMap.get(ctx) ??
+          this.newContext({
+            /* TODO: Does this happen? Are we responsible for disposing? I don't think so */
+            contextPointer: ctx,
+          })
+
+        try {
+          const result = yield* awaited(
+            moduleNormalizer(context, baseModuleName, moduleNameRequest)
+          )
+
+          if (typeof result === "object" && "error" in result && result.error) {
+            debug("cToHostNormalizeModule: normalizer returned error", result.error)
+            throw result.error
+          }
+
+          const name = typeof result === "string" ? result : result.value
+          return context.getMemory(this.rt.value).newHeapCharPointer(name).value
+        } catch (error) {
+          debug("normalizeModule: caught error", error)
+          context.throw(error as any)
+          return 0 as HeapCharPointer
+        }
+      }
+    ),
   }
 }

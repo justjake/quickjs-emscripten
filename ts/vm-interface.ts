@@ -16,7 +16,7 @@ export function isSuccess<S, F>(successOrFail: SuccessOrFail<S, F>): successOrFa
 }
 
 export function isFail<S, F>(successOrFail: SuccessOrFail<S, F>): successOrFail is { error: F } {
-  return "error" in successOrFail === false
+  return "error" in successOrFail === true
 }
 
 /**
