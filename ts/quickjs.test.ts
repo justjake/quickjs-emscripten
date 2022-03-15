@@ -43,6 +43,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       const jsNumber = 42
       const numHandle = vm.newNumber(jsNumber)
       assert.equal(vm.getNumber(numHandle), jsNumber)
+      numHandle.dispose()
     })
 
     it("can round-trip a string", () => {
