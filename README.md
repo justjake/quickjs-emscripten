@@ -8,8 +8,7 @@ compiled to WebAssembly.
 - Expose host functions to the QuickJS runtime ([more][functions]).
 - Execute synchronous code that uses asynchronous functions, with [asyncify][asyncify].
 
-[Github] | [NPM] | [API Documentation][API] | [Examples][tests]
-
+[Github] | [NPM] | [API Documentation][api] | [Examples][tests]
 
 ```typescript
 import { getQuickJS } from "quickjs-emscripten"
@@ -37,9 +36,9 @@ async function main() {
 main()
 ```
 
-[Github]: https://github.com/justjake/quickjs-emscripten
-[NPM]: https://www.npmjs.com/package/quickjs-emscripten
-[API]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md
+[github]: https://github.com/justjake/quickjs-emscripten
+[npm]: https://www.npmjs.com/package/quickjs-emscripten
+[api]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md
 [tests]: https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts
 [values]: #interfacing-with-the-interpreter
 [asyncify]: #asyncify
@@ -124,8 +123,7 @@ let interruptCycles = 0
 runtime.setInterruptHandler(() => ++interruptCycles > 1024)
 // Toy module system that always returns the module name
 // as the default export
-runtime.setModuleLoader((context, moduleName) =>
-  `export default '${moduleName}'`)
+runtime.setModuleLoader((context, moduleName) => `export default '${moduleName}'`)
 const context = runtime.newContext()
 const ok = context.evalCode(`
 import fooName from './foo.js'
@@ -133,11 +131,7 @@ globalThis.result = fooName
 `)
 context.unwrapResult(ok).dispose()
 // logs "foo.js"
-console.log(
-  context
-    .getProp(context.global, 'result')
-    .consume(context.dump)
-)
+console.log(context.getProp(context.global, "result").consume(context.dump))
 context.dispose()
 runtime.dispose()
 ```
@@ -169,15 +163,15 @@ vm.unwrapResult(vm.evalCode(`console.log("Hello from QuickJS!")`)).dispose()
 
 #### Promises
 
-To expose an asynchronous function that *returns a promise* to callers within
+To expose an asynchronous function that _returns a promise_ to callers within
 QuickJS, your function can return the handle of a `QuickJSDeferredPromise`
 created via `context.newPromise()`.
 
 When you resolve a `QuickJSDeferredPromise` -- and generally whenever async
 behavior completes for the VM -- pending listeners inside QuickJS may not
 execute immediately. Your code needs to explicitly call
-`runtime.executePendingJobs()` to resume execution inside QuickJS.  This API
-gives your code maximum control to *schedule* when QuickJS will block the host's
+`runtime.executePendingJobs()` to resume execution inside QuickJS. This API
+gives your code maximum control to _schedule_ when QuickJS will block the host's
 event loop by resuming execution.
 
 To work with QuickJS handles that contain a promise inside the environment, you
@@ -228,7 +222,7 @@ resolvedHandle.dispose()
 #### Asyncify
 
 Sometimes, we want to create a function that's synchronous from the perspective
-of QuickJS, but prefer to implement that function *asynchronously* in your host
+of QuickJS, but prefer to implement that function _asynchronously_ in your host
 code. The most obvious use-case is for EcmaScript module loading. The underlying
 QuickJS C library expects the module loader function to return synchronously,
 but loading data synchronously in the browser or server is somewhere between "a
@@ -250,18 +244,18 @@ compiler transform. Here's how Emscripten's documentation describes Asyncify:
 > resumed ..., so that it is asynchronous (hence the name “Asyncify”) even though
 > \[it is written] in a normal synchronous way.
 
-This means we can suspend an *entire WebAssembly module* (which could contain
+This means we can suspend an _entire WebAssembly module_ (which could contain
 multiple runtimes and contexts) while our host Javascript loads data
 asynchronously, and then resume execution once the data load completes. This is
 a very handy superpower, but it comes with a couple of major limitations:
 
-1. *An asyncified WebAssembly module can only suspend to wait for a single
-   asynchronous call at a time*. You may call back into a suspended WebAssembly
+1. _An asyncified WebAssembly module can only suspend to wait for a single
+   asynchronous call at a time_. You may call back into a suspended WebAssembly
    module eg. to create a QuickJS value to return a result, but the system will
    crash if this call tries to suspend again. Take a look at Emscripten's documentation
    on [reentrancy](https://emscripten.org/docs/porting/asyncify.html#reentrancy).
 
-2. *Asyncified code is bigger and runs slower*. The asyncified build of
+2. _Asyncified code is bigger and runs slower_. The asyncified build of
    Quickjs-emscripten library is 1M, 2x larger than the 500K of the default
    version. There may be room for further
    [optimization](https://emscripten.org/docs/porting/asyncify.html#optimizing)
@@ -274,9 +268,9 @@ To use asyncify features, use the following functions:
   WebAssembly module.
 - [newQuickJSAsyncWASMModule][]: create an empty WebAssembly module.
 
-[newAsyncRuntime]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasyncruntime
-[newAsyncContext]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasynccontext
-[newAsyncContext]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newquickjsasyncwasmmodule
+[newasyncruntime]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasyncruntime
+[newasynccontext]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasynccontext
+[newasynccontext]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newquickjsasyncwasmmodule
 
 These functions are asynchronous because they always create a new underlying
 WebAssembly module so that each instance can suspend and resume independently,
@@ -289,18 +283,18 @@ of it.
 ```typescript
 const module = await newQuickJSAsyncWASMModule()
 const runtime = module.newRuntime()
-const path = await import('path')
-const { promises: fs } = await import('fs')
+const path = await import("path")
+const { promises: fs } = await import("fs")
 
-const scriptsPath = path.join(__dirname, 'scripts') + '/'
+const scriptsPath = path.join(__dirname, "scripts") + "/"
 // Module loaders can return promises.
 // Execution will suspend until the promise resolves.
 runtime.setModuleLoader((context, moduleName) => {
   const modulePath = path.join(scriptsPath, moduleName)
   if (!modulePath.startsWith(scriptsPath)) {
-    throw new Error('out of bounds')
+    throw new Error("out of bounds")
   }
-  return fs.readFile(modulePath, 'utf-8')
+  return fs.readFile(modulePath, "utf-8")
 })
 
 // evalCodeAsync is required when execution may suspend.
@@ -314,9 +308,7 @@ globalThis.html = ReactDOMServer.renderToStaticMarkup(
 )
 `)
 context.unwrapResult(result).dispose()
-const html = context
-  .getProp(context.global, 'html')
-  .consume(context.getString)
+const html = context.getProp(context.global, "html").consume(context.getString)
 console.log(html) // <div><strong>Hello world!</strong></div>
 ```
 
@@ -424,14 +416,13 @@ Because the version number of this project is below `1.0.0`, expect occasional
 breaking API changes.
 
 - There is a test suite for most APIs reachable from `QuickJSContext`, but the suite could be more thorough.
-- 
+-
 
 Both the original project quickjs and this project are still in the early stage
 of development.
 There [are tests](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts), but I haven't built anything
 on top of this. Please use this project carefully in a production
 environment.
-
 
 Ideas for future work:
 
