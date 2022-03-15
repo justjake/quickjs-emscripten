@@ -1,5 +1,5 @@
 import { QuickJSContext } from "./context"
-import { debug } from "./debug"
+import { debugLog } from "./debug"
 import {
   Asyncify,
   AsyncifySleepResult,
@@ -132,7 +132,7 @@ export class QuickJSModuleCallbacks {
             done(result)
           }
         } catch (error) {
-          debug("asyncify.handleSleep error", error)
+          debugLog("asyncify.handleSleep error", error)
           throw error
         }
       })

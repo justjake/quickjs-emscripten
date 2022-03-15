@@ -1,6 +1,6 @@
 import { maybeAsyncFn } from "./asyncify-helpers"
 import { QuickJSContext } from "./context"
-import { debug } from "./debug"
+import { debugLog } from "./debug"
 import { EitherModule } from "./emscripten-types"
 import { QuickJSWrongOwner } from "./errors"
 import {
@@ -359,7 +359,7 @@ export class QuickJSRuntime implements Disposable {
         const result = yield* awaited(moduleLoader(context, moduleName))
 
         if (typeof result === "object" && "error" in result && result.error) {
-          debug("cToHostLoadModule: loader returned error", result.error)
+          debugLog("cToHostLoadModule: loader returned error", result.error)
           throw result.error
         }
 
@@ -374,7 +374,7 @@ export class QuickJSRuntime implements Disposable {
         // TODO
         throw new Error(`TODO: module definition not implemented.`)
       } catch (error) {
-        debug("cToHostLoadModule: caught error", error)
+        debugLog("cToHostLoadModule: caught error", error)
         context.throw(error as any)
         return 0 as JSModuleDefPointer
       }
@@ -405,14 +405,14 @@ export class QuickJSRuntime implements Disposable {
           )
 
           if (typeof result === "object" && "error" in result && result.error) {
-            debug("cToHostNormalizeModule: normalizer returned error", result.error)
+            debugLog("cToHostNormalizeModule: normalizer returned error", result.error)
             throw result.error
           }
 
           const name = typeof result === "string" ? result : result.value
           return context.getMemory(this.rt.value).newHeapCharPointer(name).value
         } catch (error) {
-          debug("normalizeModule: caught error", error)
+          debugLog("normalizeModule: caught error", error)
           context.throw(error as any)
           return 0 as HeapCharPointer
         }

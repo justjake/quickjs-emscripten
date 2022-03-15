@@ -1,4 +1,4 @@
-import { debug } from "./debug"
+import { debugLog } from "./debug"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 import type { EitherModule } from "./emscripten-types"
 import { QuickJSUnwrapError } from "./errors"
@@ -829,7 +829,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
           const result = yield* awaited(fn.apply(thisHandle, argHandles))
           if (result) {
             if ("error" in result && result.error) {
-              debug("throw error", result.error)
+              debugLog("throw error", result.error)
               throw result.error
             }
             const handle = scope.manage(result instanceof Lifetime ? result : result.value)

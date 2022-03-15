@@ -1,5 +1,5 @@
 import { QuickJSContext } from "./context"
-import { debug } from "./debug"
+import { debugLog } from "./debug"
 import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
 import { QuickJSAsyncFFI } from "./ffi-asyncify"
 import { EvalDetectModule, EvalFlags, JSRuntimePointer, JSValuePointer } from "./ffi-types"
@@ -53,7 +53,7 @@ export class QuickJSAsyncContext extends QuickJSContext {
           )
         )
     } catch (error) {
-      debug("QTS_Eval_MaybeAsync threw", error)
+      debugLog("QTS_Eval_MaybeAsync threw", error)
       throw error
     }
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)

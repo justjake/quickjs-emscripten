@@ -17,7 +17,7 @@ import { QuickJSContext } from "./context"
 import { QuickJSAsyncContext } from "./context-asyncify"
 import { QuickJSFFI } from "./ffi"
 import { QuickJSUnwrapError } from "./errors"
-import { debug } from "./debug"
+import { debugLog } from "./debug"
 // Force load big chonkers
 import "./quickjs.emscripten-module"
 import "./quickjs-asyncify.emscripten-module"
@@ -425,12 +425,12 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
           vm.runtime,
           "ShouldInterruptHandler callback runtime is the runtime"
         )
-        debug("interruptHandler called", interruptId)
+        debugLog("interruptHandler called", interruptId)
         calls++
         return false
       }
 
-      debug("setInterruptHandler", interruptId)
+      debugLog("setInterruptHandler", interruptId)
       vm.runtime.setInterruptHandler(interruptHandler)
 
       vm.unwrapResult(vm.evalCode("1 + 1")).dispose()
@@ -442,7 +442,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       let calls = 0
       const interruptId = getTestId()
       const interruptHandler: InterruptHandler = (interruptVm) => {
-        debug("interruptHandler called", interruptId)
+        debugLog("interruptHandler called", interruptId)
         if (calls > 10) {
           return true
         }
@@ -450,7 +450,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         return false
       }
 
-      debug("setInterruptHandler", interruptId)
+      debugLog("setInterruptHandler", interruptId)
       vm.runtime.setInterruptHandler(interruptHandler)
 
       const result = vm.evalCode("i = 0; while (1) { i++ }")
@@ -750,33 +750,33 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
           if (moduleLoaderCalls > 1) {
             throw new Error("Module loader should only be called once")
           }
-          debug("moduleLoader: sleeping")
+          debugLog("moduleLoader: sleeping")
           await new Promise((resolve) => setTimeout(resolve, 50))
-          debug("moduleLoader: done sleeping")
+          debugLog("moduleLoader: done sleeping")
           return 'export default function() { return "hello from module" }'
         }
-        debug("defined module loader")
+        debugLog("defined module loader")
 
         vm.runtime.setModuleLoader(moduleLoader)
-        debug("set module loader")
+        debugLog("set module loader")
 
         const promise = vm.evalCodeAsync(`
         import otherModule from './other-module'
         globalThis.stuff = otherModule()
       `)
-        debug("promise", promise)
+        debugLog("promise", promise)
 
         const result = await promise
-        debug("awaited vm.evalCodeAsync", result, { alive: vm.alive })
+        debugLog("awaited vm.evalCodeAsync", result, { alive: vm.alive })
 
         const unwrapped = vm.unwrapResult(result)
-        debug("unwrapped result")
+        debugLog("unwrapped result")
 
         const dumped = unwrapped.consume(vm.dump)
-        debug("consumed result")
+        debugLog("consumed result")
 
         assert.strictEqual(dumped, undefined)
-        debug("asserted result")
+        debugLog("asserted result")
 
         const stuff = vm.getProp(vm.global, "stuff").consume(vm.dump)
         assert.strictEqual(stuff, "hello from module")
@@ -785,7 +785,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       try {
         await testBody()
       } catch (error) {
-        debug("test body threw", error)
+        debugLog("test body threw", error)
         throw error
       }
     })
