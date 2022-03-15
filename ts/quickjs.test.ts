@@ -18,6 +18,9 @@ import { QuickJSAsyncContext } from "./context-asyncify"
 import { QuickJSFFI } from "./ffi"
 import { QuickJSUnwrapError } from "./errors"
 import { debug } from "./debug"
+// Force load big chonkers
+import "./quickjs.emscripten-module"
+import "./quickjs-asyncify.emscripten-module"
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
 
