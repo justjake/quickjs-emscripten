@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: Setup Docker (macOS)
         uses: docker-practice/actions-setup-docker@1.0.8
-        if: matrix.platform == "macos-latest"
+        if: matrix.platform == 'macos-latest'
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v1
