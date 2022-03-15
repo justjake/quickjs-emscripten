@@ -227,7 +227,98 @@ resolvedHandle.dispose()
 
 #### Asyncify
 
-TODO.
+Sometimes, we want to create a function that's synchronous from the perspective
+of QuickJS, but prefer to implement that function *asynchronously* in your host
+code. The most obvious use-case is for EcmaScript module loading. The underlying
+QuickJS C library expects the module loader function to return synchronously,
+but loading data synchronously in the browser or server is somewhere between "a
+bad idea" and "impossible". QuickJS also doesn't expose an API to "pause" the
+execution of a runtime, and adding such an API is tricky due to the VM's
+implementation.
+
+As a work-around, we provide an alternate build of QuickJS processed by
+Emscripten/Binaryen's [ASYNCIFY](https://emscripten.org/docs/porting/asyncify.html)
+compiler transform. Here's how Emscripten's documentation describes Asyncify:
+
+> Asyncify lets synchronous C or C++ code interact with asynchronous \[host] JavaScript. This allows things like:
+>
+> - A synchronous call in C that yields to the event loop, which allows browser events to be handled.
+>
+> - A synchronous call in C that waits for an asynchronous operation in \[host] JS to complete.
+>
+> Asyncify automatically transforms ... code into a form that can be paused and
+> resumed ..., so that it is asynchronous (hence the name “Asyncify”) even though
+> \[it is written] in a normal synchronous way.
+
+This means we can suspend an *entire WebAssembly module* (which could contain
+multiple runtimes and contexts) while our host Javascript loads data
+asynchronously, and then resume execution once the data load completes. This is
+a very handy superpower, but it comes with a couple of major limitations:
+
+1. *An asyncified WebAssembly module can only suspend to wait for a single
+   asynchronous call at a time*. You may call back into a suspended WebAssembly
+   module eg. to create a QuickJS value to return a result, but the system will
+   crash if this call tries to suspend again. Take a look at Emscripten's documentation
+   on [reentrancy](https://emscripten.org/docs/porting/asyncify.html#reentrancy).
+
+2. *Asyncified code is bigger and runs slower*. The asyncified build of
+   Quickjs-emscripten library is 1M, 2x larger than the 500K of the default
+   version. There may be room for further
+   [optimization](https://emscripten.org/docs/porting/asyncify.html#optimizing)
+   Of our build in the future.
+
+To use asyncify features, use the following functions:
+
+- [newAsyncRuntime][]: create a runtime inside a new WebAssembly module.
+- [newAsyncContext][]: create runtime and context together inside a new
+  WebAssembly module.
+- [newQuickJSAsyncWASMModule][]: create an empty WebAssembly module.
+
+[newAsyncRuntime]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasyncruntime
+[newAsyncContext]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasynccontext
+[newAsyncContext]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newquickjsasyncwasmmodule
+
+These functions are asynchronous because they always create a new underlying
+WebAssembly module so that each instance can suspend and resume independently,
+and instantiating a WebAssembly module is an async operation. This also adds
+substantial overhead compared to creating a runtime or context inside an
+existing module; if you only need to wait for a single async action at a time,
+you can create a single top-level module and create runtimes or contexts inside
+of it.
+
+```typescript
+const module = await newQuickJSAsyncWASMModule()
+const runtime = module.newRuntime()
+const path = await import('path')
+const { promises: fs } = await import('fs')
+
+const scriptsPath = path.join(__dirname, 'scripts') + '/'
+// Module loaders can return promises.
+// Execution will suspend until the promise resolves.
+runtime.setModuleLoader((context, moduleName) => {
+  const modulePath = path.join(scriptsPath, moduleName)
+  if (!modulePath.startsWith(scriptsPath)) {
+    throw new Error('out of bounds')
+  }
+  return fs.readFile(modulePath, 'utf-8')
+})
+
+// evalCodeAsync is required when execution may suspend.
+const context = runtime.newContext()
+const result = await context.evalCodeAsync(`
+import * as React from './React.min.js'
+import * as ReactDOMServer from './ReactDOMServer.min.js'
+const e = React.createElement
+globalThis.html = ReactDOMServer.renderToStaticMarkup(
+  e('div', null, e('strong', null, 'Hello world!'))
+)
+`)
+context.unwrapResult(result).dispose()
+const html = context
+  .getProp(context.global, 'html')
+  .consume(context.getString)
+console.log(html) // <div><strong>Hello world!</strong></div>
+```
 
 ### Memory Management
 
