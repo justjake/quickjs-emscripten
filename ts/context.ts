@@ -1,4 +1,4 @@
-import { debug } from "console"
+import { debug } from "./debug"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 import type { EitherModule } from "./emscripten-types"
 import { QuickJSUnwrapError } from "./errors"
