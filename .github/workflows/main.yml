@@ -25,6 +25,10 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Setup Docker (macOS)
+        uses: docker-practice/actions-setup-docker@1.0.8
+        if: startsWith(matrix.os, 'macos')
+
       - name: Setup Node.js environment
         uses: actions/setup-node@v1
         with:
