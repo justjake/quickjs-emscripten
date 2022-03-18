@@ -51,7 +51,7 @@ A context here may be allocated if one is needed by the runtime, eg for [compute
 
 #### Defined in
 
-[ts/runtime-asyncify.ts:11](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime-asyncify.ts#L11)
+[ts/runtime-asyncify.ts:18](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime-asyncify.ts#L18)
 
 ## Accessors
 
@@ -69,7 +69,7 @@ QuickJSRuntime.alive
 
 #### Defined in
 
-[ts/runtime.ts:112](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L112)
+[ts/runtime.ts:125](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L125)
 
 ## Methods
 
@@ -97,7 +97,7 @@ Assert that `handle` is owned by this runtime.
 
 #### Defined in
 
-[ts/runtime.ts:298](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L298)
+[ts/runtime.ts:312](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L312)
 
 ___
 
@@ -121,7 +121,7 @@ For a human-digestible representation, see [dumpMemoryUsage](QuickJSAsyncRuntime
 
 #### Defined in
 
-[ts/runtime.ts:279](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L279)
+[ts/runtime.ts:293](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L293)
 
 ___
 
@@ -141,7 +141,7 @@ Dispose of the underlying resources used by this object.
 
 #### Defined in
 
-[ts/runtime.ts:116](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L116)
+[ts/runtime.ts:129](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L129)
 
 ___
 
@@ -162,7 +162,7 @@ For programmatic access to this information, see [computeMemoryUsage](QuickJSAsy
 
 #### Defined in
 
-[ts/runtime.ts:290](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L290)
+[ts/runtime.ts:304](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L304)
 
 ___
 
@@ -181,7 +181,7 @@ pendingJobs. These do not execute immediately and need to triggered to run.
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `maxJobsToExecute` | `number` | `-1` | When negative, run all pending jobs. Otherwise execute at most `maxJobsToExecute` before returning. |
+| `maxJobsToExecute` | `number` \| `void` | `-1` | When negative, run all pending jobs. Otherwise execute at most `maxJobsToExecute` before returning. |
 
 #### Returns
 
@@ -199,7 +199,7 @@ functions or rejected promises. Those errors are available by calling
 
 #### Defined in
 
-[ts/runtime.ts:225](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L225)
+[ts/runtime.ts:239](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L239)
 
 ___
 
@@ -222,7 +222,7 @@ true if there is at least one pendingJob queued up.
 
 #### Defined in
 
-[ts/runtime.ts:176](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L176)
+[ts/runtime.ts:190](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L190)
 
 ___
 
@@ -246,7 +246,7 @@ ___
 
 #### Defined in
 
-[ts/runtime-asyncify.ts:34](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime-asyncify.ts#L34)
+[ts/runtime-asyncify.ts:41](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime-asyncify.ts#L41)
 
 ___
 
@@ -267,7 +267,7 @@ See [setInterruptHandler](QuickJSAsyncRuntime.md#setinterrupthandler).
 
 #### Defined in
 
-[ts/runtime.ts:201](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L201)
+[ts/runtime.ts:215](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L215)
 
 ___
 
@@ -287,7 +287,7 @@ Remove the the loader set by [setModuleLoader](QuickJSAsyncRuntime.md#setmodulel
 
 #### Defined in
 
-[ts/runtime.ts:163](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L163)
+[ts/runtime.ts:177](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L177)
 
 ___
 
@@ -317,7 +317,7 @@ The interrupt handler can be removed with [removeInterruptHandler](QuickJSAsyncR
 
 #### Defined in
 
-[ts/runtime.ts:189](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L189)
+[ts/runtime.ts:203](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L203)
 
 ___
 
@@ -344,15 +344,15 @@ To remove the limit, set to `-1`.
 
 #### Defined in
 
-[ts/runtime.ts:264](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L264)
+[ts/runtime.ts:278](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L278)
 
 ___
 
 ### setModuleLoader
 
-▸ **setModuleLoader**(`moduleLoader`): `void`
+▸ **setModuleLoader**(`moduleLoader`, `moduleNormalizer?`): `void`
 
-Set the loader for EcmasScript modules requested by any context in this
+Set the loader for EcmaScript modules requested by any context in this
 runtime.
 
 The loader can be removed with [removeModuleLoader](QuickJSAsyncRuntime.md#removemoduleloader).
@@ -362,6 +362,7 @@ The loader can be removed with [removeModuleLoader](QuickJSAsyncRuntime.md#remov
 | Name | Type |
 | :------ | :------ |
 | `moduleLoader` | [`JSModuleLoader`](../interfaces/JSModuleLoader.md) \| `JSModuleLoaderAsync` |
+| `moduleNormalizer?` | `JSModuleNormalizer` \| `JSModuleNormalizerAsync` |
 
 #### Returns
 
@@ -373,4 +374,4 @@ The loader can be removed with [removeModuleLoader](QuickJSAsyncRuntime.md#remov
 
 #### Defined in
 
-[ts/runtime-asyncify.ts:59](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime-asyncify.ts#L59)
+[ts/runtime-asyncify.ts:66](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime-asyncify.ts#L66)

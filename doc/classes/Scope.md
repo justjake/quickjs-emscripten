@@ -49,7 +49,7 @@ Lifetimes. See [withScope](Scope.md#withscope). and [withScopeAsync](Scope.md#wi
 
 #### Defined in
 
-[ts/lifetime.ts:261](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L261)
+[ts/lifetime.ts:265](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L265)
 
 ## Methods
 
@@ -69,7 +69,7 @@ Dispose of the underlying resources used by this object.
 
 #### Defined in
 
-[ts/lifetime.ts:265](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L265)
+[ts/lifetime.ts:269](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L269)
 
 ___
 
@@ -97,7 +97,7 @@ Track `lifetime` so that it is disposed when this scope is disposed.
 
 #### Defined in
 
-[ts/lifetime.ts:256](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L256)
+[ts/lifetime.ts:260](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L260)
 
 ___
 
@@ -160,29 +160,32 @@ block returns.
 
 #### Defined in
 
-[ts/lifetime.ts:238](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L238)
+[ts/lifetime.ts:242](https://github.com/justjake/quickjs-emscripten/blob/master/ts/lifetime.ts#L242)
 
 ___
 
 ### withScopeMaybeAsync
 
-▸ `Static` **withScopeMaybeAsync**<`R`\>(`block`): `R` \| `Promise`<`R`\>
+▸ `Static` **withScopeMaybeAsync**<`Return`, `This`, `Yielded`\>(`_this`, `block`): `Return` \| `Promise`<`Return`\>
 
 #### Type parameters
 
 | Name |
 | :------ |
-| `R` |
+| `Return` |
+| `This` |
+| `Yielded` |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `block` | (`scope`: [`Scope`](Scope.md)) => `R` \| `Promise`<`R`\> |
+| `_this` | `This` |
+| `block` | `MaybeAsyncBlock`<`Return`, `This`, `Yielded`, [[`Scope`](Scope.md)]\> |
 
 #### Returns
 
-`R` \| `Promise`<`R`\>
+`Return` \| `Promise`<`Return`\>
 
 #### Defined in
 

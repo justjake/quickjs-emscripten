@@ -22,7 +22,7 @@ Memory limit, in bytes, of WebAssembly heap memory used by the QuickJS VM.
 
 #### Defined in
 
-ts/module.ts:95
+[ts/module.ts:74](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module.ts#L74)
 
 ___
 
@@ -34,7 +34,7 @@ Module loader for any `import` statements or expressions.
 
 #### Defined in
 
-ts/module.ts:100
+[ts/module.ts:79](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module.ts#L79)
 
 ___
 
@@ -47,4 +47,4 @@ See [shouldInterruptAfterDeadline](../modules.md#shouldinterruptafterdeadline).
 
 #### Defined in
 
-ts/module.ts:90
+[ts/module.ts:69](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module.ts#L69)

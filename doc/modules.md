@@ -10,6 +10,8 @@
 - [QuickJSAsyncContext](classes/QuickJSAsyncContext.md)
 - [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md)
 - [QuickJSAsyncWASMModule](classes/QuickJSAsyncWASMModule.md)
+- [QuickJSAsyncifyError](classes/QuickJSAsyncifyError.md)
+- [QuickJSAsyncifySuspended](classes/QuickJSAsyncifySuspended.md)
 - [QuickJSContext](classes/QuickJSContext.md)
 - [QuickJSDeferredPromise](classes/QuickJSDeferredPromise.md)
 - [QuickJSNotImplemented](classes/QuickJSNotImplemented.md)
@@ -73,7 +75,7 @@ by the runtime.
 
 #### Defined in
 
-[ts/runtime.ts:44](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L44)
+[ts/runtime.ts:41](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L41)
 
 ___
 
@@ -102,7 +104,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Defined in
 
-[ts/runtime.ts:36](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L36)
+[ts/runtime.ts:33](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L33)
 
 ___
 
@@ -112,7 +114,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:73](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L73)
+[ts/types.ts:71](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L71)
 
 ___
 
@@ -184,7 +186,7 @@ Property key for getting or setting a property on a handle with
 
 #### Defined in
 
-[ts/context.ts:33](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L33)
+[ts/context.ts:40](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L40)
 
 ___
 
@@ -306,7 +308,7 @@ To work with the asyncified version of this library, see these functions:
 
 #### Defined in
 
-ts/index.ts:51
+[ts/index.ts:51](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L51)
 
 ___
 
@@ -325,7 +327,7 @@ least once.
 
 #### Defined in
 
-ts/index.ts:64
+[ts/index.ts:64](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L64)
 
 ___
 
@@ -404,7 +406,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-ts/index.ts:145
+[ts/index.ts:145](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L145)
 
 ___
 
@@ -428,7 +430,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-ts/index.ts:128
+[ts/index.ts:128](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L128)
 
 ___
 
@@ -454,7 +456,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-ts/index.ts:104
+[ts/index.ts:104](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L104)
 
 ___
 
@@ -475,7 +477,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-ts/index.ts:79
+[ts/index.ts:79](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L79)
 
 ___
 
@@ -497,4 +499,4 @@ Returns an interrupt handler that interrupts Javascript execution after a deadli
 
 #### Defined in
 
-ts/index.ts:156
+[ts/index.ts:156](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L156)

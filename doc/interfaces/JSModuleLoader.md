@@ -29,7 +29,7 @@ Load module (sync)
 
 #### Defined in
 
-[ts/types.ts:83](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L83)
+[ts/types.ts:81](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L81)
 
 ### JSModuleLoader
 
@@ -50,4 +50,4 @@ Load module (async)
 
 #### Defined in
 
-[ts/types.ts:79](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L79)
+[ts/types.ts:77](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L77)

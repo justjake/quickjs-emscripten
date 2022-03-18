@@ -23,7 +23,7 @@
 
 #### Defined in
 
-[ts/types.ts:100](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L100)
+[ts/types.ts:118](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L118)
 
 ___
 
@@ -33,7 +33,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:96](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L96)
+[ts/types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L114)
 
 ___
 
@@ -43,7 +43,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:101](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L101)
+[ts/types.ts:119](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L119)
 
 ___
 
@@ -53,7 +53,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:99](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L99)
+[ts/types.ts:117](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L117)
 
 ___
 
@@ -63,7 +63,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:95](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L95)
+[ts/types.ts:113](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L113)
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:97](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L97)
+[ts/types.ts:115](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L115)
 
 ___
 
@@ -83,7 +83,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:98](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L98)
+[ts/types.ts:116](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L116)
 
 ___
 
@@ -93,4 +93,4 @@ ___
 
 #### Defined in
 
-[ts/types.ts:102](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L102)
+[ts/types.ts:120](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L120)

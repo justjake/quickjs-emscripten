@@ -75,7 +75,7 @@ serialization, so properties and values unsupported by JSON will be dropped.
 
 #### Defined in
 
-ts/module.ts:315
+[ts/module.ts:337](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module.ts#L337)
 
 ___
 
@@ -99,7 +99,7 @@ be disposed when the context is disposed.
 
 #### Defined in
 
-ts/module.ts:282
+[ts/module.ts:304](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module.ts#L304)
 
 ___
 
@@ -123,4 +123,4 @@ loading for one or more [QuickJSContext](QuickJSContext.md)s inside the runtime.
 
 #### Defined in
 
-ts/module.ts:257
+[ts/module.ts:279](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module.ts#L279)

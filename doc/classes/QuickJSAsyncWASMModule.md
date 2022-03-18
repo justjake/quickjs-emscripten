@@ -47,7 +47,7 @@ Synchronous evalCode is not supported.
 
 #### Defined in
 
-ts/module-asyncify.ts:74
+[ts/module-asyncify.ts:74](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module-asyncify.ts#L74)
 
 ___
 
@@ -78,7 +78,7 @@ See the documentation for [QuickJSWASMModule.evalCode](QuickJSWASMModule.md#eval
 
 #### Defined in
 
-ts/module-asyncify.ts:89
+[ts/module-asyncify.ts:89](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module-asyncify.ts#L89)
 
 ___
 
@@ -106,7 +106,7 @@ be disposed when the context is disposed.
 
 #### Defined in
 
-ts/module-asyncify.ts:65
+[ts/module-asyncify.ts:65](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module-asyncify.ts#L65)
 
 ___
 
@@ -134,4 +134,4 @@ concurrent async actions, create multiple WebAssembly modules.
 
 #### Defined in
 
-ts/module-asyncify.ts:41
+[ts/module-asyncify.ts:41](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module-asyncify.ts#L41)

@@ -6,11 +6,11 @@ Javascript/Typescript bindings for QuickJS, a modern Javascript interpreter,
 compiled to WebAssembly.
 
 - Safely evaluate untrusted Javascript (up to ES2020).
-- Create and manipulate values inside the QuickJS runtime.
-- Expose host functions to the QuickJS runtime.
-- Write synchronous code that uses asynchronous functions ([asyncify]()).
+- Create and manipulate values inside the QuickJS runtime ([more][values]).
+- Expose host functions to the QuickJS runtime ([more][functions]).
+- Execute synchronous code that uses asynchronous functions, with [asyncify][asyncify].
 
-[Github](https://github.com/justjake/quickjs-emscripten) | [NPM](https://www.npmjs.com/package/quickjs-emscripten) | [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md) | [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
+[Github] | [NPM] | [API Documentation][api] | [Examples][tests]
 
 ```typescript
 import { getQuickJS } from "quickjs-emscripten"
@@ -37,6 +37,14 @@ async function main() {
 
 main()
 ```
+
+[github]: https://github.com/justjake/quickjs-emscripten
+[npm]: https://www.npmjs.com/package/quickjs-emscripten
+[api]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md
+[tests]: https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts
+[values]: #interfacing-with-the-interpreter
+[asyncify]: #asyncify
+[functons]: #exposing-apis
 
 ## Usage
 
@@ -71,8 +79,14 @@ You can use [QuickJSContext](https://github.com/justjake/quickjs-emscripten/blob
 to build a scripting environment by modifying globals and exposing functions
 into the QuickJS interpreter.
 
-Each `QuickJSContext` instance has its own environment, CPU limit, and memory
-limit. See the documentation for details.
+Each `QuickJSContext` instance has its own environment -- globals, built-in
+classes -- and actions from one context won't leak into other contexts or
+runtimes (with one exception, see [Asyncify][asyncify]).
+
+Every context is created inside a
+[QuickJSRuntime](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/QuickJSRuntime.md).
+A runtime represents a Javascript heap, and you can even share values between
+contexts in the same runtime.
 
 ```typescript
 const vm = QuickJS.newContext()
@@ -90,6 +104,38 @@ console.log("vm result:", vm.getNumber(nextId), "native state:", state)
 
 nextId.dispose()
 vm.dispose()
+```
+
+When you create a context from a top-level API like in the example above,
+instead of by calling `runtime.newContext()`, a runtime is automatically created
+for the lifetime of the context, and disposed of when you dispose the context.
+
+#### Runtime
+
+The runtime has APIs for CPU and memory limits that apply to all contexts within
+the runtime in aggregate. You can also use the runtime to configure EcmaScript
+module loading.
+
+```typescript
+const runtime = QuickJS.newRuntime()
+// "Should be enough for everyone" -- attributed to B. Gates
+runtime.setMemoryLimit(1024 * 640)
+// Interrupt computation after 1024 calls to the interrupt handler
+let interruptCycles = 0
+runtime.setInterruptHandler(() => ++interruptCycles > 1024)
+// Toy module system that always returns the module name
+// as the default export
+runtime.setModuleLoader((context, moduleName) => `export default '${moduleName}'`)
+const context = runtime.newContext()
+const ok = context.evalCode(`
+import fooName from './foo.js'
+globalThis.result = fooName
+`)
+context.unwrapResult(ok).dispose()
+// logs "foo.js"
+console.log(context.getProp(context.global, "result").consume(context.dump))
+context.dispose()
+runtime.dispose()
 ```
 
 ### Memory Management
@@ -177,10 +223,223 @@ vm.dispose()
 Generally working with `Scope` leads to more straight-forward code, but
 `Lifetime.consume` can be handy sugar as part of a method call chain.
 
+### Exposing APIs
+
+To add APIs inside the QuickJS environment, you'll need to create objects to
+define the shape of your API, and add properties and functions to those objects
+to allow code inside QuickJS to call code on the host.
+
+By default, no host functionality is exposed to code running inside QuickJS.
+
+```typescript
+const vm = QuickJS.newContext()
+// `console.log`
+const logHandle = vm.newFunction("log", (...args) => {
+  const nativeArgs = args.map(vm.dump)
+  console.log("QuickJS:", ...nativeArgs)
+})
+// Partially implement `console` object
+const consoleHandle = vm.newObject()
+vm.setProp(consoleHandle, "log", logHandle)
+vm.setProp(vm.global, "console", consoleHandle)
+consoleHandle.dispose()
+logHandle.dispose()
+
+vm.unwrapResult(vm.evalCode(`console.log("Hello from QuickJS!")`)).dispose()
+```
+
+#### Promises
+
+To expose an asynchronous function that _returns a promise_ to callers within
+QuickJS, your function can return the handle of a `QuickJSDeferredPromise`
+created via `context.newPromise()`.
+
+When you resolve a `QuickJSDeferredPromise` -- and generally whenever async
+behavior completes for the VM -- pending listeners inside QuickJS may not
+execute immediately. Your code needs to explicitly call
+`runtime.executePendingJobs()` to resume execution inside QuickJS. This API
+gives your code maximum control to _schedule_ when QuickJS will block the host's
+event loop by resuming execution.
+
+To work with QuickJS handles that contain a promise inside the environment, you
+can convert the QuickJSHandle into a native promise using
+`context.resolvePromise()`. Take care with this API to avoid 'deadlocks' where
+the host awaits a guest promise, but the guest cannot make progress until the
+host calls `runtime.executePendingJobs()`. The simplest way to avoid this kind
+of deadlock is to always schedule `executePendingJobs` after any promise is
+settled.
+
+```typescript
+const vm = QuickJS.newContext()
+const fakeFileSystem = new Map([["example.txt", "Example file content"]])
+
+// Function that simulates reading data asynchronously
+const readFileHandle = vm.newFunction("readFile", (pathHandle) => {
+  const path = vm.getString(pathHandle)
+  const promise = vm.newPromise()
+  setTimeout(() => {
+    const content = fakeFileSystem.get(path)
+    promise.resolve(vm.newString(content || ""))
+  }, 100)
+  // IMPORTANT: Once you resolve an async action inside QuickJS,
+  // call runtime.executePendingJobs() to run any code that was
+  // waiting on the promise or callback.
+  promise.settled.then(vm.runtime.executePendingJobs)
+  return promise.handle
+})
+readFileHandle.consume((handle) => vm.setProp(vm.global, "readFile", handle))
+
+// Evaluate code that uses `readFile`, which returns a promise
+const result = vm.evalCode(`(async () => {
+  const content = await readFile('example.txt')
+  return content.toUpperCase()
+})()`)
+const promiseHandle = vm.unwrapResult(result)
+
+// Convert the promise handle into a native promise and await it.
+// If code like this deadlocks, make sure you are calling
+// runtime.executePendingJobs appropriately.
+const resolvedResult = await vm.resolvePromise(promiseHandle)
+promiseHandle.dispose()
+const resolvedHandle = vm.unwrapResult(resolvedResult)
+console.log("Result:", vm.getString(resolvedHandle))
+resolvedHandle.dispose()
+```
+
+#### Asyncify
+
+Sometimes, we want to create a function that's synchronous from the perspective
+of QuickJS, but prefer to implement that function _asynchronously_ in your host
+code. The most obvious use-case is for EcmaScript module loading. The underlying
+QuickJS C library expects the module loader function to return synchronously,
+but loading data synchronously in the browser or server is somewhere between "a
+bad idea" and "impossible". QuickJS also doesn't expose an API to "pause" the
+execution of a runtime, and adding such an API is tricky due to the VM's
+implementation.
+
+As a work-around, we provide an alternate build of QuickJS processed by
+Emscripten/Binaryen's [ASYNCIFY](https://emscripten.org/docs/porting/asyncify.html)
+compiler transform. Here's how Emscripten's documentation describes Asyncify:
+
+> Asyncify lets synchronous C or C++ code interact with asynchronous \[host] JavaScript. This allows things like:
+>
+> - A synchronous call in C that yields to the event loop, which allows browser events to be handled.
+>
+> - A synchronous call in C that waits for an asynchronous operation in \[host] JS to complete.
+>
+> Asyncify automatically transforms ... code into a form that can be paused and
+> resumed ..., so that it is asynchronous (hence the name “Asyncify”) even though
+> \[it is written] in a normal synchronous way.
+
+This means we can suspend an _entire WebAssembly module_ (which could contain
+multiple runtimes and contexts) while our host Javascript loads data
+asynchronously, and then resume execution once the data load completes. This is
+a very handy superpower, but it comes with a couple of major limitations:
+
+1. _An asyncified WebAssembly module can only suspend to wait for a single
+   asynchronous call at a time_. You may call back into a suspended WebAssembly
+   module eg. to create a QuickJS value to return a result, but the system will
+   crash if this call tries to suspend again. Take a look at Emscripten's documentation
+   on [reentrancy](https://emscripten.org/docs/porting/asyncify.html#reentrancy).
+
+2. _Asyncified code is bigger and runs slower_. The asyncified build of
+   Quickjs-emscripten library is 1M, 2x larger than the 500K of the default
+   version. There may be room for further
+   [optimization](https://emscripten.org/docs/porting/asyncify.html#optimizing)
+   Of our build in the future.
+
+To use asyncify features, use the following functions:
+
+- [newAsyncRuntime][]: create a runtime inside a new WebAssembly module.
+- [newAsyncContext][]: create runtime and context together inside a new
+  WebAssembly module.
+- [newQuickJSAsyncWASMModule][]: create an empty WebAssembly module.
+
+[newasyncruntime]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasyncruntime
+[newasynccontext]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasynccontext
+[newasynccontext]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newquickjsasyncwasmmodule
+
+These functions are asynchronous because they always create a new underlying
+WebAssembly module so that each instance can suspend and resume independently,
+and instantiating a WebAssembly module is an async operation. This also adds
+substantial overhead compared to creating a runtime or context inside an
+existing module; if you only need to wait for a single async action at a time,
+you can create a single top-level module and create runtimes or contexts inside
+of it.
+
+##### Async module loader
+
+Here's an example of valuating a script that loads React asynchronously as an ES
+module. In our example, we're loading from the filesystem for reproducibility,
+but you can use this technique to load using `fetch`.
+
+```typescript
+const module = await newQuickJSAsyncWASMModule()
+const runtime = module.newRuntime()
+const path = await import("path")
+const { promises: fs } = await import("fs")
+
+const importsPath = path.join(__dirname, "../examples/imports") + "/"
+// Module loaders can return promises.
+// Execution will suspend until the promise resolves.
+runtime.setModuleLoader((_: unknown, moduleName: string) => {
+  const modulePath = path.join(importsPath, moduleName)
+  if (!modulePath.startsWith(importsPath)) {
+    throw new Error("out of bounds")
+  }
+  console.log("loading", moduleName, "from", modulePath)
+  return fs.readFile(modulePath, "utf-8")
+})
+
+// evalCodeAsync is required when execution may suspend.
+const context = runtime.newContext()
+const result = await context.evalCodeAsync(`
+import * as React from 'esm.sh/react@17'
+import * as ReactDOMServer from 'esm.sh/react-dom@17/server'
+const e = React.createElement
+globalThis.html = ReactDOMServer.renderToStaticMarkup(
+  e('div', null, e('strong', null, 'Hello world!'))
+)
+`)
+context.unwrapResult(result).dispose()
+const html = context.getProp(context.global, "html").consume(context.getString)
+console.log(html) // <div><strong>Hello world!</strong></div>
+```
+
+##### Async on host, sync in QuickJS
+
+Here's an example of turning an async function into a sync function inside the
+VM.
+
+```typescript
+const context = await newAsyncContext()
+const path = await import("path")
+const { promises: fs } = await import("fs")
+
+const importsPath = path.join(__dirname, "../examples/imports") + "/"
+const readFileHandle = context.newAsyncifiedFunction("readFile", async (pathHandle) => {
+  const pathString = path.join(importsPath, context.getString(pathHandle))
+  if (!pathString.startsWith(importsPath)) {
+    throw new Error("out of bounds")
+  }
+  const data = await fs.readFile(pathString, "utf-8")
+  return context.newString(data)
+})
+readFileHandle.consume((fn) => context.setProp(context.global, "readFile", fn))
+
+// evalCodeAsync is required when execution may suspend.
+const result = await context.evalCodeAsync(`
+// Not a promise! Sync! vvvvvvvvvvvvvvvvvvvv 
+const data = JSON.parse(readFile('data.json'))
+data.map(x => x.toUpperCase()).join(' ')
+`)
+const upperCaseData = context.unwrapResult(result).consume(context.getString)
+console.log(upperCaseData) // 'VERY USEFUL DATA'
+```
+
 ### More Documentation
 
-- [API Documentation]()
-- [Examples]()
+[Github](https://github.com/justjake/quickjs-emscripten) | [NPM](https://www.npmjs.com/package/quickjs-emscripten) | [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md) | [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
 
 ## Background
 
@@ -191,31 +450,37 @@ blogposts about using building a Javascript plugin runtime:
 - [How Figma built the Figma plugin system](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/): Describes the LowLevelJavascriptVm interface.
 - [An update on plugin security](https://www.figma.com/blog/an-update-on-plugin-security/): Figma switches to QuickJS.
 
-## Status & TODOs
+## Status & Roadmap
 
-Both the original project quickjs and this project are still in the early stage
-of development.
-There [are tests](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts), but I haven't built anything
-on top of this. Please use this project carefully in a production
-environment.
+**Stability**: Because the version number of this project is below `1.0.0`,
+*expect occasional breaking API changes.
 
-Because the version number of this project is below `1.0.0`, expect occasional
-breaking API changes.
+**Security**: This project makes every effort to be secure, but has not been
+audited. Please use with care in production settings.
 
-Ideas for future work:
+**Roadmap**: I work on this project in my free time, for fun. Here's I'm
+thinking comes next. Last updated 2022-03-18.
 
-- quickjs-emscripten only exposes a small subset of the QuickJS APIs. Add more QuickJS bindings!
-  - Expose tools for object and array iteration and creation.
-  - Stretch goals: class support, an event emitter bridge implementation
-- Higher-level abstractions for translating values into (and out of) QuickJS.
-- Remove the singleton limitations. Each QuickJS class instance could create
-  its own copy of the emscripten module.
-- Run quickjs-emscripten inside quickjs-emscripten.
-- Remove the `LowLevelJavascriptVm` interface and definition. Those types
-  provide no value, since there is no other implementations, and complicate the
-  types and documentation for quickjs-emscripten.
-- Improve our testing strategy by running the tests with each of the Emscripten santizers, as well as with the SAFE_HEAP. This should catch more bugs in the C code.
-  [See the Emscripten docs for more details](https://emscripten.org/docs/debugging/Sanitizers.html#comparison-to-safe-heap)
+1. Further work on module loading APIs:
+    - Create modules via Javascript, instead of source text.
+    - Scan source text for imports, for ahead of time or concurrent loading.
+      (This is possible with third-party tools, so lower priority.)
+
+2. Higher-level tools for reading QuickJS values:
+    - Type guard functions: `context.isArray(handle)`, `context.isPromise(handle)`, etc.
+    - Iteration utilities: `context.getIterable(handle)`, `context.iterateObjectEntries(handle)`.
+      This better supports user-level code to deserialize complex handle objects.
+
+3. Higher-level tools for creating QuickJS values:
+    - Devise a way to avoid needing to mess around with handles when setting up
+      the environment.
+    - Consider integrating
+      [quickjs-emscripten-sync](https://github.com/reearth/quickjs-emscripten-sync)
+      for automatic translation.
+    - Consider class-based or interface-type-based marshalling.
+
+4. EcmaScript Modules / WebAssembly files / Deno support. This requires me to
+   learn a lot of new things, but should be interesting for modern browser usage.
 
 ## Related
 
@@ -238,22 +503,16 @@ The C code builds as both with `emscripten` (using `emcc`), to produce WASM (or
 ASM.js) and with `clang`. Build outputs are checked in, so
 Intermediate object files from QuickJS end up in ./build/quickjs/{wasm,native}.
 
-This project uses `emscripten 1.39.19`. The install should be handled automatically
-if you're working from Linux or OSX (if using Windows, the best is to use WSL to work
-on this repository). If everything is right, running `yarn embin emcc -v` should print
-something like this:
-
-```
-emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 1.39.18
-clang version 11.0.0 (/b/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project 613c4a87ba9bb39d1927402f4dd4c1ef1f9a02f7)
-```
+This project uses `emscripten 3.17` via Docker. You will need a working `docker`
+install to build the Emscripten artifacts.
 
 Related NPM scripts:
 
 - `yarn update-quickjs` will sync the ./quickjs folder with a
   github repo tracking the upstream QuickJS.
 - `yarn make-debug` will rebuild C outputs into ./build/wrapper
-- `yarn run-n` builds and runs ./c/test.c
+- `yarn make-release` will rebuild C outputs in release mode, which is the mode
+  that should be checked into the repo.
 
 ### The Typescript parts
 
