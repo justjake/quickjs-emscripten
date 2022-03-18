@@ -451,7 +451,7 @@ blogposts about using building a Javascript plugin runtime:
 ## Status & Roadmap
 
 **Stability**: Because the version number of this project is below `1.0.0`,
-*expect occasional breaking API changes.
+\*expect occasional breaking API changes.
 
 **Security**: This project makes every effort to be secure, but has not been
 audited. Please use with care in production settings.
@@ -460,22 +460,25 @@ audited. Please use with care in production settings.
 thinking comes next. Last updated 2022-03-18.
 
 1. Further work on module loading APIs:
-    - Create modules via Javascript, instead of source text.
-    - Scan source text for imports, for ahead of time or concurrent loading.
-      (This is possible with third-party tools, so lower priority.)
+
+   - Create modules via Javascript, instead of source text.
+   - Scan source text for imports, for ahead of time or concurrent loading.
+     (This is possible with third-party tools, so lower priority.)
 
 2. Higher-level tools for reading QuickJS values:
-    - Type guard functions: `context.isArray(handle)`, `context.isPromise(handle)`, etc.
-    - Iteration utilities: `context.getIterable(handle)`, `context.iterateObjectEntries(handle)`.
-      This better supports user-level code to deserialize complex handle objects.
+
+   - Type guard functions: `context.isArray(handle)`, `context.isPromise(handle)`, etc.
+   - Iteration utilities: `context.getIterable(handle)`, `context.iterateObjectEntries(handle)`.
+     This better supports user-level code to deserialize complex handle objects.
 
 3. Higher-level tools for creating QuickJS values:
-    - Devise a way to avoid needing to mess around with handles when setting up
-      the environment.
-    - Consider integrating
-      [quickjs-emscripten-sync](https://github.com/reearth/quickjs-emscripten-sync)
-      for automatic translation.
-    - Consider class-based or interface-type-based marshalling.
+
+   - Devise a way to avoid needing to mess around with handles when setting up
+     the environment.
+   - Consider integrating
+     [quickjs-emscripten-sync](https://github.com/reearth/quickjs-emscripten-sync)
+     for automatic translation.
+   - Consider class-based or interface-type-based marshalling.
 
 4. EcmaScript Modules / WebAssembly files / Deno support. This requires me to
    learn a lot of new things, but should be interesting for modern browser usage.
