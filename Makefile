@@ -138,7 +138,7 @@ $(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(BUILD_WRAPPER
 ### Object files
 # Our wrapper
 $(BUILD_WRAPPER)/wasm/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.json $(BUILD_ROOT)
-	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -c -o $@ $<
+	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -DQTS_SQLITE -c -o $@ $<
 
 $(BUILD_WRAPPER)/wasm-asyncify/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.asyncify.json $(BUILD_WRAPPER)/symbols.asyncify-imports.json $(BUILD_ROOT)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_EMCC_ASYNCIFY) $(EMCC_EXPORTED_FUNCS) -c -o $@ $<

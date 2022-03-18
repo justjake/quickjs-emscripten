@@ -81,6 +81,8 @@ export type HeapCharPointer = Pointer<"char">
  */
 export type JSVoidPointer = Pointer<any>
 
+export type sqlite3Pointer = Pointer<"sqlite3">
+
 /**
  * @private
  */
