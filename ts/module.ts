@@ -6,7 +6,7 @@ import {
   EitherModule,
   EmscriptenModuleCallbacks,
 } from "./emscripten-types"
-import { QuickJSNotImplemented } from "./errors"
+import { QuickJSAsyncifyError, QuickJSAsyncifySuspended, QuickJSNotImplemented } from "./errors"
 import {
   HeapCharPointer,
   JSContextPointer,
@@ -41,19 +41,19 @@ export interface ContextCallbacks {
  */
 export interface RuntimeCallbacks {
   shouldInterrupt: MaybeAsyncEmscriptenCallbacks["shouldInterrupt"]
-  loadModule: MaybeAsyncEmscriptenCallbacks["loadModule"]
+  loadModuleSource: MaybeAsyncEmscriptenCallbacks["loadModuleSource"]
   normalizeModule: MaybeAsyncEmscriptenCallbacks["normalizeModule"]
 }
 
 class QuickJSEmscriptenModuleCallbacks implements EmscriptenModuleCallbacks {
   public callFunction: EmscriptenModuleCallbacks["callFunction"]
   public shouldInterrupt: EmscriptenModuleCallbacks["shouldInterrupt"]
-  public loadModule: EmscriptenModuleCallbacks["loadModule"]
+  public loadModuleSource: EmscriptenModuleCallbacks["loadModuleSource"]
   public normalizeModule: EmscriptenModuleCallbacks["normalizeModule"]
   constructor(args: EmscriptenModuleCallbacks) {
     this.callFunction = args.callFunction
     this.shouldInterrupt = args.shouldInterrupt
-    this.loadModule = args.loadModule
+    this.loadModuleSource = args.loadModuleSource
     this.normalizeModule = args.normalizeModule
   }
 }
@@ -112,6 +112,9 @@ export class QuickJSModuleCallbacks {
     this.contextCallbacks.delete(ctx)
   }
 
+  private suspendedCount = 0
+  private suspended: QuickJSAsyncifySuspended | undefined
+
   private handleAsyncify<T>(
     asyncify: Asyncify | undefined,
     fn: () => T | Promise<T>
@@ -123,16 +126,37 @@ export class QuickJSModuleCallbacks {
       return asyncify.handleSleep((done) => {
         try {
           const result = fn()
-          if (result instanceof Promise) {
-            result.then(done)
-            result.catch((error) =>
-              console.error("QuickJS: cannot handle error in suspended function", error)
+          if (!(result instanceof Promise)) {
+            debugLog("asyncify.handleSleep: not suspending:", result)
+            done(result)
+            return
+          }
+
+          // Is promise, we intend to suspend.
+          if (this.suspended) {
+            throw new QuickJSAsyncifyError(
+              `Already suspended at: ${this.suspended.stack}\nAttempted to suspend at:`
             )
           } else {
-            done(result)
+            this.suspended = new QuickJSAsyncifySuspended(`(${this.suspendedCount++})`)
+            debugLog("asyncify.handleSleep: suspending:", this.suspended)
           }
+
+          result.then(
+            (resolvedResult) => {
+              this.suspended = undefined
+              debugLog("asyncify.handleSleep: resolved:", resolvedResult)
+              done(resolvedResult)
+            },
+            (error) => {
+              debugLog("asyncify.handleSleep: rejected:", error)
+              console.error("QuickJS: cannot handle error in suspended function", error)
+              this.suspended = undefined
+            }
+          )
         } catch (error) {
-          debugLog("asyncify.handleSleep error", error)
+          debugLog("asyncify.handleSleep: error:", error)
+          this.suspended = undefined
           throw error
         }
       })
@@ -175,7 +199,7 @@ export class QuickJSModuleCallbacks {
         }
       }),
 
-    loadModule: (asyncify, rt, ctx, moduleName) =>
+    loadModuleSource: (asyncify, rt, ctx, moduleName) =>
       this.handleAsyncify(asyncify, () => {
         try {
           const runtimeCallbacks = this.runtimeCallbacks.get(rt)
@@ -183,14 +207,14 @@ export class QuickJSModuleCallbacks {
             throw new Error(`QuickJSRuntime(rt = ${rt}) not found for C module loader`)
           }
 
-          const loadModule = runtimeCallbacks.loadModule
+          const loadModule = runtimeCallbacks.loadModuleSource
           if (!loadModule) {
             throw new Error(`QuickJSRuntime(rt = ${rt}) does not support module loading`)
           }
           return loadModule(rt, ctx, moduleName)
         } catch (error) {
           console.error("[C to host module loader error: returning null]", error)
-          return 0 as JSModuleDefPointer
+          return 0 as HeapCharPointer
         }
       }),
 

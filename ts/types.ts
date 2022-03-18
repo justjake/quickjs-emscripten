@@ -66,7 +66,7 @@ export interface JSModuleDefinition {
   exports: JSModuleExport[]
 }
 
-export type JSModuleLoadSuccess = string | /** TODO */ PartiallyImplemented<JSModuleDefinition>
+export type JSModuleLoadSuccess = string
 export type JSModuleLoadFailure = Error | QuickJSHandle
 export type JSModuleLoadResult =
   | JSModuleLoadSuccess
@@ -104,9 +104,10 @@ type TODO<hint extends string = "?", typeHint = unknown> = never
 
 const UnstableSymbol = Symbol("Unstable")
 
-export type PartiallyImplemented<T> = T & {
-  [UnstableSymbol]: "This feature may unimplemented, broken, throw errors, etc."
-}
+export type PartiallyImplemented<T> = never &
+  T & {
+    [UnstableSymbol]: "This feature may unimplemented, broken, throw errors, etc."
+  }
 
 export interface RuntimeOptions {
   moduleLoader?: JSModuleLoader

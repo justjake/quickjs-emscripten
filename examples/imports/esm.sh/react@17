@@ -1,0 +1,3 @@
+/* esm.sh - react@17.0.2 */
+export * from "../cdn.esm.sh/v69/react@17.0.2/es2015/react.js";
+export { default } from "../cdn.esm.sh/v69/react@17.0.2/es2015/react.js";

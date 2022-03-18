@@ -69,6 +69,7 @@ generate: ts/ffi.ts ts/ffi-asyncify.ts
 wasm: $(BUILD_DIR) ts/quickjs.emscripten-module.js ts/ffi.ts
 wasm-asyncify: $(BUILD_DIR) ts/quickjs-asyncify.emscripten-module.js ts/ffi-asyncify.ts
 native: $(BUILD_WRAPPER)/native/test.exe
+imports: examples/imports
 
 emcc:
 	docker pull $(EMSDK_DOCKER_IMAGE)
@@ -105,6 +106,10 @@ ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
 ts/ffi-asyncify.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
 	ASYNCIFY=true $(GENERATE_TS) ffi $@
 	$(PRETTIER) --write $@
+
+examples/imports: downloadEcmaScriptModules.ts
+	npx ts-node downloadEcmaScriptModules.ts "https://esm.sh/react@17" "https://esm.sh/react-dom@17/server"
+	touch examples/imports
 
 ### Executables
 # The WASM module we'll link to typescript

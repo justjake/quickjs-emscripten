@@ -119,12 +119,12 @@ export interface EmscriptenModuleCallbacks {
     fn_id: number
   ) => JSValuePointer | AsyncifySleepResult<JSValuePointer>
 
-  loadModule: (
+  loadModuleSource: (
     asyncify: Asyncify | undefined,
     rt: JSRuntimePointer,
     ctx: JSContextPointer,
     module_name: string
-  ) => JSModuleDefPointer | AsyncifySleepResult<JSModuleDefPointer>
+  ) => HeapCharPointer | AsyncifySleepResult<HeapCharPointer>
 
   normalizeModule: (
     asyncify: Asyncify | undefined,

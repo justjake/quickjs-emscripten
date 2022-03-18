@@ -1,6 +1,7 @@
 // Generate symbols list
 // Generate header file
-import * as fs from "fs"
+import * as fs from "fs-extra"
+import * as pathlib from "path"
 const USAGE = "Usage: generate.ts [symbols | header | ffi] WRITE_PATH"
 
 const INTERFACE_FILE_PATH = process.env.HEADER_FILE_PATH || "./c/interface.c"
@@ -294,7 +295,7 @@ function parseParams(paramListString: string) {
   })
 }
 
-function matchAll(regexp: RegExp, text: string) {
+export function matchAll(regexp: RegExp, text: string) {
   // We're using .exec, which mutates the regexp by setting the .lastIndex
   const initialLastIndex = regexp.lastIndex
   const result: RegExpExecArray[] = []
@@ -306,4 +307,25 @@ function matchAll(regexp: RegExp, text: string) {
   return result
 }
 
-main()
+export function replaceAll(
+  regexp: RegExp,
+  text: string,
+  replacement: (match: RegExpExecArray) => string
+) {
+  const matches = matchAll(regexp, text)
+  let i = 0
+  const result = text.replace(regexp, () => {
+    const match = matches[i]
+    i++
+    const result = replacement(match)
+    return result
+  })
+  if (i !== matches.length) {
+    throw new Error(`Expected ${matches.length} matches, but got ${i}`)
+  }
+  return result
+}
+
+if (require.main === module) {
+  main()
+}

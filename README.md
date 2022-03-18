@@ -136,6 +136,91 @@ context.dispose()
 runtime.dispose()
 ```
 
+### Memory Management
+
+Many methods in this library return handles to memory allocated inside the
+WebAssembly heap. These types cannot be garbage-collected as usual in
+Javascript. Instead, you must manually manage their memory by calling a
+`.dispose()` method to free the underlying resources. Once a handle has been
+disposed, it cannot be used anymore. Note that in the example above, we call
+`.dispose()` on each handle once it is no longer needed.
+
+Calling `QuickJSContext.dispose()` will throw a RuntimeError if you've forgotten to
+dispose any handles associated with that VM, so it's good practice to create a
+new VM instance for each of your tests, and to call `vm.dispose()` at the end
+of every test.
+
+```typescript
+const vm = QuickJS.newContext()
+const numberHandle = vm.newNumber(42)
+// Note: numberHandle not disposed, so it leaks memory.
+vm.dispose()
+// throws RuntimeError: abort(Assertion failed: list_empty(&rt->gc_obj_list), at: quickjs/quickjs.c,1963,JS_FreeRuntime)
+```
+
+Here are some strategies to reduce the toil of calling `.dispose()` on each
+handle you create:
+
+#### Scope
+
+A
+[`Scope`](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/scope.md#class-scope)
+instance manages a set of disposables and calls their `.dispose()`
+method in the reverse order in which they're added to the scope. Here's the
+"Interfacing with the interpreter" example re-written using `Scope`:
+
+```typescript
+Scope.withScope((scope) => {
+  const vm = scope.manage(QuickJS.newContext())
+  let state = 0
+
+  const fnHandle = scope.manage(
+    vm.newFunction("nextId", () => {
+      return vm.newNumber(++state)
+    })
+  )
+
+  vm.setProp(vm.global, "nextId", fnHandle)
+
+  const nextId = scope.manage(vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`)))
+  console.log("vm result:", vm.getNumber(nextId), "native state:", state)
+
+  // When the withScope block exits, it calls scope.dispose(), which in turn calls
+  // the .dispose() methods of all the disposables managed by the scope.
+})
+```
+
+You can also create `Scope` instances with `new Scope()` if you want to manage
+calling `scope.dispose()` yourself.
+
+#### `Lifetime.consume(fn)`
+
+[`Lifetime.consume`](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/lifetime.md#consume)
+is sugar for the common pattern of using a handle and then
+immediately disposing of it. `Lifetime.consume` takes a `map` function that
+produces a result of any type. The `map` fuction is called with the handle,
+then the handle is disposed, then the result is returned.
+
+Here's the "Interfacing with interpreter" example re-written using `.consume()`:
+
+```typescript
+const vm = QuickJS.newContext()
+let state = 0
+
+vm.newFunction("nextId", () => {
+  return vm.newNumber(++state)
+}).consume((fnHandle) => vm.setProp(vm.global, "nextId", fnHandle))
+
+vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`)).consume((nextId) =>
+  console.log("vm result:", vm.getNumber(nextId), "native state:", state)
+)
+
+vm.dispose()
+```
+
+Generally working with `Scope` leads to more straight-forward code, but
+`Lifetime.consume` can be handy sugar as part of a method call chain.
+
 ### Exposing APIs
 
 To add APIs inside the QuickJS environment, you'll need to create objects to
@@ -280,28 +365,35 @@ existing module; if you only need to wait for a single async action at a time,
 you can create a single top-level module and create runtimes or contexts inside
 of it.
 
+##### Async module loader
+
+Here's an example of valuating a script that loads React asynchronously as an ES
+module. In our example, we're loading from the filesystem for reproducibility,
+but you can use this technique to load using `fetch`.
+
 ```typescript
 const module = await newQuickJSAsyncWASMModule()
 const runtime = module.newRuntime()
 const path = await import("path")
 const { promises: fs } = await import("fs")
 
-const scriptsPath = path.join(__dirname, "scripts") + "/"
+const importsPath = path.join(__dirname, "../examples/imports") + "/"
 // Module loaders can return promises.
 // Execution will suspend until the promise resolves.
-runtime.setModuleLoader((context, moduleName) => {
-  const modulePath = path.join(scriptsPath, moduleName)
-  if (!modulePath.startsWith(scriptsPath)) {
+runtime.setModuleLoader((_: unknown, moduleName: string) => {
+  const modulePath = path.join(importsPath, moduleName)
+  if (!modulePath.startsWith(importsPath)) {
     throw new Error("out of bounds")
   }
+  console.log("loading", moduleName, "from", modulePath)
   return fs.readFile(modulePath, "utf-8")
 })
 
 // evalCodeAsync is required when execution may suspend.
 const context = runtime.newContext()
 const result = await context.evalCodeAsync(`
-import * as React from './React.min.js'
-import * as ReactDOMServer from './ReactDOMServer.min.js'
+import * as React from 'esm.sh/react@17'
+import * as ReactDOMServer from 'esm.sh/react-dom@17/server'
 const e = React.createElement
 globalThis.html = ReactDOMServer.renderToStaticMarkup(
   e('div', null, e('strong', null, 'Hello world!'))
@@ -312,90 +404,36 @@ const html = context.getProp(context.global, "html").consume(context.getString)
 console.log(html) // <div><strong>Hello world!</strong></div>
 ```
 
-### Memory Management
+##### Async on host, sync in QuickJS
 
-Many methods in this library return handles to memory allocated inside the
-WebAssembly heap. These types cannot be garbage-collected as usual in
-Javascript. Instead, you must manually manage their memory by calling a
-`.dispose()` method to free the underlying resources. Once a handle has been
-disposed, it cannot be used anymore. Note that in the example above, we call
-`.dispose()` on each handle once it is no longer needed.
-
-Calling `QuickJSContext.dispose()` will throw a RuntimeError if you've forgotten to
-dispose any handles associated with that VM, so it's good practice to create a
-new VM instance for each of your tests, and to call `vm.dispose()` at the end
-of every test.
+Here's an example of turning an async function into a sync function inside the
+VM.
 
 ```typescript
-const vm = QuickJS.newContext()
-const numberHandle = vm.newNumber(42)
-// Note: numberHandle not disposed, so it leaks memory.
-vm.dispose()
-// throws RuntimeError: abort(Assertion failed: list_empty(&rt->gc_obj_list), at: quickjs/quickjs.c,1963,JS_FreeRuntime)
-```
+const context = await newAsyncContext()
+const path = await import("path")
+const { promises: fs } = await import("fs")
 
-Here are some strategies to reduce the toil of calling `.dispose()` on each
-handle you create:
-
-#### Scope
-
-A
-[`Scope`](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/scope.md#class-scope)
-instance manages a set of disposables and calls their `.dispose()`
-method in the reverse order in which they're added to the scope. Here's the
-"Interfacing with the interpreter" example re-written using `Scope`:
-
-```typescript
-Scope.withScope((scope) => {
-  const vm = scope.manage(QuickJS.newContext())
-  let state = 0
-
-  const fnHandle = scope.manage(
-    vm.newFunction("nextId", () => {
-      return vm.newNumber(++state)
-    })
-  )
-
-  vm.setProp(vm.global, "nextId", fnHandle)
-
-  const nextId = scope.manage(vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`)))
-  console.log("vm result:", vm.getNumber(nextId), "native state:", state)
-
-  // When the withScope block exits, it calls scope.dispose(), which in turn calls
-  // the .dispose() methods of all the disposables managed by the scope.
+const importsPath = path.join(__dirname, "../examples/imports") + "/"
+const readFileHandle = context.newAsyncifiedFunction("readFile", async (pathHandle) => {
+  const pathString = path.join(importsPath, context.getString(pathHandle))
+  if (!pathString.startsWith(importsPath)) {
+    throw new Error("out of bounds")
+  }
+  const data = await fs.readFile(pathString, "utf-8")
+  return context.newString(data)
 })
+readFileHandle.consume((fn) => context.setProp(context.global, "readFile", fn))
+
+// evalCodeAsync is required when execution may suspend.
+const result = await context.evalCodeAsync(`
+// Not a promise! Sync! vvvvvvvvvvvvvvvvvvvv 
+const data = JSON.parse(readFile('data.json'))
+data.map(x => x.toUpperCase()).join(' ')
+`)
+const upperCaseData = context.unwrapResult(result).consume(context.getString)
+console.log(upperCaseData) // 'VERY USEFUL DATA'
 ```
-
-You can also create `Scope` instances with `new Scope()` if you want to manage
-calling `scope.dispose()` yourself.
-
-#### `Lifetime.consume(fn)`
-
-[`Lifetime.consume`](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/lifetime.md#consume)
-is sugar for the common pattern of using a handle and then
-immediately disposing of it. `Lifetime.consume` takes a `map` function that
-produces a result of any type. The `map` fuction is called with the handle,
-then the handle is disposed, then the result is returned.
-
-Here's the "Interfacing with interpreter" example re-written using `.consume()`:
-
-```typescript
-const vm = QuickJS.newContext()
-let state = 0
-
-vm.newFunction("nextId", () => {
-  return vm.newNumber(++state)
-}).consume((fnHandle) => vm.setProp(vm.global, "nextId", fnHandle))
-
-vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`)).consume((nextId) =>
-  console.log("vm result:", vm.getNumber(nextId), "native state:", state)
-)
-
-vm.dispose()
-```
-
-Generally working with `Scope` leads to more straight-forward code, but
-`Lifetime.consume` can be handy sugar as part of a method call chain.
 
 ### More Documentation
 

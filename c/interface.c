@@ -125,18 +125,6 @@ JSValue *QTS_NewError(JSContext *ctx) {
   return jsvalue_to_heap(JS_NewError(ctx));
 }
 
-JSModuleDef *QTS_CompileModule(JSContext *ctx, const char *module_name, HeapChar *module_body) {
-  JSValue func_val = JS_Eval(ctx, module_body, strlen(module_body), module_name, JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
-  if (JS_IsException(func_val)) {
-    return NULL;
-  }
-  // TODO: Is exception ok?
-  // TODO: set import.meta?
-  JSModuleDef *module = JS_VALUE_GET_PTR(func_val);
-  JS_FreeValue(ctx, func_val);
-  return module;
-}
-
 /**
  * Limits.
  */
@@ -519,6 +507,9 @@ int QTS_BuildIsAsyncify() {
 }
 
 // ----------------------------------------------------------------------------
+// Module loading helpers
+
+// ----------------------------------------------------------------------------
 // C -> Host Callbacks
 // Note: inside EM_JS, we need to use ['...'] subscript syntax for accessing JS
 // objects, because in optimized builds, Closure compiler will mangle all the
@@ -595,7 +586,59 @@ void QTS_RuntimeDisableInterruptHandler(JSRuntime *rt) {
 
 // --------------------
 // load module: C -> Host
-EM_JS(MaybeAsync(JSModuleDef *), qts_host_load_module, (JSRuntime * rt, JSContext *ctx, const char *module_name), {
+// TODO: a future version can support host returning JSModuleDef* directly;
+// for now we only support loading module source code.
+
+/*
+The module loading model under ASYNCIFY is convoluted. We need to make sure we
+never have an async request running concurrently for loading modules.
+
+The first implemenation looked like this:
+
+C                                  HOST                      SUSPENDED
+qts_host_load_module(name) ------>                            false
+                                   call rt.loadModule(name)   false
+                                   Start async load module    false
+                                   Suspend C                  true
+                                   Async load complete        true
+            < ---------------      QTS_CompileModule(source)  true
+QTS_Eval(source, COMPILE_ONLY)                                true
+Loaded module has import                                      true
+qts_host_load_module(dep) ------->                            true
+                                  call rt.loadModule(dep)     true
+                                  Start async load module     true
+                                  ALREADY SUSPENDED, CRASH
+
+We can solve this in two different ways:
+
+1. Return to C as soon as we async load the module source.
+   That way, we unsuspend before calling QTS_CompileModule.
+2. Once we load the module, use a new API to detect and async
+   load the module's downstream dependencies. This way
+   they're loaded synchronously so we don't need to suspend "again".
+
+Probably we could optimize (2) to make it more performant, eg with parallel
+loading, but (1) seems much easier to implement in the sort run.
+*/
+
+JSModuleDef *qts_compile_module(JSContext *ctx, const char *module_name, HeapChar *module_body) {
+#ifdef QTS_DEBUG_MODE
+  char msg[500];
+  sprintf(msg, "QTS_CompileModule(ctx: %p, name: %s, bodyLength: %lu)", ctx, module_name, strlen(module_body));
+  QTS_DEBUG(msg)
+#endif
+  JSValue func_val = JS_Eval(ctx, module_body, strlen(module_body), module_name, JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
+  if (JS_IsException(func_val)) {
+    return NULL;
+  }
+  // TODO: Is exception ok?
+  // TODO: set import.meta?
+  JSModuleDef *module = JS_VALUE_GET_PTR(func_val);
+  JS_FreeValue(ctx, func_val);
+  return module;
+}
+
+EM_JS(MaybeAsync(char *), qts_host_load_module_source, (JSRuntime * rt, JSContext *ctx, const char *module_name), {
 #ifdef QTS_ASYNCIFY
   const asyncify = {['handleSleep'] : Asyncify.handleSleep};
 #else
@@ -603,10 +646,10 @@ EM_JS(MaybeAsync(JSModuleDef *), qts_host_load_module, (JSRuntime * rt, JSContex
 #endif
   // https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
   const moduleNameString = UTF8ToString(module_name);
-  return Module['callbacks']['loadModule'](asyncify, rt, ctx, moduleNameString);
+  return Module['callbacks']['loadModuleSource'](asyncify, rt, ctx, moduleNameString);
 });
 
-EM_JS(MaybeAsync(JSModuleDef *), qts_host_normalize_module, (JSRuntime * rt, JSContext *ctx, const char *module_base_name, const char *module_name), {
+EM_JS(MaybeAsync(char *), qts_host_normalize_module, (JSRuntime * rt, JSContext *ctx, const char *module_base_name, const char *module_name), {
 #ifdef QTS_ASYNCIFY
   const asyncify = {['handleSleep'] : Asyncify.handleSleep};
 #else
@@ -627,17 +670,27 @@ JSModuleDef *qts_load_module(JSContext *ctx, const char *module_name, void *_unu
   sprintf(msg, "qts_load_module(rt: %p, ctx: %p, name: %s)", rt, ctx, module_name);
   QTS_DEBUG(msg)
 #endif
-  return qts_host_load_module(rt, ctx, module_name);
+  char *module_source = qts_host_load_module_source(rt, ctx, module_name);
+  if (module_source == NULL) {
+    return NULL;
+  }
+
+  JSModuleDef *module = qts_compile_module(ctx, module_name, module_source);
+  free(module_source);
+  return module;
 }
 
-const char *qts_normalize_module(JSContext *ctx, const char *module_base_name, const char *module_name, void *_unused) {
+char *qts_normalize_module(JSContext *ctx, const char *module_base_name, const char *module_name, void *_unused) {
   JSRuntime *rt = JS_GetRuntime(ctx);
 #ifdef QTS_DEBUG_MODE
   char msg[500];
   sprintf(msg, "qts_normalize_module(rt: %p, ctx: %p, base_name: %s, name: %s)", rt, ctx, module_base_name, module_name);
   QTS_DEBUG(msg)
 #endif
-  return qts_host_normalize_module(rt, ctx, module_base_name, module_name);
+  char *em_module_name = qts_host_normalize_module(rt, ctx, module_base_name, module_name);
+  char *js_module_name = js_strdup(ctx, em_module_name);
+  free(em_module_name);
+  return js_module_name;
 }
 
 // Load module: Host -> QuickJS

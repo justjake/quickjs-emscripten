@@ -20,9 +20,6 @@ export class QuickJSAsyncFFI {
   QTS_NewError: (ctx: JSContextPointer) => JSValuePointer =
     this.module.cwrap("QTS_NewError", "number", ["number"])
 
-  QTS_CompileModule: (ctx: JSContextPointer, module_name: string, module_body: HeapCharPointer) => JSModuleDefPointer =
-    this.module.cwrap("QTS_CompileModule", "number", ["number","string","number"])
-
   QTS_RuntimeSetMemoryLimit: (rt: JSRuntimePointer, limit: number) => void =
     this.module.cwrap("QTS_RuntimeSetMemoryLimit", null, ["number","number"])
 

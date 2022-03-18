@@ -4,4 +4,4 @@
 --watch-files './build/**/*.ts'
 --watch-files './ts/**/*'
 --recursive
-'ts/**/*.test.ts'
+'ts/**/readme.test.ts'

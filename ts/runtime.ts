@@ -339,7 +339,7 @@ export class QuickJSRuntime implements Disposable {
       return fn(this) ? 1 : 0
     },
 
-    loadModule: maybeAsyncFn(this, function* (awaited, rt, ctx, moduleName) {
+    loadModuleSource: maybeAsyncFn(this, function* (awaited, rt, ctx, moduleName) {
       const moduleLoader = this.moduleLoader
       if (!moduleLoader) {
         throw new Error("Runtime has no module loader")
@@ -363,20 +363,14 @@ export class QuickJSRuntime implements Disposable {
           throw result.error
         }
 
-        const moduleDef =
+        const moduleSource =
           typeof result === "string" ? result : "value" in result ? result.value : result
 
-        if (typeof moduleDef === "string") {
-          const compiledModule = context.compileModule(moduleName, moduleDef)
-          return compiledModule.value
-        }
-
-        // TODO
-        throw new Error(`TODO: module definition not implemented.`)
+        return this.memory.newHeapCharPointer(moduleSource).value
       } catch (error) {
         debugLog("cToHostLoadModule: caught error", error)
         context.throw(error as any)
-        return 0 as JSModuleDefPointer
+        return 0 as HeapCharPointer
       }
     }),
 

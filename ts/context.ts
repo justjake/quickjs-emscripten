@@ -409,24 +409,6 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     return this.memory.heapValueHandle(this.ffi.QTS_NewFunction(this.ctx.value, fnId, name))
   }
 
-  /**
-   * Compile a module.
-   * @experimental
-   */
-  compileModule(
-    moduleName: string,
-    source: string
-  ): Lifetime<JSModuleDefPointer, never, QuickJSContext> {
-    return Scope.withScope((scope) => {
-      const sourcePtr = scope.manage(this.memory.newHeapCharPointer(source))
-      const moduleDefPtr = this.ffi.QTS_CompileModule(this.ctx.value, moduleName, sourcePtr.value)
-      // TODO: uh... how do we free this?
-      return new Lifetime(moduleDefPtr, undefined, (ptr) =>
-        this.ffi.QTS_FreeVoidPointer(this.ctx.value, ptr as JSVoidPointer)
-      )
-    })
-  }
-
   newError(error: { name: string; message: string }): QuickJSHandle
   newError(message: string): QuickJSHandle
   newError(): QuickJSHandle

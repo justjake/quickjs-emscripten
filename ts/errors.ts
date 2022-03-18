@@ -21,3 +21,11 @@ export class QuickJSUseAfterFree extends Error {
 export class QuickJSNotImplemented extends Error {
   name = "QuickJSNotImplemented"
 }
+
+export class QuickJSAsyncifyError extends Error {
+  name = "QuickJSAsyncifyError"
+}
+
+export class QuickJSAsyncifySuspended extends Error {
+  name = "QuickJSAsyncifySuspended"
+}
