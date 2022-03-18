@@ -6,4 +6,5 @@ quickjs
 doc
 test/json-generator-dot-com-1024-rows.json
 dist/*
+examples/imports
 build
