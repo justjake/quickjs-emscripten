@@ -793,7 +793,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
     it("passes through the module name", () => {
       let callCtx: QuickJSAsyncContext
       let callModuleName: string
-      vm.runtime.setModuleLoader((moduleVM: QuickJSAsyncContext, moduleName: string) => {
+      vm.runtime.setModuleLoader((moduleName, moduleVM) => {
         callCtx = moduleVM
         callModuleName = moduleName
         return `export default 5`
@@ -822,11 +822,11 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       let loadedName: string | undefined
 
       vm.runtime.setModuleLoader(
-        function load(moduleVM: QuickJSAsyncContext, moduleName: string) {
+        function load(moduleName: string) {
           loadedName = moduleName
           return `export default 5`
         },
-        function normalize(moduleVM: QuickJSAsyncContext, baseName: string, name: string) {
+        function normalize(baseName: string, name: string, moduleVM: QuickJSAsyncContext) {
           requestedBaseName = baseName
           requestedName = name
           return NORMALIZED_NAME

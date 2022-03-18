@@ -74,11 +74,13 @@ export type JSModuleLoadResult =
 
 export interface JSModuleLoaderAsync {
   /** Load module (async) */
-  (vm: QuickJSAsyncContext, moduleName: string): JSModuleLoadResult | Promise<JSModuleLoadResult>
+  (moduleName: string, context: QuickJSAsyncContext):
+    | JSModuleLoadResult
+    | Promise<JSModuleLoadResult>
 }
-export interface JSModuleLoader extends JSModuleLoaderAsync {
+export interface JSModuleLoader {
   /** Load module (sync) */
-  (vm: QuickJSContext, moduleName: string): JSModuleLoadResult
+  (moduleName: string, context: QuickJSContext): JSModuleLoadResult
 }
 
 export type JSModuleNormalizeSuccess = string
@@ -88,16 +90,12 @@ export type JSModuleNormalizeResult =
   | SuccessOrFail<JSModuleNormalizeSuccess, JSModuleNormalizeFailure>
 
 export interface JSModuleNormalizerAsync {
-  (vm: QuickJSAsyncContext, moduleNameBaseName: string, moduleNameRequest: string):
+  (baseModuleName: string, requestedName: string, vm: QuickJSAsyncContext):
     | JSModuleNormalizeResult
     | Promise<JSModuleNormalizeResult>
 }
 export interface JSModuleNormalizer extends JSModuleNormalizerAsync {
-  (
-    vm: QuickJSContext,
-    moduleNameBaseName: string,
-    moduleNameRequest: string
-  ): JSModuleNormalizeResult
+  (baseModuleName: string, requestedName: string, vm: QuickJSContext): JSModuleNormalizeResult
 }
 
 type TODO<hint extends string = "?", typeHint = unknown> = never
@@ -109,8 +107,7 @@ export type PartiallyImplemented<T> = never &
     [UnstableSymbol]: "This feature may unimplemented, broken, throw errors, etc."
   }
 
-export interface RuntimeOptions {
-  moduleLoader?: JSModuleLoader
+export interface RuntimeOptionsBase {
   interruptHandler?: TODO<"JS_SetInterruptHandler">
   promiseRejectionHandler?: TODO<"JSHostPromiseRejectionTracker">
   runtimeInfo?: TODO<"JS_SetRuntimeInfo", string>
@@ -121,6 +118,7 @@ export interface RuntimeOptions {
     "JS_SetJSSharedArrayBufferFunctions",
     { sab_alloc: TODO; sab_free: TODO; sab_dup: TODO; sab_opaque: TODO }
   >
+
   /**
    * Extra lifetimes the runtime should dispose of after it is destroyed.
    * @private
@@ -128,6 +126,17 @@ export interface RuntimeOptions {
   ownedLifetimes?: Disposable[]
 }
 
+export interface RuntimeOptions extends RuntimeOptionsBase {
+  moduleLoader?: JSModuleLoader
+}
+
+export interface AsyncRuntimeOptions {
+  moduleLoader?: JSModuleLoaderAsync | JSModuleLoader
+}
+
+/**
+ * Work in progress.
+ */
 export type Intrinsic =
   | "BaseObjects"
   | "Date"
@@ -160,6 +169,9 @@ const DefaultIntrinsicsList = [
   "Promise",
 ] as const
 
+/**
+ * Work in progress.
+ */
 export const DefaultIntrinsics = Symbol("DefaultIntrinsics")
 
 export interface ContextOptions {
@@ -200,7 +212,7 @@ export interface ContextEvalOptions {
   backtraceBarrier?: boolean
 }
 
-/** Convert [[EvalOptions]] to a bitfield flags */
+/** Convert [[ContextEvalOptions]] to a bitfield flags */
 export function evalOptionsToFlags(evalOptions: ContextEvalOptions | number | undefined): number {
   if (typeof evalOptions === "number") {
     return evalOptions

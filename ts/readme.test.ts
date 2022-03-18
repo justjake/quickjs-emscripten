@@ -110,7 +110,7 @@ let interruptCycles = 0
 runtime.setInterruptHandler(() => ++interruptCycles > 1024)
 // Toy module system that always returns the module name
 // as the default export
-runtime.setModuleLoader((context, moduleName) =>
+runtime.setModuleLoader(moduleName =>
   `export default '${moduleName}'`)
 const context = runtime.newContext()
 const ok = context.evalCode(`
@@ -203,7 +203,7 @@ runtime.dispose()
         const importsPath = path.join(__dirname, "../examples/imports") + "/"
         // Module loaders can return promises.
         // Execution will suspend until the promise resolves.
-        runtime.setModuleLoader((_: unknown, moduleName: string) => {
+        runtime.setModuleLoader((moduleName) => {
           const modulePath = path.join(importsPath, moduleName)
           if (!modulePath.startsWith(importsPath)) {
             throw new Error("out of bounds")

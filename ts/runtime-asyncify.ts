@@ -64,8 +64,8 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
   }
 
   public override setModuleLoader(
-    moduleLoader: JSModuleLoader | JSModuleLoaderAsync,
-    moduleNormalizer?: JSModuleNormalizer | JSModuleNormalizerAsync
+    moduleLoader: JSModuleLoaderAsync,
+    moduleNormalizer?: JSModuleNormalizerAsync
   ): void {
     super.setModuleLoader(
       moduleLoader as JSModuleLoader,

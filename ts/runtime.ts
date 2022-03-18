@@ -356,7 +356,7 @@ export class QuickJSRuntime implements Disposable {
         })
 
       try {
-        const result = yield* awaited(moduleLoader(context, moduleName))
+        const result = yield* awaited(moduleLoader(moduleName, context))
 
         if (typeof result === "object" && "error" in result && result.error) {
           debugLog("cToHostLoadModule: loader returned error", result.error)
@@ -395,7 +395,7 @@ export class QuickJSRuntime implements Disposable {
 
         try {
           const result = yield* awaited(
-            moduleNormalizer(context, baseModuleName, moduleNameRequest)
+            moduleNormalizer(baseModuleName, moduleNameRequest, context)
           )
 
           if (typeof result === "object" && "error" in result && result.error) {

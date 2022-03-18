@@ -8,6 +8,7 @@ export type { QuickJSWASMModule, QuickJSContext, QuickJSRuntime }
 import type { QuickJSAsyncWASMModule } from "./module-asyncify"
 import type { QuickJSAsyncRuntime } from "./runtime-asyncify"
 import type { QuickJSAsyncContext } from "./context-asyncify"
+import { AsyncRuntimeOptions, ContextOptions } from "./types"
 export type { QuickJSAsyncContext, QuickJSAsyncRuntime, QuickJSAsyncWASMModule }
 
 // Export helpers
@@ -125,9 +126,9 @@ export async function newQuickJSAsyncWASMModule(): Promise<QuickJSAsyncWASMModul
  * versions of v8:
  * https://bugs.chromium.org/p/v8/issues/detail?id=12076
  */
-export async function newAsyncRuntime(): Promise<QuickJSAsyncRuntime> {
+export async function newAsyncRuntime(options?: AsyncRuntimeOptions): Promise<QuickJSAsyncRuntime> {
   const module = await newQuickJSAsyncWASMModule()
-  return module.newRuntime()
+  return module.newRuntime(options)
 }
 
 /**
@@ -142,9 +143,9 @@ export async function newAsyncRuntime(): Promise<QuickJSAsyncRuntime> {
  * versions of v8:
  * https://bugs.chromium.org/p/v8/issues/detail?id=12076
  */
-export async function newAsyncContext(): Promise<QuickJSAsyncContext> {
+export async function newAsyncContext(options?: ContextOptions): Promise<QuickJSAsyncContext> {
   const module = await newQuickJSAsyncWASMModule()
-  return module.newContext()
+  return module.newContext(options)
 }
 
 /**

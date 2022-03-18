@@ -5,7 +5,7 @@ import { QuickJSAsyncFFI } from "./ffi-asyncify"
 import { Lifetime, Scope } from "./lifetime"
 import { ModuleEvalOptions, QuickJSWASMModule } from "./module"
 import { QuickJSAsyncRuntime } from "./runtime-asyncify"
-import { ContextOptions, RuntimeOptions } from "./types"
+import { AsyncRuntimeOptions, ContextOptions, RuntimeOptions } from "./types"
 
 /**
  * Asyncified version of [[QuickJSWASMModule]].
@@ -38,7 +38,7 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
    * module are limited to a single async call at a time. For multiple
    * concurrent async actions, create multiple WebAssembly modules.
    */
-  override newRuntime(options: RuntimeOptions = {}): QuickJSAsyncRuntime {
+  override newRuntime(options: AsyncRuntimeOptions = {}): QuickJSAsyncRuntime {
     const rt = new Lifetime(this.ffi.QTS_NewRuntime(), undefined, (rt_ptr) => {
       this.callbacks.deleteRuntime(rt_ptr)
       this.ffi.QTS_FreeRuntime(rt_ptr)
