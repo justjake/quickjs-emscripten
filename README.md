@@ -483,6 +483,8 @@ thinking comes next. Last updated 2022-03-18.
 4. EcmaScript Modules / WebAssembly files / Deno support. This requires me to
    learn a lot of new things, but should be interesting for modern browser usage.
 
+5. SQLite integration.
+
 ## Related
 
 - Duktape wrapped in Wasm: https://github.com/maple3142/duktape-eval/blob/master/src/Makefile
