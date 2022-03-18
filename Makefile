@@ -8,9 +8,11 @@ PRETTIER=npx prettier
 # Paths
 QUICKJS_ROOT=quickjs
 WRAPPER_ROOT=c
+SQLITE_ROOT=sqlite3
 BUILD_ROOT=build
 BUILD_WRAPPER=$(BUILD_ROOT)/wrapper
 BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
+BUILD_SQLITE=$(BUILD_ROOT)/sqlite
 
 # QuickJS
 QUICKJS_OBJS=quickjs.o libregexp.o libunicode.o cutils.o quickjs-libc.o libbf.o
@@ -19,6 +21,13 @@ QUICKJS_OBJS_WASM_ASYNCIFY=$(patsubst %.o, $(BUILD_QUICKJS)/wasm-asyncify/%.o, $
 QUICKJS_OBJS_NATIVE=$(patsubst %.o, $(BUILD_QUICKJS)/native/%.o, $(QUICKJS_OBJS))
 QUICKJS_CONFIG_VERSION=$(shell cat $(QUICKJS_ROOT)/VERSION)
 QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\"
+
+# SQLite
+SQLITE_OBJS=sqlite3.o
+SQLITE_OBJS_WASM=$(patsubst %.o, $(BUILD_SQLITE)/wasm/%.o, $(SQLITE_OBJS))
+CFLAGS_SQLITE+= -DSQLITE_THREADSAFE=0
+CFLAGS_SQLITE+= -DSQLITE_DQS=0
+CFLAGS_SQLITE+= -DSQLITE_OMIT_DECLTYPE
 
 # quickjs-emscripten
 EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=$(shell cat $(BUILD_WRAPPER)/symbols.json)
@@ -80,6 +89,9 @@ $(BUILD_WRAPPER): emcc
 $(BUILD_QUICKJS): emcc
 	mkdir -p $(BUILD_QUICKJS)/wasm $(BUILD_QUICKJS)/native $(BUILD_QUICKJS)/wasm-asyncify
 
+$(BUILD_SQLITE): emcc
+	mkdir -p $(BUILD_SQLITE)/wasm $(BUILD_SQLITE)/native $(BUILD_SQLITE)/wasm-asyncify
+
 $(BUILD_ROOT): $(BUILD_WRAPPER) $(BUILD_QUICKJS)
 
 # Generated source files
@@ -113,8 +125,8 @@ examples/imports: downloadEcmaScriptModules.ts
 
 ### Executables
 # The WASM module we'll link to typescript
-ts/quickjs.emscripten-module.js: $(BUILD_WRAPPER)/wasm/interface.o $(QUICKJS_OBJS_WASM)
-	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(QUICKJS_OBJS_WASM)
+ts/quickjs.emscripten-module.js: $(BUILD_WRAPPER)/wasm/interface.o $(QUICKJS_OBJS_WASM) $(SQLITE_OBJS_WASM)
+	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(QUICKJS_OBJS_WASM) $(SQLITE_OBJS_WASM)
 
 ts/quickjs-asyncify.emscripten-module.js: $(BUILD_WRAPPER)/wasm-asyncify/interface.o $(QUICKJS_OBJS_WASM_ASYNCIFY)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_EMCC_ASYNCIFY) $(EMCC_EXPORTED_FUNCS_ASYNCIFY) -o $@ $< $(QUICKJS_OBJS_WASM_ASYNCIFY)
@@ -146,6 +158,10 @@ $(BUILD_QUICKJS)/wasm-asyncify/%.o: $(QUICKJS_ROOT)/%.c $(BUILD_ROOT)
 
 $(BUILD_QUICKJS)/native/%.o: $(QUICKJS_ROOT)/%.c | $(BUILD_ROOT)
 	$(CC) $(CFLAGS) $(QUICKJS_DEFINES) -c -o $@ $<
+
+# SQLite
+$(BUILD_SQLITE)/wasm/%.o: $(SQLITE_ROOT)/%.c $(BUILD_SQLITE)
+	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_SQLITE) -c -o $@ $<
 
 clean-generate:
 	rm -rfv ./ts/ffi.ts

@@ -3,7 +3,7 @@
     {
       "name": "Mac",
       "includePath": ["${workspaceFolder}/**"],
-      "defines": ["QTS_ASYNCIFY=1", "QTS_DEBUG=1"],
+      "defines": ["QTS_ASYNCIFY=1", "QTS_DEBUG=1", "QTS_SQLITE=1"],
       "macFrameworkPath": [
         "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
       ],

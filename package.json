@@ -35,7 +35,7 @@
     "prettier": "prettier --write ./*.json ./**/*.ts* ./*.js* ./*.md",
     "prettier-check": "prettier --check ./*.json ./**/*.ts* ./*.js* ./*.md",
     "run-n": "yarn make-debug && ./build/wrapper/native/test.exe",
-    "prepack": "if [[ -z $NO_MAKE_RELEASE ]] ; then yarn make-release fi && yarn build",
+    "prepack": "if [ -z $NO_MAKE_RELEASE ] ; then yarn make-release;  fi && yarn build",
     "tarball": "mkdir -p build && yarn pack --filename build/quickjs-emscripten.tgz",
     "smoketest-node": "cd examples/typescript-smoketest && YARN_CHECKSUM_BEHAVIOR=update yarn add quickjs-emscripten@../../build/quickjs-emscripten.tgz && tsc --lib ES2015,dom index.ts && node index.js",
     "smoketest-cra": "cd examples/website && YARN_CHECKSUM_BEHAVIOR=update yarn add quickjs-emscripten@../../build/quickjs-emscripten.tgz && yarn build"

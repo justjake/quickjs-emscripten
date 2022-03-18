@@ -43,6 +43,10 @@
 #include "../quickjs/quickjs-libc.h"
 #include "../quickjs/quickjs.h"
 
+#ifdef QTS_SQLITE
+#include "../sqlite3/sqlite3.h";
+#endif
+
 #define PKG "quickjs-emscripten: "
 
 #ifdef QTS_DEBUG_MODE
@@ -705,3 +709,95 @@ void QTS_RuntimeEnableModuleLoader(JSRuntime *rt, int use_custom_normalize) {
 void QTS_RuntimeDisableModuleLoader(JSRuntime *rt) {
   JS_SetModuleLoaderFunc(rt, NULL, NULL, NULL);
 }
+
+// --------------------
+// Sqlite Support
+// TODO: a future version can support host returning JSModuleDef* directly;
+// for now we only support loading module source code.
+#ifdef QTS_SQLITE
+#define SQLITE_DO(msg, status)                           \
+  if (status != SQLITE_OK) {                             \
+    printf("Failed: %s: %s\n", msg, sqlite3_errmsg(db)); \
+    sqlite3_close_v2(db);                                \
+    return 0;                                            \
+  }
+
+sqlite3 *QTS_DB_New() {
+  sqlite3 *db;
+  SQLITE_DO(
+      "Open DB",
+      sqlite3_open_v2(
+          ":memory:",
+          &db,
+          SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_MEMORY,
+          0));
+  return db;
+}
+
+void QTS_DB_Close(sqlite *db) {
+  SQLITE_DO("Close DB", sqlite3_close_v2(db));
+}
+
+HeapChar *QTS_DB_Exec(sqlite3 *db, HeapChar *sql, int print_instead) {
+  sqlite3_stmt *query;
+  sqlite3_str *result = sqlite3_str_new(db);
+
+  int status = sqlite3_prepare_v2(
+          db,
+          sql,
+          -1,
+          &query,
+          0));
+
+  if (status != SQLITE_OK) {
+    goto error;
+  }
+
+  while (true) {
+    status = sqlite3_step(query);
+    switch (status) {
+      case SQLITE_DONE:
+      case SQLITE_OK:
+        status = SQLITE_OK;
+        goto done;
+      case SQLITE_ROW:
+        SQLITE_DO("Append row", append_row(result, query));
+        continue;
+      default:
+        sqlite3_str_appendf(result, "Step: unknown status %d\n", status);
+        goto error;
+    }
+  }
+error:;
+  sqlite3_str_appendf(result, "Error: %s\n", sqlite3_errmsg(db));
+done:;
+  sqlite3_finalize(query);
+  int len = sqlite3_str_len(result);
+  char *sql_result_str = sqlite3_str_finish(result);
+  if (!sql_result_str) {
+    return 0
+  }
+
+  if (print_instead) {
+    printf("%s\n", sql_result_str);
+    sqlite3_free(sql_result_str);
+    return 0
+  }
+
+  char *result = strndup(result_sql_str, len);
+  sqlite3_free(sql_result_str);
+  return result;
+}
+
+int append_row(sqlite3_str *result, sqlite3_stmt *query) {
+  int cols = sqlite3_column_count(query);
+  for (int i = 0; i < cols; i++) {
+    if (i > 0) {
+      sqlite3_str_append(result, ", ");
+    }
+    sqlite3_str_append(result, sqlite3_column_text(query, i));
+  }
+  sqlite3_str_append(result, "\n");
+  return SQLITE_OK;
+}
+#endif

@@ -4,6 +4,7 @@
     "cutils.h": "c",
     "quickjs.h": "c",
     "quickjs-libc.h": "c",
-    "stdio.h": "c"
+    "stdio.h": "c",
+    "sqlite3.h": "c"
   }
 }
