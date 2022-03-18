@@ -448,34 +448,37 @@ blogposts about using building a Javascript plugin runtime:
 - [How Figma built the Figma plugin system](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/): Describes the LowLevelJavascriptVm interface.
 - [An update on plugin security](https://www.figma.com/blog/an-update-on-plugin-security/): Figma switches to QuickJS.
 
-## Status & TODOs
+## Status & Roadmap
 
-Because the version number of this project is below `1.0.0`, expect occasional
-breaking API changes.
+**Stability**: Because the version number of this project is below `1.0.0`,
+*expect occasional breaking API changes.
 
-- There is a test suite for most APIs reachable from `QuickJSContext`, but the suite could be more thorough.
--
+**Security**: This project makes every effort to be secure, but has not been
+audited. Please use with care in production settings.
 
-Both the original project quickjs and this project are still in the early stage
-of development.
-There [are tests](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts), but I haven't built anything
-on top of this. Please use this project carefully in a production
-environment.
+**Roadmap**: I work on this project in my free time, for fun. Here's I'm
+thinking comes next. Last updated 2022-03-18.
 
-Ideas for future work:
+1. Further work on module loading APIs:
+    - Create modules via Javascript, instead of source text.
+    - Scan source text for imports, for ahead of time or concurrent loading.
+      (This is possible with third-party tools, so lower priority.)
 
-- quickjs-emscripten only exposes a small subset of the QuickJS APIs. Add more QuickJS bindings!
-  - Expose tools for object and array iteration and creation.
-  - Stretch goals: class support, an event emitter bridge implementation
-- Higher-level abstractions for translating values into (and out of) QuickJS.
-- Remove the singleton limitations. Each QuickJS class instance could create
-  its own copy of the emscripten module.
-- Run quickjs-emscripten inside quickjs-emscripten.
-- Remove the `LowLevelJavascriptVm` interface and definition. Those types
-  provide no value, since there is no other implementations, and complicate the
-  types and documentation for quickjs-emscripten.
-- Improve our testing strategy by running the tests with each of the Emscripten santizers, as well as with the SAFE_HEAP. This should catch more bugs in the C code.
-  [See the Emscripten docs for more details](https://emscripten.org/docs/debugging/Sanitizers.html#comparison-to-safe-heap)
+2. Higher-level tools for reading QuickJS values:
+    - Type guard functions: `context.isArray(handle)`, `context.isPromise(handle)`, etc.
+    - Iteration utilities: `context.getIterable(handle)`, `context.iterateObjectEntries(handle)`.
+      This better supports user-level code to deserialize complex handle objects.
+
+3. Higher-level tools for creating QuickJS values:
+    - Devise a way to avoid needing to mess around with handles when setting up
+      the environment.
+    - Consider integrating
+      [quickjs-emscripten-sync](https://github.com/reearth/quickjs-emscripten-sync)
+      for automatic translation.
+    - Consider class-based or interface-type-based marshalling.
+
+4. EcmaScript Modules / WebAssembly files / Deno support. This requires me to
+   learn a lot of new things, but should be interesting for modern browser usage.
 
 ## Related
 
@@ -498,22 +501,16 @@ The C code builds as both with `emscripten` (using `emcc`), to produce WASM (or
 ASM.js) and with `clang`. Build outputs are checked in, so
 Intermediate object files from QuickJS end up in ./build/quickjs/{wasm,native}.
 
-This project uses `emscripten 1.39.19`. The install should be handled automatically
-if you're working from Linux or OSX (if using Windows, the best is to use WSL to work
-on this repository). If everything is right, running `yarn embin emcc -v` should print
-something like this:
-
-```
-emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 1.39.18
-clang version 11.0.0 (/b/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project 613c4a87ba9bb39d1927402f4dd4c1ef1f9a02f7)
-```
+This project uses `emscripten 3.17` via Docker. You will need a working `docker`
+install to build the Emscripten artifacts.
 
 Related NPM scripts:
 
 - `yarn update-quickjs` will sync the ./quickjs folder with a
   github repo tracking the upstream QuickJS.
 - `yarn make-debug` will rebuild C outputs into ./build/wrapper
-- `yarn run-n` builds and runs ./c/test.c
+- `yarn make-release` will rebuild C outputs in release mode, which is the mode
+  that should be checked into the repo.
 
 ### The Typescript parts
 
