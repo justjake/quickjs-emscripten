@@ -1,6 +1,6 @@
 {
   "name": "quickjs-emscripten",
-  "version": "0.21.0-0",
+  "version": "0.20.0-beta.0",
   "main": "dist/index.js",
   "license": "MIT",
   "keywords": [
