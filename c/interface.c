@@ -33,7 +33,10 @@
  * build.
  */
 
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#endif
+
 #include <math.h>  // For NAN
 #include <stdbool.h>
 #include <stdio.h>
@@ -541,6 +544,7 @@ int QTS_BuildIsAsyncify() {
 
 // -------------------
 // function: C -> Host
+#ifdef __EMSCRIPTEN__
 EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, int magic_func_id), {
 #ifdef QTS_ASYNCIFY
   const asyncify = {['handleSleep'] : Asyncify.handleSleep};
@@ -549,6 +553,7 @@ EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueCo
 #endif
   return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id);
 });
+#endif
 
 // Function: QuickJS -> C
 JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic) {
@@ -584,6 +589,7 @@ JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
 
 // --------------------
 // interrupt: C -> Host
+#ifdef __EMSCRIPTEN__
 EM_JS(int, qts_host_interrupt_handler, (JSRuntime * rt), {
   // Async not supported here.
   // #ifdef QTS_ASYNCIFY
@@ -593,6 +599,7 @@ EM_JS(int, qts_host_interrupt_handler, (JSRuntime * rt), {
   // #endif
   return Module['callbacks']['shouldInterrupt'](asyncify, rt);
 });
+#endif
 
 // interrupt: QuickJS -> C
 int qts_interrupt_handler(JSRuntime *rt, void *_unused) {
@@ -662,6 +669,7 @@ JSModuleDef *qts_compile_module(JSContext *ctx, const char *module_name, Borrowe
   return module;
 }
 
+#ifdef __EMSCRIPTEN__
 EM_JS(MaybeAsync(char *), qts_host_load_module_source, (JSRuntime * rt, JSContext *ctx, const char *module_name), {
 #ifdef QTS_ASYNCIFY
   const asyncify = {['handleSleep'] : Asyncify.handleSleep};
@@ -684,6 +692,7 @@ EM_JS(MaybeAsync(char *), qts_host_normalize_module, (JSRuntime * rt, JSContext 
   const moduleNameString = UTF8ToString(module_name);
   return Module['callbacks']['normalizeModule'](asyncify, rt, ctx, moduleBaseNameString, moduleNameString);
 });
+#endif
 
 // load module: QuickJS -> C
 // See js_module_loader in quickjs/quickjs-libc.c:567

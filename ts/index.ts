@@ -11,6 +11,12 @@ import type { QuickJSAsyncContext } from "./context-asyncify"
 import { AsyncRuntimeOptions, ContextOptions } from "./types"
 export type { QuickJSAsyncContext, QuickJSAsyncRuntime, QuickJSAsyncWASMModule }
 
+// Implementation loaders
+import * as variants from "./variants"
+import { newQuickJSWASMModule, newQuickJSAsyncWASMModule } from "./variants"
+export { variants }
+export { newQuickJSWASMModule, newQuickJSAsyncWASMModule }
+
 // Export helpers
 export * from "./vm-interface"
 export * from "./lifetime"
@@ -67,52 +73,6 @@ export function getQuickJSSync(): QuickJSWASMModule {
     throw new Error("QuickJS not initialized. Await getQuickJS() at least once.")
   }
   return singleton
-}
-
-/**
- * Create a new, completely isolated WebAssembly module containing the QuickJS library.
- * See the documentation on [[QuickJSWASMModule]].
- *
- * Note that there is a hard limit on the number of WebAssembly modules in older
- * versions of v8:
- * https://bugs.chromium.org/p/v8/issues/detail?id=12076
- */
-export async function newQuickJSWASMModule(): Promise<QuickJSWASMModule> {
-  const [{ default: wasmModuleLoader }, { QuickJSWASMModule }, { QuickJSFFI }] = await Promise.all([
-    import("./quickjs.emscripten-module"),
-    import("./module"),
-    import("./ffi"),
-  ])
-  const wasmModule = await wasmModuleLoader()
-  wasmModule.type = "sync"
-  const ffi = new QuickJSFFI(wasmModule)
-  return new QuickJSWASMModule(wasmModule, ffi)
-}
-
-/**
- * Create a new, completely isolated WebAssembly module containing a version of the QuickJS library
- * compiled with Emscripten's [ASYNCIFY](https://emscripten.org/docs/porting/asyncify.html) transform.
- *
- * This version of the library offers features that enable synchronous code
- * inside the VM to interact with asynchronous code in the host environment.
- * See the documentation on [[QuickJSAsyncWASMModule]], [[QuickJSAsyncRuntime]],
- * and [[QuickJSAsyncContext]].
- *
- * Note that there is a hard limit on the number of WebAssembly modules in older
- * versions of v8:
- * https://bugs.chromium.org/p/v8/issues/detail?id=12076
- */
-export async function newQuickJSAsyncWASMModule(): Promise<QuickJSAsyncWASMModule> {
-  const [{ default: wasmModuleLoader }, { QuickJSAsyncWASMModule }, { QuickJSAsyncFFI }] =
-    await Promise.all([
-      import("./quickjs-asyncify.emscripten-module"),
-      import("./module-asyncify"),
-      import("./ffi-asyncify"),
-    ])
-  const wasmModule = await wasmModuleLoader()
-  wasmModule.type = "async"
-  const ffi = new QuickJSAsyncFFI(wasmModule)
-  return new QuickJSAsyncWASMModule(wasmModule, ffi)
 }
 
 /**

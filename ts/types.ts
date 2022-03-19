@@ -1,5 +1,4 @@
-import type { QuickJSFFI } from "./ffi"
-import type { QuickJSAsyncFFI } from "./ffi-asyncify"
+import type { QuickJSFFI, QuickJSAsyncFFI } from "./variants"
 import type { QuickJSContext } from "./context"
 import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
 import type { Disposable, Lifetime } from "./lifetime"

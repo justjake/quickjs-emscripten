@@ -163,3 +163,7 @@ export interface QuickJSAsyncEmscriptenModule extends EmscriptenModule {
 }
 
 export type EitherModule = QuickJSEmscriptenModule | QuickJSAsyncEmscriptenModule
+
+export interface EmscriptenModuleLoader<T extends EmscriptenModule> {
+  (): Promise<T>
+}

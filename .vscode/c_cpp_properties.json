@@ -14,7 +14,8 @@
             ],
             "defines": [
                 "QTS_ASYNCIFY=1",
-                "QTS_DEBUG_MODE=1"
+                "QTS_DEBUG_MODE=1",
+                "__EMSCRIPTEN__=1"
             ],
             "macFrameworkPath": [
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
@@ -30,7 +31,8 @@
                     "${workspaceFolder}/**"
                 ],
                 "limitSymbolsToIncludedHeaders": true
-            }
+            },
+            "configurationProvider": "ms-vscode.makefile-tools"
         },
         {
             "name": "Emscripten",

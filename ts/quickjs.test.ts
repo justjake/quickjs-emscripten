@@ -15,7 +15,7 @@ import { isFail, VmCallResult } from "./vm-interface"
 import fs from "fs"
 import { QuickJSContext } from "./context"
 import { QuickJSAsyncContext } from "./context-asyncify"
-import { QuickJSFFI } from "./ffi"
+import { QuickJSFFI } from "./variants"
 import { QuickJSUnwrapError } from "./errors"
 import { debugLog } from "./debug"
 // Force load big chonkers

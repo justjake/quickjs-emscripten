@@ -7,7 +7,6 @@ import {
   EmscriptenModuleCallbacks,
 } from "./emscripten-types"
 import { QuickJSAsyncifyError, QuickJSAsyncifySuspended, QuickJSNotImplemented } from "./errors"
-import { QuickJSFFI } from "./ffi"
 import {
   BorrowedHeapCharPointer,
   JSContextPointer,

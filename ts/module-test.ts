@@ -1,6 +1,5 @@
 import { QuickJSContext } from "./context"
 import { QuickJSMemoryLeakDetected } from "./errors"
-import { QuickJSFFI } from "./ffi"
 import { Lifetime } from "./lifetime"
 import { ModuleEvalOptions, QuickJSWASMModule } from "./module"
 import { QuickJSRuntime } from "./runtime"
