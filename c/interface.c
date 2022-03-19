@@ -206,7 +206,7 @@ int QTS_RecoverableLeakCheck() {
 
 int QTS_BuildIsSanitizeLeak() {
 #ifdef QTS_SANITIZE_LEAK
-  return 1
+  return 1;
 #else
   return 0;
 #endif
