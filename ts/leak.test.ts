@@ -8,6 +8,22 @@ function checkModuleForLeaks(this: Mocha.Suite, getModule: () => Promise<QuickJS
 
   beforeEach(async function () {
     wasmModule = await getModule()
+    const ffi = wasmModule.getFFI()
+    if (!ffi.QTS_BuildIsSanitizeLeak()) {
+      console.warn("Note: leak sanitizer not enabled in this build.")
+    }
+  })
+
+  it("if DEBUG and not ASYNCIFY, should have sanitizer.", () => {
+    const ffi = wasmModule.getFFI()
+    if (ffi.QTS_BuildIsSanitizeLeak()) {
+      // Ok! sanitizer enabled
+      return
+    }
+
+    if (ffi.QTS_BuildIsDebug() && !ffi.QTS_BuildIsAsyncify()) {
+      assert.fail("Sanitizer should be enabled in sync debug build.")
+    }
   })
 
   const DURATION_MS = 10 * 1000
@@ -136,6 +152,7 @@ describe("Leak checks (most accurate with debug build)", function () {
     checkModuleForLeaks.call(this, getQuickJS)
   })
 
+  // Checking another WASM module is pointless.
   // let customSyncModule: QuickJSWASMModule | undefined
   // const getCustomSyncModule = async () => {
   //   return (customSyncModule ??= await newQuickJSWASMModule())
@@ -144,6 +161,8 @@ describe("Leak checks (most accurate with debug build)", function () {
   //   checkModuleForLeaks.call(this, getCustomSyncModule)
   // })
 
+  // Leaving this enabled, but note that we now disable
+  // leak sanitizer for ASYNCIFY since it's not reliable.
   let customAsyncModule: QuickJSWASMModule | undefined
   const getCustomAsyncModule = async () => {
     return (customAsyncModule ??= await newQuickJSAsyncWASMModule())

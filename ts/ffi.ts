@@ -32,6 +32,9 @@ export class QuickJSFFI {
   QTS_RecoverableLeakCheck: () => number =
     this.module.cwrap("QTS_RecoverableLeakCheck", "number", [])
 
+  QTS_BuildIsSanitizeLeak: () => number =
+    this.module.cwrap("QTS_BuildIsSanitizeLeak", "number", [])
+
   QTS_GetUndefined: () => JSValueConstPointer =
     this.module.cwrap("QTS_GetUndefined", "number", [])
 

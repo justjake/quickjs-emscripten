@@ -6,4 +6,5 @@ if [[ -z "$EMSDK_USE_DOCKER" ]] && command -v emcc > /dev/null ; then
   fi
 fi
 
+set -x
 exec docker run --rm -v "$(pwd):$(pwd)" -u "$(id -u):$(id -g)" -w "$(pwd)" "${EMSDK_DOCKER_IMAGE}" emcc "$@"

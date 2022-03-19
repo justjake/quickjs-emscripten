@@ -38,7 +38,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef QTS_DEBUG_MODE
+#ifdef QTS_SANITIZE_LEAK
 #include <sanitizer/lsan_interface.h>
 #endif
 
@@ -194,8 +194,16 @@ OwnedHeapChar *QTS_RuntimeDumpMemoryUsage(JSRuntime *rt) {
 }
 
 int QTS_RecoverableLeakCheck() {
-#ifdef QTS_DEBUG_MODE
+#ifdef QTS_SANITIZE_LEAK
   return __lsan_do_recoverable_leak_check();
+#else
+  return 0;
+#endif
+}
+
+int QTS_BuildIsSanitizeLeak() {
+#ifdef QTS_SANITIZE_LEAK
+  return 1
 #else
   return 0;
 #endif
