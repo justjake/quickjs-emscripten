@@ -447,7 +447,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   typeof(handle: QuickJSHandle) {
     this.runtime.assertOwned(handle)
-    return this.ffi.QTS_Typeof(this.ctx.value, handle.value)
+    return this.memory.consumeHeapCharPointer(this.ffi.QTS_Typeof(this.ctx.value, handle.value))
   }
 
   /**
@@ -464,7 +464,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   getString(handle: QuickJSHandle): string {
     this.runtime.assertOwned(handle)
-    return this.ffi.QTS_GetString(this.ctx.value, handle.value)
+    return this.memory.consumeHeapCharPointer(this.ffi.QTS_GetString(this.ctx.value, handle.value))
   }
 
   /**
@@ -733,7 +733,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       return undefined
     }
 
-    const str = this.ffi.QTS_Dump(this.ctx.value, handle.value)
+    const str = this.memory.consumeHeapCharPointer(this.ffi.QTS_Dump(this.ctx.value, handle.value))
     try {
       return JSON.parse(str)
     } catch (err) {

@@ -4,7 +4,7 @@ import { debugLog } from "./debug"
 import { EitherModule } from "./emscripten-types"
 import { QuickJSWrongOwner } from "./errors"
 import {
-  HeapCharPointer,
+  BorrowedHeapCharPointer,
   JSContextPointer,
   JSContextPointerPointer,
   JSModuleDefPointer,
@@ -302,7 +302,7 @@ export class QuickJSRuntime implements Disposable {
    * For programmatic access to this information, see [[computeMemoryUsage]].
    */
   dumpMemoryUsage(): string {
-    return this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value)
+    return this.memory.consumeHeapCharPointer(this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value))
   }
 
   /**
@@ -370,7 +370,7 @@ export class QuickJSRuntime implements Disposable {
       } catch (error) {
         debugLog("cToHostLoadModule: caught error", error)
         context.throw(error as any)
-        return 0 as HeapCharPointer
+        return 0 as BorrowedHeapCharPointer
       }
     }),
 
@@ -408,7 +408,7 @@ export class QuickJSRuntime implements Disposable {
         } catch (error) {
           debugLog("normalizeModule: caught error", error)
           context.throw(error as any)
-          return 0 as HeapCharPointer
+          return 0 as BorrowedHeapCharPointer
         }
       }
     ),

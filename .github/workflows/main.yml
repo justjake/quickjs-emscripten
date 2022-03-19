@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "**/.yarn/cache"
-          key: ${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/package.json') }}
+          key: ${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: yarn install --immutable

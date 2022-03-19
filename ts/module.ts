@@ -8,9 +8,8 @@ import {
 } from "./emscripten-types"
 import { QuickJSAsyncifyError, QuickJSAsyncifySuspended, QuickJSNotImplemented } from "./errors"
 import {
-  HeapCharPointer,
+  BorrowedHeapCharPointer,
   JSContextPointer,
-  JSModuleDefPointer,
   JSRuntimePointer,
   JSValuePointer,
 } from "./ffi-types"
@@ -214,7 +213,7 @@ export class QuickJSModuleCallbacks {
           return loadModule(rt, ctx, moduleName)
         } catch (error) {
           console.error("[C to host module loader error: returning null]", error)
-          return 0 as HeapCharPointer
+          return 0 as BorrowedHeapCharPointer
         }
       }),
 
@@ -233,7 +232,7 @@ export class QuickJSModuleCallbacks {
           return normalizeModule(rt, ctx, moduleBaseName, moduleName)
         } catch (error) {
           console.error("[C to host module loader error: returning null]", error)
-          return 0 as HeapCharPointer
+          return 0 as BorrowedHeapCharPointer
         }
       }),
   })

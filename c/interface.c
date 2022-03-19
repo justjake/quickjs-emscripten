@@ -58,7 +58,8 @@
  * allocated by the caller on the heap, not a JS string on the stack.
  * https://github.com/emscripten-core/emscripten/issues/6860#issuecomment-405818401
  */
-#define HeapChar const char
+#define BorrowedHeapChar const char
+#define OwnedHeapChar const char
 
 /**
  * Signal to our FFI code generator that this function should be called
@@ -179,7 +180,7 @@ JSValue *QTS_RuntimeComputeMemoryUsage(JSRuntime *rt, JSContext *ctx) {
   return jsvalue_to_heap(result);
 }
 
-char *QTS_RuntimeDumpMemoryUsage(JSRuntime *rt) {
+OwnedHeapChar *QTS_RuntimeDumpMemoryUsage(JSRuntime *rt) {
   char *result = malloc(sizeof(char) * 1024);
   FILE *memfile = fmemopen(result, 1024, "w");
   JSMemoryUsage s;
@@ -274,11 +275,11 @@ double QTS_GetFloat64(JSContext *ctx, JSValueConst *value) {
   return result;
 }
 
-JSValue *QTS_NewString(JSContext *ctx, HeapChar *string) {
+JSValue *QTS_NewString(JSContext *ctx, BorrowedHeapChar *string) {
   return jsvalue_to_heap(JS_NewString(ctx, string));
 }
 
-char *QTS_GetString(JSContext *ctx, JSValueConst *value) {
+OwnedHeapChar *QTS_GetString(JSContext *ctx, JSValueConst *value) {
   const char *owned = JS_ToCString(ctx, *value);
   char *result = strdup(owned);
   JS_FreeCString(ctx, owned);
@@ -388,7 +389,7 @@ JSValue *QTS_ResolveException(JSContext *ctx, JSValue *maybe_exception) {
   return NULL;
 }
 
-MaybeAsync(char *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
+MaybeAsync(OwnedHeapChar *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   JSValue obj_json_value = JS_JSONStringify(ctx, *obj, JS_UNDEFINED, JS_UNDEFINED);
   if (!JS_IsException(obj_json_value)) {
     const char *obj_json_chars = JS_ToCString(ctx, obj_json_value);
@@ -423,7 +424,7 @@ MaybeAsync(char *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   return QTS_GetString(ctx, obj);
 }
 
-MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
+MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
   size_t js_code_len = strlen(js_code);
 
   if (detectModule) {
@@ -440,7 +441,7 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *fi
   return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), filename, evalFlags));
 }
 
-char *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
+OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   const char *result = "unknown";
   uint32_t tag = JS_VALUE_GET_TAG(*value);
 
@@ -621,7 +622,7 @@ Probably we could optimize (2) to make it more performant, eg with parallel
 loading, but (1) seems much easier to implement in the sort run.
 */
 
-JSModuleDef *qts_compile_module(JSContext *ctx, const char *module_name, HeapChar *module_body) {
+JSModuleDef *qts_compile_module(JSContext *ctx, const char *module_name, BorrowedHeapChar *module_body) {
 #ifdef QTS_DEBUG_MODE
   char msg[500];
   sprintf(msg, "QTS_CompileModule(ctx: %p, name: %s, bodyLength: %lu)", ctx, module_name, strlen(module_body));
