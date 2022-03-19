@@ -74,13 +74,19 @@ export type QTS_C_To_HostLoadModuleFuncPointer = Pointer<"C_To_HostLoadModuleFun
  * Used internally for Javascript-to-C calls that may contain strings too large
  * for the Emscripten stack.
  */
-export type BorrowedHeapCharPointer = Pointer<"const char" | "char">
+export type BorrowedHeapCharPointer = Pointer<"const char" | "char" | "js const char">
 
 /**
  * Used internally for Javascript-to-C calls that may contain strings too large
  * for the Emscripten stack.
  */
 export type OwnedHeapCharPointer = Pointer<"char">
+
+/**
+ * Used internally for Javascript-to-C calls that may contain strings too large
+ * for the Emscripten stack.
+ */
+export type JSBorrowedCharPointer = Pointer<"js const char">
 
 /**
  * Opaque pointer that was allocated by js_malloc.

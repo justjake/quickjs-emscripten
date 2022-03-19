@@ -63,6 +63,7 @@
  */
 #define BorrowedHeapChar const char
 #define OwnedHeapChar char
+#define JSBorrowedChar const char
 
 /**
  * Signal to our FFI code generator that this function should be called
@@ -115,7 +116,9 @@ void copy_prop_if_needed(JSContext *ctx, JSValueConst dest, JSValueConst src, co
 JSValue *jsvalue_to_heap(JSValueConst value) {
   JSValue *result = malloc(sizeof(JSValue));
   if (result) {
-    memcpy(result, &value, sizeof(JSValue));
+    // Could be better optimized, but at -0z / -ftlo, it
+    // appears to produce the same binary code as a memcpy.
+    *result = value;
   }
   return result;
 }
@@ -268,6 +271,10 @@ void QTS_FreeVoidPointer(JSContext *ctx, JSVoid *ptr) {
   js_free(ctx, ptr);
 }
 
+void QTS_FreeCString(JSContext *ctx, JSBorrowedChar *str) {
+  JS_FreeCString(ctx, str);
+}
+
 JSValue *QTS_DupValuePointer(JSContext *ctx, JSValueConst *val) {
   return jsvalue_to_heap(JS_DupValue(ctx, *val));
 }
@@ -298,11 +305,8 @@ JSValue *QTS_NewString(JSContext *ctx, BorrowedHeapChar *string) {
   return jsvalue_to_heap(JS_NewString(ctx, string));
 }
 
-OwnedHeapChar *QTS_GetString(JSContext *ctx, JSValueConst *value) {
-  const char *owned = JS_ToCString(ctx, *value);
-  char *result = strdup(owned);
-  JS_FreeCString(ctx, owned);
-  return result;
+JSBorrowedChar *QTS_GetString(JSContext *ctx, JSValueConst *value) {
+  return JS_ToCString(ctx, *value);
 }
 
 int QTS_IsJobPending(JSRuntime *rt) {
@@ -408,7 +412,7 @@ JSValue *QTS_ResolveException(JSContext *ctx, JSValue *maybe_exception) {
   return NULL;
 }
 
-MaybeAsync(OwnedHeapChar *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
+MaybeAsync(JSBorrowedChar *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   JSValue obj_json_value = JS_JSONStringify(ctx, *obj, JS_UNDEFINED, JS_UNDEFINED);
   if (!JS_IsException(obj_json_value)) {
     const char *obj_json_chars = JS_ToCString(ctx, obj_json_value);
@@ -427,7 +431,7 @@ MaybeAsync(OwnedHeapChar *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
         JSValue enumerable_json = JS_JSONStringify(ctx, enumerable_props, JS_UNDEFINED, JS_UNDEFINED);
         JS_FreeValue(ctx, enumerable_props);
 
-        char *result = QTS_GetString(ctx, &enumerable_json);
+        JSBorrowedChar *result = QTS_GetString(ctx, &enumerable_json);
         JS_FreeValue(ctx, enumerable_json);
         return result;
       }

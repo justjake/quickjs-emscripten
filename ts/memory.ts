@@ -4,7 +4,7 @@ import {
   JSContextPointerPointer,
   JSValueConstPointerPointer,
   JSValuePointerPointer,
-} from "./ffi-types"
+} from "./types-ffi"
 import { Lifetime } from "./lifetime"
 import { EitherFFI, QuickJSHandle } from "./types"
 

@@ -107,11 +107,11 @@ $(BUILD_WRAPPER)/symbols.sync.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
 $(BUILD_WRAPPER)/symbols.asyncify-imports.json: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT) $(BUILD_WRAPPER)/symbols.sync.json
 	ASYNCIFY=true $(GENERATE_TS) async-callback-symbols $@
 
-ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
+ts/ffi.ts: $(WRAPPER_ROOT)/interface.c ts/types-ffi.ts generate.ts
 	$(GENERATE_TS) ffi $@
 	$(PRETTIER) --write $@
 
-ts/ffi-asyncify.ts: $(WRAPPER_ROOT)/interface.c ts/ffi-types.ts generate.ts
+ts/ffi-asyncify.ts: $(WRAPPER_ROOT)/interface.c ts/types-ffi.ts generate.ts
 	ASYNCIFY=true $(GENERATE_TS) ffi $@
 	$(PRETTIER) --write $@
 

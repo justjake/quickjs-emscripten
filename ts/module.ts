@@ -13,7 +13,7 @@ import {
   JSContextPointer,
   JSRuntimePointer,
   JSValuePointer,
-} from "./ffi-types"
+} from "./types-ffi"
 import { Lifetime, Scope } from "./lifetime"
 import { InterruptHandler, QuickJSRuntime } from "./runtime"
 import { concat, ContextOptions, EitherFFI, JSModuleLoader, RuntimeOptions } from "./types"

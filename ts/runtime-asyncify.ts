@@ -2,7 +2,7 @@ import { Lifetime } from "."
 import { QuickJSAsyncContext } from "./context-asyncify"
 import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
 import { QuickJSAsyncFFI } from "./ffi-asyncify"
-import { JSContextPointer, JSRuntimePointer } from "./ffi-types"
+import { JSContextPointer, JSRuntimePointer } from "./types-ffi"
 import { QuickJSModuleCallbacks } from "./module"
 import { QuickJSRuntime } from "./runtime"
 import {

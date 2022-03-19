@@ -9,7 +9,7 @@ import {
   JSContextPointerPointer,
   JSModuleDefPointer,
   JSRuntimePointer,
-} from "./ffi-types"
+} from "./types-ffi"
 import { Disposable, Lifetime, Scope } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"

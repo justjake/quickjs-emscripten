@@ -1,6 +1,6 @@
 {
   "include": ["ts/**/*.ts", "ts/**/*.js"],
-  "exclude": ["node_modules", "ts/ffi-types.ts", "examples"],
+  "exclude": ["node_modules", "examples"],
   "compilerOptions": {
     /* Basic Options */
     "incremental": true /* Enable incremental compilation */,

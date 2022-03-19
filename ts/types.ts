@@ -5,7 +5,7 @@ import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
 import type { Disposable, Lifetime } from "./lifetime"
 import type { QuickJSAsyncContext } from "./context-asyncify"
 import type { QuickJSRuntime } from "./runtime"
-import { EvalFlags, JSContextPointer, JSValueConstPointer, JSValuePointer } from "./ffi-types"
+import { EvalFlags, JSContextPointer, JSValueConstPointer, JSValuePointer } from "./types-ffi"
 
 export type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
 
