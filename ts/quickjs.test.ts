@@ -36,6 +36,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
   afterEach(() => {
     vm.dispose()
+    assertLeakCheck(vm)
     vm = undefined as any
   })
 
@@ -893,4 +894,10 @@ function assertBuildIsConsistent(vm: QuickJSContext) {
       "when FFI is generated without DEBUG, C code is compiled without DEBUG"
     )
   }
+}
+
+function assertLeakCheck(vm: QuickJSContext) {
+  const ffi: QuickJSFFI = (vm as any).ffi
+  // https://web.dev/webassembly-memory-debugging/
+  assert.strictEqual(ffi.QTS_RecoverableLeakCheck(), 0, "No lsan errors")
 }

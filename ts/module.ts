@@ -7,6 +7,7 @@ import {
   EmscriptenModuleCallbacks,
 } from "./emscripten-types"
 import { QuickJSAsyncifyError, QuickJSAsyncifySuspended, QuickJSNotImplemented } from "./errors"
+import { QuickJSFFI } from "./ffi"
 import {
   BorrowedHeapCharPointer,
   JSContextPointer,
@@ -364,5 +365,16 @@ export class QuickJSWASMModule {
       const value = vm.dump(scope.manage(result.value))
       return value
     })
+  }
+
+  /**
+   * Get a low-level interface to the QuickJS functions in this WebAssembly
+   * module.
+   * @experimental
+   * @unstable No warranty is provided with this API. It could change at any time.
+   * @private
+   */
+  getFFI(): EitherFFI {
+    return this.ffi
   }
 }

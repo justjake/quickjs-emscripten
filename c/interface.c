@@ -38,6 +38,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#ifdef QTS_DEBUG_MODE
+#include <sanitizer/lsan_interface.h>
+#endif
 
 #include "../quickjs/cutils.h"
 #include "../quickjs/quickjs-libc.h"
@@ -59,7 +62,7 @@
  * https://github.com/emscripten-core/emscripten/issues/6860#issuecomment-405818401
  */
 #define BorrowedHeapChar const char
-#define OwnedHeapChar const char
+#define OwnedHeapChar char
 
 /**
  * Signal to our FFI code generator that this function should be called
@@ -188,6 +191,14 @@ OwnedHeapChar *QTS_RuntimeDumpMemoryUsage(JSRuntime *rt) {
   JS_DumpMemoryUsage(memfile, &s, rt);
   fclose(memfile);
   return result;
+}
+
+int QTS_RecoverableLeakCheck() {
+#ifdef QTS_DEBUG_MODE
+  return __lsan_do_recoverable_leak_check();
+#else
+  return 0;
+#endif
 }
 
 /**

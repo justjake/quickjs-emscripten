@@ -12,7 +12,7 @@ import { JSRuntimePointer, JSContextPointer, JSContextPointerPointer, JSModuleDe
 export class QuickJSFFI {
   constructor(private module: QuickJSEmscriptenModule) {}
   /** Set at compile time. */
-  readonly DEBUG = false
+  readonly DEBUG = true
 
   QTS_Throw: (ctx: JSContextPointer, error: JSValuePointer | JSValueConstPointer) => JSValuePointer =
     this.module.cwrap("QTS_Throw", "number", ["number","number"])
@@ -28,6 +28,9 @@ export class QuickJSFFI {
 
   QTS_RuntimeDumpMemoryUsage: (rt: JSRuntimePointer) => OwnedHeapCharPointer =
     this.module.cwrap("QTS_RuntimeDumpMemoryUsage", "number", ["number"])
+
+  QTS_RecoverableLeakCheck: () => number =
+    this.module.cwrap("QTS_RecoverableLeakCheck", "number", [])
 
   QTS_GetUndefined: () => JSValueConstPointer =
     this.module.cwrap("QTS_GetUndefined", "number", [])

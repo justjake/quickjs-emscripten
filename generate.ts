@@ -83,7 +83,7 @@ function main() {
 // $1: attribute name
 // $2: inner type
 const ATTRIBUTE_REGEX = /^(\w+)\((.+)\)$/
-type Attribute = "MaybeAsync" | "AsyncifyOnly"
+type Attribute = "MaybeAsync" | "AsyncifyOnly" | "DebugOnly"
 
 function parseAttributes(type: string) {
   let text = type
@@ -209,7 +209,17 @@ function getAvailableDefinitions(matches: RegExpMatchArray[]) {
     const params = parseParams(rawParams)
     return { functionName, returnType: cTypeToTypescriptType(returnType.trim()), params }
   })
-  const filtered = parsed.filter((fn) => !fn.returnType.attributes.has("AsyncifyOnly") || ASYNCIFY)
+  const filtered = parsed.filter((fn) => {
+    if (fn.returnType.attributes.has("AsyncifyOnly")) {
+      return ASYNCIFY
+    }
+
+    if (fn.returnType.attributes.has("DebugOnly")) {
+      return DEBUG
+    }
+
+    return true
+  })
   return filtered
 }
 

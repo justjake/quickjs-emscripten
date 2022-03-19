@@ -1,4 +1,5 @@
 import { QuickJSContext } from "./context"
+import { QuickJSFFI } from "./ffi"
 import { Lifetime } from "./lifetime"
 import { ModuleEvalOptions, QuickJSWASMModule } from "./module"
 import { QuickJSRuntime } from "./runtime"
@@ -53,5 +54,9 @@ export class TestQuickJSWASMModule implements Pick<QuickJSWASMModule, keyof Quic
         d.dispose()
       }
     })
+  }
+
+  getFFI() {
+    return this.parent.getFFI()
   }
 }

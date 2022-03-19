@@ -1,7 +1,8 @@
 # Tools
 CC=clang
-EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.7
-EMCC=docker run --rm -v $(shell pwd):$(shell pwd) -u $(shell id -u):$(shell id -g) -w $(shell pwd) $(EMSDK_DOCKER_IMAGE) emcc
+EMSDK_VERSION=3.1.7
+EMSDK_DOCKER_IMAGE=emscripten/emsdk:$(EMSDK_VERSION)
+EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) scripts/emcc.sh
 GENERATE_TS=$(GENERATE_TS_ENV) npx ts-node generate.ts
 PRETTIER=npx prettier
 
@@ -33,7 +34,6 @@ CFLAGS_EMCC+=-s EXPORT_NAME=QuickJSRaw
 CFLAGS_EMCC+=-s INVOKE_RUN=0
 CFLAGS_EMCC+=-s ALLOW_MEMORY_GROWTH=1
 CFLAGS_EMCC+=-s ALLOW_TABLE_GROWTH=1
-CFLAGS_EMCC+=-s FILESYSTEM=0
 
 # Empscripten options for asyncify variant
 # https://emscripten.org/docs/porting/asyncify.html
@@ -44,6 +44,7 @@ CFLAGS_EMCC_ASYNCIFY+=-s ASYNCIFY_IMPORTS=$(shell cat $(BUILD_WRAPPER)/symbols.a
 
 ifdef DEBUG
 	CFLAGS=-O0
+	CFLAGS+=-fsanitize=address 
 	CFLAGS+=-DQTS_DEBUG_MODE
 
 	CFLAGS_EMCC+=-gsource-map
@@ -60,6 +61,7 @@ else
 
 	CFLAGS_EMCC+=-s SINGLE_FILE=1
 	CFLAGS_EMCC+=--closure 1
+	CFLAGS_EMCC+=-s FILESYSTEM=0
 endif
 
 

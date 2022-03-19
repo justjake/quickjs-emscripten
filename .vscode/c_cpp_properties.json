@@ -1,17 +1,45 @@
 {
-  "configurations": [
-    {
-      "name": "Mac",
-      "includePath": ["${workspaceFolder}/**"],
-      "defines": ["QTS_ASYNCIFY=1", "QTS_DEBUG=1"],
-      "macFrameworkPath": [
-        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
-      ],
-      "compilerPath": "/usr/bin/clang",
-      "cStandard": "c17",
-      "cppStandard": "c++98",
-      "intelliSenseMode": "macos-clang-arm64"
-    }
-  ],
-  "version": 4
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/system/include/**"
+            ],
+            "defines": [
+                "QTS_ASYNCIFY=1",
+                "QTS_DEBUG_MODE=1"
+            ],
+            "macFrameworkPath": [
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++98",
+            "intelliSenseMode": "macos-clang-arm64",
+            "compilerArgs": [],
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        },
+        {
+            "name": "Emscripten",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "macFrameworkPath": [
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/opt/homebrew/bin/emcc",
+            "cStandard": "c17",
+            "cppStandard": "c++98",
+            "intelliSenseMode": "macos-clang-arm64"
+        }
+    ],
+    "version": 4
 }
