@@ -1,0 +1,9 @@
+{
+  "cSpell.words": ["Asyncified", "ASYNCIFY", "chonkers", "JSWASM", "runtimes"],
+  "files.associations": {
+    "cutils.h": "c",
+    "quickjs.h": "c",
+    "quickjs-libc.h": "c",
+    "stdio.h": "c"
+  }
+}

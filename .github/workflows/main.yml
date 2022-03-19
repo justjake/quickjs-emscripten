@@ -6,9 +6,9 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -18,47 +18,51 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ ubuntu-latest, macos-latest ]
+        platform: [ubuntu-latest] # , macos-latest] # Too slow :(
 
     # The type of runner that the job will run on
     runs-on: ${{matrix.platform}}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v1
-      with:
-        # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
-        node-version: 12.x
+      - name: Setup Docker (macOS)
+        uses: docker-practice/actions-setup-docker@1.0.8
+        if: matrix.platform == 'macos-latest'
 
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v1
+        with:
+          # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
+          node-version: 12.x
 
-    - name: Cache dependencies
-      uses: actions/cache@v2
-      with:
-        path: "**/.yarn/cache"
-        key: ${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/package.json') }}
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: yarn install --immutable
-      env:
-        YARN_ENABLE_SCRIPTS: 0
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: "**/.yarn/cache"
+          key: ${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/package.json') }}
 
-    - name: Test debug
-      run: make clean && yarn test
+      - name: Install dependencies
+        run: yarn install --immutable
+        env:
+          YARN_ENABLE_SCRIPTS: 0
 
-    - name: Prettier
-      run: yarn run prettier-check
+      - name: Test debug
+        run: make clean && yarn test
 
-    - name: Build release
-      run: yarn make-release && yarn build && yarn tarball
+      - name: Prettier
+        run: yarn run prettier-check
 
-    - name: Test release
-      run: yarn run mocha
+      - name: Build release
+        run: yarn make-release && yarn build && yarn tarball
 
-    - name: Test release with NodeJS/Typescript example
-      run: yarn smoketest-node
+      - name: Test release
+        run: yarn run mocha
 
-    - name: Test release with create-react-app/Typescript example
-      run: yarn smoketest-cra
+      - name: Test release with NodeJS/Typescript example
+        run: yarn smoketest-node
+
+      - name: Test release with create-react-app/Typescript example
+        run: yarn smoketest-cra

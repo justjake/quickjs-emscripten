@@ -1,4 +1,7 @@
-import { QuickJSHandle } from './quickjs'
+import { maybeAsync, MaybeAsyncBlock } from "./asyncify-helpers"
+import { QTS_DEBUG } from "./debug"
+import { QuickJSUseAfterFree } from "./errors"
+import type { QuickJSHandle } from "./types"
 
 /**
  * An object that can be disposed.
@@ -26,6 +29,7 @@ export interface Disposable {
  */
 export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
   protected _alive: boolean = true
+  protected _constructorStack = QTS_DEBUG ? new Error("Lifetime constructed").stack : undefined
 
   /**
    * When the Lifetime is disposed, it will call `disposer(_value)`. Use the
@@ -71,7 +75,7 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
   dup() {
     this.assertAlive()
     if (!this.copier) {
-      throw new Error('Non-dupable lifetime')
+      throw new Error("Non-dupable lifetime")
     }
     return new Lifetime<TCopy, TCopy, Owner>(
       this.copier(this._value),
@@ -109,7 +113,12 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
 
   private assertAlive() {
     if (!this.alive) {
-      throw new Error('Lifetime not alive')
+      if (this._constructorStack) {
+        throw new QuickJSUseAfterFree(
+          `Lifetime not alive\n${this._constructorStack}\nLifetime used`
+        )
+      }
+      throw new QuickJSUseAfterFree("Lifetime not alive")
     }
   }
 }
@@ -160,11 +169,12 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
 }
 
 function scopeFinally(scope: Scope, blockError: Error | undefined) {
+  // console.log('scopeFinally', scope, blockError)
   let disposeError: Error | undefined
   try {
     scope.dispose()
   } catch (error) {
-    disposeError = error
+    disposeError = error as any
   }
 
   if (blockError && disposeError) {
@@ -198,11 +208,29 @@ export class Scope implements Disposable {
     try {
       return block(scope)
     } catch (error) {
-      blockError = error
+      blockError = error as any
       throw error
     } finally {
       scopeFinally(scope, blockError)
     }
+  }
+
+  static withScopeMaybeAsync<Return, This, Yielded>(
+    _this: This,
+    block: MaybeAsyncBlock<Return, This, Yielded, [Scope]>
+  ): Return | Promise<Return> {
+    return maybeAsync(undefined, function* (awaited) {
+      const scope = new Scope()
+      let blockError: Error | undefined
+      try {
+        return yield* awaited.of(block.call(_this, awaited, scope))
+      } catch (error) {
+        blockError = error as any
+        throw error
+      } finally {
+        scopeFinally(scope, blockError)
+      }
+    })
   }
 
   /**
@@ -217,7 +245,7 @@ export class Scope implements Disposable {
     try {
       return await block(scope)
     } catch (error) {
-      blockError = error
+      blockError = error as any
       throw error
     } finally {
       scopeFinally(scope, blockError)

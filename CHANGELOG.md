@@ -1,0 +1,73 @@
+# Changelog
+
+## v0.20.0
+
+This is a large release! The summary is:
+
+- There are several breaking API changes to align our abstractions with the
+  underlying QuickJS library.
+- There's a new build variant build with [Emscripten's
+  ASYNCIFY](https://emscripten.org/docs/porting/asyncify.html) that allows
+  _synchronous_ code _inside_ QuickJS to use _asynchronous_ code running on the
+  host.
+- Both build variants have basic support for loading and evaluating EcmaScript
+  modules, but only the ASYNCIFY variant can asynchronously load EcmaScript code.
+
+### New features
+
+This release introduces `class QuickJSRuntime`. This class wraps QuickJS's `JSRuntime*` type:
+
+> `JSRuntime` represents a Javascript runtime corresponding to an object heap.
+> Several runtimes can exist at the same time but they cannot exchange objects.
+> Inside a given runtime, no multi-threading is supported.
+
+- `QuickJSRuntime.newContext` creates a new context inside an existing runtime.
+- `QuickJSRuntime.setModuleLoader` enables EcmaScript module loading.
+
+This release renames `QuickJSVm` to `class QuickJSContext`, and removes some methods.
+The new class wraps QuickJS's `JSContext*` type:
+
+> `JSContext` represents a Javascript context (or Realm). Each JSContext has its
+> own global objects and system objects. There can be several JSContexts per
+> JSRuntime \[...], similar to frames of the same origin
+> sharing Javascript objects in a web browser.
+
+`QuickJSContext` replaces `QuickJSVm` as the main way to interact with the
+environment inside the QuickJS virtual machine.
+
+- `QuickJSContext.runtime` provides access to a context's parent runtime.
+- `QuickJSContext.evalCode` now takes an options argument to set eval mode
+  to `'module'`.
+
+There are also **Asyncified** versions of both `QuickJSRuntime` (`QuickJSRuntimeAsync`) and `QuickJSContext` (`QuickJSContextAsync`). These variants trade some runtime performance for additional features.
+
+- `QuickJSRuntimeAsync.setModuleLoader` accepts module loaders that return
+  `Promise<string>`.
+- `QuickJSContextAsync.newAsyncifiedFunction` allows creating async functions that
+  act like sync functions inside the VM.
+
+### Breaking changes
+
+**`class QuickJSVm` is removed**. Most functionality is available on
+`QuickJSContext`, with identical function signatures. Functionality related to
+runtime limits, memory limits, and pending jobs moved to `QuickJSRuntime`.
+
+**Migration guide**:
+
+1. Replace usages with QuickJSContext.
+2. Replace the following methods:
+   - `vm.hasPendingJob` -> `context.runtime.hasPendingJob`
+   - `vm.setInterruptHandler` -> `context.runtime.setInterruptHandler`
+   - `vm.removeInterruptHandler` -> `context.runtime.removeInterruptHandler`
+   - `vm.executePendingJobs` -> `context.runtime.executePendingJobs`
+   - `vm.setMemoryLimit` -> `context.runtime.setMemoryLimit`
+   - `vm.computeMemoryUsage` -> `context.runtime.computeMemoryUsage`
+
+**`QuickJS.createVm()` is removed.**
+
+**Migration guide**: use `QuickJS.newContext()` instead.
+
+## v0.15.0
+
+This is the last version containing `class QuickJSVm` and constructor
+`QuickJS.createVm()`.

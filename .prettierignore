@@ -1,2 +1,11 @@
 ts/ffi.ts
+ts/ffi-asyncify.ts
+*.emscripten-module.js
+quickjs
+.yarn
+doc
+test/json-generator-dot-com-1024-rows.json
 dist/*
+examples/imports
+examples/typescript-smoketest/*.js
+build
