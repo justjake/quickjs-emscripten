@@ -42,7 +42,7 @@ main()
 [tests]: https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts
 [values]: #interfacing-with-the-interpreter
 [asyncify]: #asyncify
-[functons]: #exposing-apis
+[functions]: #exposing-apis
 
 ## Usage
 
@@ -355,7 +355,7 @@ To use asyncify features, use the following functions:
 
 [newasyncruntime]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasyncruntime
 [newasynccontext]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasynccontext
-[newasynccontext]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newquickjsasyncwasmmodule
+[newquickjsasyncwasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newquickjsasyncwasmmodule
 
 These functions are asynchronous because they always create a new underlying
 WebAssembly module so that each instance can suspend and resume independently,
@@ -437,7 +437,7 @@ console.log(upperCaseData) // 'VERY USEFUL DATA'
 
 ### More Documentation
 
-[Github](https://github.com/justjake/quickjs-emscripten) | [NPM](https://www.npmjs.com/package/quickjs-emscripten) | [API Documentation](https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md) | [Examples](https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts)
+[Github] | [NPM] | [API Documentation][api] | [Examples][tests]
 
 ## Background
 

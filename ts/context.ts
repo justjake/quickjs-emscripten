@@ -35,7 +35,7 @@ import {
 
 /**
  * Property key for getting or setting a property on a handle with
- * [QuickJSContext.getProp], [QuickJSContext.setProp], or [QuickJSContext.defineProp].
+ * [[QuickJSContext.getProp]], [[QuickJSContext.setProp]], or [[QuickJSContext.defineProp]].
  */
 export type QuickJSPropertyKey = number | string | QuickJSHandle
 

@@ -116,7 +116,7 @@ export async function newQuickJSAsyncWASMModule(): Promise<QuickJSAsyncWASMModul
 }
 
 /**
- * Create a new [QuickJSAsyncRuntime] in a separate WebAssembly module.
+ * Create a new [[QuickJSAsyncRuntime]] in a separate WebAssembly module.
  *
  * Each runtime is isolated in a separate WebAssembly module, so that errors in
  * one runtime cannot contaminate another runtime, and each runtime can execute
@@ -132,7 +132,7 @@ export async function newAsyncRuntime(options?: AsyncRuntimeOptions): Promise<Qu
 }
 
 /**
- * Create a new [QuickJSAsyncContext] (with an associated runtime) in an
+ * Create a new [[QuickJSAsyncContext]] (with an associated runtime) in an
  * separate WebAssembly module.
  *
  * Each context is isolated in a separate WebAssembly module, so that errors in

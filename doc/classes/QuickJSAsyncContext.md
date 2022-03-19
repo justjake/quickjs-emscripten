@@ -2,7 +2,7 @@
 
 # Class: QuickJSAsyncContext
 
-Asyncified version of [QuickJSContext].
+Asyncified version of [QuickJSContext](QuickJSContext.md).
 
 *Asyncify* allows normally synchronous code to wait for asynchronous Promises
 or callbacks. The asyncified version of QuickJSContext can wait for async
@@ -446,7 +446,7 @@ ___
 
 ▸ **evalCodeAsync**(`code`, `filename?`, `options?`): `Promise`<[`VmCallResult`](../modules.md#vmcallresult)<[`QuickJSHandle`](../modules.md#quickjshandle)\>\>
 
-Asyncified version of [evalCode].
+Asyncified version of [evalCode](QuickJSAsyncContext.md#evalcode).
 
 #### Parameters
 
@@ -573,7 +573,7 @@ ___
 
 ▸ **newAsyncifiedFunction**(`name`, `fn`): [`QuickJSHandle`](../modules.md#quickjshandle)
 
-Similar to [newFunction].
+Similar to [newFunction](QuickJSAsyncContext.md#newfunction).
 Convert an async host Javascript function into a synchronous QuickJS function value.
 
 Whenever QuickJS calls this function, the VM's stack will be unwound while

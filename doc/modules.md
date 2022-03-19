@@ -182,7 +182,7 @@ ___
 Ƭ **QuickJSPropertyKey**: `number` \| `string` \| [`QuickJSHandle`](modules.md#quickjshandle)
 
 Property key for getting or setting a property on a handle with
-[QuickJSContext.getProp], [QuickJSContext.setProp], or [QuickJSContext.defineProp].
+[QuickJSContext.getProp](classes/QuickJSContext.md#getprop), [QuickJSContext.setProp](classes/QuickJSContext.md#setprop), or [QuickJSContext.defineProp](classes/QuickJSContext.md#defineprop).
 
 #### Defined in
 
@@ -389,7 +389,7 @@ ___
 
 ▸ **newAsyncContext**(`options?`): `Promise`<[`QuickJSAsyncContext`](classes/QuickJSAsyncContext.md)\>
 
-Create a new [QuickJSAsyncContext] (with an associated runtime) in an
+Create a new [QuickJSAsyncContext](classes/QuickJSAsyncContext.md) (with an associated runtime) in an
 separate WebAssembly module.
 
 Each context is isolated in a separate WebAssembly module, so that errors in
@@ -420,7 +420,7 @@ ___
 
 ▸ **newAsyncRuntime**(`options?`): `Promise`<[`QuickJSAsyncRuntime`](classes/QuickJSAsyncRuntime.md)\>
 
-Create a new [QuickJSAsyncRuntime] in a separate WebAssembly module.
+Create a new [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md) in a separate WebAssembly module.
 
 Each runtime is isolated in a separate WebAssembly module, so that errors in
 one runtime cannot contaminate another runtime, and each runtime can execute
