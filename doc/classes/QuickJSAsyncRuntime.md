@@ -361,8 +361,8 @@ The loader can be removed with [removeModuleLoader](QuickJSAsyncRuntime.md#remov
 
 | Name | Type |
 | :------ | :------ |
-| `moduleLoader` | [`JSModuleLoader`](../interfaces/JSModuleLoader.md) \| `JSModuleLoaderAsync` |
-| `moduleNormalizer?` | `JSModuleNormalizer` \| `JSModuleNormalizerAsync` |
+| `moduleLoader` | `JSModuleLoaderAsync` |
+| `moduleNormalizer?` | `JSModuleNormalizerAsync` |
 
 #### Returns
 

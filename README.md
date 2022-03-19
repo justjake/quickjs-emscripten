@@ -123,8 +123,7 @@ let interruptCycles = 0
 runtime.setInterruptHandler(() => ++interruptCycles > 1024)
 // Toy module system that always returns the module name
 // as the default export
-runtime.setModuleLoader(moduleName =>
-  `export default '${moduleName}'`)
+runtime.setModuleLoader((moduleName) => `export default '${moduleName}'`)
 const context = runtime.newContext()
 const ok = context.evalCode(`
 import fooName from './foo.js'
@@ -132,11 +131,7 @@ globalThis.result = fooName
 `)
 context.unwrapResult(ok).dispose()
 // logs "foo.js"
-console.log(
-  context
-    .getProp(context.global, 'result')
-    .consume(context.dump)
-)
+console.log(context.getProp(context.global, "result").consume(context.dump))
 context.dispose()
 runtime.dispose()
 ```

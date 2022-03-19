@@ -308,7 +308,7 @@ To work with the asyncified version of this library, see these functions:
 
 #### Defined in
 
-[ts/index.ts:51](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L51)
+[ts/index.ts:52](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L52)
 
 ___
 
@@ -327,7 +327,7 @@ least once.
 
 #### Defined in
 
-[ts/index.ts:64](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L64)
+[ts/index.ts:65](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L65)
 
 ___
 
@@ -387,7 +387,7 @@ ___
 
 ### newAsyncContext
 
-▸ **newAsyncContext**(): `Promise`<[`QuickJSAsyncContext`](classes/QuickJSAsyncContext.md)\>
+▸ **newAsyncContext**(`options?`): `Promise`<[`QuickJSAsyncContext`](classes/QuickJSAsyncContext.md)\>
 
 Create a new [QuickJSAsyncContext] (with an associated runtime) in an
 separate WebAssembly module.
@@ -400,19 +400,25 @@ Note that there is a hard limit on the number of WebAssembly modules in older
 versions of v8:
 https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `options?` | [`ContextOptions`](interfaces/ContextOptions.md) |
+
 #### Returns
 
 `Promise`<[`QuickJSAsyncContext`](classes/QuickJSAsyncContext.md)\>
 
 #### Defined in
 
-[ts/index.ts:145](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L145)
+[ts/index.ts:146](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L146)
 
 ___
 
 ### newAsyncRuntime
 
-▸ **newAsyncRuntime**(): `Promise`<[`QuickJSAsyncRuntime`](classes/QuickJSAsyncRuntime.md)\>
+▸ **newAsyncRuntime**(`options?`): `Promise`<[`QuickJSAsyncRuntime`](classes/QuickJSAsyncRuntime.md)\>
 
 Create a new [QuickJSAsyncRuntime] in a separate WebAssembly module.
 
@@ -424,13 +430,19 @@ Note that there is a hard limit on the number of WebAssembly modules in older
 versions of v8:
 https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `options?` | `AsyncRuntimeOptions` |
+
 #### Returns
 
 `Promise`<[`QuickJSAsyncRuntime`](classes/QuickJSAsyncRuntime.md)\>
 
 #### Defined in
 
-[ts/index.ts:128](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L128)
+[ts/index.ts:129](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L129)
 
 ___
 
@@ -456,7 +468,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-[ts/index.ts:104](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L104)
+[ts/index.ts:105](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L105)
 
 ___
 
@@ -477,7 +489,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-[ts/index.ts:79](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L79)
+[ts/index.ts:80](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L80)
 
 ___
 
@@ -499,4 +511,4 @@ Returns an interrupt handler that interrupts Javascript execution after a deadli
 
 #### Defined in
 
-[ts/index.ts:156](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L156)
+[ts/index.ts:157](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L157)

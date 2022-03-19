@@ -122,7 +122,7 @@ concurrent async actions, create multiple WebAssembly modules.
 
 | Name | Type |
 | :------ | :------ |
-| `options` | [`RuntimeOptions`](../interfaces/RuntimeOptions.md) |
+| `options` | `AsyncRuntimeOptions` |
 
 #### Returns
 
