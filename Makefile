@@ -44,8 +44,9 @@ CFLAGS_EMCC_ASYNCIFY+=-s ASYNCIFY_IMPORTS=$(shell cat $(BUILD_WRAPPER)/symbols.a
 
 ifdef DEBUG
 	CFLAGS=-O0
-	CFLAGS+=-fsanitize=address 
+	CFLAGS+=-fsanitize=leak 
 	CFLAGS+=-DQTS_DEBUG_MODE
+	CFLAGS+=-g2
 
 	CFLAGS_EMCC+=-gsource-map
 	CFLAGS_EMCC+=-s ASSERTIONS=1

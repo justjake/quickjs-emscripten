@@ -16,7 +16,7 @@ import {
 } from "./ffi-types"
 import { Lifetime, Scope } from "./lifetime"
 import { InterruptHandler, QuickJSRuntime } from "./runtime"
-import { ContextOptions, EitherFFI, JSModuleLoader, RuntimeOptions } from "./types"
+import { concat, ContextOptions, EitherFFI, JSModuleLoader, RuntimeOptions } from "./types"
 
 type EmscriptenCallback<BaseArgs extends any[], Result> = (
   ...args: [Asyncify | undefined, ...BaseArgs]
@@ -303,8 +303,10 @@ export class QuickJSWASMModule {
    */
   newContext(options: ContextOptions = {}): QuickJSContext {
     const runtime = this.newRuntime()
-    const lifetimes = options.ownedLifetimes ? options.ownedLifetimes.concat([runtime]) : [runtime]
-    const context = runtime.newContext({ ...options, ownedLifetimes: lifetimes })
+    const context = runtime.newContext({
+      ...options,
+      ownedLifetimes: concat(runtime, options.ownedLifetimes),
+    })
     runtime.context = context
     return context
   }

@@ -150,7 +150,7 @@ export class QuickJSRuntime implements Disposable {
       ctx,
       ffi: this.ffi,
       rt: this.rt,
-      ownedLifetimes: [],
+      ownedLifetimes: options.ownedLifetimes,
       runtime: this,
       callbacks: this.callbacks,
     })

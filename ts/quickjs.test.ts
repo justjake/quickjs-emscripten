@@ -21,23 +21,35 @@ import { debugLog } from "./debug"
 // Force load big chonkers
 import "./quickjs.emscripten-module"
 import "./quickjs-asyncify.emscripten-module"
+import { EitherFFI } from "./types"
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
 
 function contextTests(getContext: () => Promise<QuickJSContext>) {
   let vm: QuickJSContext = undefined as any
+  let ffi: EitherFFI = undefined as any
   let testId = 0
 
   beforeEach(async () => {
     testId++
     vm = await getContext()
+    ffi = (vm as any).ffi
     assertBuildIsConsistent(vm)
   })
 
   afterEach(() => {
     vm.dispose()
-    assertLeakCheck(vm)
     vm = undefined as any
+  })
+
+  after(() => {
+    if (ffi.QTS_BuildIsAsyncify()) {
+      // Asyncify explodes during leak checking.
+      return
+    }
+    // https://web.dev/webassembly-memory-debugging/
+    assert.strictEqual(ffi.QTS_RecoverableLeakCheck(), 0, "No lsan errors")
+    console.log("Leaks checked (OK)")
   })
 
   const getTestId = () => `test-${getContext.name}-${testId}`
@@ -563,6 +575,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
       const value = vm.unwrapResult(otherContext.evalCode(`myObject`)).consume(otherContext.dump)
       assert.deepStrictEqual(value, { foo: "bar" }, "ok")
+      otherContext.dispose()
     })
   })
 
@@ -894,10 +907,4 @@ function assertBuildIsConsistent(vm: QuickJSContext) {
       "when FFI is generated without DEBUG, C code is compiled without DEBUG"
     )
   }
-}
-
-function assertLeakCheck(vm: QuickJSContext) {
-  const ffi: QuickJSFFI = (vm as any).ffi
-  // https://web.dev/webassembly-memory-debugging/
-  assert.strictEqual(ffi.QTS_RecoverableLeakCheck(), 0, "No lsan errors")
 }

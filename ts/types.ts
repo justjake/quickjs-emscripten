@@ -237,3 +237,13 @@ export type PromiseExecutor<ResolveT, RejectT> = (
   resolve: (value: ResolveT | PromiseLike<ResolveT>) => void,
   reject: (reason: RejectT) => void
 ) => void
+
+export function concat<T>(...values: Array<T[] | T | undefined>): T[] {
+  let result: T[] = []
+  for (const value of values) {
+    if (value !== undefined) {
+      result = result.concat(value)
+    }
+  }
+  return result
+}

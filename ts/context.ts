@@ -166,7 +166,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     ctx: Lifetime<JSContextPointer>
     rt: Lifetime<JSRuntimePointer>
     runtime: QuickJSRuntime
-    ownedLifetimes: Disposable[]
+    ownedLifetimes?: Disposable[]
     callbacks: QuickJSModuleCallbacks
   }) {
     this.runtime = args.runtime
@@ -269,7 +269,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     // we should manage it.
     const ptr = this.ffi.QTS_GetGlobalObject(this.ctx.value)
 
-    // Automatically clean up this reference when we dispose(
+    // Automatically clean up this reference when we dispose
     this.memory.manage(this.memory.heapValueHandle(ptr))
 
     // This isn't technically a static lifetime, but since it has the same
