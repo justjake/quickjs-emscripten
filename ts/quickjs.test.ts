@@ -92,8 +92,9 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       const fnHandle = vm.newFunction("addSome", (num) => {
         return vm.newNumber(some + vm.getNumber(num))
       })
-      const result = vm.callFunction(fnHandle, vm.undefined, vm.newNumber(1))
+      const result = vm.newNumber(1).consume((num) => vm.callFunction(fnHandle, vm.undefined, num))
       if (result.error) {
+        result.error.dispose()
         assert.fail("calling fnHandle must succeed")
       }
       assert.equal(vm.getNumber(result.value), 10)
@@ -366,6 +367,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       vm.runtime.executePendingJobs()
       assert.equal(i, 3)
       assert.equal(vm.getNumber(result), 1)
+      result.dispose()
     })
   })
 
