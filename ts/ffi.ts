@@ -12,7 +12,7 @@ import { JSRuntimePointer, JSContextPointer, JSContextPointerPointer, JSModuleDe
 export class QuickJSFFI {
   constructor(private module: QuickJSEmscriptenModule) {}
   /** Set at compile time. */
-  readonly DEBUG = true
+  readonly DEBUG = false
 
   QTS_Throw: (ctx: JSContextPointer, error: JSValuePointer | JSValueConstPointer) => JSValuePointer =
     this.module.cwrap("QTS_Throw", "number", ["number","number"])

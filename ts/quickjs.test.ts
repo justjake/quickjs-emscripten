@@ -276,7 +276,9 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         }
         throw error
       } finally {
-        handle.dispose()
+        if (handle.alive) {
+          handle.dispose()
+        }
       }
     })
   })

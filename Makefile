@@ -44,9 +44,9 @@ CFLAGS_EMCC_ASYNCIFY+=-s ASYNCIFY_IMPORTS=$(shell cat $(BUILD_WRAPPER)/symbols.a
 
 ifdef DEBUG
 	CFLAGS=-O0
-	CFLAGS+=-fsanitize=leak 
 	CFLAGS+=-DQTS_DEBUG_MODE
-	CFLAGS+=-g2
+	CFLAGS_SYNC+=-fsanitize=leak
+	CFLAGS_SYNC+=-g2
 
 	CFLAGS_EMCC+=-gsource-map
 	CFLAGS_EMCC+=-s ASSERTIONS=1
@@ -117,38 +117,38 @@ examples/imports: downloadEcmaScriptModules.ts
 ### Executables
 # The WASM module we'll link to typescript
 ts/quickjs.emscripten-module.js: $(BUILD_WRAPPER)/wasm/interface.o $(QUICKJS_OBJS_WASM)
-	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(QUICKJS_OBJS_WASM)
+	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_SYNC) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(QUICKJS_OBJS_WASM)
 
 ts/quickjs-asyncify.emscripten-module.js: $(BUILD_WRAPPER)/wasm-asyncify/interface.o $(QUICKJS_OBJS_WASM_ASYNCIFY)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_EMCC_ASYNCIFY) $(EMCC_EXPORTED_FUNCS_ASYNCIFY) -o $@ $< $(QUICKJS_OBJS_WASM_ASYNCIFY)
 
 # Trying to debug C...
 $(BUILD_WRAPPER)/native/test.exe: $(BUILD_WRAPPER)/native/test.o $(BUILD_WRAPPER)/native/interface.o $(WRAPPER_ROOT) $(QUICKJS_OBJS_NATIVE)
-	$(CC) $(CFLAGS) -o $@ $< $(BUILD_WRAPPER)/native/interface.o $(QUICKJS_OBJS_NATIVE)
+	$(CC) $(CFLAGS) $(CFLAGS_SYNC) -o $@ $< $(BUILD_WRAPPER)/native/interface.o $(QUICKJS_OBJS_NATIVE)
 
 ### Object files
 # Our wrapper
 $(BUILD_WRAPPER)/wasm/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.json $(BUILD_ROOT)
-	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -c -o $@ $<
+	$(EMCC) $(CFLAGS) $(CFLAGS_SYNC) $(CFLAGS_EMCC) $(EMCC_EXPORTED_FUNCS) -c -o $@ $<
 
 $(BUILD_WRAPPER)/wasm-asyncify/%.o: $(WRAPPER_ROOT)/%.c $(BUILD_WRAPPER)/symbols.asyncify.json $(BUILD_WRAPPER)/symbols.asyncify-imports.json $(BUILD_ROOT)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_EMCC_ASYNCIFY) $(EMCC_EXPORTED_FUNCS) -c -o $@ $<
 
 $(BUILD_WRAPPER)/native/test.o: $(WRAPPER_ROOT)/test.c $(WRAPPER_ROOT)/interface.h
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(CFLAGS_SYNC) -c -o $@ $<
 
 $(BUILD_WRAPPER)/native/%.o: $(WRAPPER_ROOT)/%.c | $(BUILD_ROOT)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(CFLAGS_SYNC) -c -o $@ $<
 
 # QuickJS
 $(BUILD_QUICKJS)/wasm/%.o: $(QUICKJS_ROOT)/%.c $(BUILD_ROOT)
-	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(QUICKJS_DEFINES) -c -o $@ $<
+	$(EMCC) $(CFLAGS) $(CFLAGS_SYNC) $(CFLAGS_EMCC) $(QUICKJS_DEFINES) -c -o $@ $<
 
 $(BUILD_QUICKJS)/wasm-asyncify/%.o: $(QUICKJS_ROOT)/%.c $(BUILD_ROOT)
 	$(EMCC) $(CFLAGS) $(CFLAGS_EMCC) $(CFLAGS_EMCC_ASYNCIFY) $(QUICKJS_DEFINES) -c -o $@ $<
 
 $(BUILD_QUICKJS)/native/%.o: $(QUICKJS_ROOT)/%.c | $(BUILD_ROOT)
-	$(CC) $(CFLAGS) $(QUICKJS_DEFINES) -c -o $@ $<
+	$(CC) $(CFLAGS) $(CFLAGS_SYNC) $(QUICKJS_DEFINES) -c -o $@ $<
 
 clean-generate:
 	rm -rfv ./ts/ffi.ts
