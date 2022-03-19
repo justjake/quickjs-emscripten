@@ -1,6 +1,6 @@
 #!/bin/bash
 # Use system emcc if installed, otherwise use Docker.
-if command -v emcc > /dev/null ; then
+if [[ -z "$EMSDK_USE_DOCKER" ]] && command -v emcc > /dev/null ; then
   if emcc --version | grep "$EMSDK_VERSION" > /dev/null ; then
     exec emcc "$@"
   fi
