@@ -60,6 +60,7 @@ ifdef DEBUG
 	GENERATE_TS_ENV+=DEBUG=true
 else
 	CFLAGS=-Oz
+	CFLAGS+=-flto
 
 	CFLAGS_EMCC+=-s SINGLE_FILE=1
 	CFLAGS_EMCC+=--closure 1
