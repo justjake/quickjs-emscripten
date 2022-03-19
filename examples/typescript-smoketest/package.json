@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "quickjs-emscripten": "../../build/quickjs-emscripten.tgz",
+    "quickjs-emscripten": "file:../../build/quickjs-emscripten.tgz",
     "typescript": "4.5.5"
   }
 }

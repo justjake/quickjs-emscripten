@@ -23,7 +23,7 @@
     "dist/*.map"
   ],
   "scripts": {
-    "prepack": "make generate && yarn build && yarn make-release",
+    "prepack": "make generate && yarn build ",
     "tarball": "mkdir -p build && yarn pack --filename build/quickjs-emscripten.tgz",
     "prepare": "yarn tarball && mocha ./dist/quickjs.test.js && yarn smoketest-node",
     "make-debug": "make DEBUG=1 -j 8",
@@ -37,8 +37,8 @@
     "prettier-check": "prettier --check .",
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:bellard/quickjs.git master",
     "run-n": "yarn make-debug && ./build/wrapper/native/test.exe",
-    "smoketest-node": "cd examples/typescript-smoketest && YARN_CHECKSUM_BEHAVIOR=update yarn add quickjs-emscripten@../../build/quickjs-emscripten.tgz && tsc --lib ES2015,dom index.ts && node index.js",
-    "smoketest-cra": "cd examples/website && YARN_CHECKSUM_BEHAVIOR=update yarn add quickjs-emscripten@../../build/quickjs-emscripten.tgz && yarn build"
+    "smoketest-node": "./scripts/smoketest-node.sh",
+    "smoketest-cra": "./scripts/smoketest-website.sh"
   },
   "devDependencies": {
     "@types/emscripten": "^1.38.0",
