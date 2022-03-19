@@ -3,7 +3,7 @@
 
 
 "quickjs-emscripten@file:../../build/quickjs-emscripten.tgz":
-  "integrity" "sha512-D2YDHP/8L02BJqzd8Q4tZ0i6JhXfozdYZ8DU12GebohgZVKbSPCQrmjIze1Rws2BRJTiAX2Y1DPzqr5WYQ8XWg=="
+  "integrity" "sha512-XwxSxfc6trvrlmVlsrrkiys3n0PugD8+jDJ+KaZVBSaHXDKRVw39oZHVu2UHJY+WMjwwvOKbYvkan/WD9qeCqw=="
   "resolved" "file:../../build/quickjs-emscripten.tgz"
   "version" "0.20.0-beta.0"
 
