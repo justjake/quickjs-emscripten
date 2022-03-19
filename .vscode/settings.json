@@ -6,6 +6,8 @@
     "quickjs-libc.h": "c",
     "stdio.h": "c",
     "lsan_interface.h": "c",
-    "math.h": "c"
-  }
+    "math.h": "c",
+    "stdbool.h": "c",
+    "emscripten.h": "c"
+  },
 }

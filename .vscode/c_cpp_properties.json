@@ -4,7 +4,13 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/system/include/**"
+                "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/system/include/**",
+                "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/cache/sysroot/include/**",
+                "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/llvm/lib/clang/15.0.0/include/**",
+                "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/cache/sysroot/include/SDL",
+                "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/cache/sysroot/include/compat",
+                "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/llvm/lib/clang/15.0.0/include",
+                "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/cache/sysroot/include"
             ],
             "defines": [
                 "QTS_ASYNCIFY=1",
