@@ -102,7 +102,7 @@ Use {@link QuickJS.createVm} to create a QuickJSContext instance.
 | `args.ctx` | [`Lifetime`](Lifetime.md)<`JSContextPointer`, `never`, `never`\> |
 | `args.ffi` | `EitherFFI` |
 | `args.module` | `EitherModule` |
-| `args.ownedLifetimes` | [`Disposable`](../interfaces/Disposable.md)[] |
+| `args.ownedLifetimes?` | [`Disposable`](../interfaces/Disposable.md)[] |
 | `args.rt` | [`Lifetime`](Lifetime.md)<`JSRuntimePointer`, `never`, `never`\> |
 | `args.runtime` | [`QuickJSRuntime`](QuickJSRuntime.md) |
 

@@ -75,7 +75,7 @@ serialization, so properties and values unsupported by JSON will be dropped.
 
 #### Defined in
 
-[ts/module.ts:337](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module.ts#L337)
+[ts/module.ts:339](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module.ts#L339)
 
 ___
 
