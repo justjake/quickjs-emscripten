@@ -243,6 +243,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       const length = vm.getProp(array, "length")
       assert.strictEqual(vm.getNumber(length), 3)
 
+      length.dispose()
       array.dispose()
       vals.forEach((val) => val.dispose())
     })
@@ -256,6 +257,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       }
 
       assert.strictEqual(vm.unwrapResult(result), handle)
+      handle.dispose()
     })
 
     it("error result: throws the error as a Javascript value", () => {
@@ -273,6 +275,8 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
           return
         }
         throw error
+      } finally {
+        handle.dispose()
       }
     })
   })
@@ -315,6 +319,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       const nextId = vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`))
       assert.equal(i, 3)
       assert.equal(vm.getNumber(nextId), 3)
+      nextId.dispose()
     })
 
     // TODO: bring back import support.
@@ -693,7 +698,10 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         "utf-8"
       )
       const stringHandle = vm.newString(jsonString)
+      const roundTripped = vm.getString(stringHandle)
       stringHandle.dispose()
+
+      assert.strictEqual(roundTripped, jsonString)
     })
   })
 }

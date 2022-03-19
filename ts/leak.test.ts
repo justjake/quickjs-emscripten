@@ -1,17 +1,13 @@
 import assert from "assert"
-import { getQuickJS } from "."
+import { getQuickJS, newQuickJSAsyncWASMModule, newQuickJSWASMModule } from "."
 import { QuickJSWASMModule } from "./module"
 
-describe("DEBUG BUILD ONLY: leak checks", function () {
+function checkModuleForLeaks(this: Mocha.Suite, getModule: () => Promise<QuickJSWASMModule>) {
   let wasmModule: QuickJSWASMModule
-
   this.timeout(Infinity)
 
   beforeEach(async function () {
-    wasmModule = await getQuickJS()
-    if (!wasmModule.getFFI().QTS_BuildIsDebug()) {
-      this.skip()
-    }
+    wasmModule = await getModule()
   })
 
   const DURATION_MS = 10 * 1000
@@ -133,4 +129,26 @@ describe("DEBUG BUILD ONLY: leak checks", function () {
       assert.strictEqual(didLeak, 0, "no leaks")
     })
   }
+}
+
+describe("Leak checks (most accurate with debug build)", function () {
+  describe("Main sync module", function () {
+    checkModuleForLeaks.call(this, getQuickJS)
+  })
+
+  // let customSyncModule: QuickJSWASMModule | undefined
+  // const getCustomSyncModule = async () => {
+  //   return (customSyncModule ??= await newQuickJSWASMModule())
+  // }
+  // describe("Standalone sync module", function () {
+  //   checkModuleForLeaks.call(this, getCustomSyncModule)
+  // })
+
+  let customAsyncModule: QuickJSWASMModule | undefined
+  const getCustomAsyncModule = async () => {
+    return (customAsyncModule ??= await newQuickJSAsyncWASMModule())
+  }
+  describe("Async module", function () {
+    checkModuleForLeaks.call(this, getCustomAsyncModule)
+  })
 })
