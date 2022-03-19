@@ -1,4 +1,5 @@
 import { QuickJSContext } from "./context"
+import { QuickJSMemoryLeakDetected } from "./errors"
 import { QuickJSFFI } from "./ffi"
 import { Lifetime } from "./lifetime"
 import { ModuleEvalOptions, QuickJSWASMModule } from "./module"
@@ -54,6 +55,23 @@ export class TestQuickJSWASMModule implements Pick<QuickJSWASMModule, keyof Quic
         d.dispose()
       }
     })
+  }
+
+  assertNoMemoryAllocated() {
+    const leaksDetected = this.getFFI().QTS_RecoverableLeakCheck()
+    if (leaksDetected) {
+      // Note: this is currently only available when building from source
+      // with debug builds.
+      throw new QuickJSMemoryLeakDetected("Leak sanitizer detected un-freed memory")
+    }
+
+    if (this.contexts.size > 0) {
+      throw new QuickJSMemoryLeakDetected(`${this.contexts.size} contexts leaked`)
+    }
+
+    if (this.runtimes.size > 0) {
+      throw new QuickJSMemoryLeakDetected(`${this.runtimes.size} runtimes leaked`)
+    }
   }
 
   getFFI() {

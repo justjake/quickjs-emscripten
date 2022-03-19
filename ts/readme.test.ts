@@ -2,15 +2,10 @@ import assert from "assert"
 import {
   getQuickJS,
   newAsyncContext,
-  newAsyncRuntime,
   newQuickJSAsyncWASMModule,
-  QuickJSWASMModule,
   shouldInterruptAfterDeadline,
 } from "."
-import { QuickJSDeferredPromise } from "./deferred-promise"
-import { Scope } from "./lifetime"
 import { TestQuickJSWASMModule } from "./module-test"
-import { QuickJSHandle } from "./types"
 
 describe("README.md", () => {
   const originalConsoleLog = console.log
@@ -29,7 +24,8 @@ describe("README.md", () => {
 
   afterEach(() => {
     console.log = originalConsoleLog
-    QuickJS?.disposeAll()
+    QuickJS.disposeAll()
+    QuickJS.assertNoMemoryAllocated()
   })
 
   describe("intro", () => {
