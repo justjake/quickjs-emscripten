@@ -66,6 +66,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       const jsString = "an example 🤔 string with unicode 🎉"
       const stringHandle = vm.newString(jsString)
       assert.equal(vm.getString(stringHandle), jsString)
+      stringHandle.dispose()
     })
 
     it("can round-trip undefined", () => {
@@ -96,6 +97,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         assert.fail("calling fnHandle must succeed")
       }
       assert.equal(vm.getNumber(result.value), 10)
+      result.value.dispose()
       fnHandle.dispose()
     })
 

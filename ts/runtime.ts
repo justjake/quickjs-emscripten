@@ -245,6 +245,7 @@ export class QuickJSRuntime implements Disposable {
     )
 
     const ctxPtr = ctxPtrOut.value.typedArray[0] as JSContextPointer
+    ctxPtrOut.dispose()
     if (ctxPtr === 0) {
       // No jobs executed.
       this.ffi.QTS_FreeValuePointerRuntime(this.rt.value, valuePtr)

@@ -76,6 +76,10 @@ wasm-asyncify: $(BUILD_DIR) ts/quickjs-asyncify.emscripten-module.js ts/ffi-asyn
 native: $(BUILD_WRAPPER)/native/test.exe
 imports: examples/imports
 
+.PHONY: test
+test:
+	yarn test
+
 emcc:
 	docker pull $(EMSDK_DOCKER_IMAGE)
 
