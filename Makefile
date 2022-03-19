@@ -67,7 +67,7 @@ endif
 
 
 default: wasm wasm-asyncify
-all: wasm wasm-asyncify native
+all: wasm wasm-asyncify native $(BUILD_ROOT)/quickjs.js
 generate: ts/ffi.ts ts/ffi-asyncify.ts
 wasm: $(BUILD_DIR) ts/quickjs.emscripten-module.js ts/ffi.ts
 wasm-asyncify: $(BUILD_DIR) ts/quickjs-asyncify.emscripten-module.js ts/ffi-asyncify.ts
@@ -84,6 +84,9 @@ $(BUILD_QUICKJS): emcc
 	mkdir -p $(BUILD_QUICKJS)/wasm $(BUILD_QUICKJS)/native $(BUILD_QUICKJS)/wasm-asyncify
 
 $(BUILD_ROOT): $(BUILD_WRAPPER) $(BUILD_QUICKJS)
+
+$(BUILD_ROOT)/sanitize_test.js: $(WRAPPER_ROOT)/sanitize_test.c
+	$(EMCC) -fsanitize=leak -s EXPORTED_FUNCTIONS='["___lsan_do_recoverable_leak_check", "_main"]' -o $@ $< 
 
 # Generated source files
 $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c $(BUILD_ROOT)
