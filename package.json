@@ -36,8 +36,8 @@
     "prettier": "prettier --write .",
     "prettier-check": "prettier --check .",
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:bellard/quickjs.git master",
-    "smoketest-node": "./scripts/smoketest-node.sh",
-    "smoketest-cra": "./scripts/smoketest-website.sh"
+    "smoketest-node": "yarn tarball && ./scripts/smoketest-node.sh",
+    "smoketest-cra": "yarn tarball && ./scripts/smoketest-website.sh"
   },
   "devDependencies": {
     "@types/emscripten": "^1.38.0",

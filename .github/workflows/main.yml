@@ -49,20 +49,17 @@ jobs:
         env:
           YARN_ENABLE_SCRIPTS: 0
 
-      - name: Test debug
-        run: make clean && yarn test
+      - name: Build
+        run: yarn build
 
-      - name: Prettier
-        run: yarn run prettier-check
-
-      - name: Build release
-        run: yarn make-release && yarn build && yarn tarball
-
-      - name: Test release
-        run: yarn run mocha
+      - name: Test
+        run: yarn test-all
 
       - name: Test release with NodeJS/Typescript example
         run: yarn smoketest-node
 
       - name: Test release with create-react-app/Typescript example
         run: yarn smoketest-cra
+
+      - name: Prettier
+        run: yarn run prettier-check
