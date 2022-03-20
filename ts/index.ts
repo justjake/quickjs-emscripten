@@ -7,15 +7,44 @@ export type { QuickJSWASMModule, QuickJSContext, QuickJSRuntime }
 // Async classes
 import type { QuickJSAsyncWASMModule } from "./module-asyncify"
 import type { QuickJSAsyncRuntime } from "./runtime-asyncify"
-import type { QuickJSAsyncContext } from "./context-asyncify"
+import type { QuickJSAsyncContext, AsyncFunctionImplementation } from "./context-asyncify"
 import { AsyncRuntimeOptions, ContextOptions } from "./types"
-export type { QuickJSAsyncContext, QuickJSAsyncRuntime, QuickJSAsyncWASMModule }
+export type {
+  QuickJSAsyncContext,
+  QuickJSAsyncRuntime,
+  QuickJSAsyncWASMModule,
+  AsyncFunctionImplementation,
+}
+
+// Build variants
+import {
+  newQuickJSWASMModule,
+  newQuickJSAsyncWASMModule,
+  DEBUG_ASYNC,
+  DEBUG_SYNC,
+  RELEASE_ASYNC,
+  RELEASE_SYNC,
+  SyncBuildVariant,
+  AsyncBuildVariant,
+} from "./variants"
+export {
+  newQuickJSWASMModule,
+  newQuickJSAsyncWASMModule,
+  DEBUG_ASYNC,
+  DEBUG_SYNC,
+  RELEASE_ASYNC,
+  RELEASE_SYNC,
+  SyncBuildVariant,
+  AsyncBuildVariant,
+}
 
 // Export helpers
 export * from "./vm-interface"
 export * from "./lifetime"
-export * from "./errors"
+/** Collects the informative errors this library may throw. */
+export * as errors from "./errors"
 export * from "./deferred-promise"
+export * from "./module-test"
 export type {
   StaticJSValue,
   JSValueConst,
@@ -24,8 +53,18 @@ export type {
   ContextOptions,
   ContextEvalOptions,
   RuntimeOptions,
+  AsyncRuntimeOptions,
+  RuntimeOptionsBase,
   JSModuleLoader,
   JSModuleLoadResult,
+  JSModuleLoaderAsync,
+  JSModuleLoadSuccess,
+  JSModuleLoadFailure,
+  JSModuleNormalizer,
+  JSModuleNormalizerAsync,
+  JSModuleNormalizeResult,
+  JSModuleNormalizeFailure,
+  JSModuleNormalizeSuccess,
 } from "./types"
 export type { ModuleEvalOptions } from "./module"
 export type { InterruptHandler, ExecutePendingJobsResult } from "./runtime"
@@ -67,52 +106,6 @@ export function getQuickJSSync(): QuickJSWASMModule {
     throw new Error("QuickJS not initialized. Await getQuickJS() at least once.")
   }
   return singleton
-}
-
-/**
- * Create a new, completely isolated WebAssembly module containing the QuickJS library.
- * See the documentation on [[QuickJSWASMModule]].
- *
- * Note that there is a hard limit on the number of WebAssembly modules in older
- * versions of v8:
- * https://bugs.chromium.org/p/v8/issues/detail?id=12076
- */
-export async function newQuickJSWASMModule(): Promise<QuickJSWASMModule> {
-  const [{ default: wasmModuleLoader }, { QuickJSWASMModule }, { QuickJSFFI }] = await Promise.all([
-    import("./quickjs.emscripten-module"),
-    import("./module"),
-    import("./ffi"),
-  ])
-  const wasmModule = await wasmModuleLoader()
-  wasmModule.type = "sync"
-  const ffi = new QuickJSFFI(wasmModule)
-  return new QuickJSWASMModule(wasmModule, ffi)
-}
-
-/**
- * Create a new, completely isolated WebAssembly module containing a version of the QuickJS library
- * compiled with Emscripten's [ASYNCIFY](https://emscripten.org/docs/porting/asyncify.html) transform.
- *
- * This version of the library offers features that enable synchronous code
- * inside the VM to interact with asynchronous code in the host environment.
- * See the documentation on [[QuickJSAsyncWASMModule]], [[QuickJSAsyncRuntime]],
- * and [[QuickJSAsyncContext]].
- *
- * Note that there is a hard limit on the number of WebAssembly modules in older
- * versions of v8:
- * https://bugs.chromium.org/p/v8/issues/detail?id=12076
- */
-export async function newQuickJSAsyncWASMModule(): Promise<QuickJSAsyncWASMModule> {
-  const [{ default: wasmModuleLoader }, { QuickJSAsyncWASMModule }, { QuickJSAsyncFFI }] =
-    await Promise.all([
-      import("./quickjs-asyncify.emscripten-module"),
-      import("./module-asyncify"),
-      import("./ffi-asyncify"),
-    ])
-  const wasmModule = await wasmModuleLoader()
-  wasmModule.type = "async"
-  const ffi = new QuickJSAsyncFFI(wasmModule)
-  return new QuickJSAsyncWASMModule(wasmModule, ffi)
 }
 
 /**

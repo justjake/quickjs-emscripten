@@ -1,10 +1,10 @@
 import { EitherModule } from "./emscripten-types"
 import {
-  HeapCharPointer,
+  OwnedHeapCharPointer,
   JSContextPointerPointer,
   JSValueConstPointerPointer,
   JSValuePointerPointer,
-} from "./ffi-types"
+} from "./types-ffi"
 import { Lifetime } from "./lifetime"
 import { EitherFFI, QuickJSHandle } from "./types"
 
@@ -34,10 +34,16 @@ export class ModuleMemory {
     return new Lifetime({ typedArray, ptr }, undefined, (value) => this.module._free(value.ptr))
   }
 
-  newHeapCharPointer(string: string): Lifetime<HeapCharPointer> {
+  newHeapCharPointer(string: string): Lifetime<OwnedHeapCharPointer> {
     const numBytes = this.module.lengthBytesUTF8(string) + 1
-    const ptr: HeapCharPointer = this.module._malloc(numBytes) as HeapCharPointer
+    const ptr: OwnedHeapCharPointer = this.module._malloc(numBytes) as OwnedHeapCharPointer
     this.module.stringToUTF8(string, ptr, numBytes)
     return new Lifetime(ptr, undefined, (value) => this.module._free(value))
+  }
+
+  consumeHeapCharPointer(ptr: OwnedHeapCharPointer): string {
+    const str = this.module.UTF8ToString(ptr)
+    this.module._free(ptr)
+    return str
   }
 }

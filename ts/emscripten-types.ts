@@ -12,13 +12,13 @@
 //   we don't use.
 
 import {
-  HeapCharPointer,
+  BorrowedHeapCharPointer,
   JSContextPointer,
-  JSModuleDefPointer,
   JSRuntimePointer,
   JSValueConstPointer,
   JSValuePointer,
-} from "./ffi-types"
+  OwnedHeapCharPointer,
+} from "./types-ffi"
 
 declare namespace Emscripten {
   interface FileSystemType {}
@@ -47,9 +47,20 @@ declare namespace Emscripten {
  * QuickJS.
  */
 interface EmscriptenModule {
-  addFunction(fn: Function, type: string): number
-  removeFunction(pointer: number): void
-  stringToUTF8(str: string, outPtr: number, maxBytesToRead?: number): void
+  // No longer needed:
+  // addFunction(fn: Function, type: string): number
+  // removeFunction(pointer: number): void
+
+  /**
+   * Write JS `str` to HeapChar pointer.
+   * https://emscripten.org/docs/api_reference/preamble.js.html#stringToUTF8
+   */
+  stringToUTF8(str: string, outPtr: OwnedHeapCharPointer, maxBytesToRead?: number): void
+  /**
+   * HeapChar to JS string.
+   * https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
+   */
+  UTF8ToString(ptr: BorrowedHeapCharPointer, maxBytesToRead?: number): string
   lengthBytesUTF8(str: string): number
 
   _malloc(size: number): number
@@ -124,7 +135,7 @@ export interface EmscriptenModuleCallbacks {
     rt: JSRuntimePointer,
     ctx: JSContextPointer,
     module_name: string
-  ) => HeapCharPointer | AsyncifySleepResult<HeapCharPointer>
+  ) => BorrowedHeapCharPointer | AsyncifySleepResult<BorrowedHeapCharPointer>
 
   normalizeModule: (
     asyncify: Asyncify | undefined,
@@ -132,7 +143,7 @@ export interface EmscriptenModuleCallbacks {
     ctx: JSContextPointer,
     module_base_name: string,
     module_name: string
-  ) => HeapCharPointer | AsyncifySleepResult<HeapCharPointer>
+  ) => BorrowedHeapCharPointer | AsyncifySleepResult<BorrowedHeapCharPointer>
 
   shouldInterrupt: (
     asyncify: Asyncify | undefined,
@@ -152,3 +163,7 @@ export interface QuickJSAsyncEmscriptenModule extends EmscriptenModule {
 }
 
 export type EitherModule = QuickJSEmscriptenModule | QuickJSAsyncEmscriptenModule
+
+export interface EmscriptenModuleLoader<T extends EmscriptenModule> {
+  (): Promise<T>
+}

@@ -5,6 +5,7 @@ import { QuickJSUnwrapError } from "./errors"
 import {
   EvalDetectModule,
   EvalFlags,
+  JSBorrowedCharPointer,
   JSContextPointer,
   JSModuleDefPointer,
   JSRuntimePointer,
@@ -12,7 +13,7 @@ import {
   JSValuePointer,
   JSValuePointerPointer,
   JSVoidPointer,
-} from "./ffi-types"
+} from "./types-ffi"
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
@@ -91,6 +92,12 @@ class ContextMemory extends ModuleMemory implements Disposable {
     this.ffi.QTS_FreeValuePointer(this.ctx.value, ptr)
   }
 
+  consumeJSCharPointer(ptr: JSBorrowedCharPointer): string {
+    const str = this.module.UTF8ToString(ptr)
+    this.ffi.QTS_FreeCString(this.ctx.value, ptr)
+    return str
+  }
+
   heapValueHandle(ptr: JSValuePointer): JSValue {
     return new Lifetime(ptr, this.copyJSValue, this.freeJSValue, this.owner)
   }
@@ -166,7 +173,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     ctx: Lifetime<JSContextPointer>
     rt: Lifetime<JSRuntimePointer>
     runtime: QuickJSRuntime
-    ownedLifetimes: Disposable[]
+    ownedLifetimes?: Disposable[]
     callbacks: QuickJSModuleCallbacks
   }) {
     this.runtime = args.runtime
@@ -269,7 +276,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     // we should manage it.
     const ptr = this.ffi.QTS_GetGlobalObject(this.ctx.value)
 
-    // Automatically clean up this reference when we dispose(
+    // Automatically clean up this reference when we dispose
     this.memory.manage(this.memory.heapValueHandle(ptr))
 
     // This isn't technically a static lifetime, but since it has the same
@@ -447,7 +454,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   typeof(handle: QuickJSHandle) {
     this.runtime.assertOwned(handle)
-    return this.ffi.QTS_Typeof(this.ctx.value, handle.value)
+    return this.memory.consumeHeapCharPointer(this.ffi.QTS_Typeof(this.ctx.value, handle.value))
   }
 
   /**
@@ -464,7 +471,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   getString(handle: QuickJSHandle): string {
     this.runtime.assertOwned(handle)
-    return this.ffi.QTS_GetString(this.ctx.value, handle.value)
+    return this.memory.consumeJSCharPointer(this.ffi.QTS_GetString(this.ctx.value, handle.value))
   }
 
   /**
@@ -733,7 +740,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       return undefined
     }
 
-    const str = this.ffi.QTS_Dump(this.ctx.value, handle.value)
+    const str = this.memory.consumeJSCharPointer(this.ffi.QTS_Dump(this.ctx.value, handle.value))
     try {
       return JSON.parse(str)
     } catch (err) {

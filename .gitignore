@@ -2,9 +2,8 @@ node_modules
 yarn-error.log
 npm-error.log
 
-*.wasm
-*.wasm.map
 *.tsbuildinfo
+.vscode/*.log
 
 /build
 /dist

@@ -33,11 +33,17 @@
  * build.
  */
 
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#endif
+
 #include <math.h>  // For NAN
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#ifdef QTS_SANITIZE_LEAK
+#include <sanitizer/lsan_interface.h>
+#endif
 
 #include "../quickjs/cutils.h"
 #include "../quickjs/quickjs-libc.h"
@@ -58,7 +64,9 @@
  * allocated by the caller on the heap, not a JS string on the stack.
  * https://github.com/emscripten-core/emscripten/issues/6860#issuecomment-405818401
  */
-#define HeapChar const char
+#define BorrowedHeapChar const char
+#define OwnedHeapChar char
+#define JSBorrowedChar const char
 
 /**
  * Signal to our FFI code generator that this function should be called
@@ -111,7 +119,9 @@ void copy_prop_if_needed(JSContext *ctx, JSValueConst dest, JSValueConst src, co
 JSValue *jsvalue_to_heap(JSValueConst value) {
   JSValue *result = malloc(sizeof(JSValue));
   if (result) {
-    memcpy(result, &value, sizeof(JSValue));
+    // Could be better optimized, but at -0z / -ftlo, it
+    // appears to produce the same binary code as a memcpy.
+    *result = value;
   }
   return result;
 }
@@ -179,7 +189,7 @@ JSValue *QTS_RuntimeComputeMemoryUsage(JSRuntime *rt, JSContext *ctx) {
   return jsvalue_to_heap(result);
 }
 
-char *QTS_RuntimeDumpMemoryUsage(JSRuntime *rt) {
+OwnedHeapChar *QTS_RuntimeDumpMemoryUsage(JSRuntime *rt) {
   char *result = malloc(sizeof(char) * 1024);
   FILE *memfile = fmemopen(result, 1024, "w");
   JSMemoryUsage s;
@@ -187,6 +197,22 @@ char *QTS_RuntimeDumpMemoryUsage(JSRuntime *rt) {
   JS_DumpMemoryUsage(memfile, &s, rt);
   fclose(memfile);
   return result;
+}
+
+int QTS_RecoverableLeakCheck() {
+#ifdef QTS_SANITIZE_LEAK
+  return __lsan_do_recoverable_leak_check();
+#else
+  return 0;
+#endif
+}
+
+int QTS_BuildIsSanitizeLeak() {
+#ifdef QTS_SANITIZE_LEAK
+  return 1;
+#else
+  return 0;
+#endif
 }
 
 /**
@@ -248,6 +274,10 @@ void QTS_FreeVoidPointer(JSContext *ctx, JSVoid *ptr) {
   js_free(ctx, ptr);
 }
 
+void QTS_FreeCString(JSContext *ctx, JSBorrowedChar *str) {
+  JS_FreeCString(ctx, str);
+}
+
 JSValue *QTS_DupValuePointer(JSContext *ctx, JSValueConst *val) {
   return jsvalue_to_heap(JS_DupValue(ctx, *val));
 }
@@ -274,15 +304,12 @@ double QTS_GetFloat64(JSContext *ctx, JSValueConst *value) {
   return result;
 }
 
-JSValue *QTS_NewString(JSContext *ctx, HeapChar *string) {
+JSValue *QTS_NewString(JSContext *ctx, BorrowedHeapChar *string) {
   return jsvalue_to_heap(JS_NewString(ctx, string));
 }
 
-char *QTS_GetString(JSContext *ctx, JSValueConst *value) {
-  const char *owned = JS_ToCString(ctx, *value);
-  char *result = strdup(owned);
-  JS_FreeCString(ctx, owned);
-  return result;
+JSBorrowedChar *QTS_GetString(JSContext *ctx, JSValueConst *value) {
+  return JS_ToCString(ctx, *value);
 }
 
 int QTS_IsJobPending(JSRuntime *rt) {
@@ -388,7 +415,7 @@ JSValue *QTS_ResolveException(JSContext *ctx, JSValue *maybe_exception) {
   return NULL;
 }
 
-MaybeAsync(char *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
+MaybeAsync(JSBorrowedChar *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   JSValue obj_json_value = JS_JSONStringify(ctx, *obj, JS_UNDEFINED, JS_UNDEFINED);
   if (!JS_IsException(obj_json_value)) {
     const char *obj_json_chars = JS_ToCString(ctx, obj_json_value);
@@ -407,7 +434,7 @@ MaybeAsync(char *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
         JSValue enumerable_json = JS_JSONStringify(ctx, enumerable_props, JS_UNDEFINED, JS_UNDEFINED);
         JS_FreeValue(ctx, enumerable_props);
 
-        char *result = QTS_GetString(ctx, &enumerable_json);
+        JSBorrowedChar *result = QTS_GetString(ctx, &enumerable_json);
         JS_FreeValue(ctx, enumerable_json);
         return result;
       }
@@ -423,7 +450,7 @@ MaybeAsync(char *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   return QTS_GetString(ctx, obj);
 }
 
-MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
+MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
   size_t js_code_len = strlen(js_code);
 
   if (detectModule) {
@@ -440,7 +467,7 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, HeapChar *js_code, const char *fi
   return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), filename, evalFlags));
 }
 
-char *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
+OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   const char *result = "unknown";
   uint32_t tag = JS_VALUE_GET_TAG(*value);
 
@@ -517,6 +544,7 @@ int QTS_BuildIsAsyncify() {
 
 // -------------------
 // function: C -> Host
+#ifdef __EMSCRIPTEN__
 EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, int magic_func_id), {
 #ifdef QTS_ASYNCIFY
   const asyncify = {['handleSleep'] : Asyncify.handleSleep};
@@ -525,6 +553,7 @@ EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueCo
 #endif
   return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id);
 });
+#endif
 
 // Function: QuickJS -> C
 JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic) {
@@ -560,6 +589,7 @@ JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
 
 // --------------------
 // interrupt: C -> Host
+#ifdef __EMSCRIPTEN__
 EM_JS(int, qts_host_interrupt_handler, (JSRuntime * rt), {
   // Async not supported here.
   // #ifdef QTS_ASYNCIFY
@@ -569,6 +599,7 @@ EM_JS(int, qts_host_interrupt_handler, (JSRuntime * rt), {
   // #endif
   return Module['callbacks']['shouldInterrupt'](asyncify, rt);
 });
+#endif
 
 // interrupt: QuickJS -> C
 int qts_interrupt_handler(JSRuntime *rt, void *_unused) {
@@ -621,7 +652,7 @@ Probably we could optimize (2) to make it more performant, eg with parallel
 loading, but (1) seems much easier to implement in the sort run.
 */
 
-JSModuleDef *qts_compile_module(JSContext *ctx, const char *module_name, HeapChar *module_body) {
+JSModuleDef *qts_compile_module(JSContext *ctx, const char *module_name, BorrowedHeapChar *module_body) {
 #ifdef QTS_DEBUG_MODE
   char msg[500];
   sprintf(msg, "QTS_CompileModule(ctx: %p, name: %s, bodyLength: %lu)", ctx, module_name, strlen(module_body));
@@ -638,6 +669,7 @@ JSModuleDef *qts_compile_module(JSContext *ctx, const char *module_name, HeapCha
   return module;
 }
 
+#ifdef __EMSCRIPTEN__
 EM_JS(MaybeAsync(char *), qts_host_load_module_source, (JSRuntime * rt, JSContext *ctx, const char *module_name), {
 #ifdef QTS_ASYNCIFY
   const asyncify = {['handleSleep'] : Asyncify.handleSleep};
@@ -660,6 +692,7 @@ EM_JS(MaybeAsync(char *), qts_host_normalize_module, (JSRuntime * rt, JSContext 
   const moduleNameString = UTF8ToString(module_name);
   return Module['callbacks']['normalizeModule'](asyncify, rt, ctx, moduleBaseNameString, moduleNameString);
 });
+#endif
 
 // load module: QuickJS -> C
 // See js_module_loader in quickjs/quickjs-libc.c:567

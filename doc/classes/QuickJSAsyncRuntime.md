@@ -97,7 +97,7 @@ Assert that `handle` is owned by this runtime.
 
 #### Defined in
 
-[ts/runtime.ts:312](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L312)
+[ts/runtime.ts:313](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L313)
 
 ___
 
@@ -121,7 +121,7 @@ For a human-digestible representation, see [dumpMemoryUsage](QuickJSAsyncRuntime
 
 #### Defined in
 
-[ts/runtime.ts:293](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L293)
+[ts/runtime.ts:294](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L294)
 
 ___
 
@@ -162,7 +162,7 @@ For programmatic access to this information, see [computeMemoryUsage](QuickJSAsy
 
 #### Defined in
 
-[ts/runtime.ts:304](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L304)
+[ts/runtime.ts:305](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L305)
 
 ___
 
@@ -344,7 +344,7 @@ To remove the limit, set to `-1`.
 
 #### Defined in
 
-[ts/runtime.ts:278](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L278)
+[ts/runtime.ts:279](https://github.com/justjake/quickjs-emscripten/blob/master/ts/runtime.ts#L279)
 
 ___
 
@@ -361,8 +361,8 @@ The loader can be removed with [removeModuleLoader](QuickJSAsyncRuntime.md#remov
 
 | Name | Type |
 | :------ | :------ |
-| `moduleLoader` | `JSModuleLoaderAsync` |
-| `moduleNormalizer?` | `JSModuleNormalizerAsync` |
+| `moduleLoader` | [`JSModuleLoaderAsync`](../interfaces/JSModuleLoaderAsync.md) |
+| `moduleNormalizer?` | [`JSModuleNormalizerAsync`](../interfaces/JSModuleNormalizerAsync.md) |
 
 #### Returns
 

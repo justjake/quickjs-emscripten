@@ -1,4 +1,4 @@
-import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
+import { EmscriptenModuleLoader, QuickJSAsyncEmscriptenModule } from "../emscripten-types"
 /**
  * Emscripten module built from [`quickjs/quickjs.h`](../quickjs/quickjs.h) and
  * our FFI support functions [c/interface.c](../c/interface.c), compiled with -s
@@ -10,5 +10,5 @@ import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
  * Note that emscripten modules returned by a `MODULARIZE=1` emscripten build
  * (like this one) load asynchronously.
  */
-declare function ModuleLoader(): Promise<QuickJSAsyncEmscriptenModule>
+declare const ModuleLoader: EmscriptenModuleLoader<QuickJSAsyncEmscriptenModule>
 export default ModuleLoader

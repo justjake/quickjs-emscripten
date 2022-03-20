@@ -8,6 +8,7 @@ import {
   InterruptHandler,
   QuickJSDeferredPromise,
   newQuickJSAsyncWASMModule,
+  newQuickJSWASMModule,
 } from "."
 import { it, describe } from "mocha"
 import assert from "assert"
@@ -15,28 +16,38 @@ import { isFail, VmCallResult } from "./vm-interface"
 import fs from "fs"
 import { QuickJSContext } from "./context"
 import { QuickJSAsyncContext } from "./context-asyncify"
-import { QuickJSFFI } from "./ffi"
+import { DEBUG_ASYNC, DEBUG_SYNC, memoizePromiseFactory, QuickJSFFI } from "./variants"
 import { QuickJSUnwrapError } from "./errors"
 import { debugLog } from "./debug"
-// Force load big chonkers
-import "./quickjs.emscripten-module"
-import "./quickjs-asyncify.emscripten-module"
+import { EitherFFI } from "./types"
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
 
 function contextTests(getContext: () => Promise<QuickJSContext>) {
   let vm: QuickJSContext = undefined as any
+  let ffi: EitherFFI = undefined as any
   let testId = 0
 
   beforeEach(async () => {
     testId++
     vm = await getContext()
+    ffi = (vm as any).ffi
     assertBuildIsConsistent(vm)
   })
 
   afterEach(() => {
     vm.dispose()
     vm = undefined as any
+  })
+
+  after(() => {
+    if (ffi.QTS_BuildIsAsyncify()) {
+      // Asyncify explodes during leak checking.
+      return
+    }
+    // https://web.dev/webassembly-memory-debugging/
+    assert.strictEqual(ffi.QTS_RecoverableLeakCheck(), 0, "No lsan errors")
+    console.log("Leaks checked (OK)")
   })
 
   const getTestId = () => `test-${getContext.name}-${testId}`
@@ -53,6 +64,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       const jsString = "an example 🤔 string with unicode 🎉"
       const stringHandle = vm.newString(jsString)
       assert.equal(vm.getString(stringHandle), jsString)
+      stringHandle.dispose()
     })
 
     it("can round-trip undefined", () => {
@@ -78,11 +90,13 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       const fnHandle = vm.newFunction("addSome", (num) => {
         return vm.newNumber(some + vm.getNumber(num))
       })
-      const result = vm.callFunction(fnHandle, vm.undefined, vm.newNumber(1))
+      const result = vm.newNumber(1).consume((num) => vm.callFunction(fnHandle, vm.undefined, num))
       if (result.error) {
+        result.error.dispose()
         assert.fail("calling fnHandle must succeed")
       }
       assert.equal(vm.getNumber(result.value), 10)
+      result.value.dispose()
       fnHandle.dispose()
     })
 
@@ -230,6 +244,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       const length = vm.getProp(array, "length")
       assert.strictEqual(vm.getNumber(length), 3)
 
+      length.dispose()
       array.dispose()
       vals.forEach((val) => val.dispose())
     })
@@ -243,6 +258,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       }
 
       assert.strictEqual(vm.unwrapResult(result), handle)
+      handle.dispose()
     })
 
     it("error result: throws the error as a Javascript value", () => {
@@ -260,6 +276,10 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
           return
         }
         throw error
+      } finally {
+        if (handle.alive) {
+          handle.dispose()
+        }
       }
     })
   })
@@ -302,6 +322,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       const nextId = vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`))
       assert.equal(i, 3)
       assert.equal(vm.getNumber(nextId), 3)
+      nextId.dispose()
     })
 
     // TODO: bring back import support.
@@ -344,6 +365,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       vm.runtime.executePendingJobs()
       assert.equal(i, 3)
       assert.equal(vm.getNumber(result), 1)
+      result.dispose()
     })
   })
 
@@ -562,6 +584,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
       const value = vm.unwrapResult(otherContext.evalCode(`myObject`)).consume(otherContext.dump)
       assert.deepStrictEqual(value, { foo: "bar" }, "ok")
+      otherContext.dispose()
     })
   })
 
@@ -679,7 +702,10 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
         "utf-8"
       )
       const stringHandle = vm.newString(jsonString)
+      const roundTripped = vm.getString(stringHandle)
       stringHandle.dispose()
+
+      assert.strictEqual(roundTripped, jsonString)
     })
   })
 }
@@ -850,27 +876,46 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
   })
 }
 
-describe("QuickJS.newContext", () => {
-  contextTests(async () => {
-    const quickjs = await getQuickJS()
-    return quickjs.newContext()
+describe("QuickJSContext", function () {
+  describe("QuickJS.newContext", function () {
+    const loader = getQuickJS
+    const getContext = () => loader().then((mod) => mod.newContext())
+    contextTests.call(this, getContext)
+  })
+
+  describe("DEBUG sync module", function () {
+    const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
+    const getContext = () => loader().then((mod) => mod.newContext())
+    contextTests.call(this, getContext)
   })
 })
 
 if (!TEST_NO_ASYNC) {
-  describe("QuickJS.newAsyncContext", () => {
-    const wasmPromise = newQuickJSAsyncWASMModule()
-    const getContext = async () => {
-      const wasm = await wasmPromise
-      return wasm.newContext()
-    }
+  describe("QuickJSAsyncContext", () => {
+    describe("newQuickJSAsyncWASMModule", function () {
+      const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule())
+      const getContext = () => loader().then((mod) => mod.newContext())
 
-    describe("sync API", () => {
-      contextTests(getContext)
+      describe("sync API", () => {
+        contextTests(getContext)
+      })
+
+      describe("async API", () => {
+        asyncContextTests(getContext)
+      })
     })
 
-    describe("async API", () => {
-      asyncContextTests(getContext)
+    describe("DEBUG async module", function () {
+      const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule(DEBUG_ASYNC))
+      const getContext = () => loader().then((mod) => mod.newContext())
+
+      describe("sync API", () => {
+        contextTests(getContext)
+      })
+
+      describe("async API", () => {
+        asyncContextTests(getContext)
+      })
     })
   })
 }

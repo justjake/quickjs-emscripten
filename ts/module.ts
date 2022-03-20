@@ -6,17 +6,16 @@ import {
   EitherModule,
   EmscriptenModuleCallbacks,
 } from "./emscripten-types"
-import { QuickJSAsyncifyError, QuickJSAsyncifySuspended, QuickJSNotImplemented } from "./errors"
+import { QuickJSAsyncifyError, QuickJSAsyncifySuspended } from "./errors"
 import {
-  HeapCharPointer,
+  BorrowedHeapCharPointer,
   JSContextPointer,
-  JSModuleDefPointer,
   JSRuntimePointer,
   JSValuePointer,
-} from "./ffi-types"
+} from "./types-ffi"
 import { Lifetime, Scope } from "./lifetime"
 import { InterruptHandler, QuickJSRuntime } from "./runtime"
-import { ContextOptions, EitherFFI, JSModuleLoader, RuntimeOptions } from "./types"
+import { concat, ContextOptions, EitherFFI, JSModuleLoader, RuntimeOptions } from "./types"
 
 type EmscriptenCallback<BaseArgs extends any[], Result> = (
   ...args: [Asyncify | undefined, ...BaseArgs]
@@ -214,7 +213,7 @@ export class QuickJSModuleCallbacks {
           return loadModule(rt, ctx, moduleName)
         } catch (error) {
           console.error("[C to host module loader error: returning null]", error)
-          return 0 as HeapCharPointer
+          return 0 as BorrowedHeapCharPointer
         }
       }),
 
@@ -233,7 +232,7 @@ export class QuickJSModuleCallbacks {
           return normalizeModule(rt, ctx, moduleBaseName, moduleName)
         } catch (error) {
           console.error("[C to host module loader error: returning null]", error)
-          return 0 as HeapCharPointer
+          return 0 as BorrowedHeapCharPointer
         }
       }),
   })
@@ -293,6 +292,10 @@ export class QuickJSWASMModule {
       runtime.setModuleLoader(options.moduleLoader)
     }
 
+    if (options.interruptHandler) {
+      runtime.setInterruptHandler(options.interruptHandler)
+    }
+
     return runtime
   }
 
@@ -303,8 +306,10 @@ export class QuickJSWASMModule {
    */
   newContext(options: ContextOptions = {}): QuickJSContext {
     const runtime = this.newRuntime()
-    const lifetimes = options.ownedLifetimes ? options.ownedLifetimes.concat([runtime]) : [runtime]
-    const context = runtime.newContext({ ...options, ownedLifetimes: lifetimes })
+    const context = runtime.newContext({
+      ...options,
+      ownedLifetimes: concat(runtime, options.ownedLifetimes),
+    })
     runtime.context = context
     return context
   }
@@ -365,5 +370,16 @@ export class QuickJSWASMModule {
       const value = vm.dump(scope.manage(result.value))
       return value
     })
+  }
+
+  /**
+   * Get a low-level interface to the QuickJS functions in this WebAssembly
+   * module.
+   * @experimental
+   * @unstable No warranty is provided with this API. It could change at any time.
+   * @private
+   */
+  getFFI(): EitherFFI {
+    return this.ffi
   }
 }

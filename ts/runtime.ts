@@ -4,12 +4,12 @@ import { debugLog } from "./debug"
 import { EitherModule } from "./emscripten-types"
 import { QuickJSWrongOwner } from "./errors"
 import {
-  HeapCharPointer,
+  BorrowedHeapCharPointer,
   JSContextPointer,
   JSContextPointerPointer,
   JSModuleDefPointer,
   JSRuntimePointer,
-} from "./ffi-types"
+} from "./types-ffi"
 import { Disposable, Lifetime, Scope } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
@@ -150,7 +150,7 @@ export class QuickJSRuntime implements Disposable {
       ctx,
       ffi: this.ffi,
       rt: this.rt,
-      ownedLifetimes: [],
+      ownedLifetimes: options.ownedLifetimes,
       runtime: this,
       callbacks: this.callbacks,
     })
@@ -245,6 +245,7 @@ export class QuickJSRuntime implements Disposable {
     )
 
     const ctxPtr = ctxPtrOut.value.typedArray[0] as JSContextPointer
+    ctxPtrOut.dispose()
     if (ctxPtr === 0) {
       // No jobs executed.
       this.ffi.QTS_FreeValuePointerRuntime(this.rt.value, valuePtr)
@@ -302,7 +303,7 @@ export class QuickJSRuntime implements Disposable {
    * For programmatic access to this information, see [[computeMemoryUsage]].
    */
   dumpMemoryUsage(): string {
-    return this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value)
+    return this.memory.consumeHeapCharPointer(this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value))
   }
 
   /**
@@ -370,7 +371,7 @@ export class QuickJSRuntime implements Disposable {
       } catch (error) {
         debugLog("cToHostLoadModule: caught error", error)
         context.throw(error as any)
-        return 0 as HeapCharPointer
+        return 0 as BorrowedHeapCharPointer
       }
     }),
 
@@ -408,7 +409,7 @@ export class QuickJSRuntime implements Disposable {
         } catch (error) {
           debugLog("normalizeModule: caught error", error)
           context.throw(error as any)
-          return 0 as HeapCharPointer
+          return 0 as BorrowedHeapCharPointer
         }
       }
     ),

@@ -1,6 +1,8 @@
-[quickjs-emscripten](../README.md) / [Exports](../modules.md) / QuickJSUseAfterFree
+[quickjs-emscripten](../README.md) / [Exports](../modules.md) / [errors](../modules/errors.md) / QuickJSUseAfterFree
 
 # Class: QuickJSUseAfterFree
+
+[errors](../modules/errors.md).QuickJSUseAfterFree
 
 ## Hierarchy
 
@@ -12,11 +14,11 @@
 
 ### Constructors
 
-- [constructor](QuickJSUseAfterFree.md#constructor)
+- [constructor](errors.QuickJSUseAfterFree.md#constructor)
 
 ### Properties
 
-- [name](QuickJSUseAfterFree.md#name)
+- [name](errors.QuickJSUseAfterFree.md#name)
 
 ## Constructors
 

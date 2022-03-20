@@ -4,50 +4,70 @@
 
 ## Table of contents
 
+### Namespaces
+
+- [errors](modules/errors.md)
+
 ### Classes
 
 - [Lifetime](classes/Lifetime.md)
 - [QuickJSAsyncContext](classes/QuickJSAsyncContext.md)
 - [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md)
 - [QuickJSAsyncWASMModule](classes/QuickJSAsyncWASMModule.md)
-- [QuickJSAsyncifyError](classes/QuickJSAsyncifyError.md)
-- [QuickJSAsyncifySuspended](classes/QuickJSAsyncifySuspended.md)
 - [QuickJSContext](classes/QuickJSContext.md)
 - [QuickJSDeferredPromise](classes/QuickJSDeferredPromise.md)
-- [QuickJSNotImplemented](classes/QuickJSNotImplemented.md)
 - [QuickJSRuntime](classes/QuickJSRuntime.md)
-- [QuickJSUnwrapError](classes/QuickJSUnwrapError.md)
-- [QuickJSUseAfterFree](classes/QuickJSUseAfterFree.md)
 - [QuickJSWASMModule](classes/QuickJSWASMModule.md)
-- [QuickJSWrongOwner](classes/QuickJSWrongOwner.md)
 - [Scope](classes/Scope.md)
 - [StaticLifetime](classes/StaticLifetime.md)
+- [TestQuickJSWASMModule](classes/TestQuickJSWASMModule.md)
 - [WeakLifetime](classes/WeakLifetime.md)
 
 ### Interfaces
 
+- [AsyncBuildVariant](interfaces/AsyncBuildVariant.md)
+- [AsyncRuntimeOptions](interfaces/AsyncRuntimeOptions.md)
 - [ContextEvalOptions](interfaces/ContextEvalOptions.md)
 - [ContextOptions](interfaces/ContextOptions.md)
 - [Disposable](interfaces/Disposable.md)
 - [JSModuleLoader](interfaces/JSModuleLoader.md)
+- [JSModuleLoaderAsync](interfaces/JSModuleLoaderAsync.md)
+- [JSModuleNormalizer](interfaces/JSModuleNormalizer.md)
+- [JSModuleNormalizerAsync](interfaces/JSModuleNormalizerAsync.md)
 - [LowLevelJavascriptVm](interfaces/LowLevelJavascriptVm.md)
 - [ModuleEvalOptions](interfaces/ModuleEvalOptions.md)
 - [RuntimeOptions](interfaces/RuntimeOptions.md)
+- [RuntimeOptionsBase](interfaces/RuntimeOptionsBase.md)
+- [SyncBuildVariant](interfaces/SyncBuildVariant.md)
 - [VmPropertyDescriptor](interfaces/VmPropertyDescriptor.md)
 
 ### Type aliases
 
+- [AsyncFunctionImplementation](modules.md#asyncfunctionimplementation)
 - [ExecutePendingJobsResult](modules.md#executependingjobsresult)
 - [InterruptHandler](modules.md#interrupthandler)
+- [JSModuleLoadFailure](modules.md#jsmoduleloadfailure)
 - [JSModuleLoadResult](modules.md#jsmoduleloadresult)
+- [JSModuleLoadSuccess](modules.md#jsmoduleloadsuccess)
+- [JSModuleNormalizeFailure](modules.md#jsmodulenormalizefailure)
+- [JSModuleNormalizeResult](modules.md#jsmodulenormalizeresult)
+- [JSModuleNormalizeSuccess](modules.md#jsmodulenormalizesuccess)
 - [JSValue](modules.md#jsvalue)
 - [JSValueConst](modules.md#jsvalueconst)
+- [PromiseExecutor](modules.md#promiseexecutor)
 - [QuickJSHandle](modules.md#quickjshandle)
 - [QuickJSPropertyKey](modules.md#quickjspropertykey)
 - [StaticJSValue](modules.md#staticjsvalue)
 - [SuccessOrFail](modules.md#successorfail)
 - [VmCallResult](modules.md#vmcallresult)
 - [VmFunctionImplementation](modules.md#vmfunctionimplementation)
+
+### Variables
+
+- [DEBUG\_ASYNC](modules.md#debug_async)
+- [DEBUG\_SYNC](modules.md#debug_sync)
+- [RELEASE\_ASYNC](modules.md#release_async)
+- [RELEASE\_SYNC](modules.md#release_sync)
 
 ### Functions
 
@@ -62,6 +82,31 @@
 - [shouldInterruptAfterDeadline](modules.md#shouldinterruptafterdeadline)
 
 ## Type aliases
+
+### AsyncFunctionImplementation
+
+Ƭ **AsyncFunctionImplementation**: (`this`: [`QuickJSHandle`](modules.md#quickjshandle), ...`args`: [`QuickJSHandle`](modules.md#quickjshandle)[]) => `Promise`<[`QuickJSHandle`](modules.md#quickjshandle) \| [`VmCallResult`](modules.md#vmcallresult)<[`QuickJSHandle`](modules.md#quickjshandle)\> \| `void`\>
+
+#### Type declaration
+
+▸ (`this`, ...`args`): `Promise`<[`QuickJSHandle`](modules.md#quickjshandle) \| [`VmCallResult`](modules.md#vmcallresult)<[`QuickJSHandle`](modules.md#quickjshandle)\> \| `void`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `this` | [`QuickJSHandle`](modules.md#quickjshandle) |
+| `...args` | [`QuickJSHandle`](modules.md#quickjshandle)[] |
+
+##### Returns
+
+`Promise`<[`QuickJSHandle`](modules.md#quickjshandle) \| [`VmCallResult`](modules.md#vmcallresult)<[`QuickJSHandle`](modules.md#quickjshandle)\> \| `void`\>
+
+#### Defined in
+
+[ts/context-asyncify.ts:12](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context-asyncify.ts#L12)
+
+___
 
 ### ExecutePendingJobsResult
 
@@ -108,13 +153,63 @@ Determines if a VM's execution should be interrupted.
 
 ___
 
-### JSModuleLoadResult
+### JSModuleLoadFailure
 
-Ƭ **JSModuleLoadResult**: `JSModuleLoadSuccess` \| [`SuccessOrFail`](modules.md#successorfail)<`JSModuleLoadSuccess`, `JSModuleLoadFailure`\>
+Ƭ **JSModuleLoadFailure**: `Error` \| [`QuickJSHandle`](modules.md#quickjshandle)
 
 #### Defined in
 
-[ts/types.ts:71](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L71)
+[ts/types.ts:69](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L69)
+
+___
+
+### JSModuleLoadResult
+
+Ƭ **JSModuleLoadResult**: [`JSModuleLoadSuccess`](modules.md#jsmoduleloadsuccess) \| [`SuccessOrFail`](modules.md#successorfail)<[`JSModuleLoadSuccess`](modules.md#jsmoduleloadsuccess), [`JSModuleLoadFailure`](modules.md#jsmoduleloadfailure)\>
+
+#### Defined in
+
+[ts/types.ts:70](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L70)
+
+___
+
+### JSModuleLoadSuccess
+
+Ƭ **JSModuleLoadSuccess**: `string`
+
+#### Defined in
+
+[ts/types.ts:68](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L68)
+
+___
+
+### JSModuleNormalizeFailure
+
+Ƭ **JSModuleNormalizeFailure**: `Error` \| [`QuickJSHandle`](modules.md#quickjshandle)
+
+#### Defined in
+
+[ts/types.ts:86](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L86)
+
+___
+
+### JSModuleNormalizeResult
+
+Ƭ **JSModuleNormalizeResult**: [`JSModuleNormalizeSuccess`](modules.md#jsmodulenormalizesuccess) \| [`SuccessOrFail`](modules.md#successorfail)<[`JSModuleNormalizeSuccess`](modules.md#jsmodulenormalizesuccess), [`JSModuleNormalizeFailure`](modules.md#jsmodulenormalizefailure)\>
+
+#### Defined in
+
+[ts/types.ts:87](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L87)
+
+___
+
+### JSModuleNormalizeSuccess
+
+Ƭ **JSModuleNormalizeSuccess**: `string`
+
+#### Defined in
+
+[ts/types.ts:85](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L85)
 
 ___
 
@@ -138,7 +233,7 @@ You can do so from Javascript by calling the .dispose() method.
 
 #### Defined in
 
-[ts/types.ts:45](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L45)
+[ts/types.ts:44](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L44)
 
 ___
 
@@ -157,7 +252,39 @@ quickjs-emscripten takes care of disposing JSValueConst references.
 
 #### Defined in
 
-[ts/types.ts:28](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L28)
+[ts/types.ts:27](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L27)
+
+___
+
+### PromiseExecutor
+
+Ƭ **PromiseExecutor**<`ResolveT`, `RejectT`\>: (`resolve`: (`value`: `ResolveT` \| `PromiseLike`<`ResolveT`\>) => `void`, `reject`: (`reason`: `RejectT`) => `void`) => `void`
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `ResolveT` |
+| `RejectT` |
+
+#### Type declaration
+
+▸ (`resolve`, `reject`): `void`
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `resolve` | (`value`: `ResolveT` \| `PromiseLike`<`ResolveT`\>) => `void` |
+| `reject` | (`reason`: `RejectT`) => `void` |
+
+##### Returns
+
+`void`
+
+#### Defined in
+
+[ts/types.ts:236](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L236)
 
 ___
 
@@ -173,7 +300,7 @@ You must dispose of any handles you create by calling the `.dispose()` method.
 
 #### Defined in
 
-[ts/types.ts:54](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L54)
+[ts/types.ts:53](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L53)
 
 ___
 
@@ -186,7 +313,7 @@ Property key for getting or setting a property on a handle with
 
 #### Defined in
 
-[ts/context.ts:40](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L40)
+[ts/context.ts:41](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L41)
 
 ___
 
@@ -199,7 +326,7 @@ be disposed.
 
 #### Defined in
 
-[ts/types.ts:16](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L16)
+[ts/types.ts:15](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L15)
 
 ___
 
@@ -282,6 +409,67 @@ It should not retain a reference to its return value or thrown error.
 
 [ts/vm-interface.ts:40](https://github.com/justjake/quickjs-emscripten/blob/master/ts/vm-interface.ts#L40)
 
+## Variables
+
+### DEBUG\_ASYNC
+
+• **DEBUG\_ASYNC**: [`AsyncBuildVariant`](interfaces/AsyncBuildVariant.md)
+
+The async debug build variant may or may not have the sanitizer enabled.
+It does print a lot of debug logs.
+
+Suggested use case: interactive debugging only.
+
+#### Defined in
+
+[ts/variants.ts:176](https://github.com/justjake/quickjs-emscripten/blob/master/ts/variants.ts#L176)
+
+___
+
+### DEBUG\_SYNC
+
+• **DEBUG\_SYNC**: [`SyncBuildVariant`](interfaces/SyncBuildVariant.md)
+
+This build variant is compiled with `-fsanitize=leak`. It instruments all
+memory allocations and when combined with sourcemaps, can present stack trace
+locations where memory leaks occur.
+
+See [TestQuickJSWASMModule](classes/TestQuickJSWASMModule.md) which provides access to the leak sanitizer via
+[TestQuickJSWASMModule.assertNoMemoryAllocated](classes/TestQuickJSWASMModule.md#assertnomemoryallocated).
+
+The downside is that it's 100-1000x slower than the other variants.
+Suggested use case: automated testing, regression testing, and interactive
+debugging.
+
+#### Defined in
+
+[ts/variants.ts:138](https://github.com/justjake/quickjs-emscripten/blob/master/ts/variants.ts#L138)
+
+___
+
+### RELEASE\_ASYNC
+
+• **RELEASE\_ASYNC**: [`AsyncBuildVariant`](interfaces/AsyncBuildVariant.md)
+
+This is the default asyncified build variant.
+
+#### Defined in
+
+[ts/variants.ts:193](https://github.com/justjake/quickjs-emscripten/blob/master/ts/variants.ts#L193)
+
+___
+
+### RELEASE\_SYNC
+
+• **RELEASE\_SYNC**: [`SyncBuildVariant`](interfaces/SyncBuildVariant.md)
+
+This is the default (synchronous) build variant.
+[getQuickJS](modules.md#getquickjs) returns a memoized instance of this build variant.
+
+#### Defined in
+
+[ts/variants.ts:156](https://github.com/justjake/quickjs-emscripten/blob/master/ts/variants.ts#L156)
+
 ## Functions
 
 ### getQuickJS
@@ -308,7 +496,7 @@ To work with the asyncified version of this library, see these functions:
 
 #### Defined in
 
-[ts/index.ts:52](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L52)
+[ts/index.ts:91](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L91)
 
 ___
 
@@ -327,7 +515,7 @@ least once.
 
 #### Defined in
 
-[ts/index.ts:65](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L65)
+[ts/index.ts:104](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L104)
 
 ___
 
@@ -412,7 +600,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-[ts/index.ts:146](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L146)
+[ts/index.ts:139](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L139)
 
 ___
 
@@ -434,7 +622,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 | Name | Type |
 | :------ | :------ |
-| `options?` | `AsyncRuntimeOptions` |
+| `options?` | [`AsyncRuntimeOptions`](interfaces/AsyncRuntimeOptions.md) |
 
 #### Returns
 
@@ -442,13 +630,13 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-[ts/index.ts:129](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L129)
+[ts/index.ts:122](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L122)
 
 ___
 
 ### newQuickJSAsyncWASMModule
 
-▸ **newQuickJSAsyncWASMModule**(): `Promise`<[`QuickJSAsyncWASMModule`](classes/QuickJSAsyncWASMModule.md)\>
+▸ **newQuickJSAsyncWASMModule**(`variant?`): `Promise`<[`QuickJSAsyncWASMModule`](classes/QuickJSAsyncWASMModule.md)\>
 
 Create a new, completely isolated WebAssembly module containing a version of the QuickJS library
 compiled with Emscripten's [ASYNCIFY](https://emscripten.org/docs/porting/asyncify.html) transform.
@@ -462,19 +650,25 @@ Note that there is a hard limit on the number of WebAssembly modules in older
 versions of v8:
 https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `variant` | [`AsyncBuildVariant`](interfaces/AsyncBuildVariant.md) | `RELEASE_ASYNC` |
+
 #### Returns
 
 `Promise`<[`QuickJSAsyncWASMModule`](classes/QuickJSAsyncWASMModule.md)\>
 
 #### Defined in
 
-[ts/index.ts:105](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L105)
+[ts/variants.ts:96](https://github.com/justjake/quickjs-emscripten/blob/master/ts/variants.ts#L96)
 
 ___
 
 ### newQuickJSWASMModule
 
-▸ **newQuickJSWASMModule**(): `Promise`<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
+▸ **newQuickJSWASMModule**(`variant?`): `Promise`<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
 
 Create a new, completely isolated WebAssembly module containing the QuickJS library.
 See the documentation on [QuickJSWASMModule](classes/QuickJSWASMModule.md).
@@ -483,13 +677,19 @@ Note that there is a hard limit on the number of WebAssembly modules in older
 versions of v8:
 https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `variant` | [`SyncBuildVariant`](interfaces/SyncBuildVariant.md) | `RELEASE_SYNC` |
+
 #### Returns
 
 `Promise`<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
 
 #### Defined in
 
-[ts/index.ts:80](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L80)
+[ts/variants.ts:66](https://github.com/justjake/quickjs-emscripten/blob/master/ts/variants.ts#L66)
 
 ___
 
@@ -511,4 +711,4 @@ Returns an interrupt handler that interrupts Javascript execution after a deadli
 
 #### Defined in
 
-[ts/index.ts:157](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L157)
+[ts/index.ts:150](https://github.com/justjake/quickjs-emscripten/blob/master/ts/index.ts#L150)

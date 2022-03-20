@@ -29,3 +29,7 @@ export class QuickJSAsyncifyError extends Error {
 export class QuickJSAsyncifySuspended extends Error {
   name = "QuickJSAsyncifySuspended"
 }
+
+export class QuickJSMemoryLeakDetected extends Error {
+  name = "QuickJSMemoryLeakDetected"
+}

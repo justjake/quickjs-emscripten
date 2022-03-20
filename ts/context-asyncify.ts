@@ -1,8 +1,8 @@
 import { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
 import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
-import { QuickJSAsyncFFI } from "./ffi-asyncify"
-import { EvalDetectModule, EvalFlags, JSRuntimePointer, JSValuePointer } from "./ffi-types"
+import { QuickJSAsyncFFI } from "./variants"
+import { EvalDetectModule, EvalFlags, JSRuntimePointer, JSValuePointer } from "./types-ffi"
 import { Lifetime } from "./lifetime"
 import { QuickJSModuleCallbacks } from "./module"
 import { QuickJSAsyncRuntime } from "./runtime-asyncify"
@@ -23,9 +23,13 @@ export type AsyncFunctionImplementation = (
  */
 export class QuickJSAsyncContext extends QuickJSContext {
   public declare runtime: QuickJSAsyncRuntime
+  /** @private */
   protected declare module: QuickJSAsyncEmscriptenModule
+  /** @private */
   protected declare ffi: QuickJSAsyncFFI
+  /** @private */
   protected declare rt: Lifetime<JSRuntimePointer>
+  /** @private */
   protected declare callbacks: QuickJSModuleCallbacks
 
   /**

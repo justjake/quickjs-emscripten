@@ -1,6 +1,8 @@
-[quickjs-emscripten](../README.md) / [Exports](../modules.md) / QuickJSAsyncifySuspended
+[quickjs-emscripten](../README.md) / [Exports](../modules.md) / [errors](../modules/errors.md) / QuickJSAsyncifySuspended
 
 # Class: QuickJSAsyncifySuspended
+
+[errors](../modules/errors.md).QuickJSAsyncifySuspended
 
 ## Hierarchy
 
@@ -12,11 +14,11 @@
 
 ### Constructors
 
-- [constructor](QuickJSAsyncifySuspended.md#constructor)
+- [constructor](errors.QuickJSAsyncifySuspended.md#constructor)
 
 ### Properties
 
-- [name](QuickJSAsyncifySuspended.md#name)
+- [name](errors.QuickJSAsyncifySuspended.md#name)
 
 ## Constructors
 

@@ -1,7 +1,7 @@
 import { QuickJSAsyncContext } from "./context-asyncify"
 import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
 import { QuickJSNotImplemented } from "./errors"
-import { QuickJSAsyncFFI } from "./ffi-asyncify"
+import { QuickJSAsyncFFI } from "./variants"
 import { Lifetime, Scope } from "./lifetime"
 import { ModuleEvalOptions, QuickJSWASMModule } from "./module"
 import { QuickJSAsyncRuntime } from "./runtime-asyncify"
@@ -52,6 +52,10 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
 
     if (options.moduleLoader) {
       runtime.setModuleLoader(options.moduleLoader)
+    }
+
+    if (options.interruptHandler) {
+      runtime.setInterruptHandler(options.interruptHandler)
     }
 
     return runtime

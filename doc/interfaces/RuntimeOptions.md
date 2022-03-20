@@ -4,7 +4,7 @@
 
 ## Hierarchy
 
-- `RuntimeOptionsBase`
+- [`RuntimeOptionsBase`](RuntimeOptionsBase.md)
 
   ↳ **`RuntimeOptions`**
 
@@ -29,7 +29,7 @@
 
 #### Inherited from
 
-RuntimeOptionsBase.gcThreshold
+[RuntimeOptionsBase](RuntimeOptionsBase.md).[gcThreshold](RuntimeOptionsBase.md#gcthreshold)
 
 #### Defined in
 
@@ -39,15 +39,15 @@ ___
 
 ### interruptHandler
 
-• `Optional` **interruptHandler**: `undefined`
+• `Optional` **interruptHandler**: [`InterruptHandler`](../modules.md#interrupthandler)
 
 #### Inherited from
 
-RuntimeOptionsBase.interruptHandler
+[RuntimeOptionsBase](RuntimeOptionsBase.md).[interruptHandler](RuntimeOptionsBase.md#interrupthandler)
 
 #### Defined in
 
-[ts/types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L111)
+[ts/types.ts:110](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L110)
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 #### Inherited from
 
-RuntimeOptionsBase.maxStackSize
+[RuntimeOptionsBase](RuntimeOptionsBase.md).[maxStackSize](RuntimeOptionsBase.md#maxstacksize)
 
 #### Defined in
 
@@ -71,7 +71,7 @@ ___
 
 #### Inherited from
 
-RuntimeOptionsBase.memoryLimit
+[RuntimeOptionsBase](RuntimeOptionsBase.md).[memoryLimit](RuntimeOptionsBase.md#memorylimit)
 
 #### Defined in
 
@@ -95,7 +95,7 @@ ___
 
 #### Inherited from
 
-RuntimeOptionsBase.promiseRejectionHandler
+[RuntimeOptionsBase](RuntimeOptionsBase.md).[promiseRejectionHandler](RuntimeOptionsBase.md#promiserejectionhandler)
 
 #### Defined in
 
@@ -109,7 +109,7 @@ ___
 
 #### Inherited from
 
-RuntimeOptionsBase.runtimeInfo
+[RuntimeOptionsBase](RuntimeOptionsBase.md).[runtimeInfo](RuntimeOptionsBase.md#runtimeinfo)
 
 #### Defined in
 
@@ -123,7 +123,7 @@ ___
 
 #### Inherited from
 
-RuntimeOptionsBase.sharedArrayBufferFunctions
+[RuntimeOptionsBase](RuntimeOptionsBase.md).[sharedArrayBufferFunctions](RuntimeOptionsBase.md#sharedarraybufferfunctions)
 
 #### Defined in
 

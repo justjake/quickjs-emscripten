@@ -4,4 +4,5 @@
 --watch-files './build/**/*.ts'
 --watch-files './ts/**/*'
 --recursive
-'ts/**/readme.test.ts'
+--timeout 5000
+'ts/**/*.test.ts'
