@@ -127,10 +127,11 @@ doc: prettier ts/* ts/generated/*.ts
 	yarn doc
 	touch doc
 
-emcc: scripts/emcc.sh
-
 build/quickjs-emscripten.tgz: dist
 	yarn pack --filename build/quickjs-emscripten.tgz
+
+emcc: scripts/emcc.sh
+	docker pull $(EMSDK_DOCKER_IMAGE)
 
 scripts/emcc.sh:
 	docker pull $(EMSDK_DOCKER_IMAGE)
@@ -157,7 +158,7 @@ generate: $(GENERATE_VARIANTS)
 # with the VARIANT= statically set so it can be used in static rule contexts.
 # I'm not good enough at Makefile to do this any other way, sorry.
 $(VARIANTS): VARIANT=$@
-$(VARIANTS): %:
+$(VARIANTS): %: | emcc
 	@$(MAKE) VARIANT=$(VARIANT) VARIANT
 
 VARIANT: $(PLATFORM)
