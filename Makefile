@@ -112,10 +112,17 @@ endif
 
 wasm: $(WASM_VARIANTS)
 all: $(VARIANTS)
+dist: wasm doc | test
 
-.PHONY: test
+.PHONY: test prettier
 test:
 	yarn test
+prettier:
+	yarn prettier
+
+doc: prettier ts/* ts/generated/*.ts
+	yarn doc
+	touch doc
 
 emcc: scripts/emcc.sh
 

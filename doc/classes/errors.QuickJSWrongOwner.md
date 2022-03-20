@@ -1,6 +1,8 @@
-[quickjs-emscripten](../README.md) / [Exports](../modules.md) / QuickJSWrongOwner
+[quickjs-emscripten](../README.md) / [Exports](../modules.md) / [errors](../modules/errors.md) / QuickJSWrongOwner
 
 # Class: QuickJSWrongOwner
+
+[errors](../modules/errors.md).QuickJSWrongOwner
 
 ## Hierarchy
 
@@ -12,11 +14,11 @@
 
 ### Constructors
 
-- [constructor](QuickJSWrongOwner.md#constructor)
+- [constructor](errors.QuickJSWrongOwner.md#constructor)
 
 ### Properties
 
-- [name](QuickJSWrongOwner.md#name)
+- [name](errors.QuickJSWrongOwner.md#name)
 
 ## Constructors
 

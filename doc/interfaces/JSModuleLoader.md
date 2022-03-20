@@ -23,4 +23,4 @@ Load module (sync)
 
 #### Defined in
 
-[ts/types.ts:83](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L83)
+[ts/types.ts:82](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L82)

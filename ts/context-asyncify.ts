@@ -23,9 +23,13 @@ export type AsyncFunctionImplementation = (
  */
 export class QuickJSAsyncContext extends QuickJSContext {
   public declare runtime: QuickJSAsyncRuntime
+  /** @private */
   protected declare module: QuickJSAsyncEmscriptenModule
+  /** @private */
   protected declare ffi: QuickJSAsyncFFI
+  /** @private */
   protected declare rt: Lifetime<JSRuntimePointer>
+  /** @private */
   protected declare callbacks: QuickJSModuleCallbacks
 
   /**

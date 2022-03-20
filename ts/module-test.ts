@@ -1,16 +1,19 @@
-import { QuickJSContext } from "./context"
+import type { QuickJSContext } from "./context"
+import type { ModuleEvalOptions, QuickJSWASMModule } from "./module"
+import type { QuickJSRuntime } from "./runtime"
+import type { ContextOptions, RuntimeOptions } from "./types"
 import { QuickJSMemoryLeakDetected } from "./errors"
 import { Lifetime } from "./lifetime"
-import { ModuleEvalOptions, QuickJSWASMModule } from "./module"
-import { QuickJSRuntime } from "./runtime"
-import { ContextOptions, RuntimeOptions } from "./types"
 
 /**
- * A test wrapper of QuickJSWASMModule that keeps a reference to each context or
- * runtime created.
+ * A test wrapper of [[QuickJSWASMModule]] that keeps a reference to each
+ * context or runtime created.
  *
  * Call [[disposeAll]] to reset these sets and calls `dispose` on any left alive
  * (which may throw an error).
+ *
+ * Call [[assertNoMemoryAllocated]] at the end of a test, when you expect that you've
+ * freed all the memory you've ever allocated.
  */
 export class TestQuickJSWASMModule implements Pick<QuickJSWASMModule, keyof QuickJSWASMModule> {
   contexts = new Set<QuickJSContext>()
@@ -73,6 +76,7 @@ export class TestQuickJSWASMModule implements Pick<QuickJSWASMModule, keyof Quic
     }
   }
 
+  /** @private */
   getFFI() {
     return this.parent.getFFI()
   }

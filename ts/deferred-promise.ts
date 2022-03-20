@@ -2,6 +2,7 @@ import type { Disposable } from "./lifetime"
 import type { QuickJSHandle } from "./types"
 import type { QuickJSRuntime } from "./runtime"
 import type { QuickJSContext } from "./context"
+export type { PromiseExecutor } from "./types"
 
 /**
  * QuickJSDeferredPromise wraps a QuickJS promise [[handle]] and allows

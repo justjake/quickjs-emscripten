@@ -1,25 +1,25 @@
-[quickjs-emscripten](../README.md) / [Exports](../modules.md) / RuntimeOptions
+[quickjs-emscripten](../README.md) / [Exports](../modules.md) / AsyncRuntimeOptions
 
-# Interface: RuntimeOptions
+# Interface: AsyncRuntimeOptions
 
 ## Hierarchy
 
 - [`RuntimeOptionsBase`](RuntimeOptionsBase.md)
 
-  ↳ **`RuntimeOptions`**
+  ↳ **`AsyncRuntimeOptions`**
 
 ## Table of contents
 
 ### Properties
 
-- [gcThreshold](RuntimeOptions.md#gcthreshold)
-- [interruptHandler](RuntimeOptions.md#interrupthandler)
-- [maxStackSize](RuntimeOptions.md#maxstacksize)
-- [memoryLimit](RuntimeOptions.md#memorylimit)
-- [moduleLoader](RuntimeOptions.md#moduleloader)
-- [promiseRejectionHandler](RuntimeOptions.md#promiserejectionhandler)
-- [runtimeInfo](RuntimeOptions.md#runtimeinfo)
-- [sharedArrayBufferFunctions](RuntimeOptions.md#sharedarraybufferfunctions)
+- [gcThreshold](AsyncRuntimeOptions.md#gcthreshold)
+- [interruptHandler](AsyncRuntimeOptions.md#interrupthandler)
+- [maxStackSize](AsyncRuntimeOptions.md#maxstacksize)
+- [memoryLimit](AsyncRuntimeOptions.md#memorylimit)
+- [moduleLoader](AsyncRuntimeOptions.md#moduleloader)
+- [promiseRejectionHandler](AsyncRuntimeOptions.md#promiserejectionhandler)
+- [runtimeInfo](AsyncRuntimeOptions.md#runtimeinfo)
+- [sharedArrayBufferFunctions](AsyncRuntimeOptions.md#sharedarraybufferfunctions)
 
 ## Properties
 
@@ -81,11 +81,11 @@ ___
 
 ### moduleLoader
 
-• `Optional` **moduleLoader**: [`JSModuleLoader`](JSModuleLoader.md)
+• `Optional` **moduleLoader**: [`JSModuleLoader`](JSModuleLoader.md) \| [`JSModuleLoaderAsync`](JSModuleLoaderAsync.md)
 
 #### Defined in
 
-[ts/types.ts:130](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L130)
+[ts/types.ts:134](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L134)
 
 ___
 

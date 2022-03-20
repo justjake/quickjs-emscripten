@@ -437,6 +437,55 @@ const upperCaseData = context.unwrapResult(result).consume(context.getString)
 console.log(upperCaseData) // 'VERY USEFUL DATA'
 ```
 
+### Testing your code
+
+This library is complicated to use, so please consider automated testing your
+implementation. We highly writing your test suite to run with both the "release"
+build variant of quickjs-emscripten, and also the [DEBUG_SYNC] build variant.
+The debug sync build variant has extra instrumentation code for detecting memory
+leaks.
+
+The class [TestQuickJSWASMModule] exposes the memory leak detection API, although
+this API is only accurate when using `DEBUG_SYNC` variant.
+
+```typescript
+// Define your test suite in a function, so that you can test against
+// different module loaders.
+function myTests(moduleLoader: () => Promise<QuickJSWASMModule>) {
+  let QuickJS: TestQuickJSWASMModule
+  beforeEach(async () => {
+    // Get a unique TestQuickJSWASMModule instance for each test.
+    const wasmModule = await moduleLoader()
+    QuickJS = new TestQuickJSWASMModule(wasmModule)
+  })
+  afterEach(() => {
+    // Assert that the test disposed all handles. The DEBUG_SYNC build
+    // variant will show detailed traces for each leak.
+    QuickJS.assertNoMemoryAllocated()
+  })
+
+  it("works well", () => {
+    // TODO: write a test using QuickJS
+    const context = QuickJS.newContext()
+    context.unwrapResult(context.evalCode("1 + 1")).dispose()
+    context.dispose()
+  })
+}
+
+// Run the test suite against a matrix of module loaders.
+describe("Check for memory leaks with QuickJS DEBUG build", () => {
+  const moduleLoader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
+  myTests(moduleLoader)
+})
+
+describe("Realistic test with QuickJS RELEASE build", () => {
+  myTests(getQuickJS)
+})
+```
+
+[debug_sync]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#debug_sync
+[testquickjswasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/TestQuickJSWASMModule.md
+
 ### More Documentation
 
 [Github] | [NPM] | [API Documentation][api] | [Examples][tests]

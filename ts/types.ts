@@ -3,7 +3,7 @@ import type { QuickJSContext } from "./context"
 import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
 import type { Disposable, Lifetime } from "./lifetime"
 import type { QuickJSAsyncContext } from "./context-asyncify"
-import type { QuickJSRuntime } from "./runtime"
+import type { InterruptHandler, QuickJSRuntime } from "./runtime"
 import { EvalFlags, JSContextPointer, JSValueConstPointer, JSValuePointer } from "./types-ffi"
 
 export type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
@@ -107,7 +107,8 @@ export type PartiallyImplemented<T> = never &
   }
 
 export interface RuntimeOptionsBase {
-  interruptHandler?: TODO<"JS_SetInterruptHandler">
+  interruptHandler?: InterruptHandler
+
   promiseRejectionHandler?: TODO<"JSHostPromiseRejectionTracker">
   runtimeInfo?: TODO<"JS_SetRuntimeInfo", string>
   memoryLimit?: TODO<"JS_SetMemoryLimit", number>
@@ -129,7 +130,7 @@ export interface RuntimeOptions extends RuntimeOptionsBase {
   moduleLoader?: JSModuleLoader
 }
 
-export interface AsyncRuntimeOptions {
+export interface AsyncRuntimeOptions extends RuntimeOptionsBase {
   moduleLoader?: JSModuleLoaderAsync | JSModuleLoader
 }
 

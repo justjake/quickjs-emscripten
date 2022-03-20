@@ -7,21 +7,44 @@ export type { QuickJSWASMModule, QuickJSContext, QuickJSRuntime }
 // Async classes
 import type { QuickJSAsyncWASMModule } from "./module-asyncify"
 import type { QuickJSAsyncRuntime } from "./runtime-asyncify"
-import type { QuickJSAsyncContext } from "./context-asyncify"
+import type { QuickJSAsyncContext, AsyncFunctionImplementation } from "./context-asyncify"
 import { AsyncRuntimeOptions, ContextOptions } from "./types"
-export type { QuickJSAsyncContext, QuickJSAsyncRuntime, QuickJSAsyncWASMModule }
+export type {
+  QuickJSAsyncContext,
+  QuickJSAsyncRuntime,
+  QuickJSAsyncWASMModule,
+  AsyncFunctionImplementation,
+}
 
-// Implementation loaders
-import * as variants from "./variants"
-import { newQuickJSWASMModule, newQuickJSAsyncWASMModule } from "./variants"
-export { variants }
-export { newQuickJSWASMModule, newQuickJSAsyncWASMModule }
+// Build variants
+import {
+  newQuickJSWASMModule,
+  newQuickJSAsyncWASMModule,
+  DEBUG_ASYNC,
+  DEBUG_SYNC,
+  RELEASE_ASYNC,
+  RELEASE_SYNC,
+  SyncBuildVariant,
+  AsyncBuildVariant,
+} from "./variants"
+export {
+  newQuickJSWASMModule,
+  newQuickJSAsyncWASMModule,
+  DEBUG_ASYNC,
+  DEBUG_SYNC,
+  RELEASE_ASYNC,
+  RELEASE_SYNC,
+  SyncBuildVariant,
+  AsyncBuildVariant,
+}
 
 // Export helpers
 export * from "./vm-interface"
 export * from "./lifetime"
-export * from "./errors"
+/** Collects the informative errors this library may throw. */
+export * as errors from "./errors"
 export * from "./deferred-promise"
+export * from "./module-test"
 export type {
   StaticJSValue,
   JSValueConst,
@@ -30,8 +53,18 @@ export type {
   ContextOptions,
   ContextEvalOptions,
   RuntimeOptions,
+  AsyncRuntimeOptions,
+  RuntimeOptionsBase,
   JSModuleLoader,
   JSModuleLoadResult,
+  JSModuleLoaderAsync,
+  JSModuleLoadSuccess,
+  JSModuleLoadFailure,
+  JSModuleNormalizer,
+  JSModuleNormalizerAsync,
+  JSModuleNormalizeResult,
+  JSModuleNormalizeFailure,
+  JSModuleNormalizeSuccess,
 } from "./types"
 export type { ModuleEvalOptions } from "./module"
 export type { InterruptHandler, ExecutePendingJobsResult } from "./runtime"

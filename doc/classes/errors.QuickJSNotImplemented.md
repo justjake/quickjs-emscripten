@@ -1,6 +1,8 @@
-[quickjs-emscripten](../README.md) / [Exports](../modules.md) / QuickJSNotImplemented
+[quickjs-emscripten](../README.md) / [Exports](../modules.md) / [errors](../modules/errors.md) / QuickJSNotImplemented
 
 # Class: QuickJSNotImplemented
+
+[errors](../modules/errors.md).QuickJSNotImplemented
 
 ## Hierarchy
 
@@ -12,11 +14,11 @@
 
 ### Constructors
 
-- [constructor](QuickJSNotImplemented.md#constructor)
+- [constructor](errors.QuickJSNotImplemented.md#constructor)
 
 ### Properties
 
-- [name](QuickJSNotImplemented.md#name)
+- [name](errors.QuickJSNotImplemented.md#name)
 
 ## Constructors
 

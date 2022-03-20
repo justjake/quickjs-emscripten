@@ -20,9 +20,16 @@ export type QuickJSAsyncFFI = DebugAsyncifyFFI | ReleaseAsyncifyFFI
 export type QuickJSAsyncFFIConstructor = typeof DebugAsyncifyFFI | typeof ReleaseAsyncifyFFI
 
 /**
- * A build variant of quickjs-emscripten. Use the DEBUG variant for interactive
- * debugging or memory leak detection, and the RELEASE variant for all other
- * use-cases.
+ * quickjs-emscripten provides multiple build variants of the core WebAssembly
+ * module. These variants are each intended for a different use case.
+ *
+ * To create an instance of the library using a specific build variant, pass the
+ * build variant to {@link newQuickJSWASMModule} or {@link newQuickJSAsyncWASMModule}.
+ *
+ * Synchronous build variants:
+ *
+ * - {@link RELEASE_SYNC} - This is the default synchronous variant, for general purpose use.
+ * - {@link DEBUG_SYNC} - Synchronous build variant for debugging memory leaks.
  */
 export interface SyncBuildVariant {
   type: "sync"
@@ -31,9 +38,16 @@ export interface SyncBuildVariant {
 }
 
 /**
- * A build variant of quickjs-emscripten (asyncify version). Use the DEBUG
- * variant for interactive debugging, and the RELEASE variant for all other
- * use-cases.
+ * quickjs-emscripten provides multiple build variants of the core WebAssembly
+ * module. These variants are each intended for a different use case.
+ *
+ * To create an instance of the library using a specific build variant, pass the
+ * build variant to {@link newQuickJSWASMModule} or {@link newQuickJSAsyncWASMModule}.
+ *
+ * Asyncified build variants:
+ *
+ * - {@link RELEASE_ASYNC} - This is the default asyncified build variant, for general purpose use.
+ * - {@link DEBUG_ASYNC} - Asyncified build variant with debug logging.
  */
 export interface AsyncBuildVariant {
   type: "async"
@@ -50,6 +64,9 @@ export interface AsyncBuildVariant {
  * https://bugs.chromium.org/p/v8/issues/detail?id=12076
  */
 export async function newQuickJSWASMModule(
+  /**
+   * Optionally, pass a {@link SyncBuildVariant} to construct a different WebAssembly module.
+   */
   variant: SyncBuildVariant = RELEASE_SYNC
 ): Promise<QuickJSWASMModule> {
   const [wasmModuleLoader, QuickJSFFI, { QuickJSWASMModule }] = await Promise.all([
@@ -77,6 +94,9 @@ export async function newQuickJSWASMModule(
  * https://bugs.chromium.org/p/v8/issues/detail?id=12076
  */
 export async function newQuickJSAsyncWASMModule(
+  /**
+   * Optionally, pass a {@link AsyncBuildVariant} to construct a different WebAssembly module.
+   */
   variant: AsyncBuildVariant = RELEASE_ASYNC
 ): Promise<QuickJSAsyncWASMModule> {
   const [wasmModuleLoader, QuickJSAsyncFFI, { QuickJSAsyncWASMModule }] = await Promise.all([
@@ -91,7 +111,10 @@ export async function newQuickJSAsyncWASMModule(
 }
 
 /**
- * @private
+ * Helper intended to memoize the creation of a WebAssembly module.
+ * ```typescript
+ * const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
+ * ```
  */
 export function memoizePromiseFactory<T>(fn: () => Promise<T>): () => Promise<T> {
   let promise: Promise<T> | undefined
@@ -128,6 +151,7 @@ export const DEBUG_SYNC: SyncBuildVariant = {
 
 /**
  * This is the default (synchronous) build variant.
+ * {@link getQuickJS} returns a memoized instance of this build variant.
  */
 export const RELEASE_SYNC: SyncBuildVariant = {
   type: "sync",

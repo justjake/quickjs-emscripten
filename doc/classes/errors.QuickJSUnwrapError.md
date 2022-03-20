@@ -1,6 +1,8 @@
-[quickjs-emscripten](../README.md) / [Exports](../modules.md) / QuickJSUnwrapError
+[quickjs-emscripten](../README.md) / [Exports](../modules.md) / [errors](../modules/errors.md) / QuickJSUnwrapError
 
 # Class: QuickJSUnwrapError
+
+[errors](../modules/errors.md).QuickJSUnwrapError
 
 Error thrown if [QuickJSContext.unwrapResult](QuickJSContext.md#unwrapresult) unwraps an error value that isn't an object.
 
@@ -14,13 +16,13 @@ Error thrown if [QuickJSContext.unwrapResult](QuickJSContext.md#unwrapresult) un
 
 ### Constructors
 
-- [constructor](QuickJSUnwrapError.md#constructor)
+- [constructor](errors.QuickJSUnwrapError.md#constructor)
 
 ### Properties
 
-- [cause](QuickJSUnwrapError.md#cause)
-- [context](QuickJSUnwrapError.md#context)
-- [name](QuickJSUnwrapError.md#name)
+- [cause](errors.QuickJSUnwrapError.md#cause)
+- [context](errors.QuickJSUnwrapError.md#context)
+- [name](errors.QuickJSUnwrapError.md#name)
 
 ## Constructors
 

@@ -292,6 +292,10 @@ export class QuickJSWASMModule {
       runtime.setModuleLoader(options.moduleLoader)
     }
 
+    if (options.interruptHandler) {
+      runtime.setInterruptHandler(options.interruptHandler)
+    }
+
     return runtime
   }
 

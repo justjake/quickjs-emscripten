@@ -72,7 +72,7 @@ this constructor directly.
 
 #### Defined in
 
-[ts/deferred-promise.ts:52](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L52)
+[ts/deferred-promise.ts:53](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L53)
 
 ## Properties
 
@@ -82,7 +82,7 @@ this constructor directly.
 
 #### Defined in
 
-[ts/deferred-promise.ts:29](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L29)
+[ts/deferred-promise.ts:30](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L30)
 
 ___
 
@@ -96,7 +96,7 @@ are finished with it.
 
 #### Defined in
 
-[ts/deferred-promise.ts:36](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L36)
+[ts/deferred-promise.ts:37](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L37)
 
 ___
 
@@ -106,7 +106,7 @@ ___
 
 #### Defined in
 
-[ts/deferred-promise.ts:28](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L28)
+[ts/deferred-promise.ts:29](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L29)
 
 ___
 
@@ -118,7 +118,7 @@ A native promise that will resolve once this deferred is settled.
 
 #### Defined in
 
-[ts/deferred-promise.ts:41](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L41)
+[ts/deferred-promise.ts:42](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L42)
 
 ## Accessors
 
@@ -136,7 +136,7 @@ A native promise that will resolve once this deferred is settled.
 
 #### Defined in
 
-[ts/deferred-promise.ts:122](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L122)
+[ts/deferred-promise.ts:123](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L123)
 
 ## Methods
 
@@ -156,7 +156,7 @@ Dispose of the underlying resources used by this object.
 
 #### Defined in
 
-[ts/deferred-promise.ts:126](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L126)
+[ts/deferred-promise.ts:127](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L127)
 
 ___
 
@@ -183,7 +183,7 @@ callbacks.
 
 #### Defined in
 
-[ts/deferred-promise.ts:103](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L103)
+[ts/deferred-promise.ts:104](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L104)
 
 ___
 
@@ -210,4 +210,4 @@ callbacks.
 
 #### Defined in
 
-[ts/deferred-promise.ts:76](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L76)
+[ts/deferred-promise.ts:77](https://github.com/justjake/quickjs-emscripten/blob/master/ts/deferred-promise.ts#L77)

@@ -1,12 +1,5 @@
 {
-  "cSpell.words": [
-    "Asyncified",
-    "ASYNCIFY",
-    "chonkers",
-    "JSFFI",
-    "JSWASM",
-    "runtimes"
-  ],
+  "cSpell.words": ["Asyncified", "ASYNCIFY", "chonkers", "JSFFI", "JSWASM", "runtimes"],
   "files.associations": {
     "cutils.h": "c",
     "quickjs.h": "c",
@@ -16,5 +9,5 @@
     "math.h": "c",
     "stdbool.h": "c",
     "emscripten.h": "c"
-  },
+  }
 }

@@ -108,7 +108,7 @@ Use {@link QuickJS.createVm} to create a QuickJSContext instance.
 
 #### Defined in
 
-[ts/context.ts:163](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L163)
+[ts/context.ts:170](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L170)
 
 ## Properties
 
@@ -120,7 +120,7 @@ The runtime that created this context.
 
 #### Defined in
 
-[ts/context.ts:136](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L136)
+[ts/context.ts:143](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L143)
 
 ## Accessors
 
@@ -138,7 +138,7 @@ The runtime that created this context.
 
 #### Defined in
 
-[ts/context.ts:190](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L190)
+[ts/context.ts:197](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L197)
 
 ___
 
@@ -154,7 +154,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:248](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L248)
+[ts/context.ts:255](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L255)
 
 ___
 
@@ -176,7 +176,7 @@ You can set properties to create global variables.
 
 #### Defined in
 
-[ts/context.ts:263](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L263)
+[ts/context.ts:270](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L270)
 
 ___
 
@@ -192,7 +192,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:222](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L222)
+[ts/context.ts:229](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L229)
 
 ___
 
@@ -208,7 +208,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:235](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L235)
+[ts/context.ts:242](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L242)
 
 ___
 
@@ -228,7 +228,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:209](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L209)
+[ts/context.ts:216](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L216)
 
 ## Methods
 
@@ -266,7 +266,7 @@ value.
 
 #### Defined in
 
-[ts/context.ts:608](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L608)
+[ts/context.ts:615](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L615)
 
 ___
 
@@ -294,7 +294,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:559](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L559)
+[ts/context.ts:566](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L566)
 
 ___
 
@@ -317,7 +317,7 @@ will result in an error.
 
 #### Defined in
 
-[ts/context.ts:200](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L200)
+[ts/context.ts:207](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L207)
 
 ___
 
@@ -340,7 +340,7 @@ Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Defined in
 
-[ts/context.ts:725](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L725)
+[ts/context.ts:732](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L732)
 
 ___
 
@@ -385,7 +385,7 @@ interrupted, the error will have name `InternalError` and message
 
 #### Defined in
 
-[ts/context.ts:655](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L655)
+[ts/context.ts:662](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L662)
 
 ___
 
@@ -413,7 +413,7 @@ Converts `handle` into a Javascript number.
 
 #### Defined in
 
-[ts/context.ts:457](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L457)
+[ts/context.ts:464](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L464)
 
 ___
 
@@ -441,7 +441,7 @@ Get a property from a JSValue.
 
 #### Defined in
 
-[ts/context.ts:523](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L523)
+[ts/context.ts:530](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L530)
 
 ___
 
@@ -467,7 +467,7 @@ Converts `handle` to a Javascript string.
 
 #### Defined in
 
-[ts/context.ts:465](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L465)
+[ts/context.ts:472](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L472)
 
 ___
 
@@ -484,7 +484,7 @@ Create a new QuickJS [array](https://developer.mozilla.org/en-US/docs/Web/JavaSc
 
 #### Defined in
 
-[ts/context.ts:321](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L321)
+[ts/context.ts:328](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L328)
 
 ___
 
@@ -506,7 +506,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:412](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L412)
+[ts/context.ts:419](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L419)
 
 ▸ **newError**(`message`): [`QuickJSHandle`](../modules.md#quickjshandle)
 
@@ -522,7 +522,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:413](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L413)
+[ts/context.ts:420](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L420)
 
 ▸ **newError**(): [`QuickJSHandle`](../modules.md#quickjshandle)
 
@@ -532,7 +532,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:414](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L414)
+[ts/context.ts:421](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L421)
 
 ___
 
@@ -574,7 +574,7 @@ return deferred.handle
 
 #### Defined in
 
-[ts/context.ts:406](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L406)
+[ts/context.ts:413](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L413)
 
 ___
 
@@ -600,7 +600,7 @@ Converts a Javascript number into a QuickJS value.
 
 #### Defined in
 
-[ts/context.ts:287](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L287)
+[ts/context.ts:294](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L294)
 
 ___
 
@@ -627,7 +627,7 @@ Create a new QuickJS [object](https://developer.mozilla.org/en-US/docs/Web/JavaS
 
 #### Defined in
 
-[ts/context.ts:307](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L307)
+[ts/context.ts:314](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L314)
 
 ___
 
@@ -646,7 +646,7 @@ resources; see the documentation on [QuickJSDeferredPromise](QuickJSDeferredProm
 
 #### Defined in
 
-[ts/context.ts:332](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L332)
+[ts/context.ts:339](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L339)
 
 ▸ **newPromise**(`promise`): [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
 
@@ -668,7 +668,7 @@ You can still resolve/reject the created promise "early" using its methods.
 
 #### Defined in
 
-[ts/context.ts:340](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L340)
+[ts/context.ts:347](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L347)
 
 ▸ **newPromise**(`newPromiseFn`): [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
 
@@ -681,7 +681,7 @@ You can still resolve/reject the created promise "early" using its methods.
 
 | Name | Type |
 | :------ | :------ |
-| `newPromiseFn` | `PromiseExecutor`<[`QuickJSHandle`](../modules.md#quickjshandle), [`QuickJSHandle`](../modules.md#quickjshandle) \| `Error`\> |
+| `newPromiseFn` | [`PromiseExecutor`](../modules.md#promiseexecutor)<[`QuickJSHandle`](../modules.md#quickjshandle), [`QuickJSHandle`](../modules.md#quickjshandle) \| `Error`\> |
 
 #### Returns
 
@@ -689,7 +689,7 @@ You can still resolve/reject the created promise "early" using its methods.
 
 #### Defined in
 
-[ts/context.ts:347](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L347)
+[ts/context.ts:354](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L354)
 
 ___
 
@@ -715,7 +715,7 @@ Create a QuickJS [string](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 
 #### Defined in
 
-[ts/context.ts:294](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L294)
+[ts/context.ts:301](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L301)
 
 ___
 
@@ -742,7 +742,7 @@ You may need to call [executePendingJobs](QuickJSRuntime.md#executependingjobs) 
 
 #### Defined in
 
-[ts/context.ts:480](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L480)
+[ts/context.ts:487](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L487)
 
 ___
 
@@ -775,7 +775,7 @@ properties.
 
 #### Defined in
 
-[ts/context.ts:544](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L544)
+[ts/context.ts:551](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L551)
 
 ___
 
@@ -799,7 +799,7 @@ Throw an error in the VM, interrupted whatever current execution is in progress 
 
 #### Defined in
 
-[ts/context.ts:685](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L685)
+[ts/context.ts:692](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L692)
 
 ___
 
@@ -828,7 +828,7 @@ Does not support BigInt values correctly.
 
 #### Defined in
 
-[ts/context.ts:448](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L448)
+[ts/context.ts:455](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L455)
 
 ___
 
@@ -859,4 +859,4 @@ If the result is an error, converts the error to a native object and throws the 
 
 #### Defined in
 
-[ts/context.ts:750](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L750)
+[ts/context.ts:757](https://github.com/justjake/quickjs-emscripten/blob/master/ts/context.ts#L757)

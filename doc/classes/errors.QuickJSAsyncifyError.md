@@ -1,6 +1,8 @@
-[quickjs-emscripten](../README.md) / [Exports](../modules.md) / QuickJSAsyncifyError
+[quickjs-emscripten](../README.md) / [Exports](../modules.md) / [errors](../modules/errors.md) / QuickJSAsyncifyError
 
 # Class: QuickJSAsyncifyError
+
+[errors](../modules/errors.md).QuickJSAsyncifyError
 
 ## Hierarchy
 
@@ -12,11 +14,11 @@
 
 ### Constructors
 
-- [constructor](QuickJSAsyncifyError.md#constructor)
+- [constructor](errors.QuickJSAsyncifyError.md#constructor)
 
 ### Properties
 
-- [name](QuickJSAsyncifyError.md#name)
+- [name](errors.QuickJSAsyncifyError.md#name)
 
 ## Constructors
 
