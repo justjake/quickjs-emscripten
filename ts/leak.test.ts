@@ -1,4 +1,4 @@
-import assert from "assert"
+import * as assert from "assert"
 import { getQuickJS, newQuickJSAsyncWASMModule, newQuickJSWASMModule } from "."
 import { QuickJSWASMModule } from "./module"
 import { DEBUG_ASYNC, DEBUG_SYNC, memoizePromiseFactory as memoizeNewModule } from "./variants"

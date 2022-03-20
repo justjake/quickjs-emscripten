@@ -11,9 +11,9 @@ import {
   newQuickJSWASMModule,
 } from "."
 import { it, describe } from "mocha"
-import assert from "assert"
+import * as assert from "assert"
 import { isFail, VmCallResult } from "./vm-interface"
-import fs from "fs"
+import * as fs from "fs"
 import { QuickJSContext } from "./context"
 import { QuickJSAsyncContext } from "./context-asyncify"
 import { DEBUG_ASYNC, DEBUG_SYNC, memoizePromiseFactory, QuickJSFFI } from "./variants"
@@ -457,7 +457,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
       vm.unwrapResult(vm.evalCode("1 + 1")).dispose()
 
-      assert(calls > 0, "interruptHandler called at least once")
+      assert.ok(calls > 0, "interruptHandler called at least once")
     })
 
     it("interrupts infinite loop execution", () => {
@@ -482,8 +482,8 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       const i = vm.getNumber(iHandle)
       iHandle.dispose()
 
-      assert(i > 10, "incremented i")
-      assert(i > calls, "incremented i more than called the interrupt handler")
+      assert.ok(i > 10, "incremented i")
+      assert.ok(i > calls, "incremented i more than called the interrupt handler")
       // debug('Javascript loop iterrations:', i, 'interrupt handler calls:', calls)
 
       if (result.error) {
@@ -566,7 +566,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
   describe(".dumpMemoryUsage()", () => {
     it("logs memory usage", () => {
-      assert(
+      assert.ok(
         vm.runtime.dumpMemoryUsage().endsWith("per fast array)\n"),
         'should end with "per fast array)\\n"'
       )
@@ -736,7 +736,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       fnHandle.dispose()
 
       const callResultPromise = vm.evalCodeAsync("asyncFn()")
-      assert(callResultPromise instanceof Promise)
+      assert.ok(callResultPromise instanceof Promise)
 
       const callResult = await callResultPromise
       const unwrapped = vm.unwrapResult(callResult)
@@ -758,10 +758,10 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       )
 
       const callResultPromise = vm.evalCodeAsync("asyncFn()")
-      assert(callResultPromise instanceof Promise)
+      assert.ok(callResultPromise instanceof Promise)
 
       const result = await callResultPromise
-      assert(isFail(result), "VM eval call errored")
+      assert.ok(isFail(result), "VM eval call errored")
 
       assert.throws(() => vm.unwrapResult(result), /async oops/)
     })

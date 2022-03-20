@@ -1,5 +1,5 @@
 import { Lifetime, Scope } from "./lifetime"
-import assert from "assert"
+import * as assert from "assert"
 
 describe("Lifetime", () => {
   describe(".consume", () => {

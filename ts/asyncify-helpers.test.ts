@@ -1,4 +1,4 @@
-import assert from "assert"
+import * as assert from "assert"
 import { maybeAsyncFn } from "./asyncify-helpers"
 
 describe("maybeAsync", () => {
@@ -16,7 +16,7 @@ describe("maybeAsync", () => {
 
   it("has async output for async inputs", async () => {
     const result = addPromises(Promise.resolve(1), 2)
-    assert(result instanceof Promise, "is promise")
+    assert.ok(result instanceof Promise, "is promise")
     const sum = await result
     assert.strictEqual(sum, 3, "sums correctly")
   })

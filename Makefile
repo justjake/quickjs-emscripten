@@ -112,10 +112,17 @@ endif
 
 wasm: $(WASM_VARIANTS)
 all: $(VARIANTS)
-dist: wasm tsconfig.json
-	rm -rf dist
+
+dist: dist/esm dist/commonjs | $(WASM_VARIANTS)
+dist/esm: tsconfig.json tsconfig.esm.json ts/*
+	rm -rf dist/esm
+	yarn run tsc -p tsconfig.esm.json
+	cp -v ts/generated/*.wasm ts/generated/*.wasm.map $@/generated
+
+dist/commonjs: tsconfig.json ts/*
+	rm -rf dist/commonjs
 	yarn run tsc
-	cp -v ts/generated/*.wasm ts/generated/*.wasm.map dist/generated
+	cp -v ts/generated/*.wasm ts/generated/*.wasm.map $@/generated
 
 .PHONY: test prettier
 test:
@@ -194,11 +201,11 @@ $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c generate.ts
 
 ###############################################################################
 # WASM variants
-WASM: $(BUILD_TS)/emscripten-module.$(VARIANT).js $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts GENERATE
+WASM: $(BUILD_TS)/emscripten-module.$(VARIANT).mjs $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts GENERATE
 GENERATE: $(BUILD_TS)/ffi.$(VARIANT).ts 
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
-$(BUILD_TS)/emscripten-module.$(VARIANT).js: $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
+$(BUILD_TS)/emscripten-module.$(VARIANT).mjs: $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
 	$(EMCC) $(VARIANT_CFLAGS) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
