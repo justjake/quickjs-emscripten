@@ -18,6 +18,7 @@
     "url": "https://github.com/justjake/quickjs-emscripten"
   },
   "files": [
+    "c/interface.c",
     "dist/**/*",
     "!dist/*.test.js",
     "!dist/*.tsbuildinfo"
