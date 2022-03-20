@@ -1,5 +1,5 @@
 {
-  "include": ["ts/**/*.ts", "ts/**/*.js"],
+  "include": ["ts/**/*.ts", "ts/**/*.js", "ts/**/*.json", "ts/**/*.wasm"],
   "exclude": ["node_modules", "examples"],
   "compilerOptions": {
     /* Basic Options */
@@ -17,7 +17,7 @@
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
     "outDir": "./dist" /* Redirect output structure to the directory. */,
     // "composite": true,                     /* Enable project compilation */
-    // "tsBuildInfoFile": "./",               /* Specify file to store incremental compilation information */
+    // "tsBuildInfoFile": "./build/tsbuildinfo",               /* Specify file to store incremental compilation information */
     // "removeComments": true,                /* Do not emit comments to output. */
     // "noEmit": true,                        /* Do not emit outputs. */
     // "importHelpers": true,                 /* Import emit helpers from 'tslib'. */

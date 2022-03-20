@@ -112,7 +112,10 @@ endif
 
 wasm: $(WASM_VARIANTS)
 all: $(VARIANTS)
-dist: wasm doc | test
+dist: wasm
+	rm -rf dist
+	yarn run tsc
+	cp -v ts/generated/*.wasm ts/generated/*.wasm.map dist/generated
 
 .PHONY: test prettier
 test:
@@ -125,6 +128,9 @@ doc: prettier ts/* ts/generated/*.ts
 	touch doc
 
 emcc: scripts/emcc.sh
+
+build/quickjs-emscripten.tgz: dist
+	yarn pack --filename build/quickjs-emscripten.tgz
 
 scripts/emcc.sh:
 	docker pull $(EMSDK_DOCKER_IMAGE)

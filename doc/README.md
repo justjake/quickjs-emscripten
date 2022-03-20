@@ -483,8 +483,16 @@ describe("Realistic test with QuickJS RELEASE build", () => {
 })
 ```
 
+For more testing examples, please explore the typescript source of [quickjs-emscripten][ts] repository.
+
+[ts]: https://github.com/justjake/quickjs-emscripten/blob/master/ts
 [debug_sync]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#debug_sync
 [testquickjswasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/TestQuickJSWASMModule.md
+
+### Debugging
+
+- Switch to a DEBUG build variant of the WebAssembly module to see debug log messages from the C part of this library.
+- Set `process.env.QTS_DEBUG` to see debug log messages from the Javascript part of this library.
 
 ### More Documentation
 
@@ -554,10 +562,12 @@ automatically exported to native code (via a generated header) and to
 Typescript (via a generated FFI class). See ./generate.ts for how this works.
 
 The C code builds as both with `emscripten` (using `emcc`), to produce WASM (or
-ASM.js) and with `clang`. Build outputs are checked in, so
-Intermediate object files from QuickJS end up in ./build/quickjs/{wasm,native}.
+ASM.js) and with `clang`. Build outputs are checked in, so you can iterate on
+the Javascript parts of the library without setting up the Emscripten toolchain.
 
-This project uses `emscripten 3.17` via Docker. You will need a working `docker`
+Intermediate object files from QuickJS end up in ./build/quickjs/.
+
+This project uses `emscripten 3.1.7` via Docker. You will need a working `docker`
 install to build the Emscripten artifacts.
 
 Related NPM scripts:

@@ -3,6 +3,8 @@ import { getQuickJS, newQuickJSAsyncWASMModule, newQuickJSWASMModule } from "."
 import { QuickJSWASMModule } from "./module"
 import { DEBUG_ASYNC, DEBUG_SYNC, memoizePromiseFactory as memoizeNewModule } from "./variants"
 
+const TEST_LEAK = Boolean(process.env.TEST_LEAK)
+
 function checkModuleForLeaks(this: Mocha.Suite, getModule: () => Promise<QuickJSWASMModule>) {
   let wasmModule: QuickJSWASMModule
   this.timeout(Infinity)
@@ -27,7 +29,7 @@ function checkModuleForLeaks(this: Mocha.Suite, getModule: () => Promise<QuickJS
     }
   })
 
-  const DURATION_MS = 10 * 1000
+  const DURATION_MS = TEST_LEAK ? 10 * 1000 : 100
   const MAX_ITERATIONS = 1000
   const PASSED_RECENTLY: Array<keyof typeof checks> = ["runtime", "runtimeContext"]
   const PRIORITY: Array<keyof typeof checks> = ["eval", "dumpEval"]
@@ -135,7 +137,7 @@ function checkModuleForLeaks(this: Mocha.Suite, getModule: () => Promise<QuickJS
       let i = 0
       for (; i < MAX_ITERATIONS; i++) {
         fn()
-        if (Date.now() - startedAt > DURATION_MS) {
+        if (i > 1 && Date.now() - startedAt > DURATION_MS) {
           break
         }
       }
