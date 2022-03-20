@@ -8,6 +8,7 @@ import {
   InterruptHandler,
   QuickJSDeferredPromise,
   newQuickJSAsyncWASMModule,
+  newQuickJSWASMModule,
 } from "."
 import { it, describe } from "mocha"
 import assert from "assert"
@@ -15,12 +16,9 @@ import { isFail, VmCallResult } from "./vm-interface"
 import fs from "fs"
 import { QuickJSContext } from "./context"
 import { QuickJSAsyncContext } from "./context-asyncify"
-import { QuickJSFFI } from "./variants"
+import { DEBUG_ASYNC, DEBUG_SYNC, memoizePromiseFactory, QuickJSFFI } from "./variants"
 import { QuickJSUnwrapError } from "./errors"
 import { debugLog } from "./debug"
-// Force load big chonkers
-import "./quickjs.emscripten-module"
-import "./quickjs-asyncify.emscripten-module"
 import { EitherFFI } from "./types"
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
@@ -878,27 +876,46 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
   })
 }
 
-describe("QuickJS.newContext", () => {
-  contextTests(async () => {
-    const quickjs = await getQuickJS()
-    return quickjs.newContext()
+describe("QuickJSContext", function () {
+  describe("QuickJS.newContext", function () {
+    const loader = getQuickJS
+    const getContext = () => loader().then((mod) => mod.newContext())
+    contextTests.call(this, getContext)
+  })
+
+  describe("DEBUG sync module", function () {
+    const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
+    const getContext = () => loader().then((mod) => mod.newContext())
+    contextTests.call(this, getContext)
   })
 })
 
 if (!TEST_NO_ASYNC) {
-  describe("QuickJS.newAsyncContext", () => {
-    const wasmPromise = newQuickJSAsyncWASMModule()
-    const getContext = async () => {
-      const wasm = await wasmPromise
-      return wasm.newContext()
-    }
+  describe("QuickJSAsyncContext", () => {
+    describe("newQuickJSAsyncWASMModule", function () {
+      const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule())
+      const getContext = () => loader().then((mod) => mod.newContext())
 
-    describe("sync API", () => {
-      contextTests(getContext)
+      describe("sync API", () => {
+        contextTests(getContext)
+      })
+
+      describe("async API", () => {
+        asyncContextTests(getContext)
+      })
     })
 
-    describe("async API", () => {
-      asyncContextTests(getContext)
+    describe("DEBUG async module", function () {
+      const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule(DEBUG_ASYNC))
+      const getContext = () => loader().then((mod) => mod.newContext())
+
+      describe("sync API", () => {
+        contextTests(getContext)
+      })
+
+      describe("async API", () => {
+        asyncContextTests(getContext)
+      })
     })
   })
 }

@@ -2050,10 +2050,10 @@ var tempI64;
 var ASM_CONSTS = {
   
 };
-function qts_host_call_function(ctx,this_ptr,argc,argv,magic_func_id){ const asyncify = undefined; return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id); }
+function qts_host_call_function(ctx,this_ptr,argc,argv,magic_func_id){ const asyncify = {['handleSleep'] : Asyncify.handleSleep}; return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id); }
 function qts_host_interrupt_handler(rt){ const asyncify = undefined; return Module['callbacks']['shouldInterrupt'](asyncify, rt); }
-function qts_host_load_module_source(rt,ctx,module_name){ const asyncify = undefined; const moduleNameString = UTF8ToString(module_name); return Module['callbacks']['loadModuleSource'](asyncify, rt, ctx, moduleNameString); }
-function qts_host_normalize_module(rt,ctx,module_base_name,module_name){ const asyncify = undefined; const moduleBaseNameString = UTF8ToString(module_base_name); const moduleNameString = UTF8ToString(module_name); return Module['callbacks']['normalizeModule'](asyncify, rt, ctx, moduleBaseNameString, moduleNameString); }
+function qts_host_load_module_source(rt,ctx,module_name){ const asyncify = {['handleSleep'] : Asyncify.handleSleep}; const moduleNameString = UTF8ToString(module_name); return Module['callbacks']['loadModuleSource'](asyncify, rt, ctx, moduleNameString); }
+function qts_host_normalize_module(rt,ctx,module_base_name,module_name){ const asyncify = {['handleSleep'] : Asyncify.handleSleep}; const moduleBaseNameString = UTF8ToString(module_base_name); const moduleNameString = UTF8ToString(module_name); return Module['callbacks']['normalizeModule'](asyncify, rt, ctx, moduleBaseNameString, moduleNameString); }
 
 
 

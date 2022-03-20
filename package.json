@@ -31,7 +31,7 @@
     "clean": "make clean",
     "build": "tsc",
     "doc": "typedoc",
-    "test": "yarn make-debug && TS_NODE_TYPE_CHECK=false mocha",
+    "test": "TS_NODE_TYPE_CHECK=false mocha",
     "test-fast": "make -j 8 wasm && TS_NODE_TYPE_CHECK=false TEST_NO_ASYNC=true mocha",
     "prettier": "prettier --write .",
     "prettier-check": "prettier --check .",

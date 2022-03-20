@@ -28,6 +28,12 @@ PLATFORM = $(word 1,$(subst _, ,$(VARIANT)))
 RELEASE = $(word 2,$(subst _, ,$(VARIANT)))
 SYNC = $(word 3,$(subst _, ,$(VARIANT)))
 
+
+# This macro handles finding all the related config for a varying variable.
+variantCombinations = $(PLATFORM) $(RELEASE) $(SYNC) $(PLATFORM)_$(RELEASE) $(PLATFORM)_$(SYNC) $(RELEASE)_$(SYNC) $(VARIANT)
+varsForVariant = $(addprefix $(1)_,$(variantCombinations))
+forVariant = $(foreach VAR,$(call varsForVariant,$(1)),$($(VAR)))
+
 # Paths
 QUICKJS_ROOT=quickjs
 WRAPPER_ROOT=c
@@ -62,7 +68,7 @@ CFLAGS_WASM_ASYNCIFY+=-s ASYNCIFY=1
 CFLAGS_WASM_ASYNCIFY+=-DQTS_ASYNCIFY=1
 CFLAGS_WASM_ASYNCIFY+=-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json
 CFLAGS_WASM_ASYNCIFY+=-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json
-GENERATE_TS_ENV_ASYNCIFY+=ASYNCIFY=1
+GENERATE_TS_ENV_ASYNCIFY+=ASYNCIFY=true
 
 # Release options
 CFLAGS_RELEASE=-Oz
@@ -88,18 +94,18 @@ CFLAGS_WASM_DEBUG_ASYNCIFY+=-s ASYNCIFY_ADVISE=1
 CFLAGS_WASM_DEBUG_ASYNCIFY+=-O3
 
 # Variant vars
-VARIANT_GENERATE_TS_ENV=$(GENERATE_TS_ENV) $(GENERATE_TS_ENV_$(RELEASE)) $(GENERATE_TS_ENV_$(SYNC)) $(GENERATE_TS_ENV_$(VARIANT))
-VARIANT_CFLAGS_WASM=$(CFLAGS_WASM) $(CFLAGS_WASM_$(RELEASE)) $(CFLAGS_WASM_$(SYNC)) $(CFLAGS_WASM_$(VARIANT))
-VARIANT_CFLAGS=$(CFLAGS) $(CFLAGS_$(RELEASE)) $(CFLAGS_$(SYNC)) $(CFLAGS_$(VARIANT))
+VARIANT_GENERATE_TS_ENV=$(call forVariant,GENERATE_TS_ENV)
+VARIANT_CFLAGS=$(call forVariant,CFLAGS)
 
-ifeq ($(PLATFORM),WASM)
-	VARIANT_CFLAGS+=$(VARIANT_CFLAGS_WASM)
-endif
 ifdef DEBUG_MAKE
 	MKDIRP=@echo "\n=====[["" target: $@, deps: $<, variant: $(VARIANT) ""]]=====" ; mkdir -p $(dir $@)
 else
 	MKDIRP=@mkdir -p $(dir $@)
 endif
+
+
+# $(error debug $(call varsForVariant,CFLAGS))
+# $(error debug $(call forVariant,CFLAGS))
 
 ###############################################################################
 # High level targets
@@ -177,16 +183,17 @@ $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c generate.ts
 # WASM variants
 WASM: $(BUILD_TS)/emscripten-module.$(VARIANT).js GENERATE
 GENERATE: $(BUILD_TS)/ffi.$(VARIANT).ts 
+WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
-$(BUILD_TS)/emscripten-module.$(VARIANT).js: $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) | scripts/emcc.sh
+$(BUILD_TS)/emscripten-module.$(VARIANT).js: $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
 	$(EMCC) $(VARIANT_CFLAGS) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
 $(BUILD_WRAPPER)/%.WASM_$(RELEASE)_$(SYNC).o: $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS) $(CFLAGS_SORTED_FUNCS) -c -o $@ $<
+	$(EMCC) $(VARIANT_CFLAGS) $(CFLAGS_SORTED_FUNCS) -c -o $@ $<
 
-$(BUILD_QUICKJS)/%.WASM_$(RELEASE)_$(SYNC).o: $(QUICKJS_ROOT)/%.c | scripts/emcc.sh
+$(BUILD_QUICKJS)/%.WASM_$(RELEASE)_$(SYNC).o: $(QUICKJS_ROOT)/%.c $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
 	$(EMCC) $(VARIANT_CFLAGS) $(EMCC_EXPORTED_FUNCS) $(QUICKJS_DEFINES) -c -o $@ $<
 
@@ -194,7 +201,6 @@ $(BUILD_TS)/ffi.$(VARIANT).ts: $(WRAPPER_ROOT)/interface.c generate.ts ts/types-
 	$(MKDIRP)
 	$(GENERATE_TS) ffi $@
 
-WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 $(BUILD_WRAPPER)/symbols.json:
 	$(MKDIRP)
 	$(GENERATE_TS) symbols $@

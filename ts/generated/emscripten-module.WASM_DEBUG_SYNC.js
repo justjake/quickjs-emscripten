@@ -928,7 +928,7 @@ var getTempRet0 = () => tempRet0;
 
 var wasmBinary;
 if (Module['wasmBinary']) wasmBinary = Module['wasmBinary'];legacyModuleProp('wasmBinary', 'wasmBinary');
-var noExitRuntime = Module['noExitRuntime'] || true;legacyModuleProp('noExitRuntime', 'noExitRuntime');
+var noExitRuntime = Module['noExitRuntime'] || false;legacyModuleProp('noExitRuntime', 'noExitRuntime');
 
 if (typeof WebAssembly != 'object') {
   abort('no native wasm support detected');
@@ -1633,6 +1633,10 @@ TTY.init();
 
 function exitRuntime() {
   checkStackCookie();
+  ___funcs_on_exit(); // Native atexit() functions
+  callRuntimeCallbacks(__ATEXIT__);
+  FS.quit();
+TTY.shutdown();
   runtimeExited = true;
 }
 
@@ -1658,6 +1662,7 @@ function addOnInit(cb) {
 }
 
 function addOnExit(cb) {
+  __ATEXIT__.unshift(cb);
 }
 
 function addOnPostRun(cb) {
@@ -1897,6 +1902,297 @@ function getBinaryPromise() {
   return Promise.resolve().then(function() { return getBinary(wasmBinaryFile); });
 }
 
+var wasmSourceMap;
+// include: source_map_support.js
+
+
+function WasmSourceMap(sourceMap) {
+  this.version = sourceMap.version;
+  this.sources = sourceMap.sources;
+  this.names = sourceMap.names;
+
+  this.mapping = {};
+  this.offsets = [];
+
+  var vlqMap = {};
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='.split('').forEach(function (c, i) {
+    vlqMap[c] = i;
+  });
+
+  // based on https://github.com/Rich-Harris/vlq/blob/master/src/vlq.ts
+  function decodeVLQ(string) {
+    var result = [];
+    var shift = 0;
+    var value = 0;
+
+    for (var i = 0; i < string.length; ++i) {
+      var integer = vlqMap[string[i]];
+      if (integer === undefined) {
+        throw new Error('Invalid character (' + string[i] + ')');
+      }
+
+      value += (integer & 31) << shift;
+
+      if (integer & 32) {
+        shift += 5;
+      } else {
+        var negate = value & 1;
+        value >>= 1;
+        result.push(negate ? -value : value);
+        value = shift = 0;
+      }
+    }
+    return result;
+  }
+
+  var offset = 0, src = 0, line = 1, col = 1, name = 0;
+  sourceMap.mappings.split(',').forEach(function (segment, index) {
+    if (!segment) return;
+    var data = decodeVLQ(segment);
+    var info = {};
+
+    offset += data[0];
+    if (data.length >= 2) info.source = src += data[1];
+    if (data.length >= 3) info.line = line += data[2];
+    if (data.length >= 4) info.column = col += data[3];
+    if (data.length >= 5) info.name = name += data[4];
+    this.mapping[offset] = info;
+    this.offsets.push(offset);
+  }, this);
+  this.offsets.sort(function (a, b) { return a - b; });
+}
+
+WasmSourceMap.prototype.lookup = function (offset) {
+  var normalized = this.normalizeOffset(offset);
+  if (!wasmOffsetConverter.isSameFunc(offset, normalized)) {
+    return null;
+  }
+  var info = this.mapping[normalized];
+  if (!info) {
+    return null;
+  }
+  return {
+    source: this.sources[info.source],
+    line: info.line,
+    column: info.column,
+    name: this.names[info.name],
+  };
+}
+
+WasmSourceMap.prototype.normalizeOffset = function (offset) {
+  var lo = 0;
+  var hi = this.offsets.length;
+  var mid;
+
+  while (lo < hi) {
+    mid = Math.floor((lo + hi) / 2);
+    if (this.offsets[mid] > offset) {
+      hi = mid;
+    } else {
+      lo = mid + 1;
+    }
+  }
+  return this.offsets[lo - 1];
+}
+
+var wasmSourceMapFile = 'emscripten-module.WASM_DEBUG_SYNC.wasm.map';
+if (!isDataURI(wasmBinaryFile)) {
+  wasmSourceMapFile = locateFile(wasmSourceMapFile);
+}
+
+function getSourceMap() {
+  try {
+    return JSON.parse(read_(wasmSourceMapFile));
+  } catch (err) {
+    abort(err);
+  }
+}
+
+function getSourceMapPromise() {
+  if ((ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) && typeof fetch == 'function') {
+    return fetch(wasmSourceMapFile, { credentials: 'same-origin' }).then(function(response) {
+      return response['json']();
+    }).catch(function () {
+      return getSourceMap();
+    });
+  }
+  return new Promise(function(resolve, reject) {
+    resolve(getSourceMap());
+  });
+}
+
+// end include: source_map_support.js
+
+var wasmOffsetConverter;
+// include: wasm_offset_converter.js
+
+
+/** @constructor */
+function WasmOffsetConverter(wasmBytes, wasmModule) {
+  // This class parses a WASM binary file, and constructs a mapping from
+  // function indices to the start of their code in the binary file, as well
+  // as parsing the name section to allow conversion of offsets to function names.
+  //
+  // The main purpose of this module is to enable the conversion of function
+  // index and offset from start of function to an offset into the WASM binary.
+  // This is needed to look up the WASM source map as well as generate
+  // consistent program counter representations given v8's non-standard
+  // WASM stack trace format.
+  //
+  // v8 bug: https://crbug.com/v8/9172
+  //
+  // This code is also used to check if the candidate source map offset is
+  // actually part of the same function as the offset we are looking for,
+  // as well as providing the function names for a given offset.
+
+  // current byte offset into the WASM binary, as we parse it
+  // the first section starts at offset 8.
+  var offset = 8;
+
+  // the index of the next function we see in the binary
+  var funcidx = 0;
+
+  // map from function index to byte offset in WASM binary
+  this.offset_map = {};
+  this.func_starts = [];
+
+  // map from function index to names in WASM binary
+  this.name_map = {};
+
+  // number of imported functions this module has
+  this.import_functions = 0;
+
+  // the buffer unsignedLEB128 will read from.
+  var buffer = wasmBytes;
+
+  function unsignedLEB128() {
+    // consumes an unsigned LEB128 integer starting at `offset`.
+    // changes `offset` to immediately after the integer
+    var result = 0;
+    var shift = 0;
+    do {
+      var byte = buffer[offset++];
+      result += (byte & 0x7F) << shift;
+      shift += 7;
+    } while (byte & 0x80);
+    return result;
+  }
+
+  function skipLimits() {
+    var flags = unsignedLEB128();
+    unsignedLEB128(); // initial size
+    var hasMax = (flags & 1) != 0;
+    if (hasMax) {
+      unsignedLEB128();
+    }
+  }
+
+  binary_parse:
+  while (offset < buffer.length) {
+    var start = offset;
+    var type = buffer[offset++];
+    var end = unsignedLEB128() + offset;
+    switch (type) {
+      case 2: // import section
+        // we need to find all function imports and increment funcidx for each one
+        // since functions defined in the module are numbered after all imports
+        var count = unsignedLEB128();
+
+        while (count-- > 0) {
+          // skip module
+          offset = unsignedLEB128() + offset;
+          // skip name
+          offset = unsignedLEB128() + offset;
+
+          switch (buffer[offset++]) {
+            case 0: // function import
+              ++funcidx;
+              unsignedLEB128(); // skip function type
+              break;
+            case 1: // table import
+              ++offset; // FIXME: should be SLEB128
+              skipLimits();
+              break;
+            case 2: // memory import
+              skipLimits();
+              break;
+            case 3: // global import
+              offset += 2; // skip type id byte and mutability byte
+              break;
+            default: throw 'bad import kind';
+          }
+        }
+        this.import_functions = funcidx;
+        break;
+      case 10: // code section
+        var count = unsignedLEB128();
+        while (count-- > 0) {
+          var size = unsignedLEB128();
+          this.offset_map[funcidx++] = offset;
+          this.func_starts.push(offset);
+          offset += size;
+        }
+        break binary_parse;
+    }
+    offset = end;
+  }
+
+  var sections = WebAssembly.Module.customSections(wasmModule, "name");
+  for (var i = 0; i < sections.length; ++i) {
+    buffer = new Uint8Array(sections[i]);
+    if (buffer[0] != 1) // not a function name section
+      continue;
+    offset = 1;
+    unsignedLEB128(); // skip byte count
+    var count = unsignedLEB128();
+    while (count-- > 0) {
+      var index = unsignedLEB128();
+      var length = unsignedLEB128();
+      this.name_map[index] = UTF8ArrayToString(buffer, offset, length);
+      offset += length;
+    }
+  }
+}
+
+WasmOffsetConverter.prototype.convert = function (funcidx, offset) {
+  return this.offset_map[funcidx] + offset;
+}
+
+WasmOffsetConverter.prototype.getIndex = function (offset) {
+  var lo = 0;
+  var hi = this.func_starts.length;
+  var mid;
+
+  while (lo < hi) {
+    mid = Math.floor((lo + hi) / 2);
+    if (this.func_starts[mid] > offset) {
+      hi = mid;
+    } else {
+      lo = mid + 1;
+    }
+  }
+  return lo + this.import_functions - 1;
+}
+
+WasmOffsetConverter.prototype.isSameFunc = function (offset1, offset2) {
+  return this.getIndex(offset1) == this.getIndex(offset2);
+}
+
+WasmOffsetConverter.prototype.getName = function (offset) {
+  var index = this.getIndex(offset);
+  return this.name_map[index] || ('wasm-function[' + index + ']');
+}
+
+// end include: wasm_offset_converter.js
+
+// When using postMessage to send an object, it is processed by the structured clone algorithm.
+// The prototype, and hence methods, on that object is then lost. This function adds back the lost prototype.
+// This does not work with nested objects that has prototypes, but it suffices for WasmSourceMap and WasmOffsetConverter.
+function resetPrototype(constructor, attrs) {
+  var object = Object.create(constructor.prototype);
+  return Object.assign(object, attrs);
+}
+
 // Create the wasm instance.
 // Receives the wasm imports, returns the exports.
 function createWasm() {
@@ -1932,6 +2228,13 @@ function createWasm() {
   // we can't run yet (except in a pthread, where we have a custom sync instantiator)
   addRunDependency('wasm-instantiate');
 
+  addRunDependency('source-map');
+
+  function receiveSourceMapJSON(sourceMap) {
+    wasmSourceMap = new WasmSourceMap(sourceMap);
+    removeRunDependency('source-map');
+  }
+
   // Prefer streaming instantiation if available.
   // Async compilation can be confusing when an error on the page overwrites Module
   // (for example, if the order of elements is wrong, and the one defining Module is
@@ -1948,9 +2251,14 @@ function createWasm() {
   }
 
   function instantiateArrayBuffer(receiver) {
+    var savedBinary;
     return getBinaryPromise().then(function(binary) {
+      savedBinary = binary;
       return WebAssembly.instantiate(binary, info);
     }).then(function (instance) {
+      // wasmOffsetConverter needs to be assigned before calling the receiver
+      // (receiveInstantiationResult).  See comments below in instantiateAsync.
+      wasmOffsetConverter = new WasmOffsetConverter(savedBinary, instance.module);
       return instance;
     }).then(receiver, function(reason) {
       err('failed to asynchronously prepare wasm: ' + reason);
@@ -1978,8 +2286,31 @@ function createWasm() {
         /** @suppress {checkTypes} */
         var result = WebAssembly.instantiateStreaming(response, info);
 
+        // We need the wasm binary for the offset converter. Clone the response
+        // in order to get its arrayBuffer (cloning should be more efficient
+        // than doing another entire request).
+        // (We must clone the response now in order to use it later, as if we
+        // try to clone it asynchronously lower down then we will get a
+        // "response was already consumed" error.)
+        var clonedResponsePromise = response.clone().arrayBuffer();
+
         return result.then(
-          receiveInstantiationResult,
+          function(instantiationResult) {
+            // When using the offset converter, we must interpose here. First,
+            // the instantiation result must arrive (if it fails, the error
+            // handling later down will handle it). Once it arrives, we can
+            // initialize the offset converter. And only then is it valid to
+            // call receiveInstantiationResult, as that function will use the
+            // offset converter (in the case of pthreads, it will create the
+            // pthreads and send them the offsets along with the wasm instance).
+
+            clonedResponsePromise.then(function(arrayBufferResult) {
+              wasmOffsetConverter = new WasmOffsetConverter(new Uint8Array(arrayBufferResult), instantiationResult.module);
+              receiveInstantiationResult(instantiationResult);
+            }, function(reason) {
+              err('failed to initialize offset-converter: ' + reason);
+            });
+          },
           function(reason) {
             // We expect the most common failure cause to be a bad MIME type for the binary,
             // in which case falling back to ArrayBuffer instantiation should work.
@@ -1998,6 +2329,8 @@ function createWasm() {
   // to any other async startup actions they are performing.
   // Also pthreads and wasm workers initialize the wasm instance through this path.
   if (Module['instantiateWasm']) {
+    wasmOffsetConverter = resetPrototype(WasmOffsetConverter, Module['wasmOffsetData']);
+    wasmSourceMap = resetPrototype(WasmSourceMap, Module['wasmSourceMapData']);
     try {
       var exports = Module['instantiateWasm'](info, receiveInstance);
       return exports;
@@ -2009,6 +2342,7 @@ function createWasm() {
 
   // If instantiation fails, reject the module ready promise.
   instantiateAsync().catch(readyPromiseReject);
+  getSourceMapPromise().then(receiveSourceMapJSON);
   return {}; // no exports yet; we'll fill them in later
 }
 
@@ -2019,7 +2353,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  
+  114190: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['LSAN_OPTIONS'] || 0); });},  
+ 114287: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
 };
 function qts_host_call_function(ctx,this_ptr,argc,argv,magic_func_id){ const asyncify = undefined; return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id); }
 function qts_host_interrupt_handler(rt){ const asyncify = undefined; return Module['callbacks']['shouldInterrupt'](asyncify, rt); }
@@ -2129,155 +2464,6 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name){ const a
 
   function ___assert_fail(condition, filename, line, func) {
       abort('Assertion failed: ' + UTF8ToString(condition) + ', at: ' + [filename ? UTF8ToString(filename) : 'unknown filename', line, func ? UTF8ToString(func) : 'unknown function']);
-    }
-
-  function __localtime_js(time, tmPtr) {
-      var date = new Date(HEAP32[((time)>>2)]*1000);
-      HEAP32[((tmPtr)>>2)] = date.getSeconds();
-      HEAP32[(((tmPtr)+(4))>>2)] = date.getMinutes();
-      HEAP32[(((tmPtr)+(8))>>2)] = date.getHours();
-      HEAP32[(((tmPtr)+(12))>>2)] = date.getDate();
-      HEAP32[(((tmPtr)+(16))>>2)] = date.getMonth();
-      HEAP32[(((tmPtr)+(20))>>2)] = date.getFullYear()-1900;
-      HEAP32[(((tmPtr)+(24))>>2)] = date.getDay();
-  
-      var start = new Date(date.getFullYear(), 0, 1);
-      var yday = ((date.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))|0;
-      HEAP32[(((tmPtr)+(28))>>2)] = yday;
-      HEAP32[(((tmPtr)+(36))>>2)] = -(date.getTimezoneOffset() * 60);
-  
-      // Attention: DST is in December in South, and some regions don't have DST at all.
-      var summerOffset = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
-      var winterOffset = start.getTimezoneOffset();
-      var dst = (summerOffset != winterOffset && date.getTimezoneOffset() == Math.min(winterOffset, summerOffset))|0;
-      HEAP32[(((tmPtr)+(32))>>2)] = dst;
-    }
-
-  function _tzset_impl(timezone, daylight, tzname) {
-      var currentYear = new Date().getFullYear();
-      var winter = new Date(currentYear, 0, 1);
-      var summer = new Date(currentYear, 6, 1);
-      var winterOffset = winter.getTimezoneOffset();
-      var summerOffset = summer.getTimezoneOffset();
-  
-      // Local standard timezone offset. Local standard time is not adjusted for daylight savings.
-      // This code uses the fact that getTimezoneOffset returns a greater value during Standard Time versus Daylight Saving Time (DST).
-      // Thus it determines the expected output during Standard Time, and it compares whether the output of the given date the same (Standard) or less (DST).
-      var stdTimezoneOffset = Math.max(winterOffset, summerOffset);
-  
-      // timezone is specified as seconds west of UTC ("The external variable
-      // `timezone` shall be set to the difference, in seconds, between
-      // Coordinated Universal Time (UTC) and local standard time."), the same
-      // as returned by stdTimezoneOffset.
-      // See http://pubs.opengroup.org/onlinepubs/009695399/functions/tzset.html
-      HEAP32[((timezone)>>2)] = stdTimezoneOffset * 60;
-  
-      HEAP32[((daylight)>>2)] = Number(winterOffset != summerOffset);
-  
-      function extractZone(date) {
-        var match = date.toTimeString().match(/\(([A-Za-z ]+)\)$/);
-        return match ? match[1] : "GMT";
-      };
-      var winterName = extractZone(winter);
-      var summerName = extractZone(summer);
-      var winterNamePtr = allocateUTF8(winterName);
-      var summerNamePtr = allocateUTF8(summerName);
-      if (summerOffset < winterOffset) {
-        // Northern hemisphere
-        HEAP32[((tzname)>>2)] = winterNamePtr;
-        HEAP32[(((tzname)+(4))>>2)] = summerNamePtr;
-      } else {
-        HEAP32[((tzname)>>2)] = summerNamePtr;
-        HEAP32[(((tzname)+(4))>>2)] = winterNamePtr;
-      }
-    }
-  function __tzset_js(timezone, daylight, tzname) {
-      // TODO: Use (malleable) environment variables instead of system settings.
-      if (__tzset_js.called) return;
-      __tzset_js.called = true;
-      _tzset_impl(timezone, daylight, tzname);
-    }
-
-  function _abort() {
-      abort('native code called abort()');
-    }
-
-  function _emscripten_memcpy_big(dest, src, num) {
-      HEAPU8.copyWithin(dest, src, src + num);
-    }
-
-  function _emscripten_get_heap_max() {
-      // Stay one Wasm page short of 4GB: while e.g. Chrome is able to allocate
-      // full 4GB Wasm memories, the size will wrap back to 0 bytes in Wasm side
-      // for any code that deals with heap sizes, which would require special
-      // casing all heap size related code to treat 0 specially.
-      return 2147483648;
-    }
-  
-  function emscripten_realloc_buffer(size) {
-      try {
-        // round size grow request up to wasm page size (fixed 64KB per spec)
-        wasmMemory.grow((size - buffer.byteLength + 65535) >>> 16); // .grow() takes a delta compared to the previous size
-        updateGlobalBufferAndViews(wasmMemory.buffer);
-        return 1 /*success*/;
-      } catch(e) {
-        err('emscripten_realloc_buffer: Attempted to grow heap from ' + buffer.byteLength  + ' bytes to ' + size + ' bytes, but got error: ' + e);
-      }
-      // implicit 0 return to save code size (caller will cast "undefined" into 0
-      // anyhow)
-    }
-  function _emscripten_resize_heap(requestedSize) {
-      var oldSize = HEAPU8.length;
-      requestedSize = requestedSize >>> 0;
-      // With multithreaded builds, races can happen (another thread might increase the size
-      // in between), so return a failure, and let the caller retry.
-      assert(requestedSize > oldSize);
-  
-      // Memory resize rules:
-      // 1.  Always increase heap size to at least the requested size, rounded up
-      //     to next page multiple.
-      // 2a. If MEMORY_GROWTH_LINEAR_STEP == -1, excessively resize the heap
-      //     geometrically: increase the heap size according to
-      //     MEMORY_GROWTH_GEOMETRIC_STEP factor (default +20%), At most
-      //     overreserve by MEMORY_GROWTH_GEOMETRIC_CAP bytes (default 96MB).
-      // 2b. If MEMORY_GROWTH_LINEAR_STEP != -1, excessively resize the heap
-      //     linearly: increase the heap size by at least
-      //     MEMORY_GROWTH_LINEAR_STEP bytes.
-      // 3.  Max size for the heap is capped at 2048MB-WASM_PAGE_SIZE, or by
-      //     MAXIMUM_MEMORY, or by ASAN limit, depending on which is smallest
-      // 4.  If we were unable to allocate as much memory, it may be due to
-      //     over-eager decision to excessively reserve due to (3) above.
-      //     Hence if an allocation fails, cut down on the amount of excess
-      //     growth, in an attempt to succeed to perform a smaller allocation.
-  
-      // A limit is set for how much we can grow. We should not exceed that
-      // (the wasm binary specifies it, so if we tried, we'd fail anyhow).
-      var maxHeapSize = _emscripten_get_heap_max();
-      if (requestedSize > maxHeapSize) {
-        err('Cannot enlarge memory, asked to go up to ' + requestedSize + ' bytes, but the limit is ' + maxHeapSize + ' bytes!');
-        return false;
-      }
-  
-      let alignUp = (x, multiple) => x + (multiple - x % multiple) % multiple;
-  
-      // Loop through potential heap size increases. If we attempt a too eager
-      // reservation that fails, cut down on the attempted size and reserve a
-      // smaller bump instead. (max 3 times, chosen somewhat arbitrarily)
-      for (var cutDown = 1; cutDown <= 4; cutDown *= 2) {
-        var overGrownHeapSize = oldSize * (1 + 0.2 / cutDown); // ensure geometric growth
-        // but limit overreserving (default to capping at +96MB overgrowth at most)
-        overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296 );
-  
-        var newSize = Math.min(maxHeapSize, alignUp(Math.max(requestedSize, overGrownHeapSize), 65536));
-  
-        var replacement = emscripten_realloc_buffer(newSize);
-        if (replacement) {
-  
-          return true;
-        }
-      }
-      err('Failed to grow the heap from ' + oldSize + ' bytes to ' + newSize + ' bytes, not enough memory!');
-      return false;
     }
 
   var PATH = {splitPath:function(filename) {
@@ -2573,7 +2759,11 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name){ const a
       return Math.ceil(size / alignment) * alignment;
     }
   function mmapAlloc(size) {
-      abort('internal error: mmapAlloc called but `emscripten_builtin_memalign` native symbol not exported');
+      size = alignMemory(size, 65536);
+      var ptr = _emscripten_builtin_memalign(65536, size);
+      if (!ptr) return 0;
+      zeroMemory(ptr, size);
+      return ptr;
     }
   var MEMFS = {ops_table:null,mount:function(mount) {
         return MEMFS.createNode(null, '/', 16384 | 511 /* 0777 */, 0);
@@ -4595,6 +4785,428 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name){ const a
         else assert(high === -1);
         return low;
       }};
+  function ___syscall_dup(fd) {
+  try {
+  
+      var old = SYSCALLS.getStreamFromFD(fd);
+      return FS.open(old.path, old.flags, 0).fd;
+    } catch (e) {
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    return -e.errno;
+  }
+  }
+
+  function ___syscall_open(path, flags, varargs) {
+  SYSCALLS.varargs = varargs;
+  try {
+  
+      var pathname = SYSCALLS.getStr(path);
+      var mode = varargs ? SYSCALLS.get() : 0;
+      var stream = FS.open(pathname, flags, mode);
+      return stream.fd;
+    } catch (e) {
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    return -e.errno;
+  }
+  }
+
+  function ___syscall_stat64(path, buf) {
+  try {
+  
+      path = SYSCALLS.getStr(path);
+      return SYSCALLS.doStat(FS.stat, path, buf);
+    } catch (e) {
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    return -e.errno;
+  }
+  }
+
+  function __localtime_js(time, tmPtr) {
+      var date = new Date(HEAP32[((time)>>2)]*1000);
+      HEAP32[((tmPtr)>>2)] = date.getSeconds();
+      HEAP32[(((tmPtr)+(4))>>2)] = date.getMinutes();
+      HEAP32[(((tmPtr)+(8))>>2)] = date.getHours();
+      HEAP32[(((tmPtr)+(12))>>2)] = date.getDate();
+      HEAP32[(((tmPtr)+(16))>>2)] = date.getMonth();
+      HEAP32[(((tmPtr)+(20))>>2)] = date.getFullYear()-1900;
+      HEAP32[(((tmPtr)+(24))>>2)] = date.getDay();
+  
+      var start = new Date(date.getFullYear(), 0, 1);
+      var yday = ((date.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))|0;
+      HEAP32[(((tmPtr)+(28))>>2)] = yday;
+      HEAP32[(((tmPtr)+(36))>>2)] = -(date.getTimezoneOffset() * 60);
+  
+      // Attention: DST is in December in South, and some regions don't have DST at all.
+      var summerOffset = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
+      var winterOffset = start.getTimezoneOffset();
+      var dst = (summerOffset != winterOffset && date.getTimezoneOffset() == Math.min(winterOffset, summerOffset))|0;
+      HEAP32[(((tmPtr)+(32))>>2)] = dst;
+    }
+
+  function __mmap_js(addr, len, prot, flags, fd, off, allocated, builtin) {
+  try {
+  
+      var info = FS.getStream(fd);
+      if (!info) return -8;
+      var res = FS.mmap(info, addr, len, off, prot, flags);
+      var ptr = res.ptr;
+      HEAP32[((allocated)>>2)] = res.allocated;
+      return ptr;
+    } catch (e) {
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    return -e.errno;
+  }
+  }
+
+  function __munmap_js(addr, len, prot, flags, fd, offset) {
+  try {
+  
+      var stream = FS.getStream(fd);
+      if (stream) {
+        if (prot & 2) {
+          SYSCALLS.doMsync(addr, stream, len, flags, offset);
+        }
+        FS.munmap(stream);
+      }
+    } catch (e) {
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    return -e.errno;
+  }
+  }
+
+  function _tzset_impl(timezone, daylight, tzname) {
+      var currentYear = new Date().getFullYear();
+      var winter = new Date(currentYear, 0, 1);
+      var summer = new Date(currentYear, 6, 1);
+      var winterOffset = winter.getTimezoneOffset();
+      var summerOffset = summer.getTimezoneOffset();
+  
+      // Local standard timezone offset. Local standard time is not adjusted for daylight savings.
+      // This code uses the fact that getTimezoneOffset returns a greater value during Standard Time versus Daylight Saving Time (DST).
+      // Thus it determines the expected output during Standard Time, and it compares whether the output of the given date the same (Standard) or less (DST).
+      var stdTimezoneOffset = Math.max(winterOffset, summerOffset);
+  
+      // timezone is specified as seconds west of UTC ("The external variable
+      // `timezone` shall be set to the difference, in seconds, between
+      // Coordinated Universal Time (UTC) and local standard time."), the same
+      // as returned by stdTimezoneOffset.
+      // See http://pubs.opengroup.org/onlinepubs/009695399/functions/tzset.html
+      HEAP32[((timezone)>>2)] = stdTimezoneOffset * 60;
+  
+      HEAP32[((daylight)>>2)] = Number(winterOffset != summerOffset);
+  
+      function extractZone(date) {
+        var match = date.toTimeString().match(/\(([A-Za-z ]+)\)$/);
+        return match ? match[1] : "GMT";
+      };
+      var winterName = extractZone(winter);
+      var summerName = extractZone(summer);
+      var winterNamePtr = allocateUTF8(winterName);
+      var summerNamePtr = allocateUTF8(summerName);
+      if (summerOffset < winterOffset) {
+        // Northern hemisphere
+        HEAP32[((tzname)>>2)] = winterNamePtr;
+        HEAP32[(((tzname)+(4))>>2)] = summerNamePtr;
+      } else {
+        HEAP32[((tzname)>>2)] = summerNamePtr;
+        HEAP32[(((tzname)+(4))>>2)] = winterNamePtr;
+      }
+    }
+  function __tzset_js(timezone, daylight, tzname) {
+      // TODO: Use (malleable) environment variables instead of system settings.
+      if (__tzset_js.called) return;
+      __tzset_js.called = true;
+      _tzset_impl(timezone, daylight, tzname);
+    }
+
+  function _abort() {
+      abort('native code called abort()');
+    }
+
+  var readAsmConstArgsArray = [];
+  function readAsmConstArgs(sigPtr, buf) {
+      ;
+      // Nobody should have mutated _readAsmConstArgsArray underneath us to be something else than an array.
+      assert(Array.isArray(readAsmConstArgsArray));
+      // The input buffer is allocated on the stack, so it must be stack-aligned.
+      assert(buf % 16 == 0);
+      readAsmConstArgsArray.length = 0;
+      var ch;
+      // Most arguments are i32s, so shift the buffer pointer so it is a plain
+      // index into HEAP32.
+      buf >>= 2;
+      while (ch = HEAPU8[sigPtr++]) {
+        assert(ch === 100/*'d'*/ || ch === 102/*'f'*/ || ch === 105 /*'i'*/, 'Invalid character ' + ch + '("' + String.fromCharCode(ch) + '") in readAsmConstArgs! Use only "d", "f" or "i", and do not specify "v" for void return argument.');
+        // A double takes two 32-bit slots, and must also be aligned - the backend
+        // will emit padding to avoid that.
+        var readAsmConstArgsDouble = ch < 105;
+        if (readAsmConstArgsDouble && (buf & 1)) buf++;
+        readAsmConstArgsArray.push(readAsmConstArgsDouble ? HEAPF64[buf++ >> 1] : HEAP32[buf]);
+        ++buf;
+      }
+      return readAsmConstArgsArray;
+    }
+  function _emscripten_asm_const_int(code, sigPtr, argbuf) {
+      var args = readAsmConstArgs(sigPtr, argbuf);
+      if (!ASM_CONSTS.hasOwnProperty(code)) abort('No EM_ASM constant found at address ' + code);
+      return ASM_CONSTS[code].apply(null, args);
+    }
+
+  function _emscripten_get_heap_max() {
+      // Stay one Wasm page short of 4GB: while e.g. Chrome is able to allocate
+      // full 4GB Wasm memories, the size will wrap back to 0 bytes in Wasm side
+      // for any code that deals with heap sizes, which would require special
+      // casing all heap size related code to treat 0 specially.
+      return 2147483648;
+    }
+
+  function _emscripten_get_module_name(buf, length) {
+      return stringToUTF8(wasmBinaryFile, buf, length);
+    }
+
+  var _emscripten_get_now;if (ENVIRONMENT_IS_NODE) {
+    _emscripten_get_now = () => {
+      var t = process['hrtime']();
+      return t[0] * 1e3 + t[1] / 1e6;
+    };
+  } else _emscripten_get_now = () => performance.now();
+  ;
+
+  function _emscripten_memcpy_big(dest, src, num) {
+      HEAPU8.copyWithin(dest, src, src + num);
+    }
+
+  var UNWIND_CACHE = {};
+  
+  /** @returns {number} */
+  function convertFrameToPC(frame) {
+      assert(wasmOffsetConverter);
+      var match;
+  
+      if (match = /\bwasm-function\[\d+\]:(0x[0-9a-f]+)/.exec(frame)) {
+        // some engines give the binary offset directly, so we use that as return address
+        return +match[1];
+      } else if (match = /\bwasm-function\[(\d+)\]:(\d+)/.exec(frame)) {
+        // other engines only give function index and offset in the function,
+        // so we try using the offset converter. If that doesn't work,
+        // we pack index and offset into a "return address"
+        return wasmOffsetConverter.convert(+match[1], +match[2]);
+      } else if (match = /:(\d+):\d+(?:\)|$)/.exec(frame)) {
+        // If we are in js, we can use the js line number as the "return address".
+        // This should work for wasm2js.  We tag the high bit to distinguish this
+        // from wasm addresses.
+        return 0x80000000 | +match[1];
+      }
+      // return 0 if we can't find any
+      return 0;
+    }
+  function convertPCtoSourceLocation(pc) {
+      if (UNWIND_CACHE.last_get_source_pc == pc) return UNWIND_CACHE.last_source;
+  
+      var match;
+      var source;
+      if (wasmSourceMap) {
+        var info = wasmSourceMap.lookup(pc);
+        if (info) {
+          source = {file: info.source, line: info.line, column: info.column};
+        }
+      }
+  
+      if (!source) {
+        var frame = UNWIND_CACHE[pc];
+        if (!frame) return null;
+        // Example: at callMain (a.out.js:6335:22)
+        if (match = /\((.*):(\d+):(\d+)\)$/.exec(frame)) {
+          source = {file: match[1], line: match[2], column: match[3]};
+        // Example: main@a.out.js:1337:42
+        } else if (match = /@(.*):(\d+):(\d+)/.exec(frame)) {
+          source = {file: match[1], line: match[2], column: match[3]};
+        }
+      }
+      UNWIND_CACHE.last_get_source_pc = pc;
+      UNWIND_CACHE.last_source = source;
+      return source;
+    }
+  function _emscripten_pc_get_column(pc) {
+      var result = convertPCtoSourceLocation(pc);
+      return result ? result.column || 0 : 0;
+    }
+
+  /** @suppress{checkTypes} */
+  function withBuiltinMalloc(func) {
+      var prev_malloc = typeof _malloc != 'undefined' ? _malloc : undefined;
+      var prev_memalign = typeof _memalign != 'undefined' ? _memalign : undefined;
+      var prev_free = typeof _free != 'undefined' ? _free : undefined;
+      _malloc = _emscripten_builtin_malloc;
+      _memalign = _emscripten_builtin_memalign;
+      _free = _emscripten_builtin_free;
+      try {
+        return func();
+      } finally {
+        _malloc = prev_malloc;
+        _memalign = prev_memalign;
+        _free = prev_free;
+      }
+    }
+  
+  function _emscripten_pc_get_file(pc) {
+    return withBuiltinMalloc(function() {
+      
+      var result = convertPCtoSourceLocation(pc);
+      if (!result) return 0;
+  
+      if (_emscripten_pc_get_file.ret) _free(_emscripten_pc_get_file.ret);
+      _emscripten_pc_get_file.ret = allocateUTF8(result.file);
+      return _emscripten_pc_get_file.ret;
+    
+    });
+  }
+  
+
+  
+  function _emscripten_pc_get_function(pc) {
+    return withBuiltinMalloc(function() {
+      
+      var name;
+      if (pc & 0x80000000) {
+        // If this is a JavaScript function, try looking it up in the unwind cache.
+        var frame = UNWIND_CACHE[pc];
+        if (!frame) return 0;
+  
+        var match;
+        if (match = /^\s+at (.*) \(.*\)$/.exec(frame)) {
+          name = match[1];
+        } else if (match = /^(.+?)@/.exec(frame)) {
+          name = match[1];
+        } else {
+          return 0;
+        }
+      } else {
+        name = wasmOffsetConverter.getName(pc);
+      }
+      if (_emscripten_pc_get_function.ret) _free(_emscripten_pc_get_function.ret);
+      _emscripten_pc_get_function.ret = allocateUTF8(name);
+      return _emscripten_pc_get_function.ret;
+    
+    });
+  }
+  
+
+  function _emscripten_pc_get_line(pc) {
+      var result = convertPCtoSourceLocation(pc);
+      return result ? result.line : 0;
+    }
+
+  function emscripten_realloc_buffer(size) {
+      try {
+        // round size grow request up to wasm page size (fixed 64KB per spec)
+        wasmMemory.grow((size - buffer.byteLength + 65535) >>> 16); // .grow() takes a delta compared to the previous size
+        updateGlobalBufferAndViews(wasmMemory.buffer);
+        return 1 /*success*/;
+      } catch(e) {
+        err('emscripten_realloc_buffer: Attempted to grow heap from ' + buffer.byteLength  + ' bytes to ' + size + ' bytes, but got error: ' + e);
+      }
+      // implicit 0 return to save code size (caller will cast "undefined" into 0
+      // anyhow)
+    }
+  function _emscripten_resize_heap(requestedSize) {
+      var oldSize = HEAPU8.length;
+      requestedSize = requestedSize >>> 0;
+      // With multithreaded builds, races can happen (another thread might increase the size
+      // in between), so return a failure, and let the caller retry.
+      assert(requestedSize > oldSize);
+  
+      // Memory resize rules:
+      // 1.  Always increase heap size to at least the requested size, rounded up
+      //     to next page multiple.
+      // 2a. If MEMORY_GROWTH_LINEAR_STEP == -1, excessively resize the heap
+      //     geometrically: increase the heap size according to
+      //     MEMORY_GROWTH_GEOMETRIC_STEP factor (default +20%), At most
+      //     overreserve by MEMORY_GROWTH_GEOMETRIC_CAP bytes (default 96MB).
+      // 2b. If MEMORY_GROWTH_LINEAR_STEP != -1, excessively resize the heap
+      //     linearly: increase the heap size by at least
+      //     MEMORY_GROWTH_LINEAR_STEP bytes.
+      // 3.  Max size for the heap is capped at 2048MB-WASM_PAGE_SIZE, or by
+      //     MAXIMUM_MEMORY, or by ASAN limit, depending on which is smallest
+      // 4.  If we were unable to allocate as much memory, it may be due to
+      //     over-eager decision to excessively reserve due to (3) above.
+      //     Hence if an allocation fails, cut down on the amount of excess
+      //     growth, in an attempt to succeed to perform a smaller allocation.
+  
+      // A limit is set for how much we can grow. We should not exceed that
+      // (the wasm binary specifies it, so if we tried, we'd fail anyhow).
+      var maxHeapSize = _emscripten_get_heap_max();
+      if (requestedSize > maxHeapSize) {
+        err('Cannot enlarge memory, asked to go up to ' + requestedSize + ' bytes, but the limit is ' + maxHeapSize + ' bytes!');
+        return false;
+      }
+  
+      let alignUp = (x, multiple) => x + (multiple - x % multiple) % multiple;
+  
+      // Loop through potential heap size increases. If we attempt a too eager
+      // reservation that fails, cut down on the attempted size and reserve a
+      // smaller bump instead. (max 3 times, chosen somewhat arbitrarily)
+      for (var cutDown = 1; cutDown <= 4; cutDown *= 2) {
+        var overGrownHeapSize = oldSize * (1 + 0.2 / cutDown); // ensure geometric growth
+        // but limit overreserving (default to capping at +96MB overgrowth at most)
+        overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296 );
+  
+        var newSize = Math.min(maxHeapSize, alignUp(Math.max(requestedSize, overGrownHeapSize), 65536));
+  
+        var replacement = emscripten_realloc_buffer(newSize);
+        if (replacement) {
+  
+          return true;
+        }
+      }
+      err('Failed to grow the heap from ' + oldSize + ' bytes to ' + newSize + ' bytes, not enough memory!');
+      return false;
+    }
+
+  function saveInUnwindCache(callstack) {
+      callstack.forEach(function (frame) {
+        var pc = convertFrameToPC(frame);
+        if (pc) {
+          UNWIND_CACHE[pc] = frame;
+        }
+      });
+    }
+  function _emscripten_stack_snapshot() {
+      var callstack = new Error().stack.split('\n');
+      if (callstack[0] == 'Error') {
+        callstack.shift();
+      }
+      saveInUnwindCache(callstack);
+  
+      // Caches the stack snapshot so that emscripten_stack_unwind_buffer() can unwind from this spot.
+      UNWIND_CACHE.last_addr = convertFrameToPC(callstack[2]);
+      UNWIND_CACHE.last_stack = callstack;
+      return UNWIND_CACHE.last_addr;
+    }
+
+  function _emscripten_stack_unwind_buffer(addr, buffer, count) {
+      var stack;
+      if (UNWIND_CACHE.last_addr == addr) {
+        stack = UNWIND_CACHE.last_stack;
+      } else {
+        stack = new Error().stack.split('\n');
+        if (stack[0] == 'Error') {
+          stack.shift();
+        }
+        saveInUnwindCache(stack);
+      }
+  
+      var offset = 2;
+      while (stack[offset] && convertFrameToPC(stack[offset]) != addr) {
+        ++offset;
+      }
+  
+      for (var i = 0; i < count && stack[i+offset]; ++i) {
+        HEAP32[(((buffer)+(i*4))>>2)] = convertFrameToPC(stack[i + offset]);
+      }
+      return i;
+    }
+
   function _fd_close(fd) {
   try {
   
@@ -4664,6 +5276,10 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name){ const a
       HEAP32[((ptr)>>2)] = (now/1000)|0; // seconds
       HEAP32[(((ptr)+(4))>>2)] = ((now % 1000)*1000)|0; // microseconds
       return 0;
+    }
+
+  function _proc_exit(code) {
+      procExit(code);
     }
 
   function _setTempRet0(val) {
@@ -4873,16 +5489,32 @@ function checkIncomingModuleAPI() {
 }
 var asmLibraryArg = {
   "__assert_fail": ___assert_fail,
+  "__syscall_dup": ___syscall_dup,
+  "__syscall_open": ___syscall_open,
+  "__syscall_stat64": ___syscall_stat64,
   "_localtime_js": __localtime_js,
+  "_mmap_js": __mmap_js,
+  "_munmap_js": __munmap_js,
   "_tzset_js": __tzset_js,
   "abort": _abort,
+  "emscripten_asm_const_int": _emscripten_asm_const_int,
+  "emscripten_get_heap_max": _emscripten_get_heap_max,
+  "emscripten_get_module_name": _emscripten_get_module_name,
+  "emscripten_get_now": _emscripten_get_now,
   "emscripten_memcpy_big": _emscripten_memcpy_big,
+  "emscripten_pc_get_column": _emscripten_pc_get_column,
+  "emscripten_pc_get_file": _emscripten_pc_get_file,
+  "emscripten_pc_get_function": _emscripten_pc_get_function,
+  "emscripten_pc_get_line": _emscripten_pc_get_line,
   "emscripten_resize_heap": _emscripten_resize_heap,
+  "emscripten_stack_snapshot": _emscripten_stack_snapshot,
+  "emscripten_stack_unwind_buffer": _emscripten_stack_unwind_buffer,
   "fd_close": _fd_close,
   "fd_read": _fd_read,
   "fd_seek": _fd_seek,
   "fd_write": _fd_write,
   "gettimeofday": _gettimeofday,
+  "proc_exit": _proc_exit,
   "qts_host_call_function": qts_host_call_function,
   "qts_host_interrupt_handler": qts_host_interrupt_handler,
   "qts_host_load_module_source": qts_host_load_module_source,
@@ -5047,13 +5679,28 @@ var _QTS_RuntimeDisableModuleLoader = Module["_QTS_RuntimeDisableModuleLoader"] 
 var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
 
 /** @type {function(...*):?} */
+var _emscripten_builtin_malloc = Module["_emscripten_builtin_malloc"] = createExportWrapper("emscripten_builtin_malloc");
+
+/** @type {function(...*):?} */
 var ___stdio_exit = Module["___stdio_exit"] = createExportWrapper("__stdio_exit");
+
+/** @type {function(...*):?} */
+var ___funcs_on_exit = Module["___funcs_on_exit"] = createExportWrapper("__funcs_on_exit");
 
 /** @type {function(...*):?} */
 var ___dl_seterr = Module["___dl_seterr"] = createExportWrapper("__dl_seterr");
 
 /** @type {function(...*):?} */
 var _emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = createExportWrapper("emscripten_main_thread_process_queued_calls");
+
+/** @type {function(...*):?} */
+var _memalign = Module["_memalign"] = createExportWrapper("memalign");
+
+/** @type {function(...*):?} */
+var _emscripten_builtin_free = Module["_emscripten_builtin_free"] = createExportWrapper("emscripten_builtin_free");
+
+/** @type {function(...*):?} */
+var _emscripten_builtin_memalign = Module["_emscripten_builtin_memalign"] = createExportWrapper("emscripten_builtin_memalign");
 
 /** @type {function(...*):?} */
 var _emscripten_stack_init = Module["_emscripten_stack_init"] = function() {
@@ -5195,6 +5842,8 @@ unexportedRuntimeFunction('setTempRet0', false);
 unexportedRuntimeFunction('callMain', false);
 unexportedRuntimeFunction('abort', false);
 unexportedRuntimeFunction('keepRuntimeAlive', false);
+unexportedRuntimeFunction('WasmOffsetConverter', false);
+unexportedRuntimeFunction('WasmSourceMap', false);
 unexportedRuntimeFunction('zeroMemory', false);
 unexportedRuntimeFunction('stringToNewUTF8', false);
 unexportedRuntimeFunction('emscripten_realloc_buffer', false);
@@ -5219,6 +5868,7 @@ unexportedRuntimeFunction('convertFrameToPC', false);
 unexportedRuntimeFunction('UNWIND_CACHE', false);
 unexportedRuntimeFunction('saveInUnwindCache', false);
 unexportedRuntimeFunction('convertPCtoSourceLocation', false);
+unexportedRuntimeFunction('withBuiltinMalloc', false);
 unexportedRuntimeFunction('readAsmConstArgsArray', false);
 unexportedRuntimeFunction('readAsmConstArgs', false);
 unexportedRuntimeFunction('mainThreadEM_ASM', false);
@@ -5460,59 +6110,14 @@ function run(args) {
 }
 Module['run'] = run;
 
-function checkUnflushedContent() {
-  // Compiler settings do not allow exiting the runtime, so flushing
-  // the streams is not possible. but in ASSERTIONS mode we check
-  // if there was something to flush, and if so tell the user they
-  // should request that the runtime be exitable.
-  // Normally we would not even include flush() at all, but in ASSERTIONS
-  // builds we do so just for this check, and here we see if there is any
-  // content to flush, that is, we check if there would have been
-  // something a non-ASSERTIONS build would have not seen.
-  // How we flush the streams depends on whether we are in SYSCALLS_REQUIRE_FILESYSTEM=0
-  // mode (which has its own special function for this; otherwise, all
-  // the code is inside libc)
-  var oldOut = out;
-  var oldErr = err;
-  var has = false;
-  out = err = (x) => {
-    has = true;
-  }
-  try { // it doesn't matter if it fails
-    ___stdio_exit();
-    // also flush in the JS FS layer
-    ['stdout', 'stderr'].forEach(function(name) {
-      var info = FS.analyzePath('/dev/' + name);
-      if (!info) return;
-      var stream = info.object;
-      var rdev = stream.rdev;
-      var tty = TTY.ttys[rdev];
-      if (tty && tty.output && tty.output.length) {
-        has = true;
-      }
-    });
-  } catch(e) {}
-  out = oldOut;
-  err = oldErr;
-  if (has) {
-    warnOnce('stdio streams had content in them that was not flushed. you should set EXIT_RUNTIME to 1 (see the FAQ), or make sure to emit a newline when you printf etc.');
-  }
-}
-
 /** @param {boolean|number=} implicit */
 function exit(status, implicit) {
   EXITSTATUS = status;
 
-  // Skip this check if the runtime is being kept alive deliberately.
-  // For example if `exit_with_live_runtime` is called.
-  if (!runtimeKeepaliveCounter) {
-    checkUnflushedContent();
-  }
-
   if (keepRuntimeAlive()) {
     // if exit() was called, we may warn the user if the runtime isn't actually being shut down
     if (!implicit) {
-      var msg = 'program exited (with status: ' + status + '), but EXIT_RUNTIME is not set, so halting execution but not exiting the runtime or preventing further async execution (build with EXIT_RUNTIME=1, if you want a true shutdown)';
+      var msg = 'program exited (with status: ' + status + '), but keepRuntimeAlive() is set (counter=' + runtimeKeepaliveCounter + ') due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)';
       readyPromiseReject(msg);
       err(msg);
     }

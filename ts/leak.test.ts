@@ -1,6 +1,7 @@
 import assert from "assert"
 import { getQuickJS, newQuickJSAsyncWASMModule, newQuickJSWASMModule } from "."
 import { QuickJSWASMModule } from "./module"
+import { DEBUG_ASYNC, DEBUG_SYNC, memoizePromiseFactory as memoizeNewModule } from "./variants"
 
 function checkModuleForLeaks(this: Mocha.Suite, getModule: () => Promise<QuickJSWASMModule>) {
   let wasmModule: QuickJSWASMModule
@@ -148,26 +149,24 @@ function checkModuleForLeaks(this: Mocha.Suite, getModule: () => Promise<QuickJS
 }
 
 describe("Leak checks (most accurate with debug build)", function () {
-  describe("Main sync module", function () {
+  describe("DEBUG sync module", function () {
+    const loader = memoizeNewModule(() => newQuickJSWASMModule(DEBUG_SYNC))
+    checkModuleForLeaks.call(this, loader)
+  })
+
+  describe("RELEASE sync module", function () {
     checkModuleForLeaks.call(this, getQuickJS)
   })
 
-  // Checking another WASM module is pointless.
-  // let customSyncModule: QuickJSWASMModule | undefined
-  // const getCustomSyncModule = async () => {
-  //   return (customSyncModule ??= await newQuickJSWASMModule())
-  // }
-  // describe("Standalone sync module", function () {
-  //   checkModuleForLeaks.call(this, getCustomSyncModule)
-  // })
+  describe.skip("DEBUG async module", function () {
+    const loader = memoizeNewModule(() => newQuickJSAsyncWASMModule(DEBUG_ASYNC))
+    checkModuleForLeaks.call(this, loader)
+  })
 
   // Leaving this enabled, but note that we now disable
   // leak sanitizer for ASYNCIFY since it's not reliable.
-  let customAsyncModule: QuickJSWASMModule | undefined
-  const getCustomAsyncModule = async () => {
-    return (customAsyncModule ??= await newQuickJSAsyncWASMModule())
-  }
-  describe("Async module", function () {
-    checkModuleForLeaks.call(this, getCustomAsyncModule)
+  describe("RELEASE async module", function () {
+    const loader = memoizeNewModule(() => newQuickJSAsyncWASMModule())
+    checkModuleForLeaks.call(this, loader)
   })
 })

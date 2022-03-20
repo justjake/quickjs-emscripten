@@ -6,7 +6,7 @@ import {
   EitherModule,
   EmscriptenModuleCallbacks,
 } from "./emscripten-types"
-import { QuickJSAsyncifyError, QuickJSAsyncifySuspended, QuickJSNotImplemented } from "./errors"
+import { QuickJSAsyncifyError, QuickJSAsyncifySuspended } from "./errors"
 import {
   BorrowedHeapCharPointer,
   JSContextPointer,

@@ -1,5 +1,5 @@
-import type { QuickJSFFI as DebugAsyncifyFFI } from "./generated/ffi.WASM_DEBUG_ASYNCIFY"
-import type { QuickJSFFI as ReleaseAsyncifyFFI } from "./generated/ffi.WASM_RELEASE_ASYNCIFY"
+import type { QuickJSAsyncFFI as DebugAsyncifyFFI } from "./generated/ffi.WASM_DEBUG_ASYNCIFY"
+import type { QuickJSAsyncFFI as ReleaseAsyncifyFFI } from "./generated/ffi.WASM_RELEASE_ASYNCIFY"
 import type { QuickJSFFI as DebugSyncFFI } from "./generated/ffi.WASM_DEBUG_SYNC"
 import type { QuickJSFFI as ReleaseSyncFFI } from "./generated/ffi.WASM_RELEASE_SYNC"
 import type {
@@ -91,6 +91,16 @@ export async function newQuickJSAsyncWASMModule(
 }
 
 /**
+ * @private
+ */
+export function memoizePromiseFactory<T>(fn: () => Promise<T>): () => Promise<T> {
+  let promise: Promise<T> | undefined
+  return () => {
+    return (promise ??= fn())
+  }
+}
+
+/**
  * This build variant is compiled with `-fsanitize=leak`. It instruments all
  * memory allocations and when combined with sourcemaps, can present stack trace
  * locations where memory leaks occur.
@@ -127,7 +137,7 @@ export const RELEASE_SYNC: SyncBuildVariant = {
   },
   async importModuleLoader() {
     const { default: wasmModuleLoader } = await import(
-      "./generated/emscripten-module.WASM_DEBUG_SYNC"
+      "./generated/emscripten-module.WASM_RELEASE_SYNC"
     )
     return wasmModuleLoader
   },
@@ -142,8 +152,8 @@ export const RELEASE_SYNC: SyncBuildVariant = {
 export const DEBUG_ASYNC: AsyncBuildVariant = {
   type: "async",
   async importFFI() {
-    const { QuickJSFFI } = await import("./generated/ffi.WASM_DEBUG_ASYNCIFY")
-    return QuickJSFFI
+    const { QuickJSAsyncFFI } = await import("./generated/ffi.WASM_DEBUG_ASYNCIFY")
+    return QuickJSAsyncFFI
   },
   async importModuleLoader() {
     const { default: wasmModuleLoader } = await import(
@@ -159,12 +169,12 @@ export const DEBUG_ASYNC: AsyncBuildVariant = {
 export const RELEASE_ASYNC: AsyncBuildVariant = {
   type: "async",
   async importFFI() {
-    const { QuickJSFFI } = await import("./generated/ffi.WASM_RELEASE_ASYNCIFY")
-    return QuickJSFFI
+    const { QuickJSAsyncFFI } = await import("./generated/ffi.WASM_RELEASE_ASYNCIFY")
+    return QuickJSAsyncFFI
   },
   async importModuleLoader() {
     const { default: wasmModuleLoader } = await import(
-      "./generated/emscripten-module.WASM_DEBUG_ASYNCIFY"
+      "./generated/emscripten-module.WASM_RELEASE_ASYNCIFY"
     )
     return wasmModuleLoader
   },
