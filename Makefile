@@ -112,7 +112,7 @@ endif
 
 wasm: $(WASM_VARIANTS)
 all: $(VARIANTS)
-dist: wasm
+dist: wasm tsconfig.json
 	rm -rf dist
 	yarn run tsc
 	cp -v ts/generated/*.wasm ts/generated/*.wasm.map dist/generated
