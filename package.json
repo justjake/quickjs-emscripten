@@ -18,9 +18,9 @@
     "url": "https://github.com/justjake/quickjs-emscripten"
   },
   "files": [
-    "dist/*.js",
-    "dist/*.ts",
-    "dist/*.map"
+    "dist/**/*",
+    "!dist/*.test.js",
+    "!dist/*.tsbuildinfo"
   ],
   "scripts": {
     "prepack": "yarn build",

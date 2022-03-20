@@ -142,10 +142,9 @@ examples/imports: downloadEcmaScriptModules.ts
 	touch examples/imports
 
 clean-generate:
-	rm -rfv ts/generated/*.ts
+	rm -rfv $(BUILD_TS)
 
-clean:
-	rm -rfv ts/generated
+clean: clean-generate
 	rm -rfv $(BUILD_ROOT)
 	rm -rf  $(WRAPPER_ROOT)/interface.h
 
@@ -195,13 +194,17 @@ $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c generate.ts
 
 ###############################################################################
 # WASM variants
-WASM: $(BUILD_TS)/emscripten-module.$(VARIANT).js GENERATE
+WASM: $(BUILD_TS)/emscripten-module.$(VARIANT).js $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts GENERATE
 GENERATE: $(BUILD_TS)/ffi.$(VARIANT).ts 
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
 $(BUILD_TS)/emscripten-module.$(VARIANT).js: $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
 	$(EMCC) $(VARIANT_CFLAGS) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+
+$(BUILD_TS)/emscripten-module.$(VARIANT).d.ts: ts/types-generated/emscripten-module.$(SYNC).d.ts
+	echo '// Generated from $<' > $@
+	cat $< >> $@
 
 $(BUILD_WRAPPER)/%.WASM_$(RELEASE)_$(SYNC).o: $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
