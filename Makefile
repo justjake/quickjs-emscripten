@@ -40,6 +40,7 @@ WRAPPER_ROOT=c
 BUILD_ROOT=build
 BUILD_WRAPPER=$(BUILD_ROOT)/wrapper
 BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
+BUILD_ESM=$(BUILD_WRAPPER)/esm
 BUILD_TS=ts/generated
 
 # QuickJS
@@ -54,13 +55,18 @@ EMCC_EXPORTED_FUNCS_ASYNCIFY+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.as
 
 # Emscripten options
 CFLAGS_WASM+=-s WASM=1
+# CFLAGS_WASM+=-s STRICT=1
+CFLAGS_WASM+=-s DYNAMIC_EXECUTION=0
 CFLAGS_WASM+=-s EXPORTED_RUNTIME_METHODS=@exportedRuntimeMethods.json
 CFLAGS_WASM+=-s NODEJS_CATCH_EXIT=0
 CFLAGS_WASM+=-s MODULARIZE=1
+# CFLAGS_WASM+=-s EXPORT_ES6=1
 CFLAGS_WASM+=-s EXPORT_NAME=QuickJSRaw
 CFLAGS_WASM+=-s INVOKE_RUN=0
 CFLAGS_WASM+=-s ALLOW_MEMORY_GROWTH=1
 CFLAGS_WASM+=-s ALLOW_TABLE_GROWTH=1
+WASM_ENVIRONMENT=
+CFLAGS_WASM+=$(WASM_ENVIRONMENT)
 
 # Empscripten options for asyncify variant
 # https://emscripten.org/docs/porting/asyncify.html
@@ -74,7 +80,8 @@ GENERATE_TS_ENV_ASYNCIFY+=ASYNCIFY=true
 CFLAGS_RELEASE=-Oz
 CFLAGS_RELEASE+=-flto
 
-CFLAGS_WASM_RELEASE+=-s SINGLE_FILE=1
+SINGLE_FILE=1
+CFLAGS_WASM_RELEASE+=-s SINGLE_FILE=$(SINGLE_FILE)
 CFLAGS_WASM_RELEASE+=--closure 1
 CFLAGS_WASM_RELEASE+=-s FILESYSTEM=0
 
@@ -107,17 +114,20 @@ endif
 # $(error debug $(call varsForVariant,CFLAGS))
 # $(error debug $(call forVariant,CFLAGS))
 
-###############################################################################
+##############################################################################
 # High level targets
 
 wasm: $(WASM_VARIANTS)
 all: $(VARIANTS)
 
 dist: dist/esm dist/commonjs | $(WASM_VARIANTS)
-dist/esm: tsconfig.json tsconfig.esm.json ts/*
+dist/esm: tsconfig.json tsconfig.esm.json ts/* $(BUILD_ESM)/*
 	rm -rf dist/esm
 	yarn run tsc -p tsconfig.esm.json
-	cp -v ts/generated/*.wasm ts/generated/*.wasm.map $@/generated
+	rm -rf $@/generated/emscripten-module.*.js
+	rm -rf $@/generated/emscripten-module.*.js.map
+	rm -rf $@/generated/emscripten-module.*.wasm
+	cp -v $(BUILD_ESM)/* $@/generated
 
 dist/commonjs: tsconfig.json ts/*
 	rm -rf dist/commonjs
@@ -152,6 +162,7 @@ clean-generate:
 	rm -rfv $(BUILD_TS)
 
 clean: clean-generate
+	rm -rfv dist
 	rm -rfv $(BUILD_ROOT)
 	rm -rf  $(WRAPPER_ROOT)/interface.h
 
@@ -201,11 +212,20 @@ $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c generate.ts
 
 ###############################################################################
 # WASM variants
-WASM: $(BUILD_TS)/emscripten-module.$(VARIANT).mjs $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts GENERATE
+ESM=$(BUILD_ESM)/emscripten-module.$(VARIANT).js
+COMMONJS=$(BUILD_TS)/emscripten-module.$(VARIANT).js
+WASM: $(ESM) $(COMMONJS) $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts GENERATE
 GENERATE: $(BUILD_TS)/ffi.$(VARIANT).ts 
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
-$(BUILD_TS)/emscripten-module.$(VARIANT).mjs: $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
+$(COMMONJS): $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
+	$(MKDIRP)
+	$(EMCC) $(VARIANT_CFLAGS) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+
+# $(ESM): CFLAGS_WASM+=-s ENVIRONMENT=node,web,webview,worker
+$(ESM): CFLAGS_WASM+=-s EXPORT_ES6=1
+$(ESM): SINGLE_FILE=0 
+$(ESM): $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
 	$(EMCC) $(VARIANT_CFLAGS) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 

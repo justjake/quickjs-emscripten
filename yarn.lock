@@ -1229,6 +1229,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"esm@npm:^3.2.25":
+  version: 3.2.25
+  resolution: "esm@npm:3.2.25"
+  checksum: 978aabe2de83541c105605a6d60a26ed8e627ef6bb0a7605fe15a95bbdea6b8348bd045255cb22219c054dd09a81a94823df00843d9e97f42419c92015ce3a64
+  languageName: node
+  linkType: hard
+
 "esprima@npm:^4.0.0":
   version: 4.0.1
   resolution: "esprima@npm:4.0.1"
@@ -3679,6 +3686,7 @@ fsevents@~2.1.1:
     "@types/fs-extra": ^9.0.13
     "@types/mocha": ^5.2.7
     "@types/node": ^13.1.4
+    esm: ^3.2.25
     fs-extra: ^10.0.1
     markserv: ^1.17.4
     mocha: 7.2.0
