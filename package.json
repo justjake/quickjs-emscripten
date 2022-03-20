@@ -2,6 +2,7 @@
   "name": "quickjs-emscripten",
   "version": "0.20.0",
   "main": "dist/index.js",
+  "sideEffects": false,
   "license": "MIT",
   "keywords": [
     "eval",
