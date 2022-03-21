@@ -55,6 +55,7 @@ EMCC_EXPORTED_FUNCS_ASYNCIFY+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.as
 # Emscripten options
 CFLAGS_WASM+=-s WASM=1
 CFLAGS_WASM+=-s EXPORTED_RUNTIME_METHODS=@exportedRuntimeMethods.json
+CFLAGS_WASM+=-s INCOMING_MODULE_JS_API=@incomingModuleJsApis.json
 CFLAGS_WASM+=-s NODEJS_CATCH_EXIT=0
 CFLAGS_WASM+=-s MODULARIZE=1
 CFLAGS_WASM+=-s EXPORT_NAME=QuickJSRaw
@@ -74,7 +75,6 @@ GENERATE_TS_ENV_ASYNCIFY+=ASYNCIFY=true
 CFLAGS_RELEASE=-Oz
 CFLAGS_RELEASE+=-flto
 
-CFLAGS_WASM_RELEASE+=-s SINGLE_FILE=1
 CFLAGS_WASM_RELEASE+=--closure 1
 CFLAGS_WASM_RELEASE+=-s FILESYSTEM=0
 
@@ -89,7 +89,7 @@ CFLAGS_DEBUG_SYNC+=-DQTS_SANITIZE_LEAK
 CFLAGS_DEBUG_SYNC+=-fsanitize=leak
 CFLAGS_DEBUG_SYNC+=-g2
 
-CFLAGS_WASM_DEBUG_ASYNCIFY+=-s ASYNCIFY_ADVISE=1
+# CFLAGS_WASM_DEBUG_ASYNCIFY+=-s ASYNCIFY_ADVISE=1
 # Need to use -O3 - otherwise ASYNCIFY leads to stack overflows (why?)
 CFLAGS_WASM_DEBUG_ASYNCIFY+=-O3
 
@@ -98,7 +98,7 @@ VARIANT_GENERATE_TS_ENV=$(call forVariant,GENERATE_TS_ENV)
 VARIANT_CFLAGS=$(call forVariant,CFLAGS)
 
 ifdef DEBUG_MAKE
-	MKDIRP=@echo "\n=====[["" target: $@, deps: $<, variant: $(VARIANT) ""]]=====" ; mkdir -p $(dir $@)
+	MKDIRP=@echo '\n=====[[ target: $@, variant: $(VARIANT), $$<: $<, $$^: $^ ]]=====' ; mkdir -p $(dir $@)
 else
 	MKDIRP=@mkdir -p $(dir $@)
 endif
@@ -194,15 +194,26 @@ $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c generate.ts
 
 ###############################################################################
 # WASM variants
-WASM: $(BUILD_TS)/emscripten-module.$(VARIANT).js $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts GENERATE
-GENERATE: $(BUILD_TS)/ffi.$(VARIANT).ts 
+
+WASM: $(BUILD_TS)/emscripten-module.$(VARIANT)_SINGLEFILE.js $(BUILD_TS)/emscripten-module.$(VARIANT)_LOADER.js GENERATE
+GENERATE: $(BUILD_TS)/ffi.$(VARIANT).ts $(BUILD_TS)/emscripten-module-apis.d.ts $(BUILD_TS)/interface.$(SYNC).ts
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
-$(BUILD_TS)/emscripten-module.$(VARIANT).js: $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
+entrypoint_deps = $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) $(BUILD_TS)/emscripten-module.$(VARIANT)_$(SINGLEFILE).d.ts
+
+$(BUILD_TS)/emscripten-module.%_SINGLEFILE.js: SINGLEFILE=SINGLEFILE
+$(BUILD_TS)/emscripten-module.%_SINGLEFILE.js: CFLAGS_WASM+=-s SINGLE_FILE=1
+$(BUILD_TS)/emscripten-module.%_SINGLEFILE.js: $(entrypoint_deps) | scripts/emcc.sh
 	$(MKDIRP)
 	$(EMCC) $(VARIANT_CFLAGS) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
-$(BUILD_TS)/emscripten-module.$(VARIANT).d.ts: ts/types-generated/emscripten-module.$(SYNC).d.ts
+$(BUILD_TS)/emscripten-module.%_LOADER.js: SINGLEFILE=LOADER
+$(BUILD_TS)/emscripten-module.%_LOADER.js: $(entrypoint_deps) | scripts/emcc.sh
+	$(MKDIRP)
+	$(EMCC) $(VARIANT_CFLAGS) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+
+$(BUILD_TS)/emscripten-module.%.d.ts: ts/types-generated/emscripten-module.$(SYNC).d.ts
+	$(MKDIRP)
 	echo '// Generated from $<' > $@
 	cat $< >> $@
 
@@ -218,14 +229,22 @@ $(BUILD_TS)/ffi.$(VARIANT).ts: $(WRAPPER_ROOT)/interface.c generate.ts ts/types-
 	$(MKDIRP)
 	$(GENERATE_TS) ffi $@
 
+$(BUILD_TS)/interface.$(SYNC).ts: $(WRAPPER_ROOT)/interface.c generate.ts ts/types-ffi.ts
+	$(MKDIRP)
+	$(GENERATE_TS) ffi-interface $@
+
 $(BUILD_WRAPPER)/symbols.json:
 	$(MKDIRP)
 	$(GENERATE_TS) symbols $@
 
 $(BUILD_WRAPPER)/asyncify-remove.json:
 	$(MKDIRP)
-	$(GENERATE_TS) sync-symbols $@
+	$(GENERATE_TS) asyncify-remove $@
 
 $(BUILD_WRAPPER)/asyncify-imports.json:
 	$(MKDIRP)
 	$(GENERATE_TS) async-callback-symbols $@
+
+$(BUILD_TS)/emscripten-module-apis.d.ts: generate.ts incomingModuleJsApis.json
+	$(MKDIRP)
+	$(GENERATE_TS) types $@

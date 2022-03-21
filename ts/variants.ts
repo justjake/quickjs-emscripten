@@ -1,23 +1,25 @@
-import type { QuickJSAsyncFFI as DebugAsyncifyFFI } from "./generated/ffi.WASM_DEBUG_ASYNCIFY"
-import type { QuickJSAsyncFFI as ReleaseAsyncifyFFI } from "./generated/ffi.WASM_RELEASE_ASYNCIFY"
-import type { QuickJSFFI as DebugSyncFFI } from "./generated/ffi.WASM_DEBUG_SYNC"
-import type { QuickJSFFI as ReleaseSyncFFI } from "./generated/ffi.WASM_RELEASE_SYNC"
 import type {
   EmscriptenModuleLoader,
   QuickJSEmscriptenModule,
   QuickJSAsyncEmscriptenModule,
+  EmscriptenModuleOptions,
 } from "./emscripten-types"
 import type { QuickJSWASMModule } from "./module"
 import type { QuickJSAsyncWASMModule } from "./module-asyncify"
+import { QuickJSFFI } from "./generated/interface.SYNC"
+import { QuickJSAsyncFFI } from "./generated/interface.ASYNCIFY"
 
-/** @private */
-export type QuickJSFFI = DebugSyncFFI | ReleaseSyncFFI
-/** @private */
-export type QuickJSFFIConstructor = typeof DebugSyncFFI | typeof ReleaseSyncFFI
-/** @private */
-export type QuickJSAsyncFFI = DebugAsyncifyFFI | ReleaseAsyncifyFFI
-/** @private */
-export type QuickJSAsyncFFIConstructor = typeof DebugAsyncifyFFI | typeof ReleaseAsyncifyFFI
+export { QuickJSFFI, QuickJSAsyncFFI }
+
+type SyncConstructorParams = ConstructorParameters<
+  typeof import("./generated/ffi.WASM_RELEASE_SYNC")["default"]
+>
+type QuickJSFFIConstructor = new (...args: SyncConstructorParams) => QuickJSFFI
+
+type AsyncConstructorParams = ConstructorParameters<
+  typeof import("./generated/ffi.WASM_RELEASE_ASYNCIFY")["default"]
+>
+type QuickJSAsyncFFIConstructor = new (...args: AsyncConstructorParams) => QuickJSAsyncFFI
 
 /**
  * quickjs-emscripten provides multiple build variants of the core WebAssembly
@@ -26,13 +28,14 @@ export type QuickJSAsyncFFIConstructor = typeof DebugAsyncifyFFI | typeof Releas
  * To create an instance of the library using a specific build variant, pass the
  * build variant to {@link newQuickJSWASMModule} or {@link newQuickJSAsyncWASMModule}.
  *
- * Synchronous build variants:
+ * Notable synchronous build variants:
  *
  * - {@link RELEASE_SYNC} - This is the default synchronous variant, for general purpose use.
- * - {@link DEBUG_SYNC} - Synchronous build variant for debugging memory leaks.
- */
+ * - {@link DEBUG_ASYNC} - Synchronous build variant for debugging memory leaks.
+async*/
 export interface SyncBuildVariant {
   type: "sync"
+  singleFile: boolean
   importFFI: () => Promise<QuickJSFFIConstructor>
   importModuleLoader: () => Promise<EmscriptenModuleLoader<QuickJSEmscriptenModule>>
 }
@@ -44,13 +47,14 @@ export interface SyncBuildVariant {
  * To create an instance of the library using a specific build variant, pass the
  * build variant to {@link newQuickJSWASMModule} or {@link newQuickJSAsyncWASMModule}.
  *
- * Asyncified build variants:
+ * Notable asyncified build variants:
  *
  * - {@link RELEASE_ASYNC} - This is the default asyncified build variant, for general purpose use.
  * - {@link DEBUG_ASYNC} - Asyncified build variant with debug logging.
  */
 export interface AsyncBuildVariant {
   type: "async"
+  singleFile: boolean
   importFFI: () => Promise<QuickJSAsyncFFIConstructor>
   importModuleLoader: () => Promise<EmscriptenModuleLoader<QuickJSAsyncEmscriptenModule>>
 }
@@ -67,14 +71,16 @@ export async function newQuickJSWASMModule(
   /**
    * Optionally, pass a {@link SyncBuildVariant} to construct a different WebAssembly module.
    */
-  variant: SyncBuildVariant = RELEASE_SYNC
+  variant: SyncBuildVariant = RELEASE_SYNC,
+  /** Options to pass through to Emscripten module loader. */
+  emscriptenOptions?: Partial<EmscriptenModuleOptions>
 ): Promise<QuickJSWASMModule> {
   const [wasmModuleLoader, QuickJSFFI, { QuickJSWASMModule }] = await Promise.all([
     variant.importModuleLoader(),
     variant.importFFI(),
     import("./module"),
   ])
-  const wasmModule = await wasmModuleLoader()
+  const wasmModule = await wasmModuleLoader(emscriptenOptions)
   wasmModule.type = "sync"
   const ffi = new QuickJSFFI(wasmModule)
   return new QuickJSWASMModule(wasmModule, ffi)
@@ -97,14 +103,16 @@ export async function newQuickJSAsyncWASMModule(
   /**
    * Optionally, pass a {@link AsyncBuildVariant} to construct a different WebAssembly module.
    */
-  variant: AsyncBuildVariant = RELEASE_ASYNC
+  variant: AsyncBuildVariant = RELEASE_ASYNC,
+  /** Options to pass through to Emscripten module loader. */
+  emscriptenOptions?: Partial<EmscriptenModuleOptions>
 ): Promise<QuickJSAsyncWASMModule> {
   const [wasmModuleLoader, QuickJSAsyncFFI, { QuickJSAsyncWASMModule }] = await Promise.all([
     variant.importModuleLoader(),
     variant.importFFI(),
     import("./module-asyncify"),
   ])
-  const wasmModule = await wasmModuleLoader()
+  const wasmModule = await wasmModuleLoader(emscriptenOptions)
   wasmModule.type = "async"
   const ffi = new QuickJSAsyncFFI(wasmModule)
   return new QuickJSAsyncWASMModule(wasmModule, ffi)
@@ -137,16 +145,18 @@ export function memoizePromiseFactory<T>(fn: () => Promise<T>): () => Promise<T>
  */
 export const DEBUG_SYNC: SyncBuildVariant = {
   type: "sync",
-  async importFFI() {
-    const { QuickJSFFI } = await import("./generated/ffi.WASM_DEBUG_SYNC")
-    return QuickJSFFI
-  },
-  async importModuleLoader() {
-    const { default: wasmModuleLoader } = await import(
-      "./generated/emscripten-module.WASM_DEBUG_SYNC"
-    )
-    return wasmModuleLoader
-  },
+  singleFile: false,
+  importFFI: () => import("./generated/ffi.WASM_DEBUG_SYNC").then((mod) => mod.default),
+  importModuleLoader: () =>
+    import("./generated/emscripten-module.WASM_DEBUG_SYNC_LOADER").then((mod) => mod.default),
+}
+
+export const DEBUG_SYNC_SINGLE_FILE: SyncBuildVariant = {
+  type: "sync",
+  singleFile: true,
+  importFFI: () => import("./generated/ffi.WASM_DEBUG_SYNC").then((mod) => mod.default),
+  importModuleLoader: () =>
+    import("./generated/emscripten-module.WASM_DEBUG_SYNC_SINGLEFILE").then((mod) => mod.default),
 }
 
 /**
@@ -155,16 +165,18 @@ export const DEBUG_SYNC: SyncBuildVariant = {
  */
 export const RELEASE_SYNC: SyncBuildVariant = {
   type: "sync",
-  async importFFI() {
-    const { QuickJSFFI } = await import("./generated/ffi.WASM_RELEASE_SYNC")
-    return QuickJSFFI
-  },
-  async importModuleLoader() {
-    const { default: wasmModuleLoader } = await import(
-      "./generated/emscripten-module.WASM_RELEASE_SYNC"
-    )
-    return wasmModuleLoader
-  },
+  singleFile: true,
+  importFFI: () => import("./generated/ffi.WASM_RELEASE_SYNC").then((mod) => mod.default),
+  importModuleLoader: () =>
+    import("./generated/emscripten-module.WASM_RELEASE_SYNC_SINGLEFILE").then((mod) => mod.default),
+}
+
+export const RELEASE_SYNC_LOADER: SyncBuildVariant = {
+  type: "sync",
+  singleFile: false,
+  importFFI: () => import("./generated/ffi.WASM_RELEASE_SYNC").then((mod) => mod.default),
+  importModuleLoader: () =>
+    import("./generated/emscripten-module.WASM_RELEASE_SYNC_LOADER").then((mod) => mod.default),
 }
 
 /**
@@ -175,16 +187,10 @@ export const RELEASE_SYNC: SyncBuildVariant = {
  */
 export const DEBUG_ASYNC: AsyncBuildVariant = {
   type: "async",
-  async importFFI() {
-    const { QuickJSAsyncFFI } = await import("./generated/ffi.WASM_DEBUG_ASYNCIFY")
-    return QuickJSAsyncFFI
-  },
-  async importModuleLoader() {
-    const { default: wasmModuleLoader } = await import(
-      "./generated/emscripten-module.WASM_DEBUG_ASYNCIFY"
-    )
-    return wasmModuleLoader
-  },
+  singleFile: false,
+  importFFI: () => import("./generated/ffi.WASM_DEBUG_ASYNCIFY").then((mod) => mod.default),
+  importModuleLoader: () =>
+    import("./generated/emscripten-module.WASM_DEBUG_ASYNCIFY_LOADER").then((mod) => mod.default),
 }
 
 /**
@@ -192,14 +198,18 @@ export const DEBUG_ASYNC: AsyncBuildVariant = {
  */
 export const RELEASE_ASYNC: AsyncBuildVariant = {
   type: "async",
-  async importFFI() {
-    const { QuickJSAsyncFFI } = await import("./generated/ffi.WASM_RELEASE_ASYNCIFY")
-    return QuickJSAsyncFFI
-  },
-  async importModuleLoader() {
-    const { default: wasmModuleLoader } = await import(
-      "./generated/emscripten-module.WASM_RELEASE_ASYNCIFY"
-    )
-    return wasmModuleLoader
-  },
+  singleFile: true,
+  importFFI: () => import("./generated/ffi.WASM_DEBUG_ASYNCIFY").then((mod) => mod.default),
+  importModuleLoader: () =>
+    import("./generated/emscripten-module.WASM_RELEASE_ASYNCIFY_SINGLEFILE").then(
+      (mod) => mod.default
+    ),
+}
+
+export const RELEASE_ASYNC_LOADER: AsyncBuildVariant = {
+  type: "async",
+  singleFile: false,
+  importFFI: () => import("./generated/ffi.WASM_DEBUG_ASYNCIFY").then((mod) => mod.default),
+  importModuleLoader: () =>
+    import("./generated/emscripten-module.WASM_RELEASE_ASYNCIFY_LOADER").then((mod) => mod.default),
 }

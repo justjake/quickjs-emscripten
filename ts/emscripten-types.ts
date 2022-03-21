@@ -10,7 +10,9 @@
 //   to our build settings
 // - some upstream types reference web-only ambient types like WebGL stuff, which
 //   we don't use.
+// - Up
 
+import { EnabledIncomingModuleJsApis } from "./generated/emscripten-module-apis"
 import {
   BorrowedHeapCharPointer,
   JSContextPointer,
@@ -45,6 +47,9 @@ declare namespace Emscripten {
 /**
  * Typings for the features we use to interface with our Emscripten build of
  * QuickJS.
+ *
+ * TODO: consider adding more of incomingModuleJsApis.json to these types.
+ * @see https://emscripten.org/docs/api_reference/module.html
  */
 interface EmscriptenModule {
   // No longer needed:
@@ -164,6 +169,69 @@ export interface QuickJSAsyncEmscriptenModule extends EmscriptenModule {
 
 export type EitherModule = QuickJSEmscriptenModule | QuickJSAsyncEmscriptenModule
 
+type TODO<T> = T
+
+/**
+ * Note: each name must be present in the `incomingModuleJsApis.json` file, or
+ * Emscripten will ignore it.
+ *
+ * https://emscripten.org/docs/api_reference/module.html#affecting-execution
+ */
+export interface EmscriptenModuleOptions {
+  /**
+   * Environment type the module should use.  Usually this is inferred
+   * automatically, but can be useful to override it.
+   */
+  ENVIRONMENT: Emscripten.EnvironmentType
+  INITIAL_MEMORY: TODO<unknown>
+  /** https://emscripten.org/docs/api_reference/module.html#Module.wasmMemory */
+  wasmMemory: WebAssembly.Memory
+  /**
+   * Return a path or URL where the given file is located. The specific behavior
+   * of file loading depends on [[ENVIRONMENT]].
+   */
+  locateFile(
+    /**
+     * The basename of the file Emscripten needs to load>
+     * Example: `"hello_world.wasm"`
+     */
+    fileName: string,
+    /**
+     * The dirname (ending with a /) where Emscripten inferred the module.js
+     * file resides, comparable to __dirname in NodeJS.
+     * Example: `"...node_modules/quickjs-emscripten/dist/generated/"`
+     * https://emscripten.org/docs/api_reference/module.html
+     */
+    prefix: string
+  ): string
+  /**
+   * Binary content of the WASM module to execute. Overriding this will avoid
+   * Emscripten (re)loading the WASM module itself.
+   *
+   * https://github.com/emscripten-core/emscripten/blob/500d8267b4eb22fcc6606aa695a1a076c0f40375/src/preamble.js#L835
+   */
+  wasmBinary: ArrayBuffer
+  /** https://emscripten.org/docs/api_reference/module.html#Module.print */
+  print(str: string): void
+  /** https://emscripten.org/docs/api_reference/module.html#Module.printErr */
+  printErr(str: string): void
+  /** https://emscripten.org/docs/api_reference/module.html#Module.preInit */
+  preInit: Array<{ (): void }>
+  preRun: Array<{ (): void }>
+}
+
+type Assert<T, U extends T> = U
+
+// type _assertAllModuleOptionsHaveTypes = Assert<
+//   Record<EnabledIncomingModuleJsApis, unknown>,
+//   EmscriptenModuleOptions
+// >
+
+// type _assertNoExtraModuleOptions = Assert<
+//   EnabledIncomingModuleJsApis,
+//   keyof EmscriptenModuleOptions
+// >
+
 export interface EmscriptenModuleLoader<T extends EmscriptenModule> {
-  (): Promise<T>
+  (moduleOverrides?: Partial<EmscriptenModuleOptions>): Promise<T>
 }
