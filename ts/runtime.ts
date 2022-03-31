@@ -307,6 +307,18 @@ export class QuickJSRuntime implements Disposable {
   }
 
   /**
+   * Set the max stack size for this runtime, in bytes.
+   * To remove the limit, set to `0`.
+   */
+  setMaxStackSize(stackSize: number) {
+    if (stackSize < 0) {
+      throw new Error("Cannot set memory limit to negative number. To unset, pass 0.")
+    }
+
+    this.ffi.QTS_RuntimeSetMaxStackSize(this.rt.value, stackSize)
+  }
+
+  /**
    * Assert that `handle` is owned by this runtime.
    * @throws QuickJSWrongOwner if owned by a different runtime.
    */

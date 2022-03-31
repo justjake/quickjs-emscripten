@@ -113,7 +113,7 @@ export interface RuntimeOptionsBase {
   runtimeInfo?: TODO<"JS_SetRuntimeInfo", string>
   memoryLimit?: TODO<"JS_SetMemoryLimit", number>
   gcThreshold?: TODO<"JS_SetGCThreshold", number>
-  maxStackSize?: TODO<"JS_SetMaxStackSize", number>
+  maxStackSize?: number
   sharedArrayBufferFunctions?: TODO<
     "JS_SetJSSharedArrayBufferFunctions",
     { sab_alloc: TODO; sab_free: TODO; sab_dup: TODO; sab_opaque: TODO }

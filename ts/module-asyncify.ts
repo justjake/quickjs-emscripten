@@ -3,7 +3,12 @@ import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
 import { QuickJSNotImplemented } from "./errors"
 import { QuickJSAsyncFFI } from "./variants"
 import { Lifetime, Scope } from "./lifetime"
-import { ModuleEvalOptions, QuickJSWASMModule } from "./module"
+import {
+  applyBaseRuntimeOptions,
+  applyModuleEvalRuntimeOptions,
+  ModuleEvalOptions,
+  QuickJSWASMModule,
+} from "./module"
 import { QuickJSAsyncRuntime } from "./runtime-asyncify"
 import { AsyncRuntimeOptions, ContextOptions, RuntimeOptions } from "./types"
 
@@ -50,12 +55,10 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
       callbacks: this.callbacks,
     })
 
+    applyBaseRuntimeOptions(runtime, options)
+
     if (options.moduleLoader) {
       runtime.setModuleLoader(options.moduleLoader)
-    }
-
-    if (options.interruptHandler) {
-      runtime.setInterruptHandler(options.interruptHandler)
     }
 
     return runtime
@@ -94,19 +97,7 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
     // TODO: we should really figure out generator for the Promise monad...
     return Scope.withScopeAsync(async (scope) => {
       const vm = scope.manage(this.newContext())
-
-      if (options.moduleLoader) {
-        vm.runtime.setModuleLoader(options.moduleLoader)
-      }
-
-      if (options.shouldInterrupt) {
-        vm.runtime.setInterruptHandler(options.shouldInterrupt)
-      }
-
-      if (options.memoryLimitBytes !== undefined) {
-        vm.runtime.setMemoryLimit(options.memoryLimitBytes)
-      }
-
+      applyModuleEvalRuntimeOptions(vm.runtime, options)
       const result = await vm.evalCodeAsync(code, "eval.js")
 
       if (options.memoryLimitBytes !== undefined) {
