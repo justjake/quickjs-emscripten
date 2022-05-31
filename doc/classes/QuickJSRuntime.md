@@ -19,7 +19,8 @@ modules to further isolate untrusted code.
 See [newQuickJSWASMModule](../modules.md#newquickjswasmmodule).
 
 Implement memory and CPU constraints with [setInterruptHandler](QuickJSRuntime.md#setinterrupthandler)
-(called regularly while the interpreter runs) and [setMemoryLimit](QuickJSRuntime.md#setmemorylimit).
+(called regularly while the interpreter runs), [setMemoryLimit](QuickJSRuntime.md#setmemorylimit), and
+[setMaxStackSize](QuickJSRuntime.md#setmaxstacksize).
 Use [computeMemoryUsage](QuickJSRuntime.md#computememoryusage) or [dumpMemoryUsage](QuickJSRuntime.md#dumpmemoryusage) to guide memory limit
 tuning.
 
@@ -75,7 +76,7 @@ A context here may be allocated if one is needed by the runtime, eg for [compute
 
 #### Defined in
 
-[ts/runtime.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L83)
+[ts/runtime.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L84)
 
 ## Accessors
 
@@ -93,7 +94,7 @@ A context here may be allocated if one is needed by the runtime, eg for [compute
 
 #### Defined in
 
-[ts/runtime.ts:125](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L125)
+[ts/runtime.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L126)
 
 ## Methods
 
@@ -117,7 +118,7 @@ Assert that `handle` is owned by this runtime.
 
 #### Defined in
 
-[ts/runtime.ts:325](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L325)
+[ts/runtime.ts:326](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L326)
 
 ___
 
@@ -137,7 +138,7 @@ For a human-digestible representation, see [dumpMemoryUsage](QuickJSRuntime.md#d
 
 #### Defined in
 
-[ts/runtime.ts:294](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L294)
+[ts/runtime.ts:295](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L295)
 
 ___
 
@@ -157,7 +158,7 @@ Dispose of the underlying resources used by this object.
 
 #### Defined in
 
-[ts/runtime.ts:129](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L129)
+[ts/runtime.ts:130](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L130)
 
 ___
 
@@ -174,7 +175,7 @@ For programmatic access to this information, see [computeMemoryUsage](QuickJSRun
 
 #### Defined in
 
-[ts/runtime.ts:305](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L305)
+[ts/runtime.ts:306](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L306)
 
 ___
 
@@ -207,7 +208,7 @@ functions or rejected promises. Those errors are available by calling
 
 #### Defined in
 
-[ts/runtime.ts:239](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L239)
+[ts/runtime.ts:240](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L240)
 
 ___
 
@@ -226,7 +227,7 @@ true if there is at least one pendingJob queued up.
 
 #### Defined in
 
-[ts/runtime.ts:190](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L190)
+[ts/runtime.ts:191](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L191)
 
 ___
 
@@ -246,7 +247,7 @@ ___
 
 #### Defined in
 
-[ts/runtime.ts:133](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L133)
+[ts/runtime.ts:134](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L134)
 
 ___
 
@@ -263,7 +264,7 @@ See [setInterruptHandler](QuickJSRuntime.md#setinterrupthandler).
 
 #### Defined in
 
-[ts/runtime.ts:215](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L215)
+[ts/runtime.ts:216](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L216)
 
 ___
 
@@ -279,7 +280,7 @@ Remove the the loader set by [setModuleLoader](QuickJSRuntime.md#setmoduleloader
 
 #### Defined in
 
-[ts/runtime.ts:177](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L177)
+[ts/runtime.ts:178](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L178)
 
 ___
 
@@ -305,7 +306,7 @@ The interrupt handler can be removed with [removeInterruptHandler](QuickJSRuntim
 
 #### Defined in
 
-[ts/runtime.ts:203](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L203)
+[ts/runtime.ts:204](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L204)
 
 ___
 
@@ -328,7 +329,7 @@ To remove the limit, set to `0`.
 
 #### Defined in
 
-[ts/runtime.ts:313](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L313)
+[ts/runtime.ts:314](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L314)
 
 ___
 
@@ -351,7 +352,7 @@ To remove the limit, set to `-1`.
 
 #### Defined in
 
-[ts/runtime.ts:279](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L279)
+[ts/runtime.ts:280](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L280)
 
 ___
 
@@ -377,4 +378,4 @@ The loader can be removed with [removeModuleLoader](QuickJSRuntime.md#removemodu
 
 #### Defined in
 
-[ts/runtime.ts:168](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L168)
+[ts/runtime.ts:169](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L169)

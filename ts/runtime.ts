@@ -66,7 +66,8 @@ export type ExecutePendingJobsResult = SuccessOrFail<
  * See {@link newQuickJSWASMModule}.
  *
  * Implement memory and CPU constraints with [[setInterruptHandler]]
- * (called regularly while the interpreter runs) and [[setMemoryLimit]].
+ * (called regularly while the interpreter runs), [[setMemoryLimit]], and
+ * [[setMaxStackSize]].
  * Use [[computeMemoryUsage]] or [[dumpMemoryUsage]] to guide memory limit
  * tuning.
  *
