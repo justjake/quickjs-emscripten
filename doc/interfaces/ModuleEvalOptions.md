@@ -8,11 +8,25 @@ Options for [QuickJSWASMModule.evalCode](../classes/QuickJSWASMModule.md#evalcod
 
 ### Properties
 
+- [maxStackSizeBytes](ModuleEvalOptions.md#maxstacksizebytes)
 - [memoryLimitBytes](ModuleEvalOptions.md#memorylimitbytes)
 - [moduleLoader](ModuleEvalOptions.md#moduleloader)
 - [shouldInterrupt](ModuleEvalOptions.md#shouldinterrupt)
 
 ## Properties
+
+### maxStackSizeBytes
+
+• `Optional` **maxStackSizeBytes**: `number`
+
+Stack size limit for this vm, in bytes
+To remove the limit, set to `0`.
+
+#### Defined in
+
+[ts/module.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module.ts#L87)
+
+___
 
 ### memoryLimitBytes
 
@@ -22,7 +36,7 @@ Memory limit, in bytes, of WebAssembly heap memory used by the QuickJS VM.
 
 #### Defined in
 
-[ts/module.ts:73](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module.ts#L73)
+[ts/module.ts:81](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module.ts#L81)
 
 ___
 
@@ -34,7 +48,7 @@ Module loader for any `import` statements or expressions.
 
 #### Defined in
 
-[ts/module.ts:78](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module.ts#L78)
+[ts/module.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module.ts#L92)
 
 ___
 
@@ -47,4 +61,4 @@ See [shouldInterruptAfterDeadline](../modules.md#shouldinterruptafterdeadline).
 
 #### Defined in
 
-[ts/module.ts:68](https://github.com/justjake/quickjs-emscripten/blob/master/ts/module.ts#L68)
+[ts/module.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module.ts#L76)

@@ -23,4 +23,4 @@ Load module (async)
 
 #### Defined in
 
-[ts/types.ts:76](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L76)
+[ts/types.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L76)

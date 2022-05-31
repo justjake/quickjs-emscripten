@@ -6,10 +6,10 @@ module.exports = {
   name,
   entryPoints: ["./ts/index.ts"],
   entryPointStrategy: "expand",
-  // link to master instead of the current git SHA
+  // link to main instead of the current git SHA
   // which is borked with our strategy of deploying the docs
   // in the repo.
-  gitRevision: "master",
+  gitRevision: "main",
   out: "./doc",
   // mode: 'file',
   exclude: NO_THANKS,

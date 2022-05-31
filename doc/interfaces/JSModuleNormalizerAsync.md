@@ -28,4 +28,4 @@
 
 #### Defined in
 
-[ts/types.ts:92](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L92)
+[ts/types.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L92)
