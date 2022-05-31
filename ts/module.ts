@@ -253,8 +253,9 @@ export class QuickJSModuleCallbacks {
 }
 
 /**
-   Process RuntimeOptions and apply them to a QuickJSRuntime.
-*/
+ * Process RuntimeOptions and apply them to a QuickJSRuntime.
+ * @private
+ */
 export function applyBaseRuntimeOptions(
   runtime: QuickJSRuntime,
   options: RuntimeOptionsBase
@@ -263,14 +264,15 @@ export function applyBaseRuntimeOptions(
     runtime.setInterruptHandler(options.interruptHandler)
   }
 
-  if (options.maxStackSize) {
-    runtime.setMaxStackSize(options.maxStackSize)
+  if (options.maxStackSizeBytes !== undefined) {
+    runtime.setMaxStackSize(options.maxStackSizeBytes)
   }
 }
 
 /**
-   Process ModuleEvalOptions and apply them to a QuickJSRuntime.
-*/
+ * Process ModuleEvalOptions and apply them to a QuickJSRuntime.
+ * @private
+ */
 export function applyModuleEvalRuntimeOptions<T extends QuickJSRuntime>(
   runtime: T,
   options: ModuleEvalOptions
@@ -287,7 +289,7 @@ export function applyModuleEvalRuntimeOptions<T extends QuickJSRuntime>(
     runtime.setMemoryLimit(options.memoryLimitBytes)
   }
 
-  if (options.maxStackSizeBytes) {
+  if (options.maxStackSizeBytes !== undefined) {
     runtime.setMaxStackSize(options.maxStackSizeBytes)
   }
 }
