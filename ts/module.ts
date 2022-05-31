@@ -267,6 +267,10 @@ export function applyBaseRuntimeOptions(
   if (options.maxStackSizeBytes !== undefined) {
     runtime.setMaxStackSize(options.maxStackSizeBytes)
   }
+
+  if (options.memoryLimitBytes !== undefined) {
+    runtime.setMemoryLimit(options.memoryLimitBytes)
+  }
 }
 
 /**

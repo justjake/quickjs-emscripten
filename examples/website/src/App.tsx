@@ -47,7 +47,7 @@ function App() {
         </ul>
         <p>
           <a href="https://github.com/justjake/quickjs-emscripten">Github</a> -{" "}
-          <a href="https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md">
+          <a href="https://github.com/justjake/quickjs-emscripten/blob/main/doc/globals.md">
             Documentation
           </a>{" "}
           - <a href="https://www.npmjs.com/package/quickjs-emscripten">NPM</a>

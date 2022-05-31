@@ -109,10 +109,10 @@ export type PartiallyImplemented<T> = never &
 export interface RuntimeOptionsBase {
   interruptHandler?: InterruptHandler
   maxStackSizeBytes?: number
+  memoryLimitBytes?: number
 
   promiseRejectionHandler?: TODO<"JSHostPromiseRejectionTracker">
   runtimeInfo?: TODO<"JS_SetRuntimeInfo", string>
-  memoryLimitBytes?: TODO<"JS_SetMemoryLimit", number>
   gcThreshold?: TODO<"JS_SetGCThreshold", number>
   sharedArrayBufferFunctions?: TODO<
     "JS_SetJSSharedArrayBufferFunctions",
