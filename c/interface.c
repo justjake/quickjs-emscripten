@@ -216,6 +216,13 @@ int QTS_BuildIsSanitizeLeak() {
 }
 
 /**
+ * Set the stack size limit, in bytes. Set to 0 to disable.
+ */
+void QTS_RuntimeSetMaxStackSize(JSRuntime *rt, size_t stack_size) {
+  JS_SetMaxStackSize(rt, stack_size);
+}
+
+/**
  * Constant pointers. Because we always use JSValue* from the host Javascript environment,
  * we need helper fuctions to return pointers to these constants.
  */

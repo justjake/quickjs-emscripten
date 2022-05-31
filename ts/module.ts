@@ -15,7 +15,15 @@ import {
 } from "./types-ffi"
 import { Lifetime, Scope } from "./lifetime"
 import { InterruptHandler, QuickJSRuntime } from "./runtime"
-import { concat, ContextOptions, EitherFFI, JSModuleLoader, RuntimeOptions } from "./types"
+import {
+  AsyncRuntimeOptions,
+  concat,
+  ContextOptions,
+  EitherFFI,
+  JSModuleLoader,
+  RuntimeOptions,
+  RuntimeOptionsBase,
+} from "./types"
 
 type EmscriptenCallback<BaseArgs extends any[], Result> = (
   ...args: [Asyncify | undefined, ...BaseArgs]
@@ -71,6 +79,12 @@ export interface ModuleEvalOptions {
    * Memory limit, in bytes, of WebAssembly heap memory used by the QuickJS VM.
    */
   memoryLimitBytes?: number
+
+  /**
+   * Stack size limit for this vm, in bytes
+   * To remove the limit, set to `0`.
+   */
+  maxStackSizeBytes?: number
 
   /**
    * Module loader for any `import` statements or expressions.
@@ -239,6 +253,48 @@ export class QuickJSModuleCallbacks {
 }
 
 /**
+ * Process RuntimeOptions and apply them to a QuickJSRuntime.
+ * @private
+ */
+export function applyBaseRuntimeOptions(
+  runtime: QuickJSRuntime,
+  options: RuntimeOptionsBase
+): void {
+  if (options.interruptHandler) {
+    runtime.setInterruptHandler(options.interruptHandler)
+  }
+
+  if (options.maxStackSizeBytes !== undefined) {
+    runtime.setMaxStackSize(options.maxStackSizeBytes)
+  }
+}
+
+/**
+ * Process ModuleEvalOptions and apply them to a QuickJSRuntime.
+ * @private
+ */
+export function applyModuleEvalRuntimeOptions<T extends QuickJSRuntime>(
+  runtime: T,
+  options: ModuleEvalOptions
+) {
+  if (options.moduleLoader) {
+    runtime.setModuleLoader(options.moduleLoader)
+  }
+
+  if (options.shouldInterrupt) {
+    runtime.setInterruptHandler(options.shouldInterrupt)
+  }
+
+  if (options.memoryLimitBytes !== undefined) {
+    runtime.setMemoryLimit(options.memoryLimitBytes)
+  }
+
+  if (options.maxStackSizeBytes !== undefined) {
+    runtime.setMaxStackSize(options.maxStackSizeBytes)
+  }
+}
+
+/**
  * This class presents a Javascript interface to QuickJS, a Javascript interpreter
  * that supports EcmaScript 2020 (ES2020).
  *
@@ -288,12 +344,10 @@ export class QuickJSWASMModule {
       rt,
     })
 
+    applyBaseRuntimeOptions(runtime, options)
+
     if (options.moduleLoader) {
       runtime.setModuleLoader(options.moduleLoader)
-    }
-
-    if (options.interruptHandler) {
-      runtime.setInterruptHandler(options.interruptHandler)
     }
 
     return runtime
@@ -343,18 +397,7 @@ export class QuickJSWASMModule {
     return Scope.withScope((scope) => {
       const vm = scope.manage(this.newContext())
 
-      if (options.moduleLoader) {
-        vm.runtime.setModuleLoader(options.moduleLoader)
-      }
-
-      if (options.shouldInterrupt) {
-        vm.runtime.setInterruptHandler(options.shouldInterrupt)
-      }
-
-      if (options.memoryLimitBytes !== undefined) {
-        vm.runtime.setMemoryLimit(options.memoryLimitBytes)
-      }
-
+      applyModuleEvalRuntimeOptions(vm.runtime, options)
       const result = vm.evalCode(code, "eval.js")
 
       if (options.memoryLimitBytes !== undefined) {

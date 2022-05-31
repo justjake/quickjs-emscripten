@@ -35,6 +35,9 @@ export class QuickJSAsyncFFI {
   QTS_BuildIsSanitizeLeak: () => number =
     this.module.cwrap("QTS_BuildIsSanitizeLeak", "number", [])
 
+  QTS_RuntimeSetMaxStackSize: (rt: JSRuntimePointer, stack_size: number) => void =
+    this.module.cwrap("QTS_RuntimeSetMaxStackSize", null, ["number","number"])
+
   QTS_GetUndefined: () => JSValueConstPointer =
     this.module.cwrap("QTS_GetUndefined", "number", [])
 

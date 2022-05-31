@@ -74,6 +74,12 @@ Module['ready'] = new Promise(function(resolve, reject) {
       }
     
 
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_RuntimeSetMaxStackSize')) {
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeSetMaxStackSize', { configurable: true, get: function() { abort('You are getting _QTS_RuntimeSetMaxStackSize on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeSetMaxStackSize', { configurable: true, set: function() { abort('You are setting _QTS_RuntimeSetMaxStackSize on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
       if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_GetUndefined')) {
         Object.defineProperty(Module['ready'], '_QTS_GetUndefined', { configurable: true, get: function() { abort('You are getting _QTS_GetUndefined on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
         Object.defineProperty(Module['ready'], '_QTS_GetUndefined', { configurable: true, set: function() { abort('You are setting _QTS_GetUndefined on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
@@ -2353,8 +2359,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  114190: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['LSAN_OPTIONS'] || 0); });},  
- 114287: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
+  113790: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['LSAN_OPTIONS'] || 0); });},  
+ 113887: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
 };
 function qts_host_call_function(ctx,this_ptr,argc,argv,magic_func_id){ const asyncify = undefined; return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id); }
 function qts_host_interrupt_handler(rt){ const asyncify = undefined; return Module['callbacks']['shouldInterrupt'](asyncify, rt); }
@@ -5548,6 +5554,9 @@ var _QTS_RecoverableLeakCheck = Module["_QTS_RecoverableLeakCheck"] = createExpo
 
 /** @type {function(...*):?} */
 var _QTS_BuildIsSanitizeLeak = Module["_QTS_BuildIsSanitizeLeak"] = createExportWrapper("QTS_BuildIsSanitizeLeak");
+
+/** @type {function(...*):?} */
+var _QTS_RuntimeSetMaxStackSize = Module["_QTS_RuntimeSetMaxStackSize"] = createExportWrapper("QTS_RuntimeSetMaxStackSize");
 
 /** @type {function(...*):?} */
 var _QTS_GetUndefined = Module["_QTS_GetUndefined"] = createExportWrapper("QTS_GetUndefined");
