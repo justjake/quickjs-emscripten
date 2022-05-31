@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.21.0
+
+- [#61](https://github.com/justjake/quickjs-emscripten/pull/61) (thanks to @torywheelwright):
+  - Add `QuickJSRuntime.setMaxStackSize(stackSizeBytes)` to protect against stack overflows.
+  - Add option `maxStackSizeBytes` when creating runtimes.
+- Change default branch `master` to `main`.
+- Add option `memoryLimitBytes` when creating runtimes.
+
 ## v0.20.0
 
 This is a large release! The summary is:
