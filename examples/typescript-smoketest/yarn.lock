@@ -3,9 +3,9 @@
 
 
 "quickjs-emscripten@file:../../build/quickjs-emscripten.tgz":
-  "integrity" "sha512-4IKym2vqjxX6HPjXDBwOjbcOr6MrzlHhlHVat/1REKt0l/vobzWfA19fggp4E7F8dKsjsuW+qUBc270y/rZNgA=="
+  "integrity" "sha512-rLSyAy4CyyKHen3/WhH2/ok7aDh00OiMKBatpJQnXndKtx9DZkVk908zNksTa+h/f/wxOEDPDK3jBuInFxbxvA=="
   "resolved" "file:../../build/quickjs-emscripten.tgz"
-  "version" "0.20.0"
+  "version" "0.21.0"
 
 "typescript@4.5.5":
   "integrity" "sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA=="

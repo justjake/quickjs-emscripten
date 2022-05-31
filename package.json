@@ -30,7 +30,7 @@
     "prepare": "yarn prettier-check && yarn tarball && yarn test && yarn test-dist && yarn smoketest-node",
     "clean": "make clean",
     "tsc": "node_modules/.bin/tsc",
-    "build": "make -j 8 dist",
+    "build": "make dist",
     "doc": "typedoc",
     "test": "TS_NODE_TYPE_CHECK=false mocha",
     "test-dist": "cd dist && TS_NODE_TYPE_CHECK=false mocha --require source-map-support/register *.test.js",
