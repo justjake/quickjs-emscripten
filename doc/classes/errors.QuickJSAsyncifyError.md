@@ -38,7 +38,7 @@ Error.constructor
 
 #### Defined in
 
-node_modules/typescript/lib/lib.es5.d.ts:1028
+node_modules/typescript/lib/lib.es5.d.ts:1034
 
 ## Properties
 
@@ -52,4 +52,4 @@ Error.name
 
 #### Defined in
 
-[ts/errors.ts:26](https://github.com/justjake/quickjs-emscripten/blob/master/ts/errors.ts#L26)
+[ts/errors.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/ts/errors.ts#L26)

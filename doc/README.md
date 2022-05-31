@@ -40,8 +40,8 @@ main()
 
 [github]: https://github.com/justjake/quickjs-emscripten
 [npm]: https://www.npmjs.com/package/quickjs-emscripten
-[api]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md
-[tests]: https://github.com/justjake/quickjs-emscripten/blob/master/ts/quickjs.test.ts
+[api]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/modules.md
+[tests]: https://github.com/justjake/quickjs-emscripten/blob/main/ts/quickjs.test.ts
 [values]: #interfacing-with-the-interpreter
 [asyncify]: #asyncify
 [functions]: #exposing-apis
@@ -59,7 +59,7 @@ function to directly access the singleton engine in your synchronous code.
 
 ### Safely evaluate Javascript code
 
-See [QuickJS.evalCode](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/quickjs.md#evalcode)
+See [QuickJS.evalCode](https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/quickjs.md#evalcode)
 
 ```typescript
 import { getQuickJS, shouldInterruptAfterDeadline } from "quickjs-emscripten"
@@ -75,7 +75,7 @@ getQuickJS().then((QuickJS) => {
 
 ### Interfacing with the interpreter
 
-You can use [QuickJSContext](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/QuickJSContext.md)
+You can use [QuickJSContext](https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/QuickJSContext.md)
 to build a scripting environment by modifying globals and exposing functions
 into the QuickJS interpreter.
 
@@ -84,7 +84,7 @@ classes -- and actions from one context won't leak into other contexts or
 runtimes (with one exception, see [Asyncify][asyncify]).
 
 Every context is created inside a
-[QuickJSRuntime](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/QuickJSRuntime.md).
+[QuickJSRuntime](https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/QuickJSRuntime.md).
 A runtime represents a Javascript heap, and you can even share values between
 contexts in the same runtime.
 
@@ -166,7 +166,7 @@ handle you create:
 #### Scope
 
 A
-[`Scope`](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/scope.md#class-scope)
+[`Scope`](https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/scope.md#class-scope)
 instance manages a set of disposables and calls their `.dispose()`
 method in the reverse order in which they're added to the scope. Here's the
 "Interfacing with the interpreter" example re-written using `Scope`:
@@ -197,7 +197,7 @@ calling `scope.dispose()` yourself.
 
 #### `Lifetime.consume(fn)`
 
-[`Lifetime.consume`](https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/lifetime.md#consume)
+[`Lifetime.consume`](https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/lifetime.md#consume)
 is sugar for the common pattern of using a handle and then
 immediately disposing of it. `Lifetime.consume` takes a `map` function that
 produces a result of any type. The `map` fuction is called with the handle,
@@ -355,9 +355,9 @@ To use asyncify features, use the following functions:
   WebAssembly module.
 - [newQuickJSAsyncWASMModule][]: create an empty WebAssembly module.
 
-[newasyncruntime]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasyncruntime
-[newasynccontext]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newasynccontext
-[newquickjsasyncwasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#newquickjsasyncwasmmodule
+[newasyncruntime]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/modules.md#newasyncruntime
+[newasynccontext]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/modules.md#newasynccontext
+[newquickjsasyncwasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/modules.md#newquickjsasyncwasmmodule
 
 These functions are asynchronous because they always create a new underlying
 WebAssembly module so that each instance can suspend and resume independently,
@@ -485,9 +485,9 @@ describe("Realistic test with QuickJS RELEASE build", () => {
 
 For more testing examples, please explore the typescript source of [quickjs-emscripten][ts] repository.
 
-[ts]: https://github.com/justjake/quickjs-emscripten/blob/master/ts
-[debug_sync]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/modules.md#debug_sync
-[testquickjswasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/master/doc/classes/TestQuickJSWASMModule.md
+[ts]: https://github.com/justjake/quickjs-emscripten/blob/main/ts
+[debug_sync]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/modules.md#debug_sync
+[testquickjswasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/TestQuickJSWASMModule.md
 
 ### Debugging
 
@@ -546,7 +546,7 @@ thinking comes next. Last updated 2022-03-18.
 
 ## Related
 
-- Duktape wrapped in Wasm: https://github.com/maple3142/duktape-eval/blob/master/src/Makefile
+- Duktape wrapped in Wasm: https://github.com/maple3142/duktape-eval/blob/main/src/Makefile
 - QuickJS wrapped in C++: https://github.com/ftk/quickjspp
 
 ## Developing

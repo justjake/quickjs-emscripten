@@ -16,8 +16,8 @@
 
 - [gcThreshold](RuntimeOptionsBase.md#gcthreshold)
 - [interruptHandler](RuntimeOptionsBase.md#interrupthandler)
-- [maxStackSize](RuntimeOptionsBase.md#maxstacksize)
-- [memoryLimit](RuntimeOptionsBase.md#memorylimit)
+- [maxStackSizeBytes](RuntimeOptionsBase.md#maxstacksizebytes)
+- [memoryLimitBytes](RuntimeOptionsBase.md#memorylimitbytes)
 - [promiseRejectionHandler](RuntimeOptionsBase.md#promiserejectionhandler)
 - [runtimeInfo](RuntimeOptionsBase.md#runtimeinfo)
 - [sharedArrayBufferFunctions](RuntimeOptionsBase.md#sharedarraybufferfunctions)
@@ -30,7 +30,7 @@
 
 #### Defined in
 
-[ts/types.ts:115](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L115)
+[ts/types.ts:116](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L116)
 
 ___
 
@@ -40,27 +40,27 @@ ___
 
 #### Defined in
 
-[ts/types.ts:110](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L110)
+[ts/types.ts:110](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L110)
 
 ___
 
-### maxStackSize
+### maxStackSizeBytes
 
-• `Optional` **maxStackSize**: `undefined`
+• `Optional` **maxStackSizeBytes**: `number`
 
 #### Defined in
 
-[ts/types.ts:116](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L116)
+[ts/types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L111)
 
 ___
 
-### memoryLimit
+### memoryLimitBytes
 
-• `Optional` **memoryLimit**: `undefined`
+• `Optional` **memoryLimitBytes**: `number`
 
 #### Defined in
 
-[ts/types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L114)
+[ts/types.ts:112](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L112)
 
 ___
 
@@ -70,7 +70,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:112](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L112)
+[ts/types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L114)
 
 ___
 
@@ -80,7 +80,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:113](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L113)
+[ts/types.ts:115](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L115)
 
 ___
 
@@ -90,4 +90,4 @@ ___
 
 #### Defined in
 
-[ts/types.ts:117](https://github.com/justjake/quickjs-emscripten/blob/master/ts/types.ts#L117)
+[ts/types.ts:117](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L117)
