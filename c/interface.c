@@ -471,7 +471,7 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, const 
     QTS_DEBUG("QTS_Eval: do not detect module");
   }
 
-  return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), filename, evalFlags));
+  return jsvalue_to_heap(JS_Eval(ctx, js_code, js_code_len, filename, evalFlags));
 }
 
 OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {

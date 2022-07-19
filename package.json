@@ -29,7 +29,7 @@
     "tarball": "make build/quickjs-emscripten.tgz",
     "prepare": "yarn prettier-check && yarn tarball && yarn test && yarn test-dist && yarn smoketest-node",
     "clean": "make clean",
-    "tsc": "node_modules/.bin/tsc",
+    "tsc": "tsc",
     "build": "make dist",
     "doc": "typedoc",
     "test": "TS_NODE_TYPE_CHECK=false mocha",
