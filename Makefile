@@ -131,10 +131,10 @@ build/quickjs-emscripten.tgz: dist
 	yarn pack --filename build/quickjs-emscripten.tgz
 
 emcc: scripts/emcc.sh
-	docker pull $(EMSDK_DOCKER_IMAGE)
+	# docker pull $(EMSDK_DOCKER_IMAGE)
 
 scripts/emcc.sh:
-	docker pull $(EMSDK_DOCKER_IMAGE)
+	# docker pull $(EMSDK_DOCKER_IMAGE)
 	touch scripts/emcc.sh
 
 examples/imports: downloadEcmaScriptModules.ts
