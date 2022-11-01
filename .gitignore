@@ -4,6 +4,7 @@ npm-error.log
 
 *.tsbuildinfo
 .vscode/*.log
+.*.sw[nop]
 
 /build
 /dist
