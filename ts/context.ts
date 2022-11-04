@@ -738,6 +738,11 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       return this.getNumber(handle)
     } else if (type === "undefined") {
       return undefined
+    } else if (type === "symbol") {
+      const propHd = this.getProp(handle, "description")
+      const desc = this.getString(propHd)
+      propHd.dispose()
+      return Symbol(desc)
     }
 
     const str = this.memory.consumeJSCharPointer(this.ffi.QTS_Dump(this.ctx.value, handle.value))

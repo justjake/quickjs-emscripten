@@ -82,6 +82,13 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     it("can round-trip null", () => {
       assert.strictEqual(vm.dump(vm.null), null)
     })
+
+    it("can round-trip Symbol", () => {
+      const symHd = vm.unwrapResult(vm.evalCode("Symbol(1)"))
+      const sym = vm.dump(symHd)
+      assert.strictEqual(typeof sym, "symbol")
+      assert.strictEqual(sym.toString(), "Symbol(1)")
+    })
   })
 
   describe("functions", () => {
