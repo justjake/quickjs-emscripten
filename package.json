@@ -1,7 +1,8 @@
 {
   "name": "quickjs-emscripten",
-  "version": "0.13.0",
-  "main": "dist/quickjs.js",
+  "version": "0.21.0",
+  "main": "dist/index.js",
+  "sideEffects": false,
   "license": "MIT",
   "keywords": [
     "eval",
@@ -18,39 +19,44 @@
     "url": "https://github.com/justjake/quickjs-emscripten"
   },
   "files": [
-    "dist/*.js",
-    "dist/*.ts",
-    "dist/*.map"
+    "c/interface.c",
+    "dist/**/*",
+    "!dist/*.test.js",
+    "!dist/*.tsbuildinfo"
   ],
   "scripts": {
-    "prepare": "yarn prepack && mocha ./dist/quickjs.test.js && yarn tarball && yarn smoketest-node",
-    "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:bellard/quickjs.git master",
-    "make-debug": "make DEBUG=1 -j 8",
-    "make-release": "make clean && make -j 8",
+    "prepack": "yarn build",
+    "tarball": "make build/quickjs-emscripten.tgz",
+    "prepare": "yarn prettier-check && yarn tarball && yarn test && yarn test-dist && yarn smoketest-node",
     "clean": "make clean",
-    "build": "tsc",
-    "doc": "typedoc --plugin typedoc-plugin-markdown ts",
-    "test": "yarn make-debug && mocha",
-    "prettier": "prettier --write ./*.json ./**/*.ts* ./*.js* ./*.md",
-    "prettier-check": "prettier --check ./*.json ./**/*.ts* ./*.js* ./*.md",
-    "run-n": "yarn make-debug && ./build/wrapper/native/test.exe",
-    "prepack": "yarn make-release && yarn build",
-    "tarball": "mkdir -p build && yarn pack --filename build/quickjs-emscripten.tgz",
-    "smoketest-node": "cd examples/typescript-smoketest && YARN_CHECKSUM_BEHAVIOR=update yarn add quickjs-emscripten@../../build/quickjs-emscripten.tgz && tsc --lib ES2015,dom index.ts && node index.js",
-    "smoketest-cra": "cd examples/website && YARN_CHECKSUM_BEHAVIOR=update yarn add quickjs-emscripten@../../build/quickjs-emscripten.tgz && yarn build"
+    "tsc": "node_modules/.bin/tsc",
+    "build": "make dist",
+    "doc": "typedoc",
+    "test": "TS_NODE_TYPE_CHECK=false mocha",
+    "test-dist": "cd dist && TS_NODE_TYPE_CHECK=false mocha --require source-map-support/register *.test.js",
+    "test-fast": "TS_NODE_TYPE_CHECK=false TEST_NO_ASYNC=true mocha",
+    "test-all": "TEST_LEAK=1 yarn test && yarn test-dist",
+    "prettier": "prettier --write .",
+    "prettier-check": "prettier --check .",
+    "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:bellard/quickjs.git master",
+    "smoketest-node": "yarn tarball && ./scripts/smoketest-node.sh",
+    "smoketest-cra": "yarn tarball && ./scripts/smoketest-website.sh"
   },
   "devDependencies": {
     "@types/emscripten": "^1.38.0",
+    "@types/fs-extra": "^9.0.13",
     "@types/mocha": "^5.2.7",
     "@types/node": "^13.1.4",
-    "embin-darwin": "1.39.19-4",
-    "embin-linux": "1.39.19-4",
+    "fs-extra": "^10.0.1",
+    "markserv": "^1.17.4",
     "mocha": "7.2.0",
-    "prettier": "^1.19.1",
+    "node-fetch-commonjs": "^3.1.1",
+    "prettier": "2.5.1",
     "source-map-support": "^0.5.16",
-    "ts-node": "^8.5.4",
-    "typedoc": "^0.15.8",
-    "typedoc-plugin-markdown": "^2.2.16",
-    "typescript": "^3.7.4"
+    "ts-node": "^10.7.0",
+    "typedoc": "^0.22.0",
+    "typedoc-plugin-inline-sources": "^1.0.1",
+    "typedoc-plugin-markdown": "^3.11.12",
+    "typescript": "^4.5.5"
   }
 }

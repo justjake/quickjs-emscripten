@@ -1,0 +1,45 @@
+{
+  "configurations": [
+    {
+      "name": "Mac",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/system/include/**",
+        "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/cache/sysroot/include/**",
+        "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/llvm/lib/clang/15.0.0/include/**",
+        "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/cache/sysroot/include/SDL",
+        "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/cache/sysroot/include/compat",
+        "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/llvm/lib/clang/15.0.0/include",
+        "/opt/homebrew/Cellar/emscripten/3.1.7/libexec/cache/sysroot/include"
+      ],
+      "defines": ["QTS_ASYNCIFY=1", "QTS_DEBUG_MODE=1", "__EMSCRIPTEN__=1"],
+      "macFrameworkPath": [
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+      ],
+      "compilerPath": "/usr/bin/clang",
+      "cStandard": "c17",
+      "cppStandard": "c++98",
+      "intelliSenseMode": "macos-clang-arm64",
+      "compilerArgs": [],
+      "mergeConfigurations": false,
+      "browse": {
+        "path": ["${workspaceFolder}/**"],
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "configurationProvider": "ms-vscode.makefile-tools"
+    },
+    {
+      "name": "Emscripten",
+      "includePath": ["${workspaceFolder}/**"],
+      "defines": [],
+      "macFrameworkPath": [
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+      ],
+      "compilerPath": "/opt/homebrew/bin/emcc",
+      "cStandard": "c17",
+      "cppStandard": "c++98",
+      "intelliSenseMode": "macos-clang-arm64"
+    }
+  ],
+  "version": 4
+}

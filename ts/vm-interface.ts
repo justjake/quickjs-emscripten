@@ -11,6 +11,14 @@ export type SuccessOrFail<S, F> =
       error: F
     }
 
+export function isSuccess<S, F>(successOrFail: SuccessOrFail<S, F>): successOrFail is { value: S } {
+  return "error" in successOrFail === false
+}
+
+export function isFail<S, F>(successOrFail: SuccessOrFail<S, F>): successOrFail is { error: F } {
+  return "error" in successOrFail === true
+}
+
 /**
  * Used as an optional for results of a Vm call.
  * `{ value: VmHandle } | { error: VmHandle }`.
@@ -66,7 +74,7 @@ export interface LowLevelJavascriptVm<VmHandle> {
   ): void
 
   callFunction(func: VmHandle, thisVal: VmHandle, ...args: VmHandle[]): VmCallResult<VmHandle>
-  evalCode(code: string): VmCallResult<VmHandle>
+  evalCode(code: string, filename?: string): VmCallResult<VmHandle>
 }
 
 /**

@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react'
-import './App.css'
-import { getQuickJS } from 'quickjs-emscripten'
+import React, { useEffect } from "react"
+import "./App.css"
+import { getQuickJS } from "quickjs-emscripten"
 
 function stringify(val: unknown) {
-  if (typeof val === 'undefined') {
-    return 'undefined'
+  if (typeof val === "undefined") {
+    return "undefined"
   }
 
   return JSON.stringify(val, undefined, 2)
@@ -22,10 +22,10 @@ function App() {
     const QuickJS = await getQuickJS()
     try {
       const result = QuickJS.evalCode(js)
-      console.log('eval result:', result)
+      console.log("eval result:", result)
       setEvalResult(result)
     } catch (err) {
-      console.log('eval error:', err)
+      console.log("eval error:", err)
       setEvalResult(err)
     }
   }, [js, setEvalResult])
@@ -46,16 +46,16 @@ function App() {
           <li>Expose host functions to the QuickJS runtime.</li>
         </ul>
         <p>
-          <a href="https://github.com/justjake/quickjs-emscripten">Github</a> -{' '}
-          <a href="https://github.com/justjake/quickjs-emscripten/blob/master/doc/globals.md">
+          <a href="https://github.com/justjake/quickjs-emscripten">Github</a> -{" "}
+          <a href="https://github.com/justjake/quickjs-emscripten/blob/main/doc/globals.md">
             Documentation
-          </a>{' '}
+          </a>{" "}
           - <a href="https://www.npmjs.com/package/quickjs-emscripten">NPM</a>
         </p>
         <h2>Eval JS code safely</h2>
         <label htmlFor="js">This code is evaluated in a QuickJS virtual machine:</label>
         <div>
-          <textarea id="js" value={js} onChange={e => setJs(e.target.value)} />
+          <textarea id="js" value={js} onChange={(e) => setJs(e.target.value)} />
         </div>
         <h3>Eval result:</h3>
         <pre>{stringify(evalResult)}</pre>
