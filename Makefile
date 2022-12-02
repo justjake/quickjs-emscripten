@@ -61,7 +61,7 @@ CFLAGS_WASM+=-s EXPORT_NAME=QuickJSRaw
 CFLAGS_WASM+=-s INVOKE_RUN=0
 CFLAGS_WASM+=-s ALLOW_MEMORY_GROWTH=1
 CFLAGS_WASM+=-s ALLOW_TABLE_GROWTH=1
-CFLAGS_WASM+=-s ENVIRONMENT=web
+# CFLAGS_WASM+=-s ENVIRONMENT=web
 
 # Empscripten options for asyncify variant
 # https://emscripten.org/docs/porting/asyncify.html
@@ -69,7 +69,7 @@ CFLAGS_WASM_ASYNCIFY+=-s ASYNCIFY=1
 CFLAGS_WASM_ASYNCIFY+=-DQTS_ASYNCIFY=1
 CFLAGS_WASM_ASYNCIFY+=-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json
 CFLAGS_WASM_ASYNCIFY+=-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json
-CFLAGS_WASM_ASYNCIFY+=-s ENVIRONMENT=web
+# CFLAGS_WASM_ASYNCIFY+=-s ENVIRONMENT=web
 GENERATE_TS_ENV_ASYNCIFY+=ASYNCIFY=true
 
 # Release options
@@ -133,10 +133,10 @@ build/quickjs-emscripten.tgz: dist
 	yarn pack --filename build/quickjs-emscripten.tgz
 
 emcc: scripts/emcc.sh
-	# docker pull $(EMSDK_DOCKER_IMAGE)
+	docker pull $(EMSDK_DOCKER_IMAGE)
 
 scripts/emcc.sh:
-	# docker pull $(EMSDK_DOCKER_IMAGE)
+	docker pull $(EMSDK_DOCKER_IMAGE)
 	touch scripts/emcc.sh
 
 examples/imports: downloadEcmaScriptModules.ts
