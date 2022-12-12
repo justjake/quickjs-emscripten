@@ -25,7 +25,6 @@
     "!dist/*.tsbuildinfo"
   ],
   "scripts": {
-    "prepack": "yarn build",
     "tarball": "make build/quickjs-emscripten.tgz",
     "clean": "make clean",
     "tsc": "node_modules/.bin/tsc",

@@ -1257,6 +1257,22 @@ static const JSClassExoticMethods js_proxy_exotic_methods;
 static const JSClassExoticMethods js_module_ns_exotic_methods;
 static JSClassID js_class_id_alloc = JS_CLASS_INIT_COUNT;
 
+
+uint32_t opcode_counter[256];
+
+void js_reset_opcode_counter() {
+    // TODO: move to memset
+    for (int i = 0; i < 256; i++) {
+        opcode_counter[i] = 0;
+    }
+}
+
+
+uint32_t* js_get_opcode_counter() {
+    return opcode_counter;
+}
+
+
 static void js_trigger_gc(JSRuntime *rt, size_t size)
 {
     BOOL force_gc;
@@ -16319,6 +16335,8 @@ static JSValue JS_CallInternal(JSContext *caller_ctx, JSValueConst func_obj,
     for(;;) {
         int call_argc;
         JSValue *call_argv;
+
+        opcode_counter[*pc]++;
 
         SWITCH(pc) {
         CASE(OP_push_i32):

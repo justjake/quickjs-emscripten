@@ -48,6 +48,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dcl/quickjs-emscripten@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@dcl/quickjs-emscripten@workspace:."
+  dependencies:
+    "@types/emscripten": ^1.38.0
+    "@types/fs-extra": ^9.0.13
+    "@types/mocha": ^5.2.7
+    "@types/node": ^13.1.4
+    fs-extra: ^10.0.1
+    markserv: ^1.17.4
+    mocha: 7.2.0
+    node-fetch-commonjs: ^3.1.1
+    prettier: 2.5.1
+    source-map-support: ^0.5.16
+    ts-node: ^10.7.0
+    typedoc: ^0.22.0
+    typedoc-plugin-inline-sources: ^1.0.1
+    typedoc-plugin-markdown: ^3.11.12
+    typescript: ^4.5.5
+  languageName: unknown
+  linkType: soft
+
 "@leichtgewicht/ip-codec@npm:^2.0.1":
   version: 2.0.3
   resolution: "@leichtgewicht/ip-codec@npm:2.0.3"
@@ -3670,28 +3692,6 @@ fsevents@~2.1.1:
   checksum: bea46e1abfaa07023e047d3cf1716a06172c4947886c053ede5c50321893711577cb6119360f810cc3ffcd70c4d7db4069c3cee876b358ceff8596e062bd1154
   languageName: node
   linkType: hard
-
-"quickjs-emscripten@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "quickjs-emscripten@workspace:."
-  dependencies:
-    "@types/emscripten": ^1.38.0
-    "@types/fs-extra": ^9.0.13
-    "@types/mocha": ^5.2.7
-    "@types/node": ^13.1.4
-    fs-extra: ^10.0.1
-    markserv: ^1.17.4
-    mocha: 7.2.0
-    node-fetch-commonjs: ^3.1.1
-    prettier: 2.5.1
-    source-map-support: ^0.5.16
-    ts-node: ^10.7.0
-    typedoc: ^0.22.0
-    typedoc-plugin-inline-sources: ^1.0.1
-    typedoc-plugin-markdown: ^3.11.12
-    typescript: ^4.5.5
-  languageName: unknown
-  linkType: soft
 
 "range-parser@npm:~1.2.1":
   version: 1.2.1

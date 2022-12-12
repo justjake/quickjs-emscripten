@@ -2,6 +2,7 @@
 
 Javascript/Typescript bindings for QuickJS, a modern Javascript interpreter,
 compiled to WebAssembly.
+
 - Safely evaluate untrusted Javascript (up to ES2020).
 - Create and manipulate values inside the QuickJS runtime ([more][values]).
 - Expose host functions to the QuickJS runtime ([more][functions]).
