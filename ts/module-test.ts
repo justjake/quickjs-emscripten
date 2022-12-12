@@ -18,7 +18,7 @@ import { Lifetime } from "./lifetime"
 export class TestQuickJSWASMModule implements Pick<QuickJSWASMModule, keyof QuickJSWASMModule> {
   contexts = new Set<QuickJSContext>()
   runtimes = new Set<QuickJSRuntime>()
-  constructor(private parent: QuickJSWASMModule) {}
+  constructor(private parent: QuickJSWASMModule) { }
 
   newRuntime(options?: RuntimeOptions): QuickJSRuntime {
     const runtime = this.parent.newRuntime({
@@ -79,5 +79,10 @@ export class TestQuickJSWASMModule implements Pick<QuickJSWASMModule, keyof Quic
   /** @private */
   getFFI() {
     return this.parent.getFFI()
+  }
+
+  /** @private */
+  getOpcodeInfo() {
+    return this.parent.getOpcodeInfo()
   }
 }
