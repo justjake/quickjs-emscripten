@@ -1260,7 +1260,7 @@ static JSClassID js_class_id_alloc = JS_CLASS_INIT_COUNT;
 
 uint32_t opcode_counter[256];
 
-static void js_reset_opcode_counter() {
+void js_reset_opcode_counter() {
     // TODO: move to memset
     for (int i = 0; i < 256; i++) {
         opcode_counter[i] = 0;
@@ -1268,7 +1268,7 @@ static void js_reset_opcode_counter() {
 }
 
 
-static uint32_t* js_get_opcode_counter() {
+uint32_t* js_get_opcode_counter() {
     return opcode_counter;
 }
 
