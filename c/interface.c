@@ -260,7 +260,13 @@ void QTS_FreeRuntime(JSRuntime *rt) {
 }
 
 JSContext *QTS_NewContext(JSRuntime *rt) {
-  return JS_NewContext(rt);
+  JSContext *ctx = JS_NewContext(rt);
+  // TODO: Enable math extensions conditinally.
+  JS_AddIntrinsicBigFloat(ctx);
+  JS_AddIntrinsicBigDecimal(ctx);
+  JS_AddIntrinsicOperators(ctx);
+  JS_EnableBignumExt(ctx, TRUE);
+  return ctx;
 }
 
 void QTS_FreeContext(JSContext *ctx) {
