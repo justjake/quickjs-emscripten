@@ -27,14 +27,336 @@ Module['ready'] = new Promise(function(resolve, reject) {
   readyPromiseResolve = resolve;
   readyPromiseReject = reject;
 });
-["_QTS_Throw","_QTS_NewError","_QTS_RuntimeSetMemoryLimit","_QTS_RuntimeComputeMemoryUsage","_QTS_RuntimeDumpMemoryUsage","_QTS_RecoverableLeakCheck","_QTS_BuildIsSanitizeLeak","_QTS_RuntimeSetMaxStackSize","_QTS_GetUndefined","_QTS_GetNull","_QTS_GetFalse","_QTS_GetTrue","_QTS_NewRuntime","_QTS_FreeRuntime","_QTS_NewContext","_QTS_FreeContext","_QTS_FreeValuePointer","_QTS_FreeValuePointerRuntime","_QTS_FreeVoidPointer","_QTS_FreeCString","_QTS_DupValuePointer","_QTS_NewObject","_QTS_NewObjectProto","_QTS_NewArray","_QTS_NewFloat64","_QTS_GetFloat64","_QTS_NewString","_QTS_GetString","_QTS_NewSymbol","_QTS_GetSymbolDescriptionOrKey","_QTS_IsGlobalSymbol","_QTS_IsJobPending","_QTS_ExecutePendingJob","_QTS_GetProp","_QTS_SetProp","_QTS_DefineProp","_QTS_Call","_QTS_ResolveException","_QTS_Dump","_QTS_Eval","_QTS_Typeof","_QTS_GetGlobalObject","_QTS_NewPromiseCapability","_QTS_TestStringArg","_QTS_BuildIsDebug","_QTS_BuildIsAsyncify","_QTS_NewFunction","_QTS_ArgvGetJSValueConstPointer","_QTS_RuntimeEnableInterruptHandler","_QTS_RuntimeDisableInterruptHandler","_QTS_RuntimeEnableModuleLoader","_QTS_RuntimeDisableModuleLoader","_malloc","_free","_fflush","onRuntimeInitialized"].forEach((prop) => {
-  if (!Object.getOwnPropertyDescriptor(Module['ready'], prop)) {
-    Object.defineProperty(Module['ready'], prop, {
-      get: () => abort('You are getting ' + prop + ' on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js'),
-      set: () => abort('You are setting ' + prop + ' on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js'),
-    });
-  }
-});
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_Throw')) {
+        Object.defineProperty(Module['ready'], '_QTS_Throw', { configurable: true, get: function() { abort('You are getting _QTS_Throw on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_Throw', { configurable: true, set: function() { abort('You are setting _QTS_Throw on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_NewError')) {
+        Object.defineProperty(Module['ready'], '_QTS_NewError', { configurable: true, get: function() { abort('You are getting _QTS_NewError on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_NewError', { configurable: true, set: function() { abort('You are setting _QTS_NewError on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_RuntimeSetMemoryLimit')) {
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeSetMemoryLimit', { configurable: true, get: function() { abort('You are getting _QTS_RuntimeSetMemoryLimit on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeSetMemoryLimit', { configurable: true, set: function() { abort('You are setting _QTS_RuntimeSetMemoryLimit on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_RuntimeComputeMemoryUsage')) {
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeComputeMemoryUsage', { configurable: true, get: function() { abort('You are getting _QTS_RuntimeComputeMemoryUsage on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeComputeMemoryUsage', { configurable: true, set: function() { abort('You are setting _QTS_RuntimeComputeMemoryUsage on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_RuntimeDumpMemoryUsage')) {
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeDumpMemoryUsage', { configurable: true, get: function() { abort('You are getting _QTS_RuntimeDumpMemoryUsage on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeDumpMemoryUsage', { configurable: true, set: function() { abort('You are setting _QTS_RuntimeDumpMemoryUsage on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_RecoverableLeakCheck')) {
+        Object.defineProperty(Module['ready'], '_QTS_RecoverableLeakCheck', { configurable: true, get: function() { abort('You are getting _QTS_RecoverableLeakCheck on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_RecoverableLeakCheck', { configurable: true, set: function() { abort('You are setting _QTS_RecoverableLeakCheck on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_BuildIsSanitizeLeak')) {
+        Object.defineProperty(Module['ready'], '_QTS_BuildIsSanitizeLeak', { configurable: true, get: function() { abort('You are getting _QTS_BuildIsSanitizeLeak on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_BuildIsSanitizeLeak', { configurable: true, set: function() { abort('You are setting _QTS_BuildIsSanitizeLeak on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_RuntimeSetMaxStackSize')) {
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeSetMaxStackSize', { configurable: true, get: function() { abort('You are getting _QTS_RuntimeSetMaxStackSize on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeSetMaxStackSize', { configurable: true, set: function() { abort('You are setting _QTS_RuntimeSetMaxStackSize on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_GetUndefined')) {
+        Object.defineProperty(Module['ready'], '_QTS_GetUndefined', { configurable: true, get: function() { abort('You are getting _QTS_GetUndefined on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_GetUndefined', { configurable: true, set: function() { abort('You are setting _QTS_GetUndefined on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_GetNull')) {
+        Object.defineProperty(Module['ready'], '_QTS_GetNull', { configurable: true, get: function() { abort('You are getting _QTS_GetNull on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_GetNull', { configurable: true, set: function() { abort('You are setting _QTS_GetNull on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_GetFalse')) {
+        Object.defineProperty(Module['ready'], '_QTS_GetFalse', { configurable: true, get: function() { abort('You are getting _QTS_GetFalse on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_GetFalse', { configurable: true, set: function() { abort('You are setting _QTS_GetFalse on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_GetTrue')) {
+        Object.defineProperty(Module['ready'], '_QTS_GetTrue', { configurable: true, get: function() { abort('You are getting _QTS_GetTrue on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_GetTrue', { configurable: true, set: function() { abort('You are setting _QTS_GetTrue on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_NewRuntime')) {
+        Object.defineProperty(Module['ready'], '_QTS_NewRuntime', { configurable: true, get: function() { abort('You are getting _QTS_NewRuntime on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_NewRuntime', { configurable: true, set: function() { abort('You are setting _QTS_NewRuntime on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_FreeRuntime')) {
+        Object.defineProperty(Module['ready'], '_QTS_FreeRuntime', { configurable: true, get: function() { abort('You are getting _QTS_FreeRuntime on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_FreeRuntime', { configurable: true, set: function() { abort('You are setting _QTS_FreeRuntime on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_NewContext')) {
+        Object.defineProperty(Module['ready'], '_QTS_NewContext', { configurable: true, get: function() { abort('You are getting _QTS_NewContext on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_NewContext', { configurable: true, set: function() { abort('You are setting _QTS_NewContext on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_ResetOpcodeCounter')) {
+        Object.defineProperty(Module['ready'], '_QTS_ResetOpcodeCounter', { configurable: true, get: function() { abort('You are getting _QTS_ResetOpcodeCounter on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_ResetOpcodeCounter', { configurable: true, set: function() { abort('You are setting _QTS_ResetOpcodeCounter on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_GetOpcodeCounter')) {
+        Object.defineProperty(Module['ready'], '_QTS_GetOpcodeCounter', { configurable: true, get: function() { abort('You are getting _QTS_GetOpcodeCounter on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_GetOpcodeCounter', { configurable: true, set: function() { abort('You are setting _QTS_GetOpcodeCounter on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_FreeContext')) {
+        Object.defineProperty(Module['ready'], '_QTS_FreeContext', { configurable: true, get: function() { abort('You are getting _QTS_FreeContext on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_FreeContext', { configurable: true, set: function() { abort('You are setting _QTS_FreeContext on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_FreeValuePointer')) {
+        Object.defineProperty(Module['ready'], '_QTS_FreeValuePointer', { configurable: true, get: function() { abort('You are getting _QTS_FreeValuePointer on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_FreeValuePointer', { configurable: true, set: function() { abort('You are setting _QTS_FreeValuePointer on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_FreeValuePointerRuntime')) {
+        Object.defineProperty(Module['ready'], '_QTS_FreeValuePointerRuntime', { configurable: true, get: function() { abort('You are getting _QTS_FreeValuePointerRuntime on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_FreeValuePointerRuntime', { configurable: true, set: function() { abort('You are setting _QTS_FreeValuePointerRuntime on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_FreeVoidPointer')) {
+        Object.defineProperty(Module['ready'], '_QTS_FreeVoidPointer', { configurable: true, get: function() { abort('You are getting _QTS_FreeVoidPointer on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_FreeVoidPointer', { configurable: true, set: function() { abort('You are setting _QTS_FreeVoidPointer on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_FreeCString')) {
+        Object.defineProperty(Module['ready'], '_QTS_FreeCString', { configurable: true, get: function() { abort('You are getting _QTS_FreeCString on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_FreeCString', { configurable: true, set: function() { abort('You are setting _QTS_FreeCString on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_DupValuePointer')) {
+        Object.defineProperty(Module['ready'], '_QTS_DupValuePointer', { configurable: true, get: function() { abort('You are getting _QTS_DupValuePointer on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_DupValuePointer', { configurable: true, set: function() { abort('You are setting _QTS_DupValuePointer on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_NewObject')) {
+        Object.defineProperty(Module['ready'], '_QTS_NewObject', { configurable: true, get: function() { abort('You are getting _QTS_NewObject on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_NewObject', { configurable: true, set: function() { abort('You are setting _QTS_NewObject on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_NewObjectProto')) {
+        Object.defineProperty(Module['ready'], '_QTS_NewObjectProto', { configurable: true, get: function() { abort('You are getting _QTS_NewObjectProto on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_NewObjectProto', { configurable: true, set: function() { abort('You are setting _QTS_NewObjectProto on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_NewArray')) {
+        Object.defineProperty(Module['ready'], '_QTS_NewArray', { configurable: true, get: function() { abort('You are getting _QTS_NewArray on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_NewArray', { configurable: true, set: function() { abort('You are setting _QTS_NewArray on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_NewFloat64')) {
+        Object.defineProperty(Module['ready'], '_QTS_NewFloat64', { configurable: true, get: function() { abort('You are getting _QTS_NewFloat64 on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_NewFloat64', { configurable: true, set: function() { abort('You are setting _QTS_NewFloat64 on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_GetFloat64')) {
+        Object.defineProperty(Module['ready'], '_QTS_GetFloat64', { configurable: true, get: function() { abort('You are getting _QTS_GetFloat64 on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_GetFloat64', { configurable: true, set: function() { abort('You are setting _QTS_GetFloat64 on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_NewString')) {
+        Object.defineProperty(Module['ready'], '_QTS_NewString', { configurable: true, get: function() { abort('You are getting _QTS_NewString on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_NewString', { configurable: true, set: function() { abort('You are setting _QTS_NewString on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_GetString')) {
+        Object.defineProperty(Module['ready'], '_QTS_GetString', { configurable: true, get: function() { abort('You are getting _QTS_GetString on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_GetString', { configurable: true, set: function() { abort('You are setting _QTS_GetString on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_IsJobPending')) {
+        Object.defineProperty(Module['ready'], '_QTS_IsJobPending', { configurable: true, get: function() { abort('You are getting _QTS_IsJobPending on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_IsJobPending', { configurable: true, set: function() { abort('You are setting _QTS_IsJobPending on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_ExecutePendingJob')) {
+        Object.defineProperty(Module['ready'], '_QTS_ExecutePendingJob', { configurable: true, get: function() { abort('You are getting _QTS_ExecutePendingJob on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_ExecutePendingJob', { configurable: true, set: function() { abort('You are setting _QTS_ExecutePendingJob on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_GetProp')) {
+        Object.defineProperty(Module['ready'], '_QTS_GetProp', { configurable: true, get: function() { abort('You are getting _QTS_GetProp on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_GetProp', { configurable: true, set: function() { abort('You are setting _QTS_GetProp on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_SetProp')) {
+        Object.defineProperty(Module['ready'], '_QTS_SetProp', { configurable: true, get: function() { abort('You are getting _QTS_SetProp on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_SetProp', { configurable: true, set: function() { abort('You are setting _QTS_SetProp on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_DefineProp')) {
+        Object.defineProperty(Module['ready'], '_QTS_DefineProp', { configurable: true, get: function() { abort('You are getting _QTS_DefineProp on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_DefineProp', { configurable: true, set: function() { abort('You are setting _QTS_DefineProp on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_Call')) {
+        Object.defineProperty(Module['ready'], '_QTS_Call', { configurable: true, get: function() { abort('You are getting _QTS_Call on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_Call', { configurable: true, set: function() { abort('You are setting _QTS_Call on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_ResolveException')) {
+        Object.defineProperty(Module['ready'], '_QTS_ResolveException', { configurable: true, get: function() { abort('You are getting _QTS_ResolveException on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_ResolveException', { configurable: true, set: function() { abort('You are setting _QTS_ResolveException on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_Dump')) {
+        Object.defineProperty(Module['ready'], '_QTS_Dump', { configurable: true, get: function() { abort('You are getting _QTS_Dump on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_Dump', { configurable: true, set: function() { abort('You are setting _QTS_Dump on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_Eval')) {
+        Object.defineProperty(Module['ready'], '_QTS_Eval', { configurable: true, get: function() { abort('You are getting _QTS_Eval on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_Eval', { configurable: true, set: function() { abort('You are setting _QTS_Eval on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_Typeof')) {
+        Object.defineProperty(Module['ready'], '_QTS_Typeof', { configurable: true, get: function() { abort('You are getting _QTS_Typeof on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_Typeof', { configurable: true, set: function() { abort('You are setting _QTS_Typeof on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_GetGlobalObject')) {
+        Object.defineProperty(Module['ready'], '_QTS_GetGlobalObject', { configurable: true, get: function() { abort('You are getting _QTS_GetGlobalObject on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_GetGlobalObject', { configurable: true, set: function() { abort('You are setting _QTS_GetGlobalObject on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_NewPromiseCapability')) {
+        Object.defineProperty(Module['ready'], '_QTS_NewPromiseCapability', { configurable: true, get: function() { abort('You are getting _QTS_NewPromiseCapability on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_NewPromiseCapability', { configurable: true, set: function() { abort('You are setting _QTS_NewPromiseCapability on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_TestStringArg')) {
+        Object.defineProperty(Module['ready'], '_QTS_TestStringArg', { configurable: true, get: function() { abort('You are getting _QTS_TestStringArg on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_TestStringArg', { configurable: true, set: function() { abort('You are setting _QTS_TestStringArg on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_BuildIsDebug')) {
+        Object.defineProperty(Module['ready'], '_QTS_BuildIsDebug', { configurable: true, get: function() { abort('You are getting _QTS_BuildIsDebug on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_BuildIsDebug', { configurable: true, set: function() { abort('You are setting _QTS_BuildIsDebug on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_BuildIsAsyncify')) {
+        Object.defineProperty(Module['ready'], '_QTS_BuildIsAsyncify', { configurable: true, get: function() { abort('You are getting _QTS_BuildIsAsyncify on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_BuildIsAsyncify', { configurable: true, set: function() { abort('You are setting _QTS_BuildIsAsyncify on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_NewFunction')) {
+        Object.defineProperty(Module['ready'], '_QTS_NewFunction', { configurable: true, get: function() { abort('You are getting _QTS_NewFunction on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_NewFunction', { configurable: true, set: function() { abort('You are setting _QTS_NewFunction on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_ArgvGetJSValueConstPointer')) {
+        Object.defineProperty(Module['ready'], '_QTS_ArgvGetJSValueConstPointer', { configurable: true, get: function() { abort('You are getting _QTS_ArgvGetJSValueConstPointer on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_ArgvGetJSValueConstPointer', { configurable: true, set: function() { abort('You are setting _QTS_ArgvGetJSValueConstPointer on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_RuntimeEnableInterruptHandler')) {
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeEnableInterruptHandler', { configurable: true, get: function() { abort('You are getting _QTS_RuntimeEnableInterruptHandler on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeEnableInterruptHandler', { configurable: true, set: function() { abort('You are setting _QTS_RuntimeEnableInterruptHandler on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_RuntimeDisableInterruptHandler')) {
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeDisableInterruptHandler', { configurable: true, get: function() { abort('You are getting _QTS_RuntimeDisableInterruptHandler on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeDisableInterruptHandler', { configurable: true, set: function() { abort('You are setting _QTS_RuntimeDisableInterruptHandler on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_RuntimeEnableModuleLoader')) {
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeEnableModuleLoader', { configurable: true, get: function() { abort('You are getting _QTS_RuntimeEnableModuleLoader on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeEnableModuleLoader', { configurable: true, set: function() { abort('You are setting _QTS_RuntimeEnableModuleLoader on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_RuntimeDisableModuleLoader')) {
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeDisableModuleLoader', { configurable: true, get: function() { abort('You are getting _QTS_RuntimeDisableModuleLoader on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_RuntimeDisableModuleLoader', { configurable: true, set: function() { abort('You are setting _QTS_RuntimeDisableModuleLoader on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_malloc')) {
+        Object.defineProperty(Module['ready'], '_malloc', { configurable: true, get: function() { abort('You are getting _malloc on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_malloc', { configurable: true, set: function() { abort('You are setting _malloc on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_free')) {
+        Object.defineProperty(Module['ready'], '_free', { configurable: true, get: function() { abort('You are getting _free on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_free', { configurable: true, set: function() { abort('You are setting _free on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '___stdio_exit')) {
+        Object.defineProperty(Module['ready'], '___stdio_exit', { configurable: true, get: function() { abort('You are getting ___stdio_exit on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '___stdio_exit', { configurable: true, set: function() { abort('You are setting ___stdio_exit on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], 'onRuntimeInitialized')) {
+        Object.defineProperty(Module['ready'], 'onRuntimeInitialized', { configurable: true, get: function() { abort('You are getting onRuntimeInitialized on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], 'onRuntimeInitialized', { configurable: true, set: function() { abort('You are setting onRuntimeInitialized on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
@@ -4772,6 +5094,12 @@ var _QTS_NewRuntime = Module["_QTS_NewRuntime"] = createExportWrapper("QTS_NewRu
 var _QTS_FreeRuntime = Module["_QTS_FreeRuntime"] = createExportWrapper("QTS_FreeRuntime");
 /** @type {function(...*):?} */
 var _QTS_NewContext = Module["_QTS_NewContext"] = createExportWrapper("QTS_NewContext");
+/** @type {function(...*):?} */
+var _QTS_ResetOpcodeCounter = Module["_QTS_ResetOpcodeCounter"] = createExportWrapper("QTS_ResetOpcodeCounter");
+
+/** @type {function(...*):?} */
+var _QTS_GetOpcodeCounter = Module["_QTS_GetOpcodeCounter"] = createExportWrapper("QTS_GetOpcodeCounter");
+
 /** @type {function(...*):?} */
 var _QTS_FreeContext = Module["_QTS_FreeContext"] = createExportWrapper("QTS_FreeContext");
 /** @type {function(...*):?} */

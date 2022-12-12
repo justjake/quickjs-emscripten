@@ -59,6 +59,12 @@ export class QuickJSAsyncFFI {
   QTS_NewContext: (rt: JSRuntimePointer) => JSContextPointer =
     this.module.cwrap("QTS_NewContext", "number", ["number"])
 
+  QTS_ResetOpcodeCounter: () => void =
+    this.module.cwrap("QTS_ResetOpcodeCounter", null, [])
+
+  QTS_GetOpcodeCounter: () => JSVoidPointer =
+    this.module.cwrap("QTS_GetOpcodeCounter", "number", [])
+
   QTS_FreeContext: (ctx: JSContextPointer) => void =
     this.module.cwrap("QTS_FreeContext", null, ["number"])
 
