@@ -24,6 +24,7 @@ import {
   RuntimeOptions,
   RuntimeOptionsBase,
 } from "./types"
+import { QuickJSOpcodeInfo } from "./opcodeinfo"
 
 type EmscriptenCallback<BaseArgs extends any[], Result> = (
   ...args: [Asyncify | undefined, ...BaseArgs]
@@ -322,12 +323,15 @@ export class QuickJSWASMModule {
   protected callbacks: QuickJSModuleCallbacks
   /** @private */
   protected module: EitherModule
+  /** @private */
+  protected opcodeInfo: QuickJSOpcodeInfo
 
   /** @private */
   constructor(module: EitherModule, ffi: EitherFFI) {
     this.module = module
     this.ffi = ffi
     this.callbacks = new QuickJSModuleCallbacks(module)
+    this.opcodeInfo = new QuickJSOpcodeInfo(module, ffi)
   }
 
   /**
@@ -428,5 +432,16 @@ export class QuickJSWASMModule {
    */
   getFFI(): EitherFFI {
     return this.ffi
+  }
+
+  /**
+   * Get a low-level interface to the QuickJS functions in this WebAssembly
+   * module.
+   * @experimental
+   * @unstable No warranty is provided with this API. It could change at any time.
+   * @private
+   */
+  getOpcodeInfo(): QuickJSOpcodeInfo {
+    return this.opcodeInfo
   }
 }

@@ -80,4 +80,9 @@ export class TestQuickJSWASMModule implements Pick<QuickJSWASMModule, keyof Quic
   getFFI() {
     return this.parent.getFFI()
   }
+
+  /** @private */
+  getOpcodeInfo() {
+    return this.parent.getOpcodeInfo()
+  }
 }
