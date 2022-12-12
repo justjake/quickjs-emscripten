@@ -378,6 +378,10 @@ void JS_AddIntrinsicOperators(JSContext *ctx);
 /* enable "use math" */
 void JS_EnableBignumExt(JSContext *ctx, JS_BOOL enable);
 
+static void js_reset_opcode_counter();
+static uint32_t* js_get_opcode_counter();
+
+
 JSValue js_string_codePointRange(JSContext *ctx, JSValueConst this_val,
                                  int argc, JSValueConst *argv);
 

@@ -263,6 +263,15 @@ JSContext *QTS_NewContext(JSRuntime *rt) {
   return JS_NewContext(rt);
 }
 
+void QTS_ResetOpcodeCounter() {
+  js_reset_opcode_counter();
+}
+
+JSVoid *QTS_GetOpcodeCounter() {
+    return js_get_opcode_counter();
+}
+
+
 void QTS_FreeContext(JSContext *ctx) {
   JS_FreeContext(ctx);
 }
