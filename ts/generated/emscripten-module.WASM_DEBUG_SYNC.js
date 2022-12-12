@@ -122,6 +122,18 @@ Module['ready'] = new Promise(function(resolve, reject) {
       }
     
 
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_ResetOpcodeCounter')) {
+        Object.defineProperty(Module['ready'], '_QTS_ResetOpcodeCounter', { configurable: true, get: function() { abort('You are getting _QTS_ResetOpcodeCounter on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_ResetOpcodeCounter', { configurable: true, set: function() { abort('You are setting _QTS_ResetOpcodeCounter on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_GetOpcodeCounter')) {
+        Object.defineProperty(Module['ready'], '_QTS_GetOpcodeCounter', { configurable: true, get: function() { abort('You are getting _QTS_GetOpcodeCounter on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_QTS_GetOpcodeCounter', { configurable: true, set: function() { abort('You are setting _QTS_GetOpcodeCounter on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
       if (!Object.getOwnPropertyDescriptor(Module['ready'], '_QTS_FreeContext')) {
         Object.defineProperty(Module['ready'], '_QTS_FreeContext', { configurable: true, get: function() { abort('You are getting _QTS_FreeContext on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
         Object.defineProperty(Module['ready'], '_QTS_FreeContext', { configurable: true, set: function() { abort('You are setting _QTS_FreeContext on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
@@ -2359,8 +2371,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  114190: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['LSAN_OPTIONS'] || 0); });},  
- 114287: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
+  113790: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['LSAN_OPTIONS'] || 0); });},  
+ 113887: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
 };
 function qts_host_call_function(ctx,this_ptr,argc,argv,magic_func_id){ const asyncify = undefined; return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id); }
 function qts_host_interrupt_handler(rt){ const asyncify = undefined; return Module['callbacks']['shouldInterrupt'](asyncify, rt); }
@@ -5578,6 +5590,12 @@ var _QTS_FreeRuntime = Module["_QTS_FreeRuntime"] = createExportWrapper("QTS_Fre
 
 /** @type {function(...*):?} */
 var _QTS_NewContext = Module["_QTS_NewContext"] = createExportWrapper("QTS_NewContext");
+
+/** @type {function(...*):?} */
+var _QTS_ResetOpcodeCounter = Module["_QTS_ResetOpcodeCounter"] = createExportWrapper("QTS_ResetOpcodeCounter");
+
+/** @type {function(...*):?} */
+var _QTS_GetOpcodeCounter = Module["_QTS_GetOpcodeCounter"] = createExportWrapper("QTS_GetOpcodeCounter");
 
 /** @type {function(...*):?} */
 var _QTS_FreeContext = Module["_QTS_FreeContext"] = createExportWrapper("QTS_FreeContext");
