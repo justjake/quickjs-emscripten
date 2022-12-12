@@ -78,10 +78,6 @@ export async function newQuickJSWASMModule(
   wasmModule.type = "sync"
   const ffi = new QuickJSFFI(wasmModule)
 
-  // call once to compile it
-  ffi.QTS_ResetOpcodeCounter()
-  ffi.QTS_GetOpcodeCounter()
-
   return new QuickJSWASMModule(wasmModule, ffi)
 }
 

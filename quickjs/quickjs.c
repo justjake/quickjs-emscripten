@@ -1258,17 +1258,14 @@ static const JSClassExoticMethods js_module_ns_exotic_methods;
 static JSClassID js_class_id_alloc = JS_CLASS_INIT_COUNT;
 
 
-uint32_t opcode_counter[256];
+uint64_t opcode_counter[256];
 
 void js_reset_opcode_counter() {
-    // TODO: move to memset
-    for (int i = 0; i < 256; i++) {
-        opcode_counter[i] = 0;
-    }
+    memset(opcode_counter, 0, 256 * 8);
 }
 
 
-uint32_t* js_get_opcode_counter() {
+uint64_t* js_get_opcode_counter() {
     return opcode_counter;
 }
 
