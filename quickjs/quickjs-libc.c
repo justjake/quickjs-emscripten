@@ -721,7 +721,7 @@ static JSValue js_std_gc(JSContext *ctx, JSValueConst this_val,
     return JS_UNDEFINED;
 }
 
-static int interrupt_handler(JSRuntime *rt, void *opaque)
+static int interrupt_handler(JSRuntime *rt, JSContext *ctx, void *opaque)
 {
     return (os_pending_signals >> SIGINT) & 1;
 }

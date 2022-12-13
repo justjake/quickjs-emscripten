@@ -597,20 +597,20 @@ JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
 // --------------------
 // interrupt: C -> Host
 #ifdef __EMSCRIPTEN__
-EM_JS(int, qts_host_interrupt_handler, (JSRuntime * rt), {
+EM_JS(int, qts_host_interrupt_handler, (JSRuntime * rt, JSContext *ctx), {
   // Async not supported here.
   // #ifdef QTS_ASYNCIFY
   //   const asyncify = Asyncify;
   // #else
   const asyncify = undefined;
   // #endif
-  return Module['callbacks']['shouldInterrupt'](asyncify, rt);
+  return Module['callbacks']['shouldInterrupt'](asyncify, rt, ctx);
 });
 #endif
 
 // interrupt: QuickJS -> C
-int qts_interrupt_handler(JSRuntime *rt, void *_unused) {
-  return qts_host_interrupt_handler(rt);
+int qts_interrupt_handler(JSRuntime *rt, JSContext *ctx, void *_unused) {
+  return qts_host_interrupt_handler(rt, ctx);
 }
 
 // interrupt: Host -> QuickJS

@@ -147,7 +147,8 @@ export interface EmscriptenModuleCallbacks {
 
   shouldInterrupt: (
     asyncify: Asyncify | undefined,
-    rt: JSRuntimePointer
+    rt: JSRuntimePointer,
+    ctx: JSContextPointer,
   ) => 0 | 1 | AsyncifySleepResult<0 | 1>
 }
 

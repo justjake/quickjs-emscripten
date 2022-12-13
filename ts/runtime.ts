@@ -30,7 +30,7 @@ import { SuccessOrFail } from "./vm-interface"
  * @returns `true` to interrupt JS execution inside the VM.
  * @returns `false` or `undefined` to continue JS execution inside the VM.
  */
-export type InterruptHandler = (runtime: QuickJSRuntime) => boolean | undefined
+export type InterruptHandler = (runtime: QuickJSRuntime, context?: QuickJSContext) => boolean | undefined
 
 /**
  * Used as an optional for the results of executing pendingJobs.
@@ -340,17 +340,19 @@ export class QuickJSRuntime implements Disposable {
   }
 
   private cToHostCallbacks: RuntimeCallbacks = {
-    shouldInterrupt: (rt) => {
+    shouldInterrupt: (rt, ctx) => {
       if (rt !== this.rt.value) {
         throw new Error("QuickJSContext instance received C -> JS interrupt with mismatched rt")
       }
+
+      const context = this.contextMap.get(ctx)
 
       const fn = this.interruptHandler
       if (!fn) {
         throw new Error("QuickJSContext had no interrupt handler")
       }
 
-      return fn(this) ? 1 : 0
+      return fn(this, context) ? 1 : 0
     },
 
     loadModuleSource: maybeAsyncFn(this, function* (awaited, rt, ctx, moduleName) {
