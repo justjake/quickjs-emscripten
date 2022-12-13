@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.21.1
+
+- [#66](https://github.com/justjake/quickjs-emscripten/pull/66) (thanks to @BickelLukas) fixes `ReferenceError` when running in browser due to `global.process`
+
 ## v0.21.0
 
 - [#61](https://github.com/justjake/quickjs-emscripten/pull/61) (thanks to @torywheelwright):
