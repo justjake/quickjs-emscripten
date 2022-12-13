@@ -747,6 +747,9 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
 function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
   let vm: QuickJSAsyncContext = undefined as any
+  let testId = 0
+
+  const getTestId = () => `test-${getContext.name}-${testId}`
 
   beforeEach(async () => {
     vm = await getContext()
@@ -907,6 +910,95 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
         NORMALIZED_NAME,
         "loader received the normalized name we returned"
       )
+    })
+  })
+
+  describe("interrupt handler", () => {
+    it("is called with the expected VM", async () => {
+      let calls = 0
+      const interruptId = getTestId()
+      const interruptHandler: InterruptHandler = (interruptVm) => {
+        assert.strictEqual(
+          interruptVm,
+          vm.runtime,
+          "ShouldInterruptHandler callback runtime is the runtime"
+        )
+        debugLog("interruptHandler called", interruptId)
+        calls++
+        return false
+      }
+
+      debugLog("setInterruptHandler", interruptId)
+      vm.runtime.setInterruptHandler(interruptHandler)
+      const result = await vm.evalCodeAsync("1 + 1")
+      vm.unwrapResult(result).dispose()
+
+      assert(calls > 0, "interruptHandler called at least once")
+    })
+
+    it("is called regularly as the code executes", async () => {
+      let calls = 0
+      const interruptId = getTestId()
+      const interruptHandler: InterruptHandler = (interruptVm) => {
+        assert.strictEqual(
+          interruptVm,
+          vm.runtime,
+          "ShouldInterruptHandler callback runtime is the runtime"
+        )
+        debugLog("interruptHandler called", interruptId)
+        calls++
+        return false
+      }
+
+      debugLog("setInterruptHandler", interruptId)
+
+      const delayUtil = (ms = 0): Promise<void> => {
+        return new Promise<void>((resolve, _reject) => {
+          const setTimeoutHandle = setTimeout(() => {
+            clearTimeout(setTimeoutHandle)
+            return resolve()
+          }, ms)
+        })
+      }
+
+      const delayFunc = vm.newFunction('$delay', (ms) => {
+        const delayMs = vm.getNumber(ms) ?? 0
+        const deferred = vm.newPromise()
+        delayUtil(delayMs).then(
+          (_) => {
+            deferred.resolve()
+            while (vm.runtime.hasPendingJob()) {
+              vm.runtime.executePendingJobs()
+            }
+          },
+          (err) => deferred.reject(err)
+        )
+        return deferred.handle
+      })
+
+      delayFunc.consume((f) => vm.setProp(vm.global, '$delay', f))
+
+      const deferred: QuickJSDeferredPromise = vm.newPromise()
+      const asyncDone = vm.newFunction('done', (err, results) => {
+        if (err) {
+          deferred.reject(err)
+        } else {
+          deferred.resolve(results)
+        }
+        return deferred.handle
+      })
+
+      asyncDone.consume((f) => vm.setProp(vm.global, 'done', f))
+
+      vm.runtime.setInterruptHandler(interruptHandler)
+      const result = await vm.evalCodeAsync("$delay(3000).then((_, err) => done(err, _))")
+      while (vm.runtime.hasPendingJob()) {
+        vm.runtime.executePendingJobs()
+      }
+      await deferred.settled
+      vm.unwrapResult(result).dispose()
+
+      assert(calls > 1, `interruptHandler called ${calls} time(s)`)
     })
   })
 }
