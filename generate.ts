@@ -237,8 +237,8 @@ function buildSyncSymbols(matches: RegExpMatchArray[]) {
   return filtered.map((fn) => "_" + fn.functionName)
 }
 
-// Input: EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint16_t magic_func_id), {
-// Match: MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint16_t magic_func_id)
+// Input: EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint32_t magic_func_id), {
+// Match: MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint32_t magic_func_id)
 function buildAsyncifySymbols(matches: RegExpMatchArray[]) {
   const parsed = matches.map((match) => {
     const [, contents] = match

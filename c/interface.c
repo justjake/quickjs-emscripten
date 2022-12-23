@@ -552,7 +552,7 @@ int QTS_BuildIsAsyncify() {
 // -------------------
 // function: C -> Host
 #ifdef __EMSCRIPTEN__
-EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint16_t magic_func_id), {
+EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint32_t magic_func_id), {
 #ifdef QTS_ASYNCIFY
   const asyncify = {['handleSleep'] : Asyncify.handleSleep};
 #else
@@ -563,7 +563,7 @@ EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueCo
 #endif
 
 // Function: QuickJS -> C
-JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, uint16_t magic) {
+JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, uint32_t magic) {
   JSValue *result_ptr = qts_host_call_function(ctx, &this_val, argc, argv, magic);
   if (result_ptr == NULL) {
     return JS_UNDEFINED;

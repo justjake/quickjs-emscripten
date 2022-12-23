@@ -151,26 +151,42 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       fnHandle.dispose()
     })
 
-    it.only("can handle 32768 functions being registered", () => {
-      for (let i = 0; i < 32767; i++) {
-        const fnHandle = vm.newFunction(`__func-${i}`, () => {
-          return vm.undefined
-        })
-        vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined)).dispose()
-        fnHandle.dispose()
- 
-      }
-      // error?
-      console.log('Reached 32767')
-      // assert good
-      const fnHandle = vm.newFunction(`__func-${32768}`, () => {
-        return vm.undefined
-      })
-      vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined)).dispose()
-      fnHandle.dispose()
-      // expect error
-    })
+    it.only("can handle up to 24-bit max int functions being registered", function (done) {
+      // FuncID is a uint32_t but fnMap is a Map, which has a limit a 2^24 keys
+      // https://stackoverflow.com/a/54466812/2212650
 
+      this.timeout(600000) // we need a LONG time to register 2^24 + 1 functions
+
+      for (let i = 0; i < Math.pow(2, 24); i++) {
+        const funcID = i
+        const fnHandle = vm.newFunction(`__func-${i}`, () => {
+          return vm.newNumber(funcID)
+        })
+        const res = vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined))
+        let calledFuncID: number
+        if (i % Math.pow(1024, 2) === 0) {
+          // spot check every 1024 funcs
+          calledFuncID = vm.dump(res)
+          assert(calledFuncID === i)
+        }
+        res.dispose()
+        fnHandle.dispose()
+      }
+      
+      try {
+        const overMax = Math.pow(2,24) + 1
+        const fnHandle = vm.newFunction(`__func-${overMax}`, () => {
+          return vm.newNumber(overMax)
+        }).dispose()
+        
+        assert(false, 'Set too many functions')
+        done('Expected to throw range error')
+      } catch(e: any) {
+        assert(e != null)
+        return done()
+      }
+ 
+    })
   })
 
   describe("properties", () => {
@@ -939,42 +955,42 @@ describe.only("QuickJSContext", function () {
     contextTests.call(this, getContext)
   })
 
-  describe("DEBUG sync module", function () {
-    const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
-    const getContext = () => loader().then((mod) => mod.newContext())
-    contextTests.call(this, getContext)
-  })
+  // describe("DEBUG sync module", function () {
+  //   const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
+  //   const getContext = () => loader().then((mod) => mod.newContext())
+  //   contextTests.call(this, getContext)
+  // })
 })
 
-if (!TEST_NO_ASYNC) {
-  describe("QuickJSAsyncContext", () => {
-    describe("newQuickJSAsyncWASMModule", function () {
-      const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule())
-      const getContext = () => loader().then((mod) => mod.newContext())
+// if (!TEST_NO_ASYNC) {
+//   describe("QuickJSAsyncContext", () => {
+//     describe("newQuickJSAsyncWASMModule", function () {
+//       const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule())
+//       const getContext = () => loader().then((mod) => mod.newContext())
 
-      describe("sync API", () => {
-        contextTests(getContext)
-      })
+//       describe("sync API", () => {
+//         contextTests(getContext)
+//       })
 
-      describe("async API", () => {
-        asyncContextTests(getContext)
-      })
-    })
+//       describe("async API", () => {
+//         asyncContextTests(getContext)
+//       })
+//     })
 
-    describe("DEBUG async module", function () {
-      const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule(DEBUG_ASYNC))
-      const getContext = () => loader().then((mod) => mod.newContext())
+//     describe("DEBUG async module", function () {
+//       const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule(DEBUG_ASYNC))
+//       const getContext = () => loader().then((mod) => mod.newContext())
 
-      describe("sync API", () => {
-        contextTests(getContext)
-      })
+//       describe("sync API", () => {
+//         contextTests(getContext)
+//       })
 
-      describe("async API", () => {
-        asyncContextTests(getContext)
-      })
-    })
-  })
-}
+//       describe("async API", () => {
+//         asyncContextTests(getContext)
+//       })
+//     })
+//   })
+// }
 
 // TODO: test newRuntime
 // TODO: test newAsyncRuntime
