@@ -161,7 +161,7 @@ export class QuickJSAsyncFFI {
   QTS_BuildIsAsyncify: () => number =
     this.module.cwrap("QTS_BuildIsAsyncify", "number", [])
 
-  QTS_NewFunction: (ctx: JSContextPointer, func_id: number, name: string) => JSValuePointer =
+  QTS_NewFunction: (ctx: JSContextPointer, func_id: uint32_t, name: string) => JSValuePointer =
     this.module.cwrap("QTS_NewFunction", "number", ["number","number","string"])
 
   QTS_ArgvGetJSValueConstPointer: (argv: JSValuePointer | JSValueConstPointer, index: number) => JSValueConstPointer =

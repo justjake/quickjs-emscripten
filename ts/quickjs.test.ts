@@ -13,7 +13,7 @@ import {
 import { it, describe } from "mocha"
 import assert from "assert"
 import { isFail, VmCallResult } from "./vm-interface"
-import fs from "fs"
+import fs, { chmod } from "fs"
 import { QuickJSContext } from "./context"
 import { QuickJSAsyncContext } from "./context-asyncify"
 import { DEBUG_ASYNC, DEBUG_SYNC, memoizePromiseFactory, QuickJSFFI } from "./variants"
@@ -84,7 +84,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     })
   })
 
-  describe("functions", () => {
+  describe.only("functions", () => {
     it("can wrap a Javascript function and call it", () => {
       const some = 9
       const fnHandle = vm.newFunction("addSome", (num) => {
@@ -150,7 +150,6 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
       fnHandle.dispose()
     })
-
 
     it.only("can handle 32768 functions being registered", () => {
       for (let i = 0; i < 32767; i++) {
@@ -933,8 +932,8 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
   })
 }
 
-describe("QuickJSContext", function () {
-  describe("QuickJS.newContext", function () {
+describe.only("QuickJSContext", function () {
+  describe.only("QuickJS.newContext", function () {
     const loader = getQuickJS
     const getContext = () => loader().then((mod) => mod.newContext())
     contextTests.call(this, getContext)
