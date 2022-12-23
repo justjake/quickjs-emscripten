@@ -799,7 +799,9 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
 
       const fn = this.fnMap.get(fn_id)
       if (!fn) {
-        throw new Error(`QuickJSContext had no callback with id ${fn_id}`)
+        console.error('Could not find function', fn_id)
+        process.exit(1)
+        // throw new Error(`QuickJSContext had no callback with id ${fn_id}`)
       }
 
       return Scope.withScopeMaybeAsync(this, function* (awaited, scope) {

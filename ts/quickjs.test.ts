@@ -150,6 +150,28 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
 
       fnHandle.dispose()
     })
+
+
+    it.only("can handle 32768 functions being registered", () => {
+      for (let i = 0; i < 32767; i++) {
+        const fnHandle = vm.newFunction(`__func-${i}`, () => {
+          return vm.undefined
+        })
+        vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined)).dispose()
+        fnHandle.dispose()
+ 
+      }
+      // error?
+      console.log('Reached 32767')
+      // assert good
+      const fnHandle = vm.newFunction(`__func-${32768}`, () => {
+        return vm.undefined
+      })
+      vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined)).dispose()
+      fnHandle.dispose()
+      // expect error
+    })
+
   })
 
   describe("properties", () => {
