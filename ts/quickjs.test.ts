@@ -151,7 +151,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       fnHandle.dispose()
     })
 
-    it.only("can handle more than signed int max functions being registered", function (done) {
+    it("can handle more than signed int max functions being registered", function (done) {
       // test for unsigned func_id impl
       this.timeout(30000) // we need more time to register 2^16 functions
 

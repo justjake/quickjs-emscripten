@@ -784,7 +784,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   }
 
   /** @private */
-  protected fnNextId = 0
+  protected fnNextId = -32768 // min value of signed 16bit int used by Quickjs
   /** @private */
   protected fnMaps = new Map<number, Map<number, VmFunctionImplementation<QuickJSHandle>>>()
 
