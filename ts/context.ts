@@ -412,8 +412,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    */
   newFunction(name: string, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
     const fnId = ++this.fnNextId
-    // If fnID > 16777218 (24-bit max int) the map will error with too many keys
-    this.fnMap.set(fnId, fn)
+    this.setFunction(fnId, fn)
     return this.memory.heapValueHandle(this.ffi.QTS_NewFunction(this.ctx.value, fnId, name))
   }
 
@@ -787,7 +786,28 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   /** @private */
   protected fnNextId = 0
   /** @private */
-  protected fnMap = new Map<number, VmFunctionImplementation<QuickJSHandle>>()
+  protected fnMaps = new Map<number, Map<number, VmFunctionImplementation<QuickJSHandle>>>()
+
+  /** @private */
+  protected getFunction(fn_id: number): VmFunctionImplementation<QuickJSHandle> | undefined {
+    const map_id = fn_id >> 8
+    const fnMap = this.fnMaps.get(map_id)
+    if (!fnMap) {
+      return undefined
+    }
+    return fnMap.get(fn_id)
+  }
+
+    /** @private */
+    protected setFunction(fn_id: number, handle: VmFunctionImplementation<QuickJSHandle>) {
+      const map_id = fn_id >> 8
+      let fnMap = this.fnMaps.get(map_id)
+      if (!fnMap) {
+        fnMap = new Map<number, VmFunctionImplementation<QuickJSHandle>>()
+        this.fnMaps.set(map_id, fnMap)
+      }
+      return fnMap.set(fn_id, handle)
+    }
 
   /**
    * @hidden
@@ -798,7 +818,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
         throw new Error("QuickJSContext instance received C -> JS call with mismatched ctx")
       }
 
-      const fn = this.fnMap.get(fn_id)
+      const fn = this.getFunction(fn_id)
       if (!fn) {
         // this "throw" is not catch-able from the TS side. could we somehow handle this higher up?
         throw new Error(`QuickJSContext had no callback with id ${fn_id}`)
