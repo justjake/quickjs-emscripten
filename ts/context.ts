@@ -800,9 +800,8 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
 
       const fn = this.fnMap.get(fn_id)
       if (!fn) {
-        console.error('Could not find function', fn_id)
-        process.exit(1)
-        // throw new Error(`QuickJSContext had no callback with id ${fn_id}`)
+        // this "throw" is not catch-able from the TS side. could we somehow handle this higher up?
+        throw new Error(`QuickJSContext had no callback with id ${fn_id}`)
       }
 
       return Scope.withScopeMaybeAsync(this, function* (awaited, scope) {
