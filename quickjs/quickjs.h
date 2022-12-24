@@ -309,8 +309,8 @@ static inline JS_BOOL JS_VALUE_IS_NAN(JSValue v)
 #define JS_EVAL_FLAG_BACKTRACE_BARRIER (1 << 6)
 
 typedef JSValue JSCFunction(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
-typedef JSValue JSCFunctionMagic(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, uint32_t magic);
-typedef JSValue JSCFunctionData(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, uint32_t magic, JSValue *func_data);
+typedef JSValue JSCFunctionMagic(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic);
+typedef JSValue JSCFunctionData(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic, JSValue *func_data);
 
 typedef struct JSMallocState {
     size_t malloc_count;
@@ -924,25 +924,25 @@ typedef enum JSCFunctionEnum {  /* XXX: should rename for namespace isolation */
 
 typedef union JSCFunctionType {
     JSCFunction *generic;
-    JSValue (*generic_magic)(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, uint32_t magic);
+    JSValue (*generic_magic)(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic);
     JSCFunction *constructor;
-    JSValue (*constructor_magic)(JSContext *ctx, JSValueConst new_target, int argc, JSValueConst *argv, uint32_t magic);
+    JSValue (*constructor_magic)(JSContext *ctx, JSValueConst new_target, int argc, JSValueConst *argv, int magic);
     JSCFunction *constructor_or_func;
     double (*f_f)(double);
     double (*f_f_f)(double, double);
     JSValue (*getter)(JSContext *ctx, JSValueConst this_val);
     JSValue (*setter)(JSContext *ctx, JSValueConst this_val, JSValueConst val);
-    JSValue (*getter_magic)(JSContext *ctx, JSValueConst this_val, uint32_t magic);
-    JSValue (*setter_magic)(JSContext *ctx, JSValueConst this_val, JSValueConst val, uint32_t magic);
+    JSValue (*getter_magic)(JSContext *ctx, JSValueConst this_val, int magic);
+    JSValue (*setter_magic)(JSContext *ctx, JSValueConst this_val, JSValueConst val, int magic);
     JSValue (*iterator_next)(JSContext *ctx, JSValueConst this_val,
-                             int argc, JSValueConst *argv, int *pdone, uint32_t magic);
+                             int argc, JSValueConst *argv, int *pdone, int magic);
 } JSCFunctionType;
 
 JSValue JS_NewCFunction2(JSContext *ctx, JSCFunction *func,
                          const char *name,
-                         int length, JSCFunctionEnum cproto, uint32_t magic);
+                         int length, JSCFunctionEnum cproto, int magic);
 JSValue JS_NewCFunctionData(JSContext *ctx, JSCFunctionData *func,
-                            int length, uint32_t magic, int data_len,
+                            int length, int magic, int data_len,
                             JSValueConst *data);
 
 static inline JSValue JS_NewCFunction(JSContext *ctx, JSCFunction *func, const char *name,
@@ -953,7 +953,7 @@ static inline JSValue JS_NewCFunction(JSContext *ctx, JSCFunction *func, const c
 
 static inline JSValue JS_NewCFunctionMagic(JSContext *ctx, JSCFunctionMagic *func,
                                            const char *name,
-                                           int length, JSCFunctionEnum cproto, uint32_t magic)
+                                           int length, JSCFunctionEnum cproto, int magic)
 {
     return JS_NewCFunction2(ctx, (JSCFunction *)func, name, length, cproto, magic);
 }

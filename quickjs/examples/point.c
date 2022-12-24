@@ -74,7 +74,7 @@ static JSValue js_point_ctor(JSContext *ctx,
     return JS_EXCEPTION;
 }
 
-static JSValue js_point_get_xy(JSContext *ctx, JSValueConst this_val, uint32_t magic)
+static JSValue js_point_get_xy(JSContext *ctx, JSValueConst this_val, int magic)
 {
     JSPointData *s = JS_GetOpaque2(ctx, this_val, js_point_class_id);
     if (!s)
@@ -85,7 +85,7 @@ static JSValue js_point_get_xy(JSContext *ctx, JSValueConst this_val, uint32_t m
         return JS_NewInt32(ctx, s->y);
 }
 
-static JSValue js_point_set_xy(JSContext *ctx, JSValueConst this_val, JSValue val, uint32_t magic)
+static JSValue js_point_set_xy(JSContext *ctx, JSValueConst this_val, JSValue val, int magic)
 {
     JSPointData *s = JS_GetOpaque2(ctx, this_val, js_point_class_id);
     int v;

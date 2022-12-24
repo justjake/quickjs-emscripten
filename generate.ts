@@ -135,7 +135,7 @@ function cTypeToTypescriptType(ctype: string): ParsedType {
   if (type === "void") {
     ffi = null
   }
-  if (type === "double" || type === "int" || type === "size_t") {
+  if (type === "double" || type === "int" || type === "size_t" || type === "uint16_t" || type === "uint32_t") {
     ffi = "number"
     typescript = "number"
   }
@@ -312,7 +312,7 @@ export function matchAll(regexp: RegExp, text: string) {
   // We're using .exec, which mutates the regexp by setting the .lastIndex
   const initialLastIndex = regexp.lastIndex
   const result: RegExpExecArray[] = []
-  let match = null
+  let match: RegExpExecArray | null = null
   while ((match = regexp.exec(text)) !== null) {
     result.push(match)
   }

@@ -1007,7 +1007,7 @@ static FILE *js_std_file_get(JSContext *ctx, JSValueConst obj)
 }
 
 static JSValue js_std_file_puts(JSContext *ctx, JSValueConst this_val,
-                                int argc, JSValueConst *argv, uint32_t magic)
+                                int argc, JSValueConst *argv, int magic)
 {
     FILE *f;
     int i;
@@ -1146,7 +1146,7 @@ static JSValue js_std_file_fileno(JSContext *ctx, JSValueConst this_val,
 }
 
 static JSValue js_std_file_read_write(JSContext *ctx, JSValueConst this_val,
-                                      int argc, JSValueConst *argv, uint32_t magic)
+                                      int argc, JSValueConst *argv, int magic)
 {
     FILE *f = js_std_file_get(ctx, this_val);
     uint64_t pos, len;
@@ -1631,7 +1631,7 @@ static JSValue js_os_seek(JSContext *ctx, JSValueConst this_val,
 }
 
 static JSValue js_os_read_write(JSContext *ctx, JSValueConst this_val,
-                                      int argc, JSValueConst *argv, uint32_t magic)
+                                      int argc, JSValueConst *argv, int magic)
 {
     int fd;
     uint64_t pos, len;
@@ -1847,7 +1847,7 @@ static void free_rw_handler(JSRuntime *rt, JSOSRWHandler *rh)
 }
 
 static JSValue js_os_setReadHandler(JSContext *ctx, JSValueConst this_val,
-                                    int argc, JSValueConst *argv, uint32_t magic)
+                                    int argc, JSValueConst *argv, int magic)
 {
     JSRuntime *rt = JS_GetRuntime(ctx);
     JSThreadState *ts = JS_GetRuntimeOpaque(rt);
