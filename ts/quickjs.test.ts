@@ -84,7 +84,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     })
   })
 
-  describe.only("functions", () => {
+  describe("functions", () => {
     it("can wrap a Javascript function and call it", () => {
       const some = 9
       const fnHandle = vm.newFunction("addSome", (num) => {
@@ -151,7 +151,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
       fnHandle.dispose()
     })
 
-    it.only("can handle up to 24-bit max int functions being registered", function (done) {
+    it("can handle up to 24-bit max int functions being registered", function (done) {
       // FuncID is a uint32_t but fnMap is a Map, which has a limit a 2^24 keys
       // https://stackoverflow.com/a/54466812/2212650
 
@@ -948,49 +948,49 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
   })
 }
 
-describe.only("QuickJSContext", function () {
-  describe.only("QuickJS.newContext", function () {
+describe("QuickJSContext", function () {
+  describe("QuickJS.newContext", function () {
     const loader = getQuickJS
     const getContext = () => loader().then((mod) => mod.newContext())
     contextTests.call(this, getContext)
   })
 
-  // describe("DEBUG sync module", function () {
-  //   const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
-  //   const getContext = () => loader().then((mod) => mod.newContext())
-  //   contextTests.call(this, getContext)
-  // })
+  describe("DEBUG sync module", function () {
+    const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
+    const getContext = () => loader().then((mod) => mod.newContext())
+    contextTests.call(this, getContext)
+  })
 })
 
-// if (!TEST_NO_ASYNC) {
-//   describe("QuickJSAsyncContext", () => {
-//     describe("newQuickJSAsyncWASMModule", function () {
-//       const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule())
-//       const getContext = () => loader().then((mod) => mod.newContext())
+if (!TEST_NO_ASYNC) {
+  describe("QuickJSAsyncContext", () => {
+    describe("newQuickJSAsyncWASMModule", function () {
+      const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule())
+      const getContext = () => loader().then((mod) => mod.newContext())
 
-//       describe("sync API", () => {
-//         contextTests(getContext)
-//       })
+      describe("sync API", () => {
+        contextTests(getContext)
+      })
 
-//       describe("async API", () => {
-//         asyncContextTests(getContext)
-//       })
-//     })
+      describe("async API", () => {
+        asyncContextTests(getContext)
+      })
+    })
 
-//     describe("DEBUG async module", function () {
-//       const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule(DEBUG_ASYNC))
-//       const getContext = () => loader().then((mod) => mod.newContext())
+    describe("DEBUG async module", function () {
+      const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule(DEBUG_ASYNC))
+      const getContext = () => loader().then((mod) => mod.newContext())
 
-//       describe("sync API", () => {
-//         contextTests(getContext)
-//       })
+      describe("sync API", () => {
+        contextTests(getContext)
+      })
 
-//       describe("async API", () => {
-//         asyncContextTests(getContext)
-//       })
-//     })
-//   })
-// }
+      describe("async API", () => {
+        asyncContextTests(getContext)
+      })
+    })
+  })
+}
 
 // TODO: test newRuntime
 // TODO: test newAsyncRuntime
