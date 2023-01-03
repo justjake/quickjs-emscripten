@@ -23,7 +23,7 @@ import { EitherFFI } from "./types"
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
 
-function contextTests(getContext: () => Promise<QuickJSContext>) {
+function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false) {
   let vm: QuickJSContext = undefined as any
   let ffi: EitherFFI = undefined as any
   let testId = 0
@@ -154,6 +154,10 @@ function contextTests(getContext: () => Promise<QuickJSContext>) {
     it("can handle more than signed int max functions being registered", function (done) {
       // test for unsigned func_id impl
       this.timeout(30000) // we need more time to register 2^16 functions
+
+      if (isDebug) {
+        this.skip() // no need to run this again, and it takes WAY too long
+      }
 
       for (let i = 0; i < Math.pow(2, 16); i++) {
         const funcID = i
@@ -942,7 +946,7 @@ describe("QuickJSContext", function () {
   describe("DEBUG sync module", function () {
     const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
     const getContext = () => loader().then((mod) => mod.newContext())
-    contextTests.call(this, getContext)
+    contextTests.call(this, getContext, true)
   })
 })
 
