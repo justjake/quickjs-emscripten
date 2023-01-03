@@ -970,7 +970,7 @@ if (!TEST_NO_ASYNC) {
       const getContext = () => loader().then((mod) => mod.newContext())
 
       describe("sync API", () => {
-        contextTests(getContext)
+        contextTests(getContext, true)
       })
 
       describe("async API", () => {
