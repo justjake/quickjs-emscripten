@@ -798,16 +798,16 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     return fnMap.get(fn_id)
   }
 
-    /** @private */
-    protected setFunction(fn_id: number, handle: VmFunctionImplementation<QuickJSHandle>) {
-      const map_id = fn_id >> 8
-      let fnMap = this.fnMaps.get(map_id)
-      if (!fnMap) {
-        fnMap = new Map<number, VmFunctionImplementation<QuickJSHandle>>()
-        this.fnMaps.set(map_id, fnMap)
-      }
-      return fnMap.set(fn_id, handle)
+  /** @private */
+  protected setFunction(fn_id: number, handle: VmFunctionImplementation<QuickJSHandle>) {
+    const map_id = fn_id >> 8
+    let fnMap = this.fnMaps.get(map_id)
+    if (!fnMap) {
+      fnMap = new Map<number, VmFunctionImplementation<QuickJSHandle>>()
+      this.fnMaps.set(map_id, fnMap)
     }
+    return fnMap.set(fn_id, handle)
+  }
 
   /**
    * @hidden

@@ -135,7 +135,13 @@ function cTypeToTypescriptType(ctype: string): ParsedType {
   if (type === "void") {
     ffi = null
   }
-  if (type === "double" || type === "int" || type === "size_t" || type === "uint16_t" || type === "uint32_t") {
+  if (
+    type === "double" ||
+    type === "int" ||
+    type === "size_t" ||
+    type === "uint16_t" ||
+    type === "uint32_t"
+  ) {
     ffi = "number"
     typescript = "number"
   }
