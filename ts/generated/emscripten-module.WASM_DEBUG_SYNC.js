@@ -2359,8 +2359,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  114190: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['LSAN_OPTIONS'] || 0); });},  
- 114287: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
+  113795: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['LSAN_OPTIONS'] || 0); });},  
+ 113892: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
 };
 function qts_host_call_function(ctx,this_ptr,argc,argv,magic_func_id){ const asyncify = undefined; return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id); }
 function qts_host_interrupt_handler(rt){ const asyncify = undefined; return Module['callbacks']['shouldInterrupt'](asyncify, rt); }
