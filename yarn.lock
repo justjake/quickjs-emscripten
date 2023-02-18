@@ -4119,11 +4119,11 @@ fsevents@~2.1.1:
   linkType: hard
 
 "snyk@npm:^1.266.0":
-  version: 1.868.0
-  resolution: "snyk@npm:1.868.0"
+  version: 1.1105.0
+  resolution: "snyk@npm:1.1105.0"
   bin:
     snyk: bin/snyk
-  checksum: ddd00a002290fd7875ca26d84a2501beaef0bc2d6a70a3798c30a9ad984b6e5f0a62a2362098a66e6367b3ce1211e122cd57bca51f808f9ba7b4c4c4998e7373
+  checksum: 5476bf625cc0fd8fcc3a3cefc4271aea0a7cc75fe1171d3b3cfa133c68b0b1260cc789d0ae9d8473f98b5da12a193f2363fdb22499a52850ab02fc0fa4b3a2eb
   languageName: node
   linkType: hard
 
