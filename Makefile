@@ -2,9 +2,10 @@
 CC=clang
 EMSDK_VERSION=3.1.7
 EMSDK_DOCKER_IMAGE=emscripten/emsdk:$(EMSDK_VERSION)
-EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) scripts/emcc.sh
+EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_DOCKER_CACHE=$(THIS_DIR)/$(BUILD_EMSDK_CACHE)/$(EMSDK_VERSION) scripts/emcc.sh
 GENERATE_TS=$(VARIANT_GENERATE_TS_ENV) npx ts-node generate.ts
 PRETTIER=npx prettier
+THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 
 DEBUG_MAKE=1
 
@@ -40,6 +41,7 @@ WRAPPER_ROOT=c
 BUILD_ROOT=build
 BUILD_WRAPPER=$(BUILD_ROOT)/wrapper
 BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
+BUILD_EMSDK_CACHE=$(BUILD_ROOT)/emsdk-cache
 BUILD_TS=ts/generated
 
 # QuickJS
@@ -174,15 +176,15 @@ NATIVE: $(BUILD_WRAPPER)/test.$(VARIANT).exe
 
 $(BUILD_WRAPPER)/test.$(VARIANT).exe: $(BUILD_WRAPPER)/test.$(VARIANT).o $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS)
 	$(MKDIRP)
-	$(CC) $(VARIANT_CFLAGS) -o $@ $< 
+	$(CC) $(VARIANT_CFLAGS) -o $@ $<
 
 $(BUILD_WRAPPER)/test.$(VARIANT).o: $(WRAPPER_ROOT)/test.c $(WRAPPER_ROOT)/interface.h
 	$(MKDIRP)
-	$(CC) $(VARIANT_CFLAGS) -o $@ $< 
+	$(CC) $(VARIANT_CFLAGS) -o $@ $<
 
 $(BUILD_WRAPPER)/%.NATIVE_$(RELEASE)_$(SYNC).o: $(WRAPPER_ROOT)/%.c
 	$(MKDIRP)
-	$(CC) $(VARIANT_CFLAGS) -o $@ $< 
+	$(CC) $(VARIANT_CFLAGS) -o $@ $<
 
 $(BUILD_QUICKJS)/%.NATIVE_$(RELEASE)_$(SYNC).o: $(QUICKJS_ROOT)/%.c
 	$(MKDIRP)
@@ -195,7 +197,7 @@ $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c generate.ts
 ###############################################################################
 # WASM variants
 WASM: $(BUILD_TS)/emscripten-module.$(VARIANT).js $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts GENERATE
-GENERATE: $(BUILD_TS)/ffi.$(VARIANT).ts 
+GENERATE: $(BUILD_TS)/ffi.$(VARIANT).ts
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
 $(BUILD_TS)/emscripten-module.$(VARIANT).js: $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
