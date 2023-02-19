@@ -72,7 +72,7 @@ export async function newQuickJSWASMModule(
   const [wasmModuleLoader, QuickJSFFI, { QuickJSWASMModule }] = await Promise.all([
     variant.importModuleLoader(),
     variant.importFFI(),
-    import("./module"),
+    import("./module.js"),
   ])
   const wasmModule = await wasmModuleLoader()
   wasmModule.type = "sync"
@@ -102,7 +102,7 @@ export async function newQuickJSAsyncWASMModule(
   const [wasmModuleLoader, QuickJSAsyncFFI, { QuickJSAsyncWASMModule }] = await Promise.all([
     variant.importModuleLoader(),
     variant.importFFI(),
-    import("./module-asyncify"),
+    import("./module-asyncify.js"),
   ])
   const wasmModule = await wasmModuleLoader()
   wasmModule.type = "async"
@@ -138,14 +138,12 @@ export function memoizePromiseFactory<T>(fn: () => Promise<T>): () => Promise<T>
 export const DEBUG_SYNC: SyncBuildVariant = {
   type: "sync",
   async importFFI() {
-    const { QuickJSFFI } = await import("./generated/ffi.WASM_DEBUG_SYNC")
+    const { QuickJSFFI } = await import("./generated/ffi.WASM_DEBUG_SYNC.js")
     return QuickJSFFI
   },
   async importModuleLoader() {
-    const { default: wasmModuleLoader } = await import(
-      "./generated/emscripten-module.WASM_DEBUG_SYNC"
-    )
-    return wasmModuleLoader
+    const mod = await import("./generated/emscripten-module.WASM_DEBUG_SYNC.js")
+    return mod.default.default
   },
 }
 
@@ -156,14 +154,12 @@ export const DEBUG_SYNC: SyncBuildVariant = {
 export const RELEASE_SYNC: SyncBuildVariant = {
   type: "sync",
   async importFFI() {
-    const { QuickJSFFI } = await import("./generated/ffi.WASM_RELEASE_SYNC")
+    const { QuickJSFFI } = await import("./generated/ffi.WASM_RELEASE_SYNC.js")
     return QuickJSFFI
   },
   async importModuleLoader() {
-    const { default: wasmModuleLoader } = await import(
-      "./generated/emscripten-module.WASM_RELEASE_SYNC"
-    )
-    return wasmModuleLoader
+    const mod = await import("./generated/emscripten-module.WASM_RELEASE_SYNC.js")
+    return mod.default.default
   },
 }
 
@@ -176,14 +172,12 @@ export const RELEASE_SYNC: SyncBuildVariant = {
 export const DEBUG_ASYNC: AsyncBuildVariant = {
   type: "async",
   async importFFI() {
-    const { QuickJSAsyncFFI } = await import("./generated/ffi.WASM_DEBUG_ASYNCIFY")
+    const { QuickJSAsyncFFI } = await import("./generated/ffi.WASM_DEBUG_ASYNCIFY.js")
     return QuickJSAsyncFFI
   },
   async importModuleLoader() {
-    const { default: wasmModuleLoader } = await import(
-      "./generated/emscripten-module.WASM_DEBUG_ASYNCIFY"
-    )
-    return wasmModuleLoader
+    const mod = await import("./generated/emscripten-module.WASM_DEBUG_ASYNCIFY.js")
+    return mod.default.default
   },
 }
 
@@ -193,13 +187,11 @@ export const DEBUG_ASYNC: AsyncBuildVariant = {
 export const RELEASE_ASYNC: AsyncBuildVariant = {
   type: "async",
   async importFFI() {
-    const { QuickJSAsyncFFI } = await import("./generated/ffi.WASM_RELEASE_ASYNCIFY")
+    const { QuickJSAsyncFFI } = await import("./generated/ffi.WASM_RELEASE_ASYNCIFY.js")
     return QuickJSAsyncFFI
   },
   async importModuleLoader() {
-    const { default: wasmModuleLoader } = await import(
-      "./generated/emscripten-module.WASM_RELEASE_ASYNCIFY"
-    )
-    return wasmModuleLoader
+    const mod = await import("./generated/emscripten-module.WASM_RELEASE_ASYNCIFY.js")
+    return mod.default.default
   },
 }
