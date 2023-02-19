@@ -98,6 +98,18 @@ export class QuickJSAsyncFFI {
   QTS_GetString: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => JSBorrowedCharPointer =
     this.module.cwrap("QTS_GetString", "number", ["number","number"])
 
+  QTS_NewSymbol: (ctx: JSContextPointer, description: BorrowedHeapCharPointer, isGlobal: number) => JSValuePointer =
+    this.module.cwrap("QTS_NewSymbol", "number", ["number","number","number"])
+
+  QTS_GetSymbolDescriptionOrKey: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => JSBorrowedCharPointer =
+    assertSync(this.module.cwrap("QTS_GetSymbolDescriptionOrKey", "number", ["number","number"]))
+
+  QTS_GetSymbolDescriptionOrKey_MaybeAsync: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => JSBorrowedCharPointer | Promise<JSBorrowedCharPointer> =
+    this.module.cwrap("QTS_GetSymbolDescriptionOrKey", "number", ["number","number"], { async: true })
+
+  QTS_IsGlobalSymbol: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => number =
+    this.module.cwrap("QTS_IsGlobalSymbol", "number", ["number","number"])
+
   QTS_IsJobPending: (rt: JSRuntimePointer) => number =
     this.module.cwrap("QTS_IsJobPending", "number", ["number"])
 
