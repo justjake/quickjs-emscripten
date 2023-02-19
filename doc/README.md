@@ -569,8 +569,11 @@ the Javascript parts of the library without setting up the Emscripten toolchain.
 
 Intermediate object files from QuickJS end up in ./build/quickjs/.
 
-This project uses `emscripten 3.1.7` via Docker. You will need a working `docker`
-install to build the Emscripten artifacts.
+This project uses `emscripten 3.1.32`.
+
+- On ARM64, you should install `emscripten` on your machine. For example on macOS, `brew install emscripten`.
+- If _the correct version of emcc_ is not in your PATH, compilation falls back to using Docker.
+  On ARM64, this is 10-50x slower than native compilation, but it's just fine on x64.
 
 Related NPM scripts:
 
@@ -585,8 +588,7 @@ Related NPM scripts:
 The ./ts directory contains Typescript types and wraps the generated Emscripten
 FFI in a more usable interface.
 
-You'll need `node` and `npm` or `yarn`. Install dependencies with `npm install`
-or `yarn install`.
+You'll need `node` and `yarn`. Install dependencies with `yarn install`.
 
 - `yarn build` produces ./dist.
 - `yarn test` runs the tests.
