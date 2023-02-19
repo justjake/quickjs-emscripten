@@ -1,11 +1,29 @@
 # Tools
 CC=clang
-EMSDK_VERSION=3.1.7
+EMSDK_VERSION=3.1.31
 EMSDK_DOCKER_IMAGE=emscripten/emsdk:$(EMSDK_VERSION)
-EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_DOCKER_CACHE=$(THIS_DIR)/$(BUILD_EMSDK_CACHE)/$(EMSDK_VERSION) scripts/emcc.sh
+EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_DOCKER_CACHE=$(THIS_DIR)/emsdk-cache/$(EMSDK_VERSION) scripts/emcc.sh
 GENERATE_TS=$(VARIANT_GENERATE_TS_ENV) npx ts-node generate.ts
 PRETTIER=npx prettier
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+
+# TODOs for 3.1.7 -> 3.1.31 upgrade:
+# https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md#3127---112922
+# - default STACK_SIZE reduced from 5mb to 64kb, set -sSTACK_SIZE=5MB to restore old behavior
+# - Add support for -sEXPORT_ES6/*.mjs on Node.js. (#17915)
+# https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md#3126---111722
+# - MIN_SAFARI_VERSION changed from 12.0 -> 14.1, set -sMIN_SAFARI_VERSION=120000 and/or -sMIN_EDGE_VERSION=44 to restore old behavior
+# 3.1.25
+# - Reccomends we enable -Wcast-function-type
+# 3.1.21
+# - LEGACY_RUNTIME is no longer enabled; many things we use like stringToUTF16  need to be added to DEFAULT_LIBRARY_FUNCS_TO_INCLUDE or EXPORTED_RUNTIME_METHODS
+# 3.1.17
+# - A source map file and DWARF info in the wasm can now be emitted at the same if the user gives the both options: -g -gsource-map. (#17484)
+#   (should we enable -g and -gsource-map?)
+# 3.1.16
+# - Should we adopt STRICT=1? #17370, #17403
+# 3.1.15
+# - Should we adopt -sWASM_BIGINT?
 
 DEBUG_MAKE=1
 
@@ -41,7 +59,6 @@ WRAPPER_ROOT=c
 BUILD_ROOT=build
 BUILD_WRAPPER=$(BUILD_ROOT)/wrapper
 BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
-BUILD_EMSDK_CACHE=$(BUILD_ROOT)/emsdk-cache
 BUILD_TS=ts/generated
 
 # QuickJS
