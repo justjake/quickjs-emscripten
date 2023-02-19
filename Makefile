@@ -29,7 +29,6 @@ PLATFORM = $(word 1,$(subst _, ,$(VARIANT)))
 RELEASE = $(word 2,$(subst _, ,$(VARIANT)))
 SYNC = $(word 3,$(subst _, ,$(VARIANT)))
 
-
 # This macro handles finding all the related config for a varying variable.
 variantCombinations = $(PLATFORM) $(RELEASE) $(SYNC) $(PLATFORM)_$(RELEASE) $(PLATFORM)_$(SYNC) $(RELEASE)_$(SYNC) $(VARIANT)
 varsForVariant = $(addprefix $(1)_,$(variantCombinations))
@@ -66,6 +65,16 @@ CFLAGS_WASM+=-s ALLOW_TABLE_GROWTH=1
 CFLAGS_WASM+=-s STACK_SIZE=5MB
 # CFLAGS_WASM+=-s MINIMAL_RUNTIME=1 # Appears to break MODULARIZE
 CFLAGS_WASM+=-s SUPPORT_ERRNO=0
+
+# ESM options
+ifdef ESM
+	CFLAGS_WASM+=-s EXPORT_ES6=1
+	JS_EXT=mjs
+	TS_EXT=mts
+else
+	JS_EXT=js
+	TS_EXT=ts
+endif
 
 # Emscripten options - like STRICT
 # https://github.com/emscripten-core/emscripten/blob/fa339b76424ca9fbe5cf15faea0295d2ac8d58cc/src/settings.js#L1095-L1109
@@ -215,15 +224,15 @@ $(WRAPPER_ROOT)/interface.h: $(WRAPPER_ROOT)/interface.c generate.ts
 
 ###############################################################################
 # WASM variants
-WASM: $(BUILD_TS)/emscripten-module.$(VARIANT).js $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts GENERATE
+WASM: $(BUILD_TS)/emscripten-module.$(VARIANT).$(JS_EXT) $(BUILD_TS)/emscripten-module.$(VARIANT).d.$(TS_EXT) GENERATE
 GENERATE: $(BUILD_TS)/ffi.$(VARIANT).ts
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
-$(BUILD_TS)/emscripten-module.$(VARIANT).js: $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
+$(BUILD_TS)/emscripten-module.$(VARIANT).$(JS_EXT): $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
 	$(EMCC) $(VARIANT_CFLAGS) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
-$(BUILD_TS)/emscripten-module.$(VARIANT).d.ts: ts/types-generated/emscripten-module.$(SYNC).d.ts
+$(BUILD_TS)/emscripten-module.$(VARIANT).d.$(TS_EXT): ts/types-generated/emscripten-module.$(SYNC).d.ts
 	echo '// Generated from $<' > $@
 	cat $< >> $@
 
