@@ -764,6 +764,8 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       return this.getString(handle)
     } else if (type === "number") {
       return this.getNumber(handle)
+    } else if (type === "bigint") {
+      return this.getBigInt(handle)
     } else if (type === "undefined") {
       return undefined
     }
