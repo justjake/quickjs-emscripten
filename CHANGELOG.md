@@ -2,10 +2,9 @@
 
 ## v0.22.0 (unreleased)
 
+- [#78](https://github.com/justjake/quickjs-emscripten/pull/78), [#105](https://github.com/justjake/quickjs-emscripten/pull/105) (thanks to @ayaboy) add Symbol helpers `context.newUniqueSymbol`, `context.newSymbolFor`, as well as support for symbols in `context.dump`.
 - [#104](https://github.com/justjake/quickjs-emscripten/pull/104) BigInt support.
-
 - [#100](https://github.com/justjake/quickjs-emscripten/pull/100) **Breaking change** upgrade Emscripten version and switch to `async import(...)` for loading variants.
-
   We also drop support for older browsers and Node versions:
 
   - Node >= 16 is required

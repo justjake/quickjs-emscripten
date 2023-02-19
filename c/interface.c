@@ -319,6 +319,69 @@ JSBorrowedChar *QTS_GetString(JSContext *ctx, JSValueConst *value) {
   return JS_ToCString(ctx, *value);
 }
 
+JSValue qts_get_symbol_key(JSContext *ctx, JSValueConst *value) {
+  JSValue global = JS_GetGlobalObject(ctx);
+  JSValue Symbol = JS_GetPropertyStr(ctx, global, "Symbol");
+  JS_FreeValue(ctx, global);
+
+  JSValue Symbol_keyFor = JS_GetPropertyStr(ctx, Symbol, "keyFor");
+  JSValue key = JS_Call(ctx, Symbol_keyFor, Symbol, 1, value);
+  JS_FreeValue(ctx, Symbol_keyFor);
+  JS_FreeValue(ctx, Symbol);
+  return key;
+}
+
+JSValue *QTS_NewSymbol(JSContext *ctx, BorrowedHeapChar *description, int isGlobal) {
+  JSValue global = JS_GetGlobalObject(ctx);
+  JSValue Symbol = JS_GetPropertyStr(ctx, global, "Symbol");
+  JS_FreeValue(ctx, global);
+  JSValue descriptionValue = JS_NewString(ctx, description);
+  JSValue symbol;
+
+  if (isGlobal != 0) {
+    JSValue Symbol_for = JS_GetPropertyStr(ctx, Symbol, "for");
+    symbol = JS_Call(ctx, Symbol_for, Symbol, 1, &descriptionValue);
+    JS_FreeValue(ctx, descriptionValue);
+    JS_FreeValue(ctx, Symbol_for);
+    JS_FreeValue(ctx, Symbol);
+    return jsvalue_to_heap(symbol);
+  }
+
+  symbol = JS_Call(ctx, Symbol, JS_UNDEFINED, 1, &descriptionValue);
+  JS_FreeValue(ctx, descriptionValue);
+  JS_FreeValue(ctx, Symbol);
+
+  return jsvalue_to_heap(symbol);
+}
+
+MaybeAsync(JSBorrowedChar *) QTS_GetSymbolDescriptionOrKey(JSContext *ctx, JSValueConst *value) {
+  JSBorrowedChar *result;
+
+  JSValue key = qts_get_symbol_key(ctx, value);
+  if (!JS_IsUndefined(key)) {
+    result = JS_ToCString(ctx, key);
+    JS_FreeValue(ctx, key);
+    return result;
+  }
+
+  JSValue description = JS_GetPropertyStr(ctx, *value, "description");
+  result = JS_ToCString(ctx, description);
+  JS_FreeValue(ctx, description);
+  return result;
+}
+
+int QTS_IsGlobalSymbol(JSContext *ctx, JSValueConst *value) {
+  JSValue key = qts_get_symbol_key(ctx, value);
+  int undefined = JS_IsUndefined(key);
+  JS_FreeValue(ctx, key);
+
+  if (undefined) {
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
 int QTS_IsJobPending(JSRuntime *rt) {
   return JS_IsJobPending(rt);
 }

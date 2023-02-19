@@ -32,7 +32,7 @@ Synchronous build variants:
 
 #### Defined in
 
-[ts/variants.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L35)
+[ts/variants.ts:36](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L36)
 
 ## Methods
 
@@ -46,7 +46,7 @@ Synchronous build variants:
 
 #### Defined in
 
-[ts/variants.ts:36](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L36)
+[ts/variants.ts:37](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L37)
 
 ___
 
@@ -60,4 +60,4 @@ ___
 
 #### Defined in
 
-[ts/variants.ts:37](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L37)
+[ts/variants.ts:38](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L38)

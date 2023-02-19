@@ -308,6 +308,30 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   }
 
   /**
+   * Create a QuickJS [symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol) value.
+   * No two symbols created with this function will be the same value.
+   */
+  newUniqueSymbol(description: string | symbol): QuickJSHandle {
+    const key = (typeof description === "symbol" ? description.description : description) ?? ""
+    const ptr = this.memory
+      .newHeapCharPointer(key)
+      .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value, 0))
+    return this.memory.heapValueHandle(ptr)
+  }
+
+  /**
+   * Get a symbol from the [global registry](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#shared_symbols_in_the_global_symbol_registry) for the given key.
+   * All symbols created with the same key will be the same value.
+   */
+  newSymbolFor(key: string | symbol): QuickJSHandle {
+    const description = (typeof key === "symbol" ? key.description : key) ?? ""
+    const ptr = this.memory
+      .newHeapCharPointer(description)
+      .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value, 1))
+    return this.memory.heapValueHandle(ptr)
+  }
+
+  /**
    * Create a QuickJS [bigint](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) value.
    */
   newBigInt(num: bigint): QuickJSHandle {
@@ -491,6 +515,19 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   getString(handle: QuickJSHandle): string {
     this.runtime.assertOwned(handle)
     return this.memory.consumeJSCharPointer(this.ffi.QTS_GetString(this.ctx.value, handle.value))
+  }
+
+  /**
+   * Converts `handle` into a Javascript symbol. If the symbol is in the global
+   * registry in the guest, it will be created with Symbol.for on the host.
+   */
+  getSymbol(handle: QuickJSHandle): symbol {
+    this.runtime.assertOwned(handle)
+    const key = this.memory.consumeJSCharPointer(
+      this.ffi.QTS_GetSymbolDescriptionOrKey(this.ctx.value, handle.value)
+    )
+    const isGlobal = this.ffi.QTS_IsGlobalSymbol(this.ctx.value, handle.value)
+    return isGlobal ? Symbol.for(key) : Symbol(key)
   }
 
   /**
@@ -768,6 +805,8 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       return this.getBigInt(handle)
     } else if (type === "undefined") {
       return undefined
+    } else if (type === "symbol") {
+      return this.getSymbol(handle)
     }
 
     const str = this.memory.consumeJSCharPointer(this.ffi.QTS_Dump(this.ctx.value, handle.value))
