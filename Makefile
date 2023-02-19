@@ -8,6 +8,7 @@ PRETTIER=npx prettier
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 
 DEBUG_MAKE=1
+ESM=1
 
 # build variant matrix
 # VARY - just to remember the we should put variant defs in
@@ -70,7 +71,7 @@ CFLAGS_WASM+=-s SUPPORT_ERRNO=0
 ifdef ESM
 	CFLAGS_WASM+=-s EXPORT_ES6=1
 	JS_EXT=mjs
-	TS_EXT=mts
+	TS_EXT=ts
 else
 	JS_EXT=js
 	TS_EXT=ts

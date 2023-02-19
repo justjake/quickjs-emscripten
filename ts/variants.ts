@@ -143,7 +143,7 @@ export const DEBUG_SYNC: SyncBuildVariant = {
     return unwrapTypescript(mod).QuickJSFFI
   },
   async importModuleLoader() {
-    const mod = await import("./generated/emscripten-module.WASM_DEBUG_SYNC.js")
+    const mod = await import("./generated/emscripten-module.WASM_DEBUG_SYNC.mjs")
     return unwrapJavascript(mod).default
   },
 }
@@ -159,7 +159,7 @@ export const RELEASE_SYNC: SyncBuildVariant = {
     return unwrapTypescript(mod).QuickJSFFI
   },
   async importModuleLoader() {
-    const mod = await import("./generated/emscripten-module.WASM_RELEASE_SYNC.js")
+    const mod = await import("./generated/emscripten-module.WASM_RELEASE_SYNC.mjs")
     return unwrapJavascript(mod).default
   },
 }
@@ -177,7 +177,7 @@ export const DEBUG_ASYNC: AsyncBuildVariant = {
     return unwrapTypescript(mod).QuickJSAsyncFFI
   },
   async importModuleLoader() {
-    const mod = await import("./generated/emscripten-module.WASM_DEBUG_ASYNCIFY.js")
+    const mod = await import("./generated/emscripten-module.WASM_DEBUG_ASYNCIFY.mjs")
     return unwrapJavascript(mod).default
   },
 }
@@ -192,7 +192,7 @@ export const RELEASE_ASYNC: AsyncBuildVariant = {
     return unwrapTypescript(mod).QuickJSAsyncFFI
   },
   async importModuleLoader() {
-    const mod = await import("./generated/emscripten-module.WASM_RELEASE_ASYNCIFY.js")
+    const mod = await import("./generated/emscripten-module.WASM_RELEASE_ASYNCIFY.mjs")
     return unwrapJavascript(mod).default
   },
 }

@@ -34,9 +34,8 @@ export {
   DEBUG_SYNC,
   RELEASE_ASYNC,
   RELEASE_SYNC,
-  SyncBuildVariant,
-  AsyncBuildVariant,
 }
+export type { SyncBuildVariant, AsyncBuildVariant }
 
 // Export helpers
 export * from "./vm-interface"

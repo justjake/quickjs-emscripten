@@ -11,7 +11,11 @@ function actualUnwrapDefault<T>(mod: T): T {
   return maybeUnwrap ?? mod
 }
 
+function identity<T>(x: T): T {
+  return x
+}
+
 // I'm not sure if this behavior is needed in all runtimes,
 // or just for mocha + ts-node.
 export const unwrapTypescript = actualUnwrapDefault
-export const unwrapJavascript = fakeUnwrapDefault
+export const unwrapJavascript = identity

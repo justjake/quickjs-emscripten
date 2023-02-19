@@ -1,15 +1,15 @@
 
 var QuickJSRaw = (() => {
-  var _scriptDir = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : undefined;
-  if (typeof __filename !== 'undefined') _scriptDir = _scriptDir || __filename;
+  var _scriptDir = import.meta.url;
+  
   return (
-function(QuickJSRaw = {})  {
+async function(QuickJSRaw = {})  {
 
 var a;a||(a=typeof QuickJSRaw !== 'undefined' ? QuickJSRaw : {});var m,n;a.ready=new Promise(function(b,c){m=b;n=c});var p=Object.assign({},a),t="./this.program",u="object"==typeof window,v="function"==typeof importScripts,w="object"==typeof process&&"object"==typeof process.versions&&"string"==typeof process.versions.node,x="",y,z,A;
-if(w){var fs=require("fs"),B=require("path");x=v?B.dirname(x)+"/":__dirname+"/";y=(b,c)=>{var d=C(b);if(d)return c?d:d.toString();b=b.startsWith("file://")?new URL(b):B.normalize(b);return fs.readFileSync(b,c?void 0:"utf8")};A=b=>{b=y(b,!0);b.buffer||(b=new Uint8Array(b));return b};z=(b,c,d)=>{var e=C(b);e&&c(e);b=b.startsWith("file://")?new URL(b):B.normalize(b);fs.readFile(b,function(f,g){f?d(f):c(g.buffer)})};1<process.argv.length&&(t=process.argv[1].replace(/\\/g,"/"));process.argv.slice(2);a.inspect=
-function(){return"[Emscripten Module object]"}}else if(u||v)v?x=self.location.href:"undefined"!=typeof document&&document.currentScript&&(x=document.currentScript.src),_scriptDir&&(x=_scriptDir),0!==x.indexOf("blob:")?x=x.substr(0,x.replace(/[?#].*/,"").lastIndexOf("/")+1):x="",y=b=>{try{var c=new XMLHttpRequest;c.open("GET",b,!1);c.send(null);return c.responseText}catch(f){if(b=C(b)){c=[];for(var d=0;d<b.length;d++){var e=b[d];255<e&&(e&=255);c.push(String.fromCharCode(e))}return c.join("")}throw f;
-}},v&&(A=b=>{try{var c=new XMLHttpRequest;c.open("GET",b,!1);c.responseType="arraybuffer";c.send(null);return new Uint8Array(c.response)}catch(d){if(b=C(b))return b;throw d;}}),z=(b,c,d)=>{var e=new XMLHttpRequest;e.open("GET",b,!0);e.responseType="arraybuffer";e.onload=()=>{if(200==e.status||0==e.status&&e.response)c(e.response);else{var f=C(b);f?c(f.buffer):d()}};e.onerror=d;e.send(null)};var aa=a.print||console.log.bind(console),D=a.printErr||console.warn.bind(console);Object.assign(a,p);p=null;
-a.thisProgram&&(t=a.thisProgram);var E;a.wasmBinary&&(E=a.wasmBinary);var noExitRuntime=a.noExitRuntime||!0;"object"!=typeof WebAssembly&&F("no native wasm support detected");var G,H=!1,I="undefined"!=typeof TextDecoder?new TextDecoder("utf8"):void 0;
+if(w){const {createRequire:b}=await import("module");var require=b(import.meta.url),fs=require("fs"),B=require("path");v?x=B.dirname(x)+"/":x=require("url").fileURLToPath(new URL("./",import.meta.url));y=(c,d)=>{var e=C(c);if(e)return d?e:e.toString();c=c.startsWith("file://")?new URL(c):B.normalize(c);return fs.readFileSync(c,d?void 0:"utf8")};A=c=>{c=y(c,!0);c.buffer||(c=new Uint8Array(c));return c};z=(c,d,e)=>{var f=C(c);f&&d(f);c=c.startsWith("file://")?new URL(c):
+B.normalize(c);fs.readFile(c,function(g,h){g?e(g):d(h.buffer)})};1<process.argv.length&&(t=process.argv[1].replace(/\\/g,"/"));process.argv.slice(2);a.inspect=function(){return"[Emscripten Module object]"}}else if(u||v)v?x=self.location.href:"undefined"!=typeof document&&document.currentScript&&(x=document.currentScript.src),_scriptDir&&(x=_scriptDir),0!==x.indexOf("blob:")?x=x.substr(0,x.replace(/[?#].*/,"").lastIndexOf("/")+1):x="",y=b=>{try{var c=new XMLHttpRequest;c.open("GET",b,!1);c.send(null);
+return c.responseText}catch(f){if(b=C(b)){c=[];for(var d=0;d<b.length;d++){var e=b[d];255<e&&(e&=255);c.push(String.fromCharCode(e))}return c.join("")}throw f;}},v&&(A=b=>{try{var c=new XMLHttpRequest;c.open("GET",b,!1);c.responseType="arraybuffer";c.send(null);return new Uint8Array(c.response)}catch(d){if(b=C(b))return b;throw d;}}),z=(b,c,d)=>{var e=new XMLHttpRequest;e.open("GET",b,!0);e.responseType="arraybuffer";e.onload=()=>{if(200==e.status||0==e.status&&e.response)c(e.response);else{var f=
+C(b);f?c(f.buffer):d()}};e.onerror=d;e.send(null)};var aa=a.print||console.log.bind(console),D=a.printErr||console.warn.bind(console);Object.assign(a,p);p=null;a.thisProgram&&(t=a.thisProgram);var E;a.wasmBinary&&(E=a.wasmBinary);var noExitRuntime=a.noExitRuntime||!0;"object"!=typeof WebAssembly&&F("no native wasm support detected");var G,H=!1,I="undefined"!=typeof TextDecoder?new TextDecoder("utf8"):void 0;
 function J(b,c,d){var e=c+d;for(d=c;b[d]&&!(d>=e);)++d;if(16<d-c&&b.buffer&&I)return I.decode(b.subarray(c,d));for(e="";c<d;){var f=b[c++];if(f&128){var g=b[c++]&63;if(192==(f&224))e+=String.fromCharCode((f&31)<<6|g);else{var h=b[c++]&63;f=224==(f&240)?(f&15)<<12|g<<6|h:(f&7)<<18|g<<12|h<<6|b[c++]&63;65536>f?e+=String.fromCharCode(f):(f-=65536,e+=String.fromCharCode(55296|f>>10,56320|f&1023))}}else e+=String.fromCharCode(f)}return e}function K(b,c){return b?J(L,b,c):""}
 function M(b,c,d,e){if(!(0<e))return 0;var f=d;e=d+e-1;for(var g=0;g<b.length;++g){var h=b.charCodeAt(g);if(55296<=h&&57343>=h){var k=b.charCodeAt(++g);h=65536+((h&1023)<<10)|k&1023}if(127>=h){if(d>=e)break;c[d++]=h}else{if(2047>=h){if(d+1>=e)break;c[d++]=192|h>>6}else{if(65535>=h){if(d+2>=e)break;c[d++]=224|h>>12}else{if(d+3>=e)break;c[d++]=240|h>>18;c[d++]=128|h>>12&63}c[d++]=128|h>>6&63}c[d++]=128|h&63}}c[d]=0;return d-f}function ba(b,c,d){return M(b,L,c,d)}
 function ca(b){for(var c=0,d=0;d<b.length;++d){var e=b.charCodeAt(d);127>=e?c++:2047>=e?c+=2:55296<=e&&57343>=e?(c+=4,++d):c+=3}return c}var N,L,O,P;function da(){var b=G.buffer;a.HEAP8=N=new Int8Array(b);a.HEAP16=new Int16Array(b);a.HEAP32=O=new Int32Array(b);a.HEAPU8=L=new Uint8Array(b);a.HEAPU16=new Uint16Array(b);a.HEAPU32=P=new Uint32Array(b);a.HEAPF32=new Float32Array(b);a.HEAPF64=new Float64Array(b)}var ea=[],fa=[],ha=[];function ia(){var b=a.preRun.shift();ea.unshift(b)}var Q=0,R=null,S=null;
@@ -49,9 +49,4 @@ if(a.preInit)for("function"==typeof a.preInit&&(a.preInit=[a.preInit]);0<a.preIn
 
 );
 })();
-if (typeof exports === 'object' && typeof module === 'object')
-  module.exports = QuickJSRaw;
-else if (typeof define === 'function' && define['amd'])
-  define([], function() { return QuickJSRaw; });
-else if (typeof exports === 'object')
-  exports["QuickJSRaw"] = QuickJSRaw;
+export default QuickJSRaw;
