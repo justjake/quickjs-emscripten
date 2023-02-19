@@ -9421,7 +9421,7 @@
   "version" "1.2.3"
 
 "quickjs-emscripten@file:../../build/quickjs-emscripten.tgz":
-  "integrity" "sha512-JDqCe5FbYgdXEn4Mp0zwPdZ57EpnYJd7w3tRzeBNatp8mKcuXLlfMENP9nhDzgqz4m4u7dXekUDItA7JjlPiCg=="
+  "integrity" "sha512-82GjV/+SKOax+Eu29QZpwdYETGq3LbngHfuZhaSFL/uScPUTQARFf7T+uRZIw3tYxTVpAE344ai051spQ5Bk/g=="
   "resolved" "file:../../build/quickjs-emscripten.tgz"
   "version" "0.21.2"
 

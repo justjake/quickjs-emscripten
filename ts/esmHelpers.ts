@@ -7,7 +7,8 @@ function fakeUnwrapDefault<T>(mod: { default: T }): T {
 /** Typescript thinks import('...ts') doesn't need mod.default.default, but does */
 function actualUnwrapDefault<T>(mod: T): T {
   // console.log("actualUnwrapDefault", mod)
-  return (mod as any).default
+  const maybeUnwrap = (mod as any).default
+  return maybeUnwrap ?? mod
 }
 
 // I'm not sure if this behavior is needed in all runtimes,

@@ -10,14 +10,9 @@ module.exports = {
     "source-map-support/register",
   ],
   // Specify "loader" for native ESM
-  // "loader": "ts-node/esm",
-  "extensions": ["ts", "tsx"],
+  "loader": "ts-node/esm",
+  "extensions": ["js", "ts", "tsx"],
 
-  // Our file paths.
-  "spec": [
-    "*.test.ts",
-    "*.test.js",
-  ],
   "watch-files": [
     "ts/**/*",
     "build/**/*.js",
