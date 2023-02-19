@@ -480,7 +480,7 @@ OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
 
   if (JS_IsNumber(*value)) {
     result = "number";
-  } else if (tag == JS_TAG_BIG_INT) {
+  } else if (JS_IsBigInt(*value)) {
     result = "bigint";
   } else if (JS_IsBigFloat(*value)) {
     result = "bigfloat";

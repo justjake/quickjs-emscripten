@@ -60,10 +60,17 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
       numHandle.dispose()
     })
 
-    it.only("can round-trip a bigint", () => {
+    it("can round-trip a bigint", () => {
       const int = 2n ** 64n
       const numHandle = vm.newBigInt(int)
       assert.equal(vm.getBigInt(numHandle), int)
+      numHandle.dispose()
+    })
+
+    it("can dump a bigint", () => {
+      const int = 2n ** 64n
+      const numHandle = vm.newBigInt(int)
+      assert.equal(vm.dump(numHandle), int)
       numHandle.dispose()
     })
 
