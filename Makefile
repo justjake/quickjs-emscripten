@@ -7,24 +7,6 @@ GENERATE_TS=$(VARIANT_GENERATE_TS_ENV) npx ts-node generate.ts
 PRETTIER=npx prettier
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 
-# TODOs for 3.1.7 -> 3.1.31 upgrade:
-# https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md#3127---112922
-# - default STACK_SIZE reduced from 5mb to 64kb, set -sSTACK_SIZE=5MB to restore old behavior
-# - Add support for -sEXPORT_ES6/*.mjs on Node.js. (#17915)
-# https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md#3126---111722
-# - MIN_SAFARI_VERSION changed from 12.0 -> 14.1, set -sMIN_SAFARI_VERSION=120000 and/or -sMIN_EDGE_VERSION=44 to restore old behavior
-# 3.1.25
-# - Reccomends we enable -Wcast-function-type
-# 3.1.21
-# - LEGACY_RUNTIME is no longer enabled; many things we use like stringToUTF16  need to be added to DEFAULT_LIBRARY_FUNCS_TO_INCLUDE or EXPORTED_RUNTIME_METHODS
-# 3.1.17
-# - A source map file and DWARF info in the wasm can now be emitted at the same if the user gives the both options: -g -gsource-map. (#17484)
-#   (should we enable -g and -gsource-map?)
-# 3.1.16
-# - Should we adopt STRICT=1? #17370, #17403
-# 3.1.15
-# - Should we adopt -sWASM_BIGINT?
-
 DEBUG_MAKE=1
 
 # build variant matrix
@@ -68,6 +50,8 @@ QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\" -D
 VARIANT_QUICKJS_OBJS=$(patsubst %.o, $(BUILD_QUICKJS)/%.$(VARIANT).o, $(QUICKJS_OBJS))
 
 # quickjs-emscripten
+WRAPPER_DEFINES=-s STRICT=1             # Can't enable for quickjs because it does some weird casts.
+WRAPPER_DEFINES+=-Wcast-function-type   # Likewise, warns about some quickjs casts we don't control.
 EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.json
 EMCC_EXPORTED_FUNCS_ASYNCIFY+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.asyncify.json
 
@@ -80,6 +64,7 @@ CFLAGS_WASM+=-s EXPORT_NAME=QuickJSRaw
 CFLAGS_WASM+=-s INVOKE_RUN=0
 CFLAGS_WASM+=-s ALLOW_MEMORY_GROWTH=1
 CFLAGS_WASM+=-s ALLOW_TABLE_GROWTH=1
+CFLAGS_WASM+=-s STACK_SIZE=5MB
 
 # Empscripten options for asyncify variant
 # https://emscripten.org/docs/porting/asyncify.html
@@ -219,7 +204,7 @@ WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json
 
 $(BUILD_TS)/emscripten-module.$(VARIANT).js: $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
-	$(EMCC) $(VARIANT_CFLAGS) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+	$(EMCC) $(VARIANT_CFLAGS) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
 $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts: ts/types-generated/emscripten-module.$(SYNC).d.ts
 	echo '// Generated from $<' > $@
@@ -227,7 +212,7 @@ $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts: ts/types-generated/emscripten-mod
 
 $(BUILD_WRAPPER)/%.WASM_$(RELEASE)_$(SYNC).o: $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
-	$(EMCC) $(VARIANT_CFLAGS) $(CFLAGS_SORTED_FUNCS) -c -o $@ $<
+	$(EMCC) $(VARIANT_CFLAGS) $(CFLAGS_SORTED_FUNCS) $(WRAPPER_DEFINES) -c -o $@ $<
 
 $(BUILD_QUICKJS)/%.WASM_$(RELEASE)_$(SYNC).o: $(QUICKJS_ROOT)/%.c $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
