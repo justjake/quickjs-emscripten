@@ -13,7 +13,7 @@
     "quickjs-emscripten": "file:../../build/quickjs-emscripten.tgz",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
+    "react-scripts": "^4.0",
     "typescript": "4.5.5"
   },
   "scripts": {

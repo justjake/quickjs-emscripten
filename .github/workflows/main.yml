@@ -30,16 +30,15 @@ jobs:
         if: matrix.platform == 'macos-latest'
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
-          node-version: 12.x
+          node-version: 16
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Cache dependencies
-        uses: actions/cache@v2
+      - name: Yarn cache
+        uses: actions/cache@v3
         with:
           path: "**/.yarn/cache"
           key: ${{ hashFiles('**/yarn.lock') }}
@@ -48,6 +47,12 @@ jobs:
         run: yarn install --immutable
         env:
           YARN_ENABLE_SCRIPTS: 0
+
+      - name: EMSDK cache
+        uses: actions/cache@v3
+        with:
+          path: "emsdk-cache"
+          key: ${{ hashFiles('scripts/emcc.sh') }}
 
       - name: Build
         run: yarn build

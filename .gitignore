@@ -7,6 +7,7 @@ npm-error.log
 
 /build
 /dist
+/emsdk-cache
 
 # QuickJS build stuff
 /quickjs/test_fib.c
@@ -23,7 +24,6 @@ npm-error.log
 /quickjs/qjscalc.c
 /quickjs/repl.c
 /quickjs/run-test262
-
 
 **/.yarn/*
 !/.yarn/releases

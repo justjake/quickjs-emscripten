@@ -1,8 +1,8 @@
 # Tools
 CC=clang
-EMSDK_VERSION=3.1.7
-EMSDK_DOCKER_IMAGE=emscripten/emsdk:$(EMSDK_VERSION)
-EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_DOCKER_CACHE=$(THIS_DIR)/$(BUILD_EMSDK_CACHE)/$(EMSDK_VERSION) scripts/emcc.sh
+EMSDK_VERSION=3.1.32
+EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.31 # .32 not released to Docker hub.
+EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_DOCKER_CACHE=$(THIS_DIR)/emsdk-cache/$(EMSDK_VERSION) scripts/emcc.sh
 GENERATE_TS=$(VARIANT_GENERATE_TS_ENV) npx ts-node generate.ts
 PRETTIER=npx prettier
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
@@ -41,7 +41,6 @@ WRAPPER_ROOT=c
 BUILD_ROOT=build
 BUILD_WRAPPER=$(BUILD_ROOT)/wrapper
 BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
-BUILD_EMSDK_CACHE=$(BUILD_ROOT)/emsdk-cache
 BUILD_TS=ts/generated
 
 # QuickJS
@@ -51,18 +50,36 @@ QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\" -D
 VARIANT_QUICKJS_OBJS=$(patsubst %.o, $(BUILD_QUICKJS)/%.$(VARIANT).o, $(QUICKJS_OBJS))
 
 # quickjs-emscripten
+WRAPPER_DEFINES+=-Wcast-function-type   # Likewise, warns about some quickjs casts we don't control.
 EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.json
 EMCC_EXPORTED_FUNCS_ASYNCIFY+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.asyncify.json
 
 # Emscripten options
 CFLAGS_WASM+=-s WASM=1
 CFLAGS_WASM+=-s EXPORTED_RUNTIME_METHODS=@exportedRuntimeMethods.json
-CFLAGS_WASM+=-s NODEJS_CATCH_EXIT=0
 CFLAGS_WASM+=-s MODULARIZE=1
 CFLAGS_WASM+=-s EXPORT_NAME=QuickJSRaw
 CFLAGS_WASM+=-s INVOKE_RUN=0
 CFLAGS_WASM+=-s ALLOW_MEMORY_GROWTH=1
 CFLAGS_WASM+=-s ALLOW_TABLE_GROWTH=1
+CFLAGS_WASM+=-s STACK_SIZE=5MB
+# CFLAGS_WASM+=-s MINIMAL_RUNTIME=1 # Appears to break MODULARIZE
+CFLAGS_WASM+=-s SUPPORT_ERRNO=0
+
+# Emscripten options - like STRICT
+# https://github.com/emscripten-core/emscripten/blob/fa339b76424ca9fbe5cf15faea0295d2ac8d58cc/src/settings.js#L1095-L1109
+# CFLAGS_WASM+=-s STRICT_JS=1 # Doesn't work with MODULARIZE
+CFLAGS_WASM+=-s IGNORE_MISSING_MAIN=0 --no-entry
+CFLAGS_WASM+=-s AUTO_JS_LIBRARIES=0
+CFLAGS_WASM+=-s -lccall.js
+CFLAGS_WASM+=-s AUTO_NATIVE_LIBRARIES=0
+CFLAGS_WASM+=-s AUTO_ARCHIVE_INDEXES=0
+CFLAGS_WASM+=-s DEFAULT_TO_CXX=0
+CFLAGS_WASM+=-s ALLOW_UNIMPLEMENTED_SYSCALLS=0
+
+# Emscripten options - NodeJS
+CFLAGS_WASM+=-s MIN_NODE_VERSION=160000
+CFLAGS_WASM+=-s NODEJS_CATCH_EXIT=0
 
 # Empscripten options for asyncify variant
 # https://emscripten.org/docs/porting/asyncify.html
@@ -70,6 +87,7 @@ CFLAGS_WASM_ASYNCIFY+=-s ASYNCIFY=1
 CFLAGS_WASM_ASYNCIFY+=-DQTS_ASYNCIFY=1
 CFLAGS_WASM_ASYNCIFY+=-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json
 CFLAGS_WASM_ASYNCIFY+=-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json
+CFLAGS_WASM_ASYNCIFY+=-lasync.js
 GENERATE_TS_ENV_ASYNCIFY+=ASYNCIFY=true
 
 # Release options
@@ -82,8 +100,10 @@ CFLAGS_WASM_RELEASE+=-s FILESYSTEM=0
 
 # Debug options
 GENERATE_TS_ENV_DEBUG+=DEBUG=true
+
 CFLAGS_DEBUG+=-O0
 CFLAGS_DEBUG+=-DQTS_DEBUG_MODE
+
 CFLAGS_WASM_DEBUG+=-gsource-map
 CFLAGS_WASM_DEBUG+=-s ASSERTIONS=1
 
@@ -202,7 +222,7 @@ WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json
 
 $(BUILD_TS)/emscripten-module.$(VARIANT).js: $(BUILD_WRAPPER)/interface.$(VARIANT).o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
-	$(EMCC) $(VARIANT_CFLAGS) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+	$(EMCC) $(VARIANT_CFLAGS) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
 $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts: ts/types-generated/emscripten-module.$(SYNC).d.ts
 	echo '// Generated from $<' > $@
@@ -210,7 +230,7 @@ $(BUILD_TS)/emscripten-module.$(VARIANT).d.ts: ts/types-generated/emscripten-mod
 
 $(BUILD_WRAPPER)/%.WASM_$(RELEASE)_$(SYNC).o: $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)
-	$(EMCC) $(VARIANT_CFLAGS) $(CFLAGS_SORTED_FUNCS) -c -o $@ $<
+	$(EMCC) $(VARIANT_CFLAGS) $(CFLAGS_SORTED_FUNCS) $(WRAPPER_DEFINES) -c -o $@ $<
 
 $(BUILD_QUICKJS)/%.WASM_$(RELEASE)_$(SYNC).o: $(QUICKJS_ROOT)/%.c $(WASM_SYMBOLS) | scripts/emcc.sh
 	$(MKDIRP)

@@ -4,6 +4,7 @@
   "main": "dist/index.js",
   "sideEffects": false,
   "license": "MIT",
+  "type": "commonjs",
   "keywords": [
     "eval",
     "quickjs",
@@ -32,10 +33,10 @@
     "tsc": "node_modules/.bin/tsc",
     "build": "make dist",
     "doc": "typedoc",
-    "test": "TS_NODE_TYPE_CHECK=false mocha",
-    "test-dist": "cd dist && TS_NODE_TYPE_CHECK=false mocha --require source-map-support/register *.test.js",
-    "test-fast": "TS_NODE_TYPE_CHECK=false TEST_NO_ASYNC=true mocha",
-    "test-all": "TEST_LEAK=1 yarn test && yarn test-dist",
+    "test": "TS_NODE_TRANSPILE_ONLY=true mocha 'ts/**/*.test.ts'",
+    "test-dist": "cd dist && TS_NODE_TRANSPILE_ONLY=true mocha --require source-map-support/register *.test.js",
+    "test-fast": "TEST_NO_ASYNC=true yarn test 'ts/**/*.test.ts'",
+    "test-all": "TEST_LEAK=1 yarn test && TEST_LEAK=1 yarn test-dist",
     "prettier": "prettier --write .",
     "prettier-check": "prettier --check .",
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:bellard/quickjs.git master",
@@ -51,12 +52,12 @@
     "markserv": "^1.17.4",
     "mocha": "7.2.0",
     "node-fetch-commonjs": "^3.1.1",
-    "prettier": "2.5.1",
-    "source-map-support": "^0.5.16",
-    "ts-node": "^10.7.0",
+    "prettier": "2.8.4",
+    "source-map-support": "^0.5.21",
+    "ts-node": "^10.9.1",
     "typedoc": "^0.22.0",
     "typedoc-plugin-inline-sources": "^1.0.1",
     "typedoc-plugin-markdown": "^3.11.12",
-    "typescript": "^4.5.5"
+    "typescript": "^4.9.5"
   }
 }
