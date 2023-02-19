@@ -2284,6 +2284,9 @@ var missingLibrarySymbols = [
   'makePromiseCallback',
   'setMainLoop',
   '_setNetworkCallback',
+  'ALLOC_NORMAL',
+  'ALLOC_STACK',
+  'allocate',
 ];
 missingLibrarySymbols.forEach(missingLibrarySymbol)
 

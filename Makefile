@@ -50,7 +50,6 @@ QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\" -D
 VARIANT_QUICKJS_OBJS=$(patsubst %.o, $(BUILD_QUICKJS)/%.$(VARIANT).o, $(QUICKJS_OBJS))
 
 # quickjs-emscripten
-WRAPPER_DEFINES=-s STRICT=1             # Can't enable for quickjs because it does some weird casts.
 WRAPPER_DEFINES+=-Wcast-function-type   # Likewise, warns about some quickjs casts we don't control.
 EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.json
 EMCC_EXPORTED_FUNCS_ASYNCIFY+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.asyncify.json
@@ -101,8 +100,10 @@ CFLAGS_WASM_RELEASE+=-s FILESYSTEM=0
 
 # Debug options
 GENERATE_TS_ENV_DEBUG+=DEBUG=true
+
 CFLAGS_DEBUG+=-O0
 CFLAGS_DEBUG+=-DQTS_DEBUG_MODE
+
 CFLAGS_WASM_DEBUG+=-gsource-map
 CFLAGS_WASM_DEBUG+=-s ASSERTIONS=1
 
