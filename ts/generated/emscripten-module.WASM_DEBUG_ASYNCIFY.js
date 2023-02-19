@@ -151,16 +151,6 @@ readAsync = (filename, onload, onerror) => {
 
   // MODULARIZE will export the module in the proper place outside, we don't need to export here
 
-  // Without this older versions of node (< v15) will log unhandled rejections
-  // but return 0, which is not normally the desired behaviour.  This is
-  // not be needed with node v15 and about because it is now the default
-  // behaviour:
-  // See https://nodejs.org/api/cli.html#cli_unhandled_rejections_mode
-  var nodeMajor = process.versions.node.split(".")[0];
-  if (nodeMajor < 15) {
-    process.on('unhandledRejection', function(reason) { throw reason; });
-  }
-
   quit_ = (status, toThrow) => {
     if (keepRuntimeAlive()) {
       process.exitCode = status;
@@ -2051,8 +2041,6 @@ var _QTS_RuntimeDisableInterruptHandler = Module["_QTS_RuntimeDisableInterruptHa
 var _QTS_RuntimeEnableModuleLoader = Module["_QTS_RuntimeEnableModuleLoader"] = createExportWrapper("QTS_RuntimeEnableModuleLoader");
 /** @type {function(...*):?} */
 var _QTS_RuntimeDisableModuleLoader = Module["_QTS_RuntimeDisableModuleLoader"] = createExportWrapper("QTS_RuntimeDisableModuleLoader");
-/** @type {function(...*):?} */
-var ___errno_location = createExportWrapper("__errno_location");
 /** @type {function(...*):?} */
 var _fflush = Module["_fflush"] = createExportWrapper("fflush");
 /** @type {function(...*):?} */
