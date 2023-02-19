@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.22.0 (unreleased)
+
+- [#104](https://github.com/justjake/quickjs-emscripten/pull/104) BigInt support.
+
+- [#100](https://github.com/justjake/quickjs-emscripten/pull/100) **Breaking change** upgrade Emscripten version and switch to `async import(...)` for loading variants.
+
+  We also drop support for older browsers and Node versions:
+
+  - Node >= 16 is required
+  - Safari >= 14.1 is required
+  - Typescript >= 4.7 is recommended, but not required.
+
+## v0.21.2
+
+- [#94](https://github.com/justjake/quickjs-emscripten/pull/94) (thanks to @swimmadude66) allows QuickJS to create many more functions before overflowing.
+
 ## v0.21.1
 
 - [#66](https://github.com/justjake/quickjs-emscripten/pull/66) (thanks to @BickelLukas) fixes `ReferenceError` when running in browser due to `global.process`

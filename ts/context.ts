@@ -163,6 +163,8 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   protected _true: QuickJSHandle | undefined = undefined
   /** @private */
   protected _global: QuickJSHandle | undefined = undefined
+  /** @private */
+  protected _BigInt: QuickJSHandle | undefined = undefined
 
   /**
    * Use {@link QuickJS.createVm} to create a QuickJSContext instance.
@@ -303,6 +305,23 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       .newHeapCharPointer(str)
       .consume((charHandle) => this.ffi.QTS_NewString(this.ctx.value, charHandle.value))
     return this.memory.heapValueHandle(ptr)
+  }
+
+  /**
+   * Create a QuickJS [bigint](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) value.
+   */
+  newBigInt(num: bigint): QuickJSHandle {
+    if (!this._BigInt) {
+      const bigIntHandle = this.getProp(this.global, "BigInt")
+      this.memory.manage(bigIntHandle)
+      this._BigInt = new StaticLifetime(bigIntHandle.value as JSValueConstPointer, this.runtime)
+    }
+
+    const bigIntHandle = this._BigInt
+    const asString = String(num)
+    return this.newString(asString).consume((handle) =>
+      this.unwrapResult(this.callFunction(bigIntHandle, this.undefined, handle))
+    )
   }
 
   /**
@@ -472,6 +491,15 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   getString(handle: QuickJSHandle): string {
     this.runtime.assertOwned(handle)
     return this.memory.consumeJSCharPointer(this.ffi.QTS_GetString(this.ctx.value, handle.value))
+  }
+
+  /**
+   * Converts `handle` to a Javascript bigint.
+   */
+  getBigInt(handle: QuickJSHandle): bigint {
+    this.runtime.assertOwned(handle)
+    const asString = this.getString(handle)
+    return BigInt(asString)
   }
 
   /**
@@ -736,6 +764,8 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
       return this.getString(handle)
     } else if (type === "number") {
       return this.getNumber(handle)
+    } else if (type === "bigint") {
+      return this.getBigInt(handle)
     } else if (type === "undefined") {
       return undefined
     }

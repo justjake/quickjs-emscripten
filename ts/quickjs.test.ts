@@ -60,6 +60,20 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
       numHandle.dispose()
     })
 
+    it("can round-trip a bigint", () => {
+      const int = 2n ** 64n
+      const numHandle = vm.newBigInt(int)
+      assert.equal(vm.getBigInt(numHandle), int)
+      numHandle.dispose()
+    })
+
+    it("can dump a bigint", () => {
+      const int = 2n ** 64n
+      const numHandle = vm.newBigInt(int)
+      assert.equal(vm.dump(numHandle), int)
+      numHandle.dispose()
+    })
+
     it("can round-trip a string", () => {
       const jsString = "an example 🤔 string with unicode 🎉"
       const stringHandle = vm.newString(jsString)
