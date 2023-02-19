@@ -12,6 +12,7 @@ module.exports = {
   // Specify "loader" for native ESM
   "loader": "ts-node/esm",
   "extensions": ["js", "ts", "tsx"],
+  "timeout": 5000,
 
   "watch-files": [
     "ts/**/*",
