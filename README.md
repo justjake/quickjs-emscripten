@@ -570,7 +570,7 @@ Intermediate object files from QuickJS end up in ./build/quickjs/.
 This project uses `emscripten 3.1.32`.
 
 - On ARM64, you should install `emscripten` on your machine. For example on macOS, `brew install emscripten`.
-- If *the correct version of emcc* is not in your PATH, compilation falls back to using Docker.
+- If _the correct version of emcc_ is not in your PATH, compilation falls back to using Docker.
   On ARM64, this is 10-50x slower than native compilation, but it's just fine on x64.
 
 Related NPM scripts:
