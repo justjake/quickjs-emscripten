@@ -81,6 +81,38 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
       stringHandle.dispose()
     })
 
+    it("can round-trip a global symbol", () => {
+      const handle = vm.newSymbolFor("potatoes")
+      const dumped = vm.getSymbol(handle)
+      assert.equal(dumped, Symbol.for("potatoes"))
+      handle.dispose()
+    })
+
+    it("can round trip a unique symbol's description", () => {
+      const symbol = Symbol("cats")
+      const handle = vm.newUniqueSymbol(symbol)
+      const dumped = vm.getSymbol(handle)
+      assert.notStrictEqual(dumped, symbol)
+      assert.notStrictEqual(dumped, Symbol.for("cats"))
+      assert.equal(dumped.description, symbol.description)
+      handle.dispose()
+    })
+
+    it("can dump a symbol", () => {
+      const cows = Symbol.for("cows")
+      const birds = Symbol("birds")
+
+      const handles = [vm.newSymbolFor(cows), vm.newUniqueSymbol(birds)]
+
+      const [cowDump, birdDump] = handles.map((h) => vm.dump(h))
+
+      assert.strictEqual(cowDump, cows)
+      assert.strictEqual(birdDump.description, birds.description)
+      assert.notStrictEqual(birdDump, birds)
+
+      handles.map((h) => h.dispose())
+    })
+
     it("can round-trip undefined", () => {
       assert.strictEqual(vm.dump(vm.undefined), undefined)
     })
