@@ -27,6 +27,7 @@ if [[ -n "$EMSDK_DOCKER_CACHE" ]]; then
     sysroot/lib/wasm32-emscripten/lto
     sysroot/lib/wasm32-emscripten/thinlto
     sysroot/lib/wasm32-emscripten/pic
+    symbol_lists
   )
   for dir in "${EMSDK_DOCKER_CACHE_PATHS[@]}"; do
     host="$EMSDK_DOCKER_CACHE/$dir"
