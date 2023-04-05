@@ -373,6 +373,9 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     return this.memory.heapValueHandle(ptr)
   }
 
+  /**
+   *  Create a new QuickJS [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer).
+   */
   newArrayBuffer(buffer: ArrayBufferLike): QuickJSHandle {
     const array = new Uint8Array(buffer);
     const ptr = this.memory
@@ -941,11 +944,17 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     return this.newError(error)
   }
 
+  /**
+   * Outputs QuickJS Objects in binary form
+   */
   encodeBinaryJSON(handle: QuickJSHandle): QuickJSHandle {
     const ptr = this.ffi.QTS_bjson_encode(this.ctx.value, handle.value)
     return this.memory.heapValueHandle(ptr)
   }
 
+  /**
+   * Outputs Handle of the given QuickJS Object in binary form
+   */
   decodeBinaryJSON(handle: QuickJSHandle): QuickJSHandle {
     const ptr = this.ffi.QTS_bjson_decode(this.ctx.value, handle.value)
     return this.memory.heapValueHandle(ptr)
