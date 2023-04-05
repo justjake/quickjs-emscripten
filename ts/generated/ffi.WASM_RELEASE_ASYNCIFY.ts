@@ -86,6 +86,9 @@ export class QuickJSAsyncFFI {
   QTS_NewArray: (ctx: JSContextPointer) => JSValuePointer =
     this.module.cwrap("QTS_NewArray", "number", ["number"])
 
+  QTS_NewArrayBuffer: (ctx: JSContextPointer, buffer: JSVoidPointer, length: number) => JSValuePointer =
+    this.module.cwrap("QTS_NewArrayBuffer", "number", ["number","number","number"])
+
   QTS_NewFloat64: (ctx: JSContextPointer, num: number) => JSValuePointer =
     this.module.cwrap("QTS_NewFloat64", "number", ["number","number"])
 
@@ -190,4 +193,10 @@ export class QuickJSAsyncFFI {
 
   QTS_RuntimeDisableModuleLoader: (rt: JSRuntimePointer) => void =
     this.module.cwrap("QTS_RuntimeDisableModuleLoader", null, ["number"])
+
+  QTS_bjson_encode: (ctx: JSContextPointer, val: JSValuePointer | JSValueConstPointer) => JSValuePointer =
+    this.module.cwrap("QTS_bjson_encode", "number", ["number","number"])
+
+  QTS_bjson_decode: (ctx: JSContextPointer, data: JSValuePointer | JSValueConstPointer) => JSValuePointer =
+    this.module.cwrap("QTS_bjson_decode", "number", ["number","number"])
 }

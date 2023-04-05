@@ -373,6 +373,14 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     return this.memory.heapValueHandle(ptr)
   }
 
+  newArrayBuffer(buffer: ArrayBufferLike): QuickJSHandle {
+    const array = new Uint8Array(buffer);
+    const ptr = this.memory
+      .newHeapBufferPointer(array)
+      .consume((bufferHandle) => this.ffi.QTS_NewArrayBuffer(this.ctx.value, bufferHandle.value, array.length))
+    return this.memory.heapValueHandle(ptr)
+  }
+
   /**
    * Create a new [[QuickJSDeferredPromise]]. Use `deferred.resolve(handle)` and
    * `deferred.reject(handle)` to fulfill the promise handle available at `deferred.handle`.
@@ -931,5 +939,15 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     }
 
     return this.newError(error)
+  }
+
+  encodeBinaryJSON(handle: QuickJSHandle): QuickJSHandle {
+    const ptr = this.ffi.QTS_bjson_encode(this.ctx.value, handle.value)
+    return this.memory.heapValueHandle(ptr)
+  }
+
+  decodeBinaryJSON(handle: QuickJSHandle): QuickJSHandle {
+    const ptr = this.ffi.QTS_bjson_decode(this.ctx.value, handle.value)
+    return this.memory.heapValueHandle(ptr)
   }
 }

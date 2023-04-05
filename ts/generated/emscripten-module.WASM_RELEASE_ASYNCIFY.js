@@ -52,7 +52,6 @@ if(a.preInit)for("function"==typeof a.preInit&&(a.preInit=[a.preInit]);0<a.preIn
 
   return QuickJSRaw.ready
 }
-
 );
 })();
 if (typeof exports === 'object' && typeof module === 'object')

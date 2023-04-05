@@ -4,6 +4,7 @@ import {
   JSContextPointerPointer,
   JSValueConstPointerPointer,
   JSValuePointerPointer,
+  JSVoidPointer,
 } from "./types-ffi"
 import { Lifetime } from "./lifetime"
 import { EitherFFI, QuickJSHandle } from "./types"
@@ -38,6 +39,13 @@ export class ModuleMemory {
     const numBytes = this.module.lengthBytesUTF8(string) + 1
     const ptr: OwnedHeapCharPointer = this.module._malloc(numBytes) as OwnedHeapCharPointer
     this.module.stringToUTF8(string, ptr, numBytes)
+    return new Lifetime(ptr, undefined, (value) => this.module._free(value))
+  }
+
+  newHeapBufferPointer(buffer: Uint8Array): Lifetime<JSVoidPointer> {
+    const numBytes = buffer.byteLength;
+    const ptr: JSVoidPointer= this.module._malloc(numBytes) as JSVoidPointer
+    this.module.HEAP8.set(buffer, ptr);
     return new Lifetime(ptr, undefined, (value) => this.module._free(value))
   }
 

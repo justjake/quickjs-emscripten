@@ -63,7 +63,6 @@ export interface LowLevelJavascriptVm<VmHandle> {
   newString(value: string): VmHandle
   newObject(prototype?: VmHandle): VmHandle
   newFunction(name: string, value: VmFunctionImplementation<VmHandle>): VmHandle
-
   // For accessing properties of objects
   getProp(handle: VmHandle, key: string | VmHandle): VmHandle
   setProp(handle: VmHandle, key: string | VmHandle, value: VmHandle): void

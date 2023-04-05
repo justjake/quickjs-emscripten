@@ -310,6 +310,10 @@ JSValue *QTS_NewArray(JSContext *ctx) {
   return jsvalue_to_heap(JS_NewArray(ctx));
 }
 
+JSValue *QTS_NewArrayBuffer(JSContext *ctx, JSVoid *buffer, size_t length) {
+  return jsvalue_to_heap(JS_NewArrayBufferCopy(ctx, (uint8_t*)buffer, length));
+}
+
 JSValue *QTS_NewFloat64(JSContext *ctx, double num) {
   return jsvalue_to_heap(JS_NewFloat64(ctx, num));
 }
@@ -816,4 +820,32 @@ void QTS_RuntimeEnableModuleLoader(JSRuntime *rt, int use_custom_normalize) {
 
 void QTS_RuntimeDisableModuleLoader(JSRuntime *rt) {
   JS_SetModuleLoaderFunc(rt, NULL, NULL, NULL);
+}
+
+// --------------------
+// Debugging QuickJS values 
+/*
+Warning: QuickJS's bjson format does not have a standard and can change, so don't use it
+storing data for later use.
+*/
+
+JSValue *QTS_bjson_encode(JSContext *ctx, JSValueConst *val) {
+  size_t length;
+  uint8_t *buffer = JS_WriteObject(ctx, &length, *val, JS_WRITE_OBJ_REFERENCE);
+  if (!buffer)
+    return jsvalue_to_heap(JS_EXCEPTION);
+
+  JSValue array = JS_NewArrayBufferCopy(ctx, buffer, length);
+  js_free(ctx, buffer);
+  return jsvalue_to_heap(array);
+}
+
+JSValue *QTS_bjson_decode(JSContext *ctx, JSValueConst *data) {
+  size_t length;
+  uint8_t *buffer = JS_GetArrayBuffer(ctx, &length, *data);
+  if (!buffer)
+   return jsvalue_to_heap(JS_EXCEPTION);
+  
+  JSValue value = JS_ReadObject(ctx, buffer, length, 0);
+  return jsvalue_to_heap(value);
 }
