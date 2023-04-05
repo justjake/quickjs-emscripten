@@ -946,6 +946,8 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
 
   /**
    * Outputs QuickJS Objects in binary form
+   * 
+   * **WARNING**: QuickJS's binary JSON doesn't have a standard so expect it to change between version
    */
   encodeBinaryJSON(handle: QuickJSHandle): QuickJSHandle {
     const ptr = this.ffi.QTS_bjson_encode(this.ctx.value, handle.value)

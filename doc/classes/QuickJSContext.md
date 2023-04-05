@@ -296,7 +296,7 @@ Outputs Handle of the given QuickJS Object in binary form
 
 #### Defined in
 
-[ts/context.ts:958](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L958)
+[ts/context.ts:960](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L960)
 
 ___
 
@@ -380,6 +380,8 @@ ___
 
 Outputs QuickJS Objects in binary form
 
+**WARNING**: QuickJS's binary JSON doesn't have a standard so expect it to change between version
+
 #### Parameters
 
 | Name | Type |
@@ -392,7 +394,7 @@ Outputs QuickJS Objects in binary form
 
 #### Defined in
 
-[ts/context.ts:950](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L950)
+[ts/context.ts:952](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L952)
 
 ___
 
