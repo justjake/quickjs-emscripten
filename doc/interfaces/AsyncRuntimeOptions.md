@@ -33,7 +33,7 @@
 
 #### Defined in
 
-[ts/types.ts:116](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L116)
+[ts/types.ts:116](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L116)
 
 ___
 
@@ -47,7 +47,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:110](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L110)
+[ts/types.ts:110](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L110)
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:111](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L111)
+[ts/types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L111)
 
 ___
 
@@ -75,7 +75,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:112](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L112)
+[ts/types.ts:112](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L112)
 
 ___
 
@@ -85,7 +85,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:134](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L134)
+[ts/types.ts:134](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L134)
 
 ___
 
@@ -99,7 +99,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:114](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L114)
+[ts/types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L114)
 
 ___
 
@@ -113,7 +113,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:115](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L115)
+[ts/types.ts:115](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L115)
 
 ___
 
@@ -127,4 +127,4 @@ ___
 
 #### Defined in
 
-[ts/types.ts:117](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L117)
+[ts/types.ts:117](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L117)

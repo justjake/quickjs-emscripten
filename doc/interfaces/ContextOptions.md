@@ -20,4 +20,4 @@ To omit all intrinsics, pass an empty array.
 
 #### Defined in
 
-[ts/types.ts:183](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L183)
+[ts/types.ts:183](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L183)

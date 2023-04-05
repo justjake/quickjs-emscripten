@@ -24,7 +24,7 @@ To remove the limit, set to `0`.
 
 #### Defined in
 
-[ts/module.ts:87](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module.ts#L87)
+[ts/module.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module.ts#L87)
 
 ___
 
@@ -36,7 +36,7 @@ Memory limit, in bytes, of WebAssembly heap memory used by the QuickJS VM.
 
 #### Defined in
 
-[ts/module.ts:81](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module.ts#L81)
+[ts/module.ts:81](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module.ts#L81)
 
 ___
 
@@ -48,7 +48,7 @@ Module loader for any `import` statements or expressions.
 
 #### Defined in
 
-[ts/module.ts:92](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module.ts#L92)
+[ts/module.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module.ts#L92)
 
 ___
 
@@ -61,4 +61,4 @@ See [shouldInterruptAfterDeadline](../modules.md#shouldinterruptafterdeadline).
 
 #### Defined in
 
-[ts/module.ts:76](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module.ts#L76)
+[ts/module.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module.ts#L76)

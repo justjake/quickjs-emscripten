@@ -93,7 +93,7 @@ Use {@link QuickJS.createVm} to create a QuickJSContext instance.
 
 #### Defined in
 
-[ts/context.ts:172](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L172)
+[ts/context.ts:172](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L172)
 
 ## Properties
 
@@ -109,7 +109,7 @@ The runtime that created this context.
 
 #### Defined in
 
-[ts/context-asyncify.ts:25](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context-asyncify.ts#L25)
+[ts/context-asyncify.ts:25](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context-asyncify.ts#L25)
 
 ## Accessors
 
@@ -127,7 +127,7 @@ QuickJSContext.alive
 
 #### Defined in
 
-[ts/context.ts:199](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L199)
+[ts/context.ts:199](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L199)
 
 ___
 
@@ -147,7 +147,7 @@ QuickJSContext.false
 
 #### Defined in
 
-[ts/context.ts:257](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L257)
+[ts/context.ts:257](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L257)
 
 ___
 
@@ -169,7 +169,7 @@ QuickJSContext.global
 
 #### Defined in
 
-[ts/context.ts:272](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L272)
+[ts/context.ts:272](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L272)
 
 ___
 
@@ -189,7 +189,7 @@ QuickJSContext.null
 
 #### Defined in
 
-[ts/context.ts:231](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L231)
+[ts/context.ts:231](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L231)
 
 ___
 
@@ -209,7 +209,7 @@ QuickJSContext.true
 
 #### Defined in
 
-[ts/context.ts:244](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L244)
+[ts/context.ts:244](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L244)
 
 ___
 
@@ -229,7 +229,7 @@ QuickJSContext.undefined
 
 #### Defined in
 
-[ts/context.ts:218](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L218)
+[ts/context.ts:218](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L218)
 
 ## Methods
 
@@ -267,7 +267,7 @@ value.
 
 #### Defined in
 
-[ts/context.ts:691](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L691)
+[ts/context.ts:691](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L691)
 
 ___
 
@@ -293,7 +293,7 @@ Outputs Handle of the given QuickJS Object in binary form
 
 #### Defined in
 
-[ts/context.ts:960](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L960)
+[ts/context.ts:960](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L960)
 
 ___
 
@@ -321,7 +321,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:642](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L642)
+[ts/context.ts:642](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L642)
 
 ___
 
@@ -344,7 +344,7 @@ will result in an error.
 
 #### Defined in
 
-[ts/context.ts:209](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L209)
+[ts/context.ts:209](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L209)
 
 ___
 
@@ -371,7 +371,7 @@ Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Defined in
 
-[ts/context.ts:808](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L808)
+[ts/context.ts:808](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L808)
 
 ___
 
@@ -399,7 +399,7 @@ Outputs QuickJS Objects in binary form
 
 #### Defined in
 
-[ts/context.ts:952](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L952)
+[ts/context.ts:952](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L952)
 
 ___
 
@@ -444,7 +444,7 @@ interrupted, the error will have name `InternalError` and message
 
 #### Defined in
 
-[ts/context.ts:738](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L738)
+[ts/context.ts:738](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L738)
 
 ___
 
@@ -468,7 +468,7 @@ Asyncified version of [evalCode](QuickJSAsyncContext.md#evalcode).
 
 #### Defined in
 
-[ts/context-asyncify.ts:38](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context-asyncify.ts#L38)
+[ts/context-asyncify.ts:38](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context-asyncify.ts#L38)
 
 ___
 
@@ -494,7 +494,7 @@ Converts `handle` to a Javascript bigint.
 
 #### Defined in
 
-[ts/context.ts:547](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L547)
+[ts/context.ts:547](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L547)
 
 ___
 
@@ -522,7 +522,7 @@ Converts `handle` into a Javascript number.
 
 #### Defined in
 
-[ts/context.ts:518](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L518)
+[ts/context.ts:518](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L518)
 
 ___
 
@@ -550,7 +550,7 @@ Get a property from a JSValue.
 
 #### Defined in
 
-[ts/context.ts:606](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L606)
+[ts/context.ts:606](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L606)
 
 ___
 
@@ -576,7 +576,7 @@ Converts `handle` to a Javascript string.
 
 #### Defined in
 
-[ts/context.ts:526](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L526)
+[ts/context.ts:526](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L526)
 
 ___
 
@@ -603,7 +603,7 @@ registry in the guest, it will be created with Symbol.for on the host.
 
 #### Defined in
 
-[ts/context.ts:535](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L535)
+[ts/context.ts:535](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L535)
 
 ___
 
@@ -624,7 +624,7 @@ Create a new QuickJS [array](https://developer.mozilla.org/en-US/docs/Web/JavaSc
 
 #### Defined in
 
-[ts/context.ts:371](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L371)
+[ts/context.ts:371](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L371)
 
 ___
 
@@ -650,7 +650,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:379](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L379)
+[ts/context.ts:379](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L379)
 
 ___
 
@@ -683,7 +683,7 @@ See [Emscripten's docs on Asyncify](https://emscripten.org/docs/porting/asyncify
 
 #### Defined in
 
-[ts/context-asyncify.ts:84](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context-asyncify.ts#L84)
+[ts/context-asyncify.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context-asyncify.ts#L84)
 
 ___
 
@@ -709,7 +709,7 @@ Create a QuickJS [bigint](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 
 #### Defined in
 
-[ts/context.ts:337](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L337)
+[ts/context.ts:337](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L337)
 
 ___
 
@@ -735,7 +735,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:473](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L473)
+[ts/context.ts:473](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L473)
 
 ▸ **newError**(`message`): [`QuickJSHandle`](../modules.md#quickjshandle)
 
@@ -755,7 +755,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:474](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L474)
+[ts/context.ts:474](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L474)
 
 ▸ **newError**(): [`QuickJSHandle`](../modules.md#quickjshandle)
 
@@ -769,7 +769,7 @@ ___
 
 #### Defined in
 
-[ts/context.ts:475](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L475)
+[ts/context.ts:475](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L475)
 
 ___
 
@@ -811,7 +811,7 @@ return deferred.handle
 
 #### Defined in
 
-[ts/context.ts:467](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L467)
+[ts/context.ts:467](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L467)
 
 ___
 
@@ -837,7 +837,7 @@ Converts a Javascript number into a QuickJS value.
 
 #### Defined in
 
-[ts/context.ts:296](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L296)
+[ts/context.ts:296](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L296)
 
 ___
 
@@ -864,7 +864,7 @@ Create a new QuickJS [object](https://developer.mozilla.org/en-US/docs/Web/JavaS
 
 #### Defined in
 
-[ts/context.ts:357](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L357)
+[ts/context.ts:357](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L357)
 
 ___
 
@@ -887,7 +887,7 @@ resources; see the documentation on [QuickJSDeferredPromise](QuickJSDeferredProm
 
 #### Defined in
 
-[ts/context.ts:393](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L393)
+[ts/context.ts:393](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L393)
 
 ▸ **newPromise**(`promise`): [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
 
@@ -913,7 +913,7 @@ You can still resolve/reject the created promise "early" using its methods.
 
 #### Defined in
 
-[ts/context.ts:401](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L401)
+[ts/context.ts:401](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L401)
 
 ▸ **newPromise**(`newPromiseFn`): [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
 
@@ -938,7 +938,7 @@ You can still resolve/reject the created promise "early" using its methods.
 
 #### Defined in
 
-[ts/context.ts:408](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L408)
+[ts/context.ts:408](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L408)
 
 ___
 
@@ -964,7 +964,7 @@ Create a QuickJS [string](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 
 #### Defined in
 
-[ts/context.ts:303](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L303)
+[ts/context.ts:303](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L303)
 
 ___
 
@@ -991,7 +991,7 @@ All symbols created with the same key will be the same value.
 
 #### Defined in
 
-[ts/context.ts:326](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L326)
+[ts/context.ts:326](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L326)
 
 ___
 
@@ -1018,7 +1018,7 @@ No two symbols created with this function will be the same value.
 
 #### Defined in
 
-[ts/context.ts:314](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L314)
+[ts/context.ts:314](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L314)
 
 ___
 
@@ -1049,7 +1049,7 @@ You may need to call [executePendingJobs](QuickJSRuntime.md#executependingjobs) 
 
 #### Defined in
 
-[ts/context.ts:563](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L563)
+[ts/context.ts:563](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L563)
 
 ___
 
@@ -1082,7 +1082,7 @@ properties.
 
 #### Defined in
 
-[ts/context.ts:627](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L627)
+[ts/context.ts:627](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L627)
 
 ___
 
@@ -1110,7 +1110,7 @@ Throw an error in the VM, interrupted whatever current execution is in progress 
 
 #### Defined in
 
-[ts/context.ts:768](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L768)
+[ts/context.ts:768](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L768)
 
 ___
 
@@ -1139,7 +1139,7 @@ Does not support BigInt values correctly.
 
 #### Defined in
 
-[ts/context.ts:509](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L509)
+[ts/context.ts:509](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L509)
 
 ___
 
@@ -1174,4 +1174,4 @@ If the result is an error, converts the error to a native object and throws the 
 
 #### Defined in
 
-[ts/context.ts:837](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L837)
+[ts/context.ts:837](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L837)

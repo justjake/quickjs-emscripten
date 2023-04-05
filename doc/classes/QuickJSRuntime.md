@@ -76,7 +76,7 @@ A context here may be allocated if one is needed by the runtime, eg for [compute
 
 #### Defined in
 
-[ts/runtime.ts:84](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L84)
+[ts/runtime.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L84)
 
 ## Accessors
 
@@ -94,7 +94,7 @@ A context here may be allocated if one is needed by the runtime, eg for [compute
 
 #### Defined in
 
-[ts/runtime.ts:126](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L126)
+[ts/runtime.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L126)
 
 ## Methods
 
@@ -118,7 +118,7 @@ Assert that `handle` is owned by this runtime.
 
 #### Defined in
 
-[ts/runtime.ts:326](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L326)
+[ts/runtime.ts:326](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L326)
 
 ___
 
@@ -138,7 +138,7 @@ For a human-digestible representation, see [dumpMemoryUsage](QuickJSRuntime.md#d
 
 #### Defined in
 
-[ts/runtime.ts:295](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L295)
+[ts/runtime.ts:295](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L295)
 
 ___
 
@@ -158,7 +158,7 @@ Dispose of the underlying resources used by this object.
 
 #### Defined in
 
-[ts/runtime.ts:130](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L130)
+[ts/runtime.ts:130](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L130)
 
 ___
 
@@ -175,7 +175,7 @@ For programmatic access to this information, see [computeMemoryUsage](QuickJSRun
 
 #### Defined in
 
-[ts/runtime.ts:306](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L306)
+[ts/runtime.ts:306](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L306)
 
 ___
 
@@ -208,7 +208,7 @@ functions or rejected promises. Those errors are available by calling
 
 #### Defined in
 
-[ts/runtime.ts:240](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L240)
+[ts/runtime.ts:240](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L240)
 
 ___
 
@@ -227,7 +227,7 @@ true if there is at least one pendingJob queued up.
 
 #### Defined in
 
-[ts/runtime.ts:191](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L191)
+[ts/runtime.ts:191](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L191)
 
 ___
 
@@ -247,7 +247,7 @@ ___
 
 #### Defined in
 
-[ts/runtime.ts:134](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L134)
+[ts/runtime.ts:134](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L134)
 
 ___
 
@@ -264,7 +264,7 @@ See [setInterruptHandler](QuickJSRuntime.md#setinterrupthandler).
 
 #### Defined in
 
-[ts/runtime.ts:216](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L216)
+[ts/runtime.ts:216](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L216)
 
 ___
 
@@ -280,7 +280,7 @@ Remove the the loader set by [setModuleLoader](QuickJSRuntime.md#setmoduleloader
 
 #### Defined in
 
-[ts/runtime.ts:178](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L178)
+[ts/runtime.ts:178](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L178)
 
 ___
 
@@ -306,7 +306,7 @@ The interrupt handler can be removed with [removeInterruptHandler](QuickJSRuntim
 
 #### Defined in
 
-[ts/runtime.ts:204](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L204)
+[ts/runtime.ts:204](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L204)
 
 ___
 
@@ -329,7 +329,7 @@ To remove the limit, set to `0`.
 
 #### Defined in
 
-[ts/runtime.ts:314](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L314)
+[ts/runtime.ts:314](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L314)
 
 ___
 
@@ -352,7 +352,7 @@ To remove the limit, set to `-1`.
 
 #### Defined in
 
-[ts/runtime.ts:280](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L280)
+[ts/runtime.ts:280](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L280)
 
 ___
 
@@ -378,4 +378,4 @@ The loader can be removed with [removeModuleLoader](QuickJSRuntime.md#removemodu
 
 #### Defined in
 
-[ts/runtime.ts:169](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L169)
+[ts/runtime.ts:169](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L169)

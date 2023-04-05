@@ -43,7 +43,7 @@ Error.constructor
 
 #### Defined in
 
-[ts/errors.ts:8](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/errors.ts#L8)
+[ts/errors.ts:8](https://github.com/justjake/quickjs-emscripten/blob/main/ts/errors.ts#L8)
 
 ## Properties
 
@@ -69,4 +69,4 @@ Error.name
 
 #### Defined in
 
-[ts/errors.ts:7](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/errors.ts#L7)
+[ts/errors.ts:7](https://github.com/justjake/quickjs-emscripten/blob/main/ts/errors.ts#L7)
