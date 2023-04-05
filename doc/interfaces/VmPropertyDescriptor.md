@@ -31,7 +31,7 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 #### Defined in
 
-[ts/vm-interface.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L85)
+[ts/vm-interface.ts:84](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/vm-interface.ts#L84)
 
 ___
 
@@ -41,7 +41,7 @@ ___
 
 #### Defined in
 
-[ts/vm-interface.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L86)
+[ts/vm-interface.ts:85](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/vm-interface.ts#L85)
 
 ___
 
@@ -51,7 +51,7 @@ ___
 
 #### Defined in
 
-[ts/vm-interface.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L84)
+[ts/vm-interface.ts:83](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/vm-interface.ts#L83)
 
 ## Methods
 
@@ -65,7 +65,7 @@ ___
 
 #### Defined in
 
-[ts/vm-interface.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L87)
+[ts/vm-interface.ts:86](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/vm-interface.ts#L86)
 
 ___
 
@@ -85,4 +85,4 @@ ___
 
 #### Defined in
 
-[ts/vm-interface.ts:88](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L88)
+[ts/vm-interface.ts:87](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/vm-interface.ts#L87)

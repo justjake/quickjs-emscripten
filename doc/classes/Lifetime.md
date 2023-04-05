@@ -87,7 +87,7 @@ the creator.
 
 #### Defined in
 
-[ts/lifetime.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L42)
+[ts/lifetime.ts:42](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L42)
 
 ## Properties
 
@@ -97,7 +97,7 @@ the creator.
 
 #### Defined in
 
-[ts/lifetime.ts:31](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L31)
+[ts/lifetime.ts:31](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L31)
 
 ___
 
@@ -107,7 +107,7 @@ ___
 
 #### Defined in
 
-[ts/lifetime.ts:32](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L32)
+[ts/lifetime.ts:32](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L32)
 
 ___
 
@@ -177,7 +177,7 @@ ___
 
 #### Defined in
 
-[ts/lifetime.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L49)
+[ts/lifetime.ts:49](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L49)
 
 ___
 
@@ -191,7 +191,7 @@ ___
 
 #### Defined in
 
-[ts/lifetime.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L68)
+[ts/lifetime.ts:68](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L68)
 
 ___
 
@@ -205,7 +205,7 @@ ___
 
 #### Defined in
 
-[ts/lifetime.ts:64](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L64)
+[ts/lifetime.ts:64](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L64)
 
 ___
 
@@ -224,7 +224,7 @@ may become invalid, leading to memory errors.
 
 #### Defined in
 
-[ts/lifetime.ts:59](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L59)
+[ts/lifetime.ts:59](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L59)
 
 ## Methods
 
@@ -254,7 +254,7 @@ the result of `map(this)`.
 
 #### Defined in
 
-[ts/lifetime.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L92)
+[ts/lifetime.ts:92](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L92)
 
 ▸ **consume**<`O`\>(`map`): `O`
 
@@ -276,7 +276,7 @@ the result of `map(this)`.
 
 #### Defined in
 
-[ts/lifetime.ts:95](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L95)
+[ts/lifetime.ts:95](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L95)
 
 ___
 
@@ -296,7 +296,7 @@ Dispose of [value](Lifetime.md#value) and perform cleanup.
 
 #### Defined in
 
-[ts/lifetime.ts:106](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L106)
+[ts/lifetime.ts:106](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L106)
 
 ___
 
@@ -312,4 +312,4 @@ Create a new handle pointing to the same [value](Lifetime.md#value).
 
 #### Defined in
 
-[ts/lifetime.ts:75](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L75)
+[ts/lifetime.ts:75](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L75)

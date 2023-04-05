@@ -49,7 +49,7 @@ Lifetimes. See [withScope](Scope.md#withscope). and [withScopeAsync](Scope.md#wi
 
 #### Defined in
 
-[ts/lifetime.ts:265](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L265)
+[ts/lifetime.ts:265](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L265)
 
 ## Methods
 
@@ -69,7 +69,7 @@ Dispose of the underlying resources used by this object.
 
 #### Defined in
 
-[ts/lifetime.ts:269](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L269)
+[ts/lifetime.ts:269](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L269)
 
 ___
 
@@ -97,7 +97,7 @@ Track `lifetime` so that it is disposed when this scope is disposed.
 
 #### Defined in
 
-[ts/lifetime.ts:260](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L260)
+[ts/lifetime.ts:260](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L260)
 
 ___
 
@@ -129,7 +129,7 @@ automatically disposed after the block returns.
 
 #### Defined in
 
-[ts/lifetime.ts:205](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L205)
+[ts/lifetime.ts:205](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L205)
 
 ___
 
@@ -160,7 +160,7 @@ block returns.
 
 #### Defined in
 
-[ts/lifetime.ts:242](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L242)
+[ts/lifetime.ts:242](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L242)
 
 ___
 
@@ -189,4 +189,4 @@ ___
 
 #### Defined in
 
-[ts/lifetime.ts:218](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L218)
+[ts/lifetime.ts:218](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L218)

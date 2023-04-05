@@ -28,7 +28,7 @@
 
 #### Defined in
 
-[ts/types.ts:97](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L97)
+[ts/types.ts:97](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L97)
 
 ### JSModuleNormalizer
 
@@ -48,4 +48,4 @@
 
 #### Defined in
 
-[ts/types.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L92)
+[ts/types.ts:92](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L92)

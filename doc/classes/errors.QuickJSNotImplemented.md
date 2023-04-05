@@ -52,4 +52,4 @@ Error.name
 
 #### Defined in
 
-[ts/errors.ts:22](https://github.com/justjake/quickjs-emscripten/blob/main/ts/errors.ts#L22)
+[ts/errors.ts:22](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/errors.ts#L22)

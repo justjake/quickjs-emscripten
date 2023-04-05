@@ -104,7 +104,7 @@
 
 #### Defined in
 
-[ts/context-asyncify.ts:12](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context-asyncify.ts#L12)
+[ts/context-asyncify.ts:12](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context-asyncify.ts#L12)
 
 ___
 
@@ -120,7 +120,7 @@ by the runtime.
 
 #### Defined in
 
-[ts/runtime.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L41)
+[ts/runtime.ts:41](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L41)
 
 ___
 
@@ -149,7 +149,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Defined in
 
-[ts/runtime.ts:33](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L33)
+[ts/runtime.ts:33](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/runtime.ts#L33)
 
 ___
 
@@ -159,7 +159,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L69)
+[ts/types.ts:69](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L69)
 
 ___
 
@@ -169,7 +169,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:70](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L70)
+[ts/types.ts:70](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L70)
 
 ___
 
@@ -179,7 +179,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L68)
+[ts/types.ts:68](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L68)
 
 ___
 
@@ -189,7 +189,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L86)
+[ts/types.ts:86](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L86)
 
 ___
 
@@ -199,7 +199,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L87)
+[ts/types.ts:87](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L87)
 
 ___
 
@@ -209,7 +209,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L85)
+[ts/types.ts:85](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L85)
 
 ___
 
@@ -233,7 +233,7 @@ You can do so from Javascript by calling the .dispose() method.
 
 #### Defined in
 
-[ts/types.ts:44](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L44)
+[ts/types.ts:44](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L44)
 
 ___
 
@@ -252,7 +252,7 @@ quickjs-emscripten takes care of disposing JSValueConst references.
 
 #### Defined in
 
-[ts/types.ts:27](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L27)
+[ts/types.ts:27](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L27)
 
 ___
 
@@ -284,7 +284,7 @@ ___
 
 #### Defined in
 
-[ts/types.ts:236](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L236)
+[ts/types.ts:236](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L236)
 
 ___
 
@@ -300,7 +300,7 @@ You must dispose of any handles you create by calling the `.dispose()` method.
 
 #### Defined in
 
-[ts/types.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L53)
+[ts/types.ts:53](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L53)
 
 ___
 
@@ -313,7 +313,7 @@ Property key for getting or setting a property on a handle with
 
 #### Defined in
 
-[ts/context.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/ts/context.ts#L41)
+[ts/context.ts:41](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/context.ts#L41)
 
 ___
 
@@ -326,7 +326,7 @@ be disposed.
 
 #### Defined in
 
-[ts/types.ts:15](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L15)
+[ts/types.ts:15](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L15)
 
 ___
 
@@ -346,7 +346,7 @@ Used as an optional.
 
 #### Defined in
 
-[ts/vm-interface.ts:5](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L5)
+[ts/vm-interface.ts:5](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/vm-interface.ts#L5)
 
 ___
 
@@ -365,7 +365,7 @@ Used as an optional for results of a Vm call.
 
 #### Defined in
 
-[ts/vm-interface.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L26)
+[ts/vm-interface.ts:26](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/vm-interface.ts#L26)
 
 ___
 
@@ -407,7 +407,7 @@ It should not retain a reference to its return value or thrown error.
 
 #### Defined in
 
-[ts/vm-interface.ts:40](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L40)
+[ts/vm-interface.ts:40](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/vm-interface.ts#L40)
 
 ## Variables
 
@@ -422,7 +422,7 @@ Suggested use case: interactive debugging only.
 
 #### Defined in
 
-[ts/variants.ts:173](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L173)
+[ts/variants.ts:173](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/variants.ts#L173)
 
 ___
 
@@ -443,7 +443,7 @@ debugging.
 
 #### Defined in
 
-[ts/variants.ts:139](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L139)
+[ts/variants.ts:139](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/variants.ts#L139)
 
 ___
 
@@ -455,7 +455,7 @@ This is the default asyncified build variant.
 
 #### Defined in
 
-[ts/variants.ts:188](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L188)
+[ts/variants.ts:188](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/variants.ts#L188)
 
 ___
 
@@ -468,7 +468,7 @@ This is the default (synchronous) build variant.
 
 #### Defined in
 
-[ts/variants.ts:155](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L155)
+[ts/variants.ts:155](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/variants.ts#L155)
 
 ## Functions
 
@@ -496,7 +496,7 @@ To work with the asyncified version of this library, see these functions:
 
 #### Defined in
 
-[ts/index.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/ts/index.ts#L91)
+[ts/index.ts:91](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/index.ts#L91)
 
 ___
 
@@ -515,7 +515,7 @@ least once.
 
 #### Defined in
 
-[ts/index.ts:104](https://github.com/justjake/quickjs-emscripten/blob/main/ts/index.ts#L104)
+[ts/index.ts:104](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/index.ts#L104)
 
 ___
 
@@ -542,7 +542,7 @@ successOrFail is Object
 
 #### Defined in
 
-[ts/vm-interface.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L18)
+[ts/vm-interface.ts:18](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/vm-interface.ts#L18)
 
 ___
 
@@ -569,7 +569,7 @@ successOrFail is Object
 
 #### Defined in
 
-[ts/vm-interface.ts:14](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L14)
+[ts/vm-interface.ts:14](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/vm-interface.ts#L14)
 
 ___
 
@@ -600,7 +600,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-[ts/index.ts:139](https://github.com/justjake/quickjs-emscripten/blob/main/ts/index.ts#L139)
+[ts/index.ts:139](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/index.ts#L139)
 
 ___
 
@@ -630,7 +630,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-[ts/index.ts:122](https://github.com/justjake/quickjs-emscripten/blob/main/ts/index.ts#L122)
+[ts/index.ts:122](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/index.ts#L122)
 
 ___
 
@@ -662,7 +662,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-[ts/variants.ts:97](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L97)
+[ts/variants.ts:97](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/variants.ts#L97)
 
 ___
 
@@ -689,7 +689,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Defined in
 
-[ts/variants.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/ts/variants.ts#L67)
+[ts/variants.ts:67](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/variants.ts#L67)
 
 ___
 
@@ -711,4 +711,4 @@ Returns an interrupt handler that interrupts Javascript execution after a deadli
 
 #### Defined in
 
-[ts/index.ts:150](https://github.com/justjake/quickjs-emscripten/blob/main/ts/index.ts#L150)
+[ts/index.ts:150](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/index.ts#L150)

@@ -36,7 +36,7 @@ Use [Scope](../classes/Scope.md) to manage cleaning up multiple disposables.
 
 #### Defined in
 
-[ts/lifetime.ts:21](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L21)
+[ts/lifetime.ts:21](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L21)
 
 ## Methods
 
@@ -52,4 +52,4 @@ Dispose of the underlying resources used by this object.
 
 #### Defined in
 
-[ts/lifetime.ts:15](https://github.com/justjake/quickjs-emscripten/blob/main/ts/lifetime.ts#L15)
+[ts/lifetime.ts:15](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/lifetime.ts#L15)

@@ -48,7 +48,7 @@ freed all the memory you've ever allocated.
 
 #### Defined in
 
-[ts/module-test.ts:21](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module-test.ts#L21)
+[ts/module-test.ts:21](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module-test.ts#L21)
 
 ## Properties
 
@@ -58,7 +58,7 @@ freed all the memory you've ever allocated.
 
 #### Defined in
 
-[ts/module-test.ts:19](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module-test.ts#L19)
+[ts/module-test.ts:19](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module-test.ts#L19)
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 #### Defined in
 
-[ts/module-test.ts:20](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module-test.ts#L20)
+[ts/module-test.ts:20](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module-test.ts#L20)
 
 ## Methods
 
@@ -82,7 +82,7 @@ ___
 
 #### Defined in
 
-[ts/module-test.ts:62](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module-test.ts#L62)
+[ts/module-test.ts:62](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module-test.ts#L62)
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 #### Defined in
 
-[ts/module-test.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module-test.ts#L51)
+[ts/module-test.ts:51](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module-test.ts#L51)
 
 ___
 
@@ -121,7 +121,7 @@ Pick.evalCode
 
 #### Defined in
 
-[ts/module-test.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module-test.ts#L47)
+[ts/module-test.ts:47](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module-test.ts#L47)
 
 ___
 
@@ -145,7 +145,7 @@ Pick.newContext
 
 #### Defined in
 
-[ts/module-test.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module-test.ts#L35)
+[ts/module-test.ts:35](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module-test.ts#L35)
 
 ___
 
@@ -169,4 +169,4 @@ Pick.newRuntime
 
 #### Defined in
 
-[ts/module-test.ts:23](https://github.com/justjake/quickjs-emscripten/blob/main/ts/module-test.ts#L23)
+[ts/module-test.ts:23](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/module-test.ts#L23)

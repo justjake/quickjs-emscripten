@@ -22,7 +22,7 @@ don't include the stack frames before this eval in the Error() backtraces
 
 #### Defined in
 
-[ts/types.ts:212](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L212)
+[ts/types.ts:212](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L212)
 
 ___
 
@@ -36,7 +36,7 @@ with JS_EvalFunction().
 
 #### Defined in
 
-[ts/types.ts:210](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L210)
+[ts/types.ts:210](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L210)
 
 ___
 
@@ -48,7 +48,7 @@ Force "strict" mode
 
 #### Defined in
 
-[ts/types.ts:202](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L202)
+[ts/types.ts:202](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L202)
 
 ___
 
@@ -60,7 +60,7 @@ Force "strip" mode
 
 #### Defined in
 
-[ts/types.ts:204](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L204)
+[ts/types.ts:204](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L204)
 
 ___
 
@@ -72,4 +72,4 @@ Global code (default)
 
 #### Defined in
 
-[ts/types.ts:200](https://github.com/justjake/quickjs-emscripten/blob/main/ts/types.ts#L200)
+[ts/types.ts:200](https://github.com/yourWaifu/quickjs-emscripten/blob/main/ts/types.ts#L200)
