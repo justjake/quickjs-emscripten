@@ -310,8 +310,10 @@ JSValue *QTS_NewArray(JSContext *ctx) {
   return jsvalue_to_heap(JS_NewArray(ctx));
 }
 
+void qts_free_buffer(JSRuntime *unused_rt, void *unused_opaque, void *ptr) { free(ptr); }
+
 JSValue *QTS_NewArrayBuffer(JSContext *ctx, JSVoid *buffer, size_t length) {
-  return jsvalue_to_heap(JS_NewArrayBufferCopy(ctx, (uint8_t*)buffer, length));
+  return jsvalue_to_heap(JS_NewArrayBuffer(ctx, (uint8_t*)buffer, length, qts_free_buffer, NULL, false));
 }
 
 JSValue *QTS_NewFloat64(JSContext *ctx, double num) {
@@ -821,13 +823,6 @@ void QTS_RuntimeEnableModuleLoader(JSRuntime *rt, int use_custom_normalize) {
 void QTS_RuntimeDisableModuleLoader(JSRuntime *rt) {
   JS_SetModuleLoaderFunc(rt, NULL, NULL, NULL);
 }
-
-// --------------------
-// Debugging QuickJS values 
-/*
-Warning: QuickJS's bjson format does not have a standard and can change, so don't use it
-storing data for later use.
-*/
 
 JSValue *QTS_bjson_encode(JSContext *ctx, JSValueConst *val) {
   size_t length;
