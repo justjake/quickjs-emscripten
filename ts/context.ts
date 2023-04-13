@@ -380,7 +380,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     const array = new Uint8Array(buffer);
     const ptr = this.memory
       .newHeapBufferPointer(array)
-      .consume((bufferHandle) => this.ffi.QTS_NewArrayBuffer(this.ctx.value, bufferHandle.value, array.length))
+      .consume((bufferHandle) => this.ffi.QTS_NewArrayBuffer(this.ctx.value, bufferHandle.value.pointer, array.length))
     return this.memory.heapValueHandle(ptr)
   }
 
@@ -548,6 +548,23 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     this.runtime.assertOwned(handle)
     const asString = this.getString(handle)
     return BigInt(asString)
+  }
+
+  /**
+   * Coverts `handle` to a JavaScript ArrayBuffer
+   */
+  getArrayBuffer(handle: QuickJSHandle) /*Lifetime<Uint8Array>*/ {
+    //this.runtime.assertOwned(handle);
+    const len = this.ffi.QTS_GetArrayBufferLength(this.ctx.value, handle.value);
+    const ptr: JSVoidPointer = this.module._malloc(len) as JSVoidPointer
+    if (!ptr) {
+      throw new Error("Couldn't allocate memory to get ArrayBuffer")
+    }
+    this.ffi.QTS_GetArrayBuffer(this.ctx.value, handle.value, ptr);
+    return new Lifetime(
+      this.module.HEAPU8.subarray(ptr, ptr + len),
+      undefined,
+      (value) => this.module._free(ptr));
   }
 
   /**

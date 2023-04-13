@@ -101,6 +101,12 @@ export class QuickJSAsyncFFI {
   QTS_GetString: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => JSBorrowedCharPointer =
     this.module.cwrap("QTS_GetString", "number", ["number","number"])
 
+  QTS_GetArrayBuffer: (ctx: JSContextPointer, data: JSValuePointer | JSValueConstPointer, result: JSVoidPointer) => number =
+    this.module.cwrap("QTS_GetArrayBuffer", "number", ["number","number","number"])
+
+  QTS_GetArrayBufferLength: (ctx: JSContextPointer, data: JSValuePointer | JSValueConstPointer) => number =
+    this.module.cwrap("QTS_GetArrayBufferLength", "number", ["number","number"])
+
   QTS_NewSymbol: (ctx: JSContextPointer, description: BorrowedHeapCharPointer, isGlobal: number) => JSValuePointer =
     this.module.cwrap("QTS_NewSymbol", "number", ["number","number","number"])
 

@@ -12,6 +12,14 @@ import { EitherFFI, QuickJSHandle } from "./types"
 /**
  * @private
  */
+type Buffer = {
+  pointer: JSVoidPointer,
+  numBytes: number,
+}
+
+/**
+ * @private
+ */
 export class ModuleMemory {
   constructor(public module: EitherModule) {}
 
@@ -42,11 +50,11 @@ export class ModuleMemory {
     return new Lifetime(ptr, undefined, (value) => this.module._free(value))
   }
 
-  newHeapBufferPointer(buffer: Uint8Array): Lifetime<JSVoidPointer> {
+  newHeapBufferPointer(buffer: Uint8Array): Lifetime<Buffer> {
     const numBytes = buffer.byteLength;
     const ptr: JSVoidPointer= this.module._malloc(numBytes) as JSVoidPointer
-    this.module.HEAP8.set(buffer, ptr);
-    return new Lifetime(ptr, undefined, (value) => this.module._free(value))
+    this.module.HEAPU8.set(buffer, ptr);
+    return new Lifetime({pointer: ptr, numBytes }, undefined, (value) => this.module._free(value.pointer))
   }
 
   consumeHeapCharPointer(ptr: OwnedHeapCharPointer): string {

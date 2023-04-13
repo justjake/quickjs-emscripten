@@ -334,6 +334,22 @@ JSBorrowedChar *QTS_GetString(JSContext *ctx, JSValueConst *value) {
   return JS_ToCString(ctx, *value);
 }
 
+size_t QTS_GetArrayBuffer(JSContext *ctx, JSValueConst *data, JSVoid *result) {
+  size_t length;
+  uint8_t *buffer = JS_GetArrayBuffer(ctx, &length, *data);
+  if (!buffer)
+    return 0;
+  memcpy(result, buffer, length);
+  return length;
+}
+
+// I don't know how to return two values in C, maybe allocate memory in stack?
+size_t QTS_GetArrayBufferLength(JSContext *ctx, JSValueConst *data) {
+  size_t length;
+  uint8_t *buffer = JS_GetArrayBuffer(ctx, &length, *data);
+  return length;
+}
+
 JSValue qts_get_symbol_key(JSContext *ctx, JSValueConst *value) {
   JSValue global = JS_GetGlobalObject(ctx);
   JSValue Symbol = JS_GetPropertyStr(ctx, global, "Symbol");
