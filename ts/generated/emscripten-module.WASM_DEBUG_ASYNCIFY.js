@@ -1191,6 +1191,7 @@ function unexportedRuntimeSymbol(sym) {
 // end include: runtime_debug.js
 // === Body ===
 
+function set_asyncify_stack_size(size) { Asyncify.StackSize = size || 81920; }
 function qts_host_call_function(ctx,this_ptr,argc,argv,magic_func_id) { const asyncify = {['handleSleep'] : Asyncify.handleSleep}; return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id); }
 function qts_host_interrupt_handler(rt) { const asyncify = undefined; return Module['callbacks']['shouldInterrupt'](asyncify, rt); }
 function qts_host_load_module_source(rt,ctx,module_name) { const asyncify = {['handleSleep'] : Asyncify.handleSleep}; const moduleNameString = UTF8ToString(module_name); return Module['callbacks']['loadModuleSource'](asyncify, rt, ctx, moduleNameString); }
@@ -1508,6 +1509,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       HEAPU32[((pnum)>>2)] = num;
       return 0;
     }
+
 
 
 
@@ -1925,7 +1927,8 @@ var wasmImports = {
   "qts_host_call_function": qts_host_call_function,
   "qts_host_interrupt_handler": qts_host_interrupt_handler,
   "qts_host_load_module_source": qts_host_load_module_source,
-  "qts_host_normalize_module": qts_host_normalize_module
+  "qts_host_normalize_module": qts_host_normalize_module,
+  "set_asyncify_stack_size": set_asyncify_stack_size
 };
 Asyncify.instrumentWasmImports(wasmImports);
 var asm = createWasm();
@@ -2154,7 +2157,7 @@ var _asyncify_start_rewind = createExportWrapper("asyncify_start_rewind");
 /** @type {function(...*):?} */
 var _asyncify_stop_rewind = createExportWrapper("asyncify_stop_rewind");
 var ___start_em_js = Module['___start_em_js'] = 86032;
-var ___stop_em_js = Module['___stop_em_js'] = 87027;
+var ___stop_em_js = Module['___stop_em_js'] = 87084;
 
 // include: postamble.js
 // === Auto-generated postamble setup entry stuff ===
