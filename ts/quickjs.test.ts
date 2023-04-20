@@ -980,6 +980,38 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       )
     })
   })
+
+  describe("ASYNCIFY_STACK_SIZE", () => {
+    // | ASYNCIFY_STACK_SIZE | Max Nesting Levels |
+    // |---------------------|--------------------|
+    // | 4096 (default)      | 12                 |
+    // | 81920               | 297                |
+    it("is enough to support at least 20 levels of function nesting", async () => {
+      // The nesting levels of the test cannot be too high, otherwise the
+      // node.js call stack will overflow when executing `yarn test`
+      let asyncFunctionCalls = 0
+      const asyncFn = async () => {
+        asyncFunctionCalls++
+      }
+      vm.newAsyncifiedFunction("asyncFn", asyncFn).consume((fn) =>
+        vm.setProp(vm.global, "asyncFn", fn)
+      )
+
+      await vm.evalCodeAsync(`
+        let nestingLevels = 0
+        function nestingFn() {
+          nestingLevels++
+          asyncFn()
+          if (nestingLevels < 20) {
+            nestingFn()
+          }
+        }
+        nestingFn();
+      `)
+
+      assert.equal(asyncFunctionCalls, 20, "20 levels of nesting")
+    })
+  })
 }
 
 describe("QuickJSContext", function () {
