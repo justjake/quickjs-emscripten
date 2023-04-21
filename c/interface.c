@@ -313,7 +313,9 @@ JSValue *QTS_NewArray(JSContext *ctx) {
 void qts_free_buffer(JSRuntime *unused_rt, void *unused_opaque, void *ptr) { free(ptr); }
 
 JSValue *QTS_NewArrayBuffer(JSContext *ctx, JSVoid *buffer, size_t length) {
-  return jsvalue_to_heap(JS_NewArrayBuffer(ctx, (uint8_t*)buffer, length, qts_free_buffer, NULL, false));
+  return jsvalue_to_heap(
+    JS_NewArrayBuffer(ctx, (uint8_t*)buffer, length, qts_free_buffer, NULL, false)
+  );
 }
 
 JSValue *QTS_NewFloat64(JSContext *ctx, double num) {
@@ -334,13 +336,16 @@ JSBorrowedChar *QTS_GetString(JSContext *ctx, JSValueConst *value) {
   return JS_ToCString(ctx, *value);
 }
 
-size_t QTS_GetArrayBuffer(JSContext *ctx, JSValueConst *data, JSVoid *result) {
+JSVoid *QTS_GetArrayBuffer(JSContext *ctx, JSValueConst *data) {
   size_t length;
   uint8_t *buffer = JS_GetArrayBuffer(ctx, &length, *data);
   if (!buffer)
     return 0;
+  uint8_t *result = malloc(length);
+  if (!result)
+    return result;
   memcpy(result, buffer, length);
-  return length;
+  return result;
 }
 
 // I don't know how to return two values in C, maybe allocate memory in stack?
