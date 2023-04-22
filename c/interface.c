@@ -215,10 +215,19 @@ int QTS_BuildIsSanitizeLeak() {
 #endif
 }
 
+#ifdef QTS_ASYNCIFY
+EM_JS(void, set_asyncify_stack_size, (size_t size), {
+  Asyncify.StackSize = size || 81920;
+});
+#endif
+
 /**
  * Set the stack size limit, in bytes. Set to 0 to disable.
  */
 void QTS_RuntimeSetMaxStackSize(JSRuntime *rt, size_t stack_size) {
+#ifdef QTS_ASYNCIFY
+  set_asyncify_stack_size(stack_size);
+#endif
   JS_SetMaxStackSize(rt, stack_size);
 }
 

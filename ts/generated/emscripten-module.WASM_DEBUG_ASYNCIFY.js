@@ -143,21 +143,21 @@ readAsync = (filename, onload, onerror) => {
 };
 
 // end include: node_shell_read.js
-  if (process.argv.length > 1) {
-    thisProgram = process.argv[1].replace(/\\/g, '/');
+  if (process['argv'].length > 1) {
+    thisProgram = process['argv'][1].replace(/\\/g, '/');
   }
 
-  arguments_ = process.argv.slice(2);
+  arguments_ = process['argv'].slice(2);
 
   // MODULARIZE will export the module in the proper place outside, we don't need to export here
 
   quit_ = (status, toThrow) => {
     if (keepRuntimeAlive()) {
-      process.exitCode = status;
+      process['exitCode'] = status;
       throw toThrow;
     }
     logExceptionOnExit(toThrow);
-    process.exit(status);
+    process['exit'](status);
   };
 
   Module['inspect'] = function () { return '[Emscripten Module object]'; };
@@ -451,7 +451,6 @@ function UTF8ArrayToString(heapOrArray, idx, maxBytesToRead) {
  * @return {string}
  */
 function UTF8ToString(ptr, maxBytesToRead) {
-  assert(typeof ptr == 'number');
   return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead) : '';
 }
 
@@ -629,7 +628,7 @@ function writeStackCookie() {
   // The stack grow downwards towards _emscripten_stack_get_end.
   // We write cookies to the final two words in the stack and detect if they are
   // ever overwritten.
-  HEAPU32[((max)>>2)] = 0x02135467;
+  HEAPU32[((max)>>2)] = 0x2135467;
   HEAPU32[(((max)+(4))>>2)] = 0x89BACDFE;
   // Also test the global address 0 for integrity.
   HEAPU32[0] = 0x63736d65; /* 'emsc' */
@@ -644,7 +643,7 @@ function checkStackCookie() {
   }
   var cookie1 = HEAPU32[((max)>>2)];
   var cookie2 = HEAPU32[(((max)+(4))>>2)];
-  if (cookie1 != 0x02135467 || cookie2 != 0x89BACDFE) {
+  if (cookie1 != 0x2135467 || cookie2 != 0x89BACDFE) {
     abort('Stack overflow! Stack cookie has been overwritten at ' + ptrToString(max) + ', expected hex dwords 0x89BACDFE and 0x2135467, but received ' + ptrToString(cookie2) + ' ' + ptrToString(cookie1));
   }
   // Also test the global address 0 for integrity.
@@ -915,8 +914,6 @@ function createExportWrapper(name, fixedasm) {
   };
 }
 
-// include: runtime_exceptions.js
-// end include: runtime_exceptions.js
 var wasmBinaryFile;
   wasmBinaryFile = 'emscripten-module.WASM_DEBUG_ASYNCIFY.wasm';
   if (!isDataURI(wasmBinaryFile)) {
@@ -938,7 +935,7 @@ function getBinary(file) {
   }
 }
 
-function getBinaryPromise(binaryFile) {
+function getBinaryPromise() {
   // If we don't have the binary yet, try to to load it asynchronously.
   // Fetch has some additional restrictions over XHR, like it can't be used on a file:// url.
   // See https://github.com/github/fetch/pull/92#issuecomment-140665932
@@ -946,82 +943,29 @@ function getBinaryPromise(binaryFile) {
   // So use fetch if it is available and the url is not a file, otherwise fall back to XHR.
   if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER)) {
     if (typeof fetch == 'function'
-      && !isFileURI(binaryFile)
+      && !isFileURI(wasmBinaryFile)
     ) {
-      return fetch(binaryFile, { credentials: 'same-origin' }).then(function(response) {
+      return fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function(response) {
         if (!response['ok']) {
-          throw "failed to load wasm binary file at '" + binaryFile + "'";
+          throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
         }
         return response['arrayBuffer']();
       }).catch(function () {
-          return getBinary(binaryFile);
+          return getBinary(wasmBinaryFile);
       });
     }
     else {
       if (readAsync) {
         // fetch is not available or url is file => try XHR (readAsync uses XHR internally)
         return new Promise(function(resolve, reject) {
-          readAsync(binaryFile, function(response) { resolve(new Uint8Array(/** @type{!ArrayBuffer} */(response))) }, reject)
+          readAsync(wasmBinaryFile, function(response) { resolve(new Uint8Array(/** @type{!ArrayBuffer} */(response))) }, reject)
         });
       }
     }
   }
 
   // Otherwise, getBinary should be able to get it synchronously
-  return Promise.resolve().then(function() { return getBinary(binaryFile); });
-}
-
-function instantiateArrayBuffer(binaryFile, imports, receiver) {
-  return getBinaryPromise(binaryFile).then(function(binary) {
-    return WebAssembly.instantiate(binary, imports);
-  }).then(function (instance) {
-    return instance;
-  }).then(receiver, function(reason) {
-    err('failed to asynchronously prepare wasm: ' + reason);
-
-    // Warn on some common problems.
-    if (isFileURI(wasmBinaryFile)) {
-      err('warning: Loading from a file URI (' + wasmBinaryFile + ') is not supported in most browsers. See https://emscripten.org/docs/getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing');
-    }
-    abort(reason);
-  });
-}
-
-function instantiateAsync(binary, binaryFile, imports, callback) {
-  if (!binary &&
-      typeof WebAssembly.instantiateStreaming == 'function' &&
-      !isDataURI(binaryFile) &&
-      // Don't use streaming for file:// delivered objects in a webview, fetch them synchronously.
-      !isFileURI(binaryFile) &&
-      // Avoid instantiateStreaming() on Node.js environment for now, as while
-      // Node.js v18.1.0 implements it, it does not have a full fetch()
-      // implementation yet.
-      //
-      // Reference:
-      //   https://github.com/emscripten-core/emscripten/pull/16917
-      !ENVIRONMENT_IS_NODE &&
-      typeof fetch == 'function') {
-    return fetch(binaryFile, { credentials: 'same-origin' }).then(function(response) {
-      // Suppress closure warning here since the upstream definition for
-      // instantiateStreaming only allows Promise<Repsponse> rather than
-      // an actual Response.
-      // TODO(https://github.com/google/closure-compiler/pull/3913): Remove if/when upstream closure is fixed.
-      /** @suppress {checkTypes} */
-      var result = WebAssembly.instantiateStreaming(response, imports);
-
-      return result.then(
-        callback,
-        function(reason) {
-          // We expect the most common failure cause to be a bad MIME type for the binary,
-          // in which case falling back to ArrayBuffer instantiation should work.
-          err('wasm streaming compile failed: ' + reason);
-          err('falling back to ArrayBuffer instantiation');
-          return instantiateArrayBuffer(binaryFile, imports, callback);
-        });
-    });
-  } else {
-    return instantiateArrayBuffer(binaryFile, imports, callback);
-  }
+  return Promise.resolve().then(function() { return getBinary(wasmBinaryFile); });
 }
 
 // Create the wasm instance.
@@ -1058,7 +1002,6 @@ function createWasm() {
 
     removeRunDependency('wasm-instantiate');
 
-    return exports;
   }
   // wait for the pthread pool (if any)
   addRunDependency('wasm-instantiate');
@@ -1078,13 +1021,68 @@ function createWasm() {
     receiveInstance(result['instance']);
   }
 
+  function instantiateArrayBuffer(receiver) {
+    return getBinaryPromise().then(function(binary) {
+      return WebAssembly.instantiate(binary, info);
+    }).then(function (instance) {
+      return instance;
+    }).then(receiver, function(reason) {
+      err('failed to asynchronously prepare wasm: ' + reason);
+
+      // Warn on some common problems.
+      if (isFileURI(wasmBinaryFile)) {
+        err('warning: Loading from a file URI (' + wasmBinaryFile + ') is not supported in most browsers. See https://emscripten.org/docs/getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing');
+      }
+      abort(reason);
+    });
+  }
+
+  function instantiateAsync() {
+    if (!wasmBinary &&
+        typeof WebAssembly.instantiateStreaming == 'function' &&
+        !isDataURI(wasmBinaryFile) &&
+        // Don't use streaming for file:// delivered objects in a webview, fetch them synchronously.
+        !isFileURI(wasmBinaryFile) &&
+        // Avoid instantiateStreaming() on Node.js environment for now, as while
+        // Node.js v18.1.0 implements it, it does not have a full fetch()
+        // implementation yet.
+        //
+        // Reference:
+        //   https://github.com/emscripten-core/emscripten/pull/16917
+        !ENVIRONMENT_IS_NODE &&
+        typeof fetch == 'function') {
+      return fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function(response) {
+        // Suppress closure warning here since the upstream definition for
+        // instantiateStreaming only allows Promise<Repsponse> rather than
+        // an actual Response.
+        // TODO(https://github.com/google/closure-compiler/pull/3913): Remove if/when upstream closure is fixed.
+        /** @suppress {checkTypes} */
+        var result = WebAssembly.instantiateStreaming(response, info);
+
+        return result.then(
+          receiveInstantiationResult,
+          function(reason) {
+            // We expect the most common failure cause to be a bad MIME type for the binary,
+            // in which case falling back to ArrayBuffer instantiation should work.
+            err('wasm streaming compile failed: ' + reason);
+            err('falling back to ArrayBuffer instantiation');
+            return instantiateArrayBuffer(receiveInstantiationResult);
+          });
+      });
+    } else {
+      return instantiateArrayBuffer(receiveInstantiationResult);
+    }
+  }
+
   // User shell pages can write their own Module.instantiateWasm = function(imports, successCallback) callback
   // to manually instantiate the Wasm module themselves. This allows pages to run the instantiation parallel
   // to any other async startup actions they are performing.
   // Also pthreads and wasm workers initialize the wasm instance through this path.
   if (Module['instantiateWasm']) {
     try {
-      return Module['instantiateWasm'](info, receiveInstance);
+      var exports = Module['instantiateWasm'](info, receiveInstance);
+      exports = Asyncify.instrumentWasmExports(exports);
+      return exports;
     } catch(e) {
       err('Module.instantiateWasm callback failed with error: ' + e);
         // If instantiation fails, reject the module ready promise.
@@ -1093,7 +1091,7 @@ function createWasm() {
   }
 
   // If instantiation fails, reject the module ready promise.
-  instantiateAsync(wasmBinary, wasmBinaryFile, info, receiveInstantiationResult).catch(readyPromiseReject);
+  instantiateAsync().catch(readyPromiseReject);
   return {}; // no exports yet; we'll fill them in later
 }
 
@@ -1170,7 +1168,7 @@ function missingLibrarySymbol(sym) {
       }
     });
   }
-  // Any symbol that is not included from the JS libary is also (by definition)
+  // Any symbol that is not included from the JS libary is also (by definttion)
   // not exported on the Module object.
   unexportedRuntimeSymbol(sym);
 }
@@ -1190,16 +1188,10 @@ function unexportedRuntimeSymbol(sym) {
   }
 }
 
-// Used by XXXXX_DEBUG settings to output debug messages.
-function dbg(text) {
-  // TODO(sbc): Make this configurable somehow.  Its not always convenient for
-  // logging to show up as errors.
-  console.error(text);
-}
-
 // end include: runtime_debug.js
 // === Body ===
 
+function set_asyncify_stack_size(size) { Asyncify.StackSize = size || 81920; }
 function qts_host_call_function(ctx,this_ptr,argc,argv,magic_func_id) { const asyncify = {['handleSleep'] : Asyncify.handleSleep}; return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id); }
 function qts_host_interrupt_handler(rt) { const asyncify = undefined; return Module['callbacks']['shouldInterrupt'](asyncify, rt); }
 function qts_host_load_module_source(rt,ctx,module_name) { const asyncify = {['handleSleep'] : Asyncify.handleSleep}; const moduleNameString = UTF8ToString(module_name); return Module['callbacks']['loadModuleSource'](asyncify, rt, ctx, moduleNameString); }
@@ -1229,19 +1221,20 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
      * @param {string} type
      */
   function getValue(ptr, type = 'i8') {
-    if (type.endsWith('*')) type = '*';
-    switch (type) {
-      case 'i1': return HEAP8[((ptr)>>0)];
-      case 'i8': return HEAP8[((ptr)>>0)];
-      case 'i16': return HEAP16[((ptr)>>1)];
-      case 'i32': return HEAP32[((ptr)>>2)];
-      case 'i64': return HEAP32[((ptr)>>2)];
-      case 'float': return HEAPF32[((ptr)>>2)];
-      case 'double': return HEAPF64[((ptr)>>3)];
-      case '*': return HEAPU32[((ptr)>>2)];
-      default: abort('invalid type for getValue: ' + type);
+      if (type.endsWith('*')) type = '*';
+      switch (type) {
+        case 'i1': return HEAP8[((ptr)>>0)];
+        case 'i8': return HEAP8[((ptr)>>0)];
+        case 'i16': return HEAP16[((ptr)>>1)];
+        case 'i32': return HEAP32[((ptr)>>2)];
+        case 'i64': return HEAP32[((ptr)>>2)];
+        case 'float': return HEAPF32[((ptr)>>2)];
+        case 'double': return HEAPF64[((ptr)>>3)];
+        case '*': return HEAPU32[((ptr)>>2)];
+        default: abort('invalid type for getValue: ' + type);
+      }
+      return null;
     }
-  }
 
   function ptrToString(ptr) {
       assert(typeof ptr === 'number');
@@ -1255,19 +1248,19 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
      * @param {string} type
      */
   function setValue(ptr, value, type = 'i8') {
-    if (type.endsWith('*')) type = '*';
-    switch (type) {
-      case 'i1': HEAP8[((ptr)>>0)] = value; break;
-      case 'i8': HEAP8[((ptr)>>0)] = value; break;
-      case 'i16': HEAP16[((ptr)>>1)] = value; break;
-      case 'i32': HEAP32[((ptr)>>2)] = value; break;
-      case 'i64': (tempI64 = [value>>>0,(tempDouble=value,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[((ptr)>>2)] = tempI64[0],HEAP32[(((ptr)+(4))>>2)] = tempI64[1]); break;
-      case 'float': HEAPF32[((ptr)>>2)] = value; break;
-      case 'double': HEAPF64[((ptr)>>3)] = value; break;
-      case '*': HEAPU32[((ptr)>>2)] = value; break;
-      default: abort('invalid type for setValue: ' + type);
+      if (type.endsWith('*')) type = '*';
+      switch (type) {
+        case 'i1': HEAP8[((ptr)>>0)] = value; break;
+        case 'i8': HEAP8[((ptr)>>0)] = value; break;
+        case 'i16': HEAP16[((ptr)>>1)] = value; break;
+        case 'i32': HEAP32[((ptr)>>2)] = value; break;
+        case 'i64': (tempI64 = [value>>>0,(tempDouble=value,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[((ptr)>>2)] = tempI64[0],HEAP32[(((ptr)+(4))>>2)] = tempI64[1]); break;
+        case 'float': HEAPF32[((ptr)>>2)] = value; break;
+        case 'double': HEAPF64[((ptr)>>3)] = value; break;
+        case '*': HEAPU32[((ptr)>>2)] = value; break;
+        default: abort('invalid type for setValue: ' + type);
+      }
     }
-  }
 
   function warnOnce(text) {
       if (!warnOnce.shown) warnOnce.shown = {};
@@ -1521,6 +1514,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
 
 
 
+
   function runAndAbortIfError(func) {
       try {
         return func();
@@ -1587,7 +1581,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
   function runtimeKeepalivePop() {
     }
   var Asyncify = {instrumentWasmImports:function(imports) {
-        var ASYNCIFY_IMPORTS = ["qts_host_call_function","qts_host_load_module_source","qts_host_normalize_module","invoke_*","emscripten_sleep","emscripten_wget","emscripten_wget_data","emscripten_idb_load","emscripten_idb_store","emscripten_idb_delete","emscripten_idb_exists","emscripten_idb_load_blob","emscripten_idb_store_blob","SDL_Delay","emscripten_scan_registers","emscripten_lazy_load_code","emscripten_fiber_swap","__load_secondary_module","fd_sync","__wasi_fd_sync","_emval_await","_dlopen_js","__asyncjs__*"];
+        var ASYNCIFY_IMPORTS = ["qts_host_call_function","qts_host_load_module_source","qts_host_normalize_module","invoke_*","emscripten_sleep","emscripten_wget","emscripten_wget_data","emscripten_idb_load","emscripten_idb_store","emscripten_idb_delete","emscripten_idb_exists","emscripten_idb_load_blob","emscripten_idb_store_blob","SDL_Delay","emscripten_scan_registers","emscripten_lazy_load_code","emscripten_fiber_swap","fd_sync","__wasi_fd_sync","_emval_await","_dlopen_js","__asyncjs__*"];
         for (var x in imports) {
           (function(x) {
             var original = imports[x];
@@ -1647,7 +1641,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
           })(x);
         }
         return ret;
-      },State:{Normal:0,Unwinding:1,Rewinding:2,Disabled:3},state:0,StackSize:4096,currData:null,handleSleepReturnValue:0,exportCallStack:[],callStackNameToId:{},callStackIdToName:{},callStackId:0,asyncPromiseHandlers:null,sleepCallbacks:[],getCallStackId:function(funcName) {
+      },State:{Normal:0,Unwinding:1,Rewinding:2,Disabled:3},state:0,StackSize:81920,currData:null,handleSleepReturnValue:0,exportCallStack:[],callStackNameToId:{},callStackIdToName:{},callStackId:0,asyncPromiseHandlers:null,sleepCallbacks:[],getCallStackId:function(funcName) {
         var id = Asyncify.callStackNameToId[funcName];
         if (id === undefined) {
           id = Asyncify.callStackId++;
@@ -1933,7 +1927,8 @@ var wasmImports = {
   "qts_host_call_function": qts_host_call_function,
   "qts_host_interrupt_handler": qts_host_interrupt_handler,
   "qts_host_load_module_source": qts_host_load_module_source,
-  "qts_host_normalize_module": qts_host_normalize_module
+  "qts_host_normalize_module": qts_host_normalize_module,
+  "set_asyncify_stack_size": set_asyncify_stack_size
 };
 Asyncify.instrumentWasmImports(wasmImports);
 var asm = createWasm();
@@ -2162,7 +2157,7 @@ var _asyncify_start_rewind = createExportWrapper("asyncify_start_rewind");
 /** @type {function(...*):?} */
 var _asyncify_stop_rewind = createExportWrapper("asyncify_stop_rewind");
 var ___start_em_js = Module['___start_em_js'] = 86032;
-var ___stop_em_js = Module['___stop_em_js'] = 87027;
+var ___stop_em_js = Module['___stop_em_js'] = 87084;
 
 // include: postamble.js
 // === Auto-generated postamble setup entry stuff ===
@@ -2201,7 +2196,7 @@ var missingLibrarySymbols = [
   'asyncLoad',
   'alignMemory',
   'mmapAlloc',
-  'HandleAllocator',
+  'handleAllocator',
   'getNativeTypeSize',
   'STACK_SIZE',
   'STACK_ALIGN',
@@ -2295,9 +2290,8 @@ var missingLibrarySymbols = [
   'setImmediateWrapped',
   'clearImmediateWrapped',
   'polyfillSetImmediate',
+  'newNativePromise',
   'getPromise',
-  'makePromise',
-  'makePromiseCallback',
   'setMainLoop',
   '_setNetworkCallback',
   'ALLOC_NORMAL',
@@ -2409,6 +2403,7 @@ function stackCheckInit() {
   writeStackCookie();
 }
 
+/** @type {function(Array=)} */
 function run() {
 
   if (runDependencies > 0) {
@@ -2502,7 +2497,6 @@ run();
 
   return QuickJSRaw.ready
 }
-
 );
 })();
 if (typeof exports === 'object' && typeof module === 'object')

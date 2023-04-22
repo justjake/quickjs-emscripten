@@ -143,21 +143,21 @@ readAsync = (filename, onload, onerror) => {
 };
 
 // end include: node_shell_read.js
-  if (process.argv.length > 1) {
-    thisProgram = process.argv[1].replace(/\\/g, '/');
+  if (process['argv'].length > 1) {
+    thisProgram = process['argv'][1].replace(/\\/g, '/');
   }
 
-  arguments_ = process.argv.slice(2);
+  arguments_ = process['argv'].slice(2);
 
   // MODULARIZE will export the module in the proper place outside, we don't need to export here
 
   quit_ = (status, toThrow) => {
     if (keepRuntimeAlive()) {
-      process.exitCode = status;
+      process['exitCode'] = status;
       throw toThrow;
     }
     logExceptionOnExit(toThrow);
-    process.exit(status);
+    process['exit'](status);
   };
 
   Module['inspect'] = function () { return '[Emscripten Module object]'; };
@@ -465,7 +465,6 @@ function UTF8ArrayToString(heapOrArray, idx, maxBytesToRead) {
  * @return {string}
  */
 function UTF8ToString(ptr, maxBytesToRead) {
-  assert(typeof ptr == 'number');
   return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead) : '';
 }
 
@@ -643,7 +642,7 @@ function writeStackCookie() {
   // The stack grow downwards towards _emscripten_stack_get_end.
   // We write cookies to the final two words in the stack and detect if they are
   // ever overwritten.
-  HEAPU32[((max)>>2)] = 0x02135467;
+  HEAPU32[((max)>>2)] = 0x2135467;
   HEAPU32[(((max)+(4))>>2)] = 0x89BACDFE;
   // Also test the global address 0 for integrity.
   HEAPU32[0] = 0x63736d65; /* 'emsc' */
@@ -658,7 +657,7 @@ function checkStackCookie() {
   }
   var cookie1 = HEAPU32[((max)>>2)];
   var cookie2 = HEAPU32[(((max)+(4))>>2)];
-  if (cookie1 != 0x02135467 || cookie2 != 0x89BACDFE) {
+  if (cookie1 != 0x2135467 || cookie2 != 0x89BACDFE) {
     abort('Stack overflow! Stack cookie has been overwritten at ' + ptrToString(max) + ', expected hex dwords 0x89BACDFE and 0x2135467, but received ' + ptrToString(cookie2) + ' ' + ptrToString(cookie1));
   }
   // Also test the global address 0 for integrity.
@@ -924,8 +923,6 @@ function createExportWrapper(name, fixedasm) {
   };
 }
 
-// include: runtime_exceptions.js
-// end include: runtime_exceptions.js
 var wasmBinaryFile;
   wasmBinaryFile = 'emscripten-module.WASM_DEBUG_SYNC.wasm';
   if (!isDataURI(wasmBinaryFile)) {
@@ -947,7 +944,7 @@ function getBinary(file) {
   }
 }
 
-function getBinaryPromise(binaryFile) {
+function getBinaryPromise() {
   // If we don't have the binary yet, try to to load it asynchronously.
   // Fetch has some additional restrictions over XHR, like it can't be used on a file:// url.
   // See https://github.com/github/fetch/pull/92#issuecomment-140665932
@@ -955,29 +952,29 @@ function getBinaryPromise(binaryFile) {
   // So use fetch if it is available and the url is not a file, otherwise fall back to XHR.
   if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER)) {
     if (typeof fetch == 'function'
-      && !isFileURI(binaryFile)
+      && !isFileURI(wasmBinaryFile)
     ) {
-      return fetch(binaryFile, { credentials: 'same-origin' }).then(function(response) {
+      return fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function(response) {
         if (!response['ok']) {
-          throw "failed to load wasm binary file at '" + binaryFile + "'";
+          throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
         }
         return response['arrayBuffer']();
       }).catch(function () {
-          return getBinary(binaryFile);
+          return getBinary(wasmBinaryFile);
       });
     }
     else {
       if (readAsync) {
         // fetch is not available or url is file => try XHR (readAsync uses XHR internally)
         return new Promise(function(resolve, reject) {
-          readAsync(binaryFile, function(response) { resolve(new Uint8Array(/** @type{!ArrayBuffer} */(response))) }, reject)
+          readAsync(wasmBinaryFile, function(response) { resolve(new Uint8Array(/** @type{!ArrayBuffer} */(response))) }, reject)
         });
       }
     }
   }
 
   // Otherwise, getBinary should be able to get it synchronously
-  return Promise.resolve().then(function() { return getBinary(binaryFile); });
+  return Promise.resolve().then(function() { return getBinary(wasmBinaryFile); });
 }
 
 var wasmSourceMap;
@@ -1184,7 +1181,7 @@ function WasmOffsetConverter(wasmBytes, wasmModule) {
               unsignedLEB128(); // skip function type
               break;
             case 1: // table import
-              unsignedLEB128(); // skip elem type
+              ++offset; // FIXME: should be SLEB128
               skipLimits();
               break;
             case 2: // memory import
@@ -1194,8 +1191,7 @@ function WasmOffsetConverter(wasmBytes, wasmModule) {
               offset += 2; // skip type id byte and mutability byte
               break;
             case 4: // tag import
-              ++offset; // skip attribute
-              unsignedLEB128(); // skip tag type
+              ++offset; // // FIXME: should be SLEB128
               break;
             default: throw 'bad import kind: ' + kind;
           }
@@ -1276,87 +1272,6 @@ function resetPrototype(constructor, attrs) {
   return Object.assign(object, attrs);
 }
 
-function instantiateArrayBuffer(binaryFile, imports, receiver) {
-  var savedBinary;
-  return getBinaryPromise(binaryFile).then(function(binary) {
-    savedBinary = binary;
-    return WebAssembly.instantiate(binary, imports);
-  }).then(function (instance) {
-    // wasmOffsetConverter needs to be assigned before calling the receiver
-    // (receiveInstantiationResult).  See comments below in instantiateAsync.
-    wasmOffsetConverter = new WasmOffsetConverter(savedBinary, instance.module);
-    return instance;
-  }).then(receiver, function(reason) {
-    err('failed to asynchronously prepare wasm: ' + reason);
-
-    // Warn on some common problems.
-    if (isFileURI(wasmBinaryFile)) {
-      err('warning: Loading from a file URI (' + wasmBinaryFile + ') is not supported in most browsers. See https://emscripten.org/docs/getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing');
-    }
-    abort(reason);
-  });
-}
-
-function instantiateAsync(binary, binaryFile, imports, callback) {
-  if (!binary &&
-      typeof WebAssembly.instantiateStreaming == 'function' &&
-      !isDataURI(binaryFile) &&
-      // Don't use streaming for file:// delivered objects in a webview, fetch them synchronously.
-      !isFileURI(binaryFile) &&
-      // Avoid instantiateStreaming() on Node.js environment for now, as while
-      // Node.js v18.1.0 implements it, it does not have a full fetch()
-      // implementation yet.
-      //
-      // Reference:
-      //   https://github.com/emscripten-core/emscripten/pull/16917
-      !ENVIRONMENT_IS_NODE &&
-      typeof fetch == 'function') {
-    return fetch(binaryFile, { credentials: 'same-origin' }).then(function(response) {
-      // Suppress closure warning here since the upstream definition for
-      // instantiateStreaming only allows Promise<Repsponse> rather than
-      // an actual Response.
-      // TODO(https://github.com/google/closure-compiler/pull/3913): Remove if/when upstream closure is fixed.
-      /** @suppress {checkTypes} */
-      var result = WebAssembly.instantiateStreaming(response, imports);
-
-      // We need the wasm binary for the offset converter. Clone the response
-      // in order to get its arrayBuffer (cloning should be more efficient
-      // than doing another entire request).
-      // (We must clone the response now in order to use it later, as if we
-      // try to clone it asynchronously lower down then we will get a
-      // "response was already consumed" error.)
-      var clonedResponsePromise = response.clone().arrayBuffer();
-
-      return result.then(
-        function(instantiationResult) {
-          // When using the offset converter, we must interpose here. First,
-          // the instantiation result must arrive (if it fails, the error
-          // handling later down will handle it). Once it arrives, we can
-          // initialize the offset converter. And only then is it valid to
-          // call receiveInstantiationResult, as that function will use the
-          // offset converter (in the case of pthreads, it will create the
-          // pthreads and send them the offsets along with the wasm instance).
-
-          clonedResponsePromise.then(function(arrayBufferResult) {
-            wasmOffsetConverter = new WasmOffsetConverter(new Uint8Array(arrayBufferResult), instantiationResult.module);
-            callback(instantiationResult);
-          }, function(reason) {
-            err('failed to initialize offset-converter: ' + reason);
-          });
-        },
-        function(reason) {
-          // We expect the most common failure cause to be a bad MIME type for the binary,
-          // in which case falling back to ArrayBuffer instantiation should work.
-          err('wasm streaming compile failed: ' + reason);
-          err('falling back to ArrayBuffer instantiation');
-          return instantiateArrayBuffer(binaryFile, imports, callback);
-        });
-    });
-  } else {
-    return instantiateArrayBuffer(binaryFile, imports, callback);
-  }
-}
-
 // Create the wasm instance.
 // Receives the wasm imports, returns the exports.
 function createWasm() {
@@ -1389,7 +1304,6 @@ function createWasm() {
 
     removeRunDependency('wasm-instantiate');
 
-    return exports;
   }
   // wait for the pthread pool (if any)
   addRunDependency('wasm-instantiate');
@@ -1411,6 +1325,87 @@ function createWasm() {
     receiveInstance(result['instance']);
   }
 
+  function instantiateArrayBuffer(receiver) {
+    var savedBinary;
+    return getBinaryPromise().then(function(binary) {
+      savedBinary = binary;
+      return WebAssembly.instantiate(binary, info);
+    }).then(function (instance) {
+      // wasmOffsetConverter needs to be assigned before calling the receiver
+      // (receiveInstantiationResult).  See comments below in instantiateAsync.
+      wasmOffsetConverter = new WasmOffsetConverter(savedBinary, instance.module);
+      return instance;
+    }).then(receiver, function(reason) {
+      err('failed to asynchronously prepare wasm: ' + reason);
+
+      // Warn on some common problems.
+      if (isFileURI(wasmBinaryFile)) {
+        err('warning: Loading from a file URI (' + wasmBinaryFile + ') is not supported in most browsers. See https://emscripten.org/docs/getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing');
+      }
+      abort(reason);
+    });
+  }
+
+  function instantiateAsync() {
+    if (!wasmBinary &&
+        typeof WebAssembly.instantiateStreaming == 'function' &&
+        !isDataURI(wasmBinaryFile) &&
+        // Don't use streaming for file:// delivered objects in a webview, fetch them synchronously.
+        !isFileURI(wasmBinaryFile) &&
+        // Avoid instantiateStreaming() on Node.js environment for now, as while
+        // Node.js v18.1.0 implements it, it does not have a full fetch()
+        // implementation yet.
+        //
+        // Reference:
+        //   https://github.com/emscripten-core/emscripten/pull/16917
+        !ENVIRONMENT_IS_NODE &&
+        typeof fetch == 'function') {
+      return fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function(response) {
+        // Suppress closure warning here since the upstream definition for
+        // instantiateStreaming only allows Promise<Repsponse> rather than
+        // an actual Response.
+        // TODO(https://github.com/google/closure-compiler/pull/3913): Remove if/when upstream closure is fixed.
+        /** @suppress {checkTypes} */
+        var result = WebAssembly.instantiateStreaming(response, info);
+
+        // We need the wasm binary for the offset converter. Clone the response
+        // in order to get its arrayBuffer (cloning should be more efficient
+        // than doing another entire request).
+        // (We must clone the response now in order to use it later, as if we
+        // try to clone it asynchronously lower down then we will get a
+        // "response was already consumed" error.)
+        var clonedResponsePromise = response.clone().arrayBuffer();
+
+        return result.then(
+          function(instantiationResult) {
+            // When using the offset converter, we must interpose here. First,
+            // the instantiation result must arrive (if it fails, the error
+            // handling later down will handle it). Once it arrives, we can
+            // initialize the offset converter. And only then is it valid to
+            // call receiveInstantiationResult, as that function will use the
+            // offset converter (in the case of pthreads, it will create the
+            // pthreads and send them the offsets along with the wasm instance).
+
+            clonedResponsePromise.then(function(arrayBufferResult) {
+              wasmOffsetConverter = new WasmOffsetConverter(new Uint8Array(arrayBufferResult), instantiationResult.module);
+              receiveInstantiationResult(instantiationResult);
+            }, function(reason) {
+              err('failed to initialize offset-converter: ' + reason);
+            });
+          },
+          function(reason) {
+            // We expect the most common failure cause to be a bad MIME type for the binary,
+            // in which case falling back to ArrayBuffer instantiation should work.
+            err('wasm streaming compile failed: ' + reason);
+            err('falling back to ArrayBuffer instantiation');
+            return instantiateArrayBuffer(receiveInstantiationResult);
+          });
+      });
+    } else {
+      return instantiateArrayBuffer(receiveInstantiationResult);
+    }
+  }
+
   // User shell pages can write their own Module.instantiateWasm = function(imports, successCallback) callback
   // to manually instantiate the Wasm module themselves. This allows pages to run the instantiation parallel
   // to any other async startup actions they are performing.
@@ -1419,7 +1414,8 @@ function createWasm() {
     wasmOffsetConverter = resetPrototype(WasmOffsetConverter, Module['wasmOffsetData']);
     wasmSourceMap = resetPrototype(WasmSourceMap, Module['wasmSourceMapData']);
     try {
-      return Module['instantiateWasm'](info, receiveInstance);
+      var exports = Module['instantiateWasm'](info, receiveInstance);
+      return exports;
     } catch(e) {
       err('Module.instantiateWasm callback failed with error: ' + e);
         // If instantiation fails, reject the module ready promise.
@@ -1428,7 +1424,7 @@ function createWasm() {
   }
 
   // If instantiation fails, reject the module ready promise.
-  instantiateAsync(wasmBinary, wasmBinaryFile, info, receiveInstantiationResult).catch(readyPromiseReject);
+  instantiateAsync().catch(readyPromiseReject);
   getSourceMapPromise().then(receiveSourceMapJSON);
   return {}; // no exports yet; we'll fill them in later
 }
@@ -1506,7 +1502,7 @@ function missingLibrarySymbol(sym) {
       }
     });
   }
-  // Any symbol that is not included from the JS libary is also (by definition)
+  // Any symbol that is not included from the JS libary is also (by definttion)
   // not exported on the Module object.
   unexportedRuntimeSymbol(sym);
 }
@@ -1526,19 +1522,12 @@ function unexportedRuntimeSymbol(sym) {
   }
 }
 
-// Used by XXXXX_DEBUG settings to output debug messages.
-function dbg(text) {
-  // TODO(sbc): Make this configurable somehow.  Its not always convenient for
-  // logging to show up as errors.
-  console.error(text);
-}
-
 // end include: runtime_debug.js
 // === Body ===
 
 var ASM_CONSTS = {
-  5361259: () => { return withBuiltinMalloc(function () { return allocateUTF8(Module['LSAN_OPTIONS'] || 0); }); },  
- 5361356: () => { var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; } }
+  5360267: () => { return withBuiltinMalloc(function () { return allocateUTF8(Module['LSAN_OPTIONS'] || 0); }); },  
+ 5360364: () => { var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; } }
 };
 function qts_host_call_function(ctx,this_ptr,argc,argv,magic_func_id) { const asyncify = undefined; return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id); }
 function qts_host_interrupt_handler(rt) { const asyncify = undefined; return Module['callbacks']['shouldInterrupt'](asyncify, rt); }
@@ -1569,19 +1558,20 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
      * @param {string} type
      */
   function getValue(ptr, type = 'i8') {
-    if (type.endsWith('*')) type = '*';
-    switch (type) {
-      case 'i1': return HEAP8[((ptr)>>0)];
-      case 'i8': return HEAP8[((ptr)>>0)];
-      case 'i16': return HEAP16[((ptr)>>1)];
-      case 'i32': return HEAP32[((ptr)>>2)];
-      case 'i64': return HEAP32[((ptr)>>2)];
-      case 'float': return HEAPF32[((ptr)>>2)];
-      case 'double': return HEAPF64[((ptr)>>3)];
-      case '*': return HEAPU32[((ptr)>>2)];
-      default: abort('invalid type for getValue: ' + type);
+      if (type.endsWith('*')) type = '*';
+      switch (type) {
+        case 'i1': return HEAP8[((ptr)>>0)];
+        case 'i8': return HEAP8[((ptr)>>0)];
+        case 'i16': return HEAP16[((ptr)>>1)];
+        case 'i32': return HEAP32[((ptr)>>2)];
+        case 'i64': return HEAP32[((ptr)>>2)];
+        case 'float': return HEAPF32[((ptr)>>2)];
+        case 'double': return HEAPF64[((ptr)>>3)];
+        case '*': return HEAPU32[((ptr)>>2)];
+        default: abort('invalid type for getValue: ' + type);
+      }
+      return null;
     }
-  }
 
   function ptrToString(ptr) {
       assert(typeof ptr === 'number');
@@ -1595,19 +1585,19 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
      * @param {string} type
      */
   function setValue(ptr, value, type = 'i8') {
-    if (type.endsWith('*')) type = '*';
-    switch (type) {
-      case 'i1': HEAP8[((ptr)>>0)] = value; break;
-      case 'i8': HEAP8[((ptr)>>0)] = value; break;
-      case 'i16': HEAP16[((ptr)>>1)] = value; break;
-      case 'i32': HEAP32[((ptr)>>2)] = value; break;
-      case 'i64': (tempI64 = [value>>>0,(tempDouble=value,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[((ptr)>>2)] = tempI64[0],HEAP32[(((ptr)+(4))>>2)] = tempI64[1]); break;
-      case 'float': HEAPF32[((ptr)>>2)] = value; break;
-      case 'double': HEAPF64[((ptr)>>3)] = value; break;
-      case '*': HEAPU32[((ptr)>>2)] = value; break;
-      default: abort('invalid type for setValue: ' + type);
+      if (type.endsWith('*')) type = '*';
+      switch (type) {
+        case 'i1': HEAP8[((ptr)>>0)] = value; break;
+        case 'i8': HEAP8[((ptr)>>0)] = value; break;
+        case 'i16': HEAP16[((ptr)>>1)] = value; break;
+        case 'i32': HEAP32[((ptr)>>2)] = value; break;
+        case 'i64': (tempI64 = [value>>>0,(tempDouble=value,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[((ptr)>>2)] = tempI64[0],HEAP32[(((ptr)+(4))>>2)] = tempI64[1]); break;
+        case 'float': HEAPF32[((ptr)>>2)] = value; break;
+        case 'double': HEAPF64[((ptr)>>3)] = value; break;
+        case '*': HEAPU32[((ptr)>>2)] = value; break;
+        default: abort('invalid type for setValue: ' + type);
+      }
     }
-  }
 
   function warnOnce(text) {
       if (!warnOnce.shown) warnOnce.shown = {};
@@ -1776,7 +1766,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
         //   // device, it always assumes it's a TTY device. because of this, we're forcing
         //   // process.stdin to UTF8 encoding to at least make stdin reading compatible
         //   // with text files until FS.init can be refactored.
-        //   process.stdin.setEncoding('utf8');
+        //   process['stdin']['setEncoding']('utf8');
         // }
       },shutdown:function() {
         // https://github.com/emscripten-core/emscripten/pull/1555
@@ -1786,7 +1776,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
         //   // inolen: I thought read() in that case was a synchronous operation that just grabbed some amount of buffered data if it exists?
         //   // isaacs: it is. but it also triggers a _read() call, which calls readStart() on the handle
         //   // isaacs: do process.stdin.pause() and i'd think it'd probably close the pending call
-        //   process.stdin.pause();
+        //   process['stdin']['pause']();
         // }
       },register:function(dev, ops) {
         TTY.ttys[dev] = { input: [], output: [], ops: ops };
@@ -3340,13 +3330,6 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       },ensureErrnoError:() => {
         if (FS.ErrnoError) return;
         FS.ErrnoError = /** @this{Object} */ function ErrnoError(errno, node) {
-          // We set the `name` property to be able to identify `FS.ErrnoError`
-          // - the `name` is a standard ECMA-262 property of error objects. Kind of good to have it anyway.
-          // - when using PROXYFS, an error can come from an underlying FS
-          // as different FS objects have their own FS.ErrnoError each,
-          // the test `err instanceof FS.ErrnoError` won't detect an error coming from another filesystem, causing bugs.
-          // we'll use the reliable test `err.name == "ErrnoError"` instead
-          this.name = 'ErrnoError';
           this.node = node;
           this.setErrno = /** @this{Object} */ function(errno) {
             this.errno = errno;
@@ -3917,7 +3900,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       var old = SYSCALLS.getStreamFromFD(fd);
       return FS.createStream(old, 0).fd;
     } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
@@ -3934,7 +3917,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       FS.mkdir(path, mode, 0);
       return 0;
     } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
@@ -3948,7 +3931,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       var mode = varargs ? SYSCALLS.get() : 0;
       return FS.open(path, flags, mode).fd;
     } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
@@ -3959,7 +3942,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       path = SYSCALLS.getStr(path);
       return SYSCALLS.doStat(FS.stat, path, buf);
     } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
@@ -4021,7 +4004,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       HEAPU32[((addr)>>2)] = ptr;
       return 0;
     } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
@@ -4038,7 +4021,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       FS.munmap(stream);
       // implicitly return 0
     } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
@@ -4151,7 +4134,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
 
   var _emscripten_get_now;if (ENVIRONMENT_IS_NODE) {
     _emscripten_get_now = () => {
-      var t = process.hrtime();
+      var t = process['hrtime']();
       return t[0] * 1e3 + t[1] / 1e6;
     };
   } else _emscripten_get_now = () => performance.now();
@@ -4430,7 +4413,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       FS.close(stream);
       return 0;
     } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return e.errno;
   }
   }
@@ -4461,7 +4444,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       HEAPU32[((pnum)>>2)] = num;
       return 0;
     } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return e.errno;
   }
   }
@@ -4485,7 +4468,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       if (stream.getdents && offset === 0 && whence === 0) stream.getdents = null; // reset readdir state
       return 0;
     } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return e.errno;
   }
   }
@@ -4515,7 +4498,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       HEAPU32[((pnum)>>2)] = num;
       return 0;
     } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return e.errno;
   }
   }
@@ -5027,8 +5010,8 @@ var dynCall_iijijji = Module["dynCall_iijijji"] = createExportWrapper("dynCall_i
 var dynCall_jiiii = Module["dynCall_jiiii"] = createExportWrapper("dynCall_jiiii");
 /** @type {function(...*):?} */
 var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
-var ___start_em_js = Module['___start_em_js'] = 5360357;
-var ___stop_em_js = Module['___stop_em_js'] = 5361259;
+var ___start_em_js = Module['___start_em_js'] = 5359365;
+var ___stop_em_js = Module['___stop_em_js'] = 5360267;
 
 // include: postamble.js
 // === Auto-generated postamble setup entry stuff ===
@@ -5065,7 +5048,7 @@ var missingLibrarySymbols = [
   'maybeExit',
   'safeSetTimeout',
   'asmjsMangle',
-  'HandleAllocator',
+  'handleAllocator',
   'getNativeTypeSize',
   'STACK_SIZE',
   'STACK_ALIGN',
@@ -5156,9 +5139,8 @@ var missingLibrarySymbols = [
   'setImmediateWrapped',
   'clearImmediateWrapped',
   'polyfillSetImmediate',
+  'newNativePromise',
   'getPromise',
-  'makePromise',
-  'makePromiseCallback',
   'setMainLoop',
   '_setNetworkCallback',
   'ALLOC_NORMAL',
@@ -5278,6 +5260,7 @@ function stackCheckInit() {
   writeStackCookie();
 }
 
+/** @type {function(Array=)} */
 function run() {
 
   if (runDependencies > 0) {
@@ -5342,7 +5325,6 @@ run();
 
   return QuickJSRaw.ready
 }
-
 );
 })();
 if (typeof exports === 'object' && typeof module === 'object')
