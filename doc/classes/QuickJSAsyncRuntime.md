@@ -52,7 +52,7 @@ A context here may be allocated if one is needed by the runtime, eg for [compute
 
 #### Defined in
 
-[ts/runtime-asyncify.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime-asyncify.ts#L18)
+[ts/runtime-asyncify.ts:19](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime-asyncify.ts#L19)
 
 ## Accessors
 
@@ -247,7 +247,7 @@ ___
 
 #### Defined in
 
-[ts/runtime-asyncify.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime-asyncify.ts#L41)
+[ts/runtime-asyncify.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime-asyncify.ts#L42)
 
 ___
 
@@ -326,8 +326,11 @@ ___
 
 ▸ **setMaxStackSize**(`stackSize`): `void`
 
-Set the max stack size for this runtime, in bytes.
+Set the max stack size for this runtime in bytes.
 To remove the limit, set to `0`.
+
+Setting this limit also adjusts the global `ASYNCIFY_STACK_SIZE` for the entire [QuickJSAsyncWASMModule](QuickJSAsyncWASMModule.md).
+See the [pull request](https://github.com/justjake/quickjs-emscripten/pull/114) for more details.
 
 #### Parameters
 
@@ -339,13 +342,13 @@ To remove the limit, set to `0`.
 
 `void`
 
-#### Inherited from
+#### Overrides
 
 [QuickJSRuntime](QuickJSRuntime.md).[setMaxStackSize](QuickJSRuntime.md#setmaxstacksize)
 
 #### Defined in
 
-[ts/runtime.ts:314](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime.ts#L314)
+[ts/runtime-asyncify.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime-asyncify.ts#L84)
 
 ___
 
@@ -402,4 +405,4 @@ The loader can be removed with [removeModuleLoader](QuickJSAsyncRuntime.md#remov
 
 #### Defined in
 
-[ts/runtime-asyncify.ts:66](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime-asyncify.ts#L66)
+[ts/runtime-asyncify.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/ts/runtime-asyncify.ts#L67)
