@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.23.0
+
+- [#114](https://github.com/justjake/quickjs-emscripten/pull/114) (thanks to @yar2001) improve stack size for ASYNCIFY build variants:
+  - Change the default ASYNCIFY_STACK_SIZE from 4096 bytes to 81920 bytes. This equates to an increase from approximately 12 to 297 function frames. See the PR for more details.
+  - `QuickJSAsyncRuntime.setMaxStackSize(stackSizeBytes)` now also adjusts the ASYNCIFY_STACK_SIZE for the entire module.
+
 ## v0.22.0
 
 - [#78](https://github.com/justjake/quickjs-emscripten/pull/78), [#105](https://github.com/justjake/quickjs-emscripten/pull/105) (thanks to @ayaboy) add Symbol helpers `context.newUniqueSymbol`, `context.newSymbolFor`, as well as support for symbols in `context.dump`.

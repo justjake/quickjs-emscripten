@@ -1,3 +1,4 @@
+import type { QuickJSAsyncWASMModule } from "./module-asyncify"
 import { Lifetime } from "."
 import { QuickJSAsyncContext } from "./context-asyncify"
 import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
@@ -71,5 +72,16 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
       moduleLoader as JSModuleLoader,
       moduleNormalizer as JSModuleNormalizer | undefined
     )
+  }
+
+  /**
+   * Set the max stack size for this runtime in bytes.
+   * To remove the limit, set to `0`.
+   *
+   * Setting this limit also adjusts the global `ASYNCIFY_STACK_SIZE` for the entire {@link QuickJSAsyncWASMModule}.
+   * See the [pull request](https://github.com/justjake/quickjs-emscripten/pull/114) for more details.
+   */
+  public override setMaxStackSize(stackSize: number): void {
+    return super.setMaxStackSize(stackSize)
   }
 }
