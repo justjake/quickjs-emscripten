@@ -1,7 +1,7 @@
 # Tools
 CC=clang
-EMSDK_VERSION=3.1.32
-EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.31 # .32 not released to Docker hub.
+EMSDK_VERSION=3.1.35
+EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.35
 EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_DOCKER_CACHE=$(THIS_DIR)/emsdk-cache/$(EMSDK_VERSION) scripts/emcc.sh
 GENERATE_TS=$(VARIANT_GENERATE_TS_ENV) npx ts-node generate.ts
 PRETTIER=npx prettier
