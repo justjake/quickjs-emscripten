@@ -81,7 +81,7 @@ ___
 
 #### Defined in
 
-[ts/vm-interface.ts:75](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L75)
+[ts/vm-interface.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L76)
 
 ___
 
@@ -103,7 +103,7 @@ ___
 
 #### Defined in
 
-[ts/vm-interface.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L69)
+[ts/vm-interface.ts:70](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L70)
 
 ___
 
@@ -124,7 +124,7 @@ ___
 
 #### Defined in
 
-[ts/vm-interface.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L76)
+[ts/vm-interface.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L77)
 
 ___
 
@@ -165,7 +165,7 @@ ___
 
 #### Defined in
 
-[ts/vm-interface.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L67)
+[ts/vm-interface.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L68)
 
 ___
 
@@ -288,7 +288,7 @@ ___
 
 #### Defined in
 
-[ts/vm-interface.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L68)
+[ts/vm-interface.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/ts/vm-interface.ts#L69)
 
 ___
 

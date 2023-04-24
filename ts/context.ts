@@ -964,6 +964,14 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * Outputs QuickJS Objects in binary form
    * 
    * **WARNING**: QuickJS's binary JSON doesn't have a standard so expect it to change between version
+   * 
+   * ```ts
+   * // imagine sending data to another via IPC
+   * let dataLifetime = context.newString("This is an example")
+   *  ?.consume(handle => context.encodeBinaryJSON(handle))
+   *  ?.consume(handle => context.getArrayBuffer(handle))
+   * socket.write(dataLifetime?.value)
+   * ```
    */
   encodeBinaryJSON(handle: QuickJSHandle): QuickJSHandle {
     const ptr = this.ffi.QTS_bjson_encode(this.ctx.value, handle.value)
@@ -972,6 +980,15 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
 
   /**
    * Outputs Handle of the given QuickJS Object in binary form
+   * 
+   * ```ts
+   * // imagine receiving data from another via IPC
+   * socket.on("data", chunk => {
+   *  context.newArrayBuffer(chunk)
+   *    ?.consume(handle => context.decodeBinaryJSON(handle))
+   *    ?.consume(handle => console.log(context.dump(handle)))
+   * })
+   * ```
    */
   decodeBinaryJSON(handle: QuickJSHandle): QuickJSHandle {
     const ptr = this.ffi.QTS_bjson_decode(this.ctx.value, handle.value)
