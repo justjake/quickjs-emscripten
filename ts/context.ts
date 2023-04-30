@@ -553,8 +553,8 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   /**
    * Coverts `handle` to a JavaScript ArrayBuffer
    */
-  getArrayBuffer(handle: QuickJSHandle) /*Lifetime<Uint8Array>*/ {
-    //this.runtime.assertOwned(handle);
+  getArrayBuffer(handle: QuickJSHandle): Lifetime<Uint8Array> {
+    this.runtime.assertOwned(handle);
     const len = this.ffi.QTS_GetArrayBufferLength(this.ctx.value, handle.value);
     const ptr = this.ffi.QTS_GetArrayBuffer(this.ctx.value, handle.value);
     if (!ptr) {

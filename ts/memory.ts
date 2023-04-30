@@ -12,7 +12,7 @@ import { EitherFFI, QuickJSHandle } from "./types"
 /**
  * @private
  */
-type Buffer = {
+type HeapUint8Array = {
   pointer: JSVoidPointer,
   numBytes: number,
 }
@@ -50,7 +50,7 @@ export class ModuleMemory {
     return new Lifetime(ptr, undefined, (value) => this.module._free(value))
   }
 
-  newHeapBufferPointer(buffer: Uint8Array): Lifetime<Buffer> {
+  newHeapBufferPointer(buffer: Uint8Array): Lifetime<HeapUint8Array> {
     const numBytes = buffer.byteLength;
     const ptr: JSVoidPointer= this.module._malloc(numBytes) as JSVoidPointer
     this.module.HEAPU8.set(buffer, ptr);
