@@ -377,9 +377,8 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    *  Create a new QuickJS [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer).
    */
   newArrayBuffer(buffer: ArrayBufferLike): QuickJSHandle {
-    const array = new Uint8Array(buffer);
-    const handle = this.memory
-      .newHeapBufferPointer(array)
+    const array = new Uint8Array(buffer)
+    const handle = this.memory.newHeapBufferPointer(array)
     const ptr = this.ffi.QTS_NewArrayBuffer(this.ctx.value, handle.value.pointer, array.length)
     return this.memory.heapValueHandle(ptr)
   }
@@ -554,16 +553,15 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * Coverts `handle` to a JavaScript ArrayBuffer
    */
   getArrayBuffer(handle: QuickJSHandle): Lifetime<Uint8Array> {
-    this.runtime.assertOwned(handle);
-    const len = this.ffi.QTS_GetArrayBufferLength(this.ctx.value, handle.value);
-    const ptr = this.ffi.QTS_GetArrayBuffer(this.ctx.value, handle.value);
+    this.runtime.assertOwned(handle)
+    const len = this.ffi.QTS_GetArrayBufferLength(this.ctx.value, handle.value)
+    const ptr = this.ffi.QTS_GetArrayBuffer(this.ctx.value, handle.value)
     if (!ptr) {
       throw new Error("Couldn't allocate memory to get ArrayBuffer")
     }
-    return new Lifetime(
-      this.module.HEAPU8.subarray(ptr, ptr + len),
-      undefined,
-      (value) => this.module._free(ptr));
+    return new Lifetime(this.module.HEAPU8.subarray(ptr, ptr + len), undefined, (value) =>
+      this.module._free(ptr)
+    )
   }
 
   /**
@@ -962,9 +960,9 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
 
   /**
    * Outputs QuickJS Objects in binary form
-   * 
+   *
    * **WARNING**: QuickJS's binary JSON doesn't have a standard so expect it to change between version
-   * 
+   *
    * ```ts
    * // imagine sending data to another via IPC
    * let dataLifetime = context.newString("This is an example")
@@ -980,7 +978,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
 
   /**
    * Outputs Handle of the given QuickJS Object in binary form
-   * 
+   *
    * ```ts
    * // imagine receiving data from another via IPC
    * socket.on("data", chunk => {
