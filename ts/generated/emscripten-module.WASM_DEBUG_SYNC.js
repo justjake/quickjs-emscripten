@@ -27,7 +27,7 @@ Module['ready'] = new Promise(function(resolve, reject) {
   readyPromiseResolve = resolve;
   readyPromiseReject = reject;
 });
-["_QTS_Throw","_QTS_NewError","_QTS_RuntimeSetMemoryLimit","_QTS_RuntimeComputeMemoryUsage","_QTS_RuntimeDumpMemoryUsage","_QTS_RecoverableLeakCheck","_QTS_BuildIsSanitizeLeak","_QTS_RuntimeSetMaxStackSize","_QTS_GetUndefined","_QTS_GetNull","_QTS_GetFalse","_QTS_GetTrue","_QTS_NewRuntime","_QTS_FreeRuntime","_QTS_NewContext","_QTS_FreeContext","_QTS_FreeValuePointer","_QTS_FreeValuePointerRuntime","_QTS_FreeVoidPointer","_QTS_FreeCString","_QTS_DupValuePointer","_QTS_NewObject","_QTS_NewObjectProto","_QTS_NewArray","_QTS_NewFloat64","_QTS_GetFloat64","_QTS_NewString","_QTS_GetString","_QTS_NewSymbol","_QTS_GetSymbolDescriptionOrKey","_QTS_IsGlobalSymbol","_QTS_IsJobPending","_QTS_ExecutePendingJob","_QTS_GetProp","_QTS_SetProp","_QTS_DefineProp","_QTS_Call","_QTS_ResolveException","_QTS_Dump","_QTS_Eval","_QTS_Typeof","_QTS_GetGlobalObject","_QTS_NewPromiseCapability","_QTS_TestStringArg","_QTS_BuildIsDebug","_QTS_BuildIsAsyncify","_QTS_NewFunction","_QTS_ArgvGetJSValueConstPointer","_QTS_RuntimeEnableInterruptHandler","_QTS_RuntimeDisableInterruptHandler","_QTS_RuntimeEnableModuleLoader","_QTS_RuntimeDisableModuleLoader","_malloc","_free","_fflush","onRuntimeInitialized"].forEach((prop) => {
+["_QTS_Throw","_QTS_NewError","_QTS_RuntimeSetMemoryLimit","_QTS_RuntimeComputeMemoryUsage","_QTS_RuntimeDumpMemoryUsage","_QTS_RecoverableLeakCheck","_QTS_BuildIsSanitizeLeak","_QTS_RuntimeSetMaxStackSize","_QTS_AddIntrinsicDate","_QTS_AddIntrinsicEval","_QTS_AddIntrinsicStringNormalize","_QTS_AddIntrinsicRegExpCompiler","_QTS_AddIntrinsicRegExp","_QTS_AddIntrinsicJSON","_QTS_AddIntrinsicProxy","_QTS_AddIntrinsicMapSet","_QTS_AddIntrinsicTypedArrays","_QTS_AddIntrinsicPromise","_QTS_AddIntrinsicBigInt","_QTS_AddIntrinsicBigFloat","_QTS_AddIntrinsicBigDecimal","_QTS_AddIntrinsicOperators","_QTS_EnableBignumExt","_QTS_GetUndefined","_QTS_GetNull","_QTS_GetFalse","_QTS_GetTrue","_QTS_NewRuntime","_QTS_FreeRuntime","_QTS_NewContext","_QTS_NewContextRaw","_QTS_FreeContext","_QTS_FreeValuePointer","_QTS_FreeValuePointerRuntime","_QTS_FreeVoidPointer","_QTS_FreeCString","_QTS_DupValuePointer","_QTS_NewObject","_QTS_NewObjectProto","_QTS_NewArray","_QTS_NewFloat64","_QTS_GetFloat64","_QTS_NewString","_QTS_GetString","_QTS_NewSymbol","_QTS_GetSymbolDescriptionOrKey","_QTS_IsGlobalSymbol","_QTS_IsJobPending","_QTS_ExecutePendingJob","_QTS_GetProp","_QTS_SetProp","_QTS_DefineProp","_QTS_Call","_QTS_ResolveException","_QTS_Dump","_QTS_Eval","_QTS_Typeof","_QTS_GetGlobalObject","_QTS_NewPromiseCapability","_QTS_TestStringArg","_QTS_BuildIsDebug","_QTS_BuildIsAsyncify","_QTS_NewFunction","_QTS_ArgvGetJSValueConstPointer","_QTS_RuntimeEnableInterruptHandler","_QTS_RuntimeDisableInterruptHandler","_QTS_RuntimeEnableModuleLoader","_QTS_RuntimeDisableModuleLoader","_malloc","_free","_fflush","onRuntimeInitialized"].forEach((prop) => {
   if (!Object.getOwnPropertyDescriptor(Module['ready'], prop)) {
     Object.defineProperty(Module['ready'], prop, {
       get: () => abort('You are getting ' + prop + ' on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js'),
@@ -1335,8 +1335,8 @@ function dbg(text) {
 // === Body ===
 
 var ASM_CONSTS = {
-  5361259: () => { return withBuiltinMalloc(function () { return stringToNewUTF8(Module['LSAN_OPTIONS'] || 0); }); },  
- 5361359: () => { var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; } }
+  5362331: () => { return withBuiltinMalloc(function () { return stringToNewUTF8(Module['LSAN_OPTIONS'] || 0); }); },  
+ 5362431: () => { var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; } }
 };
 function qts_host_call_function(ctx,this_ptr,argc,argv,magic_func_id) { const asyncify = undefined; return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id); }
 function qts_host_interrupt_handler(rt) { const asyncify = undefined; return Module['callbacks']['shouldInterrupt'](asyncify, rt); }
@@ -4759,6 +4759,36 @@ var _QTS_BuildIsSanitizeLeak = Module["_QTS_BuildIsSanitizeLeak"] = createExport
 /** @type {function(...*):?} */
 var _QTS_RuntimeSetMaxStackSize = Module["_QTS_RuntimeSetMaxStackSize"] = createExportWrapper("QTS_RuntimeSetMaxStackSize");
 /** @type {function(...*):?} */
+var _QTS_AddIntrinsicDate = Module["_QTS_AddIntrinsicDate"] = createExportWrapper("QTS_AddIntrinsicDate");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicEval = Module["_QTS_AddIntrinsicEval"] = createExportWrapper("QTS_AddIntrinsicEval");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicStringNormalize = Module["_QTS_AddIntrinsicStringNormalize"] = createExportWrapper("QTS_AddIntrinsicStringNormalize");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicRegExpCompiler = Module["_QTS_AddIntrinsicRegExpCompiler"] = createExportWrapper("QTS_AddIntrinsicRegExpCompiler");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicRegExp = Module["_QTS_AddIntrinsicRegExp"] = createExportWrapper("QTS_AddIntrinsicRegExp");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicJSON = Module["_QTS_AddIntrinsicJSON"] = createExportWrapper("QTS_AddIntrinsicJSON");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicProxy = Module["_QTS_AddIntrinsicProxy"] = createExportWrapper("QTS_AddIntrinsicProxy");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicMapSet = Module["_QTS_AddIntrinsicMapSet"] = createExportWrapper("QTS_AddIntrinsicMapSet");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicTypedArrays = Module["_QTS_AddIntrinsicTypedArrays"] = createExportWrapper("QTS_AddIntrinsicTypedArrays");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicPromise = Module["_QTS_AddIntrinsicPromise"] = createExportWrapper("QTS_AddIntrinsicPromise");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicBigInt = Module["_QTS_AddIntrinsicBigInt"] = createExportWrapper("QTS_AddIntrinsicBigInt");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicBigFloat = Module["_QTS_AddIntrinsicBigFloat"] = createExportWrapper("QTS_AddIntrinsicBigFloat");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicBigDecimal = Module["_QTS_AddIntrinsicBigDecimal"] = createExportWrapper("QTS_AddIntrinsicBigDecimal");
+/** @type {function(...*):?} */
+var _QTS_AddIntrinsicOperators = Module["_QTS_AddIntrinsicOperators"] = createExportWrapper("QTS_AddIntrinsicOperators");
+/** @type {function(...*):?} */
+var _QTS_EnableBignumExt = Module["_QTS_EnableBignumExt"] = createExportWrapper("QTS_EnableBignumExt");
+/** @type {function(...*):?} */
 var _QTS_GetUndefined = Module["_QTS_GetUndefined"] = createExportWrapper("QTS_GetUndefined");
 /** @type {function(...*):?} */
 var _QTS_GetNull = Module["_QTS_GetNull"] = createExportWrapper("QTS_GetNull");
@@ -4772,6 +4802,8 @@ var _QTS_NewRuntime = Module["_QTS_NewRuntime"] = createExportWrapper("QTS_NewRu
 var _QTS_FreeRuntime = Module["_QTS_FreeRuntime"] = createExportWrapper("QTS_FreeRuntime");
 /** @type {function(...*):?} */
 var _QTS_NewContext = Module["_QTS_NewContext"] = createExportWrapper("QTS_NewContext");
+/** @type {function(...*):?} */
+var _QTS_NewContextRaw = Module["_QTS_NewContextRaw"] = createExportWrapper("QTS_NewContextRaw");
 /** @type {function(...*):?} */
 var _QTS_FreeContext = Module["_QTS_FreeContext"] = createExportWrapper("QTS_FreeContext");
 /** @type {function(...*):?} */
@@ -4939,8 +4971,10 @@ var dynCall_iijijji = Module["dynCall_iijijji"] = createExportWrapper("dynCall_i
 var dynCall_jiiii = Module["dynCall_jiiii"] = createExportWrapper("dynCall_jiiii");
 /** @type {function(...*):?} */
 var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
-var ___start_em_js = Module['___start_em_js'] = 5360357;
-var ___stop_em_js = Module['___stop_em_js'] = 5361259;
+/** @type {function(...*):?} */
+var dynCall_jijji = Module["dynCall_jijji"] = createExportWrapper("dynCall_jijji");
+var ___start_em_js = Module['___start_em_js'] = 5361429;
+var ___stop_em_js = Module['___stop_em_js'] = 5362331;
 
 // include: postamble.js
 // === Auto-generated postamble setup entry stuff ===

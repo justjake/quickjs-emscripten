@@ -1,19 +1,19 @@
-import type { QuickJSAsyncWASMModule } from "./module-asyncify"
 import { Lifetime } from "."
 import { QuickJSAsyncContext } from "./context-asyncify"
 import { QuickJSAsyncEmscriptenModule } from "./emscripten-types"
-import { QuickJSAsyncFFI } from "./variants"
-import { JSContextPointer, JSRuntimePointer } from "./types-ffi"
 import { QuickJSModuleCallbacks } from "./module"
+import type { QuickJSAsyncWASMModule } from "./module-asyncify"
 import { QuickJSRuntime } from "./runtime"
 import {
   ContextOptions,
-  DefaultIntrinsics,
+  Intrinsic,
   JSModuleLoader,
   JSModuleLoaderAsync,
   JSModuleNormalizer,
-  JSModuleNormalizerAsync,
+  JSModuleNormalizerAsync
 } from "./types"
+import { JSContextPointer, JSRuntimePointer } from "./types-ffi"
+import { QuickJSAsyncFFI } from "./variants"
 
 export class QuickJSAsyncRuntime extends QuickJSRuntime {
   public context: QuickJSAsyncContext | undefined
@@ -40,11 +40,9 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
   }
 
   override newContext(options: ContextOptions = {}): QuickJSAsyncContext {
-    if (options.intrinsics && options.intrinsics !== DefaultIntrinsics) {
-      throw new Error("TODO: Custom intrinsics are not supported yet")
-    }
+    const ctxPtr = this.getNewContextPointer(options)
 
-    const ctx = new Lifetime(this.ffi.QTS_NewContext(this.rt.value), undefined, (ctx_ptr) => {
+    const ctx = new Lifetime(ctxPtr, undefined, (ctx_ptr) => {
       this.contextMap.delete(ctx_ptr)
       this.callbacks.deleteContext(ctx_ptr)
       this.ffi.QTS_FreeContext(ctx_ptr)
@@ -62,6 +60,77 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
     this.contextMap.set(ctx.value, context)
 
     return context
+  }
+
+  private getNewContextPointer(options: ContextOptions = {}): JSContextPointer {
+    let contextPointer
+
+    if (options.intrinsics) {
+      contextPointer = this.ffi.QTS_NewContextRaw(this.rt.value)
+      this.addContextIntrinsics(contextPointer, options.intrinsics)
+    } else {
+      contextPointer = this.ffi.QTS_NewContext(this.rt.value)
+    }
+
+    return contextPointer
+  }
+
+  private addContextIntrinsics(ctxPtr: JSContextPointer, intrinsics: Intrinsic[]): void {
+    for (const intrinsic of intrinsics) {
+      switch (intrinsic) {
+        case "BaseObjects":
+          // Intrinsic - Base Objects is always added by quickjs as this is the minimum objects required to evaluate js code
+          break
+        case "Eval":
+          // Intrinsic - Eval is required to use evalCode
+          this.ffi.QTS_AddIntrinsicEval(ctxPtr)
+          break
+        case "Date":
+          this.ffi.QTS_AddIntrinsicDate(ctxPtr)
+          break
+        case "StringNormalize":
+          this.ffi.QTS_AddIntrinsicStringNormalize(ctxPtr)
+          break
+        case "RegExp":
+          this.ffi.QTS_AddIntrinsicRegExp(ctxPtr)
+          break
+        case "RegExpCompiler":
+          this.ffi.QTS_AddIntrinsicRegExpCompiler(ctxPtr)
+          break
+        case "JSON":
+          this.ffi.QTS_AddIntrinsicJSON(ctxPtr)
+          break
+        case "Proxy":
+          this.ffi.QTS_AddIntrinsicProxy(ctxPtr)
+          break
+        case "MapSet":
+          this.ffi.QTS_AddIntrinsicMapSet(ctxPtr)
+          break
+        case "TypedArrays":
+          this.ffi.QTS_AddIntrinsicTypedArrays(ctxPtr)
+          break
+        case "Promise":
+          this.ffi.QTS_AddIntrinsicPromise(ctxPtr)
+          break
+        case "BigInt":
+          this.ffi.QTS_AddIntrinsicBigInt(ctxPtr)
+          break
+        case "BigFloat":
+          this.ffi.QTS_AddIntrinsicBigFloat(ctxPtr)
+          break
+        case "BigDecimal":
+          this.ffi.QTS_AddIntrinsicBigDecimal(ctxPtr)
+          break
+        case "OperatorOverloading":
+          this.ffi.QTS_AddIntrinsicOperators(ctxPtr)
+          break
+        case "BignumExt":
+          this.ffi.QTS_EnableBignumExt(ctxPtr, true)
+          break
+        default:
+          throw new Error(`Unknown Intrinsic: ${intrinsic}`)
+      }
+    }
   }
 
   public override setModuleLoader(

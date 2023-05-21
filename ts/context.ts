@@ -2,18 +2,6 @@ import { debugLog } from "./debug"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 import type { EitherModule } from "./emscripten-types"
 import { QuickJSUnwrapError } from "./errors"
-import {
-  EvalDetectModule,
-  EvalFlags,
-  JSBorrowedCharPointer,
-  JSContextPointer,
-  JSModuleDefPointer,
-  JSRuntimePointer,
-  JSValueConstPointer,
-  JSValuePointer,
-  JSValuePointerPointer,
-  JSVoidPointer,
-} from "./types-ffi"
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
@@ -21,11 +9,21 @@ import { QuickJSRuntime } from "./runtime"
 import {
   ContextEvalOptions,
   EitherFFI,
-  evalOptionsToFlags,
   JSValue,
   PromiseExecutor,
   QuickJSHandle,
+  evalOptionsToFlags,
 } from "./types"
+import {
+  EvalDetectModule,
+  EvalFlags,
+  JSBorrowedCharPointer,
+  JSContextPointer,
+  JSRuntimePointer,
+  JSValueConstPointer,
+  JSValuePointer,
+  JSValuePointerPointer
+} from "./types-ffi"
 import {
   LowLevelJavascriptVm,
   SuccessOrFail,

@@ -38,6 +38,51 @@ export class QuickJSFFI {
   QTS_RuntimeSetMaxStackSize: (rt: JSRuntimePointer, stack_size: number) => void =
     this.module.cwrap("QTS_RuntimeSetMaxStackSize", null, ["number","number"])
 
+  QTS_AddIntrinsicDate: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicDate", null, ["number"])
+
+  QTS_AddIntrinsicEval: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicEval", null, ["number"])
+
+  QTS_AddIntrinsicStringNormalize: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicStringNormalize", null, ["number"])
+
+  QTS_AddIntrinsicRegExpCompiler: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicRegExpCompiler", null, ["number"])
+
+  QTS_AddIntrinsicRegExp: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicRegExp", null, ["number"])
+
+  QTS_AddIntrinsicJSON: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicJSON", null, ["number"])
+
+  QTS_AddIntrinsicProxy: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicProxy", null, ["number"])
+
+  QTS_AddIntrinsicMapSet: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicMapSet", null, ["number"])
+
+  QTS_AddIntrinsicTypedArrays: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicTypedArrays", null, ["number"])
+
+  QTS_AddIntrinsicPromise: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicPromise", null, ["number"])
+
+  QTS_AddIntrinsicBigInt: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicBigInt", null, ["number"])
+
+  QTS_AddIntrinsicBigFloat: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicBigFloat", null, ["number"])
+
+  QTS_AddIntrinsicBigDecimal: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicBigDecimal", null, ["number"])
+
+  QTS_AddIntrinsicOperators: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicOperators", null, ["number"])
+
+  QTS_EnableBignumExt: (ctx: JSContextPointer, enable: boolean) => void =
+    this.module.cwrap("QTS_EnableBignumExt", null, ["number","boolean"])
+
   QTS_GetUndefined: () => JSValueConstPointer =
     this.module.cwrap("QTS_GetUndefined", "number", [])
 
@@ -58,6 +103,9 @@ export class QuickJSFFI {
 
   QTS_NewContext: (rt: JSRuntimePointer) => JSContextPointer =
     this.module.cwrap("QTS_NewContext", "number", ["number"])
+
+  QTS_NewContextRaw: (rt: JSRuntimePointer) => JSContextPointer =
+    this.module.cwrap("QTS_NewContextRaw", "number", ["number"])
 
   QTS_FreeContext: (ctx: JSContextPointer) => void =
     this.module.cwrap("QTS_FreeContext", null, ["number"])

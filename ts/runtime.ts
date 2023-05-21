@@ -3,24 +3,23 @@ import { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
 import { EitherModule } from "./emscripten-types"
 import { QuickJSWrongOwner } from "./errors"
-import {
-  BorrowedHeapCharPointer,
-  JSContextPointer,
-  JSContextPointerPointer,
-  JSModuleDefPointer,
-  JSRuntimePointer,
-} from "./types-ffi"
 import { Disposable, Lifetime, Scope } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
 import {
   ContextOptions,
-  DefaultIntrinsics,
   EitherFFI,
+  Intrinsic,
   JSModuleLoader,
   JSModuleNormalizer,
-  QuickJSHandle,
+  QuickJSHandle
 } from "./types"
+import {
+  BorrowedHeapCharPointer,
+  JSContextPointer,
+  JSContextPointerPointer,
+  JSRuntimePointer,
+} from "./types-ffi"
 import { SuccessOrFail } from "./vm-interface"
 
 /**
@@ -132,19 +131,13 @@ export class QuickJSRuntime implements Disposable {
   }
 
   newContext(options: ContextOptions = {}): QuickJSContext {
-    if (options.intrinsics && options.intrinsics !== DefaultIntrinsics) {
-      throw new Error("TODO: Custom intrinsics are not supported yet")
-    }
+    const ctxPtr = this.getNewContextPointer(options)
 
-    const ctx = new Lifetime(
-      options.contextPointer || this.ffi.QTS_NewContext(this.rt.value),
-      undefined,
-      (ctx_ptr) => {
-        this.contextMap.delete(ctx_ptr)
-        this.callbacks.deleteContext(ctx_ptr)
-        this.ffi.QTS_FreeContext(ctx_ptr)
-      }
-    )
+    const ctx = new Lifetime(ctxPtr, undefined, (ctx_ptr) => {
+      this.contextMap.delete(ctx_ptr)
+      this.callbacks.deleteContext(ctx_ptr)
+      this.ffi.QTS_FreeContext(ctx_ptr)
+    })
 
     const context = new QuickJSContext({
       module: this.module,
@@ -158,6 +151,79 @@ export class QuickJSRuntime implements Disposable {
     this.contextMap.set(ctx.value, context)
 
     return context
+  }
+
+  private getNewContextPointer(options: ContextOptions = {}): JSContextPointer {
+    let contextPointer
+    // If we are recycling an existing context, prioritize the existing pointer
+    if (options.contextPointer) {
+      contextPointer = options.contextPointer
+    } else if (options.intrinsics) {
+      contextPointer = this.ffi.QTS_NewContextRaw(this.rt.value)
+      this.addContextIntrinsics(contextPointer, options.intrinsics)
+    } else {
+      contextPointer = this.ffi.QTS_NewContext(this.rt.value)
+    }
+
+    return contextPointer
+  }
+
+  private addContextIntrinsics(ctxPtr: JSContextPointer, intrinsics: Intrinsic[]): void {
+    for (const intrinsic of intrinsics) {
+      switch (intrinsic) {
+        case "BaseObjects":
+          // Intrinsic - Base Objects is always added by quickjs as this is the minimum objects required to evaluate js code
+          break
+        case "Eval":
+          // Intrinsic - Eval is required to use evalCode
+          this.ffi.QTS_AddIntrinsicEval(ctxPtr)
+          break
+        case "Date":
+          this.ffi.QTS_AddIntrinsicDate(ctxPtr)
+          break
+        case "StringNormalize":
+          this.ffi.QTS_AddIntrinsicStringNormalize(ctxPtr)
+          break
+        case "RegExp":
+          this.ffi.QTS_AddIntrinsicRegExp(ctxPtr)
+          break
+        case "RegExpCompiler":
+          this.ffi.QTS_AddIntrinsicRegExpCompiler(ctxPtr)
+          break
+        case "JSON":
+          this.ffi.QTS_AddIntrinsicJSON(ctxPtr)
+          break
+        case "Proxy":
+          this.ffi.QTS_AddIntrinsicProxy(ctxPtr)
+          break
+        case "MapSet":
+          this.ffi.QTS_AddIntrinsicMapSet(ctxPtr)
+          break
+        case "TypedArrays":
+          this.ffi.QTS_AddIntrinsicTypedArrays(ctxPtr)
+          break
+        case "Promise":
+          this.ffi.QTS_AddIntrinsicPromise(ctxPtr)
+          break
+        case "BigInt":
+          this.ffi.QTS_AddIntrinsicBigInt(ctxPtr)
+          break
+        case "BigFloat":
+          this.ffi.QTS_AddIntrinsicBigFloat(ctxPtr)
+          break
+        case "BigDecimal":
+          this.ffi.QTS_AddIntrinsicBigDecimal(ctxPtr)
+          break
+        case "OperatorOverloading":
+          this.ffi.QTS_AddIntrinsicOperators(ctxPtr)
+          break
+        case "BignumExt":
+          this.ffi.QTS_EnableBignumExt(ctxPtr, true)
+          break
+        default:
+          throw new Error(`Unknown Intrinsic: ${intrinsic}`)
+      }
+    }
   }
 
   /**

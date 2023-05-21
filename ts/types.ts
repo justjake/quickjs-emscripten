@@ -1,10 +1,10 @@
-import type { QuickJSFFI, QuickJSAsyncFFI } from "./variants"
 import type { QuickJSContext } from "./context"
-import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
-import type { Disposable, Lifetime } from "./lifetime"
 import type { QuickJSAsyncContext } from "./context-asyncify"
+import type { Disposable, Lifetime } from "./lifetime"
 import type { InterruptHandler, QuickJSRuntime } from "./runtime"
 import { EvalFlags, JSContextPointer, JSValueConstPointer, JSValuePointer } from "./types-ffi"
+import type { QuickJSAsyncFFI, QuickJSFFI } from "./variants"
+import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
 
 export type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
 
@@ -54,10 +54,10 @@ export type QuickJSHandle = StaticJSValue | JSValue | JSValueConst
 
 export type JSModuleExport =
   | {
-      type: "function"
-      name: string
-      implementation: (vm: QuickJSContext) => VmFunctionImplementation<QuickJSHandle>
-    }
+    type: "function"
+    name: string
+    implementation: (vm: QuickJSContext) => VmFunctionImplementation<QuickJSHandle>
+  }
   | { type: "value"; name: string; value: (vm: QuickJSContext) => QuickJSHandle }
 
 export interface JSModuleDefinition {
@@ -135,7 +135,7 @@ export interface AsyncRuntimeOptions extends RuntimeOptionsBase {
 }
 
 /**
- * Work in progress.
+ * Intrinsic options to add to a JS Context
  */
 export type Intrinsic =
   | "BaseObjects"
@@ -155,7 +155,12 @@ export type Intrinsic =
   | "OperatorOverloading"
   | "BignumExt"
 
-// For informational purposes
+
+/**
+ * The default intrinsics that will be available in a new JS Context.
+ * 
+ * For information purposes only
+ */
 const DefaultIntrinsicsList = [
   "BaseObjects",
   "Date",
@@ -169,18 +174,18 @@ const DefaultIntrinsicsList = [
   "Promise",
 ] as const
 
-/**
- * Work in progress.
- */
-export const DefaultIntrinsics = Symbol("DefaultIntrinsics")
-
 export interface ContextOptions {
   /**
-   * What built-in objects and language features to enable?
+   * What built-in objects and language features to enable.
+   *
    * If unset, the default intrinsics will be used.
-   * To omit all intrinsics, pass an empty array.
+   *
+   * The base objects intrinsics will always be enabled,
+   *  but to omit all additional intrinsics, pass an empty array.
+   * 
+   * To be able to use `evalCode` you must enable the "Eval" intrinsic.
    */
-  intrinsics?: PartiallyImplemented<Intrinsic[]> | typeof DefaultIntrinsics
+  intrinsics?: Intrinsic[]
 
   /**
    * Wrap the provided context instead of constructing a new one.

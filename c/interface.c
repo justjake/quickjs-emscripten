@@ -231,6 +231,73 @@ void QTS_RuntimeSetMaxStackSize(JSRuntime *rt, size_t stack_size) {
   JS_SetMaxStackSize(rt, stack_size);
 }
 
+
+/**
+ * The following functions are used to select the
+ *  intrinsic objects to attach to the JS Context, to save memory.
+ *
+ * Base objects will always be included
+ */
+void QTS_AddIntrinsicDate(JSContext *ctx) {
+  JS_AddIntrinsicDate(ctx);
+}
+
+void QTS_AddIntrinsicEval(JSContext *ctx) {
+  JS_AddIntrinsicEval(ctx);
+}
+
+void QTS_AddIntrinsicStringNormalize(JSContext *ctx) {
+  JS_AddIntrinsicStringNormalize(ctx);
+}
+
+void QTS_AddIntrinsicRegExpCompiler(JSContext *ctx) {
+  JS_AddIntrinsicRegExpCompiler(ctx);
+}
+
+void QTS_AddIntrinsicRegExp(JSContext *ctx) {
+  JS_AddIntrinsicRegExp(ctx);
+}
+
+void QTS_AddIntrinsicJSON(JSContext *ctx) {
+  JS_AddIntrinsicJSON(ctx);
+}
+
+void QTS_AddIntrinsicProxy(JSContext *ctx) {
+  JS_AddIntrinsicProxy(ctx);
+}
+
+void QTS_AddIntrinsicMapSet(JSContext *ctx) {
+  JS_AddIntrinsicMapSet(ctx);
+}
+
+void QTS_AddIntrinsicTypedArrays(JSContext *ctx) {
+  JS_AddIntrinsicTypedArrays(ctx);
+}
+
+void QTS_AddIntrinsicPromise(JSContext *ctx) {
+  JS_AddIntrinsicPromise(ctx);
+}
+
+void QTS_AddIntrinsicBigInt(JSContext *ctx) {
+  JS_AddIntrinsicBigInt(ctx);
+}
+
+void QTS_AddIntrinsicBigFloat(JSContext *ctx) {
+  JS_AddIntrinsicBigFloat(ctx);
+}
+
+void QTS_AddIntrinsicBigDecimal(JSContext *ctx) {
+  JS_AddIntrinsicBigDecimal(ctx);
+}
+
+void QTS_AddIntrinsicOperators(JSContext *ctx) {
+  JS_AddIntrinsicOperators(ctx);
+}
+
+void QTS_EnableBignumExt(JSContext *ctx, bool enable) {
+  JS_EnableBignumExt(ctx, enable);
+}
+
 /**
  * Constant pointers. Because we always use JSValue* from the host Javascript environment,
  * we need helper fuctions to return pointers to these constants.
@@ -270,6 +337,10 @@ void QTS_FreeRuntime(JSRuntime *rt) {
 
 JSContext *QTS_NewContext(JSRuntime *rt) {
   return JS_NewContext(rt);
+}
+
+JSContext *QTS_NewContextRaw(JSRuntime *rt) {
+  return JS_NewContextRaw(rt);
 }
 
 void QTS_FreeContext(JSContext *ctx) {

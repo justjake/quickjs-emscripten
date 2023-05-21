@@ -2,28 +2,32 @@
  * These tests demonstrate some common patterns for using quickjs-emscripten.
  */
 
+import assert from "assert"
+import fs from "fs"
+import { describe, it } from "mocha"
 import {
-  getQuickJS,
-  QuickJSHandle,
+  ContextOptions,
   InterruptHandler,
   QuickJSDeferredPromise,
+  QuickJSHandle,
+  getQuickJS,
   newQuickJSAsyncWASMModule,
   newQuickJSWASMModule,
 } from "."
-import { it, describe } from "mocha"
-import assert from "assert"
-import { isFail, VmCallResult } from "./vm-interface"
-import fs, { chmod } from "fs"
 import { QuickJSContext } from "./context"
 import { QuickJSAsyncContext } from "./context-asyncify"
-import { DEBUG_ASYNC, DEBUG_SYNC, memoizePromiseFactory, QuickJSFFI } from "./variants"
-import { QuickJSUnwrapError } from "./errors"
 import { debugLog } from "./debug"
+import { QuickJSUnwrapError } from "./errors"
 import { EitherFFI } from "./types"
+import { DEBUG_ASYNC, DEBUG_SYNC, QuickJSFFI, memoizePromiseFactory } from "./variants"
+import { VmCallResult, isFail } from "./vm-interface"
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
 
-function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false) {
+function contextTests(
+  getContext: (options?: ContextOptions) => Promise<QuickJSContext>,
+  isDebug = false
+) {
   let vm: QuickJSContext = undefined as any
   let ffi: EitherFFI = undefined as any
   let testId = 0
@@ -421,7 +425,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
 
     it("respects maxStackSize", async () => {
       try {
-        ;(await getQuickJS()).evalCode('"ok"', { maxStackSizeBytes: 1 })
+        ; (await getQuickJS()).evalCode('"ok"', { maxStackSizeBytes: 1 })
       } catch (e) {
         return
       }
@@ -511,7 +515,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
     typeofTestExample({ cow: true })
     typeofTestExample([1, 2, 3])
     typeofTestExample(
-      function () {},
+      function () { },
       (val: any) => val.toString()
     )
   })
@@ -652,6 +656,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
     })
   })
 
+
   describe(".setMaxStackSize", () => {
     it("sets an enforced limit", () => {
       vm.runtime.setMaxStackSize(1)
@@ -676,6 +681,43 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
       const value = vm.dump(result)
       result.dispose()
       assert.strictEqual(value, "ok")
+    })
+  })
+
+  describe("intrisic objects", () => {
+    it("newBigInt - context respects intrinsic options", async () => {
+      // Dispose prebuilt context so we can create a new one with custom intrinsic options
+      const newContext = await getContext({ intrinsics: [] })
+
+      let handle;
+      try {
+        handle = newContext.newBigInt(2n ** 60n)
+        assert.fail('Must fail since BigInt is not an enabled intrinsic')
+      } catch (e) {
+      } finally {
+        if (handle?.alive) {
+          handle.dispose()
+        }
+        newContext.dispose()
+      }
+    })
+
+    it("evalCode - context respects intrinsic options", async () => {
+      // Eval is required to use `evalCode`
+      const newContext = await getContext({ intrinsics: ["Eval"] })
+
+      try {
+        newContext.evalCode(`new Date()`)
+        assert.fail('Must fail since Date is not an enabled intrinsic')
+      } catch (e) {
+        if (e && typeof e === 'object' && 'name' in e) {
+          assert.equal(e.name, "RuntimeError")
+        } else {
+          assert.fail('Unknown error shape')
+        }
+      } finally {
+        newContext.dispose()
+      }
     })
   })
 
@@ -816,7 +858,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
   })
 }
 
-function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
+function asyncContextTests(getContext: (options?: ContextOptions) => Promise<QuickJSAsyncContext>) {
   let vm: QuickJSAsyncContext = undefined as any
 
   beforeEach(async () => {
@@ -1017,13 +1059,13 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
 describe("QuickJSContext", function () {
   describe("QuickJS.newContext", function () {
     const loader = getQuickJS
-    const getContext = () => loader().then((mod) => mod.newContext())
+    const getContext = (options?: ContextOptions) => loader().then((mod) => mod.newContext(options))
     contextTests.call(this, getContext)
   })
 
   describe("DEBUG sync module", function () {
     const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
-    const getContext = () => loader().then((mod) => mod.newContext())
+    const getContext = (options?: ContextOptions) => loader().then((mod) => mod.newContext(options))
     contextTests.call(this, getContext, true)
   })
 })
@@ -1032,7 +1074,8 @@ if (!TEST_NO_ASYNC) {
   describe("QuickJSAsyncContext", () => {
     describe("newQuickJSAsyncWASMModule", function () {
       const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule())
-      const getContext = () => loader().then((mod) => mod.newContext())
+      const getContext = (options?: ContextOptions) =>
+        loader().then((mod) => mod.newContext(options))
 
       describe("sync API", () => {
         contextTests(getContext)
@@ -1045,7 +1088,8 @@ if (!TEST_NO_ASYNC) {
 
     describe("DEBUG async module", function () {
       const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule(DEBUG_ASYNC))
-      const getContext = () => loader().then((mod) => mod.newContext())
+      const getContext = (options?: ContextOptions) =>
+        loader().then((mod) => mod.newContext(options))
 
       describe("sync API", () => {
         contextTests(getContext, true)

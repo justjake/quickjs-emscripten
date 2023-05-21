@@ -12,7 +12,7 @@
 
 ### intrinsics
 
-• `Optional` **intrinsics**: typeof `DefaultIntrinsics`
+• `Optional` **intrinsics**: typeof `Intrinsic`
 
 What built-in objects and language features to enable?
 If unset, the default intrinsics will be used.
