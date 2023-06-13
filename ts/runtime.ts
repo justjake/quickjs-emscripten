@@ -168,7 +168,7 @@ export class QuickJSRuntime implements Disposable {
     return contextPointer
   }
 
-  private addContextIntrinsics(ctxPtr: JSContextPointer, intrinsics: Intrinsic[]): void {
+  protected addContextIntrinsics(ctxPtr: JSContextPointer, intrinsics: Intrinsic[]): void {
     for (const intrinsic of intrinsics) {
       switch (intrinsic) {
         case "BaseObjects":

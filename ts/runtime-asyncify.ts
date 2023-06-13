@@ -6,7 +6,6 @@ import type { QuickJSAsyncWASMModule } from "./module-asyncify"
 import { QuickJSRuntime } from "./runtime"
 import {
   ContextOptions,
-  Intrinsic,
   JSModuleLoader,
   JSModuleLoaderAsync,
   JSModuleNormalizer,
@@ -73,64 +72,6 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
     }
 
     return contextPointer
-  }
-
-  private addContextIntrinsics(ctxPtr: JSContextPointer, intrinsics: Intrinsic[]): void {
-    for (const intrinsic of intrinsics) {
-      switch (intrinsic) {
-        case "BaseObjects":
-          // Intrinsic - Base Objects is always added by quickjs as this is the minimum objects required to evaluate js code
-          break
-        case "Eval":
-          // Intrinsic - Eval is required to use evalCode
-          this.ffi.QTS_AddIntrinsicEval(ctxPtr)
-          break
-        case "Date":
-          this.ffi.QTS_AddIntrinsicDate(ctxPtr)
-          break
-        case "StringNormalize":
-          this.ffi.QTS_AddIntrinsicStringNormalize(ctxPtr)
-          break
-        case "RegExp":
-          this.ffi.QTS_AddIntrinsicRegExp(ctxPtr)
-          break
-        case "RegExpCompiler":
-          this.ffi.QTS_AddIntrinsicRegExpCompiler(ctxPtr)
-          break
-        case "JSON":
-          this.ffi.QTS_AddIntrinsicJSON(ctxPtr)
-          break
-        case "Proxy":
-          this.ffi.QTS_AddIntrinsicProxy(ctxPtr)
-          break
-        case "MapSet":
-          this.ffi.QTS_AddIntrinsicMapSet(ctxPtr)
-          break
-        case "TypedArrays":
-          this.ffi.QTS_AddIntrinsicTypedArrays(ctxPtr)
-          break
-        case "Promise":
-          this.ffi.QTS_AddIntrinsicPromise(ctxPtr)
-          break
-        case "BigInt":
-          this.ffi.QTS_AddIntrinsicBigInt(ctxPtr)
-          break
-        case "BigFloat":
-          this.ffi.QTS_AddIntrinsicBigFloat(ctxPtr)
-          break
-        case "BigDecimal":
-          this.ffi.QTS_AddIntrinsicBigDecimal(ctxPtr)
-          break
-        case "OperatorOverloading":
-          this.ffi.QTS_AddIntrinsicOperators(ctxPtr)
-          break
-        case "BignumExt":
-          this.ffi.QTS_EnableBignumExt(ctxPtr, true)
-          break
-        default:
-          throw new Error(`Unknown Intrinsic: ${intrinsic}`)
-      }
-    }
   }
 
   public override setModuleLoader(
