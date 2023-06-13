@@ -66,6 +66,7 @@ export type {
   JSModuleNormalizeFailure,
   JSModuleNormalizeSuccess,
 } from "./types"
+export { DefaultIntrinsics } from './types'
 export type { ModuleEvalOptions } from "./module"
 export type { InterruptHandler, ExecutePendingJobsResult } from "./runtime"
 export type { QuickJSPropertyKey } from "./context"

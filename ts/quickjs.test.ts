@@ -7,12 +7,13 @@ import fs from "fs"
 import { describe, it } from "mocha"
 import {
   ContextOptions,
+  DefaultIntrinsics,
   InterruptHandler,
   QuickJSDeferredPromise,
   QuickJSHandle,
   getQuickJS,
   newQuickJSAsyncWASMModule,
-  newQuickJSWASMModule,
+  newQuickJSWASMModule
 } from "."
 import { QuickJSContext } from "./context"
 import { QuickJSAsyncContext } from "./context-asyncify"
@@ -686,14 +687,16 @@ function contextTests(
 
   describe("intrisic objects", () => {
     it("newBigInt - context respects intrinsic options", async () => {
-      // Dispose prebuilt context so we can create a new one with custom intrinsic options
       const newContext = await getContext({ intrinsics: [] })
 
       let handle;
       try {
         handle = newContext.newBigInt(2n ** 60n)
         assert.fail('Must fail since BigInt is not an enabled intrinsic')
-      } catch (e) {
+      } catch (error) {
+        if (error instanceof QuickJSUnwrapError) {
+          assert.strictEqual(error.message, "not a function", "BigInt is not available without intrinsic object")
+        }
       } finally {
         if (handle?.alive) {
           handle.dispose()
@@ -706,8 +709,9 @@ function contextTests(
       // Eval is required to use `evalCode`
       const newContext = await getContext({ intrinsics: ["Eval"] })
 
+      let handle;
       try {
-        newContext.evalCode(`new Date()`)
+        handle = newContext.unwrapResult(newContext.evalCode(`new Date()`))
         assert.fail('Must fail since Date is not an enabled intrinsic')
       } catch (e) {
         if (e && typeof e === 'object' && 'name' in e) {
@@ -716,6 +720,27 @@ function contextTests(
           assert.fail('Unknown error shape')
         }
       } finally {
+        if (handle?.alive) {
+          handle.dispose()
+        }
+        newContext.dispose()
+      }
+    })
+
+    it("evalCode - context executes as expected with default intrinsics", async () => {
+      // Eval is required to use `evalCode`
+      const newContext = await getContext({ intrinsics: [...DefaultIntrinsics] })
+
+      let handle;
+      try {
+        handle = newContext.unwrapResult(newContext.evalCode(`new Date()`))
+      } catch (e) {
+        // No error should occur
+        throw e
+      } finally {
+        if (handle?.alive) {
+          handle.dispose()
+        }
         newContext.dispose()
       }
     })

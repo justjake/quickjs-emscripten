@@ -158,10 +158,8 @@ export type Intrinsic =
 
 /**
  * The default intrinsics that will be available in a new JS Context.
- * 
- * For informational purposes only
  */
-const DefaultIntrinsicsList = [
+export const DefaultIntrinsics = [
   "BaseObjects",
   "Date",
   "Eval",
