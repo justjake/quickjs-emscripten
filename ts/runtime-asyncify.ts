@@ -66,7 +66,7 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
 
     if (options.intrinsics) {
       contextPointer = this.ffi.QTS_NewContextRaw(this.rt.value)
-      this.addContextIntrinsics(contextPointer, options.intrinsics)
+      super.addContextIntrinsics(contextPointer, options.intrinsics)
     } else {
       contextPointer = this.ffi.QTS_NewContext(this.rt.value)
     }
