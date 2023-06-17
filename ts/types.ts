@@ -178,10 +178,9 @@ export interface ContextOptions {
    *
    * If unset, the default intrinsics will be used.
    *
-   * The base objects intrinsics will always be enabled,
-   *  but to omit all additional intrinsics, pass an empty array.
+   * Too omit all intrinsics, pass an empty array.
    * 
-   * To be able to use `evalCode` you must enable the "Eval" intrinsic.
+   * To be able to use `evalCode` you must, at least, enable the "BaseObjects" and "Eval" intrinsics.
    */
   intrinsics?: Intrinsic[]
 

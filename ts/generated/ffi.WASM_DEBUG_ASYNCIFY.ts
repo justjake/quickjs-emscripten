@@ -38,6 +38,9 @@ export class QuickJSAsyncFFI {
   QTS_RuntimeSetMaxStackSize: (rt: JSRuntimePointer, stack_size: number) => void =
     this.module.cwrap("QTS_RuntimeSetMaxStackSize", null, ["number","number"])
 
+  QTS_AddIntrinsicBaseObjects: (ctx: JSContextPointer) => void =
+    this.module.cwrap("QTS_AddIntrinsicBaseObjects", null, ["number"])
+
   QTS_AddIntrinsicDate: (ctx: JSContextPointer) => void =
     this.module.cwrap("QTS_AddIntrinsicDate", null, ["number"])
 

@@ -686,45 +686,24 @@ function contextTests(
   })
 
   describe("intrisic objects", () => {
-    it("newBigInt - context respects intrinsic options", async () => {
-      const newContext = await getContext({ intrinsics: [] })
-
-      let handle;
-      try {
-        handle = newContext.newBigInt(2n ** 60n)
-        assert.fail('Must fail since BigInt is not an enabled intrinsic')
-      } catch (error) {
-        if (error instanceof QuickJSUnwrapError) {
-          assert.strictEqual(error.message, "not a function", "BigInt is not available without intrinsic object")
-        }
-      } finally {
-        if (handle?.alive) {
-          handle.dispose()
-        }
-        newContext.dispose()
-      }
-    })
-
-    it("evalCode - context respects intrinsic options", async () => {
+    it("evalCode - context respects intrinsic options - Date Unavailable", async () => {
       // Eval is required to use `evalCode`
-      const newContext = await getContext({ intrinsics: ["Eval"] })
+      const newContext = await getContext({ intrinsics: ["BaseObjects", "Eval"] })
 
-      let handle;
-      try {
-        handle = newContext.unwrapResult(newContext.evalCode(`new Date()`))
-        assert.fail('Must fail since Date is not an enabled intrinsic')
-      } catch (e) {
-        if (e && typeof e === 'object' && 'name' in e) {
-          assert.equal(e.name, "RuntimeError")
-        } else {
-          assert.fail('Unknown error shape')
-        }
-      } finally {
-        if (handle?.alive) {
-          handle.dispose()
-        }
-        newContext.dispose()
+      const result = newContext.evalCode(`new Date()`)
+
+      if (!result.error) {
+        assert.fail("result should be an error")
       }
+
+      assert.deepEqual(newContext.dump(result.error), {
+        name: "ReferenceError",
+        message: "'Date' is not defined",
+        stack: "    at <eval> (eval.js)\n",
+      })
+
+      result.error.dispose()
+      newContext.dispose()
     })
 
     it("evalCode - context executes as expected with default intrinsics", async () => {

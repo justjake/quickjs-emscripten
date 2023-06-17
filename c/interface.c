@@ -235,9 +235,11 @@ void QTS_RuntimeSetMaxStackSize(JSRuntime *rt, size_t stack_size) {
 /**
  * The following functions are used to select the
  *  intrinsic objects to attach to the JS Context, to save memory.
- *
- * Base objects will always be included
  */
+void QTS_AddIntrinsicBaseObjects(JSContext *ctx) {
+  JS_AddIntrinsicBaseObjects(ctx);
+}
+
 void QTS_AddIntrinsicDate(JSContext *ctx) {
   JS_AddIntrinsicDate(ctx);
 }

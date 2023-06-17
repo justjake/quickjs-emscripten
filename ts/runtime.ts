@@ -172,7 +172,7 @@ export class QuickJSRuntime implements Disposable {
     for (const intrinsic of intrinsics) {
       switch (intrinsic) {
         case "BaseObjects":
-          // Intrinsic - Base Objects is always added by quickjs as this is the minimum objects required to evaluate js code
+          this.ffi.QTS_AddIntrinsicBaseObjects(ctxPtr)
           break
         case "Eval":
           // Intrinsic - Eval is required to use evalCode

@@ -25,5 +25,7 @@ npm-error.log
 /quickjs/repl.c
 /quickjs/run-test262
 
+interface.h
+
 **/.yarn/*
 !/.yarn/releases
