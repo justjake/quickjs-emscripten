@@ -310,6 +310,14 @@ JSValue *QTS_NewArray(JSContext *ctx) {
   return jsvalue_to_heap(JS_NewArray(ctx));
 }
 
+void qts_free_buffer(JSRuntime *unused_rt, void *unused_opaque, void *ptr) { free(ptr); }
+
+JSValue *QTS_NewArrayBuffer(JSContext *ctx, JSVoid *buffer, size_t length) {
+  return jsvalue_to_heap(
+    JS_NewArrayBuffer(ctx, (uint8_t*)buffer, length, qts_free_buffer, NULL, false)
+  );
+}
+
 JSValue *QTS_NewFloat64(JSContext *ctx, double num) {
   return jsvalue_to_heap(JS_NewFloat64(ctx, num));
 }
@@ -326,6 +334,25 @@ JSValue *QTS_NewString(JSContext *ctx, BorrowedHeapChar *string) {
 
 JSBorrowedChar *QTS_GetString(JSContext *ctx, JSValueConst *value) {
   return JS_ToCString(ctx, *value);
+}
+
+JSVoid *QTS_GetArrayBuffer(JSContext *ctx, JSValueConst *data) {
+  size_t length;
+  uint8_t *buffer = JS_GetArrayBuffer(ctx, &length, *data);
+  if (!buffer)
+    return 0;
+  uint8_t *result = malloc(length);
+  if (!result)
+    return result;
+  memcpy(result, buffer, length);
+  return result;
+}
+
+// I don't know how to return two values in C, maybe allocate memory in stack?
+size_t QTS_GetArrayBufferLength(JSContext *ctx, JSValueConst *data) {
+  size_t length;
+  uint8_t *buffer = JS_GetArrayBuffer(ctx, &length, *data);
+  return length;
 }
 
 JSValue qts_get_symbol_key(JSContext *ctx, JSValueConst *value) {
@@ -816,4 +843,25 @@ void QTS_RuntimeEnableModuleLoader(JSRuntime *rt, int use_custom_normalize) {
 
 void QTS_RuntimeDisableModuleLoader(JSRuntime *rt) {
   JS_SetModuleLoaderFunc(rt, NULL, NULL, NULL);
+}
+
+JSValue *QTS_bjson_encode(JSContext *ctx, JSValueConst *val) {
+  size_t length;
+  uint8_t *buffer = JS_WriteObject(ctx, &length, *val, JS_WRITE_OBJ_REFERENCE);
+  if (!buffer)
+    return jsvalue_to_heap(JS_EXCEPTION);
+
+  JSValue array = JS_NewArrayBufferCopy(ctx, buffer, length);
+  js_free(ctx, buffer);
+  return jsvalue_to_heap(array);
+}
+
+JSValue *QTS_bjson_decode(JSContext *ctx, JSValueConst *data) {
+  size_t length;
+  uint8_t *buffer = JS_GetArrayBuffer(ctx, &length, *data);
+  if (!buffer)
+   return jsvalue_to_heap(JS_EXCEPTION);
+  
+  JSValue value = JS_ReadObject(ctx, buffer, length, 0);
+  return jsvalue_to_heap(value);
 }

@@ -374,6 +374,16 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   }
 
   /**
+   *  Create a new QuickJS [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer).
+   */
+  newArrayBuffer(buffer: ArrayBufferLike): QuickJSHandle {
+    const array = new Uint8Array(buffer)
+    const handle = this.memory.newHeapBufferPointer(array)
+    const ptr = this.ffi.QTS_NewArrayBuffer(this.ctx.value, handle.value.pointer, array.length)
+    return this.memory.heapValueHandle(ptr)
+  }
+
+  /**
    * Create a new [[QuickJSDeferredPromise]]. Use `deferred.resolve(handle)` and
    * `deferred.reject(handle)` to fulfill the promise handle available at `deferred.handle`.
    * Note that you are responsible for calling `deferred.dispose()` to free the underlying
@@ -537,6 +547,21 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     this.runtime.assertOwned(handle)
     const asString = this.getString(handle)
     return BigInt(asString)
+  }
+
+  /**
+   * Coverts `handle` to a JavaScript ArrayBuffer
+   */
+  getArrayBuffer(handle: QuickJSHandle): Lifetime<Uint8Array> {
+    this.runtime.assertOwned(handle)
+    const len = this.ffi.QTS_GetArrayBufferLength(this.ctx.value, handle.value)
+    const ptr = this.ffi.QTS_GetArrayBuffer(this.ctx.value, handle.value)
+    if (!ptr) {
+      throw new Error("Couldn't allocate memory to get ArrayBuffer")
+    }
+    return new Lifetime(this.module.HEAPU8.subarray(ptr, ptr + len), undefined, (value) =>
+      this.module._free(ptr)
+    )
   }
 
   /**
@@ -931,5 +956,40 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     }
 
     return this.newError(error)
+  }
+
+  /**
+   * Outputs QuickJS Objects in binary form
+   *
+   * **WARNING**: QuickJS's binary JSON doesn't have a standard so expect it to change between version
+   *
+   * ```ts
+   * // imagine sending data to another via IPC
+   * let dataLifetime = context.newString("This is an example")
+   *  ?.consume(handle => context.encodeBinaryJSON(handle))
+   *  ?.consume(handle => context.getArrayBuffer(handle))
+   * socket.write(dataLifetime?.value)
+   * ```
+   */
+  encodeBinaryJSON(handle: QuickJSHandle): QuickJSHandle {
+    const ptr = this.ffi.QTS_bjson_encode(this.ctx.value, handle.value)
+    return this.memory.heapValueHandle(ptr)
+  }
+
+  /**
+   * Outputs Handle of the given QuickJS Object in binary form
+   *
+   * ```ts
+   * // imagine receiving data from another via IPC
+   * socket.on("data", chunk => {
+   *  context.newArrayBuffer(chunk)
+   *    ?.consume(handle => context.decodeBinaryJSON(handle))
+   *    ?.consume(handle => console.log(context.dump(handle)))
+   * })
+   * ```
+   */
+  decodeBinaryJSON(handle: QuickJSHandle): QuickJSHandle {
+    const ptr = this.ffi.QTS_bjson_decode(this.ctx.value, handle.value)
+    return this.memory.heapValueHandle(ptr)
   }
 }
