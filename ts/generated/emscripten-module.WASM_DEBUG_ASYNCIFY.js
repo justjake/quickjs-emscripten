@@ -27,7 +27,7 @@ Module['ready'] = new Promise(function(resolve, reject) {
   readyPromiseResolve = resolve;
   readyPromiseReject = reject;
 });
-["_QTS_Throw","_QTS_NewError","_QTS_RuntimeSetMemoryLimit","_QTS_RuntimeComputeMemoryUsage","_QTS_RuntimeDumpMemoryUsage","_QTS_RecoverableLeakCheck","_QTS_BuildIsSanitizeLeak","_QTS_RuntimeSetMaxStackSize","_QTS_GetUndefined","_QTS_GetNull","_QTS_GetFalse","_QTS_GetTrue","_QTS_NewRuntime","_QTS_FreeRuntime","_QTS_NewContext","_QTS_FreeContext","_QTS_FreeValuePointer","_QTS_FreeValuePointerRuntime","_QTS_FreeVoidPointer","_QTS_FreeCString","_QTS_DupValuePointer","_QTS_NewObject","_QTS_NewObjectProto","_QTS_NewArray","_QTS_NewArrayBuffer","_QTS_NewFloat64","_QTS_GetFloat64","_QTS_NewString","_QTS_GetString","_QTS_GetArrayBufferLength","_QTS_NewSymbol","_QTS_GetSymbolDescriptionOrKey","_QTS_IsGlobalSymbol","_QTS_IsJobPending","_QTS_ExecutePendingJob","_QTS_GetProp","_QTS_SetProp","_QTS_DefineProp","_QTS_Call","_QTS_ResolveException","_QTS_Dump","_QTS_Eval","_QTS_Typeof","_QTS_GetGlobalObject","_QTS_NewPromiseCapability","_QTS_TestStringArg","_QTS_BuildIsDebug","_QTS_BuildIsAsyncify","_QTS_NewFunction","_QTS_ArgvGetJSValueConstPointer","_QTS_RuntimeEnableInterruptHandler","_QTS_RuntimeDisableInterruptHandler","_QTS_RuntimeEnableModuleLoader","_QTS_RuntimeDisableModuleLoader","_QTS_bjson_encode","_QTS_bjson_decode","_malloc","_free","_fflush","onRuntimeInitialized"].forEach((prop) => {
+["_QTS_Throw","_QTS_NewError","_QTS_RuntimeSetMemoryLimit","_QTS_RuntimeComputeMemoryUsage","_QTS_RuntimeDumpMemoryUsage","_QTS_RecoverableLeakCheck","_QTS_BuildIsSanitizeLeak","_QTS_RuntimeSetMaxStackSize","_QTS_AddIntrinsicBaseObjects","_QTS_AddIntrinsicDate","_QTS_AddIntrinsicEval","_QTS_AddIntrinsicStringNormalize","_QTS_AddIntrinsicRegExpCompiler","_QTS_AddIntrinsicRegExp","_QTS_AddIntrinsicJSON","_QTS_AddIntrinsicProxy","_QTS_AddIntrinsicMapSet","_QTS_AddIntrinsicTypedArrays","_QTS_AddIntrinsicPromise","_QTS_AddIntrinsicBigInt","_QTS_AddIntrinsicBigFloat","_QTS_AddIntrinsicBigDecimal","_QTS_AddIntrinsicOperators","_QTS_EnableBignumExt","_QTS_GetUndefined","_QTS_GetNull","_QTS_GetFalse","_QTS_GetTrue","_QTS_NewRuntime","_QTS_FreeRuntime","_QTS_NewContext","_QTS_NewContextRaw","_QTS_FreeContext","_QTS_FreeValuePointer","_QTS_FreeValuePointerRuntime","_QTS_FreeVoidPointer","_QTS_FreeCString","_QTS_DupValuePointer","_QTS_NewObject","_QTS_NewObjectProto","_QTS_NewArray","_QTS_NewArrayBuffer","_QTS_NewFloat64","_QTS_GetFloat64","_QTS_NewString","_QTS_GetString","_QTS_GetArrayBuffer","_QTS_GetArrayBufferLength","_QTS_NewSymbol","_QTS_GetSymbolDescriptionOrKey","_QTS_IsGlobalSymbol","_QTS_IsJobPending","_QTS_ExecutePendingJob","_QTS_GetProp","_QTS_SetProp","_QTS_DefineProp","_QTS_Call","_QTS_ResolveException","_QTS_Dump","_QTS_Eval","_QTS_Typeof","_QTS_GetGlobalObject","_QTS_NewPromiseCapability","_QTS_TestStringArg","_QTS_BuildIsDebug","_QTS_BuildIsAsyncify","_QTS_NewFunction","_QTS_ArgvGetJSValueConstPointer","_QTS_RuntimeEnableInterruptHandler","_QTS_RuntimeDisableInterruptHandler","_QTS_RuntimeEnableModuleLoader","_QTS_RuntimeDisableModuleLoader","_QTS_bjson_encode","_QTS_bjson_decode","_malloc","_free","_fflush","onRuntimeInitialized"].forEach((prop) => {
   if (!Object.getOwnPropertyDescriptor(Module['ready'], prop)) {
     Object.defineProperty(Module['ready'], prop, {
       get: () => abort('You are getting ' + prop + ' on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js'),
@@ -510,7 +510,7 @@ function initRuntime() {
 
   checkStackCookie();
 
-
+  
   callRuntimeCallbacks(__ATINIT__);
 }
 
@@ -1045,7 +1045,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       }
     }
 
-
+  
     /**
      * @param {number} ptr
      * @param {string} type
@@ -1070,7 +1070,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       return '0x' + ptr.toString(16).padStart(8, '0');
     }
 
-
+  
     /**
      * @param {number} ptr
      * @param {number} value
@@ -1101,7 +1101,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
     }
 
   var UTF8Decoder = typeof TextDecoder != 'undefined' ? new TextDecoder('utf8') : undefined;
-
+  
     /**
      * Given a pointer 'idx' to a null-terminated UTF8-encoded string in the given
      * array that contains uint8 values, returns a copy of that string as a
@@ -1120,7 +1120,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       // (As a tiny code save trick, compare endPtr against endIdx using a negation,
       // so that undefined means Infinity)
       while (heapOrArray[endPtr] && !(endPtr >= endIdx)) ++endPtr;
-
+  
       if (endPtr - idx > 16 && heapOrArray.buffer && UTF8Decoder) {
         return UTF8Decoder.decode(heapOrArray.subarray(idx, endPtr));
       }
@@ -1143,7 +1143,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
           if ((u0 & 0xF8) != 0xF0) warnOnce('Invalid UTF-8 leading byte ' + ptrToString(u0) + ' encountered when deserializing a UTF-8 string in wasm memory to a JS string!');
           u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | (heapOrArray[idx++] & 63);
         }
-
+  
         if (u0 < 0x10000) {
           str += String.fromCharCode(u0);
         } else {
@@ -1153,8 +1153,8 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       }
       return str;
     }
-
-
+  
+  
     /**
      * Given a pointer 'ptr' to a null-terminated UTF8-encoded string in the
      * emscripten HEAP, returns a copy of that string as a Javascript String object.
@@ -1181,19 +1181,19 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
   function readI53FromI64(ptr) {
       return HEAPU32[ptr>>2] + HEAP32[ptr+4>>2] * 4294967296;
     }
-
+  
   function isLeapYear(year) {
         return year%4 === 0 && (year%100 !== 0 || year%400 === 0);
     }
-
+  
   var MONTH_DAYS_LEAP_CUMULATIVE = [0,31,60,91,121,152,182,213,244,274,305,335];
-
+  
   var MONTH_DAYS_REGULAR_CUMULATIVE = [0,31,59,90,120,151,181,212,243,273,304,334];
   function ydayFromDate(date) {
       var leap = isLeapYear(date.getFullYear());
       var monthDaysCumulative = (leap ? MONTH_DAYS_LEAP_CUMULATIVE : MONTH_DAYS_REGULAR_CUMULATIVE);
       var yday = monthDaysCumulative[date.getMonth()] + date.getDate() - 1; // -1 since it's days since Jan 1
-
+  
       return yday;
     }
   function __localtime_js(time, tmPtr) {
@@ -1205,11 +1205,11 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       HEAP32[(((tmPtr)+(16))>>2)] = date.getMonth();
       HEAP32[(((tmPtr)+(20))>>2)] = date.getFullYear()-1900;
       HEAP32[(((tmPtr)+(24))>>2)] = date.getDay();
-
+  
       var yday = ydayFromDate(date)|0;
       HEAP32[(((tmPtr)+(28))>>2)] = yday;
       HEAP32[(((tmPtr)+(36))>>2)] = -(date.getTimezoneOffset() * 60);
-
+  
       // Attention: DST is in December in South, and some regions don't have DST at all.
       var start = new Date(date.getFullYear(), 0, 1);
       var summerOffset = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
@@ -1238,13 +1238,13 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       }
       return len;
     }
-
+  
   function stringToUTF8Array(str, heap, outIdx, maxBytesToWrite) {
       // Parameter maxBytesToWrite is not optional. Negative values, 0, null,
       // undefined and false each don't write out any bytes.
       if (!(maxBytesToWrite > 0))
         return 0;
-
+  
       var startIdx = outIdx;
       var endIdx = outIdx + maxBytesToWrite - 1; // -1 for string null terminator.
       for (var i = 0; i < str.length; ++i) {
@@ -1302,21 +1302,21 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       var summer = new Date(currentYear, 6, 1);
       var winterOffset = winter.getTimezoneOffset();
       var summerOffset = summer.getTimezoneOffset();
-
+  
       // Local standard timezone offset. Local standard time is not adjusted for daylight savings.
       // This code uses the fact that getTimezoneOffset returns a greater value during Standard Time versus Daylight Saving Time (DST).
       // Thus it determines the expected output during Standard Time, and it compares whether the output of the given date the same (Standard) or less (DST).
       var stdTimezoneOffset = Math.max(winterOffset, summerOffset);
-
+  
       // timezone is specified as seconds west of UTC ("The external variable
       // `timezone` shall be set to the difference, in seconds, between
       // Coordinated Universal Time (UTC) and local standard time."), the same
       // as returned by stdTimezoneOffset.
       // See http://pubs.opengroup.org/onlinepubs/009695399/functions/tzset.html
       HEAPU32[((timezone)>>2)] = stdTimezoneOffset * 60;
-
+  
       HEAP32[((daylight)>>2)] = Number(winterOffset != summerOffset);
-
+  
       function extractZone(date) {
         var match = date.toTimeString().match(/\(([A-Za-z ]+)\)$/);
         return match ? match[1] : "GMT";
@@ -1354,7 +1354,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       // casing all heap size related code to treat 0 specially.
       return 2147483648;
     }
-
+  
   function emscripten_realloc_buffer(size) {
       var b = wasmMemory.buffer;
       try {
@@ -1374,7 +1374,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       // With multithreaded builds, races can happen (another thread might increase the size
       // in between), so return a failure, and let the caller retry.
       assert(requestedSize > oldSize);
-
+  
       // Memory resize rules:
       // 1.  Always increase heap size to at least the requested size, rounded up
       //     to next page multiple.
@@ -1391,7 +1391,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       //     over-eager decision to excessively reserve due to (3) above.
       //     Hence if an allocation fails, cut down on the amount of excess
       //     growth, in an attempt to succeed to perform a smaller allocation.
-
+  
       // A limit is set for how much we can grow. We should not exceed that
       // (the wasm binary specifies it, so if we tried, we'd fail anyhow).
       var maxHeapSize = getHeapMax();
@@ -1399,9 +1399,9 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
         err('Cannot enlarge memory, asked to go up to ' + requestedSize + ' bytes, but the limit is ' + maxHeapSize + ' bytes!');
         return false;
       }
-
+  
       let alignUp = (x, multiple) => x + (multiple - x % multiple) % multiple;
-
+  
       // Loop through potential heap size increases. If we attempt a too eager
       // reservation that fails, cut down on the attempted size and reserve a
       // smaller bump instead. (max 3 times, chosen somewhat arbitrarily)
@@ -1409,12 +1409,12 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
         var overGrownHeapSize = oldSize * (1 + 0.2 / cutDown); // ensure geometric growth
         // but limit overreserving (default to capping at +96MB overgrowth at most)
         overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296 );
-
+  
         var newSize = Math.min(maxHeapSize, alignUp(Math.max(requestedSize, overGrownHeapSize), 65536));
-
+  
         var replacement = emscripten_realloc_buffer(newSize);
         if (replacement) {
-
+  
           return true;
         }
       }
@@ -1440,16 +1440,16 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       assert(hi === (hi|0));                    // hi should be a i32
       return ((hi + 0x200000) >>> 0 < 0x400001 - !!lo) ? (lo >>> 0) + hi * 4294967296 : NaN;
     }
-
-
-
-
+  
+  
+  
+  
   function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
       return 70;
     }
 
   var printCharBuffers = [null,[],[]];
-
+  
   function printChar(stream, curr) {
       var buffer = printCharBuffers[stream];
       assert(buffer);
@@ -1460,15 +1460,15 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
         buffer.push(curr);
       }
     }
-
+  
   function flush_NO_FILESYSTEM() {
       // flush anything remaining in the buffers during shutdown
       _fflush(0);
       if (printCharBuffers[1].length) printChar(1, 10);
       if (printCharBuffers[2].length) printChar(2, 10);
     }
-
-
+  
+  
   function _fd_write(fd, iov, iovcnt, pnum) {
       // hack to support printf in SYSCALLS_REQUIRE_FILESYSTEM=0
       var num = 0;
@@ -1497,7 +1497,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
         abort(e);
       }
     }
-
+  
   function handleException(e) {
       // Certain exception types we do not treat as errors since they are used for
       // internal control flow.
@@ -1515,8 +1515,8 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       }
       quit_(1, e);
     }
-
-
+  
+  
   function _proc_exit(code) {
       EXITSTATUS = code;
       if (!keepRuntimeAlive()) {
@@ -1529,20 +1529,20 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
   /** @param {boolean|number=} implicit */
   function exitJS(status, implicit) {
       EXITSTATUS = status;
-
+  
       checkUnflushedContent();
-
+  
       // if exit() was called explicitly, warn the user if the runtime isn't actually being shut down
       if (keepRuntimeAlive() && !implicit) {
         var msg = 'program exited (with status: ' + status + '), but keepRuntimeAlive() is set (counter=' + runtimeKeepaliveCounter + ') due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)';
         readyPromiseReject(msg);
         err(msg);
       }
-
+  
       _proc_exit(status);
     }
   var _exit = exitJS;
-
+  
   function maybeExit() {
       if (!keepRuntimeAlive()) {
         try {
@@ -1564,7 +1564,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
         handleException(e);
       }
     }
-
+  
   function sigToWasmTypes(sig) {
       var typeNames = {
         'i': 'i32',
@@ -1587,11 +1587,11 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       }
       return type;
     }
-
+  
   function runtimeKeepalivePush() {
       runtimeKeepaliveCounter += 1;
     }
-
+  
   function runtimeKeepalivePop() {
       assert(runtimeKeepaliveCounter > 0);
       runtimeKeepaliveCounter -= 1;
@@ -1676,7 +1676,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
           // the dbg() function itself can call back into WebAssembly to get the
           // current pthread_self() pointer).
           Asyncify.state = Asyncify.State.Normal;
-
+          
           // Keep the runtime alive so that a re-wind can be done later.
           runAndAbortIfError(_asyncify_stop_unwind);
           if (typeof Fibers != 'undefined') {
@@ -1721,7 +1721,7 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
         var start = Asyncify.getDataRewindFunc(ptr);
         // Once we have rewound and the stack we no longer need to artificially
         // keep the runtime alive.
-
+        
         return start();
       },handleSleep:function(startAsync) {
         assert(Asyncify.state !== Asyncify.State.Disabled, 'Asyncify cannot be done during or after the runtime exits');
@@ -1824,24 +1824,24 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
       assert(func, 'Cannot call unknown function ' + ident + ', make sure it is exported');
       return func;
     }
-
-
+  
+  
   function writeArrayToMemory(array, buffer) {
       assert(array.length >= 0, 'writeArrayToMemory array must have a length (should be an array or typed array)')
       HEAP8.set(array, buffer);
     }
-
-
+  
+  
   function stringToUTF8OnStack(str) {
       var size = lengthBytesUTF8(str) + 1;
       var ret = stackAlloc(size);
       stringToUTF8(str, ret, size);
       return ret;
     }
-
-
-
-
+  
+  
+  
+  
     /**
      * @param {string|null=} returnType
      * @param {Array=} argTypes
@@ -1865,16 +1865,16 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
           return ret;
         }
       };
-
+  
       function convertReturnValue(ret) {
         if (returnType === 'string') {
-
+          
           return UTF8ToString(ret);
         }
         if (returnType === 'boolean') return Boolean(ret);
         return ret;
       }
-
+  
       var func = getCFunc(ident);
       var cArgs = [];
       var stack = 0;
@@ -1917,13 +1917,13 @@ function qts_host_normalize_module(rt,ctx,module_base_name,module_name) { const 
         assert(asyncMode, 'The call to ' + ident + ' is running asynchronously. If this was intended, add the async option to the ccall/cwrap call.');
         return Asyncify.whenDone().then(onDone);
       }
-
+  
       ret = onDone(ret);
       // If this is an async ccall, ensure we return a promise
       if (asyncMode) return Promise.resolve(ret);
       return ret;
     }
-
+  
     /**
      * @param {string=} returnType
      * @param {Array=} argTypes
@@ -2057,6 +2057,8 @@ var _QTS_GetFloat64 = Module["_QTS_GetFloat64"] = createExportWrapper("QTS_GetFl
 var _QTS_NewString = Module["_QTS_NewString"] = createExportWrapper("QTS_NewString");
 /** @type {function(...*):?} */
 var _QTS_GetString = Module["_QTS_GetString"] = createExportWrapper("QTS_GetString");
+/** @type {function(...*):?} */
+var _QTS_GetArrayBuffer = Module["_QTS_GetArrayBuffer"] = createExportWrapper("QTS_GetArrayBuffer");
 /** @type {function(...*):?} */
 var _QTS_GetArrayBufferLength = Module["_QTS_GetArrayBufferLength"] = createExportWrapper("QTS_GetArrayBufferLength");
 /** @type {function(...*):?} */
@@ -2227,8 +2229,8 @@ var _asyncify_stop_unwind = createExportWrapper("asyncify_stop_unwind");
 var _asyncify_start_rewind = createExportWrapper("asyncify_start_rewind");
 /** @type {function(...*):?} */
 var _asyncify_stop_rewind = createExportWrapper("asyncify_stop_rewind");
-var ___start_em_js = Module['___start_em_js'] = 86512;
-var ___stop_em_js = Module['___stop_em_js'] = 87564;
+var ___start_em_js = Module['___start_em_js'] = 88576;
+var ___stop_em_js = Module['___stop_em_js'] = 89628;
 
 // include: postamble.js
 // === Auto-generated postamble setup entry stuff ===
