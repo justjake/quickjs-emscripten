@@ -137,6 +137,9 @@ export class QuickJSFFI {
   QTS_NewArray: (ctx: JSContextPointer) => JSValuePointer =
     this.module.cwrap("QTS_NewArray", "number", ["number"])
 
+  QTS_NewArrayBuffer: (ctx: JSContextPointer, buffer: JSVoidPointer, length: number) => JSValuePointer =
+    this.module.cwrap("QTS_NewArrayBuffer", "number", ["number","number","number"])
+
   QTS_NewFloat64: (ctx: JSContextPointer, num: number) => JSValuePointer =
     this.module.cwrap("QTS_NewFloat64", "number", ["number","number"])
 
@@ -148,6 +151,12 @@ export class QuickJSFFI {
 
   QTS_GetString: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => JSBorrowedCharPointer =
     this.module.cwrap("QTS_GetString", "number", ["number","number"])
+
+  QTS_GetArrayBuffer: (ctx: JSContextPointer, data: JSValuePointer | JSValueConstPointer) => JSVoidPointer =
+    this.module.cwrap("QTS_GetArrayBuffer", "number", ["number","number"])
+
+  QTS_GetArrayBufferLength: (ctx: JSContextPointer, data: JSValuePointer | JSValueConstPointer) => number =
+    this.module.cwrap("QTS_GetArrayBufferLength", "number", ["number","number"])
 
   QTS_NewSymbol: (ctx: JSContextPointer, description: BorrowedHeapCharPointer, isGlobal: number) => JSValuePointer =
     this.module.cwrap("QTS_NewSymbol", "number", ["number","number","number"])
@@ -220,4 +229,10 @@ export class QuickJSFFI {
 
   QTS_RuntimeDisableModuleLoader: (rt: JSRuntimePointer) => void =
     this.module.cwrap("QTS_RuntimeDisableModuleLoader", null, ["number"])
+
+  QTS_bjson_encode: (ctx: JSContextPointer, val: JSValuePointer | JSValueConstPointer) => JSValuePointer =
+    this.module.cwrap("QTS_bjson_encode", "number", ["number","number"])
+
+  QTS_bjson_decode: (ctx: JSContextPointer, data: JSValuePointer | JSValueConstPointer) => JSValuePointer =
+    this.module.cwrap("QTS_bjson_decode", "number", ["number","number"])
 }
