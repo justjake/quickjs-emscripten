@@ -1,7 +1,7 @@
 # Tools
 CC=clang
-EMSDK_VERSION=3.1.35
-EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.35
+EMSDK_VERSION=3.1.46
+EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.46
 EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_DOCKER_CACHE=$(THIS_DIR)/emsdk-cache/$(EMSDK_VERSION) scripts/emcc.sh
 GENERATE_TS=$(VARIANT_GENERATE_TS_ENV) npx ts-node generate.ts
 PRETTIER=npx prettier
@@ -54,6 +54,10 @@ WRAPPER_DEFINES+=-Wcast-function-type   # Likewise, warns about some quickjs cas
 EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.json
 EMCC_EXPORTED_FUNCS_ASYNCIFY+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.asyncify.json
 
+# Emscripten options - ESM
+CFLAGS_WASM+=-s EXPORT_ES6=1
+CFLAGS_WASM+=-s -lidbfs.js
+
 # Emscripten options
 CFLAGS_WASM+=-s WASM=1
 CFLAGS_WASM+=-s EXPORTED_RUNTIME_METHODS=@exportedRuntimeMethods.json
@@ -78,8 +82,8 @@ CFLAGS_WASM+=-s DEFAULT_TO_CXX=0
 CFLAGS_WASM+=-s ALLOW_UNIMPLEMENTED_SYSCALLS=0
 
 # Emscripten options - NodeJS
-CFLAGS_WASM+=-s MIN_NODE_VERSION=160000
-CFLAGS_WASM+=-s NODEJS_CATCH_EXIT=0
+# CFLAGS_WASM+=-s MIN_NODE_VERSION=160000
+# CFLAGS_WASM+=-s NODEJS_CATCH_EXIT=0
 
 # Empscripten options for asyncify variant
 # https://emscripten.org/docs/porting/asyncify.html
@@ -97,7 +101,7 @@ CFLAGS_RELEASE+=-flto
 
 CFLAGS_WASM_RELEASE+=-s SINGLE_FILE=1
 CFLAGS_WASM_RELEASE+=--closure 1
-CFLAGS_WASM_RELEASE+=-s FILESYSTEM=0
+# CFLAGS_WASM_RELEASE+=-s FILESYSTEM=0
 
 # Debug options
 GENERATE_TS_ENV_DEBUG+=DEBUG=true
@@ -137,7 +141,7 @@ wasm: $(WASM_VARIANTS)
 all: $(VARIANTS)
 dist: wasm tsconfig.json
 	rm -rf dist
-	yarn run tsc
+	npm run tsc
 	cp -v ts/generated/*.wasm ts/generated/*.wasm.map dist/generated
 
 .PHONY: test prettier
