@@ -12,6 +12,38 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  studio-build:
+    depends-on: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Yarn cache
+        uses: actions/cache@v3
+        with:
+          path: "**/.yarn/cache"
+          key: ${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn install --immutable
+        env:
+          YARN_ENABLE_SCRIPTS: 0
+
+      - name: Build
+        run: bash scripts/build-studio.sh
+
+      # upload the sync-arena/dist folder as an artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: studio-quickjs
+          path: sync-arena/dist_pack
   # This workflow contains a single job called "build"
   build:
     # We'll run the tests on both Linux and OSX
