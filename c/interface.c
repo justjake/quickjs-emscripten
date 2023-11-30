@@ -581,10 +581,6 @@ OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
     result = "number";
   } else if (JS_IsBigInt(ctx, *value)) {
     result = "bigint";
-  } else if (JS_IsBigFloat(*value)) {
-    result = "bigfloat";
-  } else if (JS_IsBigDecimal(*value)) {
-    result = "bigdecimal";
   } else if (JS_IsFunction(ctx, *value)) {
     result = "function";
   } else if (JS_IsBool(*value)) {

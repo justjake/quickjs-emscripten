@@ -1,6 +1,6 @@
 /*
  * QuickJS opcode definitions
- * 
+ *
  * Copyright (c) 2017-2018 Fabrice Bellard
  * Copyright (c) 2017-2018 Charlie Gordon
  *
@@ -165,14 +165,14 @@ DEF(        set_loc, 3, 1, 1, loc) /* must come after put_loc */
 DEF(        get_arg, 3, 0, 1, arg)
 DEF(        put_arg, 3, 1, 0, arg) /* must come after get_arg */
 DEF(        set_arg, 3, 1, 1, arg) /* must come after put_arg */
-DEF(    get_var_ref, 3, 0, 1, var_ref) 
+DEF(    get_var_ref, 3, 0, 1, var_ref)
 DEF(    put_var_ref, 3, 1, 0, var_ref) /* must come after get_var_ref */
 DEF(    set_var_ref, 3, 1, 1, var_ref) /* must come after put_var_ref */
 DEF(set_loc_uninitialized, 3, 0, 0, loc)
 DEF(  get_loc_check, 3, 0, 1, loc)
 DEF(  put_loc_check, 3, 1, 0, loc) /* must come after get_loc_check */
 DEF(  put_loc_check_init, 3, 1, 0, loc)
-DEF(get_var_ref_check, 3, 0, 1, var_ref) 
+DEF(get_var_ref_check, 3, 0, 1, var_ref)
 DEF(put_var_ref_check, 3, 1, 0, var_ref) /* must come after get_var_ref_check */
 DEF(put_var_ref_check_init, 3, 1, 0, var_ref)
 DEF(      close_loc, 3, 0, 0, loc)
@@ -233,15 +233,20 @@ DEF(         typeof, 1, 1, 1, none)
 DEF(         delete, 1, 2, 1, none)
 DEF(     delete_var, 5, 0, 1, atom)
 
+/* warning: order matters (see js_parse_assign_expr) */
 DEF(            mul, 1, 2, 1, none)
 DEF(            div, 1, 2, 1, none)
 DEF(            mod, 1, 2, 1, none)
 DEF(            add, 1, 2, 1, none)
 DEF(            sub, 1, 2, 1, none)
-DEF(            pow, 1, 2, 1, none)
 DEF(            shl, 1, 2, 1, none)
 DEF(            sar, 1, 2, 1, none)
 DEF(            shr, 1, 2, 1, none)
+DEF(            and, 1, 2, 1, none)
+DEF(            xor, 1, 2, 1, none)
+DEF(             or, 1, 2, 1, none)
+DEF(            pow, 1, 2, 1, none)
+
 DEF(             lt, 1, 2, 1, none)
 DEF(            lte, 1, 2, 1, none)
 DEF(             gt, 1, 2, 1, none)
@@ -252,16 +257,9 @@ DEF(             eq, 1, 2, 1, none)
 DEF(            neq, 1, 2, 1, none)
 DEF(      strict_eq, 1, 2, 1, none)
 DEF(     strict_neq, 1, 2, 1, none)
-DEF(            and, 1, 2, 1, none)
-DEF(            xor, 1, 2, 1, none)
-DEF(             or, 1, 2, 1, none)
 DEF(is_undefined_or_null, 1, 1, 1, none)
-#ifdef CONFIG_BIGNUM
-DEF(      mul_pow10, 1, 2, 1, none)
-DEF(       math_mod, 1, 2, 1, none)
-#endif
 /* must be the last non short and non temporary opcode */
-DEF(            nop, 1, 0, 0, none) 
+DEF(            nop, 1, 0, 0, none)
 
 /* temporary opcodes: never emitted in the final bytecode */
 
@@ -282,10 +280,9 @@ def(scope_get_private_field2, 7, 1, 2, atom_u16) /* obj -> obj value, emitted in
 def(scope_put_private_field, 7, 1, 1, atom_u16) /* obj value ->, emitted in phase 1, removed in phase 2 */
 
 def( set_class_name, 5, 1, 1, u32) /* emitted in phase 1, removed in phase 2 */
-    
+
 def(       line_num, 5, 0, 0, u32) /* emitted in phase 1, removed in phase 3 */
 
-#if SHORT_OPCODES
 DEF(    push_minus1, 1, 0, 1, none_int)
 DEF(         push_0, 1, 0, 1, none_int)
 DEF(         push_1, 1, 0, 1, none_int)
@@ -305,6 +302,7 @@ DEF(       get_loc8, 2, 0, 1, loc8)
 DEF(       put_loc8, 2, 1, 0, loc8)
 DEF(       set_loc8, 2, 1, 1, loc8)
 
+DEF(  get_loc0_loc1, 1, 0, 2, none_loc)
 DEF(       get_loc0, 1, 0, 1, none_loc)
 DEF(       get_loc1, 1, 0, 1, none_loc)
 DEF(       get_loc2, 1, 0, 1, none_loc)
@@ -358,7 +356,10 @@ DEF(   is_undefined, 1, 1, 1, none)
 DEF(        is_null, 1, 1, 1, none)
 DEF(typeof_is_undefined, 1, 1, 1, none)
 DEF( typeof_is_function, 1, 1, 1, none)
-#endif
+
+DEF(      get_field_ic, 5, 1, 1, none)
+DEF(     get_field2_ic, 5, 1, 2, none)
+DEF(      put_field_ic, 5, 2, 0, none)
 
 #undef DEF
 #undef def

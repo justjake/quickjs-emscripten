@@ -1,6 +1,6 @@
 /*
  * C utilities
- * 
+ *
  * Copyright (c) 2017 Fabrice Bellard
  * Copyright (c) 2018 Charlie Gordon
  *
@@ -22,12 +22,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <time.h>
+#if !defined(_MSC_VER)
+#include <sys/time.h>
+#endif
 
 #include "cutils.h"
+
+#pragma GCC visibility push(default)
 
 void pstrcpy(char *buf, int buf_size, const char *str)
 {
@@ -140,8 +147,10 @@ int dbuf_put(DynBuf *s, const uint8_t *data, size_t len)
         if (dbuf_realloc(s, s->size + len))
             return -1;
     }
-    memcpy(s->buf + s->size, data, len);
-    s->size += len;
+    if (len > 0) {
+        memcpy(s->buf + s->size, data, len);
+        s->size += len;
+    }
     return 0;
 }
 
@@ -172,7 +181,7 @@ int __attribute__((format(printf, 2, 3))) dbuf_printf(DynBuf *s,
     va_list ap;
     char buf[128];
     int len;
-    
+
     va_start(ap, fmt);
     len = vsnprintf(buf, sizeof(buf), fmt, ap);
     va_end(ap);
@@ -302,32 +311,6 @@ int unicode_from_utf8(const uint8_t *p, int max_len, const uint8_t **pp)
     *pp = p;
     return c;
 }
-
-#if 0
-
-#if defined(EMSCRIPTEN) || defined(__ANDROID__)
-
-static void *rqsort_arg;
-static int (*rqsort_cmp)(const void *, const void *, void *);
-
-static int rqsort_cmp2(const void *p1, const void *p2)
-{
-    return rqsort_cmp(p1, p2, rqsort_arg);
-}
-
-/* not reentrant, but not needed with emscripten */
-void rqsort(void *base, size_t nmemb, size_t size,
-            int (*cmp)(const void *, const void *, void *),
-            void *arg)
-{
-    rqsort_arg = arg;
-    rqsort_cmp = cmp;
-    qsort(base, nmemb, size, rqsort_cmp2);
-}
-
-#endif
-
-#else
 
 typedef void (*exchange_f)(void *a, void *b, size_t size);
 typedef int (*cmp_f)(const void *, const void *, void *opaque);
@@ -628,4 +611,67 @@ void rqsort(void *base, size_t nmemb, size_t size, cmp_f cmp, void *opaque)
     }
 }
 
+#if defined(_MSC_VER)
+ // From: https://stackoverflow.com/a/26085827
+static int gettimeofday_msvc(struct timeval *tp, struct timezone *tzp)
+{
+  static const uint64_t EPOCH = ((uint64_t)116444736000000000ULL);
+
+  SYSTEMTIME  system_time;
+  FILETIME    file_time;
+  uint64_t    time;
+
+  GetSystemTime(&system_time);
+  SystemTimeToFileTime(&system_time, &file_time);
+  time = ((uint64_t)file_time.dwLowDateTime);
+  time += ((uint64_t)file_time.dwHighDateTime) << 32;
+
+  tp->tv_sec = (long)((time - EPOCH) / 10000000L);
+  tp->tv_usec = (long)(system_time.wMilliseconds * 1000);
+
+  return 0;
+}
+
+uint64_t js__hrtime_ns(void) {
+    LARGE_INTEGER counter, frequency;
+    double scaled_freq;
+    double result;
+
+    if (!QueryPerformanceFrequency(&frequency))
+        abort();
+    assert(frequency.QuadPart != 0);
+
+    if (!QueryPerformanceCounter(&counter))
+        abort();
+    assert(counter.QuadPart != 0);
+
+  /* Because we have no guarantee about the order of magnitude of the
+   * performance counter interval, integer math could cause this computation
+   * to overflow. Therefore we resort to floating point math.
+   */
+  scaled_freq = (double) frequency.QuadPart / 1e9;
+  result = (double) counter.QuadPart / scaled_freq;
+  return (uint64_t) result;
+}
+#else
+uint64_t js__hrtime_ns(void) {
+  struct timespec t;
+
+  if (clock_gettime(CLOCK_MONOTONIC, &t))
+    abort();
+
+  return t.tv_sec * (uint64_t) 1e9 + t.tv_nsec;
+}
 #endif
+
+int64_t js__gettimeofday_us(void) {
+    struct timeval tv;
+#if defined(_MSC_VER)
+    gettimeofday_msvc(&tv, NULL);
+#else
+    gettimeofday(&tv, NULL);
+#endif
+    return ((int64_t)tv.tv_sec * 1000000) + tv.tv_usec;
+}
+
+#pragma GCC visibility pop

@@ -1,6 +1,6 @@
 /*
  * QuickJS atom definitions
- * 
+ *
  * Copyright (c) 2017-2018 Fabrice Bellard
  * Copyright (c) 2017-2018 Charlie Gordon
  *
@@ -82,6 +82,7 @@ DEF(length, "length")
 DEF(fileName, "fileName")
 DEF(lineNumber, "lineNumber")
 DEF(message, "message")
+DEF(cause, "cause")
 DEF(errors, "errors")
 DEF(stack, "stack")
 DEF(name, "name")
@@ -166,17 +167,11 @@ DEF(revoke, "revoke")
 DEF(async, "async")
 DEF(exec, "exec")
 DEF(groups, "groups")
+DEF(indices, "indices")
 DEF(status, "status")
 DEF(reason, "reason")
 DEF(globalThis, "globalThis")
-#ifdef CONFIG_BIGNUM
 DEF(bigint, "bigint")
-DEF(bigfloat, "bigfloat")
-DEF(bigdecimal, "bigdecimal")
-DEF(roundingMode, "roundingMode")
-DEF(maximumSignificantDigits, "maximumSignificantDigits")
-DEF(maximumFractionDigits, "maximumFractionDigits")
-#endif
 #ifdef CONFIG_ATOMICS
 DEF(not_equal, "not-equal")
 DEF(timed_out, "timed-out")
@@ -202,28 +197,20 @@ DEF(RegExp, "RegExp")
 DEF(ArrayBuffer, "ArrayBuffer")
 DEF(SharedArrayBuffer, "SharedArrayBuffer")
 /* must keep same order as class IDs for typed arrays */
-DEF(Uint8ClampedArray, "Uint8ClampedArray") 
+DEF(Uint8ClampedArray, "Uint8ClampedArray")
 DEF(Int8Array, "Int8Array")
 DEF(Uint8Array, "Uint8Array")
 DEF(Int16Array, "Int16Array")
 DEF(Uint16Array, "Uint16Array")
 DEF(Int32Array, "Int32Array")
 DEF(Uint32Array, "Uint32Array")
-#ifdef CONFIG_BIGNUM
 DEF(BigInt64Array, "BigInt64Array")
 DEF(BigUint64Array, "BigUint64Array")
-#endif
 DEF(Float32Array, "Float32Array")
 DEF(Float64Array, "Float64Array")
 DEF(DataView, "DataView")
-#ifdef CONFIG_BIGNUM
 DEF(BigInt, "BigInt")
-DEF(BigFloat, "BigFloat")
-DEF(BigFloatEnv, "BigFloatEnv")
-DEF(BigDecimal, "BigDecimal")
-DEF(OperatorSet, "OperatorSet")
-DEF(Operators, "Operators")
-#endif
+DEF(WeakRef, "WeakRef")
 DEF(Map, "Map")
 DEF(Set, "Set") /* Map + 1 */
 DEF(WeakMap, "WeakMap") /* Map + 2 */
@@ -266,8 +253,5 @@ DEF(Symbol_hasInstance, "Symbol.hasInstance")
 DEF(Symbol_species, "Symbol.species")
 DEF(Symbol_unscopables, "Symbol.unscopables")
 DEF(Symbol_asyncIterator, "Symbol.asyncIterator")
-#ifdef CONFIG_BIGNUM
-DEF(Symbol_operatorSet, "Symbol.operatorSet")
-#endif
-    
+
 #endif /* DEF */

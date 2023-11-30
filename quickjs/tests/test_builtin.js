@@ -1,4 +1,5 @@
-"use strict";
+import * as os from "os";
+
 
 function assert(actual, expected, message) {
     if (arguments.length == 1)
@@ -57,7 +58,7 @@ function test_function()
     }
 
     var r, g;
-    
+
     r = my_func.call(null, 1, 2);
     assert(r, 3, "call");
 
@@ -70,10 +71,10 @@ function test_function()
     assert_throws(TypeError, (function() {
         Reflect.apply((function () { return 1; }), null, undefined);
     }));
-    
+
     r = new Function("a", "b", "return a + b;");
     assert(r(2,3), 5, "function");
-    
+
     g = f.bind(1, 2);
     assert(g.length, 1);
     assert(g.name, "bound f");
@@ -103,7 +104,7 @@ function test()
     assert(a.z, 4, "get");
     a.z = 5;
     assert(a.z_val, 5, "set");
-    
+
     a = { get z() { return 4; }, set z(val) { this.z_val = val; } };
     assert(a.z, 4, "get");
     a.z = 5;
@@ -207,7 +208,7 @@ function test_string()
     assert(a.charAt(1), "b");
     assert(a.charAt(-1), "");
     assert(a.charAt(3), "");
-    
+
     a = "abcd";
     assert(a.substring(1, 3), "bc", "substring");
     a = String.fromCharCode(0x20ac);
@@ -216,7 +217,7 @@ function test_string()
     assert(a, "\u20ac", "unicode");
     assert(a, "\u{20ac}", "unicode");
     assert("a", "\x61", "unicode");
-        
+
     a = "\u{10ffff}";
     assert(a.length, 2, "unicode");
     assert(a, "\u{dbff}\u{dfff}", "unicode");
@@ -311,6 +312,10 @@ function test_math()
     assert(Math.floor(a), 1);
     assert(Math.ceil(a), 2);
     assert(Math.imul(0x12345678, 123), -1088058456);
+    assert(Math.imul(0xB505, 0xB504), 2147441940);
+    assert(Math.imul(0xB505, 0xB505), -2147479015);
+    assert(Math.imul((-2)**31, (-2)**31), 0);
+    assert(Math.imul(2**31-1, 2**31-1), 1);
     assert(Math.fround(0.1), 0.10000000149011612);
     assert(Math.hypot() == 0);
     assert(Math.hypot(-2) == 2);
@@ -327,6 +332,10 @@ function test_number()
     assert(+"  123   ", 123);
     assert(+"0b111", 7);
     assert(+"0o123", 83);
+    assert(parseFloat("2147483647"), 2147483647);
+    assert(parseFloat("2147483648"), 2147483648);
+    assert(parseFloat("-2147483647"), -2147483647);
+    assert(parseFloat("-2147483648"), -2147483648);
     assert(parseFloat("0x1234"), 0);
     assert(parseFloat("Infinity"), Infinity);
     assert(parseFloat("-Infinity"), -Infinity);
@@ -335,6 +344,11 @@ function test_number()
     assert(Number.isNaN(Number("+")));
     assert(Number.isNaN(Number("-")));
     assert(Number.isNaN(Number("\x00a")));
+
+    // TODO: Fix rounding errors on Windows.
+    if (os.platform === 'win32') {
+        return;
+    }
 
     assert((25).toExponential(0), "3e+1");
     assert((-25).toExponential(0), "-3e+1");
@@ -379,7 +393,7 @@ function test_eval()
     assert(eval("if (0) 2; else 3;"), 3);
 
     assert(f.call(1, "this"), 1);
-    
+
     a = 2;
     assert(eval("a"), 2);
 
@@ -424,7 +438,7 @@ function test_typed_array()
     a[2] = 0.5;
     a[3] = 1233.5;
     assert(a.toString(), "0,2,0,255");
-    
+
     buffer = new ArrayBuffer(16);
     assert(buffer.byteLength, 16);
     a = new Uint32Array(buffer, 12, 1);
@@ -436,7 +450,7 @@ function test_typed_array()
 
     a = new Float32Array(buffer, 8, 1);
     a[0] = 1;
-    
+
     a = new Uint8Array(buffer);
 
     str = a.toString();
@@ -525,7 +539,7 @@ function test_regexp()
 
     a = /(\.(?!com|org)|\/)/.exec("ah.com");
     assert(a, null);
-    
+
     a = /(?=(a+))/.exec("baaabac");
     assert(a.index === 1 && a[0] === "" && a[1] === "aaa");
 
@@ -592,7 +606,7 @@ function test_map()
     }
 
     i = 0;
-    a.forEach(function (v, o) { 
+    a.forEach(function (v, o) {
         assert(o, tab[i++][0]);
         assert(a.has(o));
         assert(a.delete(o));
@@ -604,10 +618,20 @@ function test_map()
 
 function test_weak_map()
 {
-    var a, i, n, tab, o, v, n2;
+    var a, e, i, n, tab, o, v, n2;
     a = new WeakMap();
     n = 10;
     tab = [];
+    for (const k of [null, 42, "no", Symbol.for("forbidden")]) {
+        e = undefined;
+        try {
+            a.set(k, 42);
+        } catch (_e) {
+            e = _e;
+        }
+        assert(!!e);
+        assert(e.message, "invalid value used as WeakMap key");
+    }
     for(i = 0; i < n; i++) {
         v = { };
         o = { id: i };
@@ -615,7 +639,7 @@ function test_weak_map()
         a.set(o, v);
     }
     o = null;
-    
+
     n2 = n >> 1;
     for(i = 0; i < n2; i++) {
         a.delete(tab[i][0]);
@@ -624,6 +648,22 @@ function test_weak_map()
         tab[i][0] = null; /* should remove the object from the WeakMap too */
     }
     /* the WeakMap should be empty here */
+}
+
+function test_weak_set()
+{
+    var a, e;
+    a = new WeakSet();
+    for (const k of [null, 42, "no", Symbol.for("forbidden")]) {
+        e = undefined;
+        try {
+            a.add(k);
+        } catch (_e) {
+            e = _e;
+        }
+        assert(!!e);
+        assert(e.message, "invalid value used as WeakSet key");
+    }
 }
 
 function test_generator()
@@ -682,4 +722,5 @@ test_regexp();
 test_symbol();
 test_map();
 test_weak_map();
+test_weak_set();
 test_generator();

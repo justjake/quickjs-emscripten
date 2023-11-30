@@ -1,6 +1,6 @@
 /*
  * Regular Expression Engine
- * 
+ *
  * Copyright (c) 2017-2018 Fabrice Bellard
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,6 +36,7 @@
 #define LRE_FLAG_DOTALL     (1 << 3)
 #define LRE_FLAG_UTF16      (1 << 4)
 #define LRE_FLAG_STICKY     (1 << 5)
+#define LRE_FLAG_INDICES    (1 << 6) /* Unused by libregexp, just recorded. */
 
 #define LRE_FLAG_NAMED_GROUPS (1 << 7) /* named groups are present in the regexp */
 
@@ -52,8 +53,10 @@ int lre_exec(uint8_t **capture,
 int lre_parse_escape(const uint8_t **pp, int allow_utf16);
 LRE_BOOL lre_is_space(int c);
 
+void lre_byte_swap(uint8_t *buf, size_t len, BOOL is_byte_swapped);
+
 /* must be provided by the user */
-LRE_BOOL lre_check_stack_overflow(void *opaque, size_t alloca_size); 
+LRE_BOOL lre_check_stack_overflow(void *opaque, size_t alloca_size);
 void *lre_realloc(void *opaque, void *ptr, size_t size);
 
 /* JS identifier test */
@@ -65,11 +68,7 @@ static inline int lre_js_is_ident_first(int c)
     if ((uint32_t)c < 128) {
         return (lre_id_start_table_ascii[c >> 5] >> (c & 31)) & 1;
     } else {
-#ifdef CONFIG_ALL_UNICODE
         return lre_is_id_start(c);
-#else
-        return !lre_is_space(c);
-#endif
     }
 }
 
@@ -79,11 +78,7 @@ static inline int lre_js_is_ident_next(int c)
         return (lre_id_continue_table_ascii[c >> 5] >> (c & 31)) & 1;
     } else {
         /* ZWNJ and ZWJ are accepted in identifiers */
-#ifdef CONFIG_ALL_UNICODE
         return lre_is_id_continue(c) || c == 0x200C || c == 0x200D;
-#else
-        return !lre_is_space(c) || c == 0x200C || c == 0x200D;
-#endif
     }
 }
 

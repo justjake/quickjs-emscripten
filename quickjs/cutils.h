@@ -1,6 +1,6 @@
 /*
  * C utilities
- * 
+ *
  * Copyright (c) 2017 Fabrice Bellard
  * Copyright (c) 2018 Charlie Gordon
  *
@@ -31,6 +31,14 @@
 /* set if CPU is big endian */
 #undef WORDS_BIGENDIAN
 
+#if defined(_MSC_VER)
+#include <windows.h>
+#include <winsock2.h>
+#include <malloc.h>
+#define alloca _alloca
+#define ssize_t ptrdiff_t
+#endif
+
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 #define force_inline inline __attribute__((always_inline))
@@ -47,6 +55,9 @@
 #endif
 #ifndef countof
 #define countof(x) (sizeof(x) / sizeof((x)[0]))
+#ifndef endof
+#define endof(x) ((x) + countof(x))
+#endif
 #endif
 
 typedef int BOOL;
@@ -220,14 +231,22 @@ static inline uint32_t bswap32(uint32_t v)
 
 static inline uint64_t bswap64(uint64_t v)
 {
-    return ((v & ((uint64_t)0xff << (7 * 8))) >> (7 * 8)) | 
-        ((v & ((uint64_t)0xff << (6 * 8))) >> (5 * 8)) | 
-        ((v & ((uint64_t)0xff << (5 * 8))) >> (3 * 8)) | 
-        ((v & ((uint64_t)0xff << (4 * 8))) >> (1 * 8)) | 
-        ((v & ((uint64_t)0xff << (3 * 8))) << (1 * 8)) | 
-        ((v & ((uint64_t)0xff << (2 * 8))) << (3 * 8)) | 
-        ((v & ((uint64_t)0xff << (1 * 8))) << (5 * 8)) | 
+    return ((v & ((uint64_t)0xff << (7 * 8))) >> (7 * 8)) |
+        ((v & ((uint64_t)0xff << (6 * 8))) >> (5 * 8)) |
+        ((v & ((uint64_t)0xff << (5 * 8))) >> (3 * 8)) |
+        ((v & ((uint64_t)0xff << (4 * 8))) >> (1 * 8)) |
+        ((v & ((uint64_t)0xff << (3 * 8))) << (1 * 8)) |
+        ((v & ((uint64_t)0xff << (2 * 8))) << (3 * 8)) |
+        ((v & ((uint64_t)0xff << (1 * 8))) << (5 * 8)) |
         ((v & ((uint64_t)0xff << (0 * 8))) << (7 * 8));
+}
+
+static inline void inplace_bswap16(uint8_t *tab) {
+    put_u16(tab, bswap16(get_u16(tab)));
+}
+
+static inline void inplace_bswap32(uint8_t *tab) {
+    put_u32(tab, bswap32(get_u32(tab)));
 }
 
 /* XXX: should take an extra argument to pass slack information to the caller */
@@ -278,6 +297,21 @@ static inline void dbuf_set_error(DynBuf *s)
 int unicode_to_utf8(uint8_t *buf, unsigned int c);
 int unicode_from_utf8(const uint8_t *p, int max_len, const uint8_t **pp);
 
+static inline BOOL is_hi_surrogate(uint32_t c)
+{
+    return 54 == (c >> 10); // 0xD800-0xDBFF
+}
+
+static inline BOOL is_lo_surrogate(uint32_t c)
+{
+    return 55 == (c >> 10); // 0xDC00-0xDFFF
+}
+
+static inline uint32_t from_surrogate(uint32_t hi, uint32_t lo)
+{
+    return 65536 + 1024 * (hi & 1023) + (lo & 1023);
+}
+
 static inline int from_hex(int c)
 {
     if (c >= '0' && c <= '9')
@@ -293,5 +327,8 @@ static inline int from_hex(int c)
 void rqsort(void *base, size_t nmemb, size_t size,
             int (*cmp)(const void *, const void *, void *),
             void *arg);
+
+int64_t js__gettimeofday_us(void);
+uint64_t js__hrtime_ns(void);
 
 #endif  /* CUTILS_H */

@@ -1,0 +1,7 @@
+*.a
+*.orig
+*.so
+.obj/
+build/
+unicode/
+test262_*.txt

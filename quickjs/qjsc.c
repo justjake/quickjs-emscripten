@@ -1,7 +1,9 @@
 /*
  * QuickJS command line compiler
- * 
+ *
  * Copyright (c) 2018-2021 Fabrice Bellard
+ * Copyright (c) 2023 Ben Noordhuis
+ * Copyright (c) 2023 Saúl Ibarra Corretgé
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +29,12 @@
 #include <inttypes.h>
 #include <string.h>
 #include <assert.h>
+#if defined(_MSC_VER)
+#include "getopt_compat.h"
+#else
 #include <unistd.h>
-#include <errno.h>
-#if !defined(_WIN32)
-#include <sys/wait.h>
 #endif
+#include <errno.h>
 
 #include "cutils.h"
 #include "quickjs-libc.h"
@@ -48,38 +51,12 @@ typedef struct namelist_t {
     int size;
 } namelist_t;
 
-typedef struct {
-    const char *option_name;
-    const char *init_name;
-} FeatureEntry;
-
 static namelist_t cname_list;
 static namelist_t cmodule_list;
 static namelist_t init_module_list;
-static uint64_t feature_bitmap;
 static FILE *outfile;
-static BOOL byte_swap;
-static BOOL dynamic_export;
 static const char *c_ident_prefix = "qjsc_";
 
-#define FE_ALL (-1)
-
-static const FeatureEntry feature_list[] = {
-    { "date", "Date" },
-    { "eval", "Eval" },
-    { "string-normalize", "StringNormalize" },
-    { "regexp", "RegExp" },
-    { "json", "JSON" },
-    { "proxy", "Proxy" },
-    { "map", "MapSet" },
-    { "typedarray", "TypedArrays" },
-    { "promise", "Promise" },
-#define FE_MODULE_LOADER 9
-    { "module-loader", NULL },
-#ifdef CONFIG_BIGNUM
-    { "bigint", "BigInt" },
-#endif
-};
 
 void namelist_add(namelist_t *lp, const char *name, const char *short_name,
                   int flags)
@@ -131,7 +108,7 @@ static void get_c_name(char *buf, size_t buf_size, const char *file)
     size_t len, i;
     int c;
     char *q;
-    
+
     p = strrchr(file, '/');
     if (!p)
         p = file;
@@ -178,19 +155,16 @@ static void output_object_code(JSContext *ctx,
 {
     uint8_t *out_buf;
     size_t out_buf_len;
-    int flags;
-    flags = JS_WRITE_OBJ_BYTECODE;
-    if (byte_swap)
-        flags |= JS_WRITE_OBJ_BSWAP;
-    out_buf = JS_WriteObject(ctx, &out_buf_len, obj, flags);
+
+    out_buf = JS_WriteObject(ctx, &out_buf_len, obj, JS_WRITE_OBJ_BYTECODE);
     if (!out_buf) {
         js_std_dump_error(ctx);
         exit(1);
     }
 
     namelist_add(&cname_list, c_name, NULL, load_only);
-    
-    fprintf(fo, "const uint32_t %s_size = %u;\n\n", 
+
+    fprintf(fo, "const uint32_t %s_size = %u;\n\n",
             c_name, (unsigned int)out_buf_len);
     fprintf(fo, "const uint8_t %s[%u] = {\n",
             c_name, (unsigned int)out_buf_len);
@@ -242,25 +216,22 @@ JSModuleDef *jsc_module_loader(JSContext *ctx,
         /* create a dummy module */
         m = JS_NewCModule(ctx, module_name, js_module_dummy_init);
     } else if (has_suffix(module_name, ".so")) {
-        fprintf(stderr, "Warning: binary module '%s' will be dynamically loaded\n", module_name);
-        /* create a dummy module */
-        m = JS_NewCModule(ctx, module_name, js_module_dummy_init);
-        /* the resulting executable will export its symbols for the
-           dynamic library */
-        dynamic_export = TRUE;
+        JS_ThrowReferenceError(ctx, "%s: dynamically linking to shared libraries not supported",
+        module_name);
+        return NULL;
     } else {
         size_t buf_len;
         uint8_t *buf;
         JSValue func_val;
         char cname[1024];
-        
+
         buf = js_load_file(ctx, &buf_len, module_name);
         if (!buf) {
             JS_ThrowReferenceError(ctx, "could not load module filename '%s'",
                                    module_name);
             return NULL;
         }
-        
+
         /* compile the module */
         func_val = JS_Eval(ctx, (char *)buf, buf_len, module_name,
                            JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
@@ -272,7 +243,7 @@ JSModuleDef *jsc_module_loader(JSContext *ctx,
             find_unique_cname(cname, sizeof(cname));
         }
         output_object_code(ctx, outfile, func_val, cname, TRUE);
-        
+
         /* the module is already referenced, so we must free it */
         m = JS_VALUE_GET_PTR(func_val);
         JS_FreeValue(ctx, func_val);
@@ -290,7 +261,7 @@ static void compile_file(JSContext *ctx, FILE *fo,
     int eval_flags;
     JSValue obj;
     size_t buf_len;
-    
+
     buf = js_load_file(ctx, &buf_len, filename);
     if (!buf) {
         fprintf(stderr, "Could not load '%s'\n", filename);
@@ -341,144 +312,26 @@ static const char main_c_template2[] =
 
 void help(void)
 {
-    printf("QuickJS Compiler version " CONFIG_VERSION "\n"
+    printf("QuickJS-ng Compiler version %s\n"
            "usage: " PROG_NAME " [options] [files]\n"
            "\n"
            "options are:\n"
-           "-c          only output bytecode in a C file\n"
-           "-e          output main() and bytecode in a C file (default = executable output)\n"
+           "-e          output main() and bytecode in a C file\n"
            "-o output   set the output filename\n"
            "-N cname    set the C name of the generated data\n"
            "-m          compile as Javascript module (default=autodetect)\n"
            "-D module_name         compile a dynamically loaded module or worker\n"
            "-M module_name[,cname] add initialization code for an external C module\n"
-           "-x          byte swapped output\n"
            "-p prefix   set the prefix of the generated C names\n"
            "-S n        set the maximum stack size to 'n' bytes (default=%d)\n",
+           JS_GetVersion(),
            JS_DEFAULT_STACK_SIZE);
-#ifdef CONFIG_LTO
-    {
-        int i;
-        printf("-flto       use link time optimization\n");
-        printf("-fbignum    enable bignum extensions\n");
-        printf("-fno-[");
-        for(i = 0; i < countof(feature_list); i++) {
-            if (i != 0)
-                printf("|");
-            printf("%s", feature_list[i].option_name);
-        }
-        printf("]\n"
-               "            disable selected language features (smaller code size)\n");
-    }
-#endif
     exit(1);
 }
-
-#if defined(CONFIG_CC) && !defined(_WIN32)
-
-int exec_cmd(char **argv)
-{
-    int pid, status, ret;
-
-    pid = fork();
-    if (pid == 0) {
-        execvp(argv[0], argv);
-        exit(1);
-    } 
-
-    for(;;) {
-        ret = waitpid(pid, &status, 0);
-        if (ret == pid && WIFEXITED(status))
-            break;
-    }
-    return WEXITSTATUS(status);
-}
-
-static int output_executable(const char *out_filename, const char *cfilename,
-                             BOOL use_lto, BOOL verbose, const char *exename)
-{
-    const char *argv[64];
-    const char **arg, *bn_suffix, *lto_suffix;
-    char libjsname[1024];
-    char exe_dir[1024], inc_dir[1024], lib_dir[1024], buf[1024], *p;
-    int ret;
-    
-    /* get the directory of the executable */
-    pstrcpy(exe_dir, sizeof(exe_dir), exename);
-    p = strrchr(exe_dir, '/');
-    if (p) {
-        *p = '\0';
-    } else {
-        pstrcpy(exe_dir, sizeof(exe_dir), ".");
-    }
-
-    /* if 'quickjs.h' is present at the same path as the executable, we
-       use it as include and lib directory */
-    snprintf(buf, sizeof(buf), "%s/quickjs.h", exe_dir);
-    if (access(buf, R_OK) == 0) {
-        pstrcpy(inc_dir, sizeof(inc_dir), exe_dir);
-        pstrcpy(lib_dir, sizeof(lib_dir), exe_dir);
-    } else {
-        snprintf(inc_dir, sizeof(inc_dir), "%s/include/quickjs", CONFIG_PREFIX);
-        snprintf(lib_dir, sizeof(lib_dir), "%s/lib/quickjs", CONFIG_PREFIX);
-    }
-    
-    lto_suffix = "";
-    bn_suffix = "";
-    
-    arg = argv;
-    *arg++ = CONFIG_CC;
-    *arg++ = "-O2";
-#ifdef CONFIG_LTO
-    if (use_lto) {
-        *arg++ = "-flto";
-        lto_suffix = ".lto";
-    }
-#endif
-    /* XXX: use the executable path to find the includes files and
-       libraries */
-    *arg++ = "-D";
-    *arg++ = "_GNU_SOURCE";
-    *arg++ = "-I";
-    *arg++ = inc_dir;
-    *arg++ = "-o";
-    *arg++ = out_filename;
-    if (dynamic_export)
-        *arg++ = "-rdynamic";
-    *arg++ = cfilename;
-    snprintf(libjsname, sizeof(libjsname), "%s/libquickjs%s%s.a",
-             lib_dir, bn_suffix, lto_suffix);
-    *arg++ = libjsname;
-    *arg++ = "-lm";
-    *arg++ = "-ldl";
-    *arg++ = "-lpthread";
-    *arg = NULL;
-    
-    if (verbose) {
-        for(arg = argv; *arg != NULL; arg++)
-            printf("%s ", *arg);
-        printf("\n");
-    }
-    
-    ret = exec_cmd((char **)argv);
-    unlink(cfilename);
-    return ret;
-}
-#else
-static int output_executable(const char *out_filename, const char *cfilename,
-                             BOOL use_lto, BOOL verbose, const char *exename)
-{
-    fprintf(stderr, "Executable output is not supported for this target\n");
-    exit(1);
-    return 0;
-}
-#endif
-
 
 typedef enum {
     OUTPUT_C,
     OUTPUT_C_MAIN,
-    OUTPUT_EXECUTABLE,
 } OutputTypeEnum;
 
 int main(int argc, char **argv)
@@ -489,32 +342,25 @@ int main(int argc, char **argv)
     FILE *fo;
     JSRuntime *rt;
     JSContext *ctx;
-    BOOL use_lto;
     int module;
     OutputTypeEnum output_type;
     size_t stack_size;
-#ifdef CONFIG_BIGNUM
-    BOOL bignum_ext = FALSE;
-#endif
     namelist_t dynamic_module_list;
-    
+
     out_filename = NULL;
-    output_type = OUTPUT_EXECUTABLE;
+    output_type = OUTPUT_C;
     cname = NULL;
-    feature_bitmap = FE_ALL;
     module = -1;
-    byte_swap = FALSE;
     verbose = 0;
-    use_lto = FALSE;
     stack_size = 0;
     memset(&dynamic_module_list, 0, sizeof(dynamic_module_list));
-    
+
     /* add system modules */
     namelist_add(&cmodule_list, "std", "std", 0);
     namelist_add(&cmodule_list, "os", "os", 0);
 
     for(;;) {
-        c = getopt(argc, argv, "ho:cN:f:mxevM:p:S:D:");
+        c = getopt(argc, argv, "ho:N:mxevM:p:S:D:");
         if (c == -1)
             break;
         switch(c) {
@@ -523,43 +369,11 @@ int main(int argc, char **argv)
         case 'o':
             out_filename = optarg;
             break;
-        case 'c':
-            output_type = OUTPUT_C;
-            break;
         case 'e':
             output_type = OUTPUT_C_MAIN;
             break;
         case 'N':
             cname = optarg;
-            break;
-        case 'f':
-            {
-                const char *p;
-                p = optarg;
-                if (!strcmp(optarg, "lto")) {
-                    use_lto = TRUE;
-                } else if (strstart(p, "no-", &p)) {
-                    use_lto = TRUE;
-                    for(i = 0; i < countof(feature_list); i++) {
-                        if (!strcmp(p, feature_list[i].option_name)) {
-                            feature_bitmap &= ~((uint64_t)1 << i);
-                            break;
-                        }
-                    }
-                    if (i == countof(feature_list))
-                        goto bad_feature;
-                } else
-#ifdef CONFIG_BIGNUM
-                if (!strcmp(optarg, "bignum")) {
-                    bignum_ext = TRUE;
-                } else
-#endif
-                {
-                bad_feature:
-                    fprintf(stderr, "unsupported feature: %s\n", optarg);
-                    exit(1);
-                }
-            }
             break;
         case 'm':
             module = 1;
@@ -583,9 +397,6 @@ int main(int argc, char **argv)
         case 'D':
             namelist_add(&dynamic_module_list, optarg, NULL, 0);
             break;
-        case 'x':
-            byte_swap = TRUE;
-            break;
         case 'v':
             verbose++;
             break;
@@ -603,50 +414,28 @@ int main(int argc, char **argv)
     if (optind >= argc)
         help();
 
-    if (!out_filename) {
-        if (output_type == OUTPUT_EXECUTABLE) {
-            out_filename = "a.out";
-        } else {
-            out_filename = "out.c";
-        }
-    }
+    if (!out_filename)
+        out_filename = "out.c";
 
-    if (output_type == OUTPUT_EXECUTABLE) {
-#if defined(_WIN32) || defined(__ANDROID__)
-        /* XXX: find a /tmp directory ? */
-        snprintf(cfilename, sizeof(cfilename), "out%d.c", getpid());
-#else
-        snprintf(cfilename, sizeof(cfilename), "/tmp/out%d.c", getpid());
-#endif
-    } else {
-        pstrcpy(cfilename, sizeof(cfilename), out_filename);
-    }
-    
+    pstrcpy(cfilename, sizeof(cfilename), out_filename);
+
     fo = fopen(cfilename, "w");
     if (!fo) {
         perror(cfilename);
         exit(1);
     }
     outfile = fo;
-    
+
     rt = JS_NewRuntime();
     ctx = JS_NewContext(rt);
-#ifdef CONFIG_BIGNUM
-    if (bignum_ext) {
-        JS_AddIntrinsicBigFloat(ctx);
-        JS_AddIntrinsicBigDecimal(ctx);
-        JS_AddIntrinsicOperators(ctx);
-        JS_EnableBignumExt(ctx, TRUE);
-    }
-#endif
-    
+
     /* loader for ES6 modules */
     JS_SetModuleLoaderFunc(rt, NULL, jsc_module_loader, NULL);
 
-    fprintf(fo, "/* File generated automatically by the QuickJS compiler. */\n"
+    fprintf(fo, "/* File generated automatically by the QuickJS-ng compiler. */\n"
             "\n"
             );
-    
+
     if (output_type != OUTPUT_C) {
         fprintf(fo, "#include \"quickjs-libc.h\"\n"
                 "\n"
@@ -670,38 +459,20 @@ int main(int argc, char **argv)
             exit(1);
         }
     }
-    
+
     if (output_type != OUTPUT_C) {
         fprintf(fo,
                 "static JSContext *JS_NewCustomContext(JSRuntime *rt)\n"
                 "{\n"
-                "  JSContext *ctx = JS_NewContextRaw(rt);\n"
+                "  JSContext *ctx = JS_NewContext(rt);\n"
                 "  if (!ctx)\n"
                 "    return NULL;\n");
-        /* add the basic objects */
-        fprintf(fo, "  JS_AddIntrinsicBaseObjects(ctx);\n");
-        for(i = 0; i < countof(feature_list); i++) {
-            if ((feature_bitmap & ((uint64_t)1 << i)) &&
-                feature_list[i].init_name) {
-                fprintf(fo, "  JS_AddIntrinsic%s(ctx);\n",
-                        feature_list[i].init_name);
-            }
-        }
-#ifdef CONFIG_BIGNUM
-        if (bignum_ext) {
-            fprintf(fo,
-                    "  JS_AddIntrinsicBigFloat(ctx);\n"
-                    "  JS_AddIntrinsicBigDecimal(ctx);\n"
-                    "  JS_AddIntrinsicOperators(ctx);\n"
-                    "  JS_EnableBignumExt(ctx, 1);\n");
-        }
-#endif
         /* add the precompiled modules (XXX: could modify the module
            loader instead) */
         for(i = 0; i < init_module_list.count; i++) {
             namelist_entry_t *e = &init_module_list.array[i];
             /* initialize the static C modules */
-            
+
             fprintf(fo,
                     "  {\n"
                     "    extern JSModuleDef *js_init_module_%s(JSContext *ctx, const char *name);\n"
@@ -719,19 +490,17 @@ int main(int argc, char **argv)
         fprintf(fo,
                 "  return ctx;\n"
                 "}\n\n");
-        
+
         fputs(main_c_template1, fo);
 
         if (stack_size != 0) {
             fprintf(fo, "  JS_SetMaxStackSize(rt, %u);\n",
                     (unsigned int)stack_size);
         }
-        
-        /* add the module loader if necessary */
-        if (feature_bitmap & (1 << FE_MODULE_LOADER)) {
-            fprintf(fo, "  JS_SetModuleLoaderFunc(rt, NULL, js_module_loader, NULL);\n");
-        }
-        
+
+        /* add the module loader */
+        fprintf(fo, "  JS_SetModuleLoaderFunc(rt, NULL, js_module_loader, NULL);\n");
+
         fprintf(fo,
                 "  ctx = JS_NewCustomContext(rt);\n"
                 "  js_std_add_helpers(ctx, argc, argv);\n");
@@ -745,16 +514,12 @@ int main(int argc, char **argv)
         }
         fputs(main_c_template2, fo);
     }
-    
+
     JS_FreeContext(ctx);
     JS_FreeRuntime(rt);
 
     fclose(fo);
 
-    if (output_type == OUTPUT_EXECUTABLE) {
-        return output_executable(out_filename, cfilename, use_lto, verbose,
-                                 argv[0]);
-    }
     namelist_free(&cname_list);
     namelist_free(&cmodule_list);
     namelist_free(&init_module_list);
