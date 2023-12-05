@@ -7,3 +7,4 @@ dist
 examples/imports
 examples/typescript-smoketest/*.js
 build
+emsdk-cache
