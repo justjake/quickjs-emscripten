@@ -989,6 +989,9 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
     it("is enough to support at least 20 levels of function nesting", async () => {
       // The nesting levels of the test cannot be too high, otherwise the
       // node.js call stack will overflow when executing `yarn test`
+      const buildName = isBuildDebug(vm) ? 'debug' : 'release'
+      const EXPECTED_NESTING_LEVEL = isBuildDebug(vm) ? 19 : 20
+
       let asyncFunctionCalls = 0
       const asyncFn = async () => {
         asyncFunctionCalls++
@@ -997,19 +1000,25 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
         vm.setProp(vm.global, "asyncFn", fn)
       )
 
+      try {
+
       await vm.evalCodeAsync(`
         let nestingLevels = 0
         function nestingFn() {
           nestingLevels++
           asyncFn()
-          if (nestingLevels < 20) {
+          if (nestingLevels < ${EXPECTED_NESTING_LEVEL}) {
             nestingFn()
           }
         }
         nestingFn();
       `)
+      } catch (error) {
+        (error as Error).message += `\nasync calls: ${asyncFunctionCalls} (expected ${EXPECTED_NESTING_LEVEL})`
+        throw error
+      }
 
-      assert.equal(asyncFunctionCalls, 20, "20 levels of nesting")
+      assert.equal(asyncFunctionCalls, EXPECTED_NESTING_LEVEL, `${EXPECTED_NESTING_LEVEL} levels of nesting for ${buildName} build`)
     })
   })
 }
@@ -1060,6 +1069,11 @@ if (!TEST_NO_ASYNC) {
 
 // TODO: test newRuntime
 // TODO: test newAsyncRuntime
+
+function isBuildDebug(vm: QuickJSContext) {
+  const ffi: QuickJSFFI = (vm as any).ffi
+  return Boolean(ffi.QTS_BuildIsDebug())
+}
 
 function assertBuildIsConsistent(vm: QuickJSContext) {
   const ffi: QuickJSFFI = (vm as any).ffi

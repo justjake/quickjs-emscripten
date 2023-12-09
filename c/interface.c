@@ -216,8 +216,8 @@ int QTS_BuildIsSanitizeLeak() {
 }
 
 #ifdef QTS_ASYNCIFY
-EM_JS(void, set_asyncify_stack_size, (size_t size), {
-  Asyncify.StackSize = size || 81920;
+EM_JS(void, set_asyncify_stack_size, (size_t size, size_t default_size), {
+  Asyncify.StackSize = size || default_size;
 });
 #endif
 
@@ -226,7 +226,7 @@ EM_JS(void, set_asyncify_stack_size, (size_t size), {
  */
 void QTS_RuntimeSetMaxStackSize(JSRuntime *rt, size_t stack_size) {
 #ifdef QTS_ASYNCIFY
-  set_asyncify_stack_size(stack_size);
+  set_asyncify_stack_size(stack_size, QTS_ASYNCIFY_DEFAULT_STACK_SIZE);
 #endif
   JS_SetMaxStackSize(rt, stack_size);
 }
