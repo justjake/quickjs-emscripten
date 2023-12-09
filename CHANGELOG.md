@@ -3,12 +3,14 @@
 ## v0.24.0
 
 - [#127](https://github.com/justjake/quickjs-emscripten/pull/127) Upgrade to quickjs 2023-12-09:
+
   - added Object.hasOwn, {String|Array|TypedArray}.prototype.at, {Array|TypedArray}.prototype.findLast{Index}
   - BigInt support is enabled even if CONFIG_BIGNUM disabled
   - updated to Unicode 15.0.0
   - misc bug fixes
 
 - [#125](https://github.com/justjake/quickjs-emscripten/pull/125) (thanks to @tbrockman):
+
   - Synchronizes quickjs to include the recent commit to address CVE-2023-31922.
 
 - [#111](https://github.com/justjake/quickjs-emscripten/pull/111) (thanks to @yourWaifu) ArrayBuffer and binary json encoding:
