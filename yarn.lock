@@ -297,6 +297,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@jitl/tsconfig@workspace:packages/tsconfig":
+  version: 0.0.0-use.local
+  resolution: "@jitl/tsconfig@workspace:packages/tsconfig"
+  languageName: unknown
+  linkType: soft
+
 "@jridgewell/resolve-uri@npm:^3.0.3":
   version: 3.1.0
   resolution: "@jridgewell/resolve-uri@npm:3.1.0"
