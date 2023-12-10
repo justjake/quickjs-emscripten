@@ -4,8 +4,10 @@ import * as fs from "fs-extra"
 import * as pathlib from "path"
 const USAGE = "Usage: generate.ts [symbols | header | ffi] WRITE_PATH"
 
-const INTERFACE_FILE_PATH = process.env.HEADER_FILE_PATH || "./c/interface.c"
-const FFI_TYPES_PATH = process.env.FFI_TYPES_PATH || "./ts/types-ffi.ts"
+const rooted = (path: string) => pathlib.join(__dirname, path)
+
+const INTERFACE_FILE_PATH = process.env.HEADER_FILE_PATH || rooted("./c/interface.c")
+const FFI_TYPES_PATH = process.env.FFI_TYPES_PATH || rooted("./ts/types-ffi.ts")
 const DEBUG = process.env.DEBUG === "true"
 const ASYNCIFY = process.env.ASYNCIFY === "true"
 
