@@ -43,6 +43,9 @@
     "smoketest-node": "yarn tarball && ./scripts/smoketest-node.sh",
     "smoketest-cra": "yarn tarball && ./scripts/smoketest-website.sh"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "@types/emscripten": "^1.38.0",
     "@types/fs-extra": "^9.0.13",

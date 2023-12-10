@@ -1,0 +1,7 @@
+{
+  "name": "@jitl/quickjs-ffi-types",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "tsc"
+  }
+}

@@ -177,7 +177,20 @@ if (require.main === module) {
 
 interface PackageJson {
   name: string
+  type?: "module"
   version: string
+  description: string
+  sideEffects: false
+  repository: {
+    type: string
+    url: string
+  }
+  scripts: Record<string, string>
+  files: string[]
+}
+
+interface TsConfig {
+  extends: string
 }
 
 function main() {
@@ -190,8 +203,27 @@ function main() {
       const packageJson: PackageJson = {
         name: `@jitl/${basename}`,
         version: "0.0.0",
+        type: variant.moduleSystem === ModuleSystem.ESModule ? "module" : undefined,
+        description: `Variant of quickjs library: ${variant.description}`,
+        sideEffects: false,
+        repository: {
+          type: "git",
+          url: "https://github.com/justjake/quickjs-emscripten",
+        },
+        scripts: {
+          build: "make",
+          clean: "make clean",
+          prepare: "make clean && rm -r dist && make",
+        },
+        files: ["dist/**/*", "!dist/*.test.js", "!dist/*.tsbuildinfo"],
       }
-      fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify(packageJson, null, 2))
+
+      const tsConfig: TsConfig = {
+        extends: "@jitl/tsconfig",
+      }
+
+      fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify(packageJson, null, 2) + "\n")
+      fs.writeFileSync(path.join(dir, "tsconfig.json"), JSON.stringify(tsConfig, null, 2) + "\n")
       fs.writeFileSync(path.join(dir, "README.md"), renderReadme(targetName, variant, packageJson))
       fs.writeFileSync(path.join(dir, "Makefile"), renderMakefile(targetName, variant))
     }
