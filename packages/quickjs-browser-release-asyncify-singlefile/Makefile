@@ -85,13 +85,24 @@ endif
 
 ###############################################################################
 # High-level
-all: WASM
+all: WASM JS
 
 clean-generate:
 	rm -rfv $(BUILD_TS)
 
 clean: clean-generate
 	rm -rfv $(BUILD_ROOT)
+
+###############################################################################
+# Typescript files
+JS: $(BUILD_TS)/ffi.js $(BUILD_TS)/ffi.d.ts
+
+$(BUILD_TS)/ffi.js $(BUILD_TS)/ffi.d.ts: tsconfig.json $(BUILD_TS)/ffi.ts
+	yarn tsc --project tsconfig.json
+
+$(BUILD_TS)/ffi.ts: $(WRAPPER_ROOT)/interface.c $(GENERATE_TS_SRC) $(TS_ROOT)/types-ffi.ts
+	$(MKDIRP)
+	$(GENERATE_TS) ffi $@
 
 ###############################################################################
 # Wasm files
@@ -114,10 +125,6 @@ $(BUILD_WRAPPER)/%.o: $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
 $(BUILD_QUICKJS)/%.o: $(QUICKJS_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(EMCC_EXPORTED_FUNCS) $(QUICKJS_DEFINES) -c -o $@ $<
-
-$(BUILD_TS)/ffi.ts: $(WRAPPER_ROOT)/interface.c $(GENERATE_TS_SRC) $(TS_ROOT)/types-ffi.ts
-	$(MKDIRP)
-	$(GENERATE_TS) ffi $@
 
 $(BUILD_WRAPPER)/symbols.json:
 	$(MKDIRP)

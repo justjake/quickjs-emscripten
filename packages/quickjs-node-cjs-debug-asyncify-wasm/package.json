@@ -1,4 +1,23 @@
 {
   "name": "@jitl/quickjs-node-cjs-debug-asyncify-wasm",
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "description": "Variant of quickjs library: Node.js CommonJS module",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justjake/quickjs-emscripten"
+  },
+  "scripts": {
+    "build": "make",
+    "clean": "make clean",
+    "prepare": "make clean && rm -r dist && make"
+  },
+  "files": [
+    "dist/**/*",
+    "!dist/ffi.ts",
+    "!dist/*.tsbuildinfo"
+  ],
+  "dependencies": {
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  }
 }
