@@ -2,6 +2,7 @@
   "name": "@jitl/quickjs-ffi-types",
   "version": "0.0.0",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "clean": "rm -rfv *.js *.d.ts *.map"
   }
 }
