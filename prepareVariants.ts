@@ -127,7 +127,7 @@ const SyncModeFlags = {
 }
 
 const ReleaseModeFlags = {
-  [ReleaseMode.Release]: [`-0z`, `-flto`],
+  [ReleaseMode.Release]: [`-Oz`, `-flto`, `-s SINGLE_FILE=1`, `--closure 1`, `-s FILESYSTEM=0`],
   [ReleaseMode.Debug]: [`-O0`, "-DQTS_DEBUG_MODE", `-gsource-map`, `-s ASSERTIONS=1`],
 }
 
@@ -238,9 +238,6 @@ function main() {
         files: ["dist/**/*", "!dist/ffi.ts", "!dist/*.tsbuildinfo"],
         dependencies: {
           "@jitl/quickjs-ffi-types": "workspace:*",
-        },
-        devDependencies: {
-          typescript: "workspace:*",
         },
       }
 
