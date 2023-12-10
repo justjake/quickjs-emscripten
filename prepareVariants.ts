@@ -187,10 +187,14 @@ interface PackageJson {
   }
   scripts: Record<string, string>
   files: string[]
+  dependencies: Record<string, string>
+  devDependencies?: Record<string, string>
 }
 
 interface TsConfig {
   extends: string
+  includes: string[]
+  excludes: string[]
 }
 
 function main() {
@@ -215,11 +219,19 @@ function main() {
           clean: "make clean",
           prepare: "make clean && rm -r dist && make",
         },
-        files: ["dist/**/*", "!dist/*.test.js", "!dist/*.tsbuildinfo"],
+        files: ["dist/**/*", "!dist/ffi.ts", "!dist/*.tsbuildinfo"],
+        dependencies: {
+          "@jitl/quickjs-ffi-types": "workspace:*",
+        },
+        devDependencies: {
+          typescript: "workspace:*",
+        },
       }
 
       const tsConfig: TsConfig = {
-        extends: "@jitl/tsconfig",
+        extends: "@jitl/tsconfig/tsconfig.json",
+        includes: ["dist/ffi.ts"],
+        excludes: ["node_modules"],
       }
 
       fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify(packageJson, null, 2) + "\n")
