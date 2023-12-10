@@ -9,6 +9,8 @@ npm-error.log
 /dist
 /emsdk-cache
 
+/packages/*/build
+
 # QuickJS build stuff
 /quickjs/test_fib.c
 /quickjs/examples/test_fib
