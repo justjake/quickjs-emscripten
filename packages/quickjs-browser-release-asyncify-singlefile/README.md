@@ -55,8 +55,11 @@ Variant-specific Emscripten build flags:
   "-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json",
   "-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json",
   "-lasync.js",
-  "-0z",
+  "-Oz",
   "-flto",
+  "-s SINGLE_FILE=1",
+  "--closure 1",
+  "-s FILESYSTEM=0",
   "-s SINGLE_FILE=1",
   "-s EXPORT_ES6=1",
   "-s ENVIRONMENT=web,worker"

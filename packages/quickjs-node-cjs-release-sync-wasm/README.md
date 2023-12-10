@@ -47,8 +47,11 @@ Variant-specific Emscripten build flags:
 
 ```json
 [
-  "-0z",
+  "-Oz",
   "-flto",
+  "-s SINGLE_FILE=1",
+  "--closure 1",
+  "-s FILESYSTEM=0",
   "-s ENVIRONMENT=node"
 ]
 ```

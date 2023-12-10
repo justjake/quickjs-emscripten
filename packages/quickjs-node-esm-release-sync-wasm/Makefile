@@ -65,8 +65,11 @@ VARIANT={"library":"quickjs","releaseMode":"release","syncMode":"sync","emscript
 SYNC=SYNC
 
 # Emscripten options - variant specific
-CFLAGS_WASM+=-0z
+CFLAGS_WASM+=-Oz
 CFLAGS_WASM+=-flto
+CFLAGS_WASM+=-s SINGLE_FILE=1
+CFLAGS_WASM+=--closure 1
+CFLAGS_WASM+=-s FILESYSTEM=0
 CFLAGS_WASM+=-s EXPORT_ES6=1
 CFLAGS_WASM+=-s ENVIRONMENT=node
 

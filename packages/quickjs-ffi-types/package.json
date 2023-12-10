@@ -4,8 +4,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "tsc": "../../node_modules/.bin/tsc",
-    "build": "tsc --project .",
+    "build": "../../node_modules/.bin/tsc --project .",
     "clean": "rm -rfv *.js *.d.ts *.map"
   }
 }
