@@ -55,6 +55,7 @@
     "prettier": "2.8.4",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.1",
+    "tsx": "^4.6.2",
     "typedoc": "^0.22.0",
     "typedoc-plugin-inline-sources": "^1.0.1",
     "typedoc-plugin-markdown": "^3.11.12",
