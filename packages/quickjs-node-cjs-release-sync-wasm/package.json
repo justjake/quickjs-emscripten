@@ -19,5 +19,8 @@
   ],
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "workspace:*"
   }
 }

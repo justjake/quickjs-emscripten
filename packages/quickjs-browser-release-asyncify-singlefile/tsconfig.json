@@ -1,9 +1,9 @@
 {
   "extends": "@jitl/tsconfig/tsconfig.json",
-  "includes": [
+  "include": [
     "dist/ffi.ts"
   ],
-  "excludes": [
+  "exclude": [
     "node_modules"
   ]
 }

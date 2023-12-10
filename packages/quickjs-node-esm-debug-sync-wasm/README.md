@@ -51,6 +51,8 @@ Variant-specific Emscripten build flags:
   "-DQTS_DEBUG_MODE",
   "-gsource-map",
   "-s ASSERTIONS=1",
+  "-s EXPORT_ES6=1",
+  "-s ENVIRONMENT=node",
   "-DQTS_SANITIZE_LEAK",
   "-fsanitize=leak",
   "-g2",

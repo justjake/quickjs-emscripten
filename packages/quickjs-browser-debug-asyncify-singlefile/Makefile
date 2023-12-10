@@ -9,6 +9,7 @@ GENERATE_TS=$(GENERATE_TS_ENV) npx ts-node $(GENERATE_TS_SRC)
 PRETTIER=npx prettier
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 REPO_ROOT := $(THIS_DIR)/../..
+TSC=../../node_modules/.bin/tsc
 
 DEBUG_MAKE=1
 
@@ -75,6 +76,9 @@ CFLAGS_WASM+=-O0
 CFLAGS_WASM+=-DQTS_DEBUG_MODE
 CFLAGS_WASM+=-gsource-map
 CFLAGS_WASM+=-s ASSERTIONS=1
+CFLAGS_WASM+=-s SINGLE_FILE=1
+CFLAGS_WASM+=-s EXPORT_ES6=1
+CFLAGS_WASM+=-s ENVIRONMENT=web,worker
 CFLAGS_WASM+=-s ASYNCIFY_ADVISE=1
 CFLAGS_WASM+=-O3
 
@@ -103,9 +107,9 @@ clean: clean-generate
 JS: $(BUILD_TS)/ffi.js $(BUILD_TS)/ffi.d.ts
 
 $(BUILD_TS)/ffi.js $(BUILD_TS)/ffi.d.ts: tsconfig.json $(BUILD_TS)/ffi.ts
-	yarn tsc --project tsconfig.json
+	$(TSC) --project .
 
-$(BUILD_TS)/ffi.ts: $(WRAPPER_ROOT)/interface.c $(GENERATE_TS_SRC) $(TS_ROOT)/types-ffi.ts
+$(BUILD_TS)/ffi.ts: $(WRAPPER_ROOT)/interface.c $(GENERATE_TS_SRC) ../quickjs-ffi-types/ffi-types.ts
 	$(MKDIRP)
 	$(GENERATE_TS) ffi $@
 

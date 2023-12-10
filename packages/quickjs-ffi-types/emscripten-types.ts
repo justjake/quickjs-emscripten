@@ -18,7 +18,7 @@ import {
   JSValueConstPointer,
   JSValuePointer,
   OwnedHeapCharPointer,
-} from "./types-ffi"
+} from "./ffi-types"
 
 declare namespace Emscripten {
   interface FileSystemType {}

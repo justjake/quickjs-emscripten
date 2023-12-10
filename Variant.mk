@@ -93,7 +93,7 @@ JS: $(BUILD_TS)/ffi.js $(BUILD_TS)/ffi.d.ts
 $(BUILD_TS)/ffi.js $(BUILD_TS)/ffi.d.ts: tsconfig.json $(BUILD_TS)/ffi.ts
 	$(TSC) --project .
 
-$(BUILD_TS)/ffi.ts: $(WRAPPER_ROOT)/interface.c $(GENERATE_TS_SRC) ../quickjs-ffi-types/types-ffi.ts
+$(BUILD_TS)/ffi.ts: $(WRAPPER_ROOT)/interface.c $(GENERATE_TS_SRC) ../quickjs-ffi-types/ffi-types.ts
 	$(MKDIRP)
 	$(GENERATE_TS) ffi $@
 

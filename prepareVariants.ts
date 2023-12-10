@@ -131,11 +131,26 @@ const ReleaseModeFlags = {
   [ReleaseMode.Debug]: [`-O0`, "-DQTS_DEBUG_MODE", `-gsource-map`, `-s ASSERTIONS=1`],
 }
 
+const EmscriptenInclusionFlags = {
+  [EmscriptenInclusion.Separate]: [],
+  [EmscriptenInclusion.SingleFile]: [`-s SINGLE_FILE=1`],
+}
+
+const ModuleSystemFlags = {
+  [ModuleSystem.CommonJS]: [],
+  [ModuleSystem.ESModule]: [`-s EXPORT_ES6=1`],
+}
+
 function getCflags(targetName: string, variant: BuildVariant) {
   const flags: string[] = []
 
   flags.push(...SyncModeFlags[variant.syncMode])
   flags.push(...ReleaseModeFlags[variant.releaseMode])
+  flags.push(...EmscriptenInclusionFlags[variant.emscriptenInclusion])
+  flags.push(...ModuleSystemFlags[variant.moduleSystem])
+
+  const emscriptenEnvironment = variant.emscriptenEnvironment.join(",")
+  flags.push(`-s ENVIRONMENT=${emscriptenEnvironment}`)
 
   if (variant.releaseMode === ReleaseMode.Debug) {
     switch (variant.syncMode) {
@@ -193,8 +208,9 @@ interface PackageJson {
 
 interface TsConfig {
   extends: string
-  includes: string[]
-  excludes: string[]
+  include: string[]
+  files?: string[]
+  exclude: string[]
 }
 
 function main() {
@@ -230,8 +246,8 @@ function main() {
 
       const tsConfig: TsConfig = {
         extends: "@jitl/tsconfig/tsconfig.json",
-        includes: ["dist/ffi.ts"],
-        excludes: ["node_modules"],
+        include: ["dist/ffi.ts"],
+        exclude: ["node_modules"],
       }
 
       fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify(packageJson, null, 2) + "\n")
