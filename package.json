@@ -49,6 +49,7 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
     "@types/emscripten": "^1.38.0",
     "@types/fs-extra": "^9.0.13",
     "@types/mocha": "^5.2.7",
@@ -60,7 +61,9 @@
     "prettier": "2.8.4",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.1",
+    "tsup": "^8.0.1",
     "tsx": "^4.6.2",
+    "turbo": "^1.11.2",
     "typedoc": "^0.22.0",
     "typedoc-plugin-inline-sources": "^1.0.1",
     "typedoc-plugin-markdown": "^3.11.12",
