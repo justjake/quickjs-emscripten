@@ -1,8 +1,13 @@
 import { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
-import { QuickJSAsyncEmscriptenModule } from "@jitl/quickjs-ffi-types"
-import { QuickJSAsyncFFI } from "./from-variant"
-import { EvalDetectModule, EvalFlags, JSRuntimePointer, JSValuePointer } from "./types-ffi"
+import {
+  QuickJSAsyncEmscriptenModule,
+  QuickJSAsyncFFI,
+  EvalDetectModule,
+  EvalFlags,
+  JSRuntimePointer,
+  JSValuePointer,
+} from "@jitl/quickjs-ffi-types"
 import { Lifetime } from "./lifetime"
 import { QuickJSModuleCallbacks } from "./module"
 import { QuickJSAsyncRuntime } from "./runtime-asyncify"

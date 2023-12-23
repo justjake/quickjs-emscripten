@@ -1,11 +1,11 @@
-import { EitherModule } from "@jitl/quickjs-ffi-types"
 import {
+  EitherModule,
   OwnedHeapCharPointer,
   JSContextPointerPointer,
   JSValueConstPointerPointer,
   JSValuePointerPointer,
   JSVoidPointer,
-} from "./types-ffi"
+} from "@jitl/quickjs-ffi-types"
 import { Lifetime } from "./lifetime"
 import { EitherFFI, QuickJSHandle } from "./types"
 

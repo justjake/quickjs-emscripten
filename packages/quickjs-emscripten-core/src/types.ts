@@ -1,10 +1,15 @@
-import type { QuickJSFFI, QuickJSAsyncFFI } from "./from-variant"
+import type { QuickJSFFI, QuickJSAsyncFFI } from "@jitl/quickjs-ffi-types"
 import type { QuickJSContext } from "./context"
 import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
 import type { Disposable, Lifetime } from "./lifetime"
 import type { QuickJSAsyncContext } from "./context-asyncify"
 import type { InterruptHandler, QuickJSRuntime } from "./runtime"
-import { EvalFlags, JSContextPointer, JSValueConstPointer, JSValuePointer } from "./types-ffi"
+import {
+  EvalFlags,
+  JSContextPointer,
+  JSValueConstPointer,
+  JSValuePointer,
+} from "@jitl/quickjs-ffi-types"
 
 export type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
 

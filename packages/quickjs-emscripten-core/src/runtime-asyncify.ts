@@ -1,9 +1,12 @@
 import type { QuickJSAsyncWASMModule } from "./module-asyncify"
 import { Lifetime } from "."
 import { QuickJSAsyncContext } from "./context-asyncify"
-import { QuickJSAsyncEmscriptenModule } from "@jitl/quickjs-ffi-types"
-import { QuickJSAsyncFFI } from "./from-variant"
-import { JSContextPointer, JSRuntimePointer } from "./types-ffi"
+import {
+  QuickJSAsyncEmscriptenModule,
+  QuickJSAsyncFFI,
+  JSContextPointer,
+  JSRuntimePointer,
+} from "@jitl/quickjs-ffi-types"
 import { QuickJSModuleCallbacks } from "./module"
 import { QuickJSRuntime } from "./runtime"
 import {

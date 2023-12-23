@@ -1,8 +1,7 @@
 import { debugLog } from "./debug"
 import { QuickJSDeferredPromise } from "./deferred-promise"
-import type { EitherModule } from "@jitl/quickjs-ffi-types"
-import { QuickJSUnwrapError } from "./errors"
-import {
+import type {
+  EitherModule,
   EvalDetectModule,
   EvalFlags,
   JSBorrowedCharPointer,
@@ -13,7 +12,8 @@ import {
   JSValuePointer,
   JSValuePointerPointer,
   JSVoidPointer,
-} from "./types-ffi"
+} from "@jitl/quickjs-ffi-types"
+import { QuickJSUnwrapError } from "./errors"
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import { ContextCallbacks, QuickJSModuleCallbacks } from "./module"

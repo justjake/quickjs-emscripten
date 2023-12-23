@@ -1,7 +1,6 @@
 import { QuickJSAsyncContext } from "./context-asyncify"
-import { QuickJSAsyncEmscriptenModule } from "@jitl/quickjs-ffi-types"
+import { QuickJSAsyncEmscriptenModule, QuickJSAsyncFFI } from "@jitl/quickjs-ffi-types"
 import { QuickJSNotImplemented } from "./errors"
-import { QuickJSAsyncFFI } from "./from-variant"
 import { Lifetime, Scope } from "./lifetime"
 import {
   applyBaseRuntimeOptions,

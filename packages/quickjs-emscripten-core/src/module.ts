@@ -5,14 +5,12 @@ import {
   AsyncifySleepResult,
   EitherModule,
   EmscriptenModuleCallbacks,
-} from "@jitl/quickjs-ffi-types"
-import { QuickJSAsyncifyError, QuickJSAsyncifySuspended } from "./errors"
-import {
   BorrowedHeapCharPointer,
   JSContextPointer,
   JSRuntimePointer,
   JSValuePointer,
-} from "./types-ffi"
+} from "@jitl/quickjs-ffi-types"
+import { QuickJSAsyncifyError, QuickJSAsyncifySuspended } from "./errors"
 import { Lifetime, Scope } from "./lifetime"
 import { InterruptHandler, QuickJSRuntime } from "./runtime"
 import {
