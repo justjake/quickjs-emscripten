@@ -1,6 +1,6 @@
 import { debugLog } from "./debug"
 import { QuickJSDeferredPromise } from "./deferred-promise"
-import type { EitherModule } from "./emscripten-types"
+import type { EitherModule } from "@jitl/quickjs-ffi-types"
 import { QuickJSUnwrapError } from "./errors"
 import {
   EvalDetectModule,

@@ -5,7 +5,7 @@ import {
   AsyncifySleepResult,
   EitherModule,
   EmscriptenModuleCallbacks,
-} from "./emscripten-types"
+} from "@jitl/quickjs-ffi-types"
 import { QuickJSAsyncifyError, QuickJSAsyncifySuspended } from "./errors"
 import {
   BorrowedHeapCharPointer,

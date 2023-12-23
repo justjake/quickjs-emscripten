@@ -1,4 +1,4 @@
-import { EitherModule } from "./emscripten-types"
+import { EitherModule } from "@jitl/quickjs-ffi-types"
 import {
   OwnedHeapCharPointer,
   JSContextPointerPointer,

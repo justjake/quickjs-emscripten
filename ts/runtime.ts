@@ -1,7 +1,7 @@
 import { maybeAsyncFn } from "./asyncify-helpers"
 import { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
-import { EitherModule } from "./emscripten-types"
+import { EitherModule } from "@jitl/quickjs-ffi-types"
 import { QuickJSWrongOwner } from "./errors"
 import {
   BorrowedHeapCharPointer,

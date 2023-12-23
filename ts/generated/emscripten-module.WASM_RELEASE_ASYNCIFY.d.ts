@@ -1,5 +1,5 @@
 // Generated from ts/types-generated/emscripten-module.ASYNCIFY.d.ts
-import { EmscriptenModuleLoader, QuickJSAsyncEmscriptenModule } from "../emscripten-types"
+import { EmscriptenModuleLoader, QuickJSAsyncEmscriptenModule } from "@jitl/quickjs-ffi-types"
 /**
  * Emscripten module built from [`quickjs/quickjs.h`](../quickjs/quickjs.h) and
  * our FFI support functions [c/interface.c](../c/interface.c), compiled with -s

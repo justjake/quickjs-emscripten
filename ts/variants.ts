@@ -6,7 +6,7 @@ import type {
   EmscriptenModuleLoader,
   QuickJSEmscriptenModule,
   QuickJSAsyncEmscriptenModule,
-} from "./emscripten-types"
+} from "@jitl/quickjs-ffi-types"
 import type { QuickJSWASMModule } from "./module"
 import type { QuickJSAsyncWASMModule } from "./module-asyncify"
 import { unwrapTypescript, unwrapJavascript } from "./esmHelpers"
