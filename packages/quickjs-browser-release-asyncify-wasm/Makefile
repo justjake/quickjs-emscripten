@@ -1,7 +1,7 @@
 # Tools
 CC=clang
-EMSDK_VERSION=3.1.48
-EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.48
+EMSDK_VERSION=3.1.50
+EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.50
 EMCC_SRC=../../scripts/emcc.sh
 EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_DOCKER_CACHE=$(REPO_ROOT)/emsdk-cache/$(EMSDK_VERSION) $(EMCC_SRC)
 GENERATE_TS_SRC=../../generate.ts
@@ -9,7 +9,7 @@ GENERATE_TS=$(GENERATE_TS_ENV) npx ts-node $(GENERATE_TS_SRC)
 PRETTIER=npx prettier
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 REPO_ROOT := $(THIS_DIR)/../..
-TSC=../../node_modules/.bin/tsc
+TSC=npx tsc
 
 DEBUG_MAKE=1
 
@@ -17,10 +17,12 @@ DEBUG_MAKE=1
 QUICKJS_ROOT=../../quickjs
 WRAPPER_ROOT=../../c
 TS_ROOT=../../ts
+# Intermediate build files
 BUILD_ROOT=build
 BUILD_WRAPPER=$(BUILD_ROOT)/wrapper
 BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
-BUILD_TS=dist
+# Distributed to users
+DIST=dist
 
 # QuickJS
 QUICKJS_OBJS=quickjs.o libregexp.o libunicode.o cutils.o quickjs-libc.o libbf.o
@@ -81,7 +83,7 @@ CFLAGS_WASM+=-s EXPORT_ES6=1
 CFLAGS_WASM+=-s ENVIRONMENT=web,worker
 
 # GENERATE_TS options - variant specific
-GENERATE_TS_ENV=ASYNCIFY=true
+GENERATE_TS_ENV+=ASYNCIFY=true
 
 ifdef DEBUG_MAKE
 	MKDIRP=@echo "\n=====[["" target: $@, deps: $<, variant: $(VARIANT) ""]]=====" ; mkdir -p $(dir $@)
@@ -94,33 +96,36 @@ endif
 all: WASM JS
 
 clean-generate:
-	rm -rfv $(BUILD_TS)
+	rm -rfv $(DIST)
 
 clean: clean-generate
 	rm -rfv $(BUILD_ROOT)
 
 ###############################################################################
 # Typescript files
-JS: $(BUILD_TS)/ffi.js $(BUILD_TS)/ffi.d.ts
+TS_IN=$(DIST)/index.ts $(DIST)/ffi.ts $(DIST)/emscripten-module.d.ts
+TS_OUT=$(DIST)/index.js $(DIST)/index.d.ts $(DIST)/ffi.js $(DIST)/ffi.d.ts
 
-$(BUILD_TS)/ffi.js $(BUILD_TS)/ffi.d.ts: tsconfig.json $(BUILD_TS)/ffi.ts
+JS: $(TS_OUT)
+
+$(TS_OUT): $(TS_IN)
 	$(TSC) --project .
 
-$(BUILD_TS)/ffi.ts: $(WRAPPER_ROOT)/interface.c $(GENERATE_TS_SRC) ../quickjs-ffi-types/ffi-types.ts
+$(DIST)/ffi.ts: $(WRAPPER_ROOT)/interface.c $(GENERATE_TS_SRC) ../quickjs-ffi-types/ffi-types.ts
 	$(MKDIRP)
 	$(GENERATE_TS) ffi $@
 
 ###############################################################################
 # Wasm files
-WASM: $(BUILD_TS)/emscripten-module.js $(BUILD_TS)/emscripten-module.d.ts GENERATE
-GENERATE: $(BUILD_TS)/ffi.ts
+WASM: $(DIST)/emscripten-module.js $(DIST)/emscripten-module.d.ts GENERATE
+GENERATE: $(DIST)/ffi.ts
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
-$(BUILD_TS)/emscripten-module.js: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
+$(DIST)/emscripten-module.js: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
-$(BUILD_TS)/emscripten-module.d.ts: $(TS_ROOT)/types-generated/emscripten-module.$(SYNC).d.ts
+$(DIST)/emscripten-module.d.ts: $(TS_ROOT)/types-generated/emscripten-module.$(SYNC).d.ts
 	echo '// Generated from $<' > $@
 	cat $< >> $@
 

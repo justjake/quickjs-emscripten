@@ -1,4 +1,4 @@
-import { QuickJSEmscriptenModule, JSRuntimePointer, JSContextPointer, JSContextPointerPointer, JSValuePointer, JSValueConstPointer, JSValuePointerPointer, JSValueConstPointerPointer, BorrowedHeapCharPointer, OwnedHeapCharPointer, JSBorrowedCharPointer, JSVoidPointer, EvalFlags, EvalDetectModule } from "@jitl/quickjs-ffi-types";
+import { QuickJSAsyncEmscriptenModule, JSRuntimePointer, JSContextPointer, JSContextPointerPointer, JSValuePointer, JSValueConstPointer, JSValuePointerPointer, JSValueConstPointerPointer, BorrowedHeapCharPointer, OwnedHeapCharPointer, JSBorrowedCharPointer, JSVoidPointer, EvalFlags, EvalDetectModule } from "@jitl/quickjs-ffi-types";
 /**
  * Low-level FFI bindings to QuickJS's Emscripten module.
  * See instead [[QuickJSContext]], the public Javascript interface exposed by this
@@ -6,9 +6,9 @@ import { QuickJSEmscriptenModule, JSRuntimePointer, JSContextPointer, JSContextP
  *
  * @unstable The FFI interface is considered private and may change.
  */
-export declare class QuickJSFFI {
+export declare class QuickJSAsyncFFI {
     private module;
-    constructor(module: QuickJSEmscriptenModule);
+    constructor(module: QuickJSAsyncEmscriptenModule);
     /** Set at compile time. */
     readonly DEBUG = true;
     QTS_Throw: (ctx: JSContextPointer, error: JSValuePointer | JSValueConstPointer) => JSValuePointer;
@@ -44,16 +44,23 @@ export declare class QuickJSFFI {
     QTS_GetArrayBufferLength: (ctx: JSContextPointer, data: JSValuePointer | JSValueConstPointer) => number;
     QTS_NewSymbol: (ctx: JSContextPointer, description: BorrowedHeapCharPointer, isGlobal: number) => JSValuePointer;
     QTS_GetSymbolDescriptionOrKey: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => JSBorrowedCharPointer;
+    QTS_GetSymbolDescriptionOrKey_MaybeAsync: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => JSBorrowedCharPointer | Promise<JSBorrowedCharPointer>;
     QTS_IsGlobalSymbol: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => number;
     QTS_IsJobPending: (rt: JSRuntimePointer) => number;
     QTS_ExecutePendingJob: (rt: JSRuntimePointer, maxJobsToExecute: number, lastJobContext: JSContextPointerPointer) => JSValuePointer;
+    QTS_ExecutePendingJob_MaybeAsync: (rt: JSRuntimePointer, maxJobsToExecute: number, lastJobContext: JSContextPointerPointer) => JSValuePointer | Promise<JSValuePointer>;
     QTS_GetProp: (ctx: JSContextPointer, this_val: JSValuePointer | JSValueConstPointer, prop_name: JSValuePointer | JSValueConstPointer) => JSValuePointer;
+    QTS_GetProp_MaybeAsync: (ctx: JSContextPointer, this_val: JSValuePointer | JSValueConstPointer, prop_name: JSValuePointer | JSValueConstPointer) => JSValuePointer | Promise<JSValuePointer>;
     QTS_SetProp: (ctx: JSContextPointer, this_val: JSValuePointer | JSValueConstPointer, prop_name: JSValuePointer | JSValueConstPointer, prop_value: JSValuePointer | JSValueConstPointer) => void;
+    QTS_SetProp_MaybeAsync: (ctx: JSContextPointer, this_val: JSValuePointer | JSValueConstPointer, prop_name: JSValuePointer | JSValueConstPointer, prop_value: JSValuePointer | JSValueConstPointer) => void | Promise<void>;
     QTS_DefineProp: (ctx: JSContextPointer, this_val: JSValuePointer | JSValueConstPointer, prop_name: JSValuePointer | JSValueConstPointer, prop_value: JSValuePointer | JSValueConstPointer, get: JSValuePointer | JSValueConstPointer, set: JSValuePointer | JSValueConstPointer, configurable: boolean, enumerable: boolean, has_value: boolean) => void;
     QTS_Call: (ctx: JSContextPointer, func_obj: JSValuePointer | JSValueConstPointer, this_obj: JSValuePointer | JSValueConstPointer, argc: number, argv_ptrs: JSValueConstPointerPointer) => JSValuePointer;
+    QTS_Call_MaybeAsync: (ctx: JSContextPointer, func_obj: JSValuePointer | JSValueConstPointer, this_obj: JSValuePointer | JSValueConstPointer, argc: number, argv_ptrs: JSValueConstPointerPointer) => JSValuePointer | Promise<JSValuePointer>;
     QTS_ResolveException: (ctx: JSContextPointer, maybe_exception: JSValuePointer) => JSValuePointer;
     QTS_Dump: (ctx: JSContextPointer, obj: JSValuePointer | JSValueConstPointer) => JSBorrowedCharPointer;
+    QTS_Dump_MaybeAsync: (ctx: JSContextPointer, obj: JSValuePointer | JSValueConstPointer) => JSBorrowedCharPointer | Promise<JSBorrowedCharPointer>;
     QTS_Eval: (ctx: JSContextPointer, js_code: BorrowedHeapCharPointer, filename: string, detectModule: EvalDetectModule, evalFlags: EvalFlags) => JSValuePointer;
+    QTS_Eval_MaybeAsync: (ctx: JSContextPointer, js_code: BorrowedHeapCharPointer, filename: string, detectModule: EvalDetectModule, evalFlags: EvalFlags) => JSValuePointer | Promise<JSValuePointer>;
     QTS_Typeof: (ctx: JSContextPointer, value: JSValuePointer | JSValueConstPointer) => OwnedHeapCharPointer;
     QTS_GetGlobalObject: (ctx: JSContextPointer) => JSValuePointer;
     QTS_NewPromiseCapability: (ctx: JSContextPointer, resolve_funcs_out: JSValuePointerPointer) => JSValuePointer;

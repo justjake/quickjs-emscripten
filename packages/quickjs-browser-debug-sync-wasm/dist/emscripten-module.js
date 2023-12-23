@@ -841,7 +841,7 @@ function missingGlobal(sym, msg) {
   Object.defineProperty(globalThis, sym, {
    configurable: true,
    get() {
-    warnOnce("`" + sym + "` is not longer defined by emscripten. " + msg);
+    warnOnce(`\`${sym}\` is not longer defined by emscripten. ${msg}`);
     return undefined;
    }
   });
@@ -857,12 +857,12 @@ function missingLibrarySymbol(sym) {
   Object.defineProperty(globalThis, sym, {
    configurable: true,
    get() {
-    var msg = "`" + sym + "` is a library symbol and not included by default; add it to your library.js __deps or to DEFAULT_LIBRARY_FUNCS_TO_INCLUDE on the command line";
+    var msg = `\`${sym}\` is a library symbol and not included by default; add it to your library.js __deps or to DEFAULT_LIBRARY_FUNCS_TO_INCLUDE on the command line`;
     var librarySymbol = sym;
     if (!librarySymbol.startsWith("_")) {
      librarySymbol = "$" + sym;
     }
-    msg += " (e.g. -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE='" + librarySymbol + "')";
+    msg += ` (e.g. -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE='${librarySymbol}')`;
     if (isExportedByForceFilesystem(sym)) {
      msg += ". Alternatively, forcing filesystem support (-sFORCE_FILESYSTEM) can export this for you";
     }
@@ -879,7 +879,7 @@ function unexportedRuntimeSymbol(sym) {
   Object.defineProperty(Module, sym, {
    configurable: true,
    get() {
-    var msg = "'" + sym + "' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the Emscripten FAQ)";
+    var msg = `'${sym}' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the Emscripten FAQ)`;
     if (isExportedByForceFilesystem(sym)) {
      msg += ". Alternatively, forcing filesystem support (-sFORCE_FILESYSTEM) can export this for you";
     }
@@ -3615,7 +3615,7 @@ function ___syscall_stat64(path, buf) {
  }
 }
 
-var nowIsMonotonic = true;
+var nowIsMonotonic = 1;
 
 var __emscripten_get_now_is_monotonic = () => nowIsMonotonic;
 
@@ -4412,9 +4412,9 @@ var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
 
 var dynCall_jii = Module["dynCall_jii"] = createExportWrapper("dynCall_jii");
 
-var ___start_em_js = Module["___start_em_js"] = 120293;
+var ___start_em_js = Module["___start_em_js"] = 121409;
 
-var ___stop_em_js = Module["___stop_em_js"] = 121195;
+var ___stop_em_js = Module["___stop_em_js"] = 122311;
 
 Module["cwrap"] = cwrap;
 

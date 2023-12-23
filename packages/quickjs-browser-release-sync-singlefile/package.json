@@ -16,6 +16,7 @@
   "files": [
     "dist/**/*",
     "!dist/ffi.ts",
+    "!dist/index.ts",
     "!dist/*.tsbuildinfo"
   ],
   "dependencies": {
