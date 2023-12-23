@@ -1,0 +1,33 @@
+{
+  "name": "quickjs-emscripten-core",
+  "version": "0.25.0",
+  "sideEffects": false,
+  "license": "MIT",
+  "type": "commonjs",
+  "keywords": [
+    "eval",
+    "quickjs",
+    "vm",
+    "interpreter",
+    "runtime",
+    "safe",
+    "emscripten",
+    "wasm"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justjake/quickjs-emscripten"
+  },
+  "files": [
+    "dist/**/*",
+    "!dist/*.test.js",
+    "!dist/*.tsbuildinfo"
+  ],
+  "scripts": {
+    "tsc": "npx tsc -p ."
+  },
+  "dependencies": {
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  },
+  "packageManager": "yarn@4.0.2"
+}
