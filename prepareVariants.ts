@@ -2,8 +2,8 @@
  * This file defines all the different variants of the quickjs WASM library.
  */
 
-import path from "node:path"
-import fs from "node:fs"
+import path from "path"
+import fs from "fs"
 import child_process from "child_process"
 
 // Variant variables.
