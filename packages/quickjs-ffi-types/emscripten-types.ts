@@ -46,7 +46,7 @@ declare namespace Emscripten {
  * Typings for the features we use to interface with our Emscripten build of
  * QuickJS.
  */
-interface EmscriptenModule {
+export interface EmscriptenModule {
   // No longer needed:
   // addFunction(fn: Function, type: string): number
   // removeFunction(pointer: number): void

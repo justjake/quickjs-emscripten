@@ -218,7 +218,8 @@ function main() {
     for (const variant of variants) {
       const basename = getTargetFilename(targetName, variant)
       const dir = path.join(__dirname, "packages", basename)
-      fs.mkdirSync(dir, { recursive: true })
+      const dist = path.join(dir, "dist")
+      fs.mkdirSync(dist, { recursive: true })
 
       const packageJson: PackageJson = {
         name: `@jitl/${basename}`,
@@ -235,7 +236,7 @@ function main() {
           clean: "make clean",
           prepare: "make clean && rm -r dist && make",
         },
-        files: ["dist/**/*", "!dist/ffi.ts", "!dist/*.tsbuildinfo"],
+        files: ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
         dependencies: {
           "@jitl/quickjs-ffi-types": "workspace:*",
         },
@@ -243,7 +244,7 @@ function main() {
 
       const tsConfig: TsConfig = {
         extends: "@jitl/tsconfig/tsconfig.json",
-        include: ["dist/ffi.ts"],
+        include: ["dist/ffi.ts", "dist/index.ts"],
         exclude: ["node_modules"],
       }
 
@@ -251,6 +252,7 @@ function main() {
       fs.writeFileSync(path.join(dir, "tsconfig.json"), JSON.stringify(tsConfig, null, 2) + "\n")
       fs.writeFileSync(path.join(dir, "README.md"), renderReadme(targetName, variant, packageJson))
       fs.writeFileSync(path.join(dir, "Makefile"), renderMakefile(targetName, variant))
+      fs.writeFileSync(path.join(dist, "index.ts"), renderIndexTs(targetName, variant))
     }
   }
 }
@@ -350,6 +352,35 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
   replace("SYNC=REPLACE_THIS", `SYNC=${variant.syncMode.toUpperCase()}`)
 
   return template
+}
+
+function renderIndexTs(targetName: string, variant: BuildVariant): string {
+  const className = {
+    [SyncMode.Sync]: "QuickJSFFI",
+    [SyncMode.Asyncify]: "QuickJSAsyncFFI",
+  }[variant.syncMode]
+
+  const modeName = {
+    [SyncMode.Sync]: "sync",
+    [SyncMode.Asyncify]: "async",
+  }[variant.syncMode]
+
+  const variantTypeName = {
+    [SyncMode.Sync]: "QuickJSSyncVariant",
+    [SyncMode.Asyncify]: "QuickJSAsyncVariant",
+  }[variant.syncMode]
+
+  return `
+import { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
+
+const variant = {
+  type: '${modeName}',
+  importFFI: () => import('./ffi.js').then(mod => mod.${className}),
+  importModuleLoader: () => import('./emscripten-module.js').then(mod => mod.default),
+} as const satisfies ${variantTypeName}
+
+export default variant
+`
 }
 
 function getTargetFilename(targetName: string, variant: BuildVariant): string {
