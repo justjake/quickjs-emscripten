@@ -36,7 +36,9 @@ Full variant JSON description:
   "syncMode": "sync",
   "emscriptenInclusion": "wasm",
   "description": "Node.js ESModule",
-  "emscriptenEnvironment": ["node"],
+  "emscriptenEnvironment": [
+    "node"
+  ],
   "moduleSystem": "esm"
 }
 ```

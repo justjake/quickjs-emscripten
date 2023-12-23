@@ -36,7 +36,9 @@ Full variant JSON description:
   "syncMode": "asyncify",
   "emscriptenInclusion": "wasm",
   "description": "Node.js CommonJS module",
-  "emscriptenEnvironment": ["node"],
+  "emscriptenEnvironment": [
+    "node"
+  ],
   "moduleSystem": "commonjs"
 }
 ```

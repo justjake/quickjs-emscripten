@@ -36,7 +36,10 @@ Full variant JSON description:
   "syncMode": "sync",
   "emscriptenInclusion": "singlefile",
   "description": "ESModule for browsers or browser-like environments",
-  "emscriptenEnvironment": ["web", "worker"],
+  "emscriptenEnvironment": [
+    "web",
+    "worker"
+  ],
   "moduleSystem": "esm"
 }
 ```

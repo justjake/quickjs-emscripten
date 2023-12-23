@@ -36,7 +36,9 @@ Full variant JSON description:
   "syncMode": "sync",
   "emscriptenInclusion": "wasm",
   "description": "Node.js CommonJS module",
-  "emscriptenEnvironment": ["node"],
+  "emscriptenEnvironment": [
+    "node"
+  ],
   "moduleSystem": "commonjs"
 }
 ```
@@ -44,5 +46,12 @@ Full variant JSON description:
 Variant-specific Emscripten build flags:
 
 ```json
-["-Oz", "-flto", "-s SINGLE_FILE=1", "--closure 1", "-s FILESYSTEM=0", "-s ENVIRONMENT=node"]
+[
+  "-Oz",
+  "-flto",
+  "-s SINGLE_FILE=1",
+  "--closure 1",
+  "-s FILESYSTEM=0",
+  "-s ENVIRONMENT=node"
+]
 ```
