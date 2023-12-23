@@ -89,7 +89,7 @@ endif
 all: WASM JS
 
 clean-generate:
-	rm -rfv $(DIST)
+	git clean -fx $(DIST)
 
 clean: clean-generate
 	rm -rfv $(BUILD_ROOT)

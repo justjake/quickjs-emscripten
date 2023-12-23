@@ -10,7 +10,10 @@ npm-error.log
 /emsdk-cache
 
 /packages/*/build
-/packages/*/dist/*.{js,wasm,d.ts,map}
+/packages/*/dist/*.js
+/packages/*/dist/*.wasm
+/packages/*/dist/*.d.ts
+/packages/*/dist/*.map
 
 # QuickJS build stuff
 /quickjs/test_fib.c
