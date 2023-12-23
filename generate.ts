@@ -8,7 +8,7 @@ const rooted = (path: string) => pathlib.join(__dirname, path)
 
 const INTERFACE_FILE_PATH = process.env.HEADER_FILE_PATH || rooted("./c/interface.c")
 const FFI_TYPES_PATH =
-  process.env.FFI_TYPES_PATH || rooted("packages/quickjs-ffi-types/ffi-types.ts")
+  process.env.FFI_TYPES_PATH || rooted("packages/quickjs-ffi-types/src/ffi-types.ts")
 const DEBUG = process.env.DEBUG === "true"
 const ASYNCIFY = process.env.ASYNCIFY === "true"
 const TYPE_ONLY = process.env.TYPE_ONLY === "true"

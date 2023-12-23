@@ -226,8 +226,8 @@ async function main() {
 
   for (const [targetName, variants] of Object.entries(targets)) {
     for (const variant of variants) {
-      const basename = getTargetFilename(targetName, variant)
-      const dir = path.join(__dirname, "packages", basename)
+      const basename = getTargetPackageSuffix(targetName, variant)
+      const dir = path.join(__dirname, "packages", `variant-${basename}`)
       const dist = path.join(dir, "dist")
       if (CLEAN) {
         try {
@@ -452,7 +452,7 @@ ALL_VARIANTS=${allOutputFiles.join(" ")}
 `
 }
 
-function getTargetFilename(targetName: string, variant: BuildVariant): string {
+function getTargetPackageSuffix(targetName: string, variant: BuildVariant): string {
   const { releaseMode, syncMode, library, moduleSystem, emscriptenInclusion } = variant
   const filename = [
     library, // quickjs

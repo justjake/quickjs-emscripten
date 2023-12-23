@@ -16,7 +16,7 @@ BUILD_ROOT=build
 BUILD_WRAPPER=$(BUILD_ROOT)/wrapper
 BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
 BUILD_TS=ts/generated
-FFI_TYPES=packages/quickjs-ffi-types
+FFI_TYPES=packages/quickjs-ffi-types/src
 
 # QuickJS
 QUICKJS_OBJS=quickjs.o libregexp.o libunicode.o cutils.o quickjs-libc.o libbf.o
