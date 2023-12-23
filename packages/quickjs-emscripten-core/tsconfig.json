@@ -3,6 +3,6 @@
   "include": ["src/*.ts"],
   "compilerOptions": {
     "outDir": "dist",
-    "noEmit": true,
+    "noEmit": true
   }
 }
