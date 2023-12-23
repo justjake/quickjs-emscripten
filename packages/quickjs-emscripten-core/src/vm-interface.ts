@@ -70,7 +70,7 @@ export interface LowLevelJavascriptVm<VmHandle> {
   defineProp(
     handle: VmHandle,
     key: string | VmHandle,
-    descriptor: VmPropertyDescriptor<VmHandle>
+    descriptor: VmPropertyDescriptor<VmHandle>,
   ): void
 
   callFunction(func: VmHandle, thisVal: VmHandle, ...args: VmHandle[]): VmCallResult<VmHandle>

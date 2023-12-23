@@ -5,6 +5,9 @@
 import path from "path"
 import fs from "fs"
 import child_process from "child_process"
+import prettier from "prettier"
+
+const CLEAN = Boolean(process.env.CLEAN)
 
 // Variant variables.
 
@@ -163,7 +166,7 @@ function getCflags(targetName: string, variant: BuildVariant) {
         flags.push("-s ASYNCIFY_ADVISE=1")
         flags.push(
           // # Need to use -O3 - otherwise ASYNCIFY leads to stack overflows (why?)
-          "-O3"
+          "-O3",
         )
     }
   }
@@ -188,7 +191,10 @@ function getGenerateTsEnv(targetName: string, variant: BuildVariant): Record<str
 // Action
 
 if (require.main === module) {
-  main()
+  main().catch((error) => {
+    console.error(error)
+    process.exit(2)
+  })
 }
 
 interface PackageJson {
@@ -215,7 +221,7 @@ interface TsConfig {
   exclude: string[]
 }
 
-function main() {
+async function main() {
   const makeOutputFiles: string[] = []
 
   for (const [targetName, variants] of Object.entries(targets)) {
@@ -223,11 +229,13 @@ function main() {
       const basename = getTargetFilename(targetName, variant)
       const dir = path.join(__dirname, "packages", basename)
       const dist = path.join(dir, "dist")
-      // try {
-      //   fs.rmdirSync(dist, { recursive: true })
-      // } catch (e) {
-      //   console.log("ignore", e)
-      // }
+      if (CLEAN) {
+        try {
+          fs.rmdirSync(dist, { recursive: true })
+        } catch (e) {
+          console.log("ignore", e)
+        }
+      }
       fs.mkdirSync(dist, { recursive: true })
 
       const packageJson: PackageJson = {
@@ -276,17 +284,30 @@ function main() {
         exclude: ["node_modules"],
       }
 
-      fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify(packageJson, null, 2) + "\n")
-      fs.writeFileSync(path.join(dir, "tsconfig.json"), JSON.stringify(tsConfig, null, 2) + "\n")
-      fs.writeFileSync(path.join(dir, "README.md"), renderReadme(targetName, variant, packageJson))
-      fs.writeFileSync(path.join(dir, "Makefile"), renderMakefile(targetName, variant))
-      fs.writeFileSync(path.join(dist, "index.ts"), renderIndexTs(targetName, variant))
-      fs.writeFileSync(path.join(dist, "ffi.ts"), renderFfiTs(targetName, variant))
+      await writePretty(path.join(dir, "package.json"), JSON.stringify(packageJson, null, 2) + "\n")
+      await writePretty(path.join(dir, "tsconfig.json"), JSON.stringify(tsConfig, null, 2) + "\n")
+      await writePretty(path.join(dir, "README.md"), renderReadme(targetName, variant, packageJson))
+      await writePretty(path.join(dir, "Makefile"), renderMakefile(targetName, variant))
+      await writePretty(path.join(dist, "index.ts"), renderIndexTs(targetName, variant))
+      await writePretty(path.join(dist, "ffi.ts"), renderFfiTs(targetName, variant))
       makeOutputFiles.push(path.relative(__dirname, path.join(dist, "index.js")))
     }
   }
 
   fs.writeFileSync(path.join(__dirname, "AllVariants.mk"), renderAllVariantsMk(makeOutputFiles))
+}
+
+async function writePretty(filePath: string, text: string) {
+  let output = text
+  if (!filePath.endsWith("Makefile")) {
+    const prettierConfig = (await prettier.resolveConfig(filePath)) ?? {}
+    output = await prettier.format(text, {
+      ...prettierConfig,
+      filepath: filePath,
+    })
+  }
+  console.warn(`write`, path.relative(process.cwd(), filePath))
+  fs.writeFileSync(filePath, output)
 }
 
 function renderReadme(targetName: string, variant: BuildVariant, packageJson: PackageJson): string {
@@ -371,13 +392,13 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
     "CFLAGS_WASM_VARIANT=REPLACE_THIS",
     getCflags(targetName, variant)
       .map((flag) => `CFLAGS_WASM+=${flag}`)
-      .join("\n")
+      .join("\n"),
   )
   replace(
     "GENERATE_TS_ENV_VARIANT=REPLACE_THIS",
     Object.entries(getGenerateTsEnv(targetName, variant))
       .map(([key, value]) => `GENERATE_TS_ENV+=${key}=${value}`)
-      .join("\n")
+      .join("\n"),
   )
 
   replace("VARIANT=REPLACE_THIS", `VARIANT=${JSON.stringify(variant)}`)

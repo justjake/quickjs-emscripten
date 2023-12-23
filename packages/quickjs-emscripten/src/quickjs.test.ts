@@ -409,8 +409,8 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
           import {name} from './foo.js'
           globalThis.declaredWithEval = name
           `,
-          "importer.js"
-        )
+          "importer.js",
+        ),
       ).dispose()
       const declaredWithEval = vm.getProp(vm.global, "declaredWithEval")
       assert.equal(vm.getString(declaredWithEval), "from import")
@@ -438,7 +438,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
       fnHandle.dispose()
 
       const result = vm.unwrapResult(
-        vm.evalCode(`(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`)
+        vm.evalCode(`(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`),
       )
       assert.equal(i, 0)
       vm.runtime.executePendingJobs()
@@ -461,7 +461,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
       assert.strictEqual(
         vm.runtime.hasPendingJob(),
         true,
-        "has a pending job after creating a promise"
+        "has a pending job after creating a promise",
       )
 
       const executed = vm.unwrapResult(vm.runtime.executePendingJobs())
@@ -512,7 +512,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
     typeofTestExample([1, 2, 3])
     typeofTestExample(
       function () {},
-      (val: any) => val.toString()
+      (val: any) => val.toString(),
     )
   })
 
@@ -524,7 +524,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
         assert.strictEqual(
           interruptVm,
           vm.runtime,
-          "ShouldInterruptHandler callback runtime is the runtime"
+          "ShouldInterruptHandler callback runtime is the runtime",
         )
         debugLog("interruptHandler called", interruptId)
         calls++
@@ -647,7 +647,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
     it("logs memory usage", () => {
       assert(
         vm.runtime.dumpMemoryUsage().endsWith("per fast array)\n"),
-        'should end with "per fast array)\\n"'
+        'should end with "per fast array)\\n"',
       )
     })
   })
@@ -721,7 +721,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
         vm.evalCode(`
           var globalThingy = 'not set by promise';
           getThingy().then(thingy => { globalThingy = thingy })
-        `)
+        `),
       ).dispose()
 
       // Wait for the promise to settle
@@ -745,7 +745,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
         }
 
         return1()
-        `)
+        `),
       )
 
       assert.equal(vm.typeof(result), "object", "Async function returns an object (promise)")
@@ -767,7 +767,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
         }
 
         throwOops()
-        `)
+        `),
       )
 
       assert.equal(vm.typeof(result), "object", "Async function returns an object (promise)")
@@ -805,7 +805,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
     it("can pass a large string to a C function", async () => {
       const jsonString = await fs.promises.readFile(
         `${__dirname}/../test/json-generator-dot-com-1024-rows.json`,
-        "utf-8"
+        "utf-8",
       )
       const stringHandle = vm.newString(jsonString)
       const roundTripped = vm.getString(stringHandle)
@@ -860,7 +860,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       }
 
       vm.newAsyncifiedFunction("asyncFn", asyncFn).consume((fn) =>
-        vm.setProp(vm.global, "asyncFn", fn)
+        vm.setProp(vm.global, "asyncFn", fn),
       )
 
       const callResultPromise = vm.evalCodeAsync("asyncFn()")
@@ -941,7 +941,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       assert.strictEqual(
         callModuleName!,
         "other-module.js",
-        `expected module name, got ${callModuleName!}`
+        `expected module name, got ${callModuleName!}`,
       )
     })
 
@@ -962,7 +962,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
           requestedBaseName = baseName
           requestedName = name
           return NORMALIZED_NAME
-        }
+        },
       )
 
       // Asserts that the eval worked without incident
@@ -976,7 +976,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       assert.strictEqual(
         loadedName,
         NORMALIZED_NAME,
-        "loader received the normalized name we returned"
+        "loader received the normalized name we returned",
       )
     })
   })
@@ -997,7 +997,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
         asyncFunctionCalls++
       }
       vm.newAsyncifiedFunction("asyncFn", asyncFn).consume((fn) =>
-        vm.setProp(vm.global, "asyncFn", fn)
+        vm.setProp(vm.global, "asyncFn", fn),
       )
 
       try {
@@ -1013,16 +1013,15 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
         nestingFn();
       `)
       } catch (error) {
-        ;(
-          error as Error
-        ).message += `\nasync calls: ${asyncFunctionCalls} (expected ${EXPECTED_NESTING_LEVEL})`
+        ;(error as Error).message +=
+          `\nasync calls: ${asyncFunctionCalls} (expected ${EXPECTED_NESTING_LEVEL})`
         throw error
       }
 
       assert.equal(
         asyncFunctionCalls,
         EXPECTED_NESTING_LEVEL,
-        `${EXPECTED_NESTING_LEVEL} levels of nesting for ${buildName} build`
+        `${EXPECTED_NESTING_LEVEL} levels of nesting for ${buildName} build`,
       )
     })
   })
@@ -1086,13 +1085,13 @@ function assertBuildIsConsistent(vm: QuickJSContext) {
     assert.strictEqual(
       ffi.QTS_BuildIsDebug(),
       1,
-      "when FFI is generated with DEBUG, C code is compiled with DEBUG"
+      "when FFI is generated with DEBUG, C code is compiled with DEBUG",
     )
   } else {
     assert.strictEqual(
       ffi.QTS_BuildIsDebug(),
       0,
-      "when FFI is generated without DEBUG, C code is compiled without DEBUG"
+      "when FFI is generated without DEBUG, C code is compiled without DEBUG",
     )
   }
 }

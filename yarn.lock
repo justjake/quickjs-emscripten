@@ -5879,21 +5879,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:2.8.4":
-  version: 2.8.4
-  resolution: "prettier@npm:2.8.4"
-  bin:
-    prettier: bin-prettier.js
-  checksum: 57aedf9eea2ea3a4091c7867c8192d268614c395826c323c1fee7841b3ebab6b299c034b5a083f908d8a995ba7fc5c633ecc4b90c8fd56615c0c054a73d8c6b3
-  languageName: node
-  linkType: hard
-
 "prettier@npm:^2.7.1":
   version: 2.8.8
   resolution: "prettier@npm:2.8.8"
   bin:
     prettier: bin-prettier.js
   checksum: 00cdb6ab0281f98306cd1847425c24cbaaa48a5ff03633945ab4c701901b8e96ad558eb0777364ffc312f437af9b5a07d0f45346266e8245beaf6247b9c62b24
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "prettier@npm:3.1.1"
+  bin:
+    prettier: bin/prettier.cjs
+  checksum: 26a249f321b97d26c04483f1bf2eeb22e082a76f4222a2c922bebdc60111691aad4ec3979610e83942e0b956058ec361d9e9c81c185172264eb6db9aa678082b
   languageName: node
   linkType: hard
 
@@ -6014,7 +6014,7 @@ __metadata:
     markserv: "npm:^1.17.4"
     mocha: "npm:7.2.0"
     node-fetch-commonjs: "npm:^3.1.1"
-    prettier: "npm:2.8.4"
+    prettier: "npm:^3.1.1"
     source-map-support: "npm:^0.5.21"
     ts-node: "npm:^10.9.1"
     tsup: "npm:^8.0.1"

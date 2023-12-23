@@ -43,7 +43,7 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
     protected readonly _value: T,
     protected readonly copier?: (value: T | TCopy) => TCopy,
     protected readonly disposer?: (value: T | TCopy) => void,
-    protected readonly _owner?: Owner
+    protected readonly _owner?: Owner,
   ) {}
 
   get alive() {
@@ -81,7 +81,7 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
       this.copier(this._value),
       this.copier,
       this.disposer,
-      this._owner
+      this._owner,
     )
   }
 
@@ -115,7 +115,7 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
     if (!this.alive) {
       if (this._constructorStack) {
         throw new QuickJSUseAfterFree(
-          `Lifetime not alive\n${this._constructorStack}\nLifetime used`
+          `Lifetime not alive\n${this._constructorStack}\nLifetime used`,
         )
       }
       throw new QuickJSUseAfterFree("Lifetime not alive")
@@ -157,7 +157,7 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
     value: T,
     copier?: (value: T | TCopy) => TCopy,
     disposer?: (value: TCopy) => void,
-    owner?: Owner
+    owner?: Owner,
   ) {
     // We don't care if the disposer doesn't support freeing T
     super(value, copier, disposer as (value: T | TCopy) => void, owner)
@@ -217,7 +217,7 @@ export class Scope implements Disposable {
 
   static withScopeMaybeAsync<Return, This, Yielded>(
     _this: This,
-    block: MaybeAsyncBlock<Return, This, Yielded, [Scope]>
+    block: MaybeAsyncBlock<Return, This, Yielded, [Scope]>,
   ): Return | Promise<Return> {
     return maybeAsync(undefined, function* (awaited) {
       const scope = new Scope()

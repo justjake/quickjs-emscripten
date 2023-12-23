@@ -143,7 +143,7 @@ export class QuickJSRuntime implements Disposable {
         this.contextMap.delete(ctx_ptr)
         this.callbacks.deleteContext(ctx_ptr)
         this.ffi.QTS_FreeContext(ctx_ptr)
-      }
+      },
     )
 
     const context = new QuickJSContext({
@@ -242,7 +242,7 @@ export class QuickJSRuntime implements Disposable {
     const valuePtr = this.ffi.QTS_ExecutePendingJob(
       this.rt.value,
       maxJobsToExecute ?? -1,
-      ctxPtrOut.value.ptr
+      ctxPtrOut.value.ptr,
     )
 
     const ctxPtr = ctxPtrOut.value.typedArray[0] as JSContextPointer
@@ -295,7 +295,7 @@ export class QuickJSRuntime implements Disposable {
   computeMemoryUsage(): QuickJSHandle {
     const serviceContextMemory = this.getSystemContext().getMemory(this.rt.value)
     return serviceContextMemory.heapValueHandle(
-      this.ffi.QTS_RuntimeComputeMemoryUsage(this.rt.value, serviceContextMemory.ctx.value)
+      this.ffi.QTS_RuntimeComputeMemoryUsage(this.rt.value, serviceContextMemory.ctx.value),
     )
   }
 
@@ -326,7 +326,7 @@ export class QuickJSRuntime implements Disposable {
   assertOwned(handle: QuickJSHandle) {
     if (handle.owner && handle.owner.rt !== this.rt) {
       throw new QuickJSWrongOwner(
-        `Handle is not owned by this runtime: ${handle.owner.rt.value} != ${this.rt.value}`
+        `Handle is not owned by this runtime: ${handle.owner.rt.value} != ${this.rt.value}`,
       )
     }
   }
@@ -409,7 +409,7 @@ export class QuickJSRuntime implements Disposable {
 
         try {
           const result = yield* awaited(
-            moduleNormalizer(baseModuleName, moduleNameRequest, context)
+            moduleNormalizer(baseModuleName, moduleNameRequest, context),
           )
 
           if (typeof result === "object" && "error" in result && result.error) {
@@ -424,7 +424,7 @@ export class QuickJSRuntime implements Disposable {
           context.throw(error as any)
           return 0 as BorrowedHeapCharPointer
         }
-      }
+      },
     ),
   }
 }

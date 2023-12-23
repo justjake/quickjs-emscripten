@@ -6,7 +6,7 @@ describe("maybeAsync", () => {
     undefined,
     function* (awaited, a: number | Promise<number>, b: number | Promise<number>) {
       return (yield* awaited(a)) + (yield* awaited(b))
-    }
+    },
   )
 
   it("has sync output for sync inputs", () => {

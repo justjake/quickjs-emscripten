@@ -84,8 +84,8 @@ export class QuickJSDeferredPromise implements Disposable {
         this.context.callFunction(
           this.resolveHandle,
           this.context.undefined,
-          value || this.context.undefined
-        )
+          value || this.context.undefined,
+        ),
       )
       .dispose()
 
@@ -111,8 +111,8 @@ export class QuickJSDeferredPromise implements Disposable {
         this.context.callFunction(
           this.rejectHandle,
           this.context.undefined,
-          value || this.context.undefined
-        )
+          value || this.context.undefined,
+        ),
       )
       .dispose()
 

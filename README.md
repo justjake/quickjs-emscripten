@@ -179,7 +179,7 @@ Scope.withScope((scope) => {
   const fnHandle = scope.manage(
     vm.newFunction("nextId", () => {
       return vm.newNumber(++state)
-    })
+    }),
   )
 
   vm.setProp(vm.global, "nextId", fnHandle)
@@ -214,7 +214,7 @@ vm.newFunction("nextId", () => {
 }).consume((fnHandle) => vm.setProp(vm.global, "nextId", fnHandle))
 
 vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`)).consume((nextId) =>
-  console.log("vm result:", vm.getNumber(nextId), "native state:", state)
+  console.log("vm result:", vm.getNumber(nextId), "native state:", state),
 )
 
 vm.dispose()
@@ -324,7 +324,6 @@ compiler transform. Here's how Emscripten's documentation describes Asyncify:
 > Asyncify lets synchronous C or C++ code interact with asynchronous \[host] JavaScript. This allows things like:
 >
 > - A synchronous call in C that yields to the event loop, which allows browser events to be handled.
->
 > - A synchronous call in C that waits for an asynchronous operation in \[host] JS to complete.
 >
 > Asyncify automatically transforms ... code into a form that can be paused and

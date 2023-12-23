@@ -78,9 +78,10 @@ export type JSModuleLoadResult =
 
 export interface JSModuleLoaderAsync {
   /** Load module (async) */
-  (moduleName: string, context: QuickJSAsyncContext):
-    | JSModuleLoadResult
-    | Promise<JSModuleLoadResult>
+  (
+    moduleName: string,
+    context: QuickJSAsyncContext,
+  ): JSModuleLoadResult | Promise<JSModuleLoadResult>
 }
 export interface JSModuleLoader {
   /** Load module (sync) */
@@ -94,9 +95,11 @@ export type JSModuleNormalizeResult =
   | SuccessOrFail<JSModuleNormalizeSuccess, JSModuleNormalizeFailure>
 
 export interface JSModuleNormalizerAsync {
-  (baseModuleName: string, requestedName: string, vm: QuickJSAsyncContext):
-    | JSModuleNormalizeResult
-    | Promise<JSModuleNormalizeResult>
+  (
+    baseModuleName: string,
+    requestedName: string,
+    vm: QuickJSAsyncContext,
+  ): JSModuleNormalizeResult | Promise<JSModuleNormalizeResult>
 }
 export interface JSModuleNormalizer extends JSModuleNormalizerAsync {
   (baseModuleName: string, requestedName: string, vm: QuickJSContext): JSModuleNormalizeResult
@@ -240,7 +243,7 @@ export function evalOptionsToFlags(evalOptions: ContextEvalOptions | number | un
 
 export type PromiseExecutor<ResolveT, RejectT> = (
   resolve: (value: ResolveT | PromiseLike<ResolveT>) => void,
-  reject: (reason: RejectT) => void
+  reject: (reason: RejectT) => void,
 ) => void
 
 export function concat<T>(...values: Array<T[] | T | undefined>): T[] {

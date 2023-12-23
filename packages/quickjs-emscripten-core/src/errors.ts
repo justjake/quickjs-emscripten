@@ -5,7 +5,10 @@ import type { QuickJSContext } from "./context"
  */
 export class QuickJSUnwrapError extends Error {
   name = "QuickJSUnwrapError"
-  constructor(public cause: unknown, public context?: QuickJSContext) {
+  constructor(
+    public cause: unknown,
+    public context?: QuickJSContext,
+  ) {
     super(String(cause))
   }
 }

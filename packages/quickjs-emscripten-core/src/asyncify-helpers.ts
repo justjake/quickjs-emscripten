@@ -3,7 +3,7 @@ function* awaitYield<T>(value: T | Promise<T>) {
 }
 
 function awaitYieldOf<T, Yielded>(
-  generator: Generator<Yielded | Promise<Yielded>, T, Yielded>
+  generator: Generator<Yielded | Promise<Yielded>, T, Yielded>,
 ): Generator<T | Promise<T>, T, T> {
   return awaitYield(awaitEachYieldedPromise(generator))
 }
@@ -30,14 +30,14 @@ export function maybeAsyncFn<
   /** Function return type */
   Return,
   /** Yields to unwrap */
-  Yielded
+  Yielded,
 >(
   that: This,
   fn: (
     this: This,
     awaited: AwaitYield,
     ...args: Args
-  ) => Generator<Yielded | Promise<Yielded>, Return, Yielded>
+  ) => Generator<Yielded | Promise<Yielded>, Return, Yielded>,
 ): (...args: Args) => Return | Promise<Return> {
   return (...args: Args) => {
     const generator = fn.call(that, AwaitYield, ...args)
@@ -62,15 +62,15 @@ export function maybeAsync<Return, This, Yielded>(
   that: This,
   startGenerator: (
     this: This,
-    await: AwaitYield
-  ) => Generator<Yielded | Promise<Yielded>, Return, Yielded>
+    await: AwaitYield,
+  ) => Generator<Yielded | Promise<Yielded>, Return, Yielded>,
 ): Return | Promise<Return> {
   const generator = startGenerator.call(that, AwaitYield)
   return awaitEachYieldedPromise(generator)
 }
 
 export function awaitEachYieldedPromise<Yielded, Returned>(
-  gen: Generator<Yielded | Promise<Yielded>, Returned, Yielded>
+  gen: Generator<Yielded | Promise<Yielded>, Returned, Yielded>,
 ): Returned | Promise<Returned> {
   type NextResult = ReturnType<typeof gen.next>
 
@@ -82,7 +82,7 @@ export function awaitEachYieldedPromise<Yielded, Returned>(
     if (step.value instanceof Promise) {
       return step.value.then(
         (value) => handleNextStep(gen.next(value)),
-        (error) => handleNextStep(gen.throw(error))
+        (error) => handleNextStep(gen.throw(error)),
       )
     }
 

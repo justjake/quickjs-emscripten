@@ -33,7 +33,7 @@ export class ModuleMemory {
   }
 
   newMutablePointerArray<T extends JSContextPointerPointer | JSValuePointerPointer>(
-    length: number
+    length: number,
   ): Lifetime<{ typedArray: Int32Array; ptr: T }> {
     const zeros = new Int32Array(new Array(length).fill(0))
     const numBytes = zeros.length * zeros.BYTES_PER_ELEMENT
@@ -55,7 +55,7 @@ export class ModuleMemory {
     const ptr: JSVoidPointer = this.module._malloc(numBytes) as JSVoidPointer
     this.module.HEAPU8.set(buffer, ptr)
     return new Lifetime({ pointer: ptr, numBytes }, undefined, (value) =>
-      this.module._free(value.pointer)
+      this.module._free(value.pointer),
     )
   }
 

@@ -44,7 +44,7 @@ export class QuickJSAsyncContext extends QuickJSContext {
     code: string,
     filename: string = "eval.js",
     /** See [[EvalFlags]] for number semantics */
-    options?: number | ContextEvalOptions
+    options?: number | ContextEvalOptions,
   ): Promise<VmCallResult<QuickJSHandle>> {
     const detectModule = (options === undefined ? 1 : 0) as EvalDetectModule
     const flags = evalOptionsToFlags(options) as EvalFlags
@@ -58,8 +58,8 @@ export class QuickJSAsyncContext extends QuickJSContext {
             charHandle.value,
             filename,
             detectModule,
-            flags
-          )
+            flags,
+          ),
         )
     } catch (error) {
       debugLog("QTS_Eval_MaybeAsync threw", error)

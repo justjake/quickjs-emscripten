@@ -341,7 +341,7 @@ export function matchAll(regexp: RegExp, text: string) {
 export function replaceAll(
   regexp: RegExp,
   text: string,
-  replacement: (match: RegExpExecArray) => string
+  replacement: (match: RegExpExecArray) => string,
 ) {
   const matches = matchAll(regexp, text)
   let i = 0

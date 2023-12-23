@@ -31,7 +31,7 @@ export async function newQuickJSWASMModuleFromVariant(
   /**
    * A {@link QuickJSSyncVariant} to construct the WebAssembly module.
    */
-  variantOrPromise: PromisedDefault<QuickJSSyncVariant>
+  variantOrPromise: PromisedDefault<QuickJSSyncVariant>,
 ): Promise<QuickJSWASMModule> {
   const variant = smartUnwrap(await variantOrPromise)
   const [wasmModuleLoader, QuickJSFFI, { QuickJSWASMModule }] = await Promise.all([
@@ -69,7 +69,7 @@ export async function newQuickJSAsyncWASMModuleFromVariant(
   /**
    * A {@link QuickJSAsyncVariant} to construct the WebAssembly module.
    */
-  variantOrPromise: PromisedDefault<QuickJSAsyncVariant>
+  variantOrPromise: PromisedDefault<QuickJSAsyncVariant>,
 ): Promise<QuickJSAsyncWASMModule> {
   const variant = smartUnwrap(await variantOrPromise)
   const [wasmModuleLoader, QuickJSAsyncFFI, { QuickJSAsyncWASMModule }] = await Promise.all([

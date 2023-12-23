@@ -23,7 +23,7 @@ export async function newQuickJSWASMModule(
   /**
    * Optionally, pass a {@link SyncBuildVariant} to construct a different WebAssembly module.
    */
-  variant: QuickJSSyncVariant = RELEASE_SYNC
+  variant: QuickJSSyncVariant = RELEASE_SYNC,
 ): Promise<QuickJSWASMModule> {
   return newQuickJSWASMModuleFromVariant(variant)
 }
@@ -45,7 +45,7 @@ export async function newQuickJSAsyncWASMModule(
   /**
    * Optionally, pass a {@link AsyncBuildVariant} to construct a different WebAssembly module.
    */
-  variant: QuickJSAsyncVariant = RELEASE_ASYNC
+  variant: QuickJSAsyncVariant = RELEASE_ASYNC,
 ): Promise<QuickJSAsyncWASMModule> {
   return newQuickJSAsyncWASMModuleFromVariant(variant)
 }

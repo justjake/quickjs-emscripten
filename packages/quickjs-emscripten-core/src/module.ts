@@ -128,7 +128,7 @@ export class QuickJSModuleCallbacks {
 
   private handleAsyncify<T>(
     asyncify: Asyncify | undefined,
-    fn: () => T | Promise<T>
+    fn: () => T | Promise<T>,
   ): T | AsyncifySleepResult<T> {
     if (asyncify) {
       // We must always call asyncify.handleSync around our function.
@@ -146,7 +146,7 @@ export class QuickJSModuleCallbacks {
           // Is promise, we intend to suspend.
           if (this.suspended) {
             throw new QuickJSAsyncifyError(
-              `Already suspended at: ${this.suspended.stack}\nAttempted to suspend at:`
+              `Already suspended at: ${this.suspended.stack}\nAttempted to suspend at:`,
             )
           } else {
             this.suspended = new QuickJSAsyncifySuspended(`(${this.suspendedCount++})`)
@@ -163,7 +163,7 @@ export class QuickJSModuleCallbacks {
               debugLog("asyncify.handleSleep: rejected:", error)
               console.error("QuickJS: cannot handle error in suspended function", error)
               this.suspended = undefined
-            }
+            },
           )
         } catch (error) {
           debugLog("asyncify.handleSleep: error:", error)
@@ -256,7 +256,7 @@ export class QuickJSModuleCallbacks {
  */
 export function applyBaseRuntimeOptions(
   runtime: QuickJSRuntime,
-  options: RuntimeOptionsBase
+  options: RuntimeOptionsBase,
 ): void {
   if (options.interruptHandler) {
     runtime.setInterruptHandler(options.interruptHandler)
@@ -277,7 +277,7 @@ export function applyBaseRuntimeOptions(
  */
 export function applyModuleEvalRuntimeOptions<T extends QuickJSRuntime>(
   runtime: T,
-  options: ModuleEvalOptions
+  options: ModuleEvalOptions,
 ) {
   if (options.moduleLoader) {
     runtime.setModuleLoader(options.moduleLoader)

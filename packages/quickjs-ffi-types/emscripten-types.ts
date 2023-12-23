@@ -69,7 +69,7 @@ export interface EmscriptenModule {
     ident: string,
     returnType: Emscripten.ValueType | null,
     argTypes: Emscripten.ValueType[],
-    opts?: Emscripten.CCallOpts
+    opts?: Emscripten.CCallOpts,
   ): (...args: any[]) => any
 
   // USE_TYPED_ARRAYS == 2
@@ -127,14 +127,14 @@ export interface EmscriptenModuleCallbacks {
     this_ptr: JSValueConstPointer,
     argc: number,
     argv: JSValueConstPointer,
-    fn_id: number
+    fn_id: number,
   ) => JSValuePointer | AsyncifySleepResult<JSValuePointer>
 
   loadModuleSource: (
     asyncify: Asyncify | undefined,
     rt: JSRuntimePointer,
     ctx: JSContextPointer,
-    module_name: string
+    module_name: string,
   ) => BorrowedHeapCharPointer | AsyncifySleepResult<BorrowedHeapCharPointer>
 
   normalizeModule: (
@@ -142,12 +142,12 @@ export interface EmscriptenModuleCallbacks {
     rt: JSRuntimePointer,
     ctx: JSContextPointer,
     module_base_name: string,
-    module_name: string
+    module_name: string,
   ) => BorrowedHeapCharPointer | AsyncifySleepResult<BorrowedHeapCharPointer>
 
   shouldInterrupt: (
     asyncify: Asyncify | undefined,
-    rt: JSRuntimePointer
+    rt: JSRuntimePointer,
   ) => 0 | 1 | AsyncifySleepResult<0 | 1>
 }
 
