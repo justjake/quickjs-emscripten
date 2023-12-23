@@ -74,7 +74,7 @@ clean: clean-generate
 	rm -rfv $(BUILD_ROOT)
 	rm -rf  $(WRAPPER_ROOT)/interface.h
 
-generate: $(FFI_TYPES)/ffi.ts $(FFI_TYPES)/ffi-asyncify.ts
+generate: $(FFI_TYPES)/ffi.ts $(FFI_TYPES)/ffi-asyncify.ts prepareVariants.ts
 	npx tsx prepareVariants.ts
 
 $(FFI_TYPES)/ffi.ts: $(WRAPPER_ROOT)/interface.c generate.ts $(FFI_TYPES)/ffi-types.ts 

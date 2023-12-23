@@ -233,7 +233,7 @@ function main() {
           url: "https://github.com/justjake/quickjs-emscripten",
         },
         scripts: {
-          build: "make",
+          build: "make -j8",
           clean: "make clean",
           prepare: "make clean && rm -r dist && make",
         },
