@@ -4,6 +4,7 @@
 
 import path from "node:path"
 import fs from "node:fs"
+import child_process from "child_process"
 
 // Variant variables.
 
@@ -253,6 +254,7 @@ function main() {
       fs.writeFileSync(path.join(dir, "README.md"), renderReadme(targetName, variant, packageJson))
       fs.writeFileSync(path.join(dir, "Makefile"), renderMakefile(targetName, variant))
       fs.writeFileSync(path.join(dist, "index.ts"), renderIndexTs(targetName, variant))
+      fs.writeFileSync(path.join(dist, "ffi.ts"), renderFfiTs(targetName, variant))
     }
   }
 }
@@ -381,6 +383,16 @@ const variant = {
 
 export default variant
 `
+}
+
+function renderFfiTs(targetName: string, variant: BuildVariant): string {
+  return child_process.execSync("npx tsx generate.ts ffi -", {
+    env: {
+      ...process.env,
+      ...getGenerateTsEnv(targetName, variant),
+    },
+    encoding: "utf-8",
+  })
 }
 
 function getTargetFilename(targetName: string, variant: BuildVariant): string {

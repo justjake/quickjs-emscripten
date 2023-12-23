@@ -111,10 +111,6 @@ JS: $(TS_OUT)
 $(TS_OUT): $(TS_IN)
 	$(TSC) --project .
 
-$(DIST)/ffi.ts: $(WRAPPER_ROOT)/interface.c $(GENERATE_TS_SRC) ../quickjs-ffi-types/ffi-types.ts
-	$(MKDIRP)
-	$(GENERATE_TS) ffi $@
-
 ###############################################################################
 # Wasm files
 WASM: $(DIST)/emscripten-module.js $(DIST)/emscripten-module.d.ts GENERATE
