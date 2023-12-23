@@ -1,10 +1,17 @@
 {
   "name": "@jitl/quickjs-ffi-types",
   "version": "0.0.0",
-  "main": "index.js",
-  "types": "index.d.ts",
   "scripts": {
-    "build": "../../node_modules/.bin/tsc --project .",
-    "clean": "rm -rfv *.js *.d.ts *.map"
+    "check": "npx tsc --project .",
+    "build": "npx tsup",
+    "clean": "git clean -fx dist"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   }
 }
