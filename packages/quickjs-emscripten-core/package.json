@@ -24,8 +24,8 @@
     "!dist/*.tsbuildinfo"
   ],
   "exports": {
-    "module": "./dist/index.mjs",
-    "require": "./dist/index.cjs",
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.js",
     "types": "./dist/index.d.ts"
   },
   "scripts": {
