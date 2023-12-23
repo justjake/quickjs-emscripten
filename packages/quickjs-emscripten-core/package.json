@@ -23,8 +23,14 @@
     "!dist/*.test.js",
     "!dist/*.tsbuildinfo"
   ],
+  "exports": {
+    "module": "./dist/index.mjs",
+    "require": "./dist/index.cjs",
+    "types": "./dist/index.d.ts"
+  },
   "scripts": {
-    "tsc": "npx tsc -p ."
+    "tsc": "npx tsc -p .",
+    "build": "npx tsup"
   },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
