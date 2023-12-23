@@ -3,6 +3,9 @@ import type { QuickJSWASMModule } from "./module.js"
 import type { QuickJSAsyncWASMModule } from "./module-asyncify.js"
 import { unwrapTypescript } from "./esmHelpers.js"
 
+// Otherwise we have build errors?
+export { QuickJSSyncVariant, QuickJSAsyncVariant }
+
 export type PromisedDefault<T> =
   | T
   | Promise<T>

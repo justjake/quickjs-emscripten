@@ -593,7 +593,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jitl/quickjs-browser-debug-asyncify-singlefile@workspace:packages/quickjs-browser-debug-asyncify-singlefile":
+"@jitl/quickjs-browser-debug-asyncify-singlefile@workspace:*, @jitl/quickjs-browser-debug-asyncify-singlefile@workspace:packages/quickjs-browser-debug-asyncify-singlefile":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-browser-debug-asyncify-singlefile@workspace:packages/quickjs-browser-debug-asyncify-singlefile"
   dependencies:
@@ -609,7 +609,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-browser-debug-sync-singlefile@workspace:packages/quickjs-browser-debug-sync-singlefile":
+"@jitl/quickjs-browser-debug-sync-singlefile@workspace:*, @jitl/quickjs-browser-debug-sync-singlefile@workspace:packages/quickjs-browser-debug-sync-singlefile":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-browser-debug-sync-singlefile@workspace:packages/quickjs-browser-debug-sync-singlefile"
   dependencies:
@@ -625,7 +625,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-browser-release-asyncify-singlefile@workspace:packages/quickjs-browser-release-asyncify-singlefile":
+"@jitl/quickjs-browser-release-asyncify-singlefile@workspace:*, @jitl/quickjs-browser-release-asyncify-singlefile@workspace:packages/quickjs-browser-release-asyncify-singlefile":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-browser-release-asyncify-singlefile@workspace:packages/quickjs-browser-release-asyncify-singlefile"
   dependencies:
@@ -641,7 +641,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-browser-release-sync-singlefile@workspace:packages/quickjs-browser-release-sync-singlefile":
+"@jitl/quickjs-browser-release-sync-singlefile@workspace:*, @jitl/quickjs-browser-release-sync-singlefile@workspace:packages/quickjs-browser-release-sync-singlefile":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-browser-release-sync-singlefile@workspace:packages/quickjs-browser-release-sync-singlefile"
   dependencies:
@@ -663,7 +663,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-cjs-debug-asyncify-wasm@workspace:packages/quickjs-node-cjs-debug-asyncify-wasm":
+"@jitl/quickjs-node-cjs-debug-asyncify-wasm@workspace:*, @jitl/quickjs-node-cjs-debug-asyncify-wasm@workspace:packages/quickjs-node-cjs-debug-asyncify-wasm":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-node-cjs-debug-asyncify-wasm@workspace:packages/quickjs-node-cjs-debug-asyncify-wasm"
   dependencies:
@@ -671,7 +671,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-cjs-debug-sync-wasm@workspace:packages/quickjs-node-cjs-debug-sync-wasm":
+"@jitl/quickjs-node-cjs-debug-sync-wasm@workspace:*, @jitl/quickjs-node-cjs-debug-sync-wasm@workspace:packages/quickjs-node-cjs-debug-sync-wasm":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-node-cjs-debug-sync-wasm@workspace:packages/quickjs-node-cjs-debug-sync-wasm"
   dependencies:
@@ -679,7 +679,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-cjs-release-asyncify-wasm@workspace:packages/quickjs-node-cjs-release-asyncify-wasm":
+"@jitl/quickjs-node-cjs-release-asyncify-wasm@workspace:*, @jitl/quickjs-node-cjs-release-asyncify-wasm@workspace:packages/quickjs-node-cjs-release-asyncify-wasm":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-node-cjs-release-asyncify-wasm@workspace:packages/quickjs-node-cjs-release-asyncify-wasm"
   dependencies:
@@ -687,7 +687,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-cjs-release-sync-wasm@workspace:packages/quickjs-node-cjs-release-sync-wasm":
+"@jitl/quickjs-node-cjs-release-sync-wasm@workspace:*, @jitl/quickjs-node-cjs-release-sync-wasm@workspace:packages/quickjs-node-cjs-release-sync-wasm":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-node-cjs-release-sync-wasm@workspace:packages/quickjs-node-cjs-release-sync-wasm"
   dependencies:
@@ -695,7 +695,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-esm-debug-asyncify-wasm@workspace:packages/quickjs-node-esm-debug-asyncify-wasm":
+"@jitl/quickjs-node-esm-debug-asyncify-wasm@workspace:*, @jitl/quickjs-node-esm-debug-asyncify-wasm@workspace:packages/quickjs-node-esm-debug-asyncify-wasm":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-node-esm-debug-asyncify-wasm@workspace:packages/quickjs-node-esm-debug-asyncify-wasm"
   dependencies:
@@ -703,7 +703,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-esm-debug-sync-wasm@workspace:packages/quickjs-node-esm-debug-sync-wasm":
+"@jitl/quickjs-node-esm-debug-sync-wasm@workspace:*, @jitl/quickjs-node-esm-debug-sync-wasm@workspace:packages/quickjs-node-esm-debug-sync-wasm":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-node-esm-debug-sync-wasm@workspace:packages/quickjs-node-esm-debug-sync-wasm"
   dependencies:
@@ -711,7 +711,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-esm-release-asyncify-wasm@workspace:packages/quickjs-node-esm-release-asyncify-wasm":
+"@jitl/quickjs-node-esm-release-asyncify-wasm@workspace:*, @jitl/quickjs-node-esm-release-asyncify-wasm@workspace:packages/quickjs-node-esm-release-asyncify-wasm":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-node-esm-release-asyncify-wasm@workspace:packages/quickjs-node-esm-release-asyncify-wasm"
   dependencies:
@@ -719,7 +719,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-esm-release-sync-wasm@workspace:packages/quickjs-node-esm-release-sync-wasm":
+"@jitl/quickjs-node-esm-release-sync-wasm@workspace:*, @jitl/quickjs-node-esm-release-sync-wasm@workspace:packages/quickjs-node-esm-release-sync-wasm":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-node-esm-release-sync-wasm@workspace:packages/quickjs-node-esm-release-sync-wasm"
   dependencies:
@@ -5922,9 +5922,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quickjs-emscripten@workspace:.":
+"quickjs-emscripten-core@workspace:*, quickjs-emscripten-core@workspace:packages/quickjs-emscripten-core":
   version: 0.0.0-use.local
-  resolution: "quickjs-emscripten@workspace:."
+  resolution: "quickjs-emscripten-core@workspace:packages/quickjs-emscripten-core"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
+"quickjs-emscripten-repo@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "quickjs-emscripten-repo@workspace:."
   dependencies:
     "@changesets/cli": "npm:^2.27.1"
     "@types/emscripten": "npm:^1.38.0"
@@ -5945,6 +5953,26 @@ __metadata:
     typedoc-plugin-inline-sources: "npm:^1.0.1"
     typedoc-plugin-markdown: "npm:^3.11.12"
     typescript: "npm:^4.9.5"
+  languageName: unknown
+  linkType: soft
+
+"quickjs-emscripten@workspace:packages/quickjs-emscripten":
+  version: 0.0.0-use.local
+  resolution: "quickjs-emscripten@workspace:packages/quickjs-emscripten"
+  dependencies:
+    "@jitl/quickjs-browser-debug-asyncify-singlefile": "workspace:*"
+    "@jitl/quickjs-browser-debug-sync-singlefile": "workspace:*"
+    "@jitl/quickjs-browser-release-asyncify-singlefile": "workspace:*"
+    "@jitl/quickjs-browser-release-sync-singlefile": "workspace:*"
+    "@jitl/quickjs-node-cjs-debug-asyncify-wasm": "workspace:*"
+    "@jitl/quickjs-node-cjs-debug-sync-wasm": "workspace:*"
+    "@jitl/quickjs-node-cjs-release-asyncify-wasm": "workspace:*"
+    "@jitl/quickjs-node-cjs-release-sync-wasm": "workspace:*"
+    "@jitl/quickjs-node-esm-debug-asyncify-wasm": "workspace:*"
+    "@jitl/quickjs-node-esm-debug-sync-wasm": "workspace:*"
+    "@jitl/quickjs-node-esm-release-asyncify-wasm": "workspace:*"
+    "@jitl/quickjs-node-esm-release-sync-wasm": "workspace:*"
+    quickjs-emscripten-core: "workspace:*"
   languageName: unknown
   linkType: soft
 

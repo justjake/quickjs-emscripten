@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/index.ts"],"sourcesContent":["export * from \"quickjs-emscripten-core\"\nexport * from \"./variants.js\"\n"],"mappings":";;;;;;;;;;AAAA,cAAc;","names":[]}

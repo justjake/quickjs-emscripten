@@ -344,7 +344,7 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
   replace(
     "GENERATE_TS_ENV_VARIANT=REPLACE_THIS",
     Object.entries(getGenerateTsEnv(targetName, variant))
-      .map(([key, value]) => `GENERATE_TS_ENV=${key}=${value}`)
+      .map(([key, value]) => `GENERATE_TS_ENV+=${key}=${value}`)
       .join("\n")
   )
 

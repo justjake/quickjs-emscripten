@@ -1,0 +1,53 @@
+import {
+  QuickJSSyncVariant,
+  QuickJSAsyncVariant,
+  newQuickJSWASMModuleFromVariant,
+  newQuickJSAsyncWASMModuleFromVariant,
+  QuickJSWASMModule,
+  QuickJSAsyncWASMModule,
+} from "quickjs-emscripten-core"
+import DEBUG_SYNC from "quickjs-emscripten/variants/debug"
+import RELEASE_SYNC from "quickjs-emscripten/variants/release"
+import DEBUG_ASYNC from "quickjs-emscripten/variants/debug-asyncify"
+import RELEASE_ASYNC from "quickjs-emscripten/variants/release-asyncify"
+
+/**
+ * Create a new, completely isolated WebAssembly module containing the QuickJS library.
+ * See the documentation on [[QuickJSWASMModule]].
+ *
+ * Note that there is a hard limit on the number of WebAssembly modules in older
+ * versions of v8:
+ * https://bugs.chromium.org/p/v8/issues/detail?id=12076
+ */
+export async function newQuickJSWASMModule(
+  /**
+   * Optionally, pass a {@link SyncBuildVariant} to construct a different WebAssembly module.
+   */
+  variant: QuickJSSyncVariant = RELEASE_SYNC
+): Promise<QuickJSWASMModule> {
+  return newQuickJSWASMModuleFromVariant(variant)
+}
+
+/**
+ * Create a new, completely isolated WebAssembly module containing a version of the QuickJS library
+ * compiled with Emscripten's [ASYNCIFY](https://emscripten.org/docs/porting/asyncify.html) transform.
+ *
+ * This version of the library offers features that enable synchronous code
+ * inside the VM to interact with asynchronous code in the host environment.
+ * See the documentation on [[QuickJSAsyncWASMModule]], [[QuickJSAsyncRuntime]],
+ * and [[QuickJSAsyncContext]].
+ *
+ * Note that there is a hard limit on the number of WebAssembly modules in older
+ * versions of v8:
+ * https://bugs.chromium.org/p/v8/issues/detail?id=12076
+ */
+export async function newQuickJSAsyncWASMModule(
+  /**
+   * Optionally, pass a {@link AsyncBuildVariant} to construct a different WebAssembly module.
+   */
+  variant: QuickJSAsyncVariant = RELEASE_ASYNC
+): Promise<QuickJSAsyncWASMModule> {
+  return newQuickJSAsyncWASMModuleFromVariant(variant)
+}
+
+export { DEBUG_SYNC, RELEASE_SYNC, DEBUG_ASYNC, RELEASE_ASYNC }

@@ -1,0 +1,84 @@
+{
+  "name": "quickjs-emscripten",
+  "version": "0.25.0",
+  "sideEffects": false,
+  "license": "MIT",
+  "type": "commonjs",
+  "keywords": [
+    "eval",
+    "quickjs",
+    "vm",
+    "interpreter",
+    "runtime",
+    "safe",
+    "emscripten",
+    "wasm"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justjake/quickjs-emscripten"
+  },
+  "files": [
+    "dist/**/*",
+    "!dist/*.test.js",
+    "!dist/*.tsbuildinfo"
+  ],
+  "scripts": {
+    "build": "npx tsup",
+    "tsc": "npx tsc -p ."
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./variants": {
+      "types": "./dist/variants.d.ts",
+      "import": "./dist/variants.node.mjs",
+      "require": "./dist/variants.node.cjs"
+    },
+    "./package.json": "./package.json",
+    "./core": "quickjs-emscripten-core",
+    "./variants/debug": {
+      "types": "@jitl/quickjs-node-cjs-debug-sync-wasm",
+      "browser": "@jitl/quickjs-browser-debug-sync-singlefile",
+      "import": "@jitl/quickjs-node-esm-debug-sync-wasm",
+      "require": "@jitl/quickjs-node-cjs-debug-sync-wasm"
+    },
+    "./variants/debug-asyncify": {
+      "types": "@jitl/quickjs-node-cjs-debug-asyncify-wasm",
+      "browser": "@jitl/quickjs-browser-debug-asyncify-singlefile",
+      "import": "@jitl/quickjs-node-esm-debug-asyncify-wasm",
+      "require": "@jitl/quickjs-node-cjs-debug-asyncify-wasm"
+    },
+    "./variants/release": {
+      "types": "@jitl/quickjs-node-cjs-release-sync-wasm",
+      "browser": "@jitl/quickjs-browser-release-sync-singlefile",
+      "import": "@jitl/quickjs-node-esm-release-sync-wasm",
+      "require": "@jitl/quickjs-node-cjs-release-sync-wasm"
+    },
+    "./variants/release-asyncify": {
+      "types": "@jitl/quickjs-node-cjs-release-asyncify-wasm",
+      "browser": "@jitl/quickjs-browser-release-asyncify-singlefile",
+      "import": "@jitl/quickjs-node-esm-release-asyncify-wasm",
+      "require": "@jitl/quickjs-node-cjs-release-asyncify-wasm"
+    }
+  },
+  "dependencies": {
+    "@jitl/quickjs-browser-debug-asyncify-singlefile": "workspace:*",
+    "@jitl/quickjs-browser-debug-sync-singlefile": "workspace:*",
+    "@jitl/quickjs-browser-release-asyncify-singlefile": "workspace:*",
+    "@jitl/quickjs-browser-release-sync-singlefile": "workspace:*",
+    "@jitl/quickjs-node-cjs-debug-asyncify-wasm": "workspace:*",
+    "@jitl/quickjs-node-cjs-debug-sync-wasm": "workspace:*",
+    "@jitl/quickjs-node-cjs-release-asyncify-wasm": "workspace:*",
+    "@jitl/quickjs-node-cjs-release-sync-wasm": "workspace:*",
+    "@jitl/quickjs-node-esm-debug-asyncify-wasm": "workspace:*",
+    "@jitl/quickjs-node-esm-debug-sync-wasm": "workspace:*",
+    "@jitl/quickjs-node-esm-release-asyncify-wasm": "workspace:*",
+    "@jitl/quickjs-node-esm-release-sync-wasm": "workspace:*",
+    "quickjs-emscripten-core": "workspace:*"
+  },
+  "packageManager": "yarn@4.0.2"
+}
