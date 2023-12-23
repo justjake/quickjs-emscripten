@@ -215,6 +215,8 @@ interface TsConfig {
 }
 
 function main() {
+  const makeOutputFiles: string[] = []
+
   for (const [targetName, variants] of Object.entries(targets)) {
     for (const variant of variants) {
       const basename = getTargetFilename(targetName, variant)
@@ -255,8 +257,11 @@ function main() {
       fs.writeFileSync(path.join(dir, "Makefile"), renderMakefile(targetName, variant))
       fs.writeFileSync(path.join(dist, "index.ts"), renderIndexTs(targetName, variant))
       fs.writeFileSync(path.join(dist, "ffi.ts"), renderFfiTs(targetName, variant))
+      makeOutputFiles.push(path.relative(__dirname, path.join(dist, "index.js")))
     }
   }
+
+  fs.writeFileSync(path.join(__dirname, "AllVariants.mk"), renderAllVariantsMk(makeOutputFiles))
 }
 
 function renderReadme(targetName: string, variant: BuildVariant, packageJson: PackageJson): string {
@@ -393,6 +398,12 @@ function renderFfiTs(targetName: string, variant: BuildVariant): string {
     },
     encoding: "utf-8",
   })
+}
+
+function renderAllVariantsMk(allOutputFiles: string[]) {
+  return `
+ALL_VARIANTS=${allOutputFiles.join(" ")}
+`
 }
 
 function getTargetFilename(targetName: string, variant: BuildVariant): string {
