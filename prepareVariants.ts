@@ -205,6 +205,7 @@ interface PackageJson {
   files: string[]
   dependencies: Record<string, string>
   devDependencies?: Record<string, string>
+  exports: Record<string, { types: string; import: string; require: string } | string>
 }
 
 interface TsConfig {
@@ -222,6 +223,11 @@ function main() {
       const basename = getTargetFilename(targetName, variant)
       const dir = path.join(__dirname, "packages", basename)
       const dist = path.join(dir, "dist")
+      // try {
+      //   fs.rmdirSync(dist, { recursive: true })
+      // } catch (e) {
+      //   console.log("ignore", e)
+      // }
       fs.mkdirSync(dist, { recursive: true })
 
       const packageJson: PackageJson = {
@@ -240,6 +246,25 @@ function main() {
           prepare: "make clean && rm -r dist && make",
         },
         files: ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+        exports: {
+          ".": {
+            types: "./dist/index.d.ts",
+            import: "./dist/index.js",
+            require: "./dist/index.js",
+          },
+          "./package.json": "./package.json",
+          "./ffi": {
+            types: "./dist/ffi.d.ts",
+            import: "./dist/ffi.js",
+            require: "./dist/ffi.js",
+          },
+          "./wasm": "./dist/emscripten-module.wasm",
+          "./emscripten": {
+            types: "./dist/emscripten-module.d.ts",
+            import: "./dist/emscripten-module.js",
+            require: "./dist/emscripten-module.js",
+          },
+        },
         dependencies: {
           "@jitl/quickjs-ffi-types": "workspace:*",
         },

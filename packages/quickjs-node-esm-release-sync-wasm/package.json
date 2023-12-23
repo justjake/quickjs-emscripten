@@ -19,6 +19,25 @@
     "!dist/index.ts",
     "!dist/*.tsbuildinfo"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json",
+    "./ffi": {
+      "types": "./dist/ffi.d.ts",
+      "import": "./dist/ffi.js",
+      "require": "./dist/ffi.js"
+    },
+    "./wasm": "./dist/emscripten-module.wasm",
+    "./emscripten": {
+      "types": "./dist/emscripten-module.d.ts",
+      "import": "./dist/emscripten-module.js",
+      "require": "./dist/emscripten-module.js"
+    }
+  },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
   }

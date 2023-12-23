@@ -5,14 +5,10 @@
     "outDir": "dist",
     "noEmit": true,
     "paths": {
-      "quickjs-emscripten/variants/debug": ["../quickjs-node-cjs-debug-sync-wasm/dist"],
-      "quickjs-emscripten/variants/debug-asyncify": [
-        "../quickjs-node-cjs-debug-asyncify-wasm/dist"
-      ],
-      "quickjs-emscripten/variants/release": ["../quickjs-node-cjs-release-sync-wasm/dist"],
-      "quickjs-emscripten/variants/release-asyncify": [
-        "../quickjs-node-cjs-release-asyncify-wasm/dist"
-      ]
+      "#variants/debug": ["../quickjs-node-cjs-debug-sync-wasm/dist"],
+      "#variants/debug-asyncify": ["../quickjs-node-cjs-debug-asyncify-wasm/dist"],
+      "#variants/release": ["../quickjs-node-cjs-release-sync-wasm/dist"],
+      "#variants/release-asyncify": ["../quickjs-node-cjs-release-asyncify-wasm/dist"]
     }
   }
 }

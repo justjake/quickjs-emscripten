@@ -6,10 +6,10 @@ import {
   QuickJSWASMModule,
   QuickJSAsyncWASMModule,
 } from "quickjs-emscripten-core"
-import DEBUG_SYNC from "quickjs-emscripten/variants/debug"
-import RELEASE_SYNC from "quickjs-emscripten/variants/release"
-import DEBUG_ASYNC from "quickjs-emscripten/variants/debug-asyncify"
-import RELEASE_ASYNC from "quickjs-emscripten/variants/release-asyncify"
+import DEBUG_SYNC from "#variants/debug"
+import RELEASE_SYNC from "#variants/release"
+import DEBUG_ASYNC from "#variants/debug-asyncify"
+import RELEASE_ASYNC from "#variants/release-asyncify"
 
 /**
  * Create a new, completely isolated WebAssembly module containing the QuickJS library.

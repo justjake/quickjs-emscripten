@@ -6,9 +6,9 @@ export default defineConfig({
   dts: true,
   format: ["cjs", "esm"],
   external: [
-    "quickjs-emscripten/variants/debug",
-    "quickjs-emscripten/variants/debug-asyncify",
-    "quickjs-emscripten/variants/release",
-    "quickjs-emscripten/variants/release-asyncify",
+    "#variants/debug",
+    "#variants/debug-asyncify",
+    "#variants/release",
+    "#variants/release-asyncify",
   ],
 })

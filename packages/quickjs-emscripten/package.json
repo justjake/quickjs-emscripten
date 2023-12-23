@@ -35,30 +35,32 @@
     },
     "./variants": {
       "types": "./dist/variants.d.ts",
-      "import": "./dist/variants.node.mjs",
-      "require": "./dist/variants.node.cjs"
+      "import": "./dist/variants.mjs",
+      "require": "./dist/variants.js"
     },
     "./package.json": "./package.json",
-    "./core": "quickjs-emscripten-core",
-    "./variants/debug": {
+    "./core": "quickjs-emscripten-core"
+  },
+  "imports": {
+    "#variants/debug": {
       "types": "@jitl/quickjs-node-cjs-debug-sync-wasm",
       "browser": "@jitl/quickjs-browser-debug-sync-singlefile",
       "import": "@jitl/quickjs-node-esm-debug-sync-wasm",
       "require": "@jitl/quickjs-node-cjs-debug-sync-wasm"
     },
-    "./variants/debug-asyncify": {
+    "#variants/debug-asyncify": {
       "types": "@jitl/quickjs-node-cjs-debug-asyncify-wasm",
       "browser": "@jitl/quickjs-browser-debug-asyncify-singlefile",
       "import": "@jitl/quickjs-node-esm-debug-asyncify-wasm",
       "require": "@jitl/quickjs-node-cjs-debug-asyncify-wasm"
     },
-    "./variants/release": {
+    "#variants/release": {
       "types": "@jitl/quickjs-node-cjs-release-sync-wasm",
       "browser": "@jitl/quickjs-browser-release-sync-singlefile",
       "import": "@jitl/quickjs-node-esm-release-sync-wasm",
       "require": "@jitl/quickjs-node-cjs-release-sync-wasm"
     },
-    "./variants/release-asyncify": {
+    "#variants/release-asyncify": {
       "types": "@jitl/quickjs-node-cjs-release-asyncify-wasm",
       "browser": "@jitl/quickjs-browser-release-asyncify-singlefile",
       "import": "@jitl/quickjs-node-esm-release-asyncify-wasm",
