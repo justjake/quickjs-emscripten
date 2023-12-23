@@ -1,5 +1,6 @@
 {
-  "name": "quickjs-emscripten",
+  "name": "quickjs-emscripten-repo",
+  "private": true,
   "version": "0.24.0",
   "main": "dist/index.js",
   "sideEffects": false,

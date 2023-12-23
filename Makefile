@@ -81,3 +81,14 @@ $(FFI_TYPES)/ffi.ts: $(WRAPPER_ROOT)/interface.c generate.ts $(FFI_TYPES)/ffi-ty
 
 $(FFI_TYPES)/ffi-asyncify.ts: $(WRAPPER_ROOT)/interface.c generate.ts $(FFI_TYPES)/ffi-types.ts 
 	TYPE_ONLY=true ASYNCIFY=true $(GENERATE_TS) ffi $@
+
+VARIANTS=packages/quickjs-browser-debug-asyncify-singlefile packages/quickjs-browser-debug-asyncify-wasm packages/quickjs-browser-debug-sync-singlefile packages/quickjs-browser-debug-sync-wasm packages/quickjs-browser-release-asyncify-singlefile packages/quickjs-browser-release-asyncify-wasm packages/quickjs-browser-release-sync-singlefile packages/quickjs-browser-release-sync-wasm packages/quickjs-node-cjs-debug-asyncify-wasm packages/quickjs-node-cjs-debug-sync-wasm packages/quickjs-node-cjs-release-asyncify-wasm packages/quickjs-node-cjs-release-sync-wasm packages/quickjs-node-esm-debug-asyncify-wasm packages/quickjs-node-esm-debug-sync-wasm packages/quickjs-node-esm-release-asyncify-wasm packages/quickjs-node-esm-release-sync-wasm
+
+.PHONY: packages
+packages: packages/quickjs-browser-debug-asyncify-singlefile/dist/index.js
+
+packages/%/Makefile: prepareVariants.ts
+	npx tsx prepareVariants.ts
+
+packages/%/dist/index.js: packages/%/Makefile
+	cd $$(dirname $$(dirname $@)) && $(MAKE)
