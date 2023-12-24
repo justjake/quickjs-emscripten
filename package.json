@@ -53,23 +53,22 @@
     "@changesets/cli": "^2.27.1",
     "@types/emscripten": "^1.38.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/mocha": "^5.2.7",
     "@types/node": "^13.1.4",
+    "esbuild-register": "^3.5.0",
     "execa": "^8.0.1",
     "fs-extra": "^10.0.1",
     "markserv": "^1.17.4",
-    "mocha": "7.2.0",
     "node-fetch-commonjs": "^3.1.1",
     "prettier": "^3.1.1",
     "source-map-support": "^0.5.21",
-    "ts-node": "^10.9.1",
     "tsup": "^8.0.1",
     "tsx": "^4.6.2",
     "turbo": "^1.11.2",
     "typedoc": "^0.25.4",
     "typedoc-plugin-inline-sources": "^1.0.1",
     "typedoc-plugin-markdown": "4.0.0-next.38",
-    "typescript": "^4.9.5"
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
   },
   "packageManager": "yarn@4.0.2"
 }

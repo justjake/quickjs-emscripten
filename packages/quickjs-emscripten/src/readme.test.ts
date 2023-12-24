@@ -1,3 +1,4 @@
+import { describe, beforeEach, afterEach, it } from "vitest"
 import assert from "assert"
 import {
   DEBUG_SYNC,
@@ -202,7 +203,7 @@ runtime.dispose()
         const path = await import("path")
         const { promises: fs } = await import("fs")
 
-        const importsPath = path.join(__dirname, "../examples/imports") + "/"
+        const importsPath = path.resolve(__dirname, "../../../examples/imports") + "/"
         // Module loaders can return promises.
         // Execution will suspend until the promise resolves.
         runtime.setModuleLoader((moduleName) => {
@@ -239,7 +240,7 @@ runtime.dispose()
         const path = await import("path")
         const { promises: fs } = await import("fs")
 
-        const importsPath = path.join(__dirname, "../examples/imports") + "/"
+        const importsPath = path.resolve(__dirname, "../../../examples/imports") + "/"
         const readFileHandle = context.newAsyncifiedFunction("readFile", async (pathHandle) => {
           const pathString = path.join(importsPath, context.getString(pathHandle))
           if (!pathString.startsWith(importsPath)) {

@@ -264,7 +264,7 @@ async function main() {
         scripts: {
           build: "make -j8",
           clean: "make clean",
-          prepare: "make clean && rm -r dist && make",
+          prepare: "make clean && make -j8",
         },
         files: ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
         exports: {

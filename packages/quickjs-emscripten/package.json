@@ -25,7 +25,8 @@
   ],
   "scripts": {
     "build": "npx tsup",
-    "tsc": "npx tsc -p . --noEmit"
+    "tsc": "npx tsc -p . --noEmit",
+    "test": "npx mocha ./src/*.test.*"
   },
   "exports": {
     ".": {

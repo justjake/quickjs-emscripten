@@ -6,8 +6,12 @@ import {
   QuickJSWASMModule,
   QuickJSSyncVariant,
   QuickJSAsyncVariant,
+  DEBUG_ASYNC,
+  DEBUG_SYNC,
+  RELEASE_ASYNC,
+  RELEASE_SYNC,
 } from "."
-import { DEBUG_ASYNC, DEBUG_SYNC, RELEASE_ASYNC, RELEASE_SYNC } from "./variants"
+import { describe, beforeEach, afterEach, afterAll as after, it } from "vitest"
 
 // Verify that our variants are what we say they are.
 async function getVariantBuildInfo(variant: QuickJSSyncVariant | QuickJSAsyncVariant) {

@@ -1,6 +1,6 @@
 {
   "extends": "@jitl/tsconfig/tsconfig.json",
-  "include": ["src/*.ts"],
+  "include": ["src/*.ts", "src/leak.test.mts"],
   "compilerOptions": {
     "outDir": "dist",
     "paths": {

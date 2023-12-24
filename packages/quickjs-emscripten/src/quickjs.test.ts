@@ -2,6 +2,7 @@
  * These tests demonstrate some common patterns for using quickjs-emscripten.
  */
 
+import { describe, beforeEach, afterEach, afterAll as after, it } from "vitest"
 import {
   getQuickJS,
   QuickJSHandle,
@@ -21,7 +22,6 @@ import {
   debugLog,
   errors,
 } from "."
-import { it, describe } from "mocha"
 import assert from "assert"
 import fs, { chmod } from "fs"
 
@@ -134,98 +134,107 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
     })
   })
 
-  describe("functions", () => {
-    it("can wrap a Javascript function and call it", () => {
-      const some = 9
-      const fnHandle = vm.newFunction("addSome", (num) => {
-        return vm.newNumber(some + vm.getNumber(num))
-      })
-      const result = vm.newNumber(1).consume((num) => vm.callFunction(fnHandle, vm.undefined, num))
-      if (result.error) {
-        result.error.dispose()
-        assert.fail("calling fnHandle must succeed")
-      }
-      assert.equal(vm.getNumber(result.value), 10)
-      result.value.dispose()
-      fnHandle.dispose()
-    })
-
-    it("passes through native exceptions", () => {
-      const fnHandle = vm.newFunction("jsOops", () => {
-        throw new Error("oops")
-      })
-
-      const result = vm.callFunction(fnHandle, vm.undefined)
-      if (!result.error) {
-        assert.fail("function call must return error")
-      }
-      assert.deepEqual(vm.dump(result.error), {
-        name: "Error",
-        message: "oops",
-      })
-      result.error.dispose()
-      fnHandle.dispose()
-    })
-
-    it("can return undefined twice", () => {
-      const fnHandle = vm.newFunction("returnUndef", () => {
-        return vm.undefined
-      })
-
-      vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined)).dispose()
-      const result = vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined))
-
-      assert.equal(vm.typeof(result), "undefined")
-      result.dispose()
-      fnHandle.dispose()
-    })
-
-    it("can see its arguments being cloned", () => {
-      let value: QuickJSHandle | undefined
-
-      const fnHandle = vm.newFunction("doSomething", (arg) => {
-        value = arg.dup()
-      })
-
-      const argHandle = vm.newString("something")
-      const callHandle = vm.callFunction(fnHandle, vm.undefined, argHandle)
-
-      argHandle.dispose()
-      vm.unwrapResult(callHandle).dispose()
-
-      if (!value) throw new Error(`Value unset`)
-
-      assert.equal(vm.getString(value), "something")
-      value.dispose()
-
-      fnHandle.dispose()
-    })
-
-    it("can handle more than signed int max functions being registered", function (done) {
-      // test for unsigned func_id impl
-      this.timeout(30000) // we need more time to register 2^16 functions
-
-      if (isDebug) {
-        this.skip() // no need to run this again, and it takes WAY too long
-      }
-
-      for (let i = 0; i < Math.pow(2, 16); i++) {
-        const funcID = i
-        const fnHandle = vm.newFunction(`__func-${i}`, () => {
-          return vm.newNumber(funcID)
+  describe(
+    "functions",
+    () => {
+      it("can wrap a Javascript function and call it", () => {
+        const some = 9
+        const fnHandle = vm.newFunction("addSome", (num) => {
+          return vm.newNumber(some + vm.getNumber(num))
         })
-        if (i % 1024 === 0) {
-          // spot check every 1024 funcs
-          const res = vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined))
-          const calledFuncID = vm.dump(res)
-          assert(calledFuncID === i)
-          res.dispose()
+        const result = vm
+          .newNumber(1)
+          .consume((num) => vm.callFunction(fnHandle, vm.undefined, num))
+        if (result.error) {
+          result.error.dispose()
+          assert.fail("calling fnHandle must succeed")
         }
+        assert.equal(vm.getNumber(result.value), 10)
+        result.value.dispose()
         fnHandle.dispose()
-      }
-      done()
-    })
-  })
+      })
+
+      it("passes through native exceptions", () => {
+        const fnHandle = vm.newFunction("jsOops", () => {
+          throw new Error("oops")
+        })
+
+        const result = vm.callFunction(fnHandle, vm.undefined)
+        if (!result.error) {
+          assert.fail("function call must return error")
+        }
+        assert.deepEqual(vm.dump(result.error), {
+          name: "Error",
+          message: "oops",
+        })
+        result.error.dispose()
+        fnHandle.dispose()
+      })
+
+      it("can return undefined twice", () => {
+        const fnHandle = vm.newFunction("returnUndef", () => {
+          return vm.undefined
+        })
+
+        vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined)).dispose()
+        const result = vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined))
+
+        assert.equal(vm.typeof(result), "undefined")
+        result.dispose()
+        fnHandle.dispose()
+      })
+
+      it("can see its arguments being cloned", () => {
+        let value: QuickJSHandle | undefined
+
+        const fnHandle = vm.newFunction("doSomething", (arg) => {
+          value = arg.dup()
+        })
+
+        const argHandle = vm.newString("something")
+        const callHandle = vm.callFunction(fnHandle, vm.undefined, argHandle)
+
+        argHandle.dispose()
+        vm.unwrapResult(callHandle).dispose()
+
+        if (!value) throw new Error(`Value unset`)
+
+        assert.equal(vm.getString(value), "something")
+        value.dispose()
+
+        fnHandle.dispose()
+      })
+
+      const itForMaxFuns = isDebug ? it : it.skip
+      itForMaxFuns(
+        "can handle more than signed int max functions being registered",
+        () =>
+          new Promise((done) => {
+            // test for unsigned func_id impl
+
+            for (let i = 0; i < Math.pow(2, 16); i++) {
+              const funcID = i
+              const fnHandle = vm.newFunction(`__func-${i}`, () => {
+                return vm.newNumber(funcID)
+              })
+              if (i % 1024 === 0) {
+                // spot check every 1024 funcs
+                const res = vm.unwrapResult(vm.callFunction(fnHandle, vm.undefined))
+                const calledFuncID = vm.dump(res)
+                assert(calledFuncID === i)
+                res.dispose()
+              }
+              fnHandle.dispose()
+            }
+            done(undefined)
+          }),
+      )
+    },
+    {
+      // we need more time to register 2^16 functions
+      timeout: 30000,
+    },
+  )
 
   describe("properties", () => {
     it("defining a property does not leak", () => {
@@ -1035,13 +1044,13 @@ describe("QuickJSContext", function () {
   describe("QuickJS.newContext", function () {
     const loader = getQuickJS
     const getContext = () => loader().then((mod) => mod.newContext())
-    contextTests.call(this, getContext)
+    contextTests(getContext)
   })
 
   describe("DEBUG sync module", function () {
     const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
     const getContext = () => loader().then((mod) => mod.newContext())
-    contextTests.call(this, getContext, true)
+    contextTests(getContext, true)
   })
 })
 
