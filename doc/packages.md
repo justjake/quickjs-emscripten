@@ -8,6 +8,7 @@
 
 - [quickjs-emscripten](quickjs-emscripten/index.md)
 - [quickjs-emscripten-core](quickjs-emscripten-core/index.md)
+- [@jitl/quickjs-ffi-types](@jitl/quickjs-ffi-types/index.md)
 - [@jitl/quickjs-node-cjs-debug-sync-wasm](@jitl/quickjs-node-cjs-debug-sync-wasm/index.md)
 - [@jitl/quickjs-node-cjs-debug-asyncify-wasm](@jitl/quickjs-node-cjs-debug-asyncify-wasm/index.md)
 - [@jitl/quickjs-node-cjs-release-sync-wasm](@jitl/quickjs-node-cjs-release-sync-wasm/index.md)

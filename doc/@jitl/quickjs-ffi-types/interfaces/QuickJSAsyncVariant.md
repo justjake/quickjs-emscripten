@@ -1,8 +1,8 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../index.md) \| [Exports](../exports.md)
+[quickjs-emscripten](../../../packages.md) • **@jitl/quickjs-ffi-types** • [Readme](../index.md) \| [Exports](../exports.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / QuickJSAsyncVariant
+[quickjs-emscripten](../../../packages.md) / [@jitl/quickjs-ffi-types](../exports.md) / QuickJSAsyncVariant
 
 # Interface: QuickJSAsyncVariant
 
@@ -12,7 +12,7 @@ quickjs-emscripten provides multiple build variants of the core WebAssembly
 module. These variants are each intended for a different use case.
 
 To create an instance of the library using a specific build variant, pass the
-build variant to [newQuickJSWASMModule](../exports.md#newquickjswasmmodule) or [newQuickJSAsyncWASMModule](../exports.md#newquickjsasyncwasmmodule).
+build variant to newQuickJSWASMModule or newQuickJSAsyncWASMModule.
 
 ## Contents
 
@@ -36,7 +36,7 @@ build variant to [newQuickJSWASMModule](../exports.md#newquickjswasmmodule) or [
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:390
+[variant-types.ts:45](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L45)
 
 ***
 
@@ -50,7 +50,7 @@ quickjs-ffi-types/dist/index.d.ts:390
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:391
+[variant-types.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L46)
 
 ***
 
@@ -60,7 +60,7 @@ quickjs-ffi-types/dist/index.d.ts:391
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:389
+[variant-types.ts:44](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L44)
 
 ***
 

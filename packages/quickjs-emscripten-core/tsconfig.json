@@ -2,6 +2,7 @@
   "extends": "@jitl/tsconfig/tsconfig.json",
   "include": ["src/**/*"],
   "compilerOptions": {
+    "rootDir": "src",
     "outDir": "dist"
   }
 }

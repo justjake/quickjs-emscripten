@@ -1,6 +1,6 @@
 const variants = require("./variants.json")
 
-const ROOT_PACKAGES = ["quickjs-emscripten", "quickjs-emscripten-core"].map(
+const ROOT_PACKAGES = ["quickjs-emscripten", "quickjs-emscripten-core", "quickjs-ffi-types"].map(
   (path) => `./packages/${path}`,
 )
 

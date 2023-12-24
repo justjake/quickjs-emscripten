@@ -11,7 +11,7 @@ module.exports = {
   plugin: ["typedoc-plugin-markdown"],
   exclude: NO_THANKS,
   externalPattern: NO_THANKS[0],
-  excludeReferences: true,
+  // excludeReferences: true,
 
   // Experimental
   // https://github.com/tgreyuk/typedoc-plugin-markdown/blob/next/packages/typedoc-plugin-markdown/docs/plugin-options.md

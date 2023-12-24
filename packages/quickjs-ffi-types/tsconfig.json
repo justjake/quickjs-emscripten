@@ -1,5 +1,7 @@
 {
   "extends": "@jitl/tsconfig/tsconfig.json",
   "include": ["src/**/*"],
-  "compilerOptions": {}
+  "compilerOptions": {
+    "rootDir": "src"
+  }
 }

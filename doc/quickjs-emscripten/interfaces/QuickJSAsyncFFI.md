@@ -94,7 +94,7 @@ Set at compile time.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:289
+quickjs-ffi-types/dist/index.d.ts:291
 
 ***
 
@@ -114,7 +114,7 @@ quickjs-ffi-types/dist/index.d.ts:289
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:347
+quickjs-ffi-types/dist/index.d.ts:349
 
 ***
 
@@ -128,7 +128,7 @@ quickjs-ffi-types/dist/index.d.ts:347
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:345
+quickjs-ffi-types/dist/index.d.ts:347
 
 ***
 
@@ -142,7 +142,7 @@ quickjs-ffi-types/dist/index.d.ts:345
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:344
+quickjs-ffi-types/dist/index.d.ts:346
 
 ***
 
@@ -156,7 +156,7 @@ quickjs-ffi-types/dist/index.d.ts:344
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:296
+quickjs-ffi-types/dist/index.d.ts:298
 
 ***
 
@@ -182,7 +182,7 @@ quickjs-ffi-types/dist/index.d.ts:296
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:333
+quickjs-ffi-types/dist/index.d.ts:335
 
 ***
 
@@ -208,7 +208,7 @@ quickjs-ffi-types/dist/index.d.ts:333
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:334
+quickjs-ffi-types/dist/index.d.ts:336
 
 ***
 
@@ -242,7 +242,7 @@ quickjs-ffi-types/dist/index.d.ts:334
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:332
+quickjs-ffi-types/dist/index.d.ts:334
 
 ***
 
@@ -262,7 +262,7 @@ quickjs-ffi-types/dist/index.d.ts:332
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:336
+quickjs-ffi-types/dist/index.d.ts:338
 
 ***
 
@@ -282,7 +282,7 @@ quickjs-ffi-types/dist/index.d.ts:336
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:337
+quickjs-ffi-types/dist/index.d.ts:339
 
 ***
 
@@ -302,7 +302,7 @@ quickjs-ffi-types/dist/index.d.ts:337
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:310
+quickjs-ffi-types/dist/index.d.ts:312
 
 ***
 
@@ -328,7 +328,7 @@ quickjs-ffi-types/dist/index.d.ts:310
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:338
+quickjs-ffi-types/dist/index.d.ts:340
 
 ***
 
@@ -354,7 +354,7 @@ quickjs-ffi-types/dist/index.d.ts:338
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:339
+quickjs-ffi-types/dist/index.d.ts:341
 
 ***
 
@@ -376,7 +376,7 @@ quickjs-ffi-types/dist/index.d.ts:339
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:326
+quickjs-ffi-types/dist/index.d.ts:328
 
 ***
 
@@ -398,7 +398,7 @@ quickjs-ffi-types/dist/index.d.ts:326
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:327
+quickjs-ffi-types/dist/index.d.ts:329
 
 ***
 
@@ -418,7 +418,7 @@ quickjs-ffi-types/dist/index.d.ts:327
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:309
+quickjs-ffi-types/dist/index.d.ts:311
 
 ***
 
@@ -436,7 +436,7 @@ quickjs-ffi-types/dist/index.d.ts:309
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:305
+quickjs-ffi-types/dist/index.d.ts:307
 
 ***
 
@@ -454,7 +454,7 @@ quickjs-ffi-types/dist/index.d.ts:305
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:303
+quickjs-ffi-types/dist/index.d.ts:305
 
 ***
 
@@ -474,7 +474,7 @@ quickjs-ffi-types/dist/index.d.ts:303
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:306
+quickjs-ffi-types/dist/index.d.ts:308
 
 ***
 
@@ -494,7 +494,7 @@ quickjs-ffi-types/dist/index.d.ts:306
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:307
+quickjs-ffi-types/dist/index.d.ts:309
 
 ***
 
@@ -514,7 +514,7 @@ quickjs-ffi-types/dist/index.d.ts:307
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:308
+quickjs-ffi-types/dist/index.d.ts:310
 
 ***
 
@@ -534,7 +534,7 @@ quickjs-ffi-types/dist/index.d.ts:308
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:319
+quickjs-ffi-types/dist/index.d.ts:321
 
 ***
 
@@ -554,7 +554,7 @@ quickjs-ffi-types/dist/index.d.ts:319
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:320
+quickjs-ffi-types/dist/index.d.ts:322
 
 ***
 
@@ -568,7 +568,7 @@ quickjs-ffi-types/dist/index.d.ts:320
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:300
+quickjs-ffi-types/dist/index.d.ts:302
 
 ***
 
@@ -588,7 +588,7 @@ quickjs-ffi-types/dist/index.d.ts:300
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:316
+quickjs-ffi-types/dist/index.d.ts:318
 
 ***
 
@@ -606,7 +606,7 @@ quickjs-ffi-types/dist/index.d.ts:316
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:341
+quickjs-ffi-types/dist/index.d.ts:343
 
 ***
 
@@ -620,7 +620,7 @@ quickjs-ffi-types/dist/index.d.ts:341
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:299
+quickjs-ffi-types/dist/index.d.ts:301
 
 ***
 
@@ -642,7 +642,7 @@ quickjs-ffi-types/dist/index.d.ts:299
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:328
+quickjs-ffi-types/dist/index.d.ts:330
 
 ***
 
@@ -664,7 +664,7 @@ quickjs-ffi-types/dist/index.d.ts:328
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:329
+quickjs-ffi-types/dist/index.d.ts:331
 
 ***
 
@@ -684,7 +684,7 @@ quickjs-ffi-types/dist/index.d.ts:329
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:318
+quickjs-ffi-types/dist/index.d.ts:320
 
 ***
 
@@ -704,7 +704,7 @@ quickjs-ffi-types/dist/index.d.ts:318
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:322
+quickjs-ffi-types/dist/index.d.ts:324
 
 ***
 
@@ -724,7 +724,7 @@ quickjs-ffi-types/dist/index.d.ts:322
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:323
+quickjs-ffi-types/dist/index.d.ts:325
 
 ***
 
@@ -738,7 +738,7 @@ quickjs-ffi-types/dist/index.d.ts:323
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:301
+quickjs-ffi-types/dist/index.d.ts:303
 
 ***
 
@@ -752,7 +752,7 @@ quickjs-ffi-types/dist/index.d.ts:301
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:298
+quickjs-ffi-types/dist/index.d.ts:300
 
 ***
 
@@ -772,7 +772,7 @@ quickjs-ffi-types/dist/index.d.ts:298
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:324
+quickjs-ffi-types/dist/index.d.ts:326
 
 ***
 
@@ -790,7 +790,7 @@ quickjs-ffi-types/dist/index.d.ts:324
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:325
+quickjs-ffi-types/dist/index.d.ts:327
 
 ***
 
@@ -808,7 +808,7 @@ quickjs-ffi-types/dist/index.d.ts:325
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:313
+quickjs-ffi-types/dist/index.d.ts:315
 
 ***
 
@@ -830,7 +830,7 @@ quickjs-ffi-types/dist/index.d.ts:313
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:314
+quickjs-ffi-types/dist/index.d.ts:316
 
 ***
 
@@ -848,7 +848,7 @@ quickjs-ffi-types/dist/index.d.ts:314
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:304
+quickjs-ffi-types/dist/index.d.ts:306
 
 ***
 
@@ -866,7 +866,7 @@ quickjs-ffi-types/dist/index.d.ts:304
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:291
+quickjs-ffi-types/dist/index.d.ts:293
 
 ***
 
@@ -886,7 +886,7 @@ quickjs-ffi-types/dist/index.d.ts:291
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:315
+quickjs-ffi-types/dist/index.d.ts:317
 
 ***
 
@@ -908,7 +908,7 @@ quickjs-ffi-types/dist/index.d.ts:315
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:346
+quickjs-ffi-types/dist/index.d.ts:348
 
 ***
 
@@ -926,7 +926,7 @@ quickjs-ffi-types/dist/index.d.ts:346
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:311
+quickjs-ffi-types/dist/index.d.ts:313
 
 ***
 
@@ -946,7 +946,7 @@ quickjs-ffi-types/dist/index.d.ts:311
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:312
+quickjs-ffi-types/dist/index.d.ts:314
 
 ***
 
@@ -966,7 +966,7 @@ quickjs-ffi-types/dist/index.d.ts:312
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:342
+quickjs-ffi-types/dist/index.d.ts:344
 
 ***
 
@@ -980,7 +980,7 @@ quickjs-ffi-types/dist/index.d.ts:342
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:302
+quickjs-ffi-types/dist/index.d.ts:304
 
 ***
 
@@ -1000,7 +1000,7 @@ quickjs-ffi-types/dist/index.d.ts:302
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:317
+quickjs-ffi-types/dist/index.d.ts:319
 
 ***
 
@@ -1022,7 +1022,7 @@ quickjs-ffi-types/dist/index.d.ts:317
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:321
+quickjs-ffi-types/dist/index.d.ts:323
 
 ***
 
@@ -1036,7 +1036,7 @@ quickjs-ffi-types/dist/index.d.ts:321
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:295
+quickjs-ffi-types/dist/index.d.ts:297
 
 ***
 
@@ -1056,7 +1056,7 @@ quickjs-ffi-types/dist/index.d.ts:295
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:335
+quickjs-ffi-types/dist/index.d.ts:337
 
 ***
 
@@ -1076,7 +1076,7 @@ quickjs-ffi-types/dist/index.d.ts:335
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:293
+quickjs-ffi-types/dist/index.d.ts:295
 
 ***
 
@@ -1094,7 +1094,7 @@ quickjs-ffi-types/dist/index.d.ts:293
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:349
+quickjs-ffi-types/dist/index.d.ts:351
 
 ***
 
@@ -1112,7 +1112,7 @@ quickjs-ffi-types/dist/index.d.ts:349
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:351
+quickjs-ffi-types/dist/index.d.ts:353
 
 ***
 
@@ -1130,7 +1130,7 @@ quickjs-ffi-types/dist/index.d.ts:351
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:294
+quickjs-ffi-types/dist/index.d.ts:296
 
 ***
 
@@ -1148,7 +1148,7 @@ quickjs-ffi-types/dist/index.d.ts:294
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:348
+quickjs-ffi-types/dist/index.d.ts:350
 
 ***
 
@@ -1168,7 +1168,7 @@ quickjs-ffi-types/dist/index.d.ts:348
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:350
+quickjs-ffi-types/dist/index.d.ts:352
 
 ***
 
@@ -1188,7 +1188,7 @@ quickjs-ffi-types/dist/index.d.ts:350
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:297
+quickjs-ffi-types/dist/index.d.ts:299
 
 ***
 
@@ -1208,7 +1208,7 @@ quickjs-ffi-types/dist/index.d.ts:297
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:292
+quickjs-ffi-types/dist/index.d.ts:294
 
 ***
 
@@ -1232,7 +1232,7 @@ quickjs-ffi-types/dist/index.d.ts:292
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:330
+quickjs-ffi-types/dist/index.d.ts:332
 
 ***
 
@@ -1256,7 +1256,7 @@ quickjs-ffi-types/dist/index.d.ts:330
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:331
+quickjs-ffi-types/dist/index.d.ts:333
 
 ***
 
@@ -1274,7 +1274,7 @@ quickjs-ffi-types/dist/index.d.ts:331
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:343
+quickjs-ffi-types/dist/index.d.ts:345
 
 ***
 
@@ -1294,7 +1294,7 @@ quickjs-ffi-types/dist/index.d.ts:343
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:290
+quickjs-ffi-types/dist/index.d.ts:292
 
 ***
 
@@ -1314,7 +1314,7 @@ quickjs-ffi-types/dist/index.d.ts:290
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:340
+quickjs-ffi-types/dist/index.d.ts:342
 
 ***
 
@@ -1334,7 +1334,7 @@ quickjs-ffi-types/dist/index.d.ts:340
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:353
+quickjs-ffi-types/dist/index.d.ts:355
 
 ***
 
@@ -1354,7 +1354,7 @@ quickjs-ffi-types/dist/index.d.ts:353
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:352
+quickjs-ffi-types/dist/index.d.ts:354
 
 ***
 

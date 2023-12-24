@@ -1,8 +1,8 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../index.md) \| [Exports](../exports.md)
+[quickjs-emscripten](../../../packages.md) • **@jitl/quickjs-ffi-types** • [Readme](../index.md) \| [Exports](../exports.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / QuickJSAsyncEmscriptenModule
+[quickjs-emscripten](../../../packages.md) / [@jitl/quickjs-ffi-types](../exports.md) / QuickJSAsyncEmscriptenModule
 
 # Interface: QuickJSAsyncEmscriptenModule
 
@@ -46,11 +46,11 @@ QuickJS.
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.FAST_MEMORY`](EmscriptenModule.md#fast-memory)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.FAST_MEMORY`](EmscriptenModule.md#fast-memory)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:165
+[emscripten-types.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L87)
 
 ***
 
@@ -60,11 +60,11 @@ quickjs-ffi-types/dist/index.d.ts:165
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.HEAP16`](EmscriptenModule.md#heap16)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.HEAP16`](EmscriptenModule.md#heap16)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:156
+[emscripten-types.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L77)
 
 ***
 
@@ -74,11 +74,11 @@ quickjs-ffi-types/dist/index.d.ts:156
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.HEAP32`](EmscriptenModule.md#heap32)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.HEAP32`](EmscriptenModule.md#heap32)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:157
+[emscripten-types.ts:78](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L78)
 
 ***
 
@@ -88,11 +88,11 @@ quickjs-ffi-types/dist/index.d.ts:157
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.HEAP8`](EmscriptenModule.md#heap8)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.HEAP8`](EmscriptenModule.md#heap8)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:155
+[emscripten-types.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L76)
 
 ***
 
@@ -102,11 +102,11 @@ quickjs-ffi-types/dist/index.d.ts:155
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.HEAPF32`](EmscriptenModule.md#heapf32)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.HEAPF32`](EmscriptenModule.md#heapf32)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:161
+[emscripten-types.ts:82](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L82)
 
 ***
 
@@ -116,11 +116,11 @@ quickjs-ffi-types/dist/index.d.ts:161
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.HEAPF64`](EmscriptenModule.md#heapf64)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.HEAPF64`](EmscriptenModule.md#heapf64)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:162
+[emscripten-types.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L83)
 
 ***
 
@@ -130,11 +130,11 @@ quickjs-ffi-types/dist/index.d.ts:162
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.HEAPU16`](EmscriptenModule.md#heapu16)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.HEAPU16`](EmscriptenModule.md#heapu16)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:159
+[emscripten-types.ts:80](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L80)
 
 ***
 
@@ -144,11 +144,11 @@ quickjs-ffi-types/dist/index.d.ts:159
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.HEAPU32`](EmscriptenModule.md#heapu32)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.HEAPU32`](EmscriptenModule.md#heapu32)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:160
+[emscripten-types.ts:81](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L81)
 
 ***
 
@@ -158,11 +158,11 @@ quickjs-ffi-types/dist/index.d.ts:160
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.HEAPU8`](EmscriptenModule.md#heapu8)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.HEAPU8`](EmscriptenModule.md#heapu8)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:158
+[emscripten-types.ts:79](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L79)
 
 ***
 
@@ -172,11 +172,11 @@ quickjs-ffi-types/dist/index.d.ts:158
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.TOTAL_MEMORY`](EmscriptenModule.md#total-memory)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.TOTAL_MEMORY`](EmscriptenModule.md#total-memory)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:164
+[emscripten-types.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L86)
 
 ***
 
@@ -186,11 +186,11 @@ quickjs-ffi-types/dist/index.d.ts:164
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.TOTAL_STACK`](EmscriptenModule.md#total-stack)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.TOTAL_STACK`](EmscriptenModule.md#total-stack)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:163
+[emscripten-types.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L85)
 
 ***
 
@@ -200,7 +200,7 @@ quickjs-ffi-types/dist/index.d.ts:163
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:206
+[emscripten-types.ts:162](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L162)
 
 ***
 
@@ -214,7 +214,7 @@ Implement this field
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:205
+[emscripten-types.ts:161](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L161)
 
 ## Methods
 
@@ -237,11 +237,11 @@ https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.UTF8ToString`](EmscriptenModule.md#utf8tostring)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.UTF8ToString`](EmscriptenModule.md#utf8tostring)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:150
+[emscripten-types.ts:63](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L63)
 
 ***
 
@@ -259,11 +259,11 @@ quickjs-ffi-types/dist/index.d.ts:150
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule._free`](EmscriptenModule.md#free)
+[`@jitl/quickjs-ffi-types.EmscriptenModule._free`](EmscriptenModule.md#free)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:153
+[emscripten-types.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L67)
 
 ***
 
@@ -281,11 +281,11 @@ quickjs-ffi-types/dist/index.d.ts:153
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule._malloc`](EmscriptenModule.md#malloc)
+[`@jitl/quickjs-ffi-types.EmscriptenModule._malloc`](EmscriptenModule.md#malloc)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:152
+[emscripten-types.ts:66](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L66)
 
 ***
 
@@ -318,11 +318,11 @@ quickjs-ffi-types/dist/index.d.ts:152
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.cwrap`](EmscriptenModule.md#cwrap)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.cwrap`](EmscriptenModule.md#cwrap)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:154
+[emscripten-types.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L68)
 
 ***
 
@@ -340,11 +340,11 @@ quickjs-ffi-types/dist/index.d.ts:154
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.lengthBytesUTF8`](EmscriptenModule.md#lengthbytesutf8)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.lengthBytesUTF8`](EmscriptenModule.md#lengthbytesutf8)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:151
+[emscripten-types.ts:64](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L64)
 
 ***
 
@@ -369,11 +369,11 @@ https://emscripten.org/docs/api_reference/preamble.js.html#stringToUTF8
 
 #### Inherited from
 
-[`quickjs-emscripten.EmscriptenModule.stringToUTF8`](EmscriptenModule.md#stringtoutf8)
+[`@jitl/quickjs-ffi-types.EmscriptenModule.stringToUTF8`](EmscriptenModule.md#stringtoutf8)
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:145
+[emscripten-types.ts:58](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L58)
 
 ***
 

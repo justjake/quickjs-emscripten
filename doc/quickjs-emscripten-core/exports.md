@@ -133,7 +133,7 @@ for the Emscripten stack.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:66
+packages/quickjs-ffi-types/dist/index.d.ts:68
 
 ***
 
@@ -143,7 +143,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:206
+packages/quickjs-ffi-types/dist/index.d.ts:208
 
 ***
 
@@ -197,7 +197,7 @@ for the Emscripten stack.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:76
+packages/quickjs-ffi-types/dist/index.d.ts:78
 
 ***
 
@@ -209,7 +209,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:76
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:20
+packages/quickjs-ffi-types/dist/index.d.ts:22
 
 ***
 
@@ -221,7 +221,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:20
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:24
+packages/quickjs-ffi-types/dist/index.d.ts:26
 
 ***
 
@@ -233,7 +233,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:24
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:28
+packages/quickjs-ffi-types/dist/index.d.ts:30
 
 ***
 
@@ -305,7 +305,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:16
+packages/quickjs-ffi-types/dist/index.d.ts:18
 
 ***
 
@@ -361,7 +361,7 @@ See [[JSValueConst]] and [[StaticJSValue]].
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:38
+packages/quickjs-ffi-types/dist/index.d.ts:40
 
 ***
 
@@ -373,7 +373,7 @@ Used internally for Javascript-to-C function calls.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:46
+packages/quickjs-ffi-types/dist/index.d.ts:48
 
 ***
 
@@ -386,7 +386,7 @@ See [[JSValue]].
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:33
+packages/quickjs-ffi-types/dist/index.d.ts:35
 
 ***
 
@@ -398,7 +398,7 @@ Used internally for Javascript-to-C function calls.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:42
+packages/quickjs-ffi-types/dist/index.d.ts:44
 
 ***
 
@@ -410,7 +410,7 @@ Opaque pointer that was allocated by js_malloc.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:80
+packages/quickjs-ffi-types/dist/index.d.ts:82
 
 ***
 
@@ -423,7 +423,7 @@ for the Emscripten stack.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:71
+packages/quickjs-ffi-types/dist/index.d.ts:73
 
 ***
 
@@ -475,7 +475,7 @@ Used internally for C-to-Javascript function calls.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:53
+packages/quickjs-ffi-types/dist/index.d.ts:55
 
 ***
 
@@ -487,7 +487,7 @@ Used internally for C-to-Javascript interrupt handlers.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:57
+packages/quickjs-ffi-types/dist/index.d.ts:59
 
 ***
 
@@ -499,7 +499,7 @@ Used internally for C-to-Javascript module loading.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:61
+packages/quickjs-ffi-types/dist/index.d.ts:63
 
 ***
 
@@ -538,7 +538,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:391
+packages/quickjs-ffi-types/dist/index.d.ts:393
 
 ***
 
@@ -690,7 +690,7 @@ module code
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:89
+packages/quickjs-ffi-types/dist/index.d.ts:91
 
 ## Functions
 
@@ -723,7 +723,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:89
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:85
+packages/quickjs-ffi-types/dist/index.d.ts:87
 
 ***
 

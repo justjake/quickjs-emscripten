@@ -3,6 +3,7 @@
   "include": ["src/*.ts", "src/leak.test.mts"],
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": "src",
     "paths": {
       "#variants/debug": ["../quickjs-node-cjs-debug-sync-wasm/dist"],
       "#variants/debug-asyncify": ["../quickjs-node-cjs-debug-asyncify-wasm/dist"],

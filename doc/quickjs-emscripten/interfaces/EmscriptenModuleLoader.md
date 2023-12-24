@@ -18,7 +18,7 @@
 
 ## Source
 
-quickjs-ffi-types/dist/index.d.ts:208
+quickjs-ffi-types/dist/index.d.ts:210
 
 ***
 
