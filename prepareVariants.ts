@@ -282,7 +282,7 @@ async function main() {
         },
         scripts: {
           build: "yarn build:c && yarn build:ts",
-          "build:c": "make -j8",
+          "build:c": "make -j2",
           "build:ts": "npx tsc --project .",
           clean: "make clean",
           prepare: "yarn clean && yarn build",
