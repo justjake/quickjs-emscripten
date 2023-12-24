@@ -8,12 +8,9 @@ if [[ -z "$EMSDK_USE_DOCKER" ]] && command -v emcc >/dev/null; then
   fi
 fi
 
-if [[ -z "$EMSDK_CACHE" ]]; then
-  echo "EMSDK_CACHE must be set to a path"
-fi
-
 if [[ -z "$EMSDK_PROJECT_ROOT" ]]; then
   echo "EMSDK_PROJECT_ROOT must be set to a path"
+  exit 1
 fi
 
 DOCKER_ARGV=(
