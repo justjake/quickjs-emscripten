@@ -3,16 +3,5 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["ts/**/*"],
-  "references": [
-    {
-      "path": "./packages/quickjs-emscripten"
-    },
-    {
-      "path": "./packages/quickjs-emscripten-core"
-    },
-    {
-      "path": "./packages/quickjs-ffi-types"
-    }
-  ]
+  "include": ["packages/**/*"],
 }
