@@ -312,7 +312,7 @@ import {
 
 /**
  * Low-level FFI bindings to QuickJS's Emscripten module.
- * See instead [[QuickJSContext]], the public Javascript interface exposed by this
+ * See instead {@link QuickJSContext}, the public Javascript interface exposed by this
  * library.
  *
  * @unstable The FFI interface is considered private and may change.

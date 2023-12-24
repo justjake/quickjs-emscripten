@@ -1,5 +1,6 @@
 import { debugLog } from "./debug"
 import { QuickJSDeferredPromise } from "./deferred-promise"
+import { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import type {
   EitherModule,
   EvalDetectModule,
@@ -17,7 +18,7 @@ import { QuickJSUnwrapError } from "./errors"
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
-import { QuickJSRuntime } from "./runtime"
+import { QuickJSRuntime, ExecutePendingJobsResult } from "./runtime"
 import {
   ContextEvalOptions,
   EitherFFI,
@@ -114,24 +115,24 @@ class ContextMemory extends ModuleMemory implements Disposable {
  * It's the caller's responsibility to call `.dispose()` on any
  * handles you create to free memory once you're done with the handle.
  *
- * Use {@link QuickJSRuntime.newContext} or {@link QuickJSWASMModule.newContext}
+ * Use {@link QuickJSRuntime#newContext} or {@link QuickJSWASMModule#newContext}
  * to create a new QuickJSContext.
  *
  * Create QuickJS values inside the interpreter with methods like
- * [[newNumber]], [[newString]], [[newArray]], [[newObject]],
- * [[newFunction]], and [[newPromise]].
+ * {@link newNumber}, {@link newString}, {@link newArray}, {@link newObject},
+ * {@link newFunction}, and {@link newPromise}.
  *
- * Call [[setProp]] or [[defineProp]] to customize objects. Use those methods
- * with [[global]] to expose the values you create to the interior of the
- * interpreter, so they can be used in [[evalCode]].
+ * Call {@link setProp} or {@link defineProp} to customize objects. Use those methods
+ * with {@link global} to expose the values you create to the interior of the
+ * interpreter, so they can be used in {@link evalCode}.
  *
- * Use [[evalCode]] or [[callFunction]] to execute Javascript inside the VM. If
+ * Use {@link evalCode} or {@link callFunction} to execute Javascript inside the VM. If
  * you're using asynchronous code inside the QuickJSContext, you may need to also
- * call [[executePendingJobs]]. Executing code inside the runtime returns a
+ * call {@link QuickJSRuntime#executePendingJobs}. Executing code inside the runtime returns a
  * result object representing successful execution or an error. You must dispose
  * of any such results to avoid leaking memory inside the VM.
  *
- * Implement memory and CPU constraints at the runtime level, using [[runtime]].
+ * Implement memory and CPU constraints at the runtime level, using {@link runtime}.
  * See {@link QuickJSRuntime} for more information.
  *
  */
@@ -167,7 +168,8 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   protected _BigInt: QuickJSHandle | undefined = undefined
 
   /**
-   * Use {@link QuickJS.createVm} to create a QuickJSContext instance.
+   * Use {@link QuickJSRuntime#newContext} or {@link QuickJSWASMModule#newContext}
+   * to create a new QuickJSContext.
    */
   constructor(args: {
     module: EitherModule
@@ -384,14 +386,14 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   }
 
   /**
-   * Create a new [[QuickJSDeferredPromise]]. Use `deferred.resolve(handle)` and
+   * Create a new {@link QuickJSDeferredPromise}. Use `deferred.resolve(handle)` and
    * `deferred.reject(handle)` to fulfill the promise handle available at `deferred.handle`.
    * Note that you are responsible for calling `deferred.dispose()` to free the underlying
-   * resources; see the documentation on [[QuickJSDeferredPromise]] for details.
+   * resources; see the documentation on {@link QuickJSDeferredPromise} for details.
    */
   newPromise(): QuickJSDeferredPromise
   /**
-   * Create a new [[QuickJSDeferredPromise]] that resolves when the
+   * Create a new {@link QuickJSDeferredPromise} that resolves when the
    * given native Promise<QuickJSHandle> resolves. Rejections will be coerced
    * to a QuickJS error.
    *
@@ -400,7 +402,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   newPromise(promise: Promise<QuickJSHandle>): QuickJSDeferredPromise
   /**
    * Construct a new native Promise<QuickJSHandle>, and then convert it into a
-   * [[QuickJSDeferredPromise]].
+   * {@link QuickJSDeferredPromise}.
    *
    * You can still resolve/reject the created promise "early" using its methods.
    */
@@ -447,13 +449,13 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
 
   /**
    * Convert a Javascript function into a QuickJS function value.
-   * See [[VmFunctionImplementation]] for more details.
+   * See {@link VmFunctionImplementation} for more details.
    *
-   * A [[VmFunctionImplementation]] should not free its arguments or its return
+   * A {@link VmFunctionImplementation} should not free its arguments or its return
    * value. A VmFunctionImplementation should also not retain any references to
    * its return value.
    *
-   * To implement an async function, create a promise with [[newPromise]], then
+   * To implement an async function, create a promise with {@link newPromise}, then
    * return the deferred promise handle from `deferred.handle` from your
    * function implementation:
    *
@@ -570,7 +572,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * actual promise on the host.
    *
    * @remarks
-   * You may need to call [[executePendingJobs]] to ensure that the promise is resolved.
+   * You may need to call {@link runtime}.{@link QuickJSRuntime#executePendingJobs} to ensure that the promise is resolved.
    *
    * @param promiseLikeHandle - A handle to a Promise-like value with a `.then(onSuccess, onError)` method.
    */
@@ -632,7 +634,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * Set a property on a JSValue.
    *
    * @remarks
-   * Note that the QuickJS authors recommend using [[defineProp]] to define new
+   * Note that the QuickJS authors recommend using {@link defineProp} to define new
    * properties.
    *
    * @param key - The property may be specified as a JSValue handle, or as a
@@ -693,10 +695,10 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
    * [`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call).
    * Call a JSValue as a function.
    *
-   * See [[unwrapResult]], which will throw if the function returned an error, or
+   * See {@link unwrapResult}, which will throw if the function returned an error, or
    * return the result handle directly. If evaluation returned a handle containing
-   * a promise, use [[resolvePromise]] to convert it to a native promise and
-   * [[executePendingJobs]] to finish evaluating the promise.
+   * a promise, use {@link resolvePromise} to convert it to a native promise and
+   * {@link runtime}.{@link QuickJSRuntime#executePendingJobs} to finish evaluating the promise.
    *
    * @returns A result. If the function threw synchronously, `result.error` be a
    * handle to the exception. Otherwise `result.value` will be a handle to the
@@ -732,16 +734,16 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   /**
    * Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
    * Evaluates the Javascript source `code` in the global scope of this VM.
-   * When working with async code, you many need to call [[executePendingJobs]]
+   * When working with async code, you many need to call {@link runtime}.{@link QuickJSRuntime#executePendingJobs}
    * to execute callbacks pending after synchronous evaluation returns.
    *
-   * See [[unwrapResult]], which will throw if the function returned an error, or
+   * See {@link unwrapResult}, which will throw if the function returned an error, or
    * return the result handle directly. If evaluation returned a handle containing
-   * a promise, use [[resolvePromise]] to convert it to a native promise and
-   * [[executePendingJobs]] to finish evaluating the promise.
+   * a promise, use {@link resolvePromise} to convert it to a native promise and
+   * {@link QuickJSRuntime#executePendingJobs} to finish evaluating the promise.
    *
    * *Note*: to protect against infinite loops, provide an interrupt handler to
-   * [[setInterruptHandler]]. You can use [[shouldInterruptAfterDeadline]] to
+   * {@link QuickJSRuntime#setInterruptHandler}. You can use {@link shouldInterruptAfterDeadline} to
    * create a time-based deadline.
    *
    * @returns The last statement's value. If the code threw synchronously,
@@ -756,7 +758,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
      * If no options are passed, a heuristic will be used to detect if `code` is
      * an ES module.
      *
-     * See [[EvalFlags]] for number semantics.
+     * See {@link EvalFlags} for number semantics.
      */
     options?: number | ContextEvalOptions,
   ): VmCallResult<QuickJSHandle> {
@@ -843,8 +845,8 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
   }
 
   /**
-   * Unwrap a SuccessOrFail result such as a [[VmCallResult]] or a
-   * [[ExecutePendingJobsResult]], where the fail branch contains a handle to a QuickJS error value.
+   * Unwrap a SuccessOrFail result such as a {@link VmCallResult} or a
+   * {@link ExecutePendingJobsResult}, where the fail branch contains a handle to a QuickJS error value.
    * If the result is a success, returns the value.
    * If the result is an error, converts the error to a native object and throws the error.
    */

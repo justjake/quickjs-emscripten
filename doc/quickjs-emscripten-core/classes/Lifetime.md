@@ -7,7 +7,7 @@
 # Class: Lifetime\<T, TCopy, Owner\>
 
 A lifetime prevents access to a value after the lifetime has been
-[[dispose]]ed.
+[dispose](Lifetime.md#dispose)ed.
 
 Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
 
@@ -171,7 +171,7 @@ the creator.
 
 true if the object is alive
 
-false after the object has been [[dispose]]d
+false after the object has been [dispose](Lifetime.md#dispose)d
 
 #### Source
 
@@ -216,7 +216,7 @@ may become invalid, leading to memory errors.
 
 #### Throws
 
-If the lifetime has been [[dispose]]d already.
+If the lifetime has been [dispose](Lifetime.md#dispose)d already.
 
 #### Returns
 
@@ -280,7 +280,7 @@ the result of `map(this)`.
 
 > **dispose**(): `void`
 
-Dispose of [[value]] and perform cleanup.
+Dispose of [value](Lifetime.md#value-1) and perform cleanup.
 
 #### Returns
 
@@ -300,7 +300,7 @@ Dispose of [[value]] and perform cleanup.
 
 > **dup**(): [`Lifetime`](Lifetime.md)\<`TCopy`, `TCopy`, `Owner`\>
 
-Create a new handle pointing to the same [[value]].
+Create a new handle pointing to the same [value](Lifetime.md#value-1).
 
 #### Returns
 

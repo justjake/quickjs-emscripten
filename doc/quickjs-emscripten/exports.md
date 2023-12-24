@@ -86,6 +86,7 @@
 - [QuickJSAsyncWASMModule](classes/QuickJSAsyncWASMModule.md)
 - [QuickJSContext](classes/QuickJSContext.md)
 - [QuickJSDeferredPromise](classes/QuickJSDeferredPromise.md)
+- [QuickJSRuntime](classes/QuickJSRuntime.md)
 - [QuickJSWASMModule](classes/QuickJSWASMModule.md)
 - [Scope](classes/Scope.md)
 - [StaticLifetime](classes/StaticLifetime.md)
@@ -186,7 +187,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Parameters
 
-• **runtime**: `QuickJSRuntime`
+• **runtime**: [`QuickJSRuntime`](classes/QuickJSRuntime.md)
 
 #### Returns
 
@@ -325,7 +326,7 @@ quickjs-ffi-types/dist/index.d.ts:18
 
 ### JSValue
 
-> **JSValue**: [`Lifetime`](classes/Lifetime.md)\<[`JSValuePointer`](exports.md#jsvaluepointer), [`JSValuePointer`](exports.md#jsvaluepointer), `QuickJSRuntime`\>
+> **JSValue**: [`Lifetime`](classes/Lifetime.md)\<[`JSValuePointer`](exports.md#jsvaluepointer), [`JSValuePointer`](exports.md#jsvaluepointer), [`QuickJSRuntime`](classes/QuickJSRuntime.md)\>
 
 A owned QuickJSHandle that should be disposed or returned.
 
@@ -349,7 +350,7 @@ quickjs-emscripten-core/dist/index.d.ts:374
 
 ### JSValueConst
 
-> **JSValueConst**: [`Lifetime`](classes/Lifetime.md)\<[`JSValueConstPointer`](exports.md#jsvalueconstpointer), [`JSValuePointer`](exports.md#jsvaluepointer), `QuickJSRuntime`\>
+> **JSValueConst**: [`Lifetime`](classes/Lifetime.md)\<[`JSValueConstPointer`](exports.md#jsvalueconstpointer), [`JSValuePointer`](exports.md#jsvaluepointer), [`QuickJSRuntime`](classes/QuickJSRuntime.md)\>
 
 A QuickJSHandle to a borrowed value that does not need to be disposed.
 
@@ -371,7 +372,7 @@ quickjs-emscripten-core/dist/index.d.ts:358
 > **JSValueConstPointer**: `Pointer`\<`"JSValueConst"`\>
 
 `JSValueConst*
-See [[JSValueConst]] and [[StaticJSValue]].
+See [JSValueConst](exports.md#jsvalueconst) and [StaticJSValue](exports.md#staticjsvalue).
 
 #### Source
 
@@ -396,7 +397,7 @@ quickjs-ffi-types/dist/index.d.ts:48
 > **JSValuePointer**: `Pointer`\<`"JSValue"`\>
 
 `JSValue*`.
-See [[JSValue]].
+See [JSValue](exports.md#jsvalue).
 
 #### Source
 
@@ -477,7 +478,7 @@ quickjs-emscripten-core/dist/index.d.ts:475
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1244
+quickjs-emscripten-core/dist/index.d.ts:1245
 
 ***
 
@@ -558,7 +559,7 @@ quickjs-ffi-types/dist/index.d.ts:393
 
 ### StaticJSValue
 
-> **StaticJSValue**: [`Lifetime`](classes/Lifetime.md)\<[`JSValueConstPointer`](exports.md#jsvalueconstpointer), [`JSValueConstPointer`](exports.md#jsvalueconstpointer), `QuickJSRuntime`\>
+> **StaticJSValue**: [`Lifetime`](classes/Lifetime.md)\<[`JSValueConstPointer`](exports.md#jsvalueconstpointer), [`JSValueConstPointer`](exports.md#jsvalueconstpointer), [`QuickJSRuntime`](classes/QuickJSRuntime.md)\>
 
 A QuickJSHandle to a constant that will never change, and does not need to
 be disposed.
@@ -933,7 +934,7 @@ quickjs-ffi-types/dist/index.d.ts:87
 
 ##### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1383
+quickjs-emscripten-core/dist/index.d.ts:1384
 
 #### debugLog(message, optionalParams)
 
@@ -951,7 +952,7 @@ quickjs-emscripten-core/dist/index.d.ts:1383
 
 ##### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1384
+quickjs-emscripten-core/dist/index.d.ts:1385
 
 ***
 
@@ -1080,7 +1081,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1302
+quickjs-emscripten-core/dist/index.d.ts:1303
 
 ***
 
@@ -1088,7 +1089,7 @@ quickjs-emscripten-core/dist/index.d.ts:1302
 
 > **newAsyncContext**(`options`?): `Promise`\<[`QuickJSAsyncContext`](classes/QuickJSAsyncContext.md)\>
 
-Create a new [[QuickJSAsyncContext]] (with an associated runtime) in an
+Create a new [QuickJSAsyncContext](classes/QuickJSAsyncContext.md) (with an associated runtime) in an
 separate WebAssembly module.
 
 Each context is isolated in a separate WebAssembly module, so that errors in
@@ -1117,7 +1118,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 > **newAsyncRuntime**(`options`?): `Promise`\<[`QuickJSAsyncRuntime`](classes/QuickJSAsyncRuntime.md)\>
 
-Create a new [[QuickJSAsyncRuntime]] in a separate WebAssembly module.
+Create a new [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md) in a separate WebAssembly module.
 
 Each runtime is isolated in a separate WebAssembly module, so that errors in
 one runtime cannot contaminate another runtime, and each runtime can execute
@@ -1150,8 +1151,8 @@ compiled with Emscripten's [ASYNCIFY](https://emscripten.org/docs/porting/asynci
 
 This version of the library offers features that enable synchronous code
 inside the VM to interact with asynchronous code in the host environment.
-See the documentation on [[QuickJSAsyncWASMModule]], [[QuickJSAsyncRuntime]],
-and [[QuickJSAsyncContext]].
+See the documentation on [QuickJSAsyncWASMModule](classes/QuickJSAsyncWASMModule.md), [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md),
+and [QuickJSAsyncContext](classes/QuickJSAsyncContext.md).
 
 Note that there is a hard limit on the number of WebAssembly modules in older
 versions of v8:
@@ -1182,8 +1183,8 @@ compiled with Emscripten's [ASYNCIFY](https://emscripten.org/docs/porting/asynci
 
 This version of the library offers features that enable synchronous code
 inside the VM to interact with asynchronous code in the host environment.
-See the documentation on [[QuickJSAsyncWASMModule]], [[QuickJSAsyncRuntime]],
-and [[QuickJSAsyncContext]].
+See the documentation on [QuickJSAsyncWASMModule](classes/QuickJSAsyncWASMModule.md), [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md),
+and [QuickJSAsyncContext](classes/QuickJSAsyncContext.md).
 
 Note that there is a hard limit on the number of WebAssembly modules in older
 versions of v8:
@@ -1209,7 +1210,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1291
+quickjs-emscripten-core/dist/index.d.ts:1292
 
 ***
 
@@ -1218,7 +1219,7 @@ quickjs-emscripten-core/dist/index.d.ts:1291
 > **newQuickJSWASMModule**(`variant`): `Promise`\<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
 
 Create a new, completely isolated WebAssembly module containing the QuickJS library.
-See the documentation on [[QuickJSWASMModule]].
+See the documentation on [QuickJSWASMModule](classes/QuickJSWASMModule.md).
 
 Note that there is a hard limit on the number of WebAssembly modules in older
 versions of v8:
@@ -1245,7 +1246,7 @@ Optionally, pass a SyncBuildVariant to construct a different WebAssembly module.
 > **newQuickJSWASMModuleFromVariant**(`variantOrPromise`): `Promise`\<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
 
 Create a new, completely isolated WebAssembly module containing the QuickJS library.
-See the documentation on [[QuickJSWASMModule]].
+See the documentation on [QuickJSWASMModule](classes/QuickJSWASMModule.md).
 
 Note that there is a hard limit on the number of WebAssembly modules in older
 versions of v8:
@@ -1271,7 +1272,7 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1266
+quickjs-emscripten-core/dist/index.d.ts:1267
 
 ***
 
@@ -1294,7 +1295,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1310
+quickjs-emscripten-core/dist/index.d.ts:1311
 
 ***
 

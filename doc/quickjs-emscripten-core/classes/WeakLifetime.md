@@ -187,7 +187,7 @@ Used for function arguments.
 
 true if the object is alive
 
-false after the object has been [[dispose]]d
+false after the object has been [dispose](WeakLifetime.md#dispose)d
 
 #### Source
 
@@ -232,7 +232,7 @@ may become invalid, leading to memory errors.
 
 #### Throws
 
-If the lifetime has been [[dispose]]d already.
+If the lifetime has been [dispose](WeakLifetime.md#dispose)d already.
 
 #### Returns
 
@@ -304,7 +304,7 @@ the result of `map(this)`.
 
 > **dispose**(): `void`
 
-Dispose of [[value]] and perform cleanup.
+Dispose of [value](WeakLifetime.md#value-1) and perform cleanup.
 
 #### Returns
 
@@ -324,7 +324,7 @@ Dispose of [[value]] and perform cleanup.
 
 > **dup**(): [`Lifetime`](Lifetime.md)\<`TCopy`, `TCopy`, `Owner`\>
 
-Create a new handle pointing to the same [[value]].
+Create a new handle pointing to the same [value](WeakLifetime.md#value-1).
 
 #### Returns
 

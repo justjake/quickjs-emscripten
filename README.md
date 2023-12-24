@@ -49,15 +49,15 @@ main()
 Install from `npm`: `npm install --save quickjs-emscripten` or `yarn add quickjs-emscripten`.
 
 The root entrypoint of this library is the `getQuickJS` function, which returns
-a promise that resolves to a [QuickJS singleton](./doc/classes/quickjs.md) when
+a promise that resolves to a [QuickJSWASMModule](./doc/quickjs-emscripten/classes/QuickJSWASMModule.md) when
 the QuickJS WASM module is ready.
 
 Once `getQuickJS` has been awaited at least once, you also can use the `getQuickJSSync`
-function to directly access the singleton engine in your synchronous code.
+function to directly access the singleton in your synchronous code.
 
 ### Safely evaluate Javascript code
 
-See [QuickJS.evalCode](https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/quickjs.md#evalcode)
+See [QuickJSWASMModule.evalCode](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSWASMModule.md#evalcode)
 
 ```typescript
 import { getQuickJS, shouldInterruptAfterDeadline } from "quickjs-emscripten"
@@ -82,7 +82,7 @@ classes -- and actions from one context won't leak into other contexts or
 runtimes (with one exception, see [Asyncify][asyncify]).
 
 Every context is created inside a
-[QuickJSRuntime](https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/QuickJSRuntime.md).
+[QuickJSRuntime](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSRuntime.md).
 A runtime represents a Javascript heap, and you can even share values between
 contexts in the same runtime.
 
@@ -166,7 +166,7 @@ handle you create:
 #### Scope
 
 A
-[`Scope`](https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/scope.md#class-scope)
+[`Scope`](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/Scope.md#class-scope)
 instance manages a set of disposables and calls their `.dispose()`
 method in the reverse order in which they're added to the scope. Here's the
 "Interfacing with the interpreter" example re-written using `Scope`:
@@ -553,6 +553,8 @@ thinking comes next. Last updated 2022-03-18.
 This library is implemented in two languages: C (compiled to WASM with
 Emscripten), and Typescript.
 
+You will need `node`, `yarn`, `make`, and `emscripten` to build this project.
+
 ### The C parts
 
 The ./c directory contains C code that wraps the QuickJS C library (in ./quickjs).
@@ -560,36 +562,43 @@ Public functions (those starting with `QTS_`) in ./c/interface.c are
 automatically exported to native code (via a generated header) and to
 Typescript (via a generated FFI class). See ./generate.ts for how this works.
 
-The C code builds as both with `emscripten` (using `emcc`), to produce WASM (or
-ASM.js) and with `clang`. Build outputs are checked in, so you can iterate on
-the Javascript parts of the library without setting up the Emscripten toolchain.
-
-Intermediate object files from QuickJS end up in ./build/quickjs/.
-
-This project uses `emscripten 3.1.32`.
+The C code builds with `emscripten` (using `emcc`), to produce WebAssembly.
+The version of Emscripten used by the project is defined in templates/Variant.mk.
 
 - On ARM64, you should install `emscripten` on your machine. For example on macOS, `brew install emscripten`.
 - If _the correct version of emcc_ is not in your PATH, compilation falls back to using Docker.
   On ARM64, this is 10-50x slower than native compilation, but it's just fine on x64.
 
+We produce multiple build variants of the C code compiled to WebAssembly using a
+template script the ./packages directory. Each build variant uses its own copy of a Makefile
+to build the C code. The Makefile is generated from a template in ./templates/Variant.mk.
+
 Related NPM scripts:
 
-- `yarn update-quickjs` will sync the ./quickjs folder with a
-  github repo tracking the upstream QuickJS.
-- `yarn make-debug` will rebuild C outputs into ./build/wrapper
-- `yarn make-release` will rebuild C outputs in release mode, which is the mode
-  that should be checked into the repo.
+- `yarn update-quickjs` will sync the ./quickjs folder with a github repo tracking the upstream QuickJS.
+- `yarn build:codegen` updates the ./packages from the template script `./prepareVariants.ts` and Variant.mk.
+- `yarn build:packages` builds the variant packages in parallel.
 
 ### The Typescript parts
 
-The ./ts directory contains Typescript types and wraps the generated Emscripten
-FFI in a more usable interface.
+The Javascript/Typescript code is also organized into several NPM packages in ./packages:
 
-You'll need `node` and `yarn`. Install dependencies with `yarn install`.
+- ./packages/quickjs-ffi-types: Low-level types that define the FFI interface to the C code.
+  Each variant exposes an API conforming to these types that's consumed by the higher-level library.
+- ./packages/quickjs-emscripten-core: The higher-level Typescript that implements the user-facing abstractions of the library.
+  This package doesn't link directly to the WebAssembly/C code; callers must provide a build variant.
+- ./packages/quicks-emscripten: The main entrypoint of the library, which provides the `getQuickJS` function.
+  This package combines quickjs-emscripten-core with platform-appropriate WebAssembly/C code.
 
-- `yarn build` produces ./dist.
-- `yarn test` runs the tests.
-- `yarn test --watch` watches for changes and re-runs the tests.
+Related NPM scripts:
+
+- `yarn check` runs all available checks (build, format, tests, etc).
+- `yarn build` builds all the packages and generates the docs.
+- `yarn test` runs the tests for all packages.
+  - `yarn test:fast` runs the tests using only fast build variants.
+- `yarn doc` generates the docs into `./doc`.
+  - `yarn doc:serve` previews the current `./doc` in a browser.
+- `yarn prettier` formats the repo.
 
 ### Yarn updates
 

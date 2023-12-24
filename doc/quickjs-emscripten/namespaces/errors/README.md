@@ -33,7 +33,7 @@
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1340
+quickjs-emscripten-core/dist/index.d.ts:1341
 
 ***
 
@@ -43,7 +43,7 @@ quickjs-emscripten-core/dist/index.d.ts:1340
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1342
+quickjs-emscripten-core/dist/index.d.ts:1343
 
 ***
 
@@ -53,7 +53,7 @@ quickjs-emscripten-core/dist/index.d.ts:1342
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1344
+quickjs-emscripten-core/dist/index.d.ts:1345
 
 ***
 
@@ -63,7 +63,7 @@ quickjs-emscripten-core/dist/index.d.ts:1344
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1346
+quickjs-emscripten-core/dist/index.d.ts:1347
 
 ***
 
@@ -73,7 +73,7 @@ quickjs-emscripten-core/dist/index.d.ts:1346
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1348
+quickjs-emscripten-core/dist/index.d.ts:1349
 
 ***
 
@@ -83,7 +83,7 @@ quickjs-emscripten-core/dist/index.d.ts:1348
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1350
+quickjs-emscripten-core/dist/index.d.ts:1351
 
 ***
 
@@ -93,7 +93,7 @@ quickjs-emscripten-core/dist/index.d.ts:1350
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1352
+quickjs-emscripten-core/dist/index.d.ts:1353
 
 ## Variables
 
@@ -103,7 +103,7 @@ quickjs-emscripten-core/dist/index.d.ts:1352
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1340
+quickjs-emscripten-core/dist/index.d.ts:1341
 
 ***
 
@@ -113,7 +113,7 @@ quickjs-emscripten-core/dist/index.d.ts:1340
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1342
+quickjs-emscripten-core/dist/index.d.ts:1343
 
 ***
 
@@ -123,7 +123,7 @@ quickjs-emscripten-core/dist/index.d.ts:1342
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1344
+quickjs-emscripten-core/dist/index.d.ts:1345
 
 ***
 
@@ -133,7 +133,7 @@ quickjs-emscripten-core/dist/index.d.ts:1344
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1346
+quickjs-emscripten-core/dist/index.d.ts:1347
 
 ***
 
@@ -143,7 +143,7 @@ quickjs-emscripten-core/dist/index.d.ts:1346
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1348
+quickjs-emscripten-core/dist/index.d.ts:1349
 
 ***
 
@@ -153,7 +153,7 @@ quickjs-emscripten-core/dist/index.d.ts:1348
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1350
+quickjs-emscripten-core/dist/index.d.ts:1351
 
 ***
 
@@ -163,7 +163,7 @@ quickjs-emscripten-core/dist/index.d.ts:1350
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1352
+quickjs-emscripten-core/dist/index.d.ts:1353
 
 ***
 

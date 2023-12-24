@@ -7,8 +7,8 @@
 # Interface: Disposable
 
 An object that can be disposed.
-[[Lifetime]] is the canonical implementation of Disposable.
-Use [[Scope]] to manage cleaning up multiple disposables.
+[Lifetime](../classes/Lifetime.md) is the canonical implementation of Disposable.
+Use [Scope](../classes/Scope.md) to manage cleaning up multiple disposables.
 
 ## Contents
 

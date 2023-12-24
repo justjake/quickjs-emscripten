@@ -60,7 +60,7 @@ Module loader for any `import` statements or expressions.
 > **shouldInterrupt**?: [`InterruptHandler`](../exports.md#interrupthandler)
 
 Interrupt evaluation if `shouldInterrupt` returns `true`.
-See [[shouldInterruptAfterDeadline]].
+See [shouldInterruptAfterDeadline](../exports.md#shouldinterruptafterdeadline).
 
 #### Source
 

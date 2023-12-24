@@ -69,7 +69,7 @@ class QuickJSEmscriptenModuleCallbacks implements EmscriptenModuleCallbacks {
 export interface ModuleEvalOptions {
   /**
    * Interrupt evaluation if `shouldInterrupt` returns `true`.
-   * See [[shouldInterruptAfterDeadline]].
+   * See {@link shouldInterruptAfterDeadline}.
    */
   shouldInterrupt?: InterruptHandler
 
@@ -331,7 +331,7 @@ export class QuickJSWASMModule {
   /**
    * Create a runtime.
    * Use the runtime to set limits on CPU and memory usage and configure module
-   * loading for one or more [[QuickJSContext]]s inside the runtime.
+   * loading for one or more {@link QuickJSContext}s inside the runtime.
    */
   newRuntime(options: RuntimeOptions = {}): QuickJSRuntime {
     const rt = new Lifetime(this.ffi.QTS_NewRuntime(), undefined, (rt_ptr) => {
@@ -356,8 +356,8 @@ export class QuickJSWASMModule {
   }
 
   /**
-   * A simplified API to create a new [[QuickJSRuntime]] and a
-   * [[QuickJSContext]] inside that runtime at the same time. The runtime will
+   * A simplified API to create a new {@link QuickJSRuntime} and a
+   * {@link QuickJSContext} inside that runtime at the same time. The runtime will
    * be disposed when the context is disposed.
    */
   newContext(options: ContextOptions = {}): QuickJSContext {
@@ -371,15 +371,15 @@ export class QuickJSWASMModule {
   }
 
   /**
-   * One-off evaluate code without needing to create a [[QuickJSRuntime]] or
-   * [[QuickJSContext]] explicitly.
+   * One-off evaluate code without needing to create a {@link QuickJSRuntime} or
+   * {@link QuickJSContext} explicitly.
    *
    * To protect against infinite loops, use the `shouldInterrupt` option. The
-   * [[shouldInterruptAfterDeadline]] function will create a time-based deadline.
+   * {@link shouldInterruptAfterDeadline} function will create a time-based deadline.
    *
    * If you need more control over how the code executes, create a
-   * [[QuickJSRuntime]] (with [[newRuntime]]) or a [[QuickJSContext]] (with
-   * [[newContext]] or [[QuickJSRuntime.newContext]]), and use its
+   * {@link QuickJSRuntime} (with {@link newRuntime}) or a {@link QuickJSContext} (with
+   * {@link newContext} or [[QuickJSRuntime.newContext]]), and use its
    * [[QuickJSContext.evalCode]] method.
    *
    * Asynchronous callbacks may not run during the first call to `evalCode`. If

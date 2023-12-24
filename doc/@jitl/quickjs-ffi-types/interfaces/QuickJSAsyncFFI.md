@@ -7,7 +7,7 @@
 # Interface: QuickJSAsyncFFI
 
 Low-level FFI bindings to QuickJS's Emscripten module.
-See instead [[QuickJSContext]], the public Javascript interface exposed by this
+See instead QuickJSContext, the public Javascript interface exposed by this
 library.
 
 ## Contents

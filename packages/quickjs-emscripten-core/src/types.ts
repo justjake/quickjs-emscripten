@@ -220,7 +220,7 @@ export interface ContextEvalOptions {
   backtraceBarrier?: boolean
 }
 
-/** Convert [[ContextEvalOptions]] to a bitfield flags */
+/** Convert {@link ContextEvalOptions} to a bitfield flags */
 export function evalOptionsToFlags(evalOptions: ContextEvalOptions | number | undefined): number {
   if (typeof evalOptions === "number") {
     return evalOptions

@@ -14,7 +14,7 @@ export type PromisedDefault<T> =
 
 /**
  * Create a new, completely isolated WebAssembly module containing the QuickJS library.
- * See the documentation on [[QuickJSWASMModule]].
+ * See the documentation on {@link QuickJSWASMModule}.
  *
  * Note that there is a hard limit on the number of WebAssembly modules in older
  * versions of v8:
@@ -51,8 +51,8 @@ export async function newQuickJSWASMModuleFromVariant(
  *
  * This version of the library offers features that enable synchronous code
  * inside the VM to interact with asynchronous code in the host environment.
- * See the documentation on [[QuickJSAsyncWASMModule]], [[QuickJSAsyncRuntime]],
- * and [[QuickJSAsyncContext]].
+ * See the documentation on {@link QuickJSAsyncWASMModule}, {@link QuickJSAsyncRuntime},
+ * and {@link QuickJSAsyncContext}.
  *
  * Note that there is a hard limit on the number of WebAssembly modules in older
  * versions of v8:

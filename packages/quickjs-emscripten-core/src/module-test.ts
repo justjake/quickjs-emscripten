@@ -6,13 +6,13 @@ import { QuickJSMemoryLeakDetected } from "./errors"
 import { Lifetime } from "./lifetime"
 
 /**
- * A test wrapper of [[QuickJSWASMModule]] that keeps a reference to each
+ * A test wrapper of {@link QuickJSWASMModule} that keeps a reference to each
  * context or runtime created.
  *
- * Call [[disposeAll]] to reset these sets and calls `dispose` on any left alive
+ * Call {@link disposeAll} to reset these sets and calls `dispose` on any left alive
  * (which may throw an error).
  *
- * Call [[assertNoMemoryAllocated]] at the end of a test, when you expect that you've
+ * Call {@link assertNoMemoryAllocated} at the end of a test, when you expect that you've
  * freed all the memory you've ever allocated.
  */
 export class TestQuickJSWASMModule implements Pick<QuickJSWASMModule, keyof QuickJSWASMModule> {

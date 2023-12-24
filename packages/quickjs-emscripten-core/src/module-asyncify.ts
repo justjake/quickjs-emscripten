@@ -12,7 +12,7 @@ import { QuickJSAsyncRuntime } from "./runtime-asyncify"
 import { AsyncRuntimeOptions, ContextOptions, RuntimeOptions } from "./types"
 
 /**
- * Asyncified version of [[QuickJSWASMModule]].
+ * Asyncified version of {@link QuickJSWASMModule}.
  *
  * Due to limitations of Emscripten's ASYNCIFY process, only a single async
  * function call can happen at a time across the entire WebAssembly module.
@@ -64,8 +64,8 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
   }
 
   /**
-   * A simplified API to create a new [[QuickJSRuntime]] and a
-   * [[QuickJSContext]] inside that runtime at the same time. The runtime will
+   * A simplified API to create a new {@link QuickJSRuntime} and a
+   * {@link QuickJSContext} inside that runtime at the same time. The runtime will
    * be disposed when the context is disposed.
    */
   override newContext(options: ContextOptions = {}): QuickJSAsyncContext {
@@ -82,8 +82,8 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
   }
 
   /**
-   * One-off evaluate code without needing to create a [[QuickJSRuntimeAsync]] or
-   * [[QuickJSContextSync]] explicitly.
+   * One-off evaluate code without needing to create a {@link QuickJSRuntimeAsync} or
+   * {@link QuickJSContextSync} explicitly.
    *
    * This version allows for asynchronous Ecmascript module loading.
    *

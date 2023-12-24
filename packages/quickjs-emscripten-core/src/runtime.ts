@@ -65,13 +65,13 @@ export type ExecutePendingJobsResult = SuccessOrFail<
  * modules to further isolate untrusted code.
  * See {@link newQuickJSWASMModule}.
  *
- * Implement memory and CPU constraints with [[setInterruptHandler]]
- * (called regularly while the interpreter runs), [[setMemoryLimit]], and
- * [[setMaxStackSize]].
- * Use [[computeMemoryUsage]] or [[dumpMemoryUsage]] to guide memory limit
+ * Implement memory and CPU constraints with {@link setInterruptHandler}
+ * (called regularly while the interpreter runs), {@link setMemoryLimit}, and
+ * {@link setMaxStackSize}.
+ * Use {@link computeMemoryUsage} or {@link dumpMemoryUsage} to guide memory limit
  * tuning.
  *
- * Configure ES module loading with [[setModuleLoader]].
+ * Configure ES module loading with {@link setModuleLoader}.
  */
 export class QuickJSRuntime implements Disposable {
   /**
@@ -79,7 +79,7 @@ export class QuickJSRuntime implements Disposable {
    * associated with the runtime.
    *
    * If this runtime was created stand-alone, this may or may not contain a context.
-   * A context here may be allocated if one is needed by the runtime, eg for [[computeMemoryUsage]].
+   * A context here may be allocated if one is needed by the runtime, eg for {@link computeMemoryUsage}.
    */
   public context: QuickJSContext | undefined
 
@@ -164,7 +164,7 @@ export class QuickJSRuntime implements Disposable {
    * Set the loader for EcmaScript modules requested by any context in this
    * runtime.
    *
-   * The loader can be removed with [[removeModuleLoader]].
+   * The loader can be removed with {@link removeModuleLoader}.
    */
   setModuleLoader(moduleLoader: JSModuleLoader, moduleNormalizer?: JSModuleNormalizer): void {
     this.moduleLoader = moduleLoader
@@ -173,7 +173,7 @@ export class QuickJSRuntime implements Disposable {
   }
 
   /**
-   * Remove the the loader set by [[setModuleLoader]]. This disables module loading.
+   * Remove the the loader set by {@link setModuleLoader}. This disables module loading.
    */
   removeModuleLoader(): void {
     this.moduleLoader = undefined
@@ -184,7 +184,7 @@ export class QuickJSRuntime implements Disposable {
 
   /**
    * In QuickJS, promises and async functions create pendingJobs. These do not execute
-   * immediately and need to be run by calling [[executePendingJobs]].
+   * immediately and need to be run by calling {@link executePendingJobs}.
    *
    * @return true if there is at least one pendingJob queued up.
    */
@@ -199,7 +199,7 @@ export class QuickJSRuntime implements Disposable {
    * executing code. This callback can be used to implement an execution
    * timeout.
    *
-   * The interrupt handler can be removed with [[removeInterruptHandler]].
+   * The interrupt handler can be removed with {@link removeInterruptHandler}.
    */
   setInterruptHandler(cb: InterruptHandler) {
     const prevInterruptHandler = this.interruptHandler
@@ -211,7 +211,7 @@ export class QuickJSRuntime implements Disposable {
 
   /**
    * Remove the interrupt handler, if any.
-   * See [[setInterruptHandler]].
+   * See {@link setInterruptHandler}.
    */
   removeInterruptHandler() {
     if (this.interruptHandler) {
@@ -235,7 +235,7 @@ export class QuickJSRuntime implements Disposable {
    * that stopped execution, and the context it occurred in. Note that
    * executePendingJobs will not normally return errors thrown inside async
    * functions or rejected promises. Those errors are available by calling
-   * [[resolvePromise]] on the promise handle returned by the async function.
+   * {@link QuickJSContext#resolvePromise} on the promise handle returned by the async function.
    */
   executePendingJobs(maxJobsToExecute: number | void = -1): ExecutePendingJobsResult {
     const ctxPtrOut = this.memory.newMutablePointerArray<JSContextPointerPointer>(1)
@@ -290,7 +290,7 @@ export class QuickJSRuntime implements Disposable {
    * JSValue object. Use [[QuickJSContext.dump]] to convert to a native object.
    * Calling this method will allocate more memory inside the runtime. The information
    * is accurate as of just before the call to `computeMemoryUsage`.
-   * For a human-digestible representation, see [[dumpMemoryUsage]].
+   * For a human-digestible representation, see {@link dumpMemoryUsage}.
    */
   computeMemoryUsage(): QuickJSHandle {
     const serviceContextMemory = this.getSystemContext().getMemory(this.rt.value)
@@ -301,7 +301,7 @@ export class QuickJSRuntime implements Disposable {
 
   /**
    * @returns a human-readable description of memory usage in this runtime.
-   * For programmatic access to this information, see [[computeMemoryUsage]].
+   * For programmatic access to this information, see {@link computeMemoryUsage}.
    */
   dumpMemoryUsage(): string {
     return this.memory.consumeHeapCharPointer(this.ffi.QTS_RuntimeDumpMemoryUsage(this.rt.value))

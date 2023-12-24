@@ -30,13 +30,13 @@ export type JSModuleDefPointer = Pointer<"JSModuleDef">
 
 /**
  * `JSValue*`.
- * See [[JSValue]].
+ * See {@link JSValue}.
  */
 export type JSValuePointer = Pointer<"JSValue">
 
 /**
  * `JSValueConst*
- * See [[JSValueConst]] and [[StaticJSValue]].
+ * See {@link JSValueConst} and {@link StaticJSValue}.
  */
 export type JSValueConstPointer = Pointer<"JSValueConst">
 

@@ -6,13 +6,13 @@
 
 # Class: TestQuickJSWASMModule
 
-A test wrapper of [[QuickJSWASMModule]] that keeps a reference to each
+A test wrapper of [QuickJSWASMModule](QuickJSWASMModule.md) that keeps a reference to each
 context or runtime created.
 
-Call [[disposeAll]] to reset these sets and calls `dispose` on any left alive
+Call [disposeAll](TestQuickJSWASMModule.md#disposeall) to reset these sets and calls `dispose` on any left alive
 (which may throw an error).
 
-Call [[assertNoMemoryAllocated]] at the end of a test, when you expect that you've
+Call [assertNoMemoryAllocated](TestQuickJSWASMModule.md#assertnomemoryallocated) at the end of a test, when you expect that you've
 freed all the memory you've ever allocated.
 
 ## Contents
@@ -66,7 +66,7 @@ freed all the memory you've ever allocated.
 
 ### runtimes
 
-> **runtimes**: `Set`\<`QuickJSRuntime`\>
+> **runtimes**: `Set`\<[`QuickJSRuntime`](QuickJSRuntime.md)\>
 
 #### Source
 
@@ -150,7 +150,7 @@ freed all the memory you've ever allocated.
 
 ### newRuntime()
 
-> **newRuntime**(`options`?): `QuickJSRuntime`
+> **newRuntime**(`options`?): [`QuickJSRuntime`](QuickJSRuntime.md)
 
 #### Parameters
 
@@ -158,7 +158,7 @@ freed all the memory you've ever allocated.
 
 #### Returns
 
-`QuickJSRuntime`
+[`QuickJSRuntime`](QuickJSRuntime.md)
 
 #### Implementation of
 

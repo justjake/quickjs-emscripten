@@ -7,7 +7,7 @@
 # Class: Scope
 
 Scope helps reduce the burden of manually tracking and disposing of
-Lifetimes. See [[withScope]]. and [[withScopeAsync]].
+Lifetimes. See [withScope](Scope.md#withscope). and [withScopeAsync](Scope.md#withscopeasync).
 
 ## Contents
 
@@ -49,7 +49,7 @@ Lifetimes. See [[withScope]]. and [[withScopeAsync]].
 
 true if the object is alive
 
-false after the object has been [[dispose]]d
+false after the object has been [dispose](Scope.md#dispose)d
 
 #### Source
 
@@ -123,7 +123,7 @@ automatically disposed after the block returns.
 
 #### Warning
 
-Do not use with async functions. Instead, use [[withScopeAsync]].
+Do not use with async functions. Instead, use [withScopeAsync](Scope.md#withscopeasync).
 
 #### Source
 

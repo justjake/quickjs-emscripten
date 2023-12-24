@@ -40,15 +40,15 @@ inside QuickJS, create a context with [newContext](QuickJSWASMModule.md#newconte
 
 > **evalCode**(`code`, `options`?): `unknown`
 
-One-off evaluate code without needing to create a [[QuickJSRuntime]] or
-[[QuickJSContext]] explicitly.
+One-off evaluate code without needing to create a [QuickJSRuntime](QuickJSRuntime.md) or
+[QuickJSContext](QuickJSContext.md) explicitly.
 
 To protect against infinite loops, use the `shouldInterrupt` option. The
-[[shouldInterruptAfterDeadline]] function will create a time-based deadline.
+[shouldInterruptAfterDeadline](../exports.md#shouldinterruptafterdeadline) function will create a time-based deadline.
 
 If you need more control over how the code executes, create a
-[[QuickJSRuntime]] (with [[newRuntime]]) or a [[QuickJSContext]] (with
-[[newContext]] or [[QuickJSRuntime.newContext]]), and use its
+[QuickJSRuntime](QuickJSRuntime.md) (with [newRuntime](QuickJSWASMModule.md#newruntime)) or a [QuickJSContext](QuickJSContext.md) (with
+[newContext](QuickJSWASMModule.md#newcontext) or [[QuickJSRuntime.newContext]]), and use its
 [[QuickJSContext.evalCode]] method.
 
 Asynchronous callbacks may not run during the first call to `evalCode`. If
@@ -80,7 +80,7 @@ with name `"InternalError"` and  message `"interrupted"`.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1185
+quickjs-emscripten-core/dist/index.d.ts:1186
 
 ***
 
@@ -88,8 +88,8 @@ quickjs-emscripten-core/dist/index.d.ts:1185
 
 > **newContext**(`options`?): [`QuickJSContext`](QuickJSContext.md)
 
-A simplified API to create a new [[QuickJSRuntime]] and a
-[[QuickJSContext]] inside that runtime at the same time. The runtime will
+A simplified API to create a new [QuickJSRuntime](QuickJSRuntime.md) and a
+[QuickJSContext](QuickJSContext.md) inside that runtime at the same time. The runtime will
 be disposed when the context is disposed.
 
 #### Parameters
@@ -102,17 +102,17 @@ be disposed when the context is disposed.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1159
+quickjs-emscripten-core/dist/index.d.ts:1160
 
 ***
 
 ### newRuntime()
 
-> **newRuntime**(`options`?): `QuickJSRuntime`
+> **newRuntime**(`options`?): [`QuickJSRuntime`](QuickJSRuntime.md)
 
 Create a runtime.
 Use the runtime to set limits on CPU and memory usage and configure module
-loading for one or more [[QuickJSContext]]s inside the runtime.
+loading for one or more [QuickJSContext](QuickJSContext.md)s inside the runtime.
 
 #### Parameters
 
@@ -120,11 +120,11 @@ loading for one or more [[QuickJSContext]]s inside the runtime.
 
 #### Returns
 
-`QuickJSRuntime`
+[`QuickJSRuntime`](QuickJSRuntime.md)
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1153
+quickjs-emscripten-core/dist/index.d.ts:1154
 
 ***
 

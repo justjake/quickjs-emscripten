@@ -20,7 +20,7 @@ export type AsyncFunctionImplementation = (
 ) => Promise<QuickJSHandle | VmCallResult<QuickJSHandle> | void>
 
 /**
- * Asyncified version of [[QuickJSContext]].
+ * Asyncified version of {@link QuickJSContext}.
  *
  * *Asyncify* allows normally synchronous code to wait for asynchronous Promises
  * or callbacks. The asyncified version of QuickJSContext can wait for async
@@ -38,12 +38,12 @@ export class QuickJSAsyncContext extends QuickJSContext {
   protected declare callbacks: QuickJSModuleCallbacks
 
   /**
-   * Asyncified version of [[evalCode]].
+   * Asyncified version of {@link evalCode}.
    */
   async evalCodeAsync(
     code: string,
     filename: string = "eval.js",
-    /** See [[EvalFlags]] for number semantics */
+    /** See {@link EvalFlags} for number semantics */
     options?: number | ContextEvalOptions,
   ): Promise<VmCallResult<QuickJSHandle>> {
     const detectModule = (options === undefined ? 1 : 0) as EvalDetectModule
@@ -74,7 +74,7 @@ export class QuickJSAsyncContext extends QuickJSContext {
   }
 
   /**
-   * Similar to [[newFunction]].
+   * Similar to {@link newFunction}.
    * Convert an async host Javascript function into a synchronous QuickJS function value.
    *
    * Whenever QuickJS calls this function, the VM's stack will be unwound while

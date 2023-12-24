@@ -134,7 +134,7 @@ for the Emscripten stack.
 > **JSValueConstPointer**: `Pointer`\<`"JSValueConst"`\>
 
 `JSValueConst*
-See [[JSValueConst]] and [[StaticJSValue]].
+See JSValueConst and StaticJSValue.
 
 #### Source
 
@@ -159,7 +159,7 @@ Used internally for Javascript-to-C function calls.
 > **JSValuePointer**: `Pointer`\<`"JSValue"`\>
 
 `JSValue*`.
-See [[JSValue]].
+See JSValue.
 
 #### Source
 

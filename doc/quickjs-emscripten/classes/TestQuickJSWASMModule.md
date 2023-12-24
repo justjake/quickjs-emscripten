@@ -6,13 +6,13 @@
 
 # Class: TestQuickJSWASMModule
 
-A test wrapper of [[QuickJSWASMModule]] that keeps a reference to each
+A test wrapper of [QuickJSWASMModule](QuickJSWASMModule.md) that keeps a reference to each
 context or runtime created.
 
-Call [[disposeAll]] to reset these sets and calls `dispose` on any left alive
+Call [disposeAll](TestQuickJSWASMModule.md#disposeall) to reset these sets and calls `dispose` on any left alive
 (which may throw an error).
 
-Call [[assertNoMemoryAllocated]] at the end of a test, when you expect that you've
+Call [assertNoMemoryAllocated](TestQuickJSWASMModule.md#assertnomemoryallocated) at the end of a test, when you expect that you've
 freed all the memory you've ever allocated.
 
 ## Contents
@@ -50,7 +50,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1372
+quickjs-emscripten-core/dist/index.d.ts:1373
 
 ## Properties
 
@@ -60,17 +60,17 @@ quickjs-emscripten-core/dist/index.d.ts:1372
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1370
+quickjs-emscripten-core/dist/index.d.ts:1371
 
 ***
 
 ### runtimes
 
-> **runtimes**: `Set`\<`QuickJSRuntime`\>
+> **runtimes**: `Set`\<[`QuickJSRuntime`](QuickJSRuntime.md)\>
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1371
+quickjs-emscripten-core/dist/index.d.ts:1372
 
 ## Methods
 
@@ -84,7 +84,7 @@ quickjs-emscripten-core/dist/index.d.ts:1371
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1377
+quickjs-emscripten-core/dist/index.d.ts:1378
 
 ***
 
@@ -98,7 +98,7 @@ quickjs-emscripten-core/dist/index.d.ts:1377
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1376
+quickjs-emscripten-core/dist/index.d.ts:1377
 
 ***
 
@@ -122,7 +122,7 @@ quickjs-emscripten-core/dist/index.d.ts:1376
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1375
+quickjs-emscripten-core/dist/index.d.ts:1376
 
 ***
 
@@ -144,13 +144,13 @@ quickjs-emscripten-core/dist/index.d.ts:1375
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1374
+quickjs-emscripten-core/dist/index.d.ts:1375
 
 ***
 
 ### newRuntime()
 
-> **newRuntime**(`options`?): `QuickJSRuntime`
+> **newRuntime**(`options`?): [`QuickJSRuntime`](QuickJSRuntime.md)
 
 #### Parameters
 
@@ -158,7 +158,7 @@ quickjs-emscripten-core/dist/index.d.ts:1374
 
 #### Returns
 
-`QuickJSRuntime`
+[`QuickJSRuntime`](QuickJSRuntime.md)
 
 #### Implementation of
 
@@ -166,7 +166,7 @@ quickjs-emscripten-core/dist/index.d.ts:1374
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1373
+quickjs-emscripten-core/dist/index.d.ts:1374
 
 ***
 

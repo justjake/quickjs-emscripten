@@ -6,25 +6,25 @@
 
 # Class: QuickJSDeferredPromise
 
-QuickJSDeferredPromise wraps a QuickJS promise [[handle]] and allows
-[[resolve]]ing or [[reject]]ing that promise. Use it to bridge asynchronous
+QuickJSDeferredPromise wraps a QuickJS promise [handle](QuickJSDeferredPromise.md#handle) and allows
+[resolve](QuickJSDeferredPromise.md#resolve)ing or [reject](QuickJSDeferredPromise.md#reject)ing that promise. Use it to bridge asynchronous
 code on the host to APIs inside a QuickJSContext.
 
 Managing the lifetime of promises is tricky. There are three
-[[QuickJSHandle]]s inside of each deferred promise object: (1) the promise
+[QuickJSHandle](../exports.md#quickjshandle)s inside of each deferred promise object: (1) the promise
 itself, (2) the `resolve` callback, and (3) the `reject` callback.
 
-- If the promise will be fulfilled before the end of it's [[owner]]'s lifetime,
+- If the promise will be fulfilled before the end of it's [owner](QuickJSDeferredPromise.md#owner)'s lifetime,
   the only cleanup necessary is `deferred.handle.dispose()`, because
-  calling [[resolve]] or [[reject]] will dispose of both callbacks automatically.
+  calling [resolve](QuickJSDeferredPromise.md#resolve) or [reject](QuickJSDeferredPromise.md#reject) will dispose of both callbacks automatically.
 
-- As the return value of a [[VmFunctionImplementation]], return [[handle]],
-  and ensure that either [[resolve]] or [[reject]] will be called. No other
+- As the return value of a [VmFunctionImplementation](../exports.md#vmfunctionimplementationvmhandle), return [handle](QuickJSDeferredPromise.md#handle),
+  and ensure that either [resolve](QuickJSDeferredPromise.md#resolve) or [reject](QuickJSDeferredPromise.md#reject) will be called. No other
   clean-up is necessary.
 
-- In other cases, call [[dispose]], which will dispose [[handle]] as well as the
-  QuickJS handles that back [[resolve]] and [[reject]]. For this object,
-  [[dispose]] is idempotent.
+- In other cases, call [dispose](QuickJSDeferredPromise.md#dispose), which will dispose [handle](QuickJSDeferredPromise.md#handle) as well as the
+  QuickJS handles that back [resolve](QuickJSDeferredPromise.md#resolve) and [reject](QuickJSDeferredPromise.md#reject). For this object,
+  [dispose](QuickJSDeferredPromise.md#dispose) is idempotent.
 
 ## Contents
 
@@ -95,7 +95,7 @@ this constructor directly.
 > **handle**: [`QuickJSHandle`](../exports.md#quickjshandle)
 
 A handle of the Promise instance inside the QuickJSContext.
-You must dispose [[handle]] or the entire QuickJSDeferredPromise once you
+You must dispose [handle](QuickJSDeferredPromise.md#handle) or the entire QuickJSDeferredPromise once you
 are finished with it.
 
 #### Source
@@ -106,7 +106,7 @@ are finished with it.
 
 ### owner
 
-> **owner**: `QuickJSRuntime`
+> **owner**: [`QuickJSRuntime`](QuickJSRuntime.md)
 
 #### Source
 
@@ -136,7 +136,7 @@ A native promise that will resolve once this deferred is settled.
 
 true if the object is alive
 
-false after the object has been [[dispose]]d
+false after the object has been [dispose](QuickJSDeferredPromise.md#dispose)d
 
 #### Source
 
@@ -168,8 +168,8 @@ Dispose of the underlying resources used by this object.
 
 > **reject**(`value`?): `void`
 
-Reject [[handle]] with the given value, if any.
-Calling this method after calling [[dispose]] is a no-op.
+Reject [handle](QuickJSDeferredPromise.md#handle) with the given value, if any.
+Calling this method after calling [dispose](QuickJSDeferredPromise.md#dispose) is a no-op.
 
 Note that after rejecting a promise, you may need to call
 [[QuickJSContext.executePendingJobs]] to propagate the result to the promise's
@@ -193,8 +193,8 @@ callbacks.
 
 > **resolve**(`value`?): `void`
 
-Resolve [[handle]] with the given value, if any.
-Calling this method after calling [[dispose]] is a no-op.
+Resolve [handle](QuickJSDeferredPromise.md#handle) with the given value, if any.
+Calling this method after calling [dispose](QuickJSDeferredPromise.md#dispose) is a no-op.
 
 Note that after resolving a promise, you may need to call
 [[QuickJSContext.executePendingJobs]] to propagate the result to the promise's

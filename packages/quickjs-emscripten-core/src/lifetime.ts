@@ -5,8 +5,8 @@ import type { QuickJSHandle } from "./types"
 
 /**
  * An object that can be disposed.
- * [[Lifetime]] is the canonical implementation of Disposable.
- * Use [[Scope]] to manage cleaning up multiple disposables.
+ * {@link Lifetime} is the canonical implementation of Disposable.
+ * Use {@link Scope} to manage cleaning up multiple disposables.
  */
 export interface Disposable {
   /**
@@ -16,14 +16,14 @@ export interface Disposable {
 
   /**
    * @returns true if the object is alive
-   * @returns false after the object has been [[dispose]]d
+   * @returns false after the object has been {@link dispose}d
    */
   alive: boolean
 }
 
 /**
  * A lifetime prevents access to a value after the lifetime has been
- * [[dispose]]ed.
+ * {@link dispose}ed.
  *
  * Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
  */
@@ -54,7 +54,7 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
    * The value this Lifetime protects. You must never retain the value - it
    * may become invalid, leading to memory errors.
    *
-   * @throws If the lifetime has been [[dispose]]d already.
+   * @throws If the lifetime has been {@link dispose}d already.
    */
   get value() {
     this.assertAlive()
@@ -70,7 +70,7 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
   }
 
   /**
-   * Create a new handle pointing to the same [[value]].
+   * Create a new handle pointing to the same {@link value}.
    */
   dup() {
     this.assertAlive()
@@ -101,7 +101,7 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
   }
 
   /**
-   * Dispose of [[value]] and perform cleanup.
+   * Dispose of {@link value} and perform cleanup.
    */
   dispose() {
     this.assertAlive()
@@ -192,7 +192,7 @@ function scopeFinally(scope: Scope, blockError: Error | undefined) {
 
 /**
  * Scope helps reduce the burden of manually tracking and disposing of
- * Lifetimes. See [[withScope]]. and [[withScopeAsync]].
+ * Lifetimes. See {@link withScope}. and {@link withScopeAsync}.
  */
 export class Scope implements Disposable {
   /**
@@ -200,7 +200,7 @@ export class Scope implements Disposable {
    * Inside `block`, call `scope.manage` on each lifetime you create to have the lifetime
    * automatically disposed after the block returns.
    *
-   * @warning Do not use with async functions. Instead, use [[withScopeAsync]].
+   * @warning Do not use with async functions. Instead, use {@link withScopeAsync}.
    */
   static withScope<R>(block: (scope: Scope) => R): R {
     const scope = new Scope()

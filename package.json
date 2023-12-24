@@ -18,22 +18,23 @@
     "prepack": "yarn build",
     "tarball": "make build/quickjs-emscripten.tgz",
     "prepare": "yarn prettier-check && yarn tarball && yarn test && yarn test-dist && yarn smoketest-node",
-    "clean": "git clean -dfx ",
+    "clean": "git clean -dfx ./build && yarn for-each-package clean",
     "prettier": "prettier --write .",
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:bellard/quickjs.git master",
     "smoketest-node": "yarn tarball && ./scripts/smoketest-node.sh",
     "smoketest-cra": "yarn tarball && ./scripts/smoketest-website.sh",
     "check": "yarn check:format && yarn build && yarn check:types && yarn test",
-    "test": "yarn workspaces foreach -Apt run test",
+    "test": "yarn for-each-package test",
     "test:fast": "TEST_NO_ASYNC=true yarn test",
     "test:slow": "TEST_LEAK=1 yarn test",
-    "check:types": "yarn workspaces foreach -Apt run tsc",
+    "check:types": "yarn for-each-package tsc",
     "check:format": "prettier --check .",
     "build": "yarn build:codegen && yarn build:packages && yarn doc",
     "build:codegen": "npx tsx prepareVariants.ts",
-    "build:packages": "yarn workspaces foreach --from 'packages/*' -R -pt run build",
+    "build:packages": "yarn for-each-package build",
     "doc": "typedoc",
-    "doc:serve": "cd doc && npx hads"
+    "doc:serve": "cd doc && npx hads",
+    "for-each-package": "yarn workspaces foreach --from 'packages/*' -R -pt run"
   },
   "workspaces": [
     "packages/*"

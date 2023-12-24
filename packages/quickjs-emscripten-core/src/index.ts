@@ -42,6 +42,6 @@ export type {
   JSModuleNormalizeSuccess,
 } from "./types"
 export type { ModuleEvalOptions } from "./module"
-export type { InterruptHandler, ExecutePendingJobsResult } from "./runtime"
+export type { QuickJSRuntime, InterruptHandler, ExecutePendingJobsResult } from "./runtime"
 export type { QuickJSPropertyKey } from "./context"
 export { debugLog } from "./debug"

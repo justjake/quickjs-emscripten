@@ -177,7 +177,7 @@ quickjs-emscripten-core/dist/index.d.ts:502
 
 true if the object is alive
 
-false after the object has been [[dispose]]d
+false after the object has been [dispose](StaticLifetime.md#dispose)d
 
 #### Source
 
@@ -222,7 +222,7 @@ may become invalid, leading to memory errors.
 
 #### Throws
 
-If the lifetime has been [[dispose]]d already.
+If the lifetime has been [dispose](StaticLifetime.md#dispose)d already.
 
 #### Returns
 
@@ -294,7 +294,7 @@ quickjs-emscripten-core/dist/index.d.ts:534
 
 > **dispose**(): `void`
 
-Dispose of [[value]] and perform cleanup.
+Dispose of [value](StaticLifetime.md#value-1) and perform cleanup.
 
 #### Returns
 
@@ -314,7 +314,7 @@ quickjs-emscripten-core/dist/index.d.ts:548
 
 > **dup**(): [`StaticLifetime`](StaticLifetime.md)\<`T`, `Owner`\>
 
-Create a new handle pointing to the same [[value]].
+Create a new handle pointing to the same [value](StaticLifetime.md#value-1).
 
 #### Returns
 

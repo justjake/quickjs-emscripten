@@ -72,6 +72,7 @@
 - [QuickJSAsyncWASMModule](classes/QuickJSAsyncWASMModule.md)
 - [QuickJSContext](classes/QuickJSContext.md)
 - [QuickJSDeferredPromise](classes/QuickJSDeferredPromise.md)
+- [QuickJSRuntime](classes/QuickJSRuntime.md)
 - [QuickJSWASMModule](classes/QuickJSWASMModule.md)
 - [Scope](classes/Scope.md)
 - [StaticLifetime](classes/StaticLifetime.md)
@@ -172,7 +173,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Parameters
 
-• **runtime**: `QuickJSRuntime`
+• **runtime**: [`QuickJSRuntime`](classes/QuickJSRuntime.md)
 
 #### Returns
 
@@ -311,7 +312,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:18
 
 ### JSValue
 
-> **JSValue**: [`Lifetime`](classes/Lifetime.md)\<[`JSValuePointer`](exports.md#jsvaluepointer), [`JSValuePointer`](exports.md#jsvaluepointer), `QuickJSRuntime`\>
+> **JSValue**: [`Lifetime`](classes/Lifetime.md)\<[`JSValuePointer`](exports.md#jsvaluepointer), [`JSValuePointer`](exports.md#jsvaluepointer), [`QuickJSRuntime`](classes/QuickJSRuntime.md)\>
 
 A owned QuickJSHandle that should be disposed or returned.
 
@@ -335,7 +336,7 @@ You can do so from Javascript by calling the .dispose() method.
 
 ### JSValueConst
 
-> **JSValueConst**: [`Lifetime`](classes/Lifetime.md)\<[`JSValueConstPointer`](exports.md#jsvalueconstpointer), [`JSValuePointer`](exports.md#jsvaluepointer), `QuickJSRuntime`\>
+> **JSValueConst**: [`Lifetime`](classes/Lifetime.md)\<[`JSValueConstPointer`](exports.md#jsvalueconstpointer), [`JSValuePointer`](exports.md#jsvaluepointer), [`QuickJSRuntime`](classes/QuickJSRuntime.md)\>
 
 A QuickJSHandle to a borrowed value that does not need to be disposed.
 
@@ -357,7 +358,7 @@ quickjs-emscripten takes care of disposing JSValueConst references.
 > **JSValueConstPointer**: `Pointer`\<`"JSValueConst"`\>
 
 `JSValueConst*
-See [[JSValueConst]] and [[StaticJSValue]].
+See [JSValueConst](exports.md#jsvalueconst) and [StaticJSValue](exports.md#staticjsvalue).
 
 #### Source
 
@@ -382,7 +383,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:48
 > **JSValuePointer**: `Pointer`\<`"JSValue"`\>
 
 `JSValue*`.
-See [[JSValue]].
+See [JSValue](exports.md#jsvalue).
 
 #### Source
 
@@ -528,7 +529,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L41)
+[packages/quickjs-emscripten-core/src/context.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L42)
 
 ***
 
@@ -544,7 +545,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:393
 
 ### StaticJSValue
 
-> **StaticJSValue**: [`Lifetime`](classes/Lifetime.md)\<[`JSValueConstPointer`](exports.md#jsvalueconstpointer), [`JSValueConstPointer`](exports.md#jsvalueconstpointer), `QuickJSRuntime`\>
+> **StaticJSValue**: [`Lifetime`](classes/Lifetime.md)\<[`JSValueConstPointer`](exports.md#jsvalueconstpointer), [`JSValueConstPointer`](exports.md#jsvalueconstpointer), [`QuickJSRuntime`](classes/QuickJSRuntime.md)\>
 
 A QuickJSHandle to a constant that will never change, and does not need to
 be disposed.
@@ -874,8 +875,8 @@ compiled with Emscripten's [ASYNCIFY](https://emscripten.org/docs/porting/asynci
 
 This version of the library offers features that enable synchronous code
 inside the VM to interact with asynchronous code in the host environment.
-See the documentation on [[QuickJSAsyncWASMModule]], [[QuickJSAsyncRuntime]],
-and [[QuickJSAsyncContext]].
+See the documentation on [QuickJSAsyncWASMModule](classes/QuickJSAsyncWASMModule.md), [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md),
+and [QuickJSAsyncContext](classes/QuickJSAsyncContext.md).
 
 Note that there is a hard limit on the number of WebAssembly modules in older
 versions of v8:
@@ -910,7 +911,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 > **newQuickJSWASMModuleFromVariant**(`variantOrPromise`): `Promise`\<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
 
 Create a new, completely isolated WebAssembly module containing the QuickJS library.
-See the documentation on [[QuickJSWASMModule]].
+See the documentation on [QuickJSWASMModule](classes/QuickJSWASMModule.md).
 
 Note that there is a hard limit on the number of WebAssembly modules in older
 versions of v8:
