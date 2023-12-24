@@ -10,7 +10,7 @@
 
 - [Variables](exports.md#variables)
   - [default](exports.md#default)
-  - [[@jitl/quickjs-browser-release-sync-wasm](https://www.npmjs.com/package/@jitl/quickjs-browser-release-sync-wasm)](exports.md#jitlquickjs-browser-release-sync-wasmhttpswwwnpmjscompackagejitlquickjs-browser-release-sync-wasm)
+  - [[@jitl/quickjs-browser-release-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-release-sync-wasm/README.md)](exports.md#jitlquickjs-browser-release-sync-wasmhttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-browser-release-sync-wasmreadmemd)
 
 ## Variables
 
@@ -19,7 +19,7 @@
 > **`const`** **default**: `Object`
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-browser-release-sync-wasm](https://www.npmjs.com/package/@jitl/quickjs-browser-release-sync-wasm)
+### [@jitl/quickjs-browser-release-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-release-sync-wasm/README.md)
 
 ESModule for browsers or browser-like environments
 

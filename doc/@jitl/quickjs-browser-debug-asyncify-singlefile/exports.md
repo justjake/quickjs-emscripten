@@ -10,7 +10,7 @@
 
 - [Variables](exports.md#variables)
   - [default](exports.md#default)
-  - [[@jitl/quickjs-browser-debug-asyncify-singlefile](https://www.npmjs.com/package/@jitl/quickjs-browser-debug-asyncify-singlefile)](exports.md#jitlquickjs-browser-debug-asyncify-singlefilehttpswwwnpmjscompackagejitlquickjs-browser-debug-asyncify-singlefile)
+  - [[@jitl/quickjs-browser-debug-asyncify-singlefile](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-debug-asyncify-singlefile/README.md)](exports.md#jitlquickjs-browser-debug-asyncify-singlefilehttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-browser-debug-asyncify-singlefilereadmemd)
 
 ## Variables
 
@@ -19,7 +19,7 @@
 > **`const`** **default**: `Object`
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-browser-debug-asyncify-singlefile](https://www.npmjs.com/package/@jitl/quickjs-browser-debug-asyncify-singlefile)
+### [@jitl/quickjs-browser-debug-asyncify-singlefile](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-debug-asyncify-singlefile/README.md)
 
 ESModule for browsers or browser-like environments
 

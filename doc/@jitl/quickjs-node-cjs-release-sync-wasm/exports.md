@@ -10,7 +10,7 @@
 
 - [Variables](exports.md#variables)
   - [default](exports.md#default)
-  - [[@jitl/quickjs-node-cjs-release-sync-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-release-sync-wasm)](exports.md#jitlquickjs-node-cjs-release-sync-wasmhttpswwwnpmjscompackagejitlquickjs-node-cjs-release-sync-wasm)
+  - [[@jitl/quickjs-node-cjs-release-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-release-sync-wasm/README.md)](exports.md#jitlquickjs-node-cjs-release-sync-wasmhttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-node-cjs-release-sync-wasmreadmemd)
 
 ## Variables
 
@@ -19,7 +19,7 @@
 > **`const`** **default**: `Object`
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-node-cjs-release-sync-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-release-sync-wasm)
+### [@jitl/quickjs-node-cjs-release-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-release-sync-wasm/README.md)
 
 Node.js CommonJS module
 

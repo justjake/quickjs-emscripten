@@ -10,7 +10,7 @@
 
 - [Variables](exports.md#variables)
   - [default](exports.md#default)
-  - [[@jitl/quickjs-node-cjs-debug-asyncify-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-debug-asyncify-wasm)](exports.md#jitlquickjs-node-cjs-debug-asyncify-wasmhttpswwwnpmjscompackagejitlquickjs-node-cjs-debug-asyncify-wasm)
+  - [[@jitl/quickjs-node-cjs-debug-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-debug-asyncify-wasm/README.md)](exports.md#jitlquickjs-node-cjs-debug-asyncify-wasmhttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-node-cjs-debug-asyncify-wasmreadmemd)
 
 ## Variables
 
@@ -19,7 +19,7 @@
 > **`const`** **default**: `Object`
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-node-cjs-debug-asyncify-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-debug-asyncify-wasm)
+### [@jitl/quickjs-node-cjs-debug-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-debug-asyncify-wasm/README.md)
 
 Node.js CommonJS module
 

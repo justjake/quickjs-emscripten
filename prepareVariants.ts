@@ -4,7 +4,6 @@
 
 import path from "path"
 import fs, { write } from "fs"
-import child_process from "child_process"
 import prettier from "prettier"
 import { Context, getMatches, buildFFI } from "./generate"
 import { TypeDocOptions } from "typedoc"
@@ -423,7 +422,9 @@ function renderReadmeSummary(
   variant: BuildVariant,
   packageJson: PackageJson,
 ): string {
-  return `### [${packageJson.name}](https://www.npmjs.com/package/${packageJson.name})
+  const baseURL = "https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages"
+  const packageURL = `${baseURL}/${packageJson.name}/README.md`
+  return `### [${packageJson.name}](${packageURL})
 
 ${variant.description}
 

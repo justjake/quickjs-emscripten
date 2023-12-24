@@ -2,7 +2,7 @@ import { QuickJSAsyncVariant } from "@jitl/quickjs-ffi-types"
 
 /**
  * This export is a variant of the quickjs WASM library:
- * ### [@jitl/quickjs-browser-release-asyncify-wasm](https://www.npmjs.com/package/@jitl/quickjs-browser-release-asyncify-wasm)
+ * ### [@jitl/quickjs-browser-release-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-release-asyncify-wasm/README.md)
  *
  * ESModule for browsers or browser-like environments
  *

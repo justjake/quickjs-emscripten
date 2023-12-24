@@ -2,7 +2,7 @@ import { QuickJSSyncVariant } from "@jitl/quickjs-ffi-types"
 
 /**
  * This export is a variant of the quickjs WASM library:
- * ### [@jitl/quickjs-node-cjs-debug-sync-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-debug-sync-wasm)
+ * ### [@jitl/quickjs-node-cjs-debug-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-debug-sync-wasm/README.md)
  *
  * Node.js CommonJS module
  *

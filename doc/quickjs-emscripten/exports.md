@@ -50,14 +50,14 @@
   - [VmFunctionImplementation\<VmHandle\>](exports.md#vmfunctionimplementationvmhandle)
 - [Variables](exports.md#variables)
   - [DEBUG\_ASYNC](exports.md#debug-async)
-  - [[@jitl/quickjs-node-cjs-debug-asyncify-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-debug-asyncify-wasm)](exports.md#jitlquickjs-node-cjs-debug-asyncify-wasmhttpswwwnpmjscompackagejitlquickjs-node-cjs-debug-asyncify-wasm)
+  - [[@jitl/quickjs-node-cjs-debug-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-debug-asyncify-wasm/README.md)](exports.md#jitlquickjs-node-cjs-debug-asyncify-wasmhttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-node-cjs-debug-asyncify-wasmreadmemd)
   - [DEBUG\_SYNC](exports.md#debug-sync)
-  - [[@jitl/quickjs-node-cjs-debug-sync-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-debug-sync-wasm)](exports.md#jitlquickjs-node-cjs-debug-sync-wasmhttpswwwnpmjscompackagejitlquickjs-node-cjs-debug-sync-wasm)
+  - [[@jitl/quickjs-node-cjs-debug-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-debug-sync-wasm/README.md)](exports.md#jitlquickjs-node-cjs-debug-sync-wasmhttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-node-cjs-debug-sync-wasmreadmemd)
   - [EvalFlags](exports.md#evalflags)
   - [RELEASE\_ASYNC](exports.md#release-async)
-  - [[@jitl/quickjs-node-cjs-release-asyncify-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-release-asyncify-wasm)](exports.md#jitlquickjs-node-cjs-release-asyncify-wasmhttpswwwnpmjscompackagejitlquickjs-node-cjs-release-asyncify-wasm)
+  - [[@jitl/quickjs-node-cjs-release-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-release-asyncify-wasm/README.md)](exports.md#jitlquickjs-node-cjs-release-asyncify-wasmhttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-node-cjs-release-asyncify-wasmreadmemd)
   - [RELEASE\_SYNC](exports.md#release-sync)
-  - [[@jitl/quickjs-node-cjs-release-sync-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-release-sync-wasm)](exports.md#jitlquickjs-node-cjs-release-sync-wasmhttpswwwnpmjscompackagejitlquickjs-node-cjs-release-sync-wasm)
+  - [[@jitl/quickjs-node-cjs-release-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-release-sync-wasm/README.md)](exports.md#jitlquickjs-node-cjs-release-sync-wasmhttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-node-cjs-release-sync-wasmreadmemd)
 - [Functions](exports.md#functions)
   - [assertSync()](exports.md#assertsync)
   - [debugLog()](exports.md#debuglog)
@@ -646,7 +646,7 @@ quickjs-emscripten-core/dist/index.d.ts:45
 > **`const`** **DEBUG\_ASYNC**: `Object`
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-node-cjs-debug-asyncify-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-debug-asyncify-wasm)
+### [@jitl/quickjs-node-cjs-debug-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-debug-asyncify-wasm/README.md)
 
 Node.js CommonJS module
 
@@ -690,7 +690,7 @@ variant-quickjs-node-cjs-debug-asyncify-wasm/dist/index.d.ts:15
 > **`const`** **DEBUG\_SYNC**: `Object`
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-node-cjs-debug-sync-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-debug-sync-wasm)
+### [@jitl/quickjs-node-cjs-debug-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-debug-sync-wasm/README.md)
 
 Node.js CommonJS module
 
@@ -802,7 +802,7 @@ quickjs-ffi-types/dist/index.d.ts:91
 > **`const`** **RELEASE\_ASYNC**: `Object`
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-node-cjs-release-asyncify-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-release-asyncify-wasm)
+### [@jitl/quickjs-node-cjs-release-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-release-asyncify-wasm/README.md)
 
 Node.js CommonJS module
 
@@ -846,7 +846,7 @@ variant-quickjs-node-cjs-release-asyncify-wasm/dist/index.d.ts:15
 > **`const`** **RELEASE\_SYNC**: `Object`
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-node-cjs-release-sync-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-cjs-release-sync-wasm)
+### [@jitl/quickjs-node-cjs-release-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-cjs-release-sync-wasm/README.md)
 
 Node.js CommonJS module
 

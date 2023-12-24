@@ -10,7 +10,7 @@
 
 - [Variables](exports.md#variables)
   - [default](exports.md#default)
-  - [[@jitl/quickjs-node-esm-debug-sync-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-esm-debug-sync-wasm)](exports.md#jitlquickjs-node-esm-debug-sync-wasmhttpswwwnpmjscompackagejitlquickjs-node-esm-debug-sync-wasm)
+  - [[@jitl/quickjs-node-esm-debug-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-esm-debug-sync-wasm/README.md)](exports.md#jitlquickjs-node-esm-debug-sync-wasmhttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-node-esm-debug-sync-wasmreadmemd)
 
 ## Variables
 
@@ -19,7 +19,7 @@
 > **`const`** **default**: `Object`
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-node-esm-debug-sync-wasm](https://www.npmjs.com/package/@jitl/quickjs-node-esm-debug-sync-wasm)
+### [@jitl/quickjs-node-esm-debug-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-esm-debug-sync-wasm/README.md)
 
 Node.js ESModule
 
