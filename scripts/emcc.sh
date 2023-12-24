@@ -12,8 +12,13 @@ if [[ -z "$EMSDK_CACHE" ]]; then
   echo "EMSDK_CACHE must be set to a path"
 fi
 
+if [[ -z "$EMSDK_PROJECT_ROOT" ]]; then
+  echo "EMSDK_PROJECT_ROOT must be set to a path"
+fi
+
 DOCKER_ARGV=(
   run --rm
+  -v "$EMSDK_PROJECT_ROOT:$EMSDK_PROJECT_ROOT"
   -v "$(pwd):$(pwd)"
   -u "$(id -u):$(id -g)"
   -w "$(pwd)"
