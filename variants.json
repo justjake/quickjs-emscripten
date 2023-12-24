@@ -17,6 +17,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -67,6 +70,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -117,6 +123,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -167,6 +176,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -218,6 +230,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -269,6 +284,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -320,6 +338,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -371,6 +392,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -422,6 +446,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -473,6 +500,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -524,6 +554,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -575,6 +608,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -626,6 +662,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -677,6 +716,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -728,6 +770,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -779,6 +824,9 @@
         "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.ts",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",

@@ -2,12 +2,122 @@
 # yarn lockfile v1
 
 
-"quickjs-emscripten@file:../../build/quickjs-emscripten.tgz":
-  version "0.24.0"
-  resolved "file:../../build/quickjs-emscripten.tgz"
-  integrity sha512-42Gt8/8sORUsZec4381125CKMwwKTfe12WB+x5CsAeONb3kequDDG0VQvAMLgYZV75sJdbZN4TCZIWWFJeafgQ==
+"@jitl/quickjs-browser-debug-asyncify-singlefile@0.0.0", "@jitl/quickjs-browser-debug-asyncify-singlefile@file:../../build/tar/@jitl-quickjs-browser-debug-asyncify-singlefile.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-browser-debug-asyncify-singlefile.tgz"
+  integrity sha512-85acTzj+dPdVBS5VNaM6awzeDrcotmed/UFxjpCY475BGx77DVyfaWaCchwb/z9UBu95NDKV7KvwH4Uq1oE9pA==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
 
-typescript@4.5.5:
-  version "4.5.5"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.5.5.tgz"
-  integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
+"@jitl/quickjs-browser-debug-sync-singlefile@0.0.0", "@jitl/quickjs-browser-debug-sync-singlefile@file:../../build/tar/@jitl-quickjs-browser-debug-sync-singlefile.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-browser-debug-sync-singlefile.tgz"
+  integrity sha512-PP32uP3SZoZheJispUnNQLWIJe3BStt1Yt4AZfB1pjPEGNF3BWtU50M7RuATP9YzIilVrgDWDW0pbhkvLzDgFw==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+"@jitl/quickjs-browser-release-asyncify-singlefile@0.0.0", "@jitl/quickjs-browser-release-asyncify-singlefile@file:../../build/tar/@jitl-quickjs-browser-release-asyncify-singlefile.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-browser-release-asyncify-singlefile.tgz"
+  integrity sha512-D1UvQzYLaExD5cMnaqN//hI8gfrIOXtnzKeVdOJIc408JYegkKLhOP2n0EHbsET4o0+Y1pt2WVTvaeSBQhtutg==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+"@jitl/quickjs-browser-release-sync-singlefile@0.0.0", "@jitl/quickjs-browser-release-sync-singlefile@file:../../build/tar/@jitl-quickjs-browser-release-sync-singlefile.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-browser-release-sync-singlefile.tgz"
+  integrity sha512-cyuhLi8aRHruOMlMozbdfrBg/h+BCOl7m4Od6JO4+DXO7PhZ6qHzSL6PwmC57d5joiLZmOmKSJhn/UnWXpEHrg==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+"@jitl/quickjs-ffi-types@0.0.0", "@jitl/quickjs-ffi-types@file:../../build/tar/@jitl-quickjs-ffi-types.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-ffi-types.tgz"
+  integrity sha512-60y0//hL84KZZnOK/4mwYajOgzfx+jUn+QmeDq7bfLU2edHcGzD+iqNJA5w0Vc5NsThaG9zoQZwzO6oHthvK/Q==
+
+"@jitl/quickjs-node-cjs-debug-asyncify-wasm@0.0.0", "@jitl/quickjs-node-cjs-debug-asyncify-wasm@file:../../build/tar/@jitl-quickjs-node-cjs-debug-asyncify-wasm.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-node-cjs-debug-asyncify-wasm.tgz"
+  integrity sha512-nabbZ7h1MAayi5LA9zq+w8HpJpzqyzFo5UDWwpRhMlEsjIqw3rOYFKFbTeTrYRLltQ+1kRcaYTcrehnh7K531g==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+"@jitl/quickjs-node-cjs-debug-sync-wasm@0.0.0", "@jitl/quickjs-node-cjs-debug-sync-wasm@file:../../build/tar/@jitl-quickjs-node-cjs-debug-sync-wasm.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-node-cjs-debug-sync-wasm.tgz"
+  integrity sha512-NKyD/JqdHq5guLrNeWvRxG2h1Mj7pfjY2KTECuyBJdRr3UWwSJYjqxEEJaDk8eAfEehKWbvMe03Uxuiwf7XGhA==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+"@jitl/quickjs-node-cjs-release-asyncify-wasm@0.0.0", "@jitl/quickjs-node-cjs-release-asyncify-wasm@file:../../build/tar/@jitl-quickjs-node-cjs-release-asyncify-wasm.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-node-cjs-release-asyncify-wasm.tgz"
+  integrity sha512-omID9B39hxiLoTcsL0ylTbzLOlnrawE6xyFXiwM/t6kw7o1R1KJDbfDJD5zsXMwp9lIo/aEM4woQA7a42vJOng==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+"@jitl/quickjs-node-cjs-release-sync-wasm@0.0.0", "@jitl/quickjs-node-cjs-release-sync-wasm@file:../../build/tar/@jitl-quickjs-node-cjs-release-sync-wasm.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-node-cjs-release-sync-wasm.tgz"
+  integrity sha512-uuahaE2RDMlQ2nqNNnJPuuEb2hruW0RHz5rML2SLzTHq6KxI5FLFUdBw30EB1DqDWZhBS4rI4Iu2HNR+ksUTZw==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+"@jitl/quickjs-node-esm-debug-asyncify-wasm@0.0.0", "@jitl/quickjs-node-esm-debug-asyncify-wasm@file:../../build/tar/@jitl-quickjs-node-esm-debug-asyncify-wasm.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-node-esm-debug-asyncify-wasm.tgz"
+  integrity sha512-sV1V2MhlAveKKmuEXRa9JIoBGuDIZzfZt69MkfhClviHgeN3M9FpJ+Pdm/3zvmRLhGEaNBLRe23plkLMbSKACQ==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+"@jitl/quickjs-node-esm-debug-sync-wasm@0.0.0", "@jitl/quickjs-node-esm-debug-sync-wasm@file:../../build/tar/@jitl-quickjs-node-esm-debug-sync-wasm.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-node-esm-debug-sync-wasm.tgz"
+  integrity sha512-w3wjdSQtdAJKYXRIgwN67RA3fnBb8tefkxBH8HAOsHIdBhwD1lf5AsAle2g5Gqxq8En4nOtmU+VPprMJDqtPlQ==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+"@jitl/quickjs-node-esm-release-asyncify-wasm@0.0.0", "@jitl/quickjs-node-esm-release-asyncify-wasm@file:../../build/tar/@jitl-quickjs-node-esm-release-asyncify-wasm.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-node-esm-release-asyncify-wasm.tgz"
+  integrity sha512-d/hp9t32d4EMuAuZZKRuDGEBLteA5c/DXJ2k/5LDa5WZ1IANipeTy1/9IAkRFuLJk9el00TU/FHsQyTmOp4h7w==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+"@jitl/quickjs-node-esm-release-sync-wasm@0.0.0", "@jitl/quickjs-node-esm-release-sync-wasm@file:../../build/tar/@jitl-quickjs-node-esm-release-sync-wasm.tgz":
+  version "0.0.0"
+  resolved "file:../../build/tar/@jitl-quickjs-node-esm-release-sync-wasm.tgz"
+  integrity sha512-36mwndx7DZxim4z1Xi35U21HIG7kI9nztrV6knkxlfiYfTSNIUGXuTBl3/NMU+3PZjJvZPB+tdHq1mjyOTULPw==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+quickjs-emscripten-core@0.25.0, "quickjs-emscripten-core@file:../../build/tar/quickjs-emscripten-core.tgz":
+  version "0.25.0"
+  resolved "file:../../build/tar/quickjs-emscripten-core.tgz"
+  integrity sha512-yp+7br9RqWCgM7khQtDEu1ozJL2PvtTMAnk/RzUHrEArOChsh0NDUBdkqcrRM8q98UsgqEjd9I5mQQl0t1TuQQ==
+  dependencies:
+    "@jitl/quickjs-ffi-types" "0.0.0"
+
+"quickjs-emscripten@file:../../build/tar/quickjs-emscripten.tgz":
+  version "0.25.0"
+  resolved "file:../../build/tar/quickjs-emscripten.tgz"
+  integrity sha512-YdLblqOZNvgAaV9RVYwiYT2fv7wSi2IzA6tIF+nmzRopG2tCC32eGCL99hElYO/3EEL/eLVwb4PHxsxaR3ti0A==
+  dependencies:
+    "@jitl/quickjs-browser-debug-asyncify-singlefile" "0.0.0"
+    "@jitl/quickjs-browser-debug-sync-singlefile" "0.0.0"
+    "@jitl/quickjs-browser-release-asyncify-singlefile" "0.0.0"
+    "@jitl/quickjs-browser-release-sync-singlefile" "0.0.0"
+    "@jitl/quickjs-node-cjs-debug-asyncify-wasm" "0.0.0"
+    "@jitl/quickjs-node-cjs-debug-sync-wasm" "0.0.0"
+    "@jitl/quickjs-node-cjs-release-asyncify-wasm" "0.0.0"
+    "@jitl/quickjs-node-cjs-release-sync-wasm" "0.0.0"
+    "@jitl/quickjs-node-esm-debug-asyncify-wasm" "0.0.0"
+    "@jitl/quickjs-node-esm-debug-sync-wasm" "0.0.0"
+    "@jitl/quickjs-node-esm-release-asyncify-wasm" "0.0.0"
+    "@jitl/quickjs-node-esm-release-sync-wasm" "0.0.0"
+    quickjs-emscripten-core "0.25.0"
+
+typescript@5:
+  version "5.3.3"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-5.3.3.tgz"
+  integrity sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==

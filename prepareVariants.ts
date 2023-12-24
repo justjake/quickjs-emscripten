@@ -1,3 +1,5 @@
+#!/usr/bin/env npx tsx
+
 /**
  * This file defines all the different variants of the quickjs WASM library.
  */
@@ -213,6 +215,9 @@ interface PackageJson {
   dependencies: Record<string, string>
   devDependencies?: Record<string, string>
   exports: Record<string, { types: string; import: string; require: string } | string>
+  types?: string
+  main?: string
+  module?: string
 }
 
 interface TsConfig {
@@ -288,6 +293,9 @@ async function main() {
           prepare: "yarn clean && yarn build",
         },
         files: ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+        types: "./dist/index.d.ts",
+        main: "./dist/index.js",
+        module: "./dist/index.js",
         exports: {
           ".": {
             types: "./dist/index.d.ts",

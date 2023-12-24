@@ -1,10 +1,25 @@
 {
   "name": "quickjs-emscripten-smoketest",
   "version": "1.0.0",
+  "type": "commonjs",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "quickjs-emscripten": "file:../../build/quickjs-emscripten.tgz",
-    "typescript": "4.5.5"
+    "@jitl/quickjs-browser-debug-asyncify-singlefile": "file:../../build/tar/@jitl-quickjs-browser-debug-asyncify-singlefile.tgz",
+    "@jitl/quickjs-browser-debug-sync-singlefile": "file:../../build/tar/@jitl-quickjs-browser-debug-sync-singlefile.tgz",
+    "@jitl/quickjs-browser-release-asyncify-singlefile": "file:../../build/tar/@jitl-quickjs-browser-release-asyncify-singlefile.tgz",
+    "@jitl/quickjs-browser-release-sync-singlefile": "file:../../build/tar/@jitl-quickjs-browser-release-sync-singlefile.tgz",
+    "@jitl/quickjs-ffi-types": "file:../../build/tar/@jitl-quickjs-ffi-types.tgz",
+    "@jitl/quickjs-node-cjs-debug-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-debug-asyncify-wasm.tgz",
+    "@jitl/quickjs-node-cjs-debug-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-debug-sync-wasm.tgz",
+    "@jitl/quickjs-node-cjs-release-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-release-asyncify-wasm.tgz",
+    "@jitl/quickjs-node-cjs-release-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-release-sync-wasm.tgz",
+    "@jitl/quickjs-node-esm-debug-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-debug-asyncify-wasm.tgz",
+    "@jitl/quickjs-node-esm-debug-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-debug-sync-wasm.tgz",
+    "@jitl/quickjs-node-esm-release-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-release-asyncify-wasm.tgz",
+    "@jitl/quickjs-node-esm-release-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-release-sync-wasm.tgz",
+    "quickjs-emscripten": "file:../../build/tar/quickjs-emscripten.tgz",
+    "quickjs-emscripten-core": "file:../../build/tar/quickjs-emscripten-core.tgz",
+    "typescript": "5"
   }
 }

@@ -6,6 +6,9 @@
     "build": "npx tsup",
     "clean": "git clean -fx dist"
   },
+  "files": [
+    "dist/**/*"
+  ],
   "exports": {
     "./package.json": "./package.json",
     ".": {

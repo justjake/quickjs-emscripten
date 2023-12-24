@@ -28,6 +28,9 @@
     "tsc": "npx tsc -p . --noEmit",
     "test": "npx vitest run"
   },
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
