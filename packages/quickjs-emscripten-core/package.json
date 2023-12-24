@@ -30,7 +30,7 @@
   },
   "scripts": {
     "tsc": "npx tsc -p . --noEmit",
-    "test": "npx vitest",
+    "test": "npx vitest run",
     "build": "npx tsup"
   },
   "dependencies": {
