@@ -14,6 +14,10 @@
     "emscripten",
     "wasm"
   ],
+  "author": {
+    "name": "Jake Teton-Landis",
+    "url": "https://jake.tl"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/justjake/quickjs-emscripten"

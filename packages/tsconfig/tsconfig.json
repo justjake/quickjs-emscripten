@@ -8,6 +8,7 @@
     "target": "ES2021" /* Node 16+ per https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping */,
     "module": "nodenext" /* Some imports are really imports: https://www.typescriptlang.org/docs/handbook/esm-node.html */,
     "moduleResolution": "nodenext" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */,
+    "resolveJsonModule": true,
 
     "lib": ["ES2021", "dom"] /* Specify library files to be included in the compilation. */,
     // "allowJs": true /* Allow javascript files to be compiled. */,

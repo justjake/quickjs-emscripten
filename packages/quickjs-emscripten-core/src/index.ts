@@ -1,13 +1,14 @@
 export * from "@jitl/quickjs-ffi-types"
 
 // Sync classes
-export type { QuickJSWASMModule } from "./module"
-export type { QuickJSContext } from "./context"
+export { QuickJSWASMModule } from "./module"
+export { QuickJSContext } from "./context"
+export { QuickJSRuntime, InterruptHandler, ExecutePendingJobsResult } from "./runtime"
 
 // Async classes
-export type { QuickJSAsyncWASMModule } from "./module-asyncify"
-export type { QuickJSAsyncRuntime } from "./runtime-asyncify"
-export type { QuickJSAsyncContext, AsyncFunctionImplementation } from "./context-asyncify"
+export { QuickJSAsyncWASMModule } from "./module-asyncify"
+export { QuickJSAsyncRuntime } from "./runtime-asyncify"
+export { QuickJSAsyncContext, AsyncFunctionImplementation } from "./context-asyncify"
 
 // Build variants
 export * from "./from-variant"
@@ -42,6 +43,5 @@ export type {
   JSModuleNormalizeSuccess,
 } from "./types"
 export type { ModuleEvalOptions } from "./module"
-export type { QuickJSRuntime, InterruptHandler, ExecutePendingJobsResult } from "./runtime"
-export type { QuickJSPropertyKey } from "./context"
+export { QuickJSPropertyKey } from "./context"
 export { debugLog } from "./debug"

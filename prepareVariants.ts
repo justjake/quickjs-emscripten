@@ -218,6 +218,11 @@ interface PackageJson {
   types?: string
   main?: string
   module?: string
+  author: {
+    name: string
+    email?: string
+    url: string
+  }
 }
 
 interface TsConfig {
@@ -284,6 +289,10 @@ async function main() {
         repository: {
           type: "git",
           url: "https://github.com/justjake/quickjs-emscripten",
+        },
+        author: {
+          name: "Jake Teton-Landis",
+          url: "https://jake.tl",
         },
         scripts: {
           build: "yarn build:c && yarn build:ts",
