@@ -50,7 +50,7 @@ QuickJS.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:165
+quickjs-ffi-types/dist/index.d.ts:163
 
 ***
 
@@ -64,7 +64,7 @@ quickjs-ffi-types/dist/index.d.ts:165
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:156
+quickjs-ffi-types/dist/index.d.ts:154
 
 ***
 
@@ -78,7 +78,7 @@ quickjs-ffi-types/dist/index.d.ts:156
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:157
+quickjs-ffi-types/dist/index.d.ts:155
 
 ***
 
@@ -92,7 +92,7 @@ quickjs-ffi-types/dist/index.d.ts:157
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:155
+quickjs-ffi-types/dist/index.d.ts:153
 
 ***
 
@@ -106,7 +106,7 @@ quickjs-ffi-types/dist/index.d.ts:155
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:161
+quickjs-ffi-types/dist/index.d.ts:159
 
 ***
 
@@ -120,7 +120,7 @@ quickjs-ffi-types/dist/index.d.ts:161
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:162
+quickjs-ffi-types/dist/index.d.ts:160
 
 ***
 
@@ -134,7 +134,7 @@ quickjs-ffi-types/dist/index.d.ts:162
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:159
+quickjs-ffi-types/dist/index.d.ts:157
 
 ***
 
@@ -148,7 +148,7 @@ quickjs-ffi-types/dist/index.d.ts:159
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:160
+quickjs-ffi-types/dist/index.d.ts:158
 
 ***
 
@@ -162,7 +162,7 @@ quickjs-ffi-types/dist/index.d.ts:160
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:158
+quickjs-ffi-types/dist/index.d.ts:156
 
 ***
 
@@ -176,7 +176,7 @@ quickjs-ffi-types/dist/index.d.ts:158
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:164
+quickjs-ffi-types/dist/index.d.ts:162
 
 ***
 
@@ -190,7 +190,7 @@ quickjs-ffi-types/dist/index.d.ts:164
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:163
+quickjs-ffi-types/dist/index.d.ts:161
 
 ***
 
@@ -200,7 +200,7 @@ quickjs-ffi-types/dist/index.d.ts:163
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:206
+quickjs-ffi-types/dist/index.d.ts:204
 
 ***
 
@@ -214,7 +214,7 @@ Implement this field
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:205
+quickjs-ffi-types/dist/index.d.ts:203
 
 ## Methods
 
@@ -241,7 +241,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:150
+quickjs-ffi-types/dist/index.d.ts:148
 
 ***
 
@@ -263,7 +263,7 @@ quickjs-ffi-types/dist/index.d.ts:150
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:153
+quickjs-ffi-types/dist/index.d.ts:151
 
 ***
 
@@ -285,7 +285,7 @@ quickjs-ffi-types/dist/index.d.ts:153
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:152
+quickjs-ffi-types/dist/index.d.ts:150
 
 ***
 
@@ -322,7 +322,7 @@ quickjs-ffi-types/dist/index.d.ts:152
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:154
+quickjs-ffi-types/dist/index.d.ts:152
 
 ***
 
@@ -344,7 +344,7 @@ quickjs-ffi-types/dist/index.d.ts:154
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:151
+quickjs-ffi-types/dist/index.d.ts:149
 
 ***
 
@@ -373,7 +373,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#stringToUTF8
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:145
+quickjs-ffi-types/dist/index.d.ts:143
 
 ***
 

@@ -1,5 +1,5 @@
 export * from "./emscripten-types"
 export * from "./ffi-types"
 export * from "./ffi"
-export * from "./ffi-asyncify"
+export * from "./ffi-async"
 export * from "./variant-types"

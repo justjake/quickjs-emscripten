@@ -5,7 +5,7 @@ import type {
   EmscriptenModule,
 } from "./emscripten-types.js"
 import type { QuickJSFFI } from "./ffi.js"
-import type { QuickJSAsyncFFI } from "./ffi-asyncify.js"
+import type { QuickJSAsyncFFI } from "./ffi-async.js"
 
 type EmscriptenImport<T extends EmscriptenModule> =
   | EmscriptenModuleLoader<T>
