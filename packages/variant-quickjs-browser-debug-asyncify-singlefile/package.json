@@ -8,6 +8,10 @@
     "type": "git",
     "url": "https://github.com/justjake/quickjs-emscripten"
   },
+  "author": {
+    "name": "Jake Teton-Landis",
+    "url": "https://jake.tl"
+  },
   "scripts": {
     "build": "yarn build:c && yarn build:ts",
     "build:c": "make -j2",
