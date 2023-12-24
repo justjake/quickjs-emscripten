@@ -1,0 +1,24 @@
+releases:
+  "@jitl/quickjs-browser-debug-asyncify-singlefile": major
+  "@jitl/quickjs-browser-debug-asyncify-wasm": major
+  "@jitl/quickjs-browser-debug-sync-singlefile": major
+  "@jitl/quickjs-browser-debug-sync-wasm": major
+  "@jitl/quickjs-browser-release-asyncify-singlefile": major
+  "@jitl/quickjs-browser-release-asyncify-wasm": major
+  "@jitl/quickjs-browser-release-sync-singlefile": major
+  "@jitl/quickjs-browser-release-sync-wasm": major
+  "@jitl/quickjs-ffi-types": major
+  "@jitl/quickjs-node-cjs-debug-asyncify-wasm": major
+  "@jitl/quickjs-node-cjs-debug-sync-wasm": major
+  "@jitl/quickjs-node-cjs-release-asyncify-wasm": major
+  "@jitl/quickjs-node-cjs-release-sync-wasm": major
+  "@jitl/quickjs-node-esm-debug-asyncify-wasm": major
+  "@jitl/quickjs-node-esm-debug-sync-wasm": major
+  "@jitl/quickjs-node-esm-release-asyncify-wasm": major
+  "@jitl/quickjs-node-esm-release-sync-wasm": major
+  quickjs-emscripten-repo: minor
+
+declined:
+  - quickjs-emscripten
+  - quickjs-emscripten-core
+  - "@jitl/tsconfig"

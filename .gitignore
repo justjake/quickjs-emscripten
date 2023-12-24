@@ -31,5 +31,5 @@ npm-error.log
 /quickjs/repl.c
 /quickjs/run-test262
 
-**/.yarn/*
-!/.yarn/releases
+.yarn/cache
+.yarn/install-state.gz
