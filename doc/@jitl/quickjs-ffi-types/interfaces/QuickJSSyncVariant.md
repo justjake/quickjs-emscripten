@@ -1,4 +1,4 @@
-[quickjs-emscripten](../../../packages.md) • **@jitl/quickjs-ffi-types** • [Readme](../index.md) \| [Exports](../exports.md)
+[quickjs-emscripten](../../../packages.md) • **@jitl/quickjs-ffi-types** • [Readme](../README.md) \| [Exports](../exports.md)
 
 ***
 

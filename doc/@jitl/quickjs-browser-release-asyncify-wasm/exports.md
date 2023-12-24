@@ -1,4 +1,4 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-browser-release-asyncify-wasm** • [Readme](index.md) \| [Exports](exports.md)
+[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-browser-release-asyncify-wasm** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 

@@ -1,4 +1,4 @@
-[quickjs-emscripten](../packages.md) • **quickjs-emscripten-core** • [Readme](index.md) \| [Exports](exports.md)
+[quickjs-emscripten](../packages.md) • **quickjs-emscripten-core** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 
@@ -62,7 +62,7 @@
 
 ## Namespaces
 
-- [errors](namespaces/errors/index.md)
+- [errors](namespaces/errors/README.md)
 
 ## Classes
 

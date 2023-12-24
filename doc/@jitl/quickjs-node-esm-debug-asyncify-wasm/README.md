@@ -1,4 +1,4 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-esm-debug-asyncify-wasm** • [Readme](index.md) \| [Exports](exports.md)
+[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-esm-debug-asyncify-wasm** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 
@@ -19,12 +19,12 @@ This variant was built with the following settings:
 
 ## Contents
 
-- [Library: quickjs](index.md#library-quickjs)
-- [Release mode: debug](index.md#release-mode-debug)
-- [Module system: esm](index.md#module-system-esm)
-- [Extra async magic? Yes](index.md#extra-async-magic-yes)
-- [Single-file, or separate .wasm file? wasm](index.md#single-file-or-separate-wasm-file-wasm)
-- [More details](index.md#more-details)
+- [Library: quickjs](README.md#library-quickjs)
+- [Release mode: debug](README.md#release-mode-debug)
+- [Module system: esm](README.md#module-system-esm)
+- [Extra async magic? Yes](README.md#extra-async-magic-yes)
+- [Single-file, or separate .wasm file? wasm](README.md#single-file-or-separate-wasm-file-wasm)
+- [More details](README.md#more-details)
 
 ## Library: quickjs
 

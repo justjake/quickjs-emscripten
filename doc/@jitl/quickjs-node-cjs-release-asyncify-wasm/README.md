@@ -1,16 +1,16 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-browser-release-asyncify-wasm** • [Readme](index.md) \| [Exports](exports.md)
+[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-cjs-release-asyncify-wasm** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 
-# @jitl/quickjs-browser-release-asyncify-wasm
+# @jitl/quickjs-node-cjs-release-asyncify-wasm
 
-ESModule for browsers or browser-like environments
+Node.js CommonJS module
 
 This generated package is part of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten).
 It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
 
 ```typescript
-import variant from "@jitl/quickjs-browser-release-asyncify-wasm"
+import variant from "@jitl/quickjs-node-cjs-release-asyncify-wasm"
 import { newQuickJSAsyncWASMModuleFromVariant } from "quickjs-emscripten-core"
 const QuickJS = await newQuickJSAsyncWASMModuleFromVariant(variant)
 ```
@@ -19,12 +19,12 @@ This variant was built with the following settings:
 
 ## Contents
 
-- [Library: quickjs](index.md#library-quickjs)
-- [Release mode: release](index.md#release-mode-release)
-- [Module system: esm](index.md#module-system-esm)
-- [Extra async magic? Yes](index.md#extra-async-magic-yes)
-- [Single-file, or separate .wasm file? wasm](index.md#single-file-or-separate-wasm-file-wasm)
-- [More details](index.md#more-details)
+- [Library: quickjs](README.md#library-quickjs)
+- [Release mode: release](README.md#release-mode-release)
+- [Module system: commonjs](README.md#module-system-commonjs)
+- [Extra async magic? Yes](README.md#extra-async-magic-yes)
+- [Single-file, or separate .wasm file? wasm](README.md#single-file-or-separate-wasm-file-wasm)
+- [More details](README.md#more-details)
 
 ## Library: quickjs
 
@@ -34,9 +34,9 @@ The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
 
 Optimized for performance; use when building/deploying your application.
 
-## Module system: esm
+## Module system: commonjs
 
-This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.
+This variant exports a CommonJS module, which is faster to load and run in Node.js.
 
 ## Extra async magic? Yes
 
@@ -56,9 +56,9 @@ Full variant JSON description:
   "releaseMode": "release",
   "syncMode": "asyncify",
   "emscriptenInclusion": "wasm",
-  "description": "ESModule for browsers or browser-like environments",
-  "emscriptenEnvironment": ["web", "worker"],
-  "moduleSystem": "esm"
+  "description": "Node.js CommonJS module",
+  "emscriptenEnvironment": ["node"],
+  "moduleSystem": "commonjs"
 }
 ```
 
@@ -78,8 +78,7 @@ Variant-specific Emscripten build flags:
   "-s SINGLE_FILE=1",
   "--closure 1",
   "-s FILESYSTEM=0",
-  "-s EXPORT_ES6=1",
-  "-s ENVIRONMENT=web,worker"
+  "-s ENVIRONMENT=node"
 ]
 ```
 

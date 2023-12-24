@@ -1,8 +1,8 @@
-[quickjs-emscripten](../../../../packages.md) • **quickjs-emscripten-core** • [Readme](../../../index.md) \| [Exports](../../../exports.md)
+[quickjs-emscripten](../../../../packages.md) • **quickjs-emscripten-core** • [Readme](../../../README.md) \| [Exports](../../../exports.md)
 
 ***
 
-[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten-core](../../../exports.md) / [errors](../index.md) / QuickJSMemoryLeakDetected
+[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten-core](../../../exports.md) / [errors](../README.md) / QuickJSMemoryLeakDetected
 
 # Class: QuickJSMemoryLeakDetected
 

@@ -1,8 +1,8 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-esm-release-sync-wasm** • [Readme](index.md) \| [Exports](exports.md)
+[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-esm-release-asyncify-wasm** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 
-# @jitl/quickjs-node-esm-release-sync-wasm
+# @jitl/quickjs-node-esm-release-asyncify-wasm
 
 Node.js ESModule
 
@@ -10,21 +10,21 @@ This generated package is part of [quickjs-emscripten](https://github.com/justja
 It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
 
 ```typescript
-import variant from "@jitl/quickjs-node-esm-release-sync-wasm"
-import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
-const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
+import variant from "@jitl/quickjs-node-esm-release-asyncify-wasm"
+import { newQuickJSAsyncWASMModuleFromVariant } from "quickjs-emscripten-core"
+const QuickJS = await newQuickJSAsyncWASMModuleFromVariant(variant)
 ```
 
 This variant was built with the following settings:
 
 ## Contents
 
-- [Library: quickjs](index.md#library-quickjs)
-- [Release mode: release](index.md#release-mode-release)
-- [Module system: esm](index.md#module-system-esm)
-- [Extra async magic? No](index.md#extra-async-magic-no)
-- [Single-file, or separate .wasm file? wasm](index.md#single-file-or-separate-wasm-file-wasm)
-- [More details](index.md#more-details)
+- [Library: quickjs](README.md#library-quickjs)
+- [Release mode: release](README.md#release-mode-release)
+- [Module system: esm](README.md#module-system-esm)
+- [Extra async magic? Yes](README.md#extra-async-magic-yes)
+- [Single-file, or separate .wasm file? wasm](README.md#single-file-or-separate-wasm-file-wasm)
+- [More details](README.md#more-details)
 
 ## Library: quickjs
 
@@ -38,9 +38,9 @@ Optimized for performance; use when building/deploying your application.
 
 This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.
 
-## Extra async magic? No
+## Extra async magic? Yes
 
-The default, normal build. Note that both variants support regular async functions.
+Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to!
 
 ## Single-file, or separate .wasm file? wasm
 
@@ -54,7 +54,7 @@ Full variant JSON description:
 {
   "library": "quickjs",
   "releaseMode": "release",
-  "syncMode": "sync",
+  "syncMode": "asyncify",
   "emscriptenInclusion": "wasm",
   "description": "Node.js ESModule",
   "emscriptenEnvironment": ["node"],
@@ -66,6 +66,13 @@ Variant-specific Emscripten build flags:
 
 ```json
 [
+  "-s ASYNCIFY=1",
+  "-DQTS_ASYNCIFY=1",
+  "-DQTS_ASYNCIFY_DEFAULT_STACK_SIZE=81920",
+  "-s ASYNCIFY_STACK_SIZE=81920",
+  "-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json",
+  "-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json",
+  "-lasync.js",
   "-Oz",
   "-flto",
   "-s SINGLE_FILE=1",

@@ -1,4 +1,4 @@
-[quickjs-emscripten](../../../packages.md) • **@jitl/quickjs-ffi-types** • [Readme](../index.md) \| [Exports](../exports.md)
+[quickjs-emscripten](../../../packages.md) • **@jitl/quickjs-ffi-types** • [Readme](../README.md) \| [Exports](../exports.md)
 
 ***
 
@@ -7,7 +7,7 @@
 # Interface: QuickJSFFI
 
 Low-level FFI bindings to QuickJS's Emscripten module.
-See instead quickjs-emscripten#QuickJSVM, the public Javascript interface exposed by this
+See instead [[QuickJSContext]], the public Javascript interface exposed by this
 library.
 
 ## Contents

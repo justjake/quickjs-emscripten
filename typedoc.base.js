@@ -17,5 +17,7 @@ module.exports = {
   // https://github.com/tgreyuk/typedoc-plugin-markdown/blob/next/packages/typedoc-plugin-markdown/docs/plugin-options.md
   // useCodeBlocks: true,
   // outputFileStrategy: "modules"
+  // mergeReadme: true,
+  entryFileName: "README.md",
   membersWithOwnFile: ["Class", "Interface"],
 }

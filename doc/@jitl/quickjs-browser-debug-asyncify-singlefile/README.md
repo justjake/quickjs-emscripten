@@ -1,16 +1,16 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-cjs-debug-asyncify-wasm** • [Readme](index.md) \| [Exports](exports.md)
+[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-browser-debug-asyncify-singlefile** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 
-# @jitl/quickjs-node-cjs-debug-asyncify-wasm
+# @jitl/quickjs-browser-debug-asyncify-singlefile
 
-Node.js CommonJS module
+ESModule for browsers or browser-like environments
 
 This generated package is part of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten).
 It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
 
 ```typescript
-import variant from "@jitl/quickjs-node-cjs-debug-asyncify-wasm"
+import variant from "@jitl/quickjs-browser-debug-asyncify-singlefile"
 import { newQuickJSAsyncWASMModuleFromVariant } from "quickjs-emscripten-core"
 const QuickJS = await newQuickJSAsyncWASMModuleFromVariant(variant)
 ```
@@ -19,12 +19,12 @@ This variant was built with the following settings:
 
 ## Contents
 
-- [Library: quickjs](index.md#library-quickjs)
-- [Release mode: debug](index.md#release-mode-debug)
-- [Module system: commonjs](index.md#module-system-commonjs)
-- [Extra async magic? Yes](index.md#extra-async-magic-yes)
-- [Single-file, or separate .wasm file? wasm](index.md#single-file-or-separate-wasm-file-wasm)
-- [More details](index.md#more-details)
+- [Library: quickjs](README.md#library-quickjs)
+- [Release mode: debug](README.md#release-mode-debug)
+- [Module system: esm](README.md#module-system-esm)
+- [Extra async magic? Yes](README.md#extra-async-magic-yes)
+- [Single-file, or separate .wasm file? singlefile](README.md#single-file-or-separate-wasm-file-singlefile)
+- [More details](README.md#more-details)
 
 ## Library: quickjs
 
@@ -34,17 +34,17 @@ The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
 
 Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.
 
-## Module system: commonjs
+## Module system: esm
 
-This variant exports a CommonJS module, which is faster to load and run in Node.js.
+This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.
 
 ## Extra async magic? Yes
 
 Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to!
 
-## Single-file, or separate .wasm file? wasm
+## Single-file, or separate .wasm file? singlefile
 
-Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.
+The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.
 
 ## More details
 
@@ -55,10 +55,10 @@ Full variant JSON description:
   "library": "quickjs",
   "releaseMode": "debug",
   "syncMode": "asyncify",
-  "emscriptenInclusion": "wasm",
-  "description": "Node.js CommonJS module",
-  "emscriptenEnvironment": ["node"],
-  "moduleSystem": "commonjs"
+  "emscriptenInclusion": "singlefile",
+  "description": "ESModule for browsers or browser-like environments",
+  "emscriptenEnvironment": ["web", "worker"],
+  "moduleSystem": "esm"
 }
 ```
 
@@ -77,7 +77,9 @@ Variant-specific Emscripten build flags:
   "-DQTS_DEBUG_MODE",
   "-gsource-map",
   "-s ASSERTIONS=1",
-  "-s ENVIRONMENT=node",
+  "-s SINGLE_FILE=1",
+  "-s EXPORT_ES6=1",
+  "-s ENVIRONMENT=web,worker",
   "-s ASYNCIFY_ADVISE=1",
   "-O3"
 ]

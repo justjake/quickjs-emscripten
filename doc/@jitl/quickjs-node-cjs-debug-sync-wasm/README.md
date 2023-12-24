@@ -1,8 +1,8 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-cjs-release-sync-wasm** • [Readme](index.md) \| [Exports](exports.md)
+[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-cjs-debug-sync-wasm** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 
-# @jitl/quickjs-node-cjs-release-sync-wasm
+# @jitl/quickjs-node-cjs-debug-sync-wasm
 
 Node.js CommonJS module
 
@@ -10,7 +10,7 @@ This generated package is part of [quickjs-emscripten](https://github.com/justja
 It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
 
 ```typescript
-import variant from "@jitl/quickjs-node-cjs-release-sync-wasm"
+import variant from "@jitl/quickjs-node-cjs-debug-sync-wasm"
 import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
 const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
 ```
@@ -19,20 +19,20 @@ This variant was built with the following settings:
 
 ## Contents
 
-- [Library: quickjs](index.md#library-quickjs)
-- [Release mode: release](index.md#release-mode-release)
-- [Module system: commonjs](index.md#module-system-commonjs)
-- [Extra async magic? No](index.md#extra-async-magic-no)
-- [Single-file, or separate .wasm file? wasm](index.md#single-file-or-separate-wasm-file-wasm)
-- [More details](index.md#more-details)
+- [Library: quickjs](README.md#library-quickjs)
+- [Release mode: debug](README.md#release-mode-debug)
+- [Module system: commonjs](README.md#module-system-commonjs)
+- [Extra async magic? No](README.md#extra-async-magic-no)
+- [Single-file, or separate .wasm file? wasm](README.md#single-file-or-separate-wasm-file-wasm)
+- [More details](README.md#more-details)
 
 ## Library: quickjs
 
 The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
 
-## Release mode: release
+## Release mode: debug
 
-Optimized for performance; use when building/deploying your application.
+Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.
 
 ## Module system: commonjs
 
@@ -53,7 +53,7 @@ Full variant JSON description:
 ```json
 {
   "library": "quickjs",
-  "releaseMode": "release",
+  "releaseMode": "debug",
   "syncMode": "sync",
   "emscriptenInclusion": "wasm",
   "description": "Node.js CommonJS module",
@@ -65,7 +65,18 @@ Full variant JSON description:
 Variant-specific Emscripten build flags:
 
 ```json
-["-Oz", "-flto", "-s SINGLE_FILE=1", "--closure 1", "-s FILESYSTEM=0", "-s ENVIRONMENT=node"]
+[
+  "-O0",
+  "-DQTS_DEBUG_MODE",
+  "-gsource-map",
+  "-s ASSERTIONS=1",
+  "-s ENVIRONMENT=node",
+  "-DQTS_SANITIZE_LEAK",
+  "-fsanitize=leak",
+  "-g2",
+  "-s ASYNCIFY_ADVISE=1",
+  "-O3"
+]
 ```
 
 ***

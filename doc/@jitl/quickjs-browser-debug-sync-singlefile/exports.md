@@ -1,4 +1,4 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-browser-debug-sync-singlefile** • [Readme](index.md) \| [Exports](exports.md)
+[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-browser-debug-sync-singlefile** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 

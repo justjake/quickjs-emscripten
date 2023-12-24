@@ -1,4 +1,4 @@
-[quickjs-emscripten](../packages.md) • **quickjs-emscripten-core** • [Readme](index.md) \| [Exports](exports.md)
+[quickjs-emscripten](../packages.md) • **quickjs-emscripten-core** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 
@@ -25,8 +25,8 @@ const QuickJS = await newQuickJSWASMModuleFromVariant(releaseVariant)
 
 ## Contents
 
-- [What's a variant?](index.md#whats-a-variant)
-- [Available variants](index.md#available-variants)
+- [What's a variant?](README.md#whats-a-variant)
+- [Available variants](README.md#available-variants)
 
 ## What's a variant?
 

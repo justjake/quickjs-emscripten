@@ -1,4 +1,4 @@
-[quickjs-emscripten](../../../packages.md) • **quickjs-emscripten** • [Readme](../../index.md) \| [Exports](../../exports.md)
+[quickjs-emscripten](../../../packages.md) • **quickjs-emscripten** • [Readme](../../README.md) \| [Exports](../../exports.md)
 
 ***
 
@@ -8,22 +8,22 @@
 
 ## Contents
 
-- [Type Aliases](index.md#type-aliases)
-  - [QuickJSAsyncifyError](index.md#quickjsasyncifyerror)
-  - [QuickJSAsyncifySuspended](index.md#quickjsasyncifysuspended)
-  - [QuickJSMemoryLeakDetected](index.md#quickjsmemoryleakdetected)
-  - [QuickJSNotImplemented](index.md#quickjsnotimplemented)
-  - [QuickJSUnwrapError](index.md#quickjsunwraperror)
-  - [QuickJSUseAfterFree](index.md#quickjsuseafterfree)
-  - [QuickJSWrongOwner](index.md#quickjswrongowner)
-- [Variables](index.md#variables)
-  - [QuickJSAsyncifyError](index.md#quickjsasyncifyerror-1)
-  - [QuickJSAsyncifySuspended](index.md#quickjsasyncifysuspended-1)
-  - [QuickJSMemoryLeakDetected](index.md#quickjsmemoryleakdetected-1)
-  - [QuickJSNotImplemented](index.md#quickjsnotimplemented-1)
-  - [QuickJSUnwrapError](index.md#quickjsunwraperror-1)
-  - [QuickJSUseAfterFree](index.md#quickjsuseafterfree-1)
-  - [QuickJSWrongOwner](index.md#quickjswrongowner-1)
+- [Type Aliases](README.md#type-aliases)
+  - [QuickJSAsyncifyError](README.md#quickjsasyncifyerror)
+  - [QuickJSAsyncifySuspended](README.md#quickjsasyncifysuspended)
+  - [QuickJSMemoryLeakDetected](README.md#quickjsmemoryleakdetected)
+  - [QuickJSNotImplemented](README.md#quickjsnotimplemented)
+  - [QuickJSUnwrapError](README.md#quickjsunwraperror)
+  - [QuickJSUseAfterFree](README.md#quickjsuseafterfree)
+  - [QuickJSWrongOwner](README.md#quickjswrongowner)
+- [Variables](README.md#variables)
+  - [QuickJSAsyncifyError](README.md#quickjsasyncifyerror-1)
+  - [QuickJSAsyncifySuspended](README.md#quickjsasyncifysuspended-1)
+  - [QuickJSMemoryLeakDetected](README.md#quickjsmemoryleakdetected-1)
+  - [QuickJSNotImplemented](README.md#quickjsnotimplemented-1)
+  - [QuickJSUnwrapError](README.md#quickjsunwraperror-1)
+  - [QuickJSUseAfterFree](README.md#quickjsuseafterfree-1)
+  - [QuickJSWrongOwner](README.md#quickjswrongowner-1)
 
 ## Type Aliases
 

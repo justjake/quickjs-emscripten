@@ -1,4 +1,4 @@
-**quickjs-emscripten** • [Readme](index.md) \| [Packages](packages.md)
+[quickjs-emscripten](../packages.md) • **quickjs-emscripten** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 
@@ -47,6 +47,24 @@ main()
 [values]: #interfacing-with-the-interpreter
 [asyncify]: #asyncify
 [functions]: #exposing-apis
+
+## Contents
+
+- [Usage](README.md#usage)
+  - [Safely evaluate Javascript code](README.md#safely-evaluate-javascript-code)
+  - [Interfacing with the interpreter](README.md#interfacing-with-the-interpreter)
+  - [Memory Management](README.md#memory-management)
+  - [Exposing APIs](README.md#exposing-apis)
+  - [Testing your code](README.md#testing-your-code)
+  - [Debugging](README.md#debugging)
+  - [More Documentation](README.md#more-documentation)
+- [Background](README.md#background)
+- [Status & Roadmap](README.md#status-roadmap)
+- [Related](README.md#related)
+- [Developing](README.md#developing)
+  - [The C parts](README.md#the-c-parts)
+  - [The Typescript parts](README.md#the-typescript-parts)
+  - [Yarn updates](README.md#yarn-updates)
 
 ## Usage
 
