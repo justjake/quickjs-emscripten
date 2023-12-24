@@ -93,17 +93,17 @@ Set at compile time.
 
 ### QTS\_ArgvGetJSValueConstPointer
 
-> **QTS\_ArgvGetJSValueConstPointer**: (`argv`, `index`) => [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+> **QTS\_ArgvGetJSValueConstPointer**: (`argv`, `index`) => [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Parameters
 
-• **argv**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **argv**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 • **index**: `number`
 
 #### Returns
 
-[`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+[`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Source
 
@@ -155,23 +155,23 @@ Set at compile time.
 
 ### QTS\_Call
 
-> **QTS\_Call**: (`ctx`, `func_obj`, `this_obj`, `argc`, `argv_ptrs`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_Call**: (`ctx`, `func_obj`, `this_obj`, `argc`, `argv_ptrs`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **func\_obj**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **func\_obj**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **this\_obj**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **this\_obj**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 • **argc**: `number`
 
-• **argv\_ptrs**: [`JSValueConstPointerPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointerpointer)
+• **argv\_ptrs**: [`JSValueConstPointerPointer`](../exports.md#jsvalueconstpointerpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -185,17 +185,17 @@ Set at compile time.
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **this\_val**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **this\_val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **prop\_name**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **prop\_name**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **prop\_value**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **prop\_value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **get**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **get**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **set**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **set**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 • **configurable**: `boolean`
 
@@ -215,17 +215,17 @@ Set at compile time.
 
 ### QTS\_Dump
 
-> **QTS\_Dump**: (`ctx`, `obj`) => [`JSBorrowedCharPointer`](../../../quickjs-emscripten/exports.md#jsborrowedcharpointer)
+> **QTS\_Dump**: (`ctx`, `obj`) => [`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **obj**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **obj**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSBorrowedCharPointer`](../../../quickjs-emscripten/exports.md#jsborrowedcharpointer)
+[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
 
 #### Source
 
@@ -235,17 +235,17 @@ Set at compile time.
 
 ### QTS\_DupValuePointer
 
-> **QTS\_DupValuePointer**: (`ctx`, `val`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_DupValuePointer**: (`ctx`, `val`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **val**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -255,23 +255,23 @@ Set at compile time.
 
 ### QTS\_Eval
 
-> **QTS\_Eval**: (`ctx`, `js_code`, `filename`, `detectModule`, `evalFlags`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_Eval**: (`ctx`, `js_code`, `filename`, `detectModule`, `evalFlags`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **js\_code**: [`BorrowedHeapCharPointer`](../../../quickjs-emscripten/exports.md#borrowedheapcharpointer)
+• **js\_code**: [`BorrowedHeapCharPointer`](../exports.md#borrowedheapcharpointer)
 
 • **filename**: `string`
 
 • **detectModule**: `EvalDetectModule`
 
-• **evalFlags**: [`EvalFlags`](../../../quickjs-emscripten/exports.md#evalflags)
+• **evalFlags**: [`EvalFlags`](../exports.md#evalflags)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -281,19 +281,19 @@ Set at compile time.
 
 ### QTS\_ExecutePendingJob
 
-> **QTS\_ExecutePendingJob**: (`rt`, `maxJobsToExecute`, `lastJobContext`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_ExecutePendingJob**: (`rt`, `maxJobsToExecute`, `lastJobContext`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 • **maxJobsToExecute**: `number`
 
-• **lastJobContext**: [`JSContextPointerPointer`](../../../quickjs-emscripten/exports.md#jscontextpointerpointer)
+• **lastJobContext**: [`JSContextPointerPointer`](../exports.md#jscontextpointerpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -307,9 +307,9 @@ Set at compile time.
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **str**: [`JSBorrowedCharPointer`](../../../quickjs-emscripten/exports.md#jsborrowedcharpointer)
+• **str**: [`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
 
 #### Returns
 
@@ -327,7 +327,7 @@ Set at compile time.
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
 #### Returns
 
@@ -345,7 +345,7 @@ Set at compile time.
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 #### Returns
 
@@ -363,9 +363,9 @@ Set at compile time.
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -383,9 +383,9 @@ Set at compile time.
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
-• **value**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -403,9 +403,9 @@ Set at compile time.
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **ptr**: [`JSVoidPointer`](../../../quickjs-emscripten/exports.md#jsvoidpointer)
+• **ptr**: [`JSVoidPointer`](../exports.md#jsvoidpointer)
 
 #### Returns
 
@@ -419,17 +419,17 @@ Set at compile time.
 
 ### QTS\_GetArrayBuffer
 
-> **QTS\_GetArrayBuffer**: (`ctx`, `data`) => [`JSVoidPointer`](../../../quickjs-emscripten/exports.md#jsvoidpointer)
+> **QTS\_GetArrayBuffer**: (`ctx`, `data`) => [`JSVoidPointer`](../exports.md#jsvoidpointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **data**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **data**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSVoidPointer`](../../../quickjs-emscripten/exports.md#jsvoidpointer)
+[`JSVoidPointer`](../exports.md#jsvoidpointer)
 
 #### Source
 
@@ -443,9 +443,9 @@ Set at compile time.
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **data**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **data**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -459,11 +459,11 @@ Set at compile time.
 
 ### QTS\_GetFalse
 
-> **QTS\_GetFalse**: () => [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+> **QTS\_GetFalse**: () => [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+[`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Source
 
@@ -477,9 +477,9 @@ Set at compile time.
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -493,15 +493,15 @@ Set at compile time.
 
 ### QTS\_GetGlobalObject
 
-> **QTS\_GetGlobalObject**: (`ctx`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_GetGlobalObject**: (`ctx`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -511,11 +511,11 @@ Set at compile time.
 
 ### QTS\_GetNull
 
-> **QTS\_GetNull**: () => [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+> **QTS\_GetNull**: () => [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+[`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Source
 
@@ -525,19 +525,19 @@ Set at compile time.
 
 ### QTS\_GetProp
 
-> **QTS\_GetProp**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_GetProp**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **this\_val**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **this\_val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **prop\_name**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **prop\_name**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -547,17 +547,17 @@ Set at compile time.
 
 ### QTS\_GetString
 
-> **QTS\_GetString**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../../../quickjs-emscripten/exports.md#jsborrowedcharpointer)
+> **QTS\_GetString**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSBorrowedCharPointer`](../../../quickjs-emscripten/exports.md#jsborrowedcharpointer)
+[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
 
 #### Source
 
@@ -567,17 +567,17 @@ Set at compile time.
 
 ### QTS\_GetSymbolDescriptionOrKey
 
-> **QTS\_GetSymbolDescriptionOrKey**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../../../quickjs-emscripten/exports.md#jsborrowedcharpointer)
+> **QTS\_GetSymbolDescriptionOrKey**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSBorrowedCharPointer`](../../../quickjs-emscripten/exports.md#jsborrowedcharpointer)
+[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
 
 #### Source
 
@@ -587,11 +587,11 @@ Set at compile time.
 
 ### QTS\_GetTrue
 
-> **QTS\_GetTrue**: () => [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+> **QTS\_GetTrue**: () => [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+[`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Source
 
@@ -601,11 +601,11 @@ Set at compile time.
 
 ### QTS\_GetUndefined
 
-> **QTS\_GetUndefined**: () => [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+> **QTS\_GetUndefined**: () => [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+[`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Source
 
@@ -619,9 +619,9 @@ Set at compile time.
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -639,7 +639,7 @@ Set at compile time.
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 #### Returns
 
@@ -653,15 +653,15 @@ Set at compile time.
 
 ### QTS\_NewArray
 
-> **QTS\_NewArray**: (`ctx`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_NewArray**: (`ctx`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -671,19 +671,19 @@ Set at compile time.
 
 ### QTS\_NewArrayBuffer
 
-> **QTS\_NewArrayBuffer**: (`ctx`, `buffer`, `length`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_NewArrayBuffer**: (`ctx`, `buffer`, `length`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **buffer**: [`JSVoidPointer`](../../../quickjs-emscripten/exports.md#jsvoidpointer)
+• **buffer**: [`JSVoidPointer`](../exports.md#jsvoidpointer)
 
 • **length**: `number`
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -693,15 +693,15 @@ Set at compile time.
 
 ### QTS\_NewContext
 
-> **QTS\_NewContext**: (`rt`) => [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+> **QTS\_NewContext**: (`rt`) => [`JSContextPointer`](../exports.md#jscontextpointer)
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 #### Returns
 
-[`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+[`JSContextPointer`](../exports.md#jscontextpointer)
 
 #### Source
 
@@ -711,15 +711,15 @@ Set at compile time.
 
 ### QTS\_NewError
 
-> **QTS\_NewError**: (`ctx`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_NewError**: (`ctx`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -729,17 +729,17 @@ Set at compile time.
 
 ### QTS\_NewFloat64
 
-> **QTS\_NewFloat64**: (`ctx`, `num`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_NewFloat64**: (`ctx`, `num`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
 • **num**: `number`
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -749,11 +749,11 @@ Set at compile time.
 
 ### QTS\_NewFunction
 
-> **QTS\_NewFunction**: (`ctx`, `func_id`, `name`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_NewFunction**: (`ctx`, `func_id`, `name`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
 • **func\_id**: `number`
 
@@ -761,7 +761,7 @@ Set at compile time.
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -771,15 +771,15 @@ Set at compile time.
 
 ### QTS\_NewObject
 
-> **QTS\_NewObject**: (`ctx`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_NewObject**: (`ctx`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -789,17 +789,17 @@ Set at compile time.
 
 ### QTS\_NewObjectProto
 
-> **QTS\_NewObjectProto**: (`ctx`, `proto`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_NewObjectProto**: (`ctx`, `proto`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **proto**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **proto**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -809,17 +809,17 @@ Set at compile time.
 
 ### QTS\_NewPromiseCapability
 
-> **QTS\_NewPromiseCapability**: (`ctx`, `resolve_funcs_out`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_NewPromiseCapability**: (`ctx`, `resolve_funcs_out`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **resolve\_funcs\_out**: [`JSValuePointerPointer`](../../../quickjs-emscripten/exports.md#jsvaluepointerpointer)
+• **resolve\_funcs\_out**: [`JSValuePointerPointer`](../exports.md#jsvaluepointerpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -829,11 +829,11 @@ Set at compile time.
 
 ### QTS\_NewRuntime
 
-> **QTS\_NewRuntime**: () => [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+> **QTS\_NewRuntime**: () => [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 #### Returns
 
-[`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+[`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 #### Source
 
@@ -843,17 +843,17 @@ Set at compile time.
 
 ### QTS\_NewString
 
-> **QTS\_NewString**: (`ctx`, `string`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_NewString**: (`ctx`, `string`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **string**: [`BorrowedHeapCharPointer`](../../../quickjs-emscripten/exports.md#borrowedheapcharpointer)
+• **string**: [`BorrowedHeapCharPointer`](../exports.md#borrowedheapcharpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -863,19 +863,19 @@ Set at compile time.
 
 ### QTS\_NewSymbol
 
-> **QTS\_NewSymbol**: (`ctx`, `description`, `isGlobal`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_NewSymbol**: (`ctx`, `description`, `isGlobal`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **description**: [`BorrowedHeapCharPointer`](../../../quickjs-emscripten/exports.md#borrowedheapcharpointer)
+• **description**: [`BorrowedHeapCharPointer`](../exports.md#borrowedheapcharpointer)
 
 • **isGlobal**: `number`
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -899,17 +899,17 @@ Set at compile time.
 
 ### QTS\_ResolveException
 
-> **QTS\_ResolveException**: (`ctx`, `maybe_exception`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_ResolveException**: (`ctx`, `maybe_exception`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **maybe\_exception**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+• **maybe\_exception**: [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -919,17 +919,17 @@ Set at compile time.
 
 ### QTS\_RuntimeComputeMemoryUsage
 
-> **QTS\_RuntimeComputeMemoryUsage**: (`rt`, `ctx`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_RuntimeComputeMemoryUsage**: (`rt`, `ctx`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -943,7 +943,7 @@ Set at compile time.
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 #### Returns
 
@@ -961,7 +961,7 @@ Set at compile time.
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 #### Returns
 
@@ -975,15 +975,15 @@ Set at compile time.
 
 ### QTS\_RuntimeDumpMemoryUsage
 
-> **QTS\_RuntimeDumpMemoryUsage**: (`rt`) => [`OwnedHeapCharPointer`](../../../quickjs-emscripten/exports.md#ownedheapcharpointer)
+> **QTS\_RuntimeDumpMemoryUsage**: (`rt`) => [`OwnedHeapCharPointer`](../exports.md#ownedheapcharpointer)
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 #### Returns
 
-[`OwnedHeapCharPointer`](../../../quickjs-emscripten/exports.md#ownedheapcharpointer)
+[`OwnedHeapCharPointer`](../exports.md#ownedheapcharpointer)
 
 #### Source
 
@@ -997,7 +997,7 @@ Set at compile time.
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 #### Returns
 
@@ -1015,7 +1015,7 @@ Set at compile time.
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 • **use\_custom\_normalize**: `number`
 
@@ -1035,7 +1035,7 @@ Set at compile time.
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 • **stack\_size**: `number`
 
@@ -1055,7 +1055,7 @@ Set at compile time.
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../../../quickjs-emscripten/exports.md#jsruntimepointer)
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
 
 • **limit**: `number`
 
@@ -1075,13 +1075,13 @@ Set at compile time.
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **this\_val**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **this\_val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **prop\_name**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **prop\_name**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **prop\_value**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **prop\_value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -1113,17 +1113,17 @@ Set at compile time.
 
 ### QTS\_Throw
 
-> **QTS\_Throw**: (`ctx`, `error`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_Throw**: (`ctx`, `error`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **error**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **error**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -1133,17 +1133,17 @@ Set at compile time.
 
 ### QTS\_Typeof
 
-> **QTS\_Typeof**: (`ctx`, `value`) => [`OwnedHeapCharPointer`](../../../quickjs-emscripten/exports.md#ownedheapcharpointer)
+> **QTS\_Typeof**: (`ctx`, `value`) => [`OwnedHeapCharPointer`](../exports.md#ownedheapcharpointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`OwnedHeapCharPointer`](../../../quickjs-emscripten/exports.md#ownedheapcharpointer)
+[`OwnedHeapCharPointer`](../exports.md#ownedheapcharpointer)
 
 #### Source
 
@@ -1153,17 +1153,17 @@ Set at compile time.
 
 ### QTS\_bjson\_decode
 
-> **QTS\_bjson\_decode**: (`ctx`, `data`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_bjson\_decode**: (`ctx`, `data`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **data**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **data**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 
@@ -1173,17 +1173,17 @@ Set at compile time.
 
 ### QTS\_bjson\_encode
 
-> **QTS\_bjson\_encode**: (`ctx`, `val`) => [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+> **QTS\_bjson\_encode**: (`ctx`, `val`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../../../quickjs-emscripten/exports.md#jscontextpointer)
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **val**: [`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../../../quickjs-emscripten/exports.md#jsvalueconstpointer)
+• **val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../../../quickjs-emscripten/exports.md#jsvaluepointer)
+[`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Source
 

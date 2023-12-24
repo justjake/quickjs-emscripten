@@ -19,7 +19,7 @@ import {
   EvalFlags,
   EvalDetectModule,
   assertSync,
-} from "@jitl/quickjs-ffi-types"
+} from "."
 
 /**
  * Low-level FFI bindings to QuickJS's Emscripten module.
