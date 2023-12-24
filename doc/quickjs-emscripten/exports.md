@@ -1162,7 +1162,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 • **variant**: [`QuickJSAsyncVariant`](interfaces/QuickJSAsyncVariant.md)= `RELEASE_ASYNC`
 
-Optionally, pass a AsyncBuildVariant to construct a different WebAssembly module.
+Optionally, pass a [QuickJSAsyncVariant](interfaces/QuickJSAsyncVariant.md) to construct a different WebAssembly module.
 
 #### Returns
 
@@ -1229,7 +1229,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 • **variant**: [`QuickJSSyncVariant`](interfaces/QuickJSSyncVariant.md)= `RELEASE_SYNC`
 
-Optionally, pass a SyncBuildVariant to construct a different WebAssembly module.
+Optionally, pass a [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md) to construct a different WebAssembly module.
 
 #### Returns
 

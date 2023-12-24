@@ -64,8 +64,8 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
   }
 
   /**
-   * A simplified API to create a new {@link QuickJSRuntime} and a
-   * {@link QuickJSContext} inside that runtime at the same time. The runtime will
+   * A simplified API to create a new {@link QuickJSAsyncRuntime} and a
+   * {@link QuickJSAsyncContext} inside that runtime at the same time. The runtime will
    * be disposed when the context is disposed.
    */
   override newContext(options: ContextOptions = {}): QuickJSAsyncContext {
@@ -82,8 +82,8 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
   }
 
   /**
-   * One-off evaluate code without needing to create a {@link QuickJSRuntimeAsync} or
-   * {@link QuickJSContextSync} explicitly.
+   * One-off evaluate code without needing to create a {@link QuickJSAsyncRuntime} or
+   * {@link QuickJSAsyncContext} explicitly.
    *
    * This version allows for asynchronous Ecmascript module loading.
    *

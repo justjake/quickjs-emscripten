@@ -57,8 +57,8 @@ quickjs-emscripten-core/dist/index.d.ts:1230
 
 > **evalCodeAsync**(`code`, `options`): `Promise`\<`unknown`\>
 
-One-off evaluate code without needing to create a QuickJSRuntimeAsync or
-QuickJSContextSync explicitly.
+One-off evaluate code without needing to create a [QuickJSAsyncRuntime](QuickJSAsyncRuntime.md) or
+[QuickJSAsyncContext](QuickJSAsyncContext.md) explicitly.
 
 This version allows for asynchronous Ecmascript module loading.
 
@@ -87,8 +87,8 @@ quickjs-emscripten-core/dist/index.d.ts:1242
 
 > **newContext**(`options`?): [`QuickJSAsyncContext`](QuickJSAsyncContext.md)
 
-A simplified API to create a new [QuickJSRuntime](QuickJSRuntime.md) and a
-[QuickJSContext](QuickJSContext.md) inside that runtime at the same time. The runtime will
+A simplified API to create a new [QuickJSAsyncRuntime](QuickJSAsyncRuntime.md) and a
+[QuickJSAsyncContext](QuickJSAsyncContext.md) inside that runtime at the same time. The runtime will
 be disposed when the context is disposed.
 
 #### Parameters
