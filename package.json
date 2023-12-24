@@ -15,6 +15,7 @@
     "variants.json"
   ],
   "scripts": {
+    "codegen": "npx tsx prepareVariants.ts",
     "prepack": "yarn build",
     "tarball": "make build/quickjs-emscripten.tgz",
     "prepare": "yarn prettier-check && yarn tarball && yarn test && yarn test-dist && yarn smoketest-node",
@@ -30,6 +31,7 @@
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:bellard/quickjs.git master",
     "smoketest-node": "yarn tarball && ./scripts/smoketest-node.sh",
     "smoketest-cra": "yarn tarball && ./scripts/smoketest-website.sh",
+    "build:packages": "yarn workspaces foreach --from 'packages/*' -R -pt run build",
     "build:node": "yarn workspaces foreach --from 'packages/quickjs-node*' -R -pt run build",
     "build:browser": "yarn workspaces foreach --from 'packages/quickjs-browser*' -R -pt run build"
   },

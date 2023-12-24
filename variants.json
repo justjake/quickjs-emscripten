@@ -10,9 +10,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -58,9 +60,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -106,9 +110,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -154,9 +160,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -203,9 +211,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -252,9 +262,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -301,9 +313,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -350,9 +364,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -399,9 +415,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -448,9 +466,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -497,9 +517,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -546,9 +568,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -595,9 +619,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -644,9 +670,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -693,9 +721,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {
@@ -742,9 +772,11 @@
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "scripts": {
-        "build": "make -j8",
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j8",
+        "build:ts": "npx tsc --project .",
         "clean": "make clean",
-        "prepare": "make clean && make -j8"
+        "prepare": "yarn clean && yarn build"
       },
       "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
       "exports": {

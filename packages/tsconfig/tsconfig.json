@@ -3,6 +3,7 @@
   "compilerOptions": {
     /* Basic Options */
     // "incremental": true /* Enable incremental compilation */,
+    // "tsBuildInfoFile": "build/tsbuildinfo",
 
     "target": "ES2021" /* Node 16+ per https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping */,
     "module": "nodenext" /* Some imports are really imports: https://www.typescriptlang.org/docs/handbook/esm-node.html */,

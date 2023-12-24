@@ -3,7 +3,7 @@
  */
 
 import path from "path"
-import fs from "fs"
+import fs, { write } from "fs"
 import child_process from "child_process"
 import prettier from "prettier"
 import { Context, getMatches, buildFFI } from "./generate"
@@ -237,6 +237,26 @@ async function main() {
   const makeOutputFiles: string[] = []
   const coreReadmeVariantDescriptions: string[] = []
 
+  const ffiTypesDir = path.join(__dirname, "packages/quickjs-ffi-types")
+  await writePretty(
+    path.join(ffiTypesDir, "src/ffi.ts"),
+    buildFFI(
+      ...createContext({
+        TYPE_ONLY: true,
+        ASYNCIFY: false,
+      }),
+    ),
+  )
+  await writePretty(
+    path.join(ffiTypesDir, "src/ffi-async.ts"),
+    buildFFI(
+      ...createContext({
+        TYPE_ONLY: true,
+        ASYNCIFY: true,
+      }),
+    ),
+  )
+
   for (const [targetName, variants] of Object.entries(targets)) {
     for (const variant of variants) {
       const basename = getTargetPackageSuffix(targetName, variant)
@@ -262,9 +282,11 @@ async function main() {
           url: "https://github.com/justjake/quickjs-emscripten",
         },
         scripts: {
-          build: "make -j8",
+          build: "yarn build:c && yarn build:ts",
+          "build:c": "make -j8",
+          "build:ts": "npx tsc --project .",
           clean: "make clean",
-          prepare: "make clean && make -j8",
+          prepare: "yarn clean && yarn build",
         },
         files: ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
         exports: {
@@ -329,7 +351,6 @@ async function main() {
     }
   }
 
-  await writePretty(path.join(__dirname, "AllVariants.mk"), renderAllVariantsMk(makeOutputFiles))
   await writePretty(
     path.join(__dirname, "packages/quickjs-emscripten-core/README.md"),
     renderCoreReadme(coreReadmeVariantDescriptions),
@@ -489,7 +510,9 @@ class TemplateFile {
 }
 
 function renderMakefile(targetName: string, variant: BuildVariant): string {
-  const template = new TemplateFile(fs.readFileSync(path.join(__dirname, "Variant.mk"), "utf-8"))
+  const template = new TemplateFile(
+    fs.readFileSync(path.join(__dirname, "templates/Variant.mk"), "utf-8"),
+  )
 
   template.replace(
     "CFLAGS_WASM_VARIANT=REPLACE_THIS",
@@ -554,15 +577,14 @@ export default variant
 
 function renderFfiTs(targetName: string, variant: BuildVariant): string {
   const env = getGenerateTsEnv(targetName, variant)
-  const context = Object.assign(new Context(), env)
-  const { matches } = getMatches(context)
-  return buildFFI(context, matches)
+  return buildFFI(...createContext(env))
 }
 
-function renderAllVariantsMk(allOutputFiles: string[]) {
-  return `
-ALL_VARIANTS=${allOutputFiles.join(" ")}
-`
+function createContext(merged: Partial<Context> = {}) {
+  const context = new Context()
+  Object.assign(context, merged)
+  const matches = getMatches(context).matches
+  return [context, matches] as const
 }
 
 function getTargetPackageSuffix(targetName: string, variant: BuildVariant): string {

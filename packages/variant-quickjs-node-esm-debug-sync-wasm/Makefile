@@ -16,7 +16,7 @@ DEBUG_MAKE=1
 # Paths
 QUICKJS_ROOT=../../quickjs
 WRAPPER_ROOT=../../c
-TS_ROOT=../../ts
+TEMPLATES=../../templates
 # Intermediate build files
 BUILD_ROOT=build
 BUILD_WRAPPER=$(BUILD_ROOT)/wrapper
@@ -90,35 +90,21 @@ endif
 
 ###############################################################################
 # High-level
-all: WASM JS
+all: WASM
 
-clean-generate:
-	git clean -fx $(DIST)
-
-clean: clean-generate
-	rm -rfv $(BUILD_ROOT)
-
-###############################################################################
-# Typescript files
-TS_IN=$(DIST)/index.ts $(DIST)/ffi.ts $(DIST)/emscripten-module.d.ts
-TS_OUT=$(DIST)/index.js $(DIST)/index.d.ts $(DIST)/ffi.js $(DIST)/ffi.d.ts
-
-JS: $(TS_OUT)
-
-$(TS_OUT): $(TS_IN)
-	$(TSC) --project .
+clean:
+	git clean -fx $(DIST) $(BUILD_ROOT)
 
 ###############################################################################
 # Wasm files
-WASM: $(DIST)/emscripten-module.js $(DIST)/emscripten-module.d.ts GENERATE
-GENERATE: $(DIST)/ffi.ts
+WASM: $(DIST)/emscripten-module.js $(DIST)/emscripten-module.d.ts
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
 $(DIST)/emscripten-module.js: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
-$(DIST)/emscripten-module.d.ts: $(TS_ROOT)/types-generated/emscripten-module.$(SYNC).d.ts
+$(DIST)/emscripten-module.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
 	echo '// Generated from $<' > $@
 	cat $< >> $@
 
