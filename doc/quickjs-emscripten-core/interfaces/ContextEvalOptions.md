@@ -69,7 +69,7 @@ Force "strip" mode
 
 ### type?
 
-> **type**?: `"module"` \| `"global"`
+> **type**?: `"global"` \| `"module"`
 
 Global code (default)
 

@@ -1,3 +1,4 @@
+import { describe, it } from "vitest"
 import { Lifetime, Scope } from "./lifetime"
 import assert from "assert"
 

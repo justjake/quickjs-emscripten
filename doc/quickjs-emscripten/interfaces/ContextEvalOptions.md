@@ -69,7 +69,7 @@ quickjs-emscripten-core/dist/index.d.ts:465
 
 ### type?
 
-> **type**?: `"module"` \| `"global"`
+> **type**?: `"global"` \| `"module"`
 
 Global code (default)
 

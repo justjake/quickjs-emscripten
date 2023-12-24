@@ -97,7 +97,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:220
 
 #### Parameters
 
-• **argv**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **argv**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 • **index**: `number`
 
@@ -161,9 +161,9 @@ packages/quickjs-ffi-types/dist/index.d.ts:227
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **func\_obj**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **func\_obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
-• **this\_obj**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **this\_obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 • **argc**: `number`
 
@@ -187,15 +187,15 @@ packages/quickjs-ffi-types/dist/index.d.ts:260
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **this\_val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
-• **prop\_name**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **prop\_name**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
-• **prop\_value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **prop\_value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
-• **get**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **get**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
-• **set**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **set**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 • **configurable**: `boolean`
 
@@ -221,7 +221,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:259
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **obj**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -241,7 +241,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:262
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -425,7 +425,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:239
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **data**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **data**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -445,7 +445,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:250
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **data**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **data**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -479,7 +479,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:231
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -531,9 +531,9 @@ packages/quickjs-ffi-types/dist/index.d.ts:230
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **this\_val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
-• **prop\_name**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **prop\_name**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -553,7 +553,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:257
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -573,7 +573,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:249
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -621,7 +621,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:229
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -795,7 +795,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:242
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **proto**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **proto**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -1077,11 +1077,11 @@ packages/quickjs-ffi-types/dist/index.d.ts:223
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **this\_val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
-• **prop\_name**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **prop\_name**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
-• **prop\_value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **prop\_value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -1119,7 +1119,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:267
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **error**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **error**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -1139,7 +1139,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:221
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -1159,7 +1159,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:264
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **data**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **data**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 
@@ -1179,7 +1179,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:277
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+• **val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
 
 #### Returns
 

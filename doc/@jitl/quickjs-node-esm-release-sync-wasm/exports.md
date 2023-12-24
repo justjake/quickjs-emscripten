@@ -34,11 +34,11 @@ Node.js ESModule
 
 ##### importFFI
 
-> **`readonly`** **importFFI**: () => `Promise`\<(`module`) => [`QuickJSFFI`](../../quickjs-emscripten/interfaces/QuickJSFFI.md) \| *typeof* `QuickJSFFI`\>
+> **`readonly`** **importFFI**: () => `Promise`\<*typeof* `QuickJSFFI` \| (`module`) => [`QuickJSFFI`](../../quickjs-emscripten/interfaces/QuickJSFFI.md)\>
 
 ###### Returns
 
-`Promise`\<(`module`) => [`QuickJSFFI`](../../quickjs-emscripten/interfaces/QuickJSFFI.md) \| *typeof* `QuickJSFFI`\>
+`Promise`\<*typeof* `QuickJSFFI` \| (`module`) => [`QuickJSFFI`](../../quickjs-emscripten/interfaces/QuickJSFFI.md)\>
 
 ##### importModuleLoader
 

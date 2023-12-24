@@ -34,11 +34,11 @@ ESModule for browsers or browser-like environments
 
 ##### importFFI
 
-> **`readonly`** **importFFI**: () => `Promise`\<(`module`) => [`QuickJSAsyncFFI`](../../quickjs-emscripten/interfaces/QuickJSAsyncFFI.md) \| *typeof* `QuickJSAsyncFFI`\>
+> **`readonly`** **importFFI**: () => `Promise`\<*typeof* `QuickJSAsyncFFI` \| (`module`) => [`QuickJSAsyncFFI`](../../quickjs-emscripten/interfaces/QuickJSAsyncFFI.md)\>
 
 ###### Returns
 
-`Promise`\<(`module`) => [`QuickJSAsyncFFI`](../../quickjs-emscripten/interfaces/QuickJSAsyncFFI.md) \| *typeof* `QuickJSAsyncFFI`\>
+`Promise`\<*typeof* `QuickJSAsyncFFI` \| (`module`) => [`QuickJSAsyncFFI`](../../quickjs-emscripten/interfaces/QuickJSAsyncFFI.md)\>
 
 ##### importModuleLoader
 

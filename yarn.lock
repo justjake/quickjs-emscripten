@@ -1163,10 +1163,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^13.1.4":
-  version: 13.1.4
-  resolution: "@types/node@npm:13.1.4"
-  checksum: 75be5a54f0efb002a52e15e5765e120a8cd363f49923767e879bb00c8c7bfc4bad8d83794747a70c741b177e7e17e04bba6dd43d8c4167f21a73f26e9d4f01bc
+"@types/node@npm:^20.10.5":
+  version: 20.10.5
+  resolution: "@types/node@npm:20.10.5"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 4a378428d2c9f692b19801a5a3d20dc4c0ad5d4a3d103350f8b401af439941a9aa5efeadc8eb9db13c66c620318bc7f336abfc8934f82fd32c4a689d85068c6f
   languageName: node
   linkType: hard
 
@@ -6071,7 +6073,7 @@ __metadata:
     "@changesets/cli": "npm:^2.27.1"
     "@types/emscripten": "npm:^1.38.0"
     "@types/fs-extra": "npm:^9.0.13"
-    "@types/node": "npm:^13.1.4"
+    "@types/node": "npm:^20.10.5"
     esbuild-register: "npm:^3.5.0"
     execa: "npm:^8.0.1"
     fs-extra: "npm:^10.0.1"
@@ -7704,6 +7706,13 @@ __metadata:
     has-symbols: "npm:^1.0.3"
     which-boxed-primitive: "npm:^1.0.2"
   checksum: 06e1ee41c1095e37281cb71a975cb3350f7cb470a0665d2576f02cc9564f623bd90cfc0183693b8a7fdf2d242963dcc3010b509fa3ac683f540c765c0f3e7e43
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~5.26.4":
+  version: 5.26.5
+  resolution: "undici-types@npm:5.26.5"
+  checksum: 0097779d94bc0fd26f0418b3a05472410408877279141ded2bd449167be1aed7ea5b76f756562cb3586a07f251b90799bab22d9019ceba49c037c76445f7cddd
   languageName: node
   linkType: hard
 

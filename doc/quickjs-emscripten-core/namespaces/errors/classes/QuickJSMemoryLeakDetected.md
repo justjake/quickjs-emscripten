@@ -38,7 +38,7 @@
 
 #### Source
 
-node\_modules/typescript/lib/lib.es5.d.ts:1059
+node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 ## Properties
 
