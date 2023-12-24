@@ -18,6 +18,10 @@
     "type": "git",
     "url": "https://github.com/justjake/quickjs-emscripten"
   },
+  "author": {
+    "name": "Jake Teton-Landis",
+    "url": "https://jake.tl"
+  },
   "files": [
     "dist/**/*",
     "!dist/*.test.js",
@@ -42,8 +46,7 @@
       "import": "./dist/variants.mjs",
       "require": "./dist/variants.js"
     },
-    "./package.json": "./package.json",
-    "./core": "quickjs-emscripten-core"
+    "./package.json": "./package.json"
   },
   "imports": {
     "#variants/debug": {
@@ -86,7 +89,6 @@
     "@jitl/quickjs-node-esm-release-sync-wasm": "workspace:*",
     "quickjs-emscripten-core": "workspace:*"
   },
-  "packageManager": "yarn@4.0.2",
   "engines": {
     "node": ">=14.6.0"
   }
