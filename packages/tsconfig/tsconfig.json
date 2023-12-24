@@ -5,7 +5,7 @@
     // "incremental": true /* Enable incremental compilation */,
     // "tsBuildInfoFile": "build/tsbuildinfo",
 
-    "target": "ES2021" /* Node 16+ per https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping */,
+    "target": "ES2020" /* Node 14+ per https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping */,
     "module": "nodenext" /* Some imports are really imports: https://www.typescriptlang.org/docs/handbook/esm-node.html */,
     "moduleResolution": "nodenext" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */,
     "resolveJsonModule": true,
