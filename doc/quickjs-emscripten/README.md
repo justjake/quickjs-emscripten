@@ -12,7 +12,7 @@ compiled to WebAssembly.
 - Expose host functions to the QuickJS runtime ([more][functions]).
 - Execute synchronous code that uses asynchronous functions, with [asyncify][asyncify].
 
-[Github] | [NPM] | [API Documentation][api] | [Examples][tests]
+[Github] | [NPM] | [API Documentation][api] | [Variants][core] | [Examples][tests]
 
 ```typescript
 import { getQuickJS } from "quickjs-emscripten"
@@ -48,6 +48,31 @@ main()
 [asyncify]: #asyncify
 [functions]: #exposing-apis
 
+- [quickjs-emscripten](#quickjs-emscripten)
+  - [Usage](#usage)
+    - [Safely evaluate Javascript code](#safely-evaluate-javascript-code)
+    - [Interfacing with the interpreter](#interfacing-with-the-interpreter)
+      - [Runtime](#runtime)
+    - [Memory Management](#memory-management)
+      - [Scope](#scope)
+      - [`Lifetime.consume(fn)`](#lifetimeconsumefn)
+    - [Exposing APIs](#exposing-apis)
+      - [Promises](#promises)
+      - [Asyncify](#asyncify)
+        - [Async module loader](#async-module-loader)
+        - [Async on host, sync in QuickJS](#async-on-host-sync-in-quickjs)
+    - [Testing your code](#testing-your-code)
+    - [quickjs-emscripten-core, variants, and advanced packaging](#quickjs-emscripten-core-variants-and-advanced-packaging)
+    - [Debugging](#debugging)
+    - [More Documentation](#more-documentation)
+  - [Background](#background)
+  - [Status \& Roadmap](#status--roadmap)
+  - [Related](#related)
+  - [Developing](#developing)
+    - [The C parts](#the-c-parts)
+    - [The Typescript parts](#the-typescript-parts)
+    - [Yarn updates](#yarn-updates)
+
 ## Contents
 
 - [Usage](README.md#usage)
@@ -56,6 +81,7 @@ main()
   - [Memory Management](README.md#memory-management)
   - [Exposing APIs](README.md#exposing-apis)
   - [Testing your code](README.md#testing-your-code)
+  - [quickjs-emscripten-core, variants, and advanced packaging](README.md#quickjs-emscripten-core-variants-and-advanced-packaging)
   - [Debugging](README.md#debugging)
   - [More Documentation](README.md#more-documentation)
 - [Background](README.md#background)
@@ -510,14 +536,40 @@ For more testing examples, please explore the typescript source of [quickjs-emsc
 [debug_sync]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/modules.md#debug_sync
 [testquickjswasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/TestQuickJSWASMModule.md
 
+### quickjs-emscripten-core, variants, and advanced packaging
+
+Them main `quickjs-emscripten` package includes several build variants of the WebAssembly module.
+If these variants are too large for you, you can instead use the `quickjs-emscripten-core` package,
+and manually select your own build variant.
+
+See the [documentation of quickjs-emscripten-core][core] for more details.
+
+[core]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten-core/README.md
+
 ### Debugging
 
-- Switch to a DEBUG build variant of the WebAssembly module to see debug log messages from the C part of this library.
+- Switch to a DEBUG build variant of the WebAssembly module to see debug log messages from the C part of this library:
+
+  ```typescript
+  import { newQuickJSWASMModule, DEBUG_SYNC } from "quickjs-emscripten"
+
+  const QuickJS = await newQuickJSWASMModule(DEBUG_SYNC)
+  ```
+
+  With quickjs-emscripten-core:
+
+  ```typescript
+  import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
+  import DEBUG_SYNC from '@jitl/quickjs-node-esm-debug-sync-wasm'
+
+  const QuickJS = await newQuickJSWASMModuleFromVariant(DEBUG_SYNC)
+  ```
+
 - Set `process.env.QTS_DEBUG` to see debug log messages from the Javascript part of this library.
 
 ### More Documentation
 
-[Github] | [NPM] | [API Documentation][api] | [Examples][tests]
+[Github] | [NPM] | [API Documentation][api] | [Variants][core] | [Examples][tests]
 
 ## Background
 

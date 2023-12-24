@@ -347,7 +347,7 @@ async function main() {
       )
       await writePretty(path.join(dist, "ffi.ts"), renderFfiTs(targetName, variant))
       makeOutputFiles.push(finalVariant.indexJs)
-      coreReadmeVariantDescriptions.push()
+      coreReadmeVariantDescriptions.push(readmeSummary)
     }
   }
 
