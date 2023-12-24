@@ -36,7 +36,11 @@ export function exec(command: string) {
 
 const alreadyInstalled = new Map<string, Set<string>>()
 
-export function installDependencyGraphFromTar(into: string, packageName: string) {
+export function installDependencyGraphFromTar(
+  into: string,
+  packageName: string,
+  cmd = "npm install",
+) {
   const have = alreadyInstalled.get(into)?.has(packageName)
   if (have) {
     return
@@ -45,10 +49,10 @@ export function installDependencyGraphFromTar(into: string, packageName: string)
   console.log(`install ${packageName}`)
   const packageJson = getPackageJson(packageName)
   for (const dependency of Object.keys(packageJson.dependencies ?? {})) {
-    installDependencyGraphFromTar(into, dependency)
+    installDependencyGraphFromTar(into, dependency, cmd)
   }
   const tarFile = getTarFile(packageName)
-  exec(`cd ${into} && npm install ${packageName}@${tarFile}`)
+  exec(`cd ${into} && ${cmd} ${packageName}@${tarFile}`)
   alreadyInstalled.set(into, alreadyInstalled.get(into)?.add(packageName) ?? new Set([packageName]))
 }
 

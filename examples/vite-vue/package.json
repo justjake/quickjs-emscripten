@@ -1,0 +1,33 @@
+{
+  "name": "vite-vue",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@jitl/quickjs-browser-debug-asyncify-singlefile": "file:../../build/tar/@jitl-quickjs-browser-debug-asyncify-singlefile.tgz",
+    "@jitl/quickjs-browser-debug-sync-singlefile": "file:../../build/tar/@jitl-quickjs-browser-debug-sync-singlefile.tgz",
+    "@jitl/quickjs-browser-release-asyncify-singlefile": "file:../../build/tar/@jitl-quickjs-browser-release-asyncify-singlefile.tgz",
+    "@jitl/quickjs-browser-release-sync-singlefile": "file:../../build/tar/@jitl-quickjs-browser-release-sync-singlefile.tgz",
+    "@jitl/quickjs-ffi-types": "file:../../build/tar/@jitl-quickjs-ffi-types.tgz",
+    "@jitl/quickjs-node-cjs-debug-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-debug-asyncify-wasm.tgz",
+    "@jitl/quickjs-node-cjs-debug-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-debug-sync-wasm.tgz",
+    "@jitl/quickjs-node-cjs-release-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-release-asyncify-wasm.tgz",
+    "@jitl/quickjs-node-cjs-release-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-release-sync-wasm.tgz",
+    "@jitl/quickjs-node-esm-debug-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-debug-asyncify-wasm.tgz",
+    "@jitl/quickjs-node-esm-debug-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-debug-sync-wasm.tgz",
+    "@jitl/quickjs-node-esm-release-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-release-asyncify-wasm.tgz",
+    "@jitl/quickjs-node-esm-release-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-release-sync-wasm.tgz",
+    "quickjs-emscripten": "file:../../build/tar/quickjs-emscripten.tgz",
+    "quickjs-emscripten-core": "file:../../build/tar/quickjs-emscripten-core.tgz",
+    "vue": "^3.3.11"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.2",
+    "vite": "^5.0.8"
+  }
+}
