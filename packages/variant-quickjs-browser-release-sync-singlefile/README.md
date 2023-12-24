@@ -3,7 +3,15 @@
 ESModule for browsers or browser-like environments
 
 This generated package is part of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten).
-It contains a variant of the quickjs WASM library built with the following configuration:
+It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
+
+```typescript
+import variant from "@jitl/quickjs-browser-release-sync-singlefile"
+import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
+const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
+```
+
+This variant was built with the following settings:
 
 ## Library: quickjs
 
@@ -23,7 +31,7 @@ The default, normal build. Note that both variants support regular async functio
 
 ## Single-file, or separate .wasm file? singlefile
 
-The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app
+The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.
 
 ## More details
 

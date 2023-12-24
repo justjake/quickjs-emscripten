@@ -1,3 +1,3 @@
 export * from "quickjs-emscripten-core"
 export * from "./variants.js"
-export * from "./legacy.js"
+export * from "./mod.js"

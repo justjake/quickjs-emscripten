@@ -1,7 +1,13 @@
 import assert from "assert"
-import { getQuickJS, newQuickJSAsyncWASMModule, newQuickJSWASMModule } from "."
-import { QuickJSWASMModule } from "./module"
-import { DEBUG_ASYNC, DEBUG_SYNC, memoizePromiseFactory as memoizeNewModule } from "./variants"
+import {
+  getQuickJS,
+  newQuickJSAsyncWASMModule,
+  newQuickJSWASMModule,
+  QuickJSWASMModule,
+  DEBUG_ASYNC,
+  DEBUG_SYNC,
+  memoizePromiseFactory as memoizeNewModule,
+} from "."
 
 const TEST_LEAK = Boolean(process.env.TEST_LEAK)
 

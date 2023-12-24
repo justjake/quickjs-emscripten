@@ -6,10 +6,10 @@ import {
   newQuickJSAsyncWASMModule,
   newQuickJSWASMModule,
   shouldInterruptAfterDeadline,
+  QuickJSWASMModule,
+  TestQuickJSWASMModule,
+  memoizePromiseFactory,
 } from "."
-import { QuickJSWASMModule } from "./module"
-import { TestQuickJSWASMModule } from "./module-test"
-import { memoizePromiseFactory } from "./variants"
 
 describe("README.md", () => {
   const originalConsoleLog = console.log

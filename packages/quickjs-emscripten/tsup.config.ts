@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup"
 
 export default defineConfig({
-  entry: ["src/index.ts", "src/variants.ts"],
+  entry: ["src/index.ts", "src/variants.ts", "src/barrel.ts"],
   sourcemap: true,
   dts: true,
   format: ["cjs", "esm"],

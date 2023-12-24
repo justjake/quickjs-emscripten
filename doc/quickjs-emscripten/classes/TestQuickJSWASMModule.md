@@ -1,0 +1,173 @@
+[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../index.md) \| [Exports](../exports.md)
+
+***
+
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / TestQuickJSWASMModule
+
+# Class: TestQuickJSWASMModule
+
+A test wrapper of [[QuickJSWASMModule]] that keeps a reference to each
+context or runtime created.
+
+Call [[disposeAll]] to reset these sets and calls `dispose` on any left alive
+(which may throw an error).
+
+Call [[assertNoMemoryAllocated]] at the end of a test, when you expect that you've
+freed all the memory you've ever allocated.
+
+## Contents
+
+- [Implements](TestQuickJSWASMModule.md#implements)
+- [Constructors](TestQuickJSWASMModule.md#constructors)
+  - [new TestQuickJSWASMModule(parent)](TestQuickJSWASMModule.md#new-testquickjswasmmoduleparent)
+- [Properties](TestQuickJSWASMModule.md#properties)
+  - [contexts](TestQuickJSWASMModule.md#contexts)
+  - [runtimes](TestQuickJSWASMModule.md#runtimes)
+- [Methods](TestQuickJSWASMModule.md#methods)
+  - [assertNoMemoryAllocated()](TestQuickJSWASMModule.md#assertnomemoryallocated)
+  - [disposeAll()](TestQuickJSWASMModule.md#disposeall)
+  - [evalCode()](TestQuickJSWASMModule.md#evalcode)
+  - [newContext()](TestQuickJSWASMModule.md#newcontext)
+  - [newRuntime()](TestQuickJSWASMModule.md#newruntime)
+
+## Implements
+
+- `Pick`\<[`QuickJSWASMModule`](QuickJSWASMModule.md), keyof [`QuickJSWASMModule`](QuickJSWASMModule.md)\>
+
+## Constructors
+
+### new TestQuickJSWASMModule(parent)
+
+> **new TestQuickJSWASMModule**(`parent`): [`TestQuickJSWASMModule`](TestQuickJSWASMModule.md)
+
+#### Parameters
+
+• **parent**: [`QuickJSWASMModule`](QuickJSWASMModule.md)
+
+#### Returns
+
+[`TestQuickJSWASMModule`](TestQuickJSWASMModule.md)
+
+#### Source
+
+quickjs-emscripten-core/dist/index.d.ts:1372
+
+## Properties
+
+### contexts
+
+> **contexts**: `Set`\<[`QuickJSContext`](QuickJSContext.md)\>
+
+#### Source
+
+quickjs-emscripten-core/dist/index.d.ts:1370
+
+***
+
+### runtimes
+
+> **runtimes**: `Set`\<`QuickJSRuntime`\>
+
+#### Source
+
+quickjs-emscripten-core/dist/index.d.ts:1371
+
+## Methods
+
+### assertNoMemoryAllocated()
+
+> **assertNoMemoryAllocated**(): `void`
+
+#### Returns
+
+`void`
+
+#### Source
+
+quickjs-emscripten-core/dist/index.d.ts:1377
+
+***
+
+### disposeAll()
+
+> **disposeAll**(): `void`
+
+#### Returns
+
+`void`
+
+#### Source
+
+quickjs-emscripten-core/dist/index.d.ts:1376
+
+***
+
+### evalCode()
+
+> **evalCode**(`code`, `options`?): `unknown`
+
+#### Parameters
+
+• **code**: `string`
+
+• **options?**: [`ModuleEvalOptions`](../interfaces/ModuleEvalOptions.md)
+
+#### Returns
+
+`unknown`
+
+#### Implementation of
+
+`Pick.evalCode`
+
+#### Source
+
+quickjs-emscripten-core/dist/index.d.ts:1375
+
+***
+
+### newContext()
+
+> **newContext**(`options`?): [`QuickJSContext`](QuickJSContext.md)
+
+#### Parameters
+
+• **options?**: [`ContextOptions`](../interfaces/ContextOptions.md)
+
+#### Returns
+
+[`QuickJSContext`](QuickJSContext.md)
+
+#### Implementation of
+
+`Pick.newContext`
+
+#### Source
+
+quickjs-emscripten-core/dist/index.d.ts:1374
+
+***
+
+### newRuntime()
+
+> **newRuntime**(`options`?): `QuickJSRuntime`
+
+#### Parameters
+
+• **options?**: [`RuntimeOptions`](../interfaces/RuntimeOptions.md)
+
+#### Returns
+
+`QuickJSRuntime`
+
+#### Implementation of
+
+`Pick.newRuntime`
+
+#### Source
+
+quickjs-emscripten-core/dist/index.d.ts:1373
+
+***
+
+Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

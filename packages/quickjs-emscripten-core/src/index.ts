@@ -1,3 +1,5 @@
+export * from "@jitl/quickjs-ffi-types"
+
 // Sync classes
 export type { QuickJSWASMModule } from "./module"
 export type { QuickJSContext } from "./context"
@@ -42,3 +44,4 @@ export type {
 export type { ModuleEvalOptions } from "./module"
 export type { InterruptHandler, ExecutePendingJobsResult } from "./runtime"
 export type { QuickJSPropertyKey } from "./context"
+export { debugLog } from "./debug"

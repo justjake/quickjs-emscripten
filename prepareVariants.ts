@@ -6,6 +6,8 @@ import path from "path"
 import fs from "fs"
 import child_process from "child_process"
 import prettier from "prettier"
+import { Context, getMatches, buildFFI } from "./generate"
+import { TypeDocOptions } from "typedoc"
 
 const CLEAN = Boolean(process.env.CLEAN)
 
@@ -221,8 +223,19 @@ interface TsConfig {
   exclude: string[]
 }
 
+interface FinalVariant {
+  basename: string
+  targetName: string
+  dir: string
+  packageJson: PackageJson
+  variant: BuildVariant
+  indexJs: string
+}
+
 async function main() {
+  const variantsJson: Record<string, FinalVariant> = {}
   const makeOutputFiles: string[] = []
+  const coreReadmeVariantDescriptions: string[] = []
 
   for (const [targetName, variants] of Object.entries(targets)) {
     for (const variant of variants) {
@@ -284,22 +297,51 @@ async function main() {
         exclude: ["node_modules"],
       }
 
-      await writePretty(path.join(dir, "package.json"), JSON.stringify(packageJson, null, 2) + "\n")
-      await writePretty(path.join(dir, "tsconfig.json"), JSON.stringify(tsConfig, null, 2) + "\n")
+      const typedocConfig: Partial<TypeDocOptions> & { extends?: string; mergeReadme?: boolean } = {
+        extends: "../../typedoc.base.js",
+        entryPoints: ["./dist/index.ts"],
+        mergeReadme: true,
+      }
+
+      const finalVariant: FinalVariant = {
+        basename,
+        targetName,
+        dir: path.relative(__dirname, dir),
+        packageJson,
+        indexJs: path.relative(__dirname, path.join(dist, "index.js")),
+        variant,
+      }
+      variantsJson[finalVariant.dir] = finalVariant
+
+      await writePretty(path.join(dir, "package.json"), JSON.stringify(packageJson))
+      await writePretty(path.join(dir, "tsconfig.json"), JSON.stringify(tsConfig))
+      await writePretty(path.join(dir, "typedoc.json"), JSON.stringify(typedocConfig))
       await writePretty(path.join(dir, "README.md"), renderReadme(targetName, variant, packageJson))
       await writePretty(path.join(dir, "Makefile"), renderMakefile(targetName, variant))
-      await writePretty(path.join(dist, "index.ts"), renderIndexTs(targetName, variant))
+      const readmeSummary = renderReadmeSummary(targetName, variant, packageJson)
+      await writePretty(
+        path.join(dist, "index.ts"),
+        renderIndexTs(targetName, variant, readmeSummary),
+      )
       await writePretty(path.join(dist, "ffi.ts"), renderFfiTs(targetName, variant))
-      makeOutputFiles.push(path.relative(__dirname, path.join(dist, "index.js")))
+      makeOutputFiles.push(finalVariant.indexJs)
+      coreReadmeVariantDescriptions.push()
     }
   }
 
-  fs.writeFileSync(path.join(__dirname, "AllVariants.mk"), renderAllVariantsMk(makeOutputFiles))
+  await writePretty(path.join(__dirname, "AllVariants.mk"), renderAllVariantsMk(makeOutputFiles))
+  await writePretty(
+    path.join(__dirname, "packages/quickjs-emscripten-core/README.md"),
+    renderCoreReadme(coreReadmeVariantDescriptions),
+  )
+  await writePretty(path.join(__dirname, "variants.json"), JSON.stringify(variantsJson))
 }
 
 async function writePretty(filePath: string, text: string) {
   let output = text
-  if (!filePath.endsWith("Makefile")) {
+
+  const isPrettierUnsupportedType = filePath.endsWith(".mk") || filePath.endsWith("Makefile")
+  if (!isPrettierUnsupportedType) {
     const prettierConfig = (await prettier.resolveConfig(filePath)) ?? {}
     output = await prettier.format(text, {
       ...prettierConfig,
@@ -310,40 +352,93 @@ async function writePretty(filePath: string, text: string) {
   fs.writeFileSync(filePath, output)
 }
 
+const describeInclusion = {
+  [EmscriptenInclusion.SingleFile]: `The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.`,
+  [EmscriptenInclusion.Separate]: `Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.`,
+}
+
+const describeMode = {
+  [ReleaseMode.Debug]: `Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.`,
+  [ReleaseMode.Release]: `Optimized for performance; use when building/deploying your application.`,
+}
+
+const describeSyncMode = {
+  [SyncMode.Sync]: `The default, normal build. Note that both variants support regular async functions.`,
+  [SyncMode.Asyncify]: `Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to!`,
+}
+
+const describeLibrary = {
+  [CLibrary.QuickJS]: `The original [bellard/quickjs](https://github.com/bellard/quickjs) library.`,
+  [CLibrary.NG]: `[quickjs-ng](https://github.com/quickjs-ng/quickjs) is a newer fork of quickjs with more language features.`,
+}
+
+const describeModuleSystem = {
+  [ModuleSystem.CommonJS]: `This variant exports a CommonJS module, which is faster to load and run in Node.js.`,
+  [ModuleSystem.ESModule]: `This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.`,
+}
+
+const describeModuleFactory = {
+  [SyncMode.Sync]: `newQuickJSWASMModuleFromVariant`,
+  [SyncMode.Asyncify]: `newQuickJSAsyncWASMModuleFromVariant`,
+}
+
+function renderCoreReadme(variantDescriptions: string[]): string {
+  const template = new TemplateFile(
+    fs.readFileSync(
+      path.join(__dirname, "packages/quickjs-emscripten-core/README.template.md"),
+      "utf-8",
+    ),
+  )
+  template.replace("<!-- __VARIANTS__ -->", variantDescriptions.join("\n\n"))
+  template.replace(
+    "__EDIT_THIS_FILE_NOT_README_MD__",
+    "DO NOT EDIT THIS FILE. Edit README.template.md instead.",
+  )
+  return template.text
+}
+
+function renderReadmeSummary(
+  targetName: string,
+  variant: BuildVariant,
+  packageJson: PackageJson,
+): string {
+  return `### [${packageJson.name}](https://www.npmjs.com/package/${packageJson.name})
+
+${variant.description}
+
+| Variable            |    Setting                     |    Description    |
+| --                  | --                             | --                |
+| releaseMode         | ${variant.releaseMode} | ${describeMode[variant.releaseMode]} |
+| syncMode            | ${variant.syncMode} | ${describeSyncMode[variant.syncMode]} |
+| moduleSystem        | ${variant.moduleSystem} | ${describeModuleSystem[variant.moduleSystem]} |
+| emscriptenInclusion | ${variant.emscriptenInclusion} | ${
+    describeInclusion[variant.emscriptenInclusion]
+  } |
+`
+}
+
 function renderReadme(targetName: string, variant: BuildVariant, packageJson: PackageJson): string {
-  const json = (obj: any) => "```json\n" + JSON.stringify(obj, null, 2) + "\n```"
-
-  const describeInclusion = {
-    [EmscriptenInclusion.SingleFile]: `The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app`,
-    [EmscriptenInclusion.Separate]: `Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.`,
-  }
-
-  const describeMode = {
-    [ReleaseMode.Debug]: `Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.`,
-    [ReleaseMode.Release]: `Optimized for performance; use when building/deploying your application.`,
-  }
-
-  const describeSyncMode = {
-    [SyncMode.Sync]: `The default, normal build. Note that both variants support regular async functions.`,
-    [SyncMode.Asyncify]: `Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to!`,
-  }
-
-  const describeLibrary = {
-    [CLibrary.QuickJS]: `The original [bellard/quickjs](https://github.com/bellard/quickjs) library.`,
-    [CLibrary.NG]: `[quickjs-ng](https://github.com/quickjs-ng/quickjs) is a newer fork of quickjs with more language features.`,
-  }
-
-  const describeModuleSystem = {
-    [ModuleSystem.CommonJS]: `This variant exports a CommonJS module, which is faster to load and run in Node.js.`,
-    [ModuleSystem.ESModule]: `This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.`,
-  }
+  const codeFence = (lang: string, text: string) => `\`\`\`${lang}\n${text}\n\`\`\``
+  const json = (obj: any) => codeFence("json", JSON.stringify(obj, null, 2))
+  const create = describeModuleFactory[variant.syncMode]
 
   return `# ${packageJson.name}
 
 ${variant.description}
 
 This generated package is part of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten).
-It contains a variant of the quickjs WASM library built with the following configuration:
+It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
+
+${codeFence(
+  "typescript",
+  `
+import variant from '${packageJson.name}'
+import { ${create} } from 'quickjs-emscripten-core'
+const QuickJS = await ${create}(variant)
+`,
+)}
+
+This variant was built with the following settings:
 
 ## Library: ${variant.library}
 
@@ -377,37 +472,54 @@ ${json(getCflags(targetName, variant))}
 `
 }
 
-function renderMakefile(targetName: string, variant: BuildVariant): string {
-  let template = fs.readFileSync(path.join(__dirname, "Variant.mk"), "utf-8")
+class TemplateFile {
+  constructor(public text: string) {}
 
-  const replace = (pattern: string | RegExp, replacement: string) => {
-    const nextTemplate = template.replace(pattern, replacement)
-    if (nextTemplate === template) {
+  replace(pattern: string | RegExp, replacement: string) {
+    const nextText = this.text.replace(pattern, replacement)
+    if (nextText === this.text) {
       throw new Error(`Failed to replace ${pattern} with ${replacement}`)
     }
-    template = nextTemplate
+    this.text = nextText
   }
 
-  replace(
+  toString() {
+    return this.text
+  }
+}
+
+function renderMakefile(targetName: string, variant: BuildVariant): string {
+  const template = new TemplateFile(fs.readFileSync(path.join(__dirname, "Variant.mk"), "utf-8"))
+
+  template.replace(
     "CFLAGS_WASM_VARIANT=REPLACE_THIS",
     getCflags(targetName, variant)
       .map((flag) => `CFLAGS_WASM+=${flag}`)
       .join("\n"),
   )
-  replace(
+  template.replace(
     "GENERATE_TS_ENV_VARIANT=REPLACE_THIS",
     Object.entries(getGenerateTsEnv(targetName, variant))
       .map(([key, value]) => `GENERATE_TS_ENV+=${key}=${value}`)
       .join("\n"),
   )
 
-  replace("VARIANT=REPLACE_THIS", `VARIANT=${JSON.stringify(variant)}`)
-  replace("SYNC=REPLACE_THIS", `SYNC=${variant.syncMode.toUpperCase()}`)
+  template.replace("VARIANT=REPLACE_THIS", `VARIANT=${JSON.stringify(variant)}`)
+  template.replace("SYNC=REPLACE_THIS", `SYNC=${variant.syncMode.toUpperCase()}`)
 
-  return template
+  return template.text
 }
 
-function renderIndexTs(targetName: string, variant: BuildVariant): string {
+function renderIndexTs(
+  targetName: string,
+  variant: BuildVariant,
+  docCommentContents: string,
+): string {
+  const docComment = docCommentContents
+    .split("\n")
+    .map((line) => ` * ${line}`)
+    .join("\n")
+
   const className = {
     [SyncMode.Sync]: "QuickJSFFI",
     [SyncMode.Asyncify]: "QuickJSAsyncFFI",
@@ -426,6 +538,10 @@ function renderIndexTs(targetName: string, variant: BuildVariant): string {
   return `
 import { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
 
+/**
+ * This export is a variant of the quickjs WASM library:
+${docComment}
+ */
 const variant = {
   type: '${modeName}',
   importFFI: () => import('./ffi.js').then(mod => mod.${className}),
@@ -437,13 +553,10 @@ export default variant
 }
 
 function renderFfiTs(targetName: string, variant: BuildVariant): string {
-  return child_process.execSync("npx tsx generate.ts ffi -", {
-    env: {
-      ...process.env,
-      ...getGenerateTsEnv(targetName, variant),
-    },
-    encoding: "utf-8",
-  })
+  const env = getGenerateTsEnv(targetName, variant)
+  const context = Object.assign(new Context(), env)
+  const { matches } = getMatches(context)
+  return buildFFI(context, matches)
 }
 
 function renderAllVariantsMk(allOutputFiles: string[]) {

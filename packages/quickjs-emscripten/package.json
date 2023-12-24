@@ -25,7 +25,7 @@
   ],
   "scripts": {
     "build": "npx tsup",
-    "tsc": "npx tsc -p ."
+    "tsc": "npx tsc -p . --noEmit"
   },
   "exports": {
     ".": {

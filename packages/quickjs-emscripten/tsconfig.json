@@ -3,7 +3,6 @@
   "include": ["src/*.ts"],
   "compilerOptions": {
     "outDir": "dist",
-    "noEmit": true,
     "paths": {
       "#variants/debug": ["../quickjs-node-cjs-debug-sync-wasm/dist"],
       "#variants/debug-asyncify": ["../quickjs-node-cjs-debug-asyncify-wasm/dist"],

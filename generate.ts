@@ -6,12 +6,14 @@ const USAGE = "Usage: generate.ts [symbols | header | ffi] WRITE_PATH"
 
 const rooted = (path: string) => pathlib.join(__dirname, path)
 
-const INTERFACE_FILE_PATH = process.env.HEADER_FILE_PATH || rooted("./c/interface.c")
-const FFI_TYPES_PATH =
-  process.env.FFI_TYPES_PATH || rooted("packages/quickjs-ffi-types/src/ffi-types.ts")
-const DEBUG = process.env.DEBUG === "true"
-const ASYNCIFY = process.env.ASYNCIFY === "true"
-const TYPE_ONLY = process.env.TYPE_ONLY === "true"
+export class Context {
+  public INTERFACE_FILE_PATH = process.env.HEADER_FILE_PATH || rooted("./c/interface.c")
+  public FFI_TYPES_PATH =
+    process.env.FFI_TYPES_PATH || rooted("packages/quickjs-ffi-types/src/ffi-types.ts")
+  public DEBUG = process.env.DEBUG === "true"
+  public ASYNCIFY = process.env.ASYNCIFY === "true"
+  public TYPE_ONLY = process.env.TYPE_ONLY === "true"
+}
 
 const ASSERT_SYNC_FN = "assertSync"
 
@@ -30,27 +32,38 @@ function writeFile(filename: string, content: string) {
   fs.writeFileSync(filename, content + "\n", "utf-8")
 }
 
+export function getMatches(context: Context) {
+  const interfaceFile = fs.readFileSync(context.INTERFACE_FILE_PATH, "utf-8")
+  const matches = matchAll(DECL_RE, interfaceFile)
+  const includeMatches = matchAll(INCLUDE_RE, interfaceFile)
+  const typedefMatches = matchAll(TYPEDEF_RE, interfaceFile)
+  const emJsMatches = matchAll(EM_JS_RE, interfaceFile)
+  return {
+    matches,
+    includeMatches,
+    typedefMatches,
+    emJsMatches,
+  }
+}
+
 function main() {
   const [, , command, destination] = process.argv
+  const context = new Context()
 
   if (!command || !destination) {
     throw new Error(USAGE)
   }
 
-  const interfaceFile = fs.readFileSync(INTERFACE_FILE_PATH, "utf-8")
-  const matches = matchAll(DECL_RE, interfaceFile)
-  const includeMatches = matchAll(INCLUDE_RE, interfaceFile)
-  const typedefMatches = matchAll(TYPEDEF_RE, interfaceFile)
-  const emJsMatches = matchAll(EM_JS_RE, interfaceFile)
+  const { matches, includeMatches, typedefMatches, emJsMatches } = getMatches(context)
 
   if (command === "symbols") {
-    const symbols = buildSymbols(matches)
+    const symbols = buildSymbols(context, matches)
     writeFile(destination, JSON.stringify(symbols))
     return
   }
 
   if (command === "sync-symbols") {
-    const symbols = buildSyncSymbols(matches)
+    const symbols = buildSyncSymbols(context, matches)
     writeFile(destination, JSON.stringify(symbols))
     return
   }
@@ -80,7 +93,7 @@ function main() {
   }
 
   if (command === "ffi") {
-    writeFile(destination, buildFFI(matches))
+    writeFile(destination, buildFFI(context, matches))
     return
   }
 
@@ -157,12 +170,13 @@ function cTypeToTypescriptType(ctype: string): ParsedType {
 }
 
 function renderFunction(args: {
+  context: Context
   functionName: string
   returnType: ParsedType
   params: Array<{ name: string; type: ParsedType }>
   async: boolean
 }) {
-  const { functionName, returnType, params, async } = args
+  const { functionName, returnType, params, async, context } = args
   const typescriptParams = params
     .map((param) => {
       // Allow JSValue wherever JSValueConst is accepted.
@@ -174,7 +188,7 @@ function renderFunction(args: {
     })
     .join(", ")
 
-  const forceSync = ASYNCIFY && !async && returnType.attributes.has("MaybeAsync")
+  const forceSync = context.ASYNCIFY && !async && returnType.attributes.has("MaybeAsync")
   const markAsync = async && returnType.attributes.has("MaybeAsync")
 
   let typescriptFunctionName = functionName
@@ -190,7 +204,7 @@ function renderFunction(args: {
 
   const ffiParams = JSON.stringify(params.map((param) => param.type.ffi))
   const cwrapArgs = [JSON.stringify(functionName), JSON.stringify(returnType.ffi), ffiParams]
-  if (DEBUG && async) {
+  if (context.DEBUG && async) {
     // https://emscripten.org/docs/porting/asyncify.html#usage-with-ccall
     // Passing {async:true} to cwrap/ccall will wrap all return values in
     // Promise.resolve(...), even if the c code doesn't suspend and returns a
@@ -214,14 +228,14 @@ function renderFunction(args: {
   }
 
   let result = `  ${typescriptFunctionName}: ${typescriptFunctionType}`
-  if (!TYPE_ONLY) {
+  if (!context.TYPE_ONLY) {
     result += ` =\n    ${cwrap}`
   }
 
   return result
 }
 
-function getAvailableDefinitions(matches: RegExpMatchArray[]) {
+function getAvailableDefinitions(context: Context, matches: RegExpMatchArray[]) {
   const parsed = matches.map((match) => {
     const [, returnType, functionName, , rawParams] = match
     const params = parseParams(rawParams)
@@ -229,11 +243,11 @@ function getAvailableDefinitions(matches: RegExpMatchArray[]) {
   })
   const filtered = parsed.filter((fn) => {
     if (fn.returnType.attributes.has("AsyncifyOnly")) {
-      return ASYNCIFY
+      return context.ASYNCIFY
     }
 
     if (fn.returnType.attributes.has("DebugOnly")) {
-      return DEBUG
+      return context.DEBUG
     }
 
     return true
@@ -241,13 +255,13 @@ function getAvailableDefinitions(matches: RegExpMatchArray[]) {
   return filtered
 }
 
-function buildSymbols(matches: RegExpMatchArray[]) {
-  const names = getAvailableDefinitions(matches).map((fn) => "_" + fn.functionName)
+function buildSymbols(context: Context, matches: RegExpMatchArray[]) {
+  const names = getAvailableDefinitions(context, matches).map((fn) => "_" + fn.functionName)
   return names.concat("_malloc", "_free")
 }
 
-function buildSyncSymbols(matches: RegExpMatchArray[]) {
-  const parsed = getAvailableDefinitions(matches)
+function buildSyncSymbols(context: Context, matches: RegExpMatchArray[]) {
+  const parsed = getAvailableDefinitions(context, matches)
   const filtered = parsed.filter((fn) => !fn.returnType.attributes.has("MaybeAsync"))
   return filtered.map((fn) => "_" + fn.functionName)
 }
@@ -265,19 +279,20 @@ function buildAsyncifySymbols(matches: RegExpMatchArray[]) {
   return filtered.map((fn) => fn.functionName)
 }
 
-function buildFFI(matches: RegExpExecArray[]) {
-  const parsed = getAvailableDefinitions(matches)
+export function buildFFI(context: Context, matches: RegExpExecArray[]) {
+  const parsed = getAvailableDefinitions(context, matches)
   const decls: string[] = []
   parsed.forEach((fn) => {
-    if (!fn.returnType.attributes.has("AsyncifyOnly") || ASYNCIFY) {
-      decls.push(renderFunction({ ...fn, async: false }))
+    if (!fn.returnType.attributes.has("AsyncifyOnly") || context.ASYNCIFY) {
+      decls.push(renderFunction({ ...fn, async: false, context }))
     }
 
-    if (fn.returnType.attributes.has("MaybeAsync") && ASYNCIFY) {
-      decls.push(renderFunction({ ...fn, async: true }))
+    if (fn.returnType.attributes.has("MaybeAsync") && context.ASYNCIFY) {
+      decls.push(renderFunction({ ...fn, async: true, context }))
     }
   })
 
+  const { FFI_TYPES_PATH, ASYNCIFY, TYPE_ONLY, DEBUG } = context
   const ffiTypes = fs.readFileSync(FFI_TYPES_PATH, "utf-8")
   const importFromFfiTypes = matchAll(TS_EXPORT_TYPE_RE, ffiTypes).map((match) => match[1])
   if (ASYNCIFY) {

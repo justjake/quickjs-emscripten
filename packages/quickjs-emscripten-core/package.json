@@ -29,11 +29,10 @@
     "types": "./dist/index.d.ts"
   },
   "scripts": {
-    "tsc": "npx tsc -p .",
+    "tsc": "npx tsc -p . --noEmit",
     "build": "npx tsup"
   },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
-  },
-  "packageManager": "yarn@4.0.2"
+  }
 }

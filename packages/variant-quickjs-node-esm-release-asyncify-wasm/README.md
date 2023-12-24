@@ -3,7 +3,15 @@
 Node.js ESModule
 
 This generated package is part of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten).
-It contains a variant of the quickjs WASM library built with the following configuration:
+It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
+
+```typescript
+import variant from "@jitl/quickjs-node-esm-release-asyncify-wasm"
+import { newQuickJSAsyncWASMModuleFromVariant } from "quickjs-emscripten-core"
+const QuickJS = await newQuickJSAsyncWASMModuleFromVariant(variant)
+```
+
+This variant was built with the following settings:
 
 ## Library: quickjs
 

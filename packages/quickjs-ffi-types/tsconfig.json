@@ -1,7 +1,5 @@
 {
   "extends": "@jitl/tsconfig/tsconfig.json",
   "include": ["src/**/*"],
-  "compilerOptions": {
-    "noEmit": true
-  }
+  "compilerOptions": {}
 }

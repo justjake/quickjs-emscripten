@@ -1,8 +1,7 @@
 {
   "extends": "@jitl/tsconfig/tsconfig.json",
-  "include": ["src/*.ts"],
+  "include": ["src/**/*"],
   "compilerOptions": {
-    "outDir": "dist",
-    "noEmit": true
+    "outDir": "dist"
   }
 }

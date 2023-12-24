@@ -2,7 +2,7 @@
   "name": "@jitl/quickjs-ffi-types",
   "version": "0.0.0",
   "scripts": {
-    "check": "npx tsc --project .",
+    "check": "npx tsc --project . --noEmit",
     "build": "npx tsup",
     "clean": "git clean -fx dist"
   },

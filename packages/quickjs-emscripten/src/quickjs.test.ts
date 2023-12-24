@@ -9,23 +9,27 @@ import {
   QuickJSDeferredPromise,
   newQuickJSAsyncWASMModule,
   newQuickJSWASMModule,
+  isFail,
+  VmCallResult,
+  QuickJSContext,
+  QuickJSAsyncContext,
+  DEBUG_ASYNC,
+  DEBUG_SYNC,
+  memoizePromiseFactory,
+  QuickJSFFI,
+  QuickJSAsyncFFI,
+  debugLog,
+  errors,
 } from "."
 import { it, describe } from "mocha"
 import assert from "assert"
-import { isFail, VmCallResult } from "./vm-interface"
 import fs, { chmod } from "fs"
-import { QuickJSContext } from "./context"
-import { QuickJSAsyncContext } from "./context-asyncify"
-import { DEBUG_ASYNC, DEBUG_SYNC, memoizePromiseFactory, QuickJSFFI } from "./variants"
-import { QuickJSUnwrapError } from "./errors"
-import { debugLog } from "./debug"
-import { EitherFFI } from "./types"
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
 
 function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false) {
   let vm: QuickJSContext = undefined as any
-  let ffi: EitherFFI = undefined as any
+  let ffi: QuickJSFFI | QuickJSAsyncFFI = undefined as any
   let testId = 0
 
   beforeEach(async () => {
@@ -342,7 +346,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
         vm.unwrapResult(result)
         assert.fail("vm.unwrapResult(error) must throw")
       } catch (error) {
-        if (error instanceof QuickJSUnwrapError) {
+        if (error instanceof errors.QuickJSUnwrapError) {
           assert.strictEqual(error.cause, "ERROR!", "QuickJSUnwrapError.cause set correctly")
           return
         }

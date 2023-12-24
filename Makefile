@@ -50,7 +50,7 @@ test:
 prettier:
 	yarn prettier
 
-doc: prettier ts/* ts/generated/*.ts
+doc: generate prettier
 	yarn doc
 	touch doc
 

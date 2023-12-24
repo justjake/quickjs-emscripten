@@ -1,22 +1,15 @@
-const name = require("./package.json").name
-const NO_THANKS = ["**/node_modules/**", "./quickjs/**"]
+const variants = require("./variants.json")
+
+const ROOT_PACKAGES = ["quickjs-emscripten", "quickjs-emscripten-core"].map(
+  (path) => `./packages/${path}`,
+)
+
+const VARIANT_PACKAGES = Object.values(variants).map((variant) => variant.dir)
 
 module.exports = {
-  // disable package version in doc headers
-  name,
-  entryPoints: ["./ts/index.ts"],
-  entryPointStrategy: "expand",
-  // link to main instead of the current git SHA
-  // which is borked with our strategy of deploying the docs
-  // in the repo.
-  gitRevision: "main",
+  extends: "./typedoc.base.js",
+  name: "quickjs-emscripten",
+  entryPoints: [...ROOT_PACKAGES, ...VARIANT_PACKAGES],
+  entryPointStrategy: "packages",
   out: "./doc",
-  // mode: 'file',
-  exclude: NO_THANKS,
-  externalPattern: NO_THANKS[0],
-  // excludeNotExported: true,
-  excludePrivate: true,
-  categorizeByGroup: true,
-  listInvalidSymbolLinks: true,
-  plugin: ["typedoc-plugin-markdown"],
 }

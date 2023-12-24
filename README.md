@@ -38,8 +38,8 @@ main()
 
 [github]: https://github.com/justjake/quickjs-emscripten
 [npm]: https://www.npmjs.com/package/quickjs-emscripten
-[api]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/modules.md
-[tests]: https://github.com/justjake/quickjs-emscripten/blob/main/ts/quickjs.test.ts
+[api]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages.md
+[tests]: https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/quickjs.test.ts
 [values]: #interfacing-with-the-interpreter
 [asyncify]: #asyncify
 [functions]: #exposing-apis
