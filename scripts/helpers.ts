@@ -76,7 +76,7 @@ export async function writePretty(filePath: string, text: string) {
   fs.writeFileSync(filePath, output)
 }
 
-interface WorkspaceJson {
+export interface WorkspaceJson {
   location: string
   name: string
 }
@@ -104,6 +104,7 @@ export function tryReadJson<T>(filepath: string): T | undefined {
 export interface PackageJson {
   name: string
   type?: "module"
+  private?: boolean
   version: string
   description: string
   sideEffects: false
@@ -115,7 +116,7 @@ export interface PackageJson {
   files: string[]
   dependencies: Record<string, string>
   devDependencies?: Record<string, string>
-  exports: Record<string, { types: string; import: string; require: string } | string>
+  exports: Record<string, { types: string; import: string; require: string } | string | undefined>
   types?: string
   main?: string
   module?: string

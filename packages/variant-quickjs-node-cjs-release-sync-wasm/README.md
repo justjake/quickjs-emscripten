@@ -52,5 +52,5 @@ Full variant JSON description:
 Variant-specific Emscripten build flags:
 
 ```json
-["-Oz", "-flto", "-s SINGLE_FILE=1", "--closure 1", "-s FILESYSTEM=0", "-s ENVIRONMENT=node"]
+["-Oz", "-flto", "--closure 1", "-s FILESYSTEM=0", "-s ENVIRONMENT=node"]
 ```

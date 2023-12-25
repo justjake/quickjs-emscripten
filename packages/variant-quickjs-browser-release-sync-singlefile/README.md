@@ -55,7 +55,6 @@ Variant-specific Emscripten build flags:
 [
   "-Oz",
   "-flto",
-  "-s SINGLE_FILE=1",
   "--closure 1",
   "-s FILESYSTEM=0",
   "-s SINGLE_FILE=1",

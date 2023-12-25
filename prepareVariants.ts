@@ -134,7 +134,7 @@ const SyncModeFlags = {
 }
 
 const ReleaseModeFlags = {
-  [ReleaseMode.Release]: [`-Oz`, `-flto`, `-s SINGLE_FILE=1`, `--closure 1`, `-s FILESYSTEM=0`],
+  [ReleaseMode.Release]: [`-Oz`, `-flto`, `--closure 1`, `-s FILESYSTEM=0`],
   [ReleaseMode.Debug]: [`-O0`, "-DQTS_DEBUG_MODE", `-gsource-map`, `-s ASSERTIONS=1`],
 }
 
@@ -297,7 +297,10 @@ async function main() {
             import: "./dist/ffi.js",
             require: "./dist/ffi.js",
           },
-          "./wasm": "./dist/emscripten-module.wasm",
+          "./wasm":
+            variant.emscriptenInclusion === EmscriptenInclusion.Separate
+              ? "./dist/emscripten-module.wasm"
+              : undefined,
           "./emscripten": {
             types: "./dist/emscripten-module.d.ts",
             import: "./dist/emscripten-module.js",

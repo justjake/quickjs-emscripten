@@ -9,11 +9,6 @@
     "type": "git",
     "url": "https://github.com/justjake/quickjs-emscripten"
   },
-  "files": [
-    "README.md",
-    "LICENSE",
-    "variants.json"
-  ],
   "scripts": {
     "prepack": "yarn build && yarn check:package",
     "tarball": "rm -rf $PWD/build/tar && mkdir -p $PWD/build/tar && yarn for-each-package-cmd pack --out $PWD/build/tar/%s.tgz",

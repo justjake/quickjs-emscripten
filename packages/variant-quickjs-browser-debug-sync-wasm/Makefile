@@ -98,7 +98,7 @@ clean:
 WASM: $(DIST)/emscripten-module.js $(DIST)/emscripten-module.d.ts
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
-$(DIST)/emscripten-module.js: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
+$(DIST)/emscripten-module.js: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC) $(BUILD_WRAPPER)/Makefile.changed
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
@@ -106,11 +106,11 @@ $(DIST)/emscripten-module.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
 	echo '// Generated from $<' > $@
 	cat $< >> $@
 
-$(BUILD_WRAPPER)/%.o: $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
+$(BUILD_WRAPPER)/%.o:  $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC) (BUILD_WRAPPER)/Makefile.changed
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(CFLAGS_SORTED_FUNCS) $(WRAPPER_DEFINES) -c -o $@ $<
 
-$(BUILD_QUICKJS)/%.o: $(QUICKJS_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
+$(BUILD_QUICKJS)/%.o: $(QUICKJS_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC) $(BUILD_WRAPPER)/Makefile.changed
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(EMCC_EXPORTED_FUNCS) $(QUICKJS_DEFINES) -c -o $@ $<
 
@@ -125,3 +125,7 @@ $(BUILD_WRAPPER)/asyncify-remove.json:
 $(BUILD_WRAPPER)/asyncify-imports.json:
 	$(MKDIRP)
 	$(GENERATE_TS) async-callback-symbols $@
+
+$(BUILD_WRAPPER)/Makefile.changed: Makefile
+	$(MKDIRP)
+	$(GENERATE_TS) hash $< $@

@@ -470,7 +470,6 @@
           "import": "./dist/ffi.js",
           "require": "./dist/ffi.js"
         },
-        "./wasm": "./dist/emscripten-module.wasm",
         "./emscripten": {
           "types": "./dist/emscripten-module.d.ts",
           "import": "./dist/emscripten-module.js",
@@ -580,7 +579,6 @@
           "import": "./dist/ffi.js",
           "require": "./dist/ffi.js"
         },
-        "./wasm": "./dist/emscripten-module.wasm",
         "./emscripten": {
           "types": "./dist/emscripten-module.d.ts",
           "import": "./dist/emscripten-module.js",
@@ -690,7 +688,6 @@
           "import": "./dist/ffi.js",
           "require": "./dist/ffi.js"
         },
-        "./wasm": "./dist/emscripten-module.wasm",
         "./emscripten": {
           "types": "./dist/emscripten-module.d.ts",
           "import": "./dist/emscripten-module.js",
@@ -800,7 +797,6 @@
           "import": "./dist/ffi.js",
           "require": "./dist/ffi.js"
         },
-        "./wasm": "./dist/emscripten-module.wasm",
         "./emscripten": {
           "types": "./dist/emscripten-module.d.ts",
           "import": "./dist/emscripten-module.js",

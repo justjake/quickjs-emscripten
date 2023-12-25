@@ -2,7 +2,10 @@
 // Generate header file
 import * as fs from "fs-extra"
 import * as pathlib from "path"
-const USAGE = "Usage: generate.ts [symbols | header | ffi] WRITE_PATH"
+import * as crypto from "crypto"
+const USAGE =
+  "Usage: generate.ts [symbols | header | ffi] WRITE_PATH" +
+  "\ngenerate.ts hash READ_PATH WRITE_PATH"
 
 const rooted = (path: string) => pathlib.join(__dirname, path)
 
@@ -47,7 +50,7 @@ export function getMatches(context: Context) {
 }
 
 function main() {
-  const [, , command, destination] = process.argv
+  const [, , command, destination, hashDestination] = process.argv
   const context = new Context()
 
   if (!command || !destination) {
@@ -94,6 +97,11 @@ function main() {
 
   if (command === "ffi") {
     writeFile(destination, buildFFI(context, matches))
+    return
+  }
+
+  if (command === "hash") {
+    updateHashFile(destination, hashDestination)
     return
   }
 
@@ -371,6 +379,18 @@ export function replaceAll(
     throw new Error(`Expected ${matches.length} matches, but got ${i}`)
   }
   return result
+}
+
+function updateHashFile(src: string, dest: string) {
+  const bytes = fs.readFileSync(src)
+  const hash = crypto.createHash("md5").update(bytes).digest("hex") + "\n"
+  try {
+    const existing = fs.readFileSync(dest, "utf-8")
+    if (existing === hash) {
+      return
+    }
+  } catch (e) {}
+  fs.writeFileSync(dest, hash)
 }
 
 if (require.main === module) {
