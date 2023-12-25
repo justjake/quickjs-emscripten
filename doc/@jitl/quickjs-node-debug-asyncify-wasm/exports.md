@@ -1,16 +1,16 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-esm-debug-asyncify-wasm** • [Readme](README.md) \| [Exports](exports.md)
+[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-debug-asyncify-wasm** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / @jitl/quickjs-node-esm-debug-asyncify-wasm
+[quickjs-emscripten](../../packages.md) / @jitl/quickjs-node-debug-asyncify-wasm
 
-# @jitl/quickjs-node-esm-debug-asyncify-wasm
+# @jitl/quickjs-node-debug-asyncify-wasm
 
 ## Contents
 
 - [Variables](exports.md#variables)
   - [default](exports.md#default)
-  - [[@jitl/quickjs-node-esm-debug-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-esm-debug-asyncify-wasm/README.md)](exports.md#jitlquickjs-node-esm-debug-asyncify-wasmhttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-node-esm-debug-asyncify-wasmreadmemd)
+  - [[@jitl/quickjs-node-debug-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-debug-asyncify-wasm/README.md)](exports.md#jitlquickjs-node-debug-asyncify-wasmhttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-node-debug-asyncify-wasmreadmemd)
 
 ## Variables
 
@@ -19,15 +19,15 @@
 > **`const`** **default**: `Object`
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-node-esm-debug-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-esm-debug-asyncify-wasm/README.md)
+### [@jitl/quickjs-node-debug-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-debug-asyncify-wasm/README.md)
 
-Node.js ESModule
+Node.js build with both CommonJS and ESModule exports
 
 | Variable            |    Setting                     |    Description    |
 | --                  | --                             | --                |
 | releaseMode         | debug | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
 | syncMode            | asyncify | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
-| moduleSystem        | esm | This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans. |
+| moduleSystem        | both | Contains both CommonJS and ESModule exports. |
 | emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
 
 #### Type declaration
@@ -42,11 +42,11 @@ Node.js ESModule
 
 ##### importModuleLoader
 
-> **`readonly`** **importModuleLoader**: () => `Promise`\<[`EmscriptenModuleLoader`](../../quickjs-emscripten/interfaces/EmscriptenModuleLoader.md)\<[`QuickJSAsyncEmscriptenModule`](../../quickjs-emscripten/interfaces/QuickJSAsyncEmscriptenModule.md)\> \| `Object` \| `Object`\>
+> **`readonly`** **importModuleLoader**: () => `Promise`\<`__module` \| [`EmscriptenModuleLoader`](../../quickjs-emscripten/interfaces/EmscriptenModuleLoader.md)\<[`QuickJSAsyncEmscriptenModule`](../../quickjs-emscripten/interfaces/QuickJSAsyncEmscriptenModule.md)\> \| `Object` \| `Object`\>
 
 ###### Returns
 
-`Promise`\<[`EmscriptenModuleLoader`](../../quickjs-emscripten/interfaces/EmscriptenModuleLoader.md)\<[`QuickJSAsyncEmscriptenModule`](../../quickjs-emscripten/interfaces/QuickJSAsyncEmscriptenModule.md)\> \| `Object` \| `Object`\>
+`Promise`\<`__module` \| [`EmscriptenModuleLoader`](../../quickjs-emscripten/interfaces/EmscriptenModuleLoader.md)\<[`QuickJSAsyncEmscriptenModule`](../../quickjs-emscripten/interfaces/QuickJSAsyncEmscriptenModule.md)\> \| `Object` \| `Object`\>
 
 ##### type
 
@@ -54,7 +54,7 @@ Node.js ESModule
 
 #### Source
 
-[variant-quickjs-node-esm-debug-asyncify-wasm/dist/index.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-node-esm-debug-asyncify-wasm/dist/index.ts#L17)
+[variant-quickjs-node-debug-asyncify-wasm/dist/index.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-node-debug-asyncify-wasm/dist/index.ts#L17)
 
 ***
 

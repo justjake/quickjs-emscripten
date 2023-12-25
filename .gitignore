@@ -13,6 +13,8 @@ npm-error.log
 
 /packages/*/build
 /packages/*/dist/*.js
+/packages/*/dist/*.cjs
+/packages/*/dist/*.mjs
 /packages/*/dist/*.wasm
 /packages/*/dist/*.d.ts
 /packages/*/dist/*.map

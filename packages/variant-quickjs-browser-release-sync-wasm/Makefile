@@ -93,7 +93,7 @@ clean:
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
 WASM: $(DIST)/emscripten-module.d.ts JS
-JS: CJS MJS
+JS: MJS
 CJS: $(DIST)/emscripten-module.cjs
 MJS: $(DIST)/emscripten-module.mjs
 

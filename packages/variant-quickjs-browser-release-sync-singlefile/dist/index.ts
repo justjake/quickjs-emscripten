@@ -18,7 +18,9 @@ const variant = {
   type: "sync",
   importFFI: () => import("./ffi.js").then((mod) => mod.QuickJSFFI),
   importModuleLoader: () =>
-    import("@jitl/quickjs-browser-release-sync-singlefile/emscripten-module"),
+    import("@jitl/quickjs-browser-release-sync-singlefile/emscripten-module").then(
+      (mod) => mod.default,
+    ),
 } as const satisfies QuickJSSyncVariant
 
 export default variant

@@ -1,16 +1,16 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-cjs-debug-sync-wasm** • [Readme](README.md) \| [Exports](exports.md)
+[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-debug-sync-wasm** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 
-# @jitl/quickjs-node-cjs-debug-sync-wasm
+# @jitl/quickjs-node-debug-sync-wasm
 
-Node.js CommonJS module
+Node.js build with both CommonJS and ESModule exports
 
 This generated package is part of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten).
 It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
 
 ```typescript
-import variant from "@jitl/quickjs-node-cjs-debug-sync-wasm"
+import variant from "@jitl/quickjs-node-debug-sync-wasm"
 import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
 const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
 ```
@@ -21,7 +21,7 @@ This variant was built with the following settings:
 
 - [Library: quickjs](README.md#library-quickjs)
 - [Release mode: debug](README.md#release-mode-debug)
-- [Module system: commonjs](README.md#module-system-commonjs)
+- [Module system: both](README.md#module-system-both)
 - [Extra async magic? No](README.md#extra-async-magic-no)
 - [Single-file, or separate .wasm file? wasm](README.md#single-file-or-separate-wasm-file-wasm)
 - [More details](README.md#more-details)
@@ -34,9 +34,9 @@ The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
 
 Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.
 
-## Module system: commonjs
+## Module system: both
 
-This variant exports a CommonJS module, which is faster to load and run in Node.js.
+Contains both CommonJS and ESModule exports.
 
 ## Extra async magic? No
 
@@ -56,9 +56,9 @@ Full variant JSON description:
   "releaseMode": "debug",
   "syncMode": "sync",
   "emscriptenInclusion": "wasm",
-  "description": "Node.js CommonJS module",
+  "description": "Node.js build with both CommonJS and ESModule exports",
   "emscriptenEnvironment": ["node"],
-  "moduleSystem": "commonjs"
+  "moduleSystem": "both"
 }
 ```
 

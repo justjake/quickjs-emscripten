@@ -12,7 +12,7 @@
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
         "build": "yarn build:c && yarn build:ts",
-        "build:c": "make -j2",
+        "build:c": "make",
         "build:ts": "npx tsc --project .",
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
@@ -66,7 +66,7 @@
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
         "build": "yarn build:c && yarn build:ts",
-        "build:c": "make -j2",
+        "build:c": "make",
         "build:ts": "npx tsc --project .",
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
@@ -120,7 +120,7 @@
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
         "build": "yarn build:c && yarn build:ts",
-        "build:c": "make -j2",
+        "build:c": "make",
         "build:ts": "npx tsc --project .",
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
@@ -174,7 +174,7 @@
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
         "build": "yarn build:c && yarn build:ts",
-        "build:c": "make -j2",
+        "build:c": "make",
         "build:ts": "npx tsc --project .",
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"

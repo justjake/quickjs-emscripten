@@ -77,7 +77,6 @@ Variant-specific Emscripten build flags:
   "-flto",
   "--closure 1",
   "-s FILESYSTEM=0",
-  "-s EXPORT_ES6=1",
   "-s ENVIRONMENT=web,worker"
 ]
 ```

@@ -18,7 +18,9 @@ const variant = {
   type: "async",
   importFFI: () => import("./ffi.js").then((mod) => mod.QuickJSAsyncFFI),
   importModuleLoader: () =>
-    import("@jitl/quickjs-browser-release-asyncify-singlefile/emscripten-module"),
+    import("@jitl/quickjs-browser-release-asyncify-singlefile/emscripten-module").then(
+      (mod) => mod.default,
+    ),
 } as const satisfies QuickJSAsyncVariant
 
 export default variant

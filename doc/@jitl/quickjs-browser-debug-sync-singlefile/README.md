@@ -71,7 +71,6 @@ Variant-specific Emscripten build flags:
   "-gsource-map",
   "-s ASSERTIONS=1",
   "-s SINGLE_FILE=1",
-  "-s EXPORT_ES6=1",
   "-s ENVIRONMENT=web,worker",
   "-DQTS_SANITIZE_LEAK",
   "-fsanitize=leak",

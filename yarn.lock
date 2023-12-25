@@ -881,65 +881,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-cjs-debug-asyncify-wasm@workspace:*, @jitl/quickjs-node-cjs-debug-asyncify-wasm@workspace:packages/variant-quickjs-node-cjs-debug-asyncify-wasm":
+"@jitl/quickjs-node-debug-asyncify-wasm@workspace:*, @jitl/quickjs-node-debug-asyncify-wasm@workspace:packages/variant-quickjs-node-debug-asyncify-wasm":
   version: 0.0.0-use.local
-  resolution: "@jitl/quickjs-node-cjs-debug-asyncify-wasm@workspace:packages/variant-quickjs-node-cjs-debug-asyncify-wasm"
+  resolution: "@jitl/quickjs-node-debug-asyncify-wasm@workspace:packages/variant-quickjs-node-debug-asyncify-wasm"
   dependencies:
     "@jitl/quickjs-ffi-types": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-cjs-debug-sync-wasm@workspace:*, @jitl/quickjs-node-cjs-debug-sync-wasm@workspace:packages/variant-quickjs-node-cjs-debug-sync-wasm":
+"@jitl/quickjs-node-debug-sync-wasm@workspace:*, @jitl/quickjs-node-debug-sync-wasm@workspace:packages/variant-quickjs-node-debug-sync-wasm":
   version: 0.0.0-use.local
-  resolution: "@jitl/quickjs-node-cjs-debug-sync-wasm@workspace:packages/variant-quickjs-node-cjs-debug-sync-wasm"
+  resolution: "@jitl/quickjs-node-debug-sync-wasm@workspace:packages/variant-quickjs-node-debug-sync-wasm"
   dependencies:
     "@jitl/quickjs-ffi-types": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-cjs-release-asyncify-wasm@workspace:*, @jitl/quickjs-node-cjs-release-asyncify-wasm@workspace:packages/variant-quickjs-node-cjs-release-asyncify-wasm":
+"@jitl/quickjs-node-release-asyncify-wasm@workspace:*, @jitl/quickjs-node-release-asyncify-wasm@workspace:packages/variant-quickjs-node-release-asyncify-wasm":
   version: 0.0.0-use.local
-  resolution: "@jitl/quickjs-node-cjs-release-asyncify-wasm@workspace:packages/variant-quickjs-node-cjs-release-asyncify-wasm"
+  resolution: "@jitl/quickjs-node-release-asyncify-wasm@workspace:packages/variant-quickjs-node-release-asyncify-wasm"
   dependencies:
     "@jitl/quickjs-ffi-types": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-node-cjs-release-sync-wasm@workspace:*, @jitl/quickjs-node-cjs-release-sync-wasm@workspace:packages/variant-quickjs-node-cjs-release-sync-wasm":
+"@jitl/quickjs-node-release-sync-wasm@workspace:*, @jitl/quickjs-node-release-sync-wasm@workspace:packages/variant-quickjs-node-release-sync-wasm":
   version: 0.0.0-use.local
-  resolution: "@jitl/quickjs-node-cjs-release-sync-wasm@workspace:packages/variant-quickjs-node-cjs-release-sync-wasm"
-  dependencies:
-    "@jitl/quickjs-ffi-types": "workspace:*"
-  languageName: unknown
-  linkType: soft
-
-"@jitl/quickjs-node-esm-debug-asyncify-wasm@workspace:*, @jitl/quickjs-node-esm-debug-asyncify-wasm@workspace:packages/variant-quickjs-node-esm-debug-asyncify-wasm":
-  version: 0.0.0-use.local
-  resolution: "@jitl/quickjs-node-esm-debug-asyncify-wasm@workspace:packages/variant-quickjs-node-esm-debug-asyncify-wasm"
-  dependencies:
-    "@jitl/quickjs-ffi-types": "workspace:*"
-  languageName: unknown
-  linkType: soft
-
-"@jitl/quickjs-node-esm-debug-sync-wasm@workspace:*, @jitl/quickjs-node-esm-debug-sync-wasm@workspace:packages/variant-quickjs-node-esm-debug-sync-wasm":
-  version: 0.0.0-use.local
-  resolution: "@jitl/quickjs-node-esm-debug-sync-wasm@workspace:packages/variant-quickjs-node-esm-debug-sync-wasm"
-  dependencies:
-    "@jitl/quickjs-ffi-types": "workspace:*"
-  languageName: unknown
-  linkType: soft
-
-"@jitl/quickjs-node-esm-release-asyncify-wasm@workspace:*, @jitl/quickjs-node-esm-release-asyncify-wasm@workspace:packages/variant-quickjs-node-esm-release-asyncify-wasm":
-  version: 0.0.0-use.local
-  resolution: "@jitl/quickjs-node-esm-release-asyncify-wasm@workspace:packages/variant-quickjs-node-esm-release-asyncify-wasm"
-  dependencies:
-    "@jitl/quickjs-ffi-types": "workspace:*"
-  languageName: unknown
-  linkType: soft
-
-"@jitl/quickjs-node-esm-release-sync-wasm@workspace:*, @jitl/quickjs-node-esm-release-sync-wasm@workspace:packages/variant-quickjs-node-esm-release-sync-wasm":
-  version: 0.0.0-use.local
-  resolution: "@jitl/quickjs-node-esm-release-sync-wasm@workspace:packages/variant-quickjs-node-esm-release-sync-wasm"
+  resolution: "@jitl/quickjs-node-release-sync-wasm@workspace:packages/variant-quickjs-node-release-sync-wasm"
   dependencies:
     "@jitl/quickjs-ffi-types": "workspace:*"
   languageName: unknown
@@ -5745,14 +5713,10 @@ __metadata:
     "@jitl/quickjs-browser-debug-sync-singlefile": "workspace:*"
     "@jitl/quickjs-browser-release-asyncify-singlefile": "workspace:*"
     "@jitl/quickjs-browser-release-sync-singlefile": "workspace:*"
-    "@jitl/quickjs-node-cjs-debug-asyncify-wasm": "workspace:*"
-    "@jitl/quickjs-node-cjs-debug-sync-wasm": "workspace:*"
-    "@jitl/quickjs-node-cjs-release-asyncify-wasm": "workspace:*"
-    "@jitl/quickjs-node-cjs-release-sync-wasm": "workspace:*"
-    "@jitl/quickjs-node-esm-debug-asyncify-wasm": "workspace:*"
-    "@jitl/quickjs-node-esm-debug-sync-wasm": "workspace:*"
-    "@jitl/quickjs-node-esm-release-asyncify-wasm": "workspace:*"
-    "@jitl/quickjs-node-esm-release-sync-wasm": "workspace:*"
+    "@jitl/quickjs-node-debug-asyncify-wasm": "workspace:*"
+    "@jitl/quickjs-node-debug-sync-wasm": "workspace:*"
+    "@jitl/quickjs-node-release-asyncify-wasm": "workspace:*"
+    "@jitl/quickjs-node-release-sync-wasm": "workspace:*"
     quickjs-emscripten-core: "workspace:*"
   languageName: unknown
   linkType: soft

@@ -278,7 +278,7 @@ async function main() {
         },
         scripts: {
           build: "yarn build:c && yarn build:ts",
-          "build:c": "make -j2",
+          "build:c": variant.moduleSystem === ModuleSystem.Both ? "make" : "make -j2",
           "build:ts": "npx tsc --project .",
           clean: "make clean",
           prepare: "yarn clean && yarn build",
@@ -523,7 +523,7 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
     [ModuleSystem.Both]: `CJS MJS`,
     [ModuleSystem.CommonJS]: `CJS`,
     [ModuleSystem.ESModule]: `MJS`,
-  }[ModuleSystem.Both]
+  }[variant.moduleSystem]
   template.replace(/^JS: __REPLACE_THIS__/gm, `JS: ${moduleSystemTarget}`)
 
   return template.text
@@ -565,7 +565,7 @@ ${docComment}
 const variant = {
   type: '${modeName}',
   importFFI: () => import('./ffi.js').then(mod => mod.${className}),
-  importModuleLoader: () => import('${packageJson.name}/emscripten-module'),
+  importModuleLoader: () => import('${packageJson.name}/emscripten-module').then(mod => mod.default),
 } as const satisfies ${variantTypeName}
 
 export default variant

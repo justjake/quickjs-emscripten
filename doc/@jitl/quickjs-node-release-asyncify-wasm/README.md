@@ -1,16 +1,16 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-cjs-debug-asyncify-wasm** • [Readme](README.md) \| [Exports](exports.md)
+[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-node-release-asyncify-wasm** • [Readme](README.md) \| [Exports](exports.md)
 
 ***
 
-# @jitl/quickjs-node-cjs-debug-asyncify-wasm
+# @jitl/quickjs-node-release-asyncify-wasm
 
-Node.js CommonJS module
+Node.js build with both CommonJS and ESModule exports
 
 This generated package is part of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten).
 It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
 
 ```typescript
-import variant from "@jitl/quickjs-node-cjs-debug-asyncify-wasm"
+import variant from "@jitl/quickjs-node-release-asyncify-wasm"
 import { newQuickJSAsyncWASMModuleFromVariant } from "quickjs-emscripten-core"
 const QuickJS = await newQuickJSAsyncWASMModuleFromVariant(variant)
 ```
@@ -20,8 +20,8 @@ This variant was built with the following settings:
 ## Contents
 
 - [Library: quickjs](README.md#library-quickjs)
-- [Release mode: debug](README.md#release-mode-debug)
-- [Module system: commonjs](README.md#module-system-commonjs)
+- [Release mode: release](README.md#release-mode-release)
+- [Module system: both](README.md#module-system-both)
 - [Extra async magic? Yes](README.md#extra-async-magic-yes)
 - [Single-file, or separate .wasm file? wasm](README.md#single-file-or-separate-wasm-file-wasm)
 - [More details](README.md#more-details)
@@ -30,13 +30,13 @@ This variant was built with the following settings:
 
 The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
 
-## Release mode: debug
+## Release mode: release
 
-Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.
+Optimized for performance; use when building/deploying your application.
 
-## Module system: commonjs
+## Module system: both
 
-This variant exports a CommonJS module, which is faster to load and run in Node.js.
+Contains both CommonJS and ESModule exports.
 
 ## Extra async magic? Yes
 
@@ -53,12 +53,12 @@ Full variant JSON description:
 ```json
 {
   "library": "quickjs",
-  "releaseMode": "debug",
+  "releaseMode": "release",
   "syncMode": "asyncify",
   "emscriptenInclusion": "wasm",
-  "description": "Node.js CommonJS module",
+  "description": "Node.js build with both CommonJS and ESModule exports",
   "emscriptenEnvironment": ["node"],
-  "moduleSystem": "commonjs"
+  "moduleSystem": "both"
 }
 ```
 
@@ -73,13 +73,11 @@ Variant-specific Emscripten build flags:
   "-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json",
   "-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json",
   "-lasync.js",
-  "-O0",
-  "-DQTS_DEBUG_MODE",
-  "-gsource-map",
-  "-s ASSERTIONS=1",
-  "-s ENVIRONMENT=node",
-  "-s ASYNCIFY_ADVISE=1",
-  "-O3"
+  "-Oz",
+  "-flto",
+  "--closure 1",
+  "-s FILESYSTEM=0",
+  "-s ENVIRONMENT=node"
 ]
 ```
 
