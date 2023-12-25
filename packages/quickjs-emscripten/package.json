@@ -1,6 +1,6 @@
 {
   "name": "quickjs-emscripten",
-  "version": "0.25.0",
+  "version": "0.25.0-0",
   "sideEffects": false,
   "license": "MIT",
   "type": "commonjs",
@@ -91,5 +91,6 @@
   },
   "engines": {
     "node": ">=14.6.0"
-  }
+  },
+  "stableVersion": "0.24.0"
 }

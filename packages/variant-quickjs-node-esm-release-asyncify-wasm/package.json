@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-node-esm-release-asyncify-wasm",
-  "version": "0.25.0",
+  "version": "0.25.0-0",
   "type": "module",
   "description": "Variant of quickjs library: Node.js ESModule",
   "sideEffects": false,
@@ -49,5 +49,6 @@
   },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
-  }
+  },
+  "stableVersion": "0.24.0"
 }

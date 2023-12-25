@@ -1,6 +1,6 @@
 {
   "name": "quickjs-emscripten-core",
-  "version": "0.25.0",
+  "version": "0.25.0-0",
   "sideEffects": false,
   "license": "MIT",
   "type": "commonjs",
@@ -42,5 +42,6 @@
   },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
-  }
+  },
+  "stableVersion": "0.24.0"
 }
