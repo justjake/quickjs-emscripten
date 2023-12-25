@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-browser-release-sync-singlefile",
-  "version": "0.0.0",
+  "version": "0.25.0",
   "type": "module",
   "description": "Variant of quickjs library: ESModule for browsers or browser-like environments",
   "sideEffects": false,
