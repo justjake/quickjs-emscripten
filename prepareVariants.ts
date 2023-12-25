@@ -4,9 +4,9 @@
  * This file defines all the different variants of the quickjs WASM library.
  */
 
-import path from "path"
-import fs, { write } from "fs"
-import prettier from "prettier"
+import path from "node:path"
+import fs from "node:fs"
+import { writePretty } from "./scripts/helpers"
 import { Context, getMatches, buildFFI } from "./generate"
 import { TypeDocOptions } from "typedoc"
 
@@ -372,21 +372,6 @@ async function main() {
     renderCoreReadme(coreReadmeVariantDescriptions),
   )
   await writePretty(path.join(__dirname, "variants.json"), JSON.stringify(variantsJson))
-}
-
-async function writePretty(filePath: string, text: string) {
-  let output = text
-
-  const isPrettierUnsupportedType = filePath.endsWith(".mk") || filePath.endsWith("Makefile")
-  if (!isPrettierUnsupportedType) {
-    const prettierConfig = (await prettier.resolveConfig(filePath)) ?? {}
-    output = await prettier.format(text, {
-      ...prettierConfig,
-      filepath: filePath,
-    })
-  }
-  console.warn(`write`, path.relative(process.cwd(), filePath))
-  fs.writeFileSync(filePath, output)
 }
 
 const describeInclusion = {

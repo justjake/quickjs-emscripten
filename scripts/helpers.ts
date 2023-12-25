@@ -1,6 +1,7 @@
 import path from "node:path"
 import fs from "node:fs"
 import p from "node:child_process"
+import prettier from "prettier"
 
 const packagesDir = path.resolve(__dirname, "../packages")
 const tarDir = path.resolve(__dirname, "../build/tar")
@@ -58,4 +59,32 @@ export function installDependencyGraphFromTar(
 
 export function resolve(...parts: string[]) {
   return path.resolve(...parts)
+}
+
+export async function writePretty(filePath: string, text: string) {
+  let output = text
+
+  const isPrettierUnsupportedType = filePath.endsWith(".mk") || filePath.endsWith("Makefile")
+  if (!isPrettierUnsupportedType) {
+    const prettierConfig = (await prettier.resolveConfig(filePath)) ?? {}
+    output = await prettier.format(text, {
+      ...prettierConfig,
+      filepath: filePath,
+    })
+  }
+  console.warn(`write`, path.relative(process.cwd(), filePath))
+  fs.writeFileSync(filePath, output)
+}
+
+interface WorkspaceJson {
+  location: string
+  name: string
+}
+
+function getYarnWorkspaces(): WorkspaceJson[] {
+  return p
+    .execSync("yarn workspaces list --json", { encoding: "utf-8" })
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => JSON.parse(line) as WorkspaceJson)
 }
