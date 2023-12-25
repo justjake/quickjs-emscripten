@@ -11,7 +11,7 @@
   },
   "scripts": {
     "prepack": "yarn build && yarn check:package",
-    "tarball": "rm -rf $PWD/build/tar && mkdir -p $PWD/build/tar && yarn for-each-package-cmd pack --out $PWD/build/tar/%s.tgz",
+    "tarball": "yarn check:packages && rm -rf $PWD/build/tar && mkdir -p $PWD/build/tar && yarn for-each-package-cmd pack --out $PWD/build/tar/%s.tgz",
     "prepare": "yarn prettier-check && yarn tarball && yarn test && yarn test-dist && yarn smoketest-node",
     "clean": "git clean -dfx ./build && yarn for-each-package clean",
     "prettier": "prettier --write .",

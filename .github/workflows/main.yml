@@ -66,11 +66,17 @@ jobs:
       - name: Test
         run: yarn test:slow
 
+      - name: Build tarballs
+        run: yarn tarball
+
       - name: Test release with NodeJS/Typescript example
-        run: yarn smoketest-node
+        run: ./scripts/smoketest-node.ts
 
       - name: Test release with create-react-app/Typescript example
-        run: yarn smoketest-cra
+        run: ./scripts/smoketest-website.ts
+
+      - name: Test release with Vite/Vue example
+        run: ./scripts/smoketest-vite.ts
 
       - name: Check format
         run: yarn check:format
