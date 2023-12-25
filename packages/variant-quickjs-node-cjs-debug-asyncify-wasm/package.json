@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-node-cjs-debug-asyncify-wasm",
-  "version": "0.25.0-0",
+  "version": "0.25.0-rc.0",
   "description": "Variant of quickjs library: Node.js CommonJS module",
   "sideEffects": false,
   "repository": {
