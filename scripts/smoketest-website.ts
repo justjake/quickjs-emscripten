@@ -1,4 +1,4 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env -S npx tsx
 import * as sh from "./helpers"
 
 const target = sh.resolve(__dirname, "../examples/website")
