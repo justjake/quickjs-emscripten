@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-node-esm-debug-asyncify-wasm",
-  "version": "0.25.0-rc.1",
+  "version": "0.25.0-rc.2",
   "type": "module",
   "description": "Variant of quickjs library: Node.js ESModule",
   "sideEffects": false,
@@ -50,5 +50,5 @@
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
   },
-  "stableVersion": "0.25.0-rc.0"
+  "stableVersion": "0.25.0-rc.1"
 }
