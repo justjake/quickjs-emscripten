@@ -28,5 +28,8 @@
       "require": "./dist/index.js"
     }
   },
+  "devDependencies": {
+    "@jitl/tsconfig": "workspace:*"
+  },
   "stableVersion": "0.24.0"
 }

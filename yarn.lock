@@ -876,6 +876,8 @@ __metadata:
 "@jitl/quickjs-ffi-types@workspace:*, @jitl/quickjs-ffi-types@workspace:packages/quickjs-ffi-types":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-ffi-types@workspace:packages/quickjs-ffi-types"
+  dependencies:
+    "@jitl/tsconfig": "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -943,7 +945,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/tsconfig@workspace:packages/internal-tsconfig":
+"@jitl/tsconfig@workspace:*, @jitl/tsconfig@workspace:packages/internal-tsconfig":
   version: 0.0.0-use.local
   resolution: "@jitl/tsconfig@workspace:packages/internal-tsconfig"
   languageName: unknown

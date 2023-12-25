@@ -1,9 +1,3 @@
-import { defineConfig } from "tsup"
+import { extendConfig } from "@jitl/tsconfig/tsup.base.config.js"
 
-export default defineConfig({
-  entry: ["src/index.ts"],
-  sourcemap: true,
-  dts: true,
-  clean: true,
-  format: ["cjs", "esm"],
-})
+export default extendConfig()

@@ -30,10 +30,11 @@
     "build:packages": "yarn for-each-package build",
     "doc": "typedoc",
     "doc:serve": "cd doc && npx hads",
-    "all:publish:stable": "yarn run check:packages && yarn for-each-package-cmd npm publish --access public",
-    "all:publish:next": "yarn run check:packages && yarn for-each-package-cmd npm publish --access public --tag next",
+    "all:publish:stable": "yarn run check:packages && yarn for-each-publishable-package npm publish --access public",
+    "all:publish:next": "yarn run check:packages && yarn for-each-publishable-package npm publish --access public --tag next",
     "all:version": "yarn workspaces foreach --all version",
-    "for-each-package-cmd": "yarn workspaces foreach --from 'packages/*' --exclude 'packages/internal-*' -Rpt",
+    "for-each-package-cmd": "yarn workspaces foreach --from 'packages/*' -Rpt",
+    "for-each-publishable-package": "yarn for-each-package-cmd --exclude 'packages/internal-*'",
     "for-each-package": "yarn for-each-package-cmd run"
   },
   "workspaces": [
