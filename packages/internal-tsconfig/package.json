@@ -1,7 +1,7 @@
 {
   "name": "@jitl/tsconfig",
   "private": true,
-  "version": "0.25.0-rc.2",
+  "version": "0.25.0-rc.3",
   "stableVersion": "0.24.0",
   "scripts": {
     "build": "tsc --project ."

@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-browser-release-sync-singlefile",
-  "version": "0.25.0-rc.2",
+  "version": "0.25.0-rc.3",
   "type": "module",
   "description": "Variant of quickjs library: ESModule for browsers or browser-like environments",
   "sideEffects": false,
@@ -47,5 +47,6 @@
   },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
-  }
+  },
+  "stableVersion": "0.25.0-rc.2"
 }

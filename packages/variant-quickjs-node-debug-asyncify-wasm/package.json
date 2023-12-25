@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-node-debug-asyncify-wasm",
-  "version": "0.25.0-rc.2",
+  "version": "0.25.0-rc.3",
   "description": "Variant of quickjs library: Node.js build with both CommonJS and ESModule exports",
   "sideEffects": false,
   "repository": {
@@ -48,5 +48,6 @@
   },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
-  }
+  },
+  "stableVersion": "0.25.0-rc.2"
 }
