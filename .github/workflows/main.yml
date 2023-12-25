@@ -60,6 +60,9 @@ jobs:
       - name: Check types
         run: yarn check:types
 
+      - name: Check package.jsons
+        run: yarn check:packages
+
       - name: Test
         run: yarn test:slow
 
