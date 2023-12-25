@@ -4,6 +4,7 @@ export default defineConfig({
   entry: ["src/index.ts", "src/variants.ts", "src/barrel.ts"],
   sourcemap: true,
   dts: true,
+  clean: true,
   format: ["cjs", "esm"],
   external: [
     "#variants/debug",
