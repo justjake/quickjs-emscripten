@@ -1,7 +1,7 @@
 {
   "name": "quickjs-emscripten-repo",
   "private": true,
-  "version": "0.25.0-rc.0",
+  "version": "0.25.0-rc.1",
   "sideEffects": false,
   "license": "MIT",
   "type": "commonjs",
@@ -30,7 +30,8 @@
     "build:packages": "yarn for-each-package build",
     "doc": "typedoc",
     "doc:serve": "cd doc && npx hads",
-    "set-all-versions": "yarn workspaces foreach --all version",
+    "all:publish": "yarn check:packages && yarn for-each-package publish --access public",
+    "all:version": "yarn workspaces foreach --all version",
     "for-each-package-cmd": "yarn workspaces foreach --from 'packages/*' --exclude 'packages/internal-*' -Rpt",
     "for-each-package": "yarn for-each-package-cmd run"
   },
