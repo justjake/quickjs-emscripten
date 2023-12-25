@@ -81,10 +81,47 @@ interface WorkspaceJson {
   name: string
 }
 
-function getYarnWorkspaces(): WorkspaceJson[] {
+export function getYarnWorkspaces(): WorkspaceJson[] {
   return p
     .execSync("yarn workspaces list --json", { encoding: "utf-8" })
     .split("\n")
     .filter(Boolean)
     .map((line) => JSON.parse(line) as WorkspaceJson)
+}
+
+export function readJson<T>(filepath: string): T {
+  return JSON.parse(fs.readFileSync(filepath, "utf8"))
+}
+
+export function tryReadJson<T>(filepath: string): T | undefined {
+  try {
+    return readJson(filepath)
+  } catch (e) {
+    return undefined
+  }
+}
+
+export interface PackageJson {
+  name: string
+  type?: "module"
+  version: string
+  description: string
+  sideEffects: false
+  repository: {
+    type: string
+    url: string
+  }
+  scripts: Record<string, string>
+  files: string[]
+  dependencies: Record<string, string>
+  devDependencies?: Record<string, string>
+  exports: Record<string, { types: string; import: string; require: string } | string>
+  types?: string
+  main?: string
+  module?: string
+  author: {
+    name: string
+    email?: string
+    url: string
+  }
 }

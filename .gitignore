@@ -9,6 +9,8 @@ npm-error.log
 /dist
 /emsdk-cache
 
+/packages/quickjs-emscripten/README.md
+
 /packages/*/build
 /packages/*/dist/*.js
 /packages/*/dist/*.wasm

@@ -5,7 +5,7 @@
     "dir": "packages/variant-quickjs-node-cjs-debug-sync-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-node-cjs-debug-sync-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "description": "Variant of quickjs library: Node.js CommonJS module",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -59,7 +59,7 @@
     "dir": "packages/variant-quickjs-node-cjs-debug-asyncify-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-node-cjs-debug-asyncify-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "description": "Variant of quickjs library: Node.js CommonJS module",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -113,7 +113,7 @@
     "dir": "packages/variant-quickjs-node-cjs-release-sync-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-node-cjs-release-sync-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "description": "Variant of quickjs library: Node.js CommonJS module",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -167,7 +167,7 @@
     "dir": "packages/variant-quickjs-node-cjs-release-asyncify-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-node-cjs-release-asyncify-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "description": "Variant of quickjs library: Node.js CommonJS module",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -221,7 +221,7 @@
     "dir": "packages/variant-quickjs-node-esm-debug-sync-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-node-esm-debug-sync-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: Node.js ESModule",
       "sideEffects": false,
@@ -276,7 +276,7 @@
     "dir": "packages/variant-quickjs-node-esm-debug-asyncify-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-node-esm-debug-asyncify-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: Node.js ESModule",
       "sideEffects": false,
@@ -331,7 +331,7 @@
     "dir": "packages/variant-quickjs-node-esm-release-sync-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-node-esm-release-sync-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: Node.js ESModule",
       "sideEffects": false,
@@ -386,7 +386,7 @@
     "dir": "packages/variant-quickjs-node-esm-release-asyncify-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-node-esm-release-asyncify-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: Node.js ESModule",
       "sideEffects": false,
@@ -441,7 +441,7 @@
     "dir": "packages/variant-quickjs-browser-debug-sync-singlefile",
     "packageJson": {
       "name": "@jitl/quickjs-browser-debug-sync-singlefile",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: ESModule for browsers or browser-like environments",
       "sideEffects": false,
@@ -496,7 +496,7 @@
     "dir": "packages/variant-quickjs-browser-debug-sync-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-browser-debug-sync-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: ESModule for browsers or browser-like environments",
       "sideEffects": false,
@@ -551,7 +551,7 @@
     "dir": "packages/variant-quickjs-browser-debug-asyncify-singlefile",
     "packageJson": {
       "name": "@jitl/quickjs-browser-debug-asyncify-singlefile",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: ESModule for browsers or browser-like environments",
       "sideEffects": false,
@@ -606,7 +606,7 @@
     "dir": "packages/variant-quickjs-browser-debug-asyncify-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-browser-debug-asyncify-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: ESModule for browsers or browser-like environments",
       "sideEffects": false,
@@ -661,7 +661,7 @@
     "dir": "packages/variant-quickjs-browser-release-sync-singlefile",
     "packageJson": {
       "name": "@jitl/quickjs-browser-release-sync-singlefile",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: ESModule for browsers or browser-like environments",
       "sideEffects": false,
@@ -716,7 +716,7 @@
     "dir": "packages/variant-quickjs-browser-release-sync-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-browser-release-sync-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: ESModule for browsers or browser-like environments",
       "sideEffects": false,
@@ -771,7 +771,7 @@
     "dir": "packages/variant-quickjs-browser-release-asyncify-singlefile",
     "packageJson": {
       "name": "@jitl/quickjs-browser-release-asyncify-singlefile",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: ESModule for browsers or browser-like environments",
       "sideEffects": false,
@@ -826,7 +826,7 @@
     "dir": "packages/variant-quickjs-browser-release-asyncify-wasm",
     "packageJson": {
       "name": "@jitl/quickjs-browser-release-asyncify-wasm",
-      "version": "0.0.0",
+      "version": "0.25.0-rc.0",
       "type": "module",
       "description": "Variant of quickjs library: ESModule for browsers or browser-like environments",
       "sideEffects": false,

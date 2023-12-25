@@ -6,7 +6,7 @@
 
 import path from "node:path"
 import fs from "node:fs"
-import { writePretty } from "./scripts/helpers"
+import { writePretty, tryReadJson, PackageJson } from "./scripts/helpers"
 import { Context, getMatches, buildFFI } from "./generate"
 import { TypeDocOptions } from "typedoc"
 
@@ -200,31 +200,6 @@ if (require.main === module) {
   })
 }
 
-interface PackageJson {
-  name: string
-  type?: "module"
-  version: string
-  description: string
-  sideEffects: false
-  repository: {
-    type: string
-    url: string
-  }
-  scripts: Record<string, string>
-  files: string[]
-  dependencies: Record<string, string>
-  devDependencies?: Record<string, string>
-  exports: Record<string, { types: string; import: string; require: string } | string>
-  types?: string
-  main?: string
-  module?: string
-  author: {
-    name: string
-    email?: string
-    url: string
-  }
-}
-
 interface TsConfig {
   extends: string
   include: string[]
@@ -280,9 +255,14 @@ async function main() {
       }
       fs.mkdirSync(dist, { recursive: true })
 
+      const rootPackageJson: PackageJson | undefined = tryReadJson(
+        path.join(__dirname, "package.json"),
+      )
+      const packageJsonPath = path.join(dir, "package.json")
+      const existingPackageJson: PackageJson | undefined = tryReadJson(packageJsonPath)
       const packageJson: PackageJson = {
         name: `@jitl/${basename}`,
-        version: "0.0.0",
+        version: existingPackageJson?.version ?? rootPackageJson?.version ?? "0.0.0",
         type: variant.moduleSystem === ModuleSystem.ESModule ? "module" : undefined,
         description: `Variant of quickjs library: ${variant.description}`,
         sideEffects: false,
