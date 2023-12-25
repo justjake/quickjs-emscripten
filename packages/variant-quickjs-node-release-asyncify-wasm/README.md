@@ -1,12 +1,12 @@
-# @jitl/quickjs-browser-release-asyncify-wasm
+# @jitl/quickjs-node-release-asyncify-wasm
 
-ESModule for browsers or browser-like environments
+Node.js build with both CommonJS and ESModule exports
 
 This generated package is part of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten).
 It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
 
 ```typescript
-import variant from "@jitl/quickjs-browser-release-asyncify-wasm"
+import variant from "@jitl/quickjs-node-release-asyncify-wasm"
 import { newQuickJSAsyncWASMModuleFromVariant } from "quickjs-emscripten-core"
 const QuickJS = await newQuickJSAsyncWASMModuleFromVariant(variant)
 ```
@@ -21,9 +21,9 @@ The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
 
 Optimized for performance; use when building/deploying your application.
 
-## Module system: esm
+## Module system: both
 
-This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.
+Contains both CommonJS and ESModule exports.
 
 ## Extra async magic? Yes
 
@@ -43,9 +43,9 @@ Full variant JSON description:
   "releaseMode": "release",
   "syncMode": "asyncify",
   "emscriptenInclusion": "wasm",
-  "description": "ESModule for browsers or browser-like environments",
-  "emscriptenEnvironment": ["web", "worker"],
-  "moduleSystem": "esm"
+  "description": "Node.js build with both CommonJS and ESModule exports",
+  "emscriptenEnvironment": ["node"],
+  "moduleSystem": "both"
 }
 ```
 
@@ -64,6 +64,6 @@ Variant-specific Emscripten build flags:
   "-flto",
   "--closure 1",
   "-s FILESYSTEM=0",
-  "-s ENVIRONMENT=web,worker"
+  "-s ENVIRONMENT=node"
 ]
 ```

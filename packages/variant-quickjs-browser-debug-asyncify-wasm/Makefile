@@ -76,7 +76,6 @@ CFLAGS_WASM+=-O0
 CFLAGS_WASM+=-DQTS_DEBUG_MODE
 CFLAGS_WASM+=-gsource-map
 CFLAGS_WASM+=-s ASSERTIONS=1
-CFLAGS_WASM+=-s EXPORT_ES6=1
 CFLAGS_WASM+=-s ENVIRONMENT=web,worker
 CFLAGS_WASM+=-s ASYNCIFY_ADVISE=1
 CFLAGS_WASM+=-O3
@@ -84,6 +83,7 @@ CFLAGS_WASM+=-O3
 # GENERATE_TS options - variant specific
 GENERATE_TS_ENV+=ASYNCIFY=true
 GENERATE_TS_ENV+=DEBUG=true
+
 
 ifdef DEBUG_MAKE
 	MKDIRP=@echo "\n=====[["" target: $@, deps: $<, variant: $(VARIANT) ""]]=====" ; mkdir -p $(dir $@)
@@ -100,10 +100,19 @@ clean:
 
 ###############################################################################
 # Wasm files
-WASM: $(DIST)/emscripten-module.js $(DIST)/emscripten-module.d.ts
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 
-$(DIST)/emscripten-module.js: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
+WASM: $(DIST)/emscripten-module.d.ts JS
+JS: CJS MJS
+CJS: $(DIST)/emscripten-module.cjs
+MJS: $(DIST)/emscripten-module.mjs
+
+$(DIST)/emscripten-module.mjs: CFLAGS_WASM+=-s EXPORT_ES6=1
+$(DIST)/emscripten-module.mjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
+	$(MKDIRP)
+	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+
+$(DIST)/emscripten-module.cjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 

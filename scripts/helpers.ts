@@ -116,7 +116,10 @@ export interface PackageJson {
   files: string[]
   dependencies: Record<string, string>
   devDependencies?: Record<string, string>
-  exports: Record<string, { types: string; import: string; require: string } | string | undefined>
+  exports: Record<
+    string,
+    { types: string; import: string | undefined; require: string | undefined } | string | undefined
+  >
   types?: string
   main?: string
   module?: string

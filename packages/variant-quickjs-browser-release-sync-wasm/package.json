@@ -41,14 +41,12 @@
       "require": "./dist/ffi.js"
     },
     "./wasm": "./dist/emscripten-module.wasm",
-    "./emscripten": {
+    "./emscripten-module": {
       "types": "./dist/emscripten-module.d.ts",
-      "import": "./dist/emscripten-module.js",
-      "require": "./dist/emscripten-module.js"
+      "import": "./dist/emscripten-module.mjs"
     }
   },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
-  },
-  "stableVersion": "0.25.0-rc.2"
+  }
 }

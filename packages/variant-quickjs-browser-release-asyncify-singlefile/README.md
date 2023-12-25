@@ -65,7 +65,6 @@ Variant-specific Emscripten build flags:
   "--closure 1",
   "-s FILESYSTEM=0",
   "-s SINGLE_FILE=1",
-  "-s EXPORT_ES6=1",
   "-s ENVIRONMENT=web,worker"
 ]
 ```

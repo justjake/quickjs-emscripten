@@ -64,7 +64,6 @@ Variant-specific Emscripten build flags:
   "-DQTS_DEBUG_MODE",
   "-gsource-map",
   "-s ASSERTIONS=1",
-  "-s EXPORT_ES6=1",
   "-s ENVIRONMENT=web,worker",
   "-s ASYNCIFY_ADVISE=1",
   "-O3"

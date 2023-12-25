@@ -1,8 +1,7 @@
 {
-  "name": "@jitl/quickjs-browser-release-asyncify-wasm",
+  "name": "@jitl/quickjs-node-debug-asyncify-wasm",
   "version": "0.25.0-rc.2",
-  "type": "module",
-  "description": "Variant of quickjs library: ESModule for browsers or browser-like environments",
+  "description": "Variant of quickjs library: Node.js build with both CommonJS and ESModule exports",
   "sideEffects": false,
   "repository": {
     "type": "git",
@@ -43,7 +42,8 @@
     "./wasm": "./dist/emscripten-module.wasm",
     "./emscripten-module": {
       "types": "./dist/emscripten-module.d.ts",
-      "import": "./dist/emscripten-module.mjs"
+      "import": "./dist/emscripten-module.mjs",
+      "require": "./dist/emscripten-module.cjs"
     }
   },
   "dependencies": {

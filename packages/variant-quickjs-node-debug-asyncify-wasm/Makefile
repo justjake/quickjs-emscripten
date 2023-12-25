@@ -61,7 +61,7 @@ CFLAGS_WASM+=-s MIN_NODE_VERSION=160000
 CFLAGS_WASM+=-s NODEJS_CATCH_EXIT=0
 
 # VARIANT
-VARIANT={"library":"quickjs","releaseMode":"release","syncMode":"asyncify","emscriptenInclusion":"wasm","description":"ESModule for browsers or browser-like environments","emscriptenEnvironment":["web","worker"],"moduleSystem":"esm"}
+VARIANT={"library":"quickjs","releaseMode":"debug","syncMode":"asyncify","emscriptenInclusion":"wasm","description":"Node.js build with both CommonJS and ESModule exports","emscriptenEnvironment":["node"],"moduleSystem":"both"}
 SYNC=ASYNCIFY
 
 # Emscripten options - variant specific
@@ -72,14 +72,17 @@ CFLAGS_WASM+=-s ASYNCIFY_STACK_SIZE=81920
 CFLAGS_WASM+=-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json
 CFLAGS_WASM+=-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json
 CFLAGS_WASM+=-lasync.js
-CFLAGS_WASM+=-Oz
-CFLAGS_WASM+=-flto
-CFLAGS_WASM+=--closure 1
-CFLAGS_WASM+=-s FILESYSTEM=0
-CFLAGS_WASM+=-s ENVIRONMENT=web,worker
+CFLAGS_WASM+=-O0
+CFLAGS_WASM+=-DQTS_DEBUG_MODE
+CFLAGS_WASM+=-gsource-map
+CFLAGS_WASM+=-s ASSERTIONS=1
+CFLAGS_WASM+=-s ENVIRONMENT=node
+CFLAGS_WASM+=-s ASYNCIFY_ADVISE=1
+CFLAGS_WASM+=-O3
 
 # GENERATE_TS options - variant specific
 GENERATE_TS_ENV+=ASYNCIFY=true
+GENERATE_TS_ENV+=DEBUG=true
 
 
 ifdef DEBUG_MAKE

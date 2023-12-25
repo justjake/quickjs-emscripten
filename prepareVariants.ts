@@ -32,6 +32,7 @@ enum CLibrary {
 enum ModuleSystem {
   CommonJS = "commonjs",
   ESModule = "esm",
+  Both = "both",
 }
 
 enum EmscriptenInclusion {
@@ -67,16 +68,10 @@ const buildMatrix = {
 // Targets: groups of variants.
 
 const targets = {
-  "node-cjs": makeTarget({
-    description: `Node.js CommonJS module`,
+  node: makeTarget({
+    description: `Node.js build with both CommonJS and ESModule exports`,
     emscriptenEnvironment: [EmscriptenEnvironment.node],
-    moduleSystem: ModuleSystem.CommonJS,
-    emscriptenInclusion: EmscriptenInclusion.Separate,
-  }),
-  "node-esm": makeTarget({
-    description: `Node.js ESModule`,
-    emscriptenEnvironment: [EmscriptenEnvironment.node],
-    moduleSystem: ModuleSystem.ESModule,
+    moduleSystem: ModuleSystem.Both,
     emscriptenInclusion: EmscriptenInclusion.Separate,
   }),
   browser: makeTarget({
@@ -145,7 +140,8 @@ const EmscriptenInclusionFlags = {
 
 const ModuleSystemFlags = {
   [ModuleSystem.CommonJS]: [],
-  [ModuleSystem.ESModule]: [`-s EXPORT_ES6=1`],
+  [ModuleSystem.ESModule]: [],
+  [ModuleSystem.Both]: [],
 }
 
 function getCflags(targetName: string, variant: BuildVariant) {
@@ -260,6 +256,12 @@ async function main() {
       )
       const packageJsonPath = path.join(dir, "package.json")
       const existingPackageJson: PackageJson | undefined = tryReadJson(packageJsonPath)
+
+      const exportImportCondition =
+        variant.moduleSystem === ModuleSystem.Both || variant.moduleSystem === ModuleSystem.ESModule
+      const exportRequireCondition =
+        variant.moduleSystem === ModuleSystem.Both || variant.moduleSystem === ModuleSystem.CommonJS
+
       const packageJson: PackageJson = {
         name: `@jitl/${basename}`,
         version: existingPackageJson?.version ?? rootPackageJson?.version ?? "0.0.0",
@@ -301,10 +303,10 @@ async function main() {
             variant.emscriptenInclusion === EmscriptenInclusion.Separate
               ? "./dist/emscripten-module.wasm"
               : undefined,
-          "./emscripten": {
+          "./emscripten-module": {
             types: "./dist/emscripten-module.d.ts",
-            import: "./dist/emscripten-module.js",
-            require: "./dist/emscripten-module.js",
+            import: exportImportCondition ? "./dist/emscripten-module.mjs" : undefined,
+            require: exportRequireCondition ? "./dist/emscripten-module.cjs" : undefined,
           },
         },
         dependencies: {
@@ -342,7 +344,7 @@ async function main() {
       const readmeSummary = renderReadmeSummary(targetName, variant, packageJson)
       await writePretty(
         path.join(dist, "index.ts"),
-        renderIndexTs(targetName, variant, readmeSummary),
+        renderIndexTs(targetName, variant, readmeSummary, packageJson),
       )
       await writePretty(path.join(dist, "ffi.ts"), renderFfiTs(targetName, variant))
       makeOutputFiles.push(finalVariant.indexJs)
@@ -380,6 +382,7 @@ const describeLibrary = {
 const describeModuleSystem = {
   [ModuleSystem.CommonJS]: `This variant exports a CommonJS module, which is faster to load and run in Node.js.`,
   [ModuleSystem.ESModule]: `This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.`,
+  [ModuleSystem.Both]: `Contains both CommonJS and ESModule exports.`,
 }
 
 const describeModuleFactory = {
@@ -516,6 +519,13 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
   template.replace("VARIANT=REPLACE_THIS", `VARIANT=${JSON.stringify(variant)}`)
   template.replace("SYNC=REPLACE_THIS", `SYNC=${variant.syncMode.toUpperCase()}`)
 
+  const moduleSystemTarget = {
+    [ModuleSystem.Both]: `CJS MJS`,
+    [ModuleSystem.CommonJS]: `CJS`,
+    [ModuleSystem.ESModule]: `MJS`,
+  }[ModuleSystem.Both]
+  template.replace(/^JS: __REPLACE_THIS__/gm, `JS: ${moduleSystemTarget}`)
+
   return template.text
 }
 
@@ -523,6 +533,7 @@ function renderIndexTs(
   targetName: string,
   variant: BuildVariant,
   docCommentContents: string,
+  packageJson: PackageJson,
 ): string {
   const docComment = docCommentContents
     .split("\n")
@@ -554,7 +565,7 @@ ${docComment}
 const variant = {
   type: '${modeName}',
   importFFI: () => import('./ffi.js').then(mod => mod.${className}),
-  importModuleLoader: () => import('./emscripten-module.js').then(mod => mod.default),
+  importModuleLoader: () => import('${packageJson.name}/emscripten-module'),
 } as const satisfies ${variantTypeName}
 
 export default variant
