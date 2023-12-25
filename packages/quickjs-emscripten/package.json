@@ -30,7 +30,9 @@
   "scripts": {
     "build": "npx tsup",
     "tsc": "npx tsc -p . --noEmit",
-    "test": "npx vitest run"
+    "test:vi": "VITEST=1 npx vitest run",
+    "test:node": "npx tsc -p . && node ./output/variants_node_test.js",
+    "test": "npm run test:vi && npm run test:node"
   },
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
