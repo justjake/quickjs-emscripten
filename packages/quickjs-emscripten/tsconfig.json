@@ -1,8 +1,8 @@
 {
   "extends": "@jitl/tsconfig/tsconfig.json",
-  "include": ["src/*.ts", "src/leak.test.mts", "src/variants.test.mts"],
+  "include": ["src/*.*ts"],
   "compilerOptions": {
-    "outDir": "output",
+    "outDir": ".output",
     "rootDir": "src",
     "paths": {
       "#variants/debug": ["../quickjs-node-cjs-debug-sync-wasm/dist"],
