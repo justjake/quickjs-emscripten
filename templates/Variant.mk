@@ -58,14 +58,19 @@ CFLAGS_WASM+=-s ALLOW_UNIMPLEMENTED_SYSCALLS=0
 CFLAGS_WASM+=-s MIN_NODE_VERSION=160000
 CFLAGS_WASM+=-s NODEJS_CATCH_EXIT=0
 
+CFLAGS_MJS+=-s EXPORT_ES6=1
+CFLAGS_BROWSER+=-s EXPORT_ES6=1
+
 # VARIANT
 VARIANT=REPLACE_THIS
 SYNC=REPLACE_THIS
 CFLAGS_WASM_BROWSER=$(CFLAGS_WASM)
 
-# Emscripten options - variant specific
-CFLAGS_WASM_BROWSER=REPLACE_THIS
-CFLAGS_WASM_VARIANT=REPLACE_THIS
+# Emscripten options - variant & target specific
+CFLAGS_ALL=REPLACE_THIS
+CFLAGS_CJS=REPLACE_THIS
+CFLAGS_MJS=REPLACE_THIS
+CFLAGS_BROWSER=REPLACE_THIS
 
 # GENERATE_TS options - variant specific
 GENERATE_TS_ENV_VARIANT=REPLACE_THIS
@@ -79,23 +84,22 @@ endif
 
 ###############################################################################
 # High-level
-all: WASM
+all: EXPORTS
 
 clean:
 	git clean -fx $(DIST) $(BUILD_ROOT)
 
 ###############################################################################
 # Emscripten output targets
-WASM: JS
-JS: __REPLACE_THIS__
+EXPORTS: __REPLACE_THIS__
 CJS: $(DIST)/emscripten-module.cjs $(DIST)/emscripten-module.d.ts
 MJS: $(DIST)/emscripten-module.mjs $(DIST)/emscripten-module.d.ts
 BROWSER: $(DIST)/emscripten-module.browser.mjs $(DIST)/emscripten-module.browser.d.ts
 
-$(DIST)/emscripten-module.mjs: CFLAGS_WASM+=-s EXPORT_ES6=1
+$(DIST)/emscripten-module.mjs: CFLAGS_WASM+=$(CFLAGS_ESM)
 $(DIST)/emscripten-module.mjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS_WASM_BROWSER) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
 $(DIST)/emscripten-module.cjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
@@ -110,10 +114,10 @@ $(DIST)/emscripten-module.browser.mjs: $(BUILD_WRAPPER)/browser/emscripten-modul
 	cp $< $@
 	cp -v $(basename $<).wasm* $(dir $@)
 
-$(BUILD_WRAPPER)/browser/emscripten-module.mjs: CFLAGS_WASM+=-s EXPORT_ES6=1
+$(BUILD_WRAPPER)/browser/emscripten-module.mjs: CFLAGS_WASM+=$(CFLAGS_BROWSER)
 $(BUILD_WRAPPER)/browser/emscripten-module.mjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS_WASM) $(CFLAGS_WASM_BROWSER) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
 ###############################################################################
 # Emscripten intermediate files

@@ -118,7 +118,14 @@ export interface PackageJson {
   devDependencies?: Record<string, string>
   exports: Record<
     string,
-    { types: string; import: string | undefined; require: string | undefined } | string | undefined
+    | {
+        types: string
+        browser?: string
+        import: string | undefined
+        require: string | undefined
+      }
+    | string
+    | undefined
   >
   types?: string
   main?: string

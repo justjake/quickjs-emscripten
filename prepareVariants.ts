@@ -53,9 +53,30 @@ interface BuildVariant {
   releaseMode: ReleaseMode
   syncMode: SyncMode
   library: CLibrary
-  moduleSystem: ModuleSystem
   emscriptenInclusion: EmscriptenInclusion
-  emscriptenEnvironment: EmscriptenEnvironment[]
+  exports: {
+    browser?: {
+      emscriptenEnvironment: EmscriptenEnvironment[]
+    }
+    import?: {
+      emscriptenEnvironment: EmscriptenEnvironment[]
+    }
+    require?: {
+      emscriptenEnvironment: EmscriptenEnvironment[]
+    }
+  }
+}
+
+const SEPARATE_FILE_INCLUSION: BuildVariant["exports"] = {
+  require: {
+    emscriptenEnvironment: [EmscriptenEnvironment.node],
+  },
+  import: {
+    emscriptenEnvironment: [EmscriptenEnvironment.node],
+  },
+  browser: {
+    emscriptenEnvironment: [EmscriptenEnvironment.web, EmscriptenEnvironment.worker],
+  },
 }
 
 const buildMatrix = {
@@ -68,16 +89,27 @@ const buildMatrix = {
 // Targets: groups of variants.
 
 const targets = {
-  node: makeTarget({
-    description: `Node.js build with both CommonJS and ESModule exports`,
-    emscriptenEnvironment: [EmscriptenEnvironment.node],
-    moduleSystem: ModuleSystem.Both,
-    emscriptenInclusion: EmscriptenInclusion.Separate,
+  "separate-wasm": makeTarget({
+    description: `Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.`,
+    exports: SEPARATE_FILE_INCLUSION,
   }),
-  browser: makeTarget({
-    description: `ESModule for browsers or browser-like environments`,
-    emscriptenEnvironment: [EmscriptenEnvironment.web, EmscriptenEnvironment.worker],
-    moduleSystem: ModuleSystem.ESModule,
+  "singlefile-cjs": makeTarget({
+    description: `Variant with the WASM data embedded into a NodeJS CommonJS module.`,
+    exports: {
+      require: SEPARATE_FILE_INCLUSION.require,
+    },
+  }),
+  "singlefile-mjs": makeTarget({
+    description: `Variant with the WASM data embedded into a NodeJS ESModule.`,
+    exports: {
+      import: SEPARATE_FILE_INCLUSION.import,
+    },
+  }),
+  "singlefile-browser": makeTarget({
+    description: `Variant with the WASM data embedded into a browser ESModule.`,
+    exports: {
+      browser: SEPARATE_FILE_INCLUSION.browser,
+    },
   }),
 }
 
@@ -128,6 +160,12 @@ const SyncModeFlags = {
   ],
 }
 
+const ExportNameToModuleSystem = {
+  require: ModuleSystem.CommonJS,
+  import: ModuleSystem.ESModule,
+  browser: ModuleSystem.ESModule,
+}
+
 const ReleaseModeFlags = {
   [ReleaseMode.Release]: [`-Oz`, `-flto`, `--closure 1`, `-s FILESYSTEM=0`],
   [ReleaseMode.Debug]: [`-O0`, "-DQTS_DEBUG_MODE", `-gsource-map`, `-s ASSERTIONS=1`],
@@ -138,22 +176,12 @@ const EmscriptenInclusionFlags = {
   [EmscriptenInclusion.SingleFile]: [`-s SINGLE_FILE=1`],
 }
 
-const ModuleSystemFlags = {
-  [ModuleSystem.CommonJS]: [],
-  [ModuleSystem.ESModule]: [],
-  [ModuleSystem.Both]: [],
-}
-
 function getCflags(targetName: string, variant: BuildVariant) {
   const flags: string[] = []
 
   flags.push(...SyncModeFlags[variant.syncMode])
   flags.push(...ReleaseModeFlags[variant.releaseMode])
   flags.push(...EmscriptenInclusionFlags[variant.emscriptenInclusion])
-  flags.push(...ModuleSystemFlags[variant.moduleSystem])
-
-  const emscriptenEnvironment = variant.emscriptenEnvironment.join(",")
-  flags.push(`-s ENVIRONMENT=${emscriptenEnvironment}`)
 
   if (variant.releaseMode === ReleaseMode.Debug) {
     switch (variant.syncMode) {
@@ -171,6 +199,16 @@ function getCflags(targetName: string, variant: BuildVariant) {
   }
 
   return flags
+}
+
+function getExportCflags(variant: BuildVariant, exportName: keyof BuildVariant["exports"]) {
+  const exportVariant = variant.exports[exportName]
+  if (!exportVariant) {
+    return []
+  }
+
+  const emscriptenEnvironment = exportVariant.emscriptenEnvironment.join(",")
+  return [`-s ENVIRONMENT=${emscriptenEnvironment}`]
 }
 
 function getGenerateTsEnv(targetName: string, variant: BuildVariant): Record<string, string> {
@@ -257,15 +295,9 @@ async function main() {
       const packageJsonPath = path.join(dir, "package.json")
       const existingPackageJson: PackageJson | undefined = tryReadJson(packageJsonPath)
 
-      const exportImportCondition =
-        variant.moduleSystem === ModuleSystem.Both || variant.moduleSystem === ModuleSystem.ESModule
-      const exportRequireCondition =
-        variant.moduleSystem === ModuleSystem.Both || variant.moduleSystem === ModuleSystem.CommonJS
-
       const packageJson: PackageJson = {
         name: `@jitl/${basename}`,
         version: existingPackageJson?.version ?? rootPackageJson?.version ?? "0.0.0",
-        type: variant.moduleSystem === ModuleSystem.ESModule ? "module" : undefined,
         description: `Variant of quickjs library: ${variant.description}`,
         sideEffects: false,
         repository: {
@@ -278,7 +310,7 @@ async function main() {
         },
         scripts: {
           build: "yarn build:c && yarn build:ts",
-          "build:c": variant.moduleSystem === ModuleSystem.Both ? "make" : "make -j2",
+          "build:c": variant.exports.import && variant.exports.require ? "make" : "make -j2",
           "build:ts": "npx tsc --project .",
           clean: "make clean",
           prepare: "yarn clean && yarn build",
@@ -305,8 +337,9 @@ async function main() {
               : undefined,
           "./emscripten-module": {
             types: "./dist/emscripten-module.d.ts",
-            import: exportImportCondition ? "./dist/emscripten-module.mjs" : undefined,
-            require: exportRequireCondition ? "./dist/emscripten-module.cjs" : undefined,
+            browser: variant.exports.browser ? "./dist/emscripten-module.browser.mjs" : undefined,
+            import: variant.exports.import ? "./dist/emscripten-module.mjs" : undefined,
+            require: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
           },
         },
         dependencies: {
@@ -390,6 +423,12 @@ const describeModuleFactory = {
   [SyncMode.Asyncify]: `newQuickJSAsyncWASMModuleFromVariant`,
 }
 
+const describeExport = {
+  browser: `Exports a browser-compatible ESModule.`,
+  cjs: `Exports a NodeJS CommonJS module.`,
+  mjs: `Exports a NodeJS ESModule.`,
+}
+
 function renderCoreReadme(variantDescriptions: string[]): string {
   const template = new TemplateFile(
     fs.readFileSync(
@@ -412,18 +451,18 @@ function renderReadmeSummary(
 ): string {
   const baseURL = "https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages"
   const packageURL = `${baseURL}/${packageJson.name}/README.md`
+  const inclusion = describeInclusion[variant.emscriptenInclusion]
+  const hasExports = Object.keys(variant.exports).join(" ")
   return `### [${packageJson.name}](${packageURL})
 
 ${variant.description}
 
 | Variable            |    Setting                     |    Description    |
 | --                  | --                             | --                |
-| releaseMode         | ${variant.releaseMode} | ${describeMode[variant.releaseMode]} |
-| syncMode            | ${variant.syncMode} | ${describeSyncMode[variant.syncMode]} |
-| moduleSystem        | ${variant.moduleSystem} | ${describeModuleSystem[variant.moduleSystem]} |
-| emscriptenInclusion | ${variant.emscriptenInclusion} | ${
-    describeInclusion[variant.emscriptenInclusion]
-  } |
+| releaseMode         | ${variant.releaseMode}         | ${describeMode[variant.releaseMode]} |
+| syncMode            | ${variant.syncMode}            | ${describeSyncMode[variant.syncMode]} |
+| emscriptenInclusion | ${variant.emscriptenInclusion} | ${inclusion} |
+| exports             | ${hasExports}                  | Has these package.json export conditions |
 `
 }
 
@@ -431,6 +470,10 @@ function renderReadme(targetName: string, variant: BuildVariant, packageJson: Pa
   const codeFence = (lang: string, text: string) => `\`\`\`${lang}\n${text}\n\`\`\``
   const json = (obj: any) => codeFence("json", JSON.stringify(obj, null, 2))
   const create = describeModuleFactory[variant.syncMode]
+  const hasExports = Object.keys(variant.exports).join(" ")
+  const exportsList = Object.keys(variant.exports)
+    .map((exportName) => `- ${describeExport[exportName]}`)
+    .join("\n")
 
   return `# ${packageJson.name}
 
@@ -458,9 +501,11 @@ ${describeLibrary[variant.library]}
 
 ${describeMode[variant.releaseMode]}
 
-## Module system: ${variant.moduleSystem}
+## Exports: ${hasExports}
 
-${describeModuleSystem[variant.moduleSystem]}
+Exports the following in package.json for the package entrypoint:
+
+${exportsList}
 
 ## Extra async magic? ${variant.syncMode === SyncMode.Asyncify ? "Yes" : "No"}
 
@@ -503,41 +548,59 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
     fs.readFileSync(path.join(__dirname, "templates/Variant.mk"), "utf-8"),
   )
 
+  const appendEnvVars = (varname: string, flags: string[]) =>
+    Object.entries(getGenerateTsEnv(targetName, variant))
+      .map((flag) => `${varname}+=${flag}`)
+      .join("\n")
+
   template.replace(
-    "CFLAGS_WASM_VARIANT=REPLACE_THIS",
-    getCflags(targetName, variant)
-      .map((flag) => `CFLAGS_WASM+=${flag}`)
-      .join("\n"),
+    "CFLAGS_ALL=REPLACE_THIS",
+    appendEnvVars("CFLAGS_WASM", getCflags(targetName, variant)),
   )
 
-  const browserVariant: BuildVariant = {
-    ...variant,
-    moduleSystem: targets.browser[0].moduleSystem,
-    emscriptenEnvironment: targets.browser[0].emscriptenEnvironment,
-  }
   template.replace(
-    "CFLAGS_WASM_BROWSER=REPLACE_THIS",
-    getCflags(targetName, browserVariant)
-      .map((flag) => `CFLAGS_WASM_BROWSER+=${flag}`)
-      .join("\n"),
+    "CFLAGS_CJS=REPLACE_THIS",
+    appendEnvVars("CFLAGS_CJS", getExportCflags(variant, "require")),
+  )
+
+  template.replace(
+    "CFLAGS_MJS=REPLACE_THIS",
+    appendEnvVars("CFLAGS_MJS", getExportCflags(variant, "import")),
+  )
+
+  template.replace(
+    "CFLAGS_BROWSER=REPLACE_THIS",
+    appendEnvVars("CFLAGS_BROWSER", getExportCflags(variant, "browser")),
   )
 
   template.replace(
     "GENERATE_TS_ENV_VARIANT=REPLACE_THIS",
-    Object.entries(getGenerateTsEnv(targetName, variant))
-      .map(([key, value]) => `GENERATE_TS_ENV+=${key}=${value}`)
-      .join("\n"),
+    appendEnvVars(
+      "GENERATE_TS_ENV",
+      Object.entries(getGenerateTsEnv(targetName, variant)).map(
+        ([key, value]) => `${key}=${value}`,
+      ),
+    ),
   )
 
   template.replace("VARIANT=REPLACE_THIS", `VARIANT=${JSON.stringify(variant)}`)
   template.replace("SYNC=REPLACE_THIS", `SYNC=${variant.syncMode.toUpperCase()}`)
 
-  const moduleSystemTarget = {
-    [ModuleSystem.Both]: `CJS MJS`,
-    [ModuleSystem.CommonJS]: `CJS`,
-    [ModuleSystem.ESModule]: `MJS`,
-  }[variant.moduleSystem]
-  template.replace(/^JS: __REPLACE_THIS__/gm, `JS: ${moduleSystemTarget}`)
+  const targets: string[] = []
+  if (variant.exports.browser) {
+    targets.push("BROWSER")
+  }
+  if (variant.exports.import) {
+    targets.push("MJS")
+  }
+  if (variant.exports.require) {
+    targets.push("CJS")
+  }
+  template.replace(/^TARGETS: __REPLACE_THIS__/gm, `TARGETS: ${targets.join(" ")}`)
+
+  if (template.text.includes("REPLACE_THIS")) {
+    throw new Error(`Didn't replace all REPLACE_THIS in Variant.mk`)
+  }
 
   return template.text
 }
@@ -598,13 +661,12 @@ function createContext(merged: Partial<Context> = {}) {
 }
 
 function getTargetPackageSuffix(targetName: string, variant: BuildVariant): string {
-  const { releaseMode, syncMode, library, moduleSystem, emscriptenInclusion } = variant
+  const { releaseMode, syncMode, library } = variant
   const filename = [
     library, // quickjs
     targetName, // node-cjs
     releaseMode, // debug
     syncMode, // sync
-    emscriptenInclusion, // singlefile
   ].join("-")
   return filename
 }
