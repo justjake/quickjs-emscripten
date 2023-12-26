@@ -1,6 +1,6 @@
 {
   "name": "quickjs-emscripten",
-  "version": "0.25.0-rc.3",
+  "version": "0.25.0-rc.4",
   "sideEffects": false,
   "license": "MIT",
   "type": "commonjs",

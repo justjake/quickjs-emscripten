@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-singlefile-mjs-release-asyncify",
-  "version": "0.25.0-rc.3",
+  "version": "0.25.0-rc.4",
   "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
   "sideEffects": false,
   "repository": {
@@ -45,5 +45,6 @@
   },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
-  }
+  },
+  "stableVersion": "0.25.0-rc.3"
 }

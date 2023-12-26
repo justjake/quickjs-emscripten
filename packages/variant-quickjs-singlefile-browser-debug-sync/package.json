@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-singlefile-browser-debug-sync",
-  "version": "0.25.0-rc.3",
+  "version": "0.25.0-rc.4",
   "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
   "sideEffects": false,
   "repository": {
@@ -46,5 +46,6 @@
   },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
-  }
+  },
+  "stableVersion": "0.25.0-rc.3"
 }
