@@ -1,19 +1,6 @@
 import { assert, test } from "vitest"
 import packageJson from "../package.json"
 
-test("all import remappings are specified as dependencies", () => {
-  for (const [name, mappings] of Object.entries(packageJson.imports)) {
-    for (const [condition, importTarget] of Object.entries(mappings)) {
-      const importTargetInDependencies =
-        packageJson.dependencies[importTarget as keyof typeof packageJson.dependencies]
-      assert.isString(
-        importTargetInDependencies,
-        `package.json import "${name}" condition ${condition} points to ${importTarget}, but it isn't listed in dependencies`,
-      )
-    }
-  }
-})
-
 test("all export subpaths start with ./", () => {
   for (const [name, mappings] of Object.entries(packageJson.exports)) {
     if (typeof mappings === "string") {

@@ -12,12 +12,7 @@ npm-error.log
 /packages/quickjs-emscripten/README.md
 
 /packages/*/build
-/packages/*/dist/*.js
-/packages/*/dist/*.cjs
-/packages/*/dist/*.mjs
-/packages/*/dist/*.wasm
-/packages/*/dist/*.d.ts
-/packages/*/dist/*.map
+/packages/*/dist
 
 # QuickJS build stuff
 /quickjs/test_fib.c

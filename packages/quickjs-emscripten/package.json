@@ -50,41 +50,11 @@
     },
     "./package.json": "./package.json"
   },
-  "imports": {
-    "#variants/debug": {
-      "types": "@jitl/quickjs-node-debug-sync-wasm",
-      "browser": "@jitl/quickjs-browser-debug-sync-singlefile",
-      "import": "@jitl/quickjs-node-debug-sync-wasm",
-      "require": "@jitl/quickjs-node-debug-sync-wasm"
-    },
-    "#variants/debug-asyncify": {
-      "types": "@jitl/quickjs-node-debug-asyncify-wasm",
-      "browser": "@jitl/quickjs-browser-debug-asyncify-singlefile",
-      "import": "@jitl/quickjs-node-debug-asyncify-wasm",
-      "require": "@jitl/quickjs-node-debug-asyncify-wasm"
-    },
-    "#variants/release": {
-      "types": "@jitl/quickjs-node-release-sync-wasm",
-      "browser": "@jitl/quickjs-browser-release-sync-singlefile",
-      "import": "@jitl/quickjs-node-release-sync-wasm",
-      "require": "@jitl/quickjs-node-release-sync-wasm"
-    },
-    "#variants/release-asyncify": {
-      "types": "@jitl/quickjs-node-release-asyncify-wasm",
-      "browser": "@jitl/quickjs-browser-release-asyncify-singlefile",
-      "import": "@jitl/quickjs-node-release-asyncify-wasm",
-      "require": "@jitl/quickjs-node-release-asyncify-wasm"
-    }
-  },
   "dependencies": {
-    "@jitl/quickjs-browser-debug-asyncify-singlefile": "workspace:*",
-    "@jitl/quickjs-browser-debug-sync-singlefile": "workspace:*",
-    "@jitl/quickjs-browser-release-asyncify-singlefile": "workspace:*",
-    "@jitl/quickjs-browser-release-sync-singlefile": "workspace:*",
-    "@jitl/quickjs-node-debug-asyncify-wasm": "workspace:*",
-    "@jitl/quickjs-node-debug-sync-wasm": "workspace:*",
-    "@jitl/quickjs-node-release-asyncify-wasm": "workspace:*",
-    "@jitl/quickjs-node-release-sync-wasm": "workspace:*",
+    "@jitl/quickjs-wasmfile-debug-asyncify": "workspace:*",
+    "@jitl/quickjs-wasmfile-debug-sync": "workspace:*",
+    "@jitl/quickjs-wasmfile-release-asyncify": "workspace:*",
+    "@jitl/quickjs-wasmfile-release-sync": "workspace:*",
     "quickjs-emscripten-core": "workspace:*"
   },
   "engines": {

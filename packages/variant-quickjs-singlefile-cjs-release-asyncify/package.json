@@ -1,0 +1,48 @@
+{
+  "name": "@jitl/quickjs-singlefile-cjs-release-asyncify",
+  "version": "0.25.0-rc.3",
+  "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS CommonJS module.",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justjake/quickjs-emscripten"
+  },
+  "author": {
+    "name": "Jake Teton-Landis",
+    "url": "https://jake.tl"
+  },
+  "scripts": {
+    "build": "yarn build:c && yarn build:ts",
+    "build:c": "make -j2",
+    "build:ts": "npx tsup",
+    "check:types": "npx tsc --project . --noEmit",
+    "clean": "make clean",
+    "prepare": "yarn clean && yarn build"
+  },
+  "files": [
+    "dist/**/*",
+    "!dist/ffi.ts",
+    "!dist/index.ts",
+    "!dist/*.tsbuildinfo"
+  ],
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json",
+    "./ffi": {
+      "types": "./dist/ffi.d.ts",
+      "require": "./dist/ffi.js"
+    },
+    "./emscripten-module": {
+      "types": "./dist/emscripten-module.d.ts",
+      "require": "./dist/emscripten-module.cjs"
+    }
+  },
+  "dependencies": {
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  }
+}

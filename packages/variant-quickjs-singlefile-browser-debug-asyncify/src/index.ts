@@ -1,0 +1,26 @@
+import { QuickJSAsyncVariant } from "@jitl/quickjs-ffi-types"
+
+/**
+ * This export is a variant of the quickjs WASM library:
+ * ### [@jitl/quickjs-singlefile-browser-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-browser-debug-asyncify/README.md)
+ *
+ * Variant with the WASM data embedded into a browser ESModule.
+ *
+ * | Variable            |    Setting                     |    Description    |
+ * | --                  | --                             | --                |
+ * | releaseMode         | debug         | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
+ * | syncMode            | asyncify            | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
+ * | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app. |
+ * | exports             | browser                  | Has these package.json export conditions |
+ *
+ */
+const variant = {
+  type: "async",
+  importFFI: () => import("./ffi.js").then((mod) => mod.QuickJSAsyncFFI),
+  importModuleLoader: () =>
+    import("@jitl/quickjs-singlefile-browser-debug-asyncify/emscripten-module").then(
+      (mod) => mod.default,
+    ),
+} as const satisfies QuickJSAsyncVariant
+
+export default variant

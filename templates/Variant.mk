@@ -105,6 +105,10 @@ $(DIST)/emscripten-module.cjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OB
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
+$(DIST)/emscripten-module.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
+	echo '// Generated from $<' > $@
+	cat $< >> $@
+
 $(DIST)/emscripten-module%.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
 	echo '// Generated from $<' > $@
 	cat $< >> $@

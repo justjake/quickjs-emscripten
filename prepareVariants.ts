@@ -83,30 +83,33 @@ const buildMatrix = {
   library: [CLibrary.QuickJS],
   releaseMode: [ReleaseMode.Debug, ReleaseMode.Release],
   syncMode: [SyncMode.Sync, SyncMode.Asyncify],
-  emscriptenInclusion: [EmscriptenInclusion.SingleFile, EmscriptenInclusion.Separate],
 } as const
 
 // Targets: groups of variants.
 
 const targets = {
-  "separate-wasm": makeTarget({
+  wasmfile: makeTarget({
     description: `Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.`,
+    emscriptenInclusion: EmscriptenInclusion.Separate,
     exports: SEPARATE_FILE_INCLUSION,
   }),
   "singlefile-cjs": makeTarget({
     description: `Variant with the WASM data embedded into a NodeJS CommonJS module.`,
+    emscriptenInclusion: EmscriptenInclusion.SingleFile,
     exports: {
       require: SEPARATE_FILE_INCLUSION.require,
     },
   }),
   "singlefile-mjs": makeTarget({
     description: `Variant with the WASM data embedded into a NodeJS ESModule.`,
+    emscriptenInclusion: EmscriptenInclusion.SingleFile,
     exports: {
       import: SEPARATE_FILE_INCLUSION.import,
     },
   }),
   "singlefile-browser": makeTarget({
     description: `Variant with the WASM data embedded into a browser ESModule.`,
+    emscriptenInclusion: EmscriptenInclusion.SingleFile,
     exports: {
       browser: SEPARATE_FILE_INCLUSION.browser,
     },
@@ -119,15 +122,12 @@ function makeTarget(partialVariant: TargetSpec): BuildVariant[] {
   const allVariants = buildMatrix.library.flatMap<BuildVariant>((library) => {
     return buildMatrix.releaseMode.flatMap((releaseMode) => {
       return buildMatrix.syncMode.flatMap((syncMode) => {
-        return buildMatrix.emscriptenInclusion.flatMap((emscriptenInclusion) => {
-          return {
-            library,
-            releaseMode,
-            syncMode,
-            emscriptenInclusion,
-            ...partialVariant,
-          }
-        })
+        return {
+          library,
+          releaseMode,
+          syncMode,
+          ...partialVariant,
+        }
       })
     })
   })
@@ -252,7 +252,6 @@ interface FinalVariant {
 
 async function main() {
   const variantsJson: Record<string, FinalVariant> = {}
-  const makeOutputFiles: string[] = []
   const coreReadmeVariantDescriptions: string[] = []
 
   const ffiTypesDir = path.join(__dirname, "packages/quickjs-ffi-types")
@@ -280,20 +279,27 @@ async function main() {
       const basename = getTargetPackageSuffix(targetName, variant)
       const dir = path.join(__dirname, "packages", `variant-${basename}`)
       const dist = path.join(dir, "dist")
-      if (CLEAN) {
-        try {
-          fs.rmdirSync(dist, { recursive: true })
-        } catch (e) {
-          console.log("ignore", e)
+      const src = path.join(dir, "src")
+
+      const makeDirs = [dist, src]
+      for (const dirToMake of makeDirs) {
+        if (CLEAN) {
+          try {
+            fs.rmdirSync(dirToMake, { recursive: true })
+          } catch (e) {
+            console.log("ignore", e)
+          }
         }
+        fs.mkdirSync(dirToMake, { recursive: true })
       }
-      fs.mkdirSync(dist, { recursive: true })
 
       const rootPackageJson: PackageJson | undefined = tryReadJson(
         path.join(__dirname, "package.json"),
       )
       const packageJsonPath = path.join(dir, "package.json")
       const existingPackageJson: PackageJson | undefined = tryReadJson(packageJsonPath)
+
+      const { js, mjs } = getTsupExtensions(variant)
 
       const packageJson: PackageJson = {
         name: `@jitl/${basename}`,
@@ -311,34 +317,41 @@ async function main() {
         scripts: {
           build: "yarn build:c && yarn build:ts",
           "build:c": variant.exports.import && variant.exports.require ? "make" : "make -j2",
-          "build:ts": "npx tsc --project .",
+          "build:ts": "npx tsup",
+          "check:types": "npx tsc --project . --noEmit",
           clean: "make clean",
           prepare: "yarn clean && yarn build",
         },
         files: ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
         types: "./dist/index.d.ts",
-        main: "./dist/index.js",
-        module: "./dist/index.js",
+        main: js ? "./dist/index.js" : "./dist/index.mjs",
+        module: mjs ? "./dist/index.mjs" : undefined,
         exports: {
           ".": {
             types: "./dist/index.d.ts",
-            import: "./dist/index.js",
-            require: "./dist/index.js",
+            import: mjs ? "./dist/index.mjs" : undefined,
+            require: js ? "./dist/index.js" : undefined,
           },
           "./package.json": "./package.json",
           "./ffi": {
             types: "./dist/ffi.d.ts",
-            import: "./dist/ffi.js",
-            require: "./dist/ffi.js",
+            import: mjs ? "./dist/ffi.mjs" : undefined,
+            require: js ? "./dist/ffi.js" : undefined,
           },
           "./wasm":
             variant.emscriptenInclusion === EmscriptenInclusion.Separate
               ? "./dist/emscripten-module.wasm"
               : undefined,
           "./emscripten-module": {
-            types: "./dist/emscripten-module.d.ts",
+            types: variant.exports.browser
+              ? "./dist/emscripten-module.browser.d.ts"
+              : "./dist/emscripten-module.d.ts",
             browser: variant.exports.browser ? "./dist/emscripten-module.browser.mjs" : undefined,
-            import: variant.exports.import ? "./dist/emscripten-module.mjs" : undefined,
+            import: variant.exports.import
+              ? "./dist/emscripten-module.mjs"
+              : variant.exports.browser
+                ? "./dist/emscripten-module.browser.mjs"
+                : undefined,
             require: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
           },
         },
@@ -349,13 +362,13 @@ async function main() {
 
       const tsConfig: TsConfig = {
         extends: "@jitl/tsconfig/tsconfig.json",
-        include: ["dist/ffi.ts", "dist/index.ts"],
+        include: ["src/*"],
         exclude: ["node_modules"],
       }
 
       const typedocConfig: Partial<TypeDocOptions> & { extends?: string; mergeReadme?: boolean } = {
         extends: "../../typedoc.base.js",
-        entryPoints: ["./dist/index.ts"],
+        entryPoints: ["./src/index.ts"],
         mergeReadme: true,
       }
 
@@ -367,6 +380,10 @@ async function main() {
         indexJs: path.relative(__dirname, path.join(dist, "index.js")),
         variant,
       }
+
+      if (finalVariant.dir in variantsJson) {
+        throw new Error(`Duplicate variant dir ${finalVariant.dir}`)
+      }
       variantsJson[finalVariant.dir] = finalVariant
 
       await writePretty(path.join(dir, "package.json"), JSON.stringify(packageJson))
@@ -374,13 +391,13 @@ async function main() {
       await writePretty(path.join(dir, "typedoc.json"), JSON.stringify(typedocConfig))
       await writePretty(path.join(dir, "README.md"), renderReadme(targetName, variant, packageJson))
       await writePretty(path.join(dir, "Makefile"), renderMakefile(targetName, variant))
+      await writePretty(path.join(dir, "tsup.config.ts"), renderTsupConfig(variant, packageJson))
       const readmeSummary = renderReadmeSummary(targetName, variant, packageJson)
       await writePretty(
-        path.join(dist, "index.ts"),
+        path.join(src, "index.ts"),
         renderIndexTs(targetName, variant, readmeSummary, packageJson),
       )
-      await writePretty(path.join(dist, "ffi.ts"), renderFfiTs(targetName, variant))
-      makeOutputFiles.push(finalVariant.indexJs)
+      await writePretty(path.join(src, "ffi.ts"), renderFfiTs(targetName, variant))
       coreReadmeVariantDescriptions.push(readmeSummary)
     }
   }
@@ -549,9 +566,7 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
   )
 
   const appendEnvVars = (varname: string, flags: string[]) =>
-    Object.entries(getGenerateTsEnv(targetName, variant))
-      .map((flag) => `${varname}+=${flag}`)
-      .join("\n")
+    flags.map((flag) => `${varname}+=${flag}`).join("\n")
 
   template.replace(
     "CFLAGS_ALL=REPLACE_THIS",
@@ -596,7 +611,7 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
   if (variant.exports.require) {
     targets.push("CJS")
   }
-  template.replace(/^TARGETS: __REPLACE_THIS__/gm, `TARGETS: ${targets.join(" ")}`)
+  template.replace(/^EXPORTS: __REPLACE_THIS__/gm, `EXPORTS: ${targets.join(" ")}`)
 
   if (template.text.includes("REPLACE_THIS")) {
     throw new Error(`Didn't replace all REPLACE_THIS in Variant.mk`)
@@ -651,6 +666,32 @@ export default variant
 function renderFfiTs(targetName: string, variant: BuildVariant): string {
   const env = getGenerateTsEnv(targetName, variant)
   return buildFFI(...createContext(env))
+}
+
+function getTsupExtensions(variant: BuildVariant) {
+  const wantsESM = Boolean(variant.exports.import || variant.exports.browser)
+  const wantsCJS = Boolean(variant.exports.require)
+  return {
+    js: wantsCJS,
+    mjs: wantsESM,
+  }
+}
+
+function renderTsupConfig(variant: BuildVariant, packageJson: PackageJson): string {
+  const { js, mjs } = getTsupExtensions(variant)
+  const formats = [mjs && "esm", js && "cjs"].filter(Boolean)
+  return `
+import { extendConfig } from "@jitl/tsconfig/tsup.base.config.js"
+
+export default extendConfig({
+  entry: ["src/index.ts", "src/ffi.ts"],
+  external: [
+    "${packageJson.name}/emscripten-module",
+  ],
+  formats: ${JSON.stringify(formats)},
+  clean: false,
+})
+`
 }
 
 function createContext(merged: Partial<Context> = {}) {

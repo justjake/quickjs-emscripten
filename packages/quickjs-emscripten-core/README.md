@@ -71,134 +71,178 @@ const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
 
 ## Available variants
 
-### [@jitl/quickjs-node-debug-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-debug-sync-wasm/README.md)
+### [@jitl/quickjs-wasmfile-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-wasmfile-debug-sync/README.md)
 
-Node.js build with both CommonJS and ESModule exports
+Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
-| Variable            | Setting | Description                                                                                                                                                   |
-| ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| releaseMode         | debug   | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
-| syncMode            | sync    | The default, normal build. Note that both variants support regular async functions.                                                                           |
-| moduleSystem        | both    | Contains both CommonJS and ESModule exports.                                                                                                                  |
-| emscriptenInclusion | wasm    | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.  |
+| Variable            | Setting                | Description                                                                                                                                                   |
+| ------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| releaseMode         | debug                  | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
+| syncMode            | sync                   | The default, normal build. Note that both variants support regular async functions.                                                                           |
+| emscriptenInclusion | wasm                   | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.  |
+| exports             | require import browser | Has these package.json export conditions                                                                                                                      |
 
-### [@jitl/quickjs-node-debug-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-debug-asyncify-wasm/README.md)
+### [@jitl/quickjs-wasmfile-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-wasmfile-debug-asyncify/README.md)
 
-Node.js build with both CommonJS and ESModule exports
+Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
-| Variable            | Setting  | Description                                                                                                                                                                                                                                                                                                        |
-| ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| releaseMode         | debug    | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.                                                                                                                                                      |
-| syncMode            | asyncify | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
-| moduleSystem        | both     | Contains both CommonJS and ESModule exports.                                                                                                                                                                                                                                                                       |
-| emscriptenInclusion | wasm     | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.                                                                                                                                                       |
+| Variable            | Setting                | Description                                                                                                                                                                                                                                                                                                        |
+| ------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| releaseMode         | debug                  | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.                                                                                                                                                      |
+| syncMode            | asyncify               | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
+| emscriptenInclusion | wasm                   | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.                                                                                                                                                       |
+| exports             | require import browser | Has these package.json export conditions                                                                                                                                                                                                                                                                           |
 
-### [@jitl/quickjs-node-release-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-release-sync-wasm/README.md)
+### [@jitl/quickjs-wasmfile-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-wasmfile-release-sync/README.md)
 
-Node.js build with both CommonJS and ESModule exports
+Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
-| Variable            | Setting | Description                                                                                                                                                  |
-| ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| releaseMode         | release | Optimized for performance; use when building/deploying your application.                                                                                     |
-| syncMode            | sync    | The default, normal build. Note that both variants support regular async functions.                                                                          |
-| moduleSystem        | both    | Contains both CommonJS and ESModule exports.                                                                                                                 |
-| emscriptenInclusion | wasm    | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
+| Variable            | Setting                | Description                                                                                                                                                  |
+| ------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| releaseMode         | release                | Optimized for performance; use when building/deploying your application.                                                                                     |
+| syncMode            | sync                   | The default, normal build. Note that both variants support regular async functions.                                                                          |
+| emscriptenInclusion | wasm                   | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
+| exports             | require import browser | Has these package.json export conditions                                                                                                                     |
 
-### [@jitl/quickjs-node-release-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-node-release-asyncify-wasm/README.md)
+### [@jitl/quickjs-wasmfile-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-wasmfile-release-asyncify/README.md)
 
-Node.js build with both CommonJS and ESModule exports
+Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
-| Variable            | Setting  | Description                                                                                                                                                                                                                                                                                                        |
-| ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| releaseMode         | release  | Optimized for performance; use when building/deploying your application.                                                                                                                                                                                                                                           |
-| syncMode            | asyncify | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
-| moduleSystem        | both     | Contains both CommonJS and ESModule exports.                                                                                                                                                                                                                                                                       |
-| emscriptenInclusion | wasm     | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.                                                                                                                                                       |
+| Variable            | Setting                | Description                                                                                                                                                                                                                                                                                                        |
+| ------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| releaseMode         | release                | Optimized for performance; use when building/deploying your application.                                                                                                                                                                                                                                           |
+| syncMode            | asyncify               | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
+| emscriptenInclusion | wasm                   | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.                                                                                                                                                       |
+| exports             | require import browser | Has these package.json export conditions                                                                                                                                                                                                                                                                           |
 
-### [@jitl/quickjs-browser-debug-sync-singlefile](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-debug-sync-singlefile/README.md)
+### [@jitl/quickjs-singlefile-cjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-cjs-debug-sync/README.md)
 
-ESModule for browsers or browser-like environments
+Variant with the WASM data embedded into a NodeJS CommonJS module.
 
-| Variable            | Setting    | Description                                                                                                                                                              |
-| ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| releaseMode         | debug      | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.            |
-| syncMode            | sync       | The default, normal build. Note that both variants support regular async functions.                                                                                      |
-| moduleSystem        | esm        | This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans. |
-| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                           |
+| Variable            | Setting    | Description                                                                                                                                                   |
+| ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| releaseMode         | debug      | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
+| syncMode            | sync       | The default, normal build. Note that both variants support regular async functions.                                                                           |
+| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                |
+| exports             | require    | Has these package.json export conditions                                                                                                                      |
 
-### [@jitl/quickjs-browser-debug-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-debug-sync-wasm/README.md)
+### [@jitl/quickjs-singlefile-cjs-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-cjs-debug-asyncify/README.md)
 
-ESModule for browsers or browser-like environments
-
-| Variable            | Setting | Description                                                                                                                                                              |
-| ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| releaseMode         | debug   | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.            |
-| syncMode            | sync    | The default, normal build. Note that both variants support regular async functions.                                                                                      |
-| moduleSystem        | esm     | This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans. |
-| emscriptenInclusion | wasm    | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.             |
-
-### [@jitl/quickjs-browser-debug-asyncify-singlefile](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-debug-asyncify-singlefile/README.md)
-
-ESModule for browsers or browser-like environments
+Variant with the WASM data embedded into a NodeJS CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                        |
 | ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | releaseMode         | debug      | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.                                                                                                                                                      |
 | syncMode            | asyncify   | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
-| moduleSystem        | esm        | This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.                                                                                                                                           |
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                     |
+| exports             | require    | Has these package.json export conditions                                                                                                                                                                                                                                                                           |
 
-### [@jitl/quickjs-browser-debug-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-debug-asyncify-wasm/README.md)
+### [@jitl/quickjs-singlefile-cjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-cjs-release-sync/README.md)
 
-ESModule for browsers or browser-like environments
+Variant with the WASM data embedded into a NodeJS CommonJS module.
 
-| Variable            | Setting  | Description                                                                                                                                                                                                                                                                                                        |
-| ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| releaseMode         | debug    | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.                                                                                                                                                      |
-| syncMode            | asyncify | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
-| moduleSystem        | esm      | This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.                                                                                                                                           |
-| emscriptenInclusion | wasm     | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.                                                                                                                                                       |
+| Variable            | Setting    | Description                                                                                                                                    |
+| ------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| releaseMode         | release    | Optimized for performance; use when building/deploying your application.                                                                       |
+| syncMode            | sync       | The default, normal build. Note that both variants support regular async functions.                                                            |
+| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app. |
+| exports             | require    | Has these package.json export conditions                                                                                                       |
 
-### [@jitl/quickjs-browser-release-sync-singlefile](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-release-sync-singlefile/README.md)
+### [@jitl/quickjs-singlefile-cjs-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-cjs-release-asyncify/README.md)
 
-ESModule for browsers or browser-like environments
-
-| Variable            | Setting    | Description                                                                                                                                                              |
-| ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| releaseMode         | release    | Optimized for performance; use when building/deploying your application.                                                                                                 |
-| syncMode            | sync       | The default, normal build. Note that both variants support regular async functions.                                                                                      |
-| moduleSystem        | esm        | This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans. |
-| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                           |
-
-### [@jitl/quickjs-browser-release-sync-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-release-sync-wasm/README.md)
-
-ESModule for browsers or browser-like environments
-
-| Variable            | Setting | Description                                                                                                                                                              |
-| ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| releaseMode         | release | Optimized for performance; use when building/deploying your application.                                                                                                 |
-| syncMode            | sync    | The default, normal build. Note that both variants support regular async functions.                                                                                      |
-| moduleSystem        | esm     | This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans. |
-| emscriptenInclusion | wasm    | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.             |
-
-### [@jitl/quickjs-browser-release-asyncify-singlefile](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-release-asyncify-singlefile/README.md)
-
-ESModule for browsers or browser-like environments
+Variant with the WASM data embedded into a NodeJS CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                        |
 | ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | releaseMode         | release    | Optimized for performance; use when building/deploying your application.                                                                                                                                                                                                                                           |
 | syncMode            | asyncify   | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
-| moduleSystem        | esm        | This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.                                                                                                                                           |
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                     |
+| exports             | require    | Has these package.json export conditions                                                                                                                                                                                                                                                                           |
 
-### [@jitl/quickjs-browser-release-asyncify-wasm](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-browser-release-asyncify-wasm/README.md)
+### [@jitl/quickjs-singlefile-mjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-mjs-debug-sync/README.md)
 
-ESModule for browsers or browser-like environments
+Variant with the WASM data embedded into a NodeJS ESModule.
 
-| Variable            | Setting  | Description                                                                                                                                                                                                                                                                                                        |
-| ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| releaseMode         | release  | Optimized for performance; use when building/deploying your application.                                                                                                                                                                                                                                           |
-| syncMode            | asyncify | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
-| moduleSystem        | esm      | This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.                                                                                                                                           |
-| emscriptenInclusion | wasm     | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.                                                                                                                                                       |
+| Variable            | Setting    | Description                                                                                                                                                   |
+| ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| releaseMode         | debug      | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
+| syncMode            | sync       | The default, normal build. Note that both variants support regular async functions.                                                                           |
+| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                |
+| exports             | import     | Has these package.json export conditions                                                                                                                      |
+
+### [@jitl/quickjs-singlefile-mjs-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-mjs-debug-asyncify/README.md)
+
+Variant with the WASM data embedded into a NodeJS ESModule.
+
+| Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                        |
+| ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| releaseMode         | debug      | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.                                                                                                                                                      |
+| syncMode            | asyncify   | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
+| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                     |
+| exports             | import     | Has these package.json export conditions                                                                                                                                                                                                                                                                           |
+
+### [@jitl/quickjs-singlefile-mjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-mjs-release-sync/README.md)
+
+Variant with the WASM data embedded into a NodeJS ESModule.
+
+| Variable            | Setting    | Description                                                                                                                                    |
+| ------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| releaseMode         | release    | Optimized for performance; use when building/deploying your application.                                                                       |
+| syncMode            | sync       | The default, normal build. Note that both variants support regular async functions.                                                            |
+| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app. |
+| exports             | import     | Has these package.json export conditions                                                                                                       |
+
+### [@jitl/quickjs-singlefile-mjs-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-mjs-release-asyncify/README.md)
+
+Variant with the WASM data embedded into a NodeJS ESModule.
+
+| Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                        |
+| ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| releaseMode         | release    | Optimized for performance; use when building/deploying your application.                                                                                                                                                                                                                                           |
+| syncMode            | asyncify   | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
+| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                     |
+| exports             | import     | Has these package.json export conditions                                                                                                                                                                                                                                                                           |
+
+### [@jitl/quickjs-singlefile-browser-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-browser-debug-sync/README.md)
+
+Variant with the WASM data embedded into a browser ESModule.
+
+| Variable            | Setting    | Description                                                                                                                                                   |
+| ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| releaseMode         | debug      | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
+| syncMode            | sync       | The default, normal build. Note that both variants support regular async functions.                                                                           |
+| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                |
+| exports             | browser    | Has these package.json export conditions                                                                                                                      |
+
+### [@jitl/quickjs-singlefile-browser-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-browser-debug-asyncify/README.md)
+
+Variant with the WASM data embedded into a browser ESModule.
+
+| Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                        |
+| ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| releaseMode         | debug      | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.                                                                                                                                                      |
+| syncMode            | asyncify   | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
+| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                     |
+| exports             | browser    | Has these package.json export conditions                                                                                                                                                                                                                                                                           |
+
+### [@jitl/quickjs-singlefile-browser-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-browser-release-sync/README.md)
+
+Variant with the WASM data embedded into a browser ESModule.
+
+| Variable            | Setting    | Description                                                                                                                                    |
+| ------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| releaseMode         | release    | Optimized for performance; use when building/deploying your application.                                                                       |
+| syncMode            | sync       | The default, normal build. Note that both variants support regular async functions.                                                            |
+| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app. |
+| exports             | browser    | Has these package.json export conditions                                                                                                       |
+
+### [@jitl/quickjs-singlefile-browser-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-browser-release-asyncify/README.md)
+
+Variant with the WASM data embedded into a browser ESModule.
+
+| Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                        |
+| ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| releaseMode         | release    | Optimized for performance; use when building/deploying your application.                                                                                                                                                                                                                                           |
+| syncMode            | asyncify   | Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! |
+| emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                     |
+| exports             | browser    | Has these package.json export conditions                                                                                                                                                                                                                                                                           |

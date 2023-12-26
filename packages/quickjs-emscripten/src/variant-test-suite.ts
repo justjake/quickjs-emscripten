@@ -1,6 +1,13 @@
 import assert from "assert"
 import type { QuickJSAsyncVariant, QuickJSSyncVariant, QuickJSWASMModule } from "."
 
+export const importSpecifiers = {
+  debug_sync: "@jitl/quickjs-wasmfile-debug-sync",
+  release_sync: "@jitl/quickjs-wasmfile-release-sync",
+  debug_async: "@jitl/quickjs-wasmfile-debug-asyncify",
+  release_async: "@jitl/quickjs-wasmfile-release-asyncify",
+}
+
 interface TestFramework {
   it(name: string, fn: () => void | Promise<void>): void
   describe(name: string, fn: () => void): void
