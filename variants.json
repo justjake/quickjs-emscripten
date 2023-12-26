@@ -5,7 +5,7 @@
     "dir": "packages/variant-quickjs-wasmfile-debug-sync",
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-debug-sync",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -64,7 +64,7 @@
     "dir": "packages/variant-quickjs-wasmfile-debug-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-debug-asyncify",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -123,7 +123,7 @@
     "dir": "packages/variant-quickjs-wasmfile-release-sync",
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-release-sync",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -182,7 +182,7 @@
     "dir": "packages/variant-quickjs-wasmfile-release-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-release-asyncify",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -241,7 +241,7 @@
     "dir": "packages/variant-quickjs-singlefile-cjs-debug-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-debug-sync",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS CommonJS module.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -293,7 +293,7 @@
     "dir": "packages/variant-quickjs-singlefile-cjs-debug-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-debug-asyncify",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS CommonJS module.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -345,7 +345,7 @@
     "dir": "packages/variant-quickjs-singlefile-cjs-release-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-release-sync",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS CommonJS module.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -397,7 +397,7 @@
     "dir": "packages/variant-quickjs-singlefile-cjs-release-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-release-asyncify",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS CommonJS module.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -449,7 +449,7 @@
     "dir": "packages/variant-quickjs-singlefile-mjs-debug-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-debug-sync",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -493,7 +493,7 @@
     "dir": "packages/variant-quickjs-singlefile-mjs-debug-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-debug-asyncify",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -537,7 +537,7 @@
     "dir": "packages/variant-quickjs-singlefile-mjs-release-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-release-sync",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -581,7 +581,7 @@
     "dir": "packages/variant-quickjs-singlefile-mjs-release-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-release-asyncify",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -625,7 +625,7 @@
     "dir": "packages/variant-quickjs-singlefile-browser-debug-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-debug-sync",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -670,7 +670,7 @@
     "dir": "packages/variant-quickjs-singlefile-browser-debug-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-debug-asyncify",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -715,7 +715,7 @@
     "dir": "packages/variant-quickjs-singlefile-browser-release-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-release-sync",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -760,7 +760,7 @@
     "dir": "packages/variant-quickjs-singlefile-browser-release-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-release-asyncify",
-      "version": "0.25.0-rc.4",
+      "version": "0.25.0-rc.5",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
