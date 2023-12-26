@@ -30,20 +30,22 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
       "require": "./dist/index.js"
     },
     "./package.json": "./package.json",
     "./ffi": {
       "types": "./dist/ffi.d.ts",
+      "import": "./dist/ffi.js",
       "require": "./dist/ffi.js"
     },
     "./emscripten-module": {
       "types": "./dist/emscripten-module.d.ts",
+      "import": "./dist/emscripten-module.cjs",
       "require": "./dist/emscripten-module.cjs"
     }
   },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
-  },
-  "stableVersion": "0.25.0-rc.3"
+  }
 }

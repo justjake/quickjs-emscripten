@@ -329,13 +329,13 @@ async function main() {
         exports: {
           ".": {
             types: "./dist/index.d.ts",
-            import: mjs ? "./dist/index.mjs" : undefined,
+            import: mjs ? "./dist/index.mjs" : "./dist/index.js",
             require: js ? "./dist/index.js" : undefined,
           },
           "./package.json": "./package.json",
           "./ffi": {
             types: "./dist/ffi.d.ts",
-            import: mjs ? "./dist/ffi.mjs" : undefined,
+            import: mjs ? "./dist/ffi.mjs" : "./dist/ffi.js",
             require: js ? "./dist/ffi.js" : undefined,
           },
           "./wasm":
@@ -351,7 +351,7 @@ async function main() {
               ? "./dist/emscripten-module.mjs"
               : variant.exports.browser
                 ? "./dist/emscripten-module.browser.mjs"
-                : undefined,
+                : "./dist/emscripten-module.cjs",
             require: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
           },
         },

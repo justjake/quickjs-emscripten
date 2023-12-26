@@ -1,20 +1,19 @@
-import * as quickjsEmscripten from "quickjs-emscripten"
-
 import { describe, it } from "node:test"
-import { importSpecifiers, testSuite } from "./variant-test-suite.js"
 import { createRequire } from "node:module"
+
+import * as quickjsEmscripten from "quickjs-emscripten"
+import { packageSpecifiers, testSuite } from "./variant-test-suite.js"
 
 const require = createRequire(import.meta.url)
 
-const VARIANT_LOADERS = {
-  import_debug_sync: () => import(importSpecifiers.debug_sync),
-  import_release_sync: () => import(importSpecifiers.release_sync),
-  import_debug_async: () => import(importSpecifiers.debug_async),
-  import_release_async: () => import(importSpecifiers.release_async),
-  require_debug_sync: () => Promise.resolve(require(importSpecifiers.debug_sync)),
-  require_release_sync: () => Promise.resolve(require(importSpecifiers.release_sync)),
-  require_debug_async: () => Promise.resolve(require(importSpecifiers.debug_async)),
-  require_release_async: () => Promise.resolve(require(importSpecifiers.release_async)),
+const VARIANT_LOADERS: Record<string, () => Promise<any>> = {}
+for (const [name, conditions] of Object.entries(packageSpecifiers)) {
+  if (conditions.import) {
+    VARIANT_LOADERS[`import(${name})`] = () => import(name)
+  }
+  if (conditions.require) {
+    VARIANT_LOADERS[`require(${name})`] = () => Promise.resolve(require(name))
+  }
 }
 
 describe("variants (node:test)", () => {

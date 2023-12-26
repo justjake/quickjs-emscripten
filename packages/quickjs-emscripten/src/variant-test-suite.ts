@@ -1,12 +1,20 @@
 import assert from "assert"
 import type { QuickJSAsyncVariant, QuickJSSyncVariant, QuickJSWASMModule } from "."
+import variantsManifest from "../../../variants.json"
 
-export const importSpecifiers = {
-  debug_sync: "@jitl/quickjs-wasmfile-debug-sync",
-  release_sync: "@jitl/quickjs-wasmfile-release-sync",
-  debug_async: "@jitl/quickjs-wasmfile-debug-asyncify",
-  release_async: "@jitl/quickjs-wasmfile-release-asyncify",
+function buildImportSpecifiers() {
+  const specifiers: Record<string, { browser: boolean; import: boolean; require: boolean }> = {}
+  for (const [dir, variant] of Object.entries(variantsManifest)) {
+    specifiers[variant.packageJson.name] = {
+      browser: "browser" in variant.variant.exports,
+      import: "import" in variant.variant.exports,
+      require: "require" in variant.variant.exports,
+    }
+  }
+  return specifiers
 }
+
+export const packageSpecifiers = buildImportSpecifiers()
 
 interface TestFramework {
   it(name: string, fn: () => void | Promise<void>): void
