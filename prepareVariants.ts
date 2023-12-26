@@ -509,6 +509,19 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
       .map((flag) => `CFLAGS_WASM+=${flag}`)
       .join("\n"),
   )
+
+  const browserVariant: BuildVariant = {
+    ...variant,
+    moduleSystem: targets.browser[0].moduleSystem,
+    emscriptenEnvironment: targets.browser[0].emscriptenEnvironment,
+  }
+  template.replace(
+    "CFLAGS_WASM_BROWSER=REPLACE_THIS",
+    getCflags(targetName, browserVariant)
+      .map((flag) => `CFLAGS_WASM_BROWSER+=${flag}`)
+      .join("\n"),
+  )
+
   template.replace(
     "GENERATE_TS_ENV_VARIANT=REPLACE_THIS",
     Object.entries(getGenerateTsEnv(targetName, variant))

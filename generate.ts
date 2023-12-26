@@ -1,3 +1,4 @@
+#!/usr/bin/env -S npx tsx
 // Generate symbols list
 // Generate header file
 import * as fs from "fs-extra"

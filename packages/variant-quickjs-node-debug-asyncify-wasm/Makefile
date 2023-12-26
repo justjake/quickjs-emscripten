@@ -1,13 +1,11 @@
 # Tools
-CC=clang
 EMSDK_VERSION=3.1.50
 EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.50
 EMCC_SRC=../../scripts/emcc.sh
 EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_PROJECT_ROOT=$(REPO_ROOT) EMSDK_DOCKER_CACHE=$(REPO_ROOT)/emsdk-cache/$(EMSDK_VERSION) $(EMCC_SRC)
-GENERATE_TS_SRC=../../generate.ts
-GENERATE_TS=$(GENERATE_TS_ENV) npx tsx $(GENERATE_TS_SRC)
+GENERATE_TS=$(GENERATE_TS_ENV) ../../generate.ts
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
-REPO_ROOT := $(THIS_DIR)/../..
+REPO_ROOT := $(abspath $(THIS_DIR)/../..)
 
 DEBUG_MAKE=1
 
@@ -63,8 +61,23 @@ CFLAGS_WASM+=-s NODEJS_CATCH_EXIT=0
 # VARIANT
 VARIANT={"library":"quickjs","releaseMode":"debug","syncMode":"asyncify","emscriptenInclusion":"wasm","description":"Node.js build with both CommonJS and ESModule exports","emscriptenEnvironment":["node"],"moduleSystem":"both"}
 SYNC=ASYNCIFY
+CFLAGS_WASM_BROWSER=$(CFLAGS_WASM)
 
 # Emscripten options - variant specific
+CFLAGS_WASM_BROWSER+=-s ASYNCIFY=1
+CFLAGS_WASM_BROWSER+=-DQTS_ASYNCIFY=1
+CFLAGS_WASM_BROWSER+=-DQTS_ASYNCIFY_DEFAULT_STACK_SIZE=81920
+CFLAGS_WASM_BROWSER+=-s ASYNCIFY_STACK_SIZE=81920
+CFLAGS_WASM_BROWSER+=-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json
+CFLAGS_WASM_BROWSER+=-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json
+CFLAGS_WASM_BROWSER+=-lasync.js
+CFLAGS_WASM_BROWSER+=-O0
+CFLAGS_WASM_BROWSER+=-DQTS_DEBUG_MODE
+CFLAGS_WASM_BROWSER+=-gsource-map
+CFLAGS_WASM_BROWSER+=-s ASSERTIONS=1
+CFLAGS_WASM_BROWSER+=-s ENVIRONMENT=web,worker
+CFLAGS_WASM_BROWSER+=-s ASYNCIFY_ADVISE=1
+CFLAGS_WASM_BROWSER+=-O3
 CFLAGS_WASM+=-s ASYNCIFY=1
 CFLAGS_WASM+=-DQTS_ASYNCIFY=1
 CFLAGS_WASM+=-DQTS_ASYNCIFY_DEFAULT_STACK_SIZE=81920
@@ -99,27 +112,39 @@ clean:
 	git clean -fx $(DIST) $(BUILD_ROOT)
 
 ###############################################################################
-# Wasm files
-WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
-
-WASM: $(DIST)/emscripten-module.d.ts JS
+# Emscripten output targets
+WASM: JS
 JS: CJS MJS
-CJS: $(DIST)/emscripten-module.cjs
-MJS: $(DIST)/emscripten-module.mjs
+CJS: $(DIST)/emscripten-module.cjs $(DIST)/emscripten-module.d.ts
+MJS: $(DIST)/emscripten-module.mjs $(DIST)/emscripten-module.d.ts
+BROWSER: $(DIST)/emscripten-module.browser.mjs $(DIST)/emscripten-module.browser.d.ts
 
 $(DIST)/emscripten-module.mjs: CFLAGS_WASM+=-s EXPORT_ES6=1
 $(DIST)/emscripten-module.mjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+	$(EMCC) $(CFLAGS_WASM_BROWSER) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
 $(DIST)/emscripten-module.cjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
-$(DIST)/emscripten-module.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
+$(DIST)/emscripten-module%.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
 	echo '// Generated from $<' > $@
 	cat $< >> $@
 
+# Browser target needs intermediate build to avoid two copies of .wasm
+$(DIST)/emscripten-module.browser.mjs: $(BUILD_WRAPPER)/browser/emscripten-module.mjs
+	cp $< $@
+	cp -v $(basename $<).wasm* $(dir $@)
+
+$(BUILD_WRAPPER)/browser/emscripten-module.mjs: CFLAGS_WASM+=-s EXPORT_ES6=1
+$(BUILD_WRAPPER)/browser/emscripten-module.mjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
+	$(MKDIRP)
+	$(EMCC) $(CFLAGS_WASM) $(CFLAGS_WASM_BROWSER) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+
+###############################################################################
+# Emscripten intermediate files
+WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 $(BUILD_WRAPPER)/%.o: $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(CFLAGS_SORTED_FUNCS) $(WRAPPER_DEFINES) -c -o $@ $<
