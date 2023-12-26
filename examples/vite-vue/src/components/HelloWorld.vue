@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { QuickJSAsync, QuickJSDefault, QuickJSFromVariant } from '../quickjs';
+import { ref } from "vue"
+import { QuickJSAsync, QuickJSDefault, QuickJSFromVariant } from "../quickjs"
 
 const vms = [
   QuickJSAsync.newContext(),
@@ -8,10 +8,10 @@ const vms = [
   QuickJSFromVariant.newContext(),
 ]
 
-const code = ref('1 + 2')
+const code = ref("1 + 2")
 
 function evaluate() {
-  return vms.map(vm => {
+  return vms.map((vm) => {
     const result = vm.evalCode(code.value)
     if (result.error) {
       return result.error.consume(vm.dump)
@@ -28,7 +28,7 @@ function evaluate() {
 
     <div><label for="code">Code:</label></div>
     <textarea v-model="code" id="code"></textarea>
-    <Eval vm={vm}></Eval>
+    <Eval vm="{vm}"></Eval>
     <pre class="result">Results: {{ evaluate() }}</pre>
   </div>
 </template>

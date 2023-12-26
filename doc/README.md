@@ -541,7 +541,7 @@ See the [documentation of quickjs-emscripten-core][core] for more details.
 
   ```typescript
   import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
-  import DEBUG_SYNC from '@jitl/quickjs-node-esm-debug-sync-wasm'
+  import DEBUG_SYNC from "@jitl/quickjs-node-esm-debug-sync-wasm"
 
   const QuickJS = await newQuickJSWASMModuleFromVariant(DEBUG_SYNC)
   ```
