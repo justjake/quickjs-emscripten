@@ -12,6 +12,6 @@ for (const [name, conditions] of Object.entries(packageSpecifiers)) {
   }
 }
 
-describe("variants (node:test)", () => {
+describe("node:test load variants from CommonJS", () => {
   testSuite({ describe, it }, VARIANT_LOADERS, quickjsEmscripten)
 })
