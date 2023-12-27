@@ -11,7 +11,7 @@
 // - some upstream types reference web-only ambient types like WebGL stuff, which
 //   we don't use.
 
-import {
+import type {
   BorrowedHeapCharPointer,
   JSContextPointer,
   JSRuntimePointer,

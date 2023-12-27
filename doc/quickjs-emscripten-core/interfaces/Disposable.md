@@ -25,7 +25,7 @@ Use [Scope](../classes/Scope.md) to manage cleaning up multiple disposables.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:21](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L21)
+[packages/quickjs-emscripten-core/src/lifetime.ts:22](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L22)
 
 ## Methods
 
@@ -41,7 +41,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:15](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L15)
+[packages/quickjs-emscripten-core/src/lifetime.ts:16](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L16)
 
 ***
 

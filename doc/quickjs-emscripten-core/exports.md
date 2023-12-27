@@ -122,7 +122,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context-asyncify.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context-asyncify.ts#L17)
+[packages/quickjs-emscripten-core/src/context-asyncify.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context-asyncify.ts#L18)
 
 ***
 
@@ -171,7 +171,7 @@ by the runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:40](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L40)
+[packages/quickjs-emscripten-core/src/runtime.ts:36](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L36)
 
 ***
 
@@ -196,7 +196,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:32](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L32)
+[packages/quickjs-emscripten-core/src/runtime.ts:28](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L28)
 
 ***
 
@@ -255,7 +255,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:71](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L71)
+[packages/quickjs-emscripten-core/src/types.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L67)
 
 ***
 
@@ -265,7 +265,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:72](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L72)
+[packages/quickjs-emscripten-core/src/types.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L68)
 
 ***
 
@@ -275,7 +275,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:70](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L70)
+[packages/quickjs-emscripten-core/src/types.ts:66](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L66)
 
 ***
 
@@ -285,7 +285,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:89](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L89)
+[packages/quickjs-emscripten-core/src/types.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L85)
 
 ***
 
@@ -295,7 +295,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:90](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L90)
+[packages/quickjs-emscripten-core/src/types.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L86)
 
 ***
 
@@ -305,7 +305,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:88](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L88)
+[packages/quickjs-emscripten-core/src/types.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L84)
 
 ***
 
@@ -341,7 +341,7 @@ You can do so from Javascript by calling the .dispose() method.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L46)
+[packages/quickjs-emscripten-core/src/types.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L42)
 
 ***
 
@@ -360,7 +360,7 @@ quickjs-emscripten takes care of disposing JSValueConst references.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:29](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L29)
+[packages/quickjs-emscripten-core/src/types.ts:25](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L25)
 
 ***
 
@@ -461,7 +461,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:71
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:242](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L242)
+[packages/quickjs-emscripten-core/src/types.ts:238](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L238)
 
 ***
 
@@ -527,7 +527,7 @@ You must dispose of any handles you create by calling the `.dispose()` method.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:55](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L55)
+[packages/quickjs-emscripten-core/src/types.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L51)
 
 ***
 
@@ -540,7 +540,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:45](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L45)
+[packages/quickjs-emscripten-core/src/context.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L41)
 
 ***
 
@@ -563,7 +563,7 @@ be disposed.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L17)
+[packages/quickjs-emscripten-core/src/types.ts:13](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L13)
 
 ***
 

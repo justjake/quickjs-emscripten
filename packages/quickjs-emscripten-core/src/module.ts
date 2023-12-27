@@ -1,6 +1,6 @@
-import { QuickJSContext } from "./context"
+import type { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
-import {
+import type {
   Asyncify,
   AsyncifySleepResult,
   EitherModule,
@@ -13,8 +13,10 @@ import {
 } from "@jitl/quickjs-ffi-types"
 import { QuickJSAsyncifyError, QuickJSAsyncifySuspended } from "./errors"
 import { Lifetime, Scope } from "./lifetime"
-import { InterruptHandler, QuickJSRuntime } from "./runtime"
-import { concat, ContextOptions, JSModuleLoader, RuntimeOptions, RuntimeOptionsBase } from "./types"
+import type { InterruptHandler } from "./runtime"
+import { QuickJSRuntime } from "./runtime"
+import type { ContextOptions, JSModuleLoader, RuntimeOptions, RuntimeOptionsBase } from "./types"
+import { concat } from "./types"
 
 type EmscriptenCallback<BaseArgs extends any[], Result> = (
   ...args: [Asyncify | undefined, ...BaseArgs]

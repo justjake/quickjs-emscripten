@@ -1,4 +1,4 @@
-import {
+import type {
   EitherModule,
   OwnedHeapCharPointer,
   JSContextPointerPointer,
@@ -7,7 +7,7 @@ import {
   JSVoidPointer,
 } from "@jitl/quickjs-ffi-types"
 import { Lifetime } from "./lifetime"
-import { QuickJSHandle } from "./types"
+import type { QuickJSHandle } from "./types"
 
 /**
  * @private

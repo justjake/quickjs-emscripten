@@ -3,12 +3,8 @@ import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
 import type { Disposable, Lifetime } from "./lifetime"
 import type { QuickJSAsyncContext } from "./context-asyncify"
 import type { InterruptHandler, QuickJSRuntime } from "./runtime"
-import {
-  EvalFlags,
-  JSContextPointer,
-  JSValueConstPointer,
-  JSValuePointer,
-} from "@jitl/quickjs-ffi-types"
+import type { JSContextPointer, JSValueConstPointer, JSValuePointer } from "@jitl/quickjs-ffi-types"
+import { EvalFlags } from "@jitl/quickjs-ffi-types"
 
 /**
  * A QuickJSHandle to a constant that will never change, and does not need to

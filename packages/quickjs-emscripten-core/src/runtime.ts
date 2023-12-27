@@ -2,7 +2,7 @@ import { maybeAsyncFn } from "./asyncify-helpers"
 import { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
 import { QuickJSWrongOwner } from "./errors"
-import {
+import type {
   BorrowedHeapCharPointer,
   JSContextPointer,
   JSContextPointerPointer,
@@ -10,17 +10,13 @@ import {
   EitherFFI,
   EitherModule,
 } from "@jitl/quickjs-ffi-types"
-import { Disposable, Lifetime, Scope } from "./lifetime"
+import type { Disposable } from "./lifetime"
+import { Lifetime, Scope } from "./lifetime"
 import { ModuleMemory } from "./memory"
-import { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
-import {
-  ContextOptions,
-  DefaultIntrinsics,
-  JSModuleLoader,
-  JSModuleNormalizer,
-  QuickJSHandle,
-} from "./types"
-import { SuccessOrFail } from "./vm-interface"
+import type { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
+import type { ContextOptions, JSModuleLoader, JSModuleNormalizer, QuickJSHandle } from "./types"
+import { DefaultIntrinsics } from "./types"
+import type { SuccessOrFail } from "./vm-interface"
 
 /**
  * Callback called regularly while the VM executes code.

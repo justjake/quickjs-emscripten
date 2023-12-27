@@ -1,4 +1,5 @@
-import { maybeAsync, MaybeAsyncBlock } from "./asyncify-helpers"
+import type { MaybeAsyncBlock } from "./asyncify-helpers"
+import { maybeAsync } from "./asyncify-helpers"
 import { QTS_DEBUG } from "./debug"
 import { QuickJSUseAfterFree } from "./errors"
 import type { QuickJSHandle } from "./types"

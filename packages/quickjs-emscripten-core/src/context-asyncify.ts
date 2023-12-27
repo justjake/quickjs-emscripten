@@ -1,6 +1,6 @@
 import { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
-import {
+import type {
   QuickJSAsyncEmscriptenModule,
   QuickJSAsyncFFI,
   EvalDetectModule,
@@ -8,11 +8,12 @@ import {
   JSRuntimePointer,
   JSValuePointer,
 } from "@jitl/quickjs-ffi-types"
-import { Lifetime } from "./lifetime"
-import { QuickJSModuleCallbacks } from "./module"
-import { QuickJSAsyncRuntime } from "./runtime-asyncify"
-import { ContextEvalOptions, evalOptionsToFlags, QuickJSHandle } from "./types"
-import { VmCallResult } from "./vm-interface"
+import type { Lifetime } from "./lifetime"
+import type { QuickJSModuleCallbacks } from "./module"
+import type { QuickJSAsyncRuntime } from "./runtime-asyncify"
+import type { ContextEvalOptions, QuickJSHandle } from "./types"
+import { evalOptionsToFlags } from "./types"
+import type { VmCallResult } from "./vm-interface"
 
 export type AsyncFunctionImplementation = (
   this: QuickJSHandle,

@@ -80,7 +80,7 @@ with name `"InternalError"` and  message `"interrupted"`.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:391](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L391)
+[packages/quickjs-emscripten-core/src/module.ts:393](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L393)
 
 ***
 
@@ -102,7 +102,7 @@ be disposed when the context is disposed.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:356](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L356)
+[packages/quickjs-emscripten-core/src/module.ts:358](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L358)
 
 ***
 
@@ -124,7 +124,7 @@ loading for one or more [QuickJSContext](QuickJSContext.md)s inside the runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:329](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L329)
+[packages/quickjs-emscripten-core/src/module.ts:331](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L331)
 
 ***
 

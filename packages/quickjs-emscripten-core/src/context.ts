@@ -15,22 +15,18 @@ import type {
   EitherFFI,
 } from "@jitl/quickjs-ffi-types"
 import { QuickJSUnwrapError } from "./errors"
-import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
+import type { Disposable } from "./lifetime"
+import { Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
-import { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
+import type { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
 import type {
   QuickJSRuntime,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ExecutePendingJobsResult,
 } from "./runtime"
-import {
-  ContextEvalOptions,
-  evalOptionsToFlags,
-  JSValue,
-  PromiseExecutor,
-  QuickJSHandle,
-} from "./types"
-import {
+import type { ContextEvalOptions, JSValue, PromiseExecutor, QuickJSHandle } from "./types"
+import { evalOptionsToFlags } from "./types"
+import type {
   LowLevelJavascriptVm,
   SuccessOrFail,
   VmCallResult,

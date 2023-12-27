@@ -1,5 +1,6 @@
 import { describe, beforeEach, afterEach, it } from "vitest"
 import assert from "assert"
+import type { QuickJSWASMModule } from "."
 import {
   DEBUG_SYNC,
   getQuickJS,
@@ -7,7 +8,6 @@ import {
   newQuickJSAsyncWASMModule,
   newQuickJSWASMModule,
   shouldInterruptAfterDeadline,
-  QuickJSWASMModule,
   TestQuickJSWASMModule,
   memoizePromiseFactory,
 } from "."

@@ -27,7 +27,7 @@ To remove the limit, set to `0`.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:78](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L78)
+[packages/quickjs-emscripten-core/src/module.ts:80](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L80)
 
 ***
 
@@ -39,7 +39,7 @@ Memory limit, in bytes, of WebAssembly heap memory used by the QuickJS VM.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:72](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L72)
+[packages/quickjs-emscripten-core/src/module.ts:74](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L74)
 
 ***
 
@@ -51,7 +51,7 @@ Module loader for any `import` statements or expressions.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L83)
+[packages/quickjs-emscripten-core/src/module.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L85)
 
 ***
 
@@ -64,7 +64,7 @@ See [shouldInterruptAfterDeadline](../exports.md#shouldinterruptafterdeadline).
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L67)
+[packages/quickjs-emscripten-core/src/module.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L69)
 
 ***
 

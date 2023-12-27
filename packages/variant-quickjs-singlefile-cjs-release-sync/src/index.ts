@@ -1,4 +1,4 @@
-import { QuickJSSyncVariant } from "@jitl/quickjs-ffi-types"
+import type { QuickJSSyncVariant } from "@jitl/quickjs-ffi-types"
 
 /**
  * This export is a variant of the quickjs WASM library:

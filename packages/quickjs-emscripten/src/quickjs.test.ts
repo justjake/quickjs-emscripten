@@ -3,22 +3,24 @@
  */
 
 import { describe, beforeEach, afterEach, afterAll as after, it } from "vitest"
-import {
-  getQuickJS,
+import type {
   QuickJSHandle,
   InterruptHandler,
   QuickJSDeferredPromise,
-  newQuickJSAsyncWASMModule,
-  newQuickJSWASMModule,
-  isFail,
   VmCallResult,
   QuickJSContext,
   QuickJSAsyncContext,
+  QuickJSFFI,
+  QuickJSAsyncFFI,
+} from "."
+import {
+  getQuickJS,
+  newQuickJSAsyncWASMModule,
+  newQuickJSWASMModule,
+  isFail,
   DEBUG_ASYNC,
   DEBUG_SYNC,
   memoizePromiseFactory,
-  QuickJSFFI,
-  QuickJSAsyncFFI,
   debugLog,
   errors,
 } from "."

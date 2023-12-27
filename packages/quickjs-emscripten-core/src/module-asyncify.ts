@@ -1,15 +1,11 @@
-import { QuickJSAsyncContext } from "./context-asyncify"
-import { QuickJSAsyncEmscriptenModule, QuickJSAsyncFFI } from "@jitl/quickjs-ffi-types"
+import type { QuickJSAsyncContext } from "./context-asyncify"
+import type { QuickJSAsyncEmscriptenModule, QuickJSAsyncFFI } from "@jitl/quickjs-ffi-types"
 import { QuickJSNotImplemented } from "./errors"
 import { Lifetime, Scope } from "./lifetime"
-import {
-  applyBaseRuntimeOptions,
-  applyModuleEvalRuntimeOptions,
-  ModuleEvalOptions,
-  QuickJSWASMModule,
-} from "./module"
+import type { ModuleEvalOptions } from "./module"
+import { applyBaseRuntimeOptions, applyModuleEvalRuntimeOptions, QuickJSWASMModule } from "./module"
 import { QuickJSAsyncRuntime } from "./runtime-asyncify"
-import { AsyncRuntimeOptions, ContextOptions } from "./types"
+import type { AsyncRuntimeOptions, ContextOptions } from "./types"
 
 /**
  * Asyncified version of {@link QuickJSWASMModule}.

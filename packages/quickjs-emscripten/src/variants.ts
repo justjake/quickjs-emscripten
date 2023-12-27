@@ -1,10 +1,12 @@
-import {
+import type {
   QuickJSSyncVariant,
   QuickJSAsyncVariant,
-  newQuickJSWASMModuleFromVariant,
-  newQuickJSAsyncWASMModuleFromVariant,
   QuickJSWASMModule,
   QuickJSAsyncWASMModule,
+} from "quickjs-emscripten-core"
+import {
+  newQuickJSWASMModuleFromVariant,
+  newQuickJSAsyncWASMModuleFromVariant,
 } from "quickjs-emscripten-core"
 import DEBUG_SYNC from "@jitl/quickjs-wasmfile-debug-sync"
 import RELEASE_SYNC from "@jitl/quickjs-wasmfile-release-sync"

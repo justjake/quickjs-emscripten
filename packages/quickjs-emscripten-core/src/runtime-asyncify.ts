@@ -5,22 +5,22 @@ import type {
 } from "./module-asyncify"
 import { Lifetime } from "."
 import { QuickJSAsyncContext } from "./context-asyncify"
-import {
+import type {
   QuickJSAsyncEmscriptenModule,
   QuickJSAsyncFFI,
   JSContextPointer,
   JSRuntimePointer,
 } from "@jitl/quickjs-ffi-types"
-import { QuickJSModuleCallbacks } from "./module"
+import type { QuickJSModuleCallbacks } from "./module"
 import { QuickJSRuntime } from "./runtime"
-import {
+import type {
   ContextOptions,
-  DefaultIntrinsics,
   JSModuleLoader,
   JSModuleLoaderAsync,
   JSModuleNormalizer,
   JSModuleNormalizerAsync,
 } from "./types"
+import { DefaultIntrinsics } from "./types"
 
 export class QuickJSAsyncRuntime extends QuickJSRuntime {
   public declare context: QuickJSAsyncContext | undefined

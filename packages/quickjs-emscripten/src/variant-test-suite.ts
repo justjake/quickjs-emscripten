@@ -22,6 +22,7 @@ interface TestFramework {
 }
 
 export async function getVariantBuildInfoFromModule(
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   mod: typeof import("."),
   variant: QuickJSSyncVariant | QuickJSAsyncVariant,
 ) {
@@ -52,6 +53,7 @@ const DEFAULT_VARIANT = {
 export function testSuite(
   test: TestFramework,
   dynamicLoaders: Record<string, () => any>,
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   mod: typeof import("."),
 ) {
   const { describe, it } = test

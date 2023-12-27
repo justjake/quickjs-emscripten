@@ -6,9 +6,10 @@
 
 import path from "node:path"
 import fs from "node:fs"
-import { writePretty, tryReadJson, PackageJson, repoRoot } from "./helpers"
+import type { PackageJson } from "./helpers"
+import { writePretty, tryReadJson, repoRoot } from "./helpers"
 import { Context, getMatches, buildFFI } from "./generate"
-import { TypeDocOptions } from "typedoc"
+import type { TypeDocOptions } from "typedoc"
 
 const CLEAN = Boolean(process.env.CLEAN)
 
@@ -651,7 +652,7 @@ function renderIndexTs(
   }[variant.syncMode]
 
   return `
-import { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
+import type { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
 
 /**
  * This export is a variant of the quickjs WASM library:

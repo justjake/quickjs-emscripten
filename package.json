@@ -28,6 +28,7 @@
     "check:packages": "./scripts/check-packages-built.ts",
     "check:smoketest": "yarn tarball && ./scripts/smoketest-node.ts && ./scripts/smoketest-website.ts && ./scripts/smoketest-vite.ts",
     "lint": "npx eslint .",
+    "fix": "yarn lint --fix ; yarn prettier > /dev/null",
     "build": "cp -v README.md packages/quickjs-emscripten && yarn build:codegen && yarn build:packages && yarn doc",
     "build:codegen": "./scripts/prepareVariants.ts && yarn workspace @jitl/tsconfig build",
     "build:packages": "yarn for-each-package build",

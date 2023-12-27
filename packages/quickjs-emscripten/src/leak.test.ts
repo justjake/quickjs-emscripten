@@ -1,9 +1,9 @@
 import assert from "assert"
+import type { QuickJSWASMModule } from "."
 import {
   getQuickJS,
   newQuickJSAsyncWASMModule,
   newQuickJSWASMModule,
-  QuickJSWASMModule,
   DEBUG_ASYNC,
   DEBUG_SYNC,
   memoizePromiseFactory as memoizeNewModule,

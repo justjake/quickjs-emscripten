@@ -1,4 +1,4 @@
-import { InterruptHandler } from "./runtime"
+import type { InterruptHandler } from "./runtime"
 
 /**
  * Returns an interrupt handler that interrupts Javascript execution after a deadline time.

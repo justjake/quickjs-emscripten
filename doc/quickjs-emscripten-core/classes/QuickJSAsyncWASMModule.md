@@ -49,7 +49,7 @@ Synchronous evalCode is not supported.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-asyncify.ts:80](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L80)
+[packages/quickjs-emscripten-core/src/module-asyncify.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L76)
 
 ***
 
@@ -79,7 +79,7 @@ See the documentation for [QuickJSWASMModule#evalCode](QuickJSWASMModule.md#eval
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-asyncify.ts:95](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L95)
+[packages/quickjs-emscripten-core/src/module-asyncify.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L91)
 
 ***
 
@@ -105,7 +105,7 @@ be disposed when the context is disposed.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-asyncify.ts:71](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L71)
+[packages/quickjs-emscripten-core/src/module-asyncify.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L67)
 
 ***
 
@@ -131,7 +131,7 @@ concurrent async actions, create multiple WebAssembly modules.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-asyncify.ts:45](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L45)
+[packages/quickjs-emscripten-core/src/module-asyncify.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L41)
 
 ***
 

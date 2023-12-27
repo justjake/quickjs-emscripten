@@ -1075,7 +1075,7 @@ Optionally, pass a [QuickJSAsyncVariant](interfaces/QuickJSAsyncVariant.md) to c
 
 #### Source
 
-[quickjs-emscripten/src/variants.ts:44](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L44)
+[quickjs-emscripten/src/variants.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L46)
 
 ***
 
@@ -1142,7 +1142,7 @@ Optionally, pass a [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md) to con
 
 #### Source
 
-[quickjs-emscripten/src/variants.ts:22](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L22)
+[quickjs-emscripten/src/variants.ts:24](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L24)
 
 ***
 
