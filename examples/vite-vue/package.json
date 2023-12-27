@@ -9,19 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@jitl/quickjs-browser-debug-asyncify-singlefile": "file:../../build/tar/@jitl-quickjs-browser-debug-asyncify-singlefile.tgz",
-    "@jitl/quickjs-browser-debug-sync-singlefile": "file:../../build/tar/@jitl-quickjs-browser-debug-sync-singlefile.tgz",
-    "@jitl/quickjs-browser-release-asyncify-singlefile": "file:../../build/tar/@jitl-quickjs-browser-release-asyncify-singlefile.tgz",
-    "@jitl/quickjs-browser-release-sync-singlefile": "file:../../build/tar/@jitl-quickjs-browser-release-sync-singlefile.tgz",
     "@jitl/quickjs-ffi-types": "file:../../build/tar/@jitl-quickjs-ffi-types.tgz",
-    "@jitl/quickjs-node-cjs-debug-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-debug-asyncify-wasm.tgz",
-    "@jitl/quickjs-node-cjs-debug-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-debug-sync-wasm.tgz",
-    "@jitl/quickjs-node-cjs-release-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-release-asyncify-wasm.tgz",
-    "@jitl/quickjs-node-cjs-release-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-cjs-release-sync-wasm.tgz",
-    "@jitl/quickjs-node-esm-debug-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-debug-asyncify-wasm.tgz",
-    "@jitl/quickjs-node-esm-debug-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-debug-sync-wasm.tgz",
-    "@jitl/quickjs-node-esm-release-asyncify-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-release-asyncify-wasm.tgz",
-    "@jitl/quickjs-node-esm-release-sync-wasm": "file:../../build/tar/@jitl-quickjs-node-esm-release-sync-wasm.tgz",
+    "@jitl/quickjs-wasmfile-debug-asyncify": "file:../../build/tar/@jitl-quickjs-wasmfile-debug-asyncify.tgz",
+    "@jitl/quickjs-wasmfile-debug-sync": "file:../../build/tar/@jitl-quickjs-wasmfile-debug-sync.tgz",
+    "@jitl/quickjs-wasmfile-release-asyncify": "file:../../build/tar/@jitl-quickjs-wasmfile-release-asyncify.tgz",
+    "@jitl/quickjs-wasmfile-release-sync": "file:../../build/tar/@jitl-quickjs-wasmfile-release-sync.tgz",
     "quickjs-emscripten": "file:../../build/tar/quickjs-emscripten.tgz",
     "quickjs-emscripten-core": "file:../../build/tar/quickjs-emscripten-core.tgz",
     "vue": "^3.3.11"

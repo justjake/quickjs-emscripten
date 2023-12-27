@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { ref } from "vue"
-import { QuickJSAsync, QuickJSDefault, QuickJSFromVariant } from "../quickjs"
+import { load } from "../quickjs"
+import type { QuickJSAsyncContext, QuickJSContext } from "quickjs-emscripten-core";
 
-const vms = [
-  QuickJSAsync.newContext(),
-  QuickJSDefault.newContext(),
-  QuickJSFromVariant.newContext(),
-]
+const vms = ref<Array<QuickJSContext | QuickJSAsyncContext>>([])
+load().then(deps => {
+  vms.value = [
+    deps.QuickJSAsync.newContext(),
+    deps.QuickJSDefault.newContext(),
+    deps.QuickJSFromVariant.newContext(),
+  ]
+})
 
 const code = ref("1 + 2")
 
 function evaluate() {
-  return vms.map((vm) => {
+  return vms.value.map((vm) => {
     const result = vm.evalCode(code.value)
     if (result.error) {
       return result.error.consume(vm.dump)

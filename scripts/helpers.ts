@@ -2,6 +2,7 @@ import path from "node:path"
 import fs from "node:fs"
 import p from "node:child_process"
 import prettier from "prettier"
+import { remove } from "fs-extra"
 
 const packagesDir = path.resolve(__dirname, "../packages")
 const tarDir = path.resolve(__dirname, "../build/tar")
@@ -37,24 +38,72 @@ export function exec(command: string) {
 
 const alreadyInstalled = new Map<string, Set<string>>()
 
+class InstallFlow {
+  steps: Array<() => void> = []
+
+  constructor(
+    public into: string,
+    public commands: { install: string; remove: string },
+  ) {}
+
+  add(packageName: string) {
+    const removed = new Set<string>()
+    const added = new Set<string>()
+    this.visit(packageName, {
+      after: (pkg) => {
+        if (removed.has(pkg.name)) {
+          return
+        }
+        this.steps.push(() => exec(`cd ${this.into} && ${this.commands.remove} ${pkg.name}`))
+        removed.add(pkg.name)
+      },
+    })
+    this.visit(packageName, {
+      after: (pkg) => {
+        if (added.has(pkg.name)) {
+          return
+        }
+        const tarFile = getTarFile(pkg.name)
+        this.steps.push(() =>
+          exec(`cd ${this.into} && ${this.commands.install} ${pkg.name}@${tarFile}`),
+        )
+        added.add(pkg.name)
+      },
+    })
+    return this
+  }
+
+  private visit(
+    packageName: string,
+    handle: { before?(pkg: PackageJson): void; after?(pkg: PackageJson): void },
+  ) {
+    const packageJson = getPackageJson(packageName)
+    handle.before?.(packageJson)
+    for (const dependency of Object.keys(packageJson.dependencies ?? {})) {
+      this.visit(dependency, handle)
+    }
+    handle.after?.(packageJson)
+  }
+
+  run() {
+    for (const step of this.steps) {
+      step()
+    }
+  }
+}
+
 export function installDependencyGraphFromTar(
   into: string,
   packageName: string,
-  cmd = "npm install",
+  cmds: {
+    install: string
+    remove: string
+  } = {
+    install: "npm install",
+    remove: "npm remove",
+  },
 ) {
-  const have = alreadyInstalled.get(into)?.has(packageName)
-  if (have) {
-    return
-  }
-
-  console.log(`install ${packageName}`)
-  const packageJson = getPackageJson(packageName)
-  for (const dependency of Object.keys(packageJson.dependencies ?? {})) {
-    installDependencyGraphFromTar(into, dependency, cmd)
-  }
-  const tarFile = getTarFile(packageName)
-  exec(`cd ${into} && ${cmd} ${packageName}@${tarFile}`)
-  alreadyInstalled.set(into, alreadyInstalled.get(into)?.add(packageName) ?? new Set([packageName]))
+  new InstallFlow(into, cmds).add(packageName).run()
 }
 
 export function resolve(...parts: string[]) {
