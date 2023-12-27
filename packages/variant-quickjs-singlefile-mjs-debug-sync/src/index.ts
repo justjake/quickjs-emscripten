@@ -1,9 +1,9 @@
 import type { QuickJSSyncVariant } from "@jitl/quickjs-ffi-types"
 
 /**
- * This export is a variant of the quickjs WASM library:
- * ### [@jitl/quickjs-singlefile-mjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-sync/README.md)
+ * ### @jitl/quickjs-singlefile-mjs-debug-sync
  *
+ * [Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-sync/README.md) |
  * Variant with the WASM data embedded into a NodeJS ESModule.
  *
  * | Variable            |    Setting                     |    Description    |

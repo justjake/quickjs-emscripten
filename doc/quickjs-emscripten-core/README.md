@@ -16,39 +16,34 @@ import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
 
 // 2. Import a variant suitable for your use case. For example, if you only care to
 //    target with the fastest execution speed, import the release build variant
-import releaseVariant from "@jitl/quickjs-browser-release-sync-singlefile"
+import releaseVariant from "@jitl/quickjs-singlefile-cjs-release-sync"
 
 // 3. Create the "QuickJS" module that presents the quickjs-emscripten API.
 //    Export and use in other files, or consume directly.
 const QuickJS = await newQuickJSWASMModuleFromVariant(releaseVariant)
 ```
 
-- [quickjs-emscripten-core](#quickjs-emscripten-core)
-  - [What's a variant?](#whats-a-variant)
-  - [Environment-specific variants](#environment-specific-variants)
-  - [Available variants](#available-variants)
-
 ## Contents
 
 - [What's a variant?](README.md#whats-a-variant)
 - [Environment-specific variants](README.md#environment-specific-variants)
 - [Available variants](README.md#available-variants)
-  - [[@jitl/quickjs-wasmfile-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-sync/README.md)](README.md#jitlquickjs-wasmfile-debug-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-wasmfile-debug-syncreadmemd)
-  - [[@jitl/quickjs-wasmfile-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-asyncify/README.md)](README.md#jitlquickjs-wasmfile-debug-asyncifyhttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-wasmfile-debug-asyncifyreadmemd)
-  - [[@jitl/quickjs-wasmfile-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-sync/README.md)](README.md#jitlquickjs-wasmfile-release-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-wasmfile-release-syncreadmemd)
-  - [[@jitl/quickjs-wasmfile-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-asyncify/README.md)](README.md#jitlquickjs-wasmfile-release-asyncifyhttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-wasmfile-release-asyncifyreadmemd)
-  - [[@jitl/quickjs-singlefile-cjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-sync/README.md)](README.md#jitlquickjs-singlefile-cjs-debug-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-cjs-debug-syncreadmemd)
-  - [[@jitl/quickjs-singlefile-cjs-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-asyncify/README.md)](README.md#jitlquickjs-singlefile-cjs-debug-asyncifyhttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-cjs-debug-asyncifyreadmemd)
-  - [[@jitl/quickjs-singlefile-cjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-sync/README.md)](README.md#jitlquickjs-singlefile-cjs-release-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-cjs-release-syncreadmemd)
-  - [[@jitl/quickjs-singlefile-cjs-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-asyncify/README.md)](README.md#jitlquickjs-singlefile-cjs-release-asyncifyhttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-cjs-release-asyncifyreadmemd)
-  - [[@jitl/quickjs-singlefile-mjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-sync/README.md)](README.md#jitlquickjs-singlefile-mjs-debug-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-mjs-debug-syncreadmemd)
-  - [[@jitl/quickjs-singlefile-mjs-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-asyncify/README.md)](README.md#jitlquickjs-singlefile-mjs-debug-asyncifyhttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-mjs-debug-asyncifyreadmemd)
-  - [[@jitl/quickjs-singlefile-mjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-sync/README.md)](README.md#jitlquickjs-singlefile-mjs-release-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-mjs-release-syncreadmemd)
-  - [[@jitl/quickjs-singlefile-mjs-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-asyncify/README.md)](README.md#jitlquickjs-singlefile-mjs-release-asyncifyhttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-mjs-release-asyncifyreadmemd)
-  - [[@jitl/quickjs-singlefile-browser-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-sync/README.md)](README.md#jitlquickjs-singlefile-browser-debug-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-browser-debug-syncreadmemd)
-  - [[@jitl/quickjs-singlefile-browser-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-asyncify/README.md)](README.md#jitlquickjs-singlefile-browser-debug-asyncifyhttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-browser-debug-asyncifyreadmemd)
-  - [[@jitl/quickjs-singlefile-browser-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-sync/README.md)](README.md#jitlquickjs-singlefile-browser-release-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-browser-release-syncreadmemd)
-  - [[@jitl/quickjs-singlefile-browser-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-asyncify/README.md)](README.md#jitlquickjs-singlefile-browser-release-asyncifyhttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-browser-release-asyncifyreadmemd)
+  - [@jitl/quickjs-wasmfile-debug-sync](README.md#jitlquickjs-wasmfile-debug-sync)
+  - [@jitl/quickjs-wasmfile-debug-asyncify](README.md#jitlquickjs-wasmfile-debug-asyncify)
+  - [@jitl/quickjs-wasmfile-release-sync](README.md#jitlquickjs-wasmfile-release-sync)
+  - [@jitl/quickjs-wasmfile-release-asyncify](README.md#jitlquickjs-wasmfile-release-asyncify)
+  - [@jitl/quickjs-singlefile-cjs-debug-sync](README.md#jitlquickjs-singlefile-cjs-debug-sync)
+  - [@jitl/quickjs-singlefile-cjs-debug-asyncify](README.md#jitlquickjs-singlefile-cjs-debug-asyncify)
+  - [@jitl/quickjs-singlefile-cjs-release-sync](README.md#jitlquickjs-singlefile-cjs-release-sync)
+  - [@jitl/quickjs-singlefile-cjs-release-asyncify](README.md#jitlquickjs-singlefile-cjs-release-asyncify)
+  - [@jitl/quickjs-singlefile-mjs-debug-sync](README.md#jitlquickjs-singlefile-mjs-debug-sync)
+  - [@jitl/quickjs-singlefile-mjs-debug-asyncify](README.md#jitlquickjs-singlefile-mjs-debug-asyncify)
+  - [@jitl/quickjs-singlefile-mjs-release-sync](README.md#jitlquickjs-singlefile-mjs-release-sync)
+  - [@jitl/quickjs-singlefile-mjs-release-asyncify](README.md#jitlquickjs-singlefile-mjs-release-asyncify)
+  - [@jitl/quickjs-singlefile-browser-debug-sync](README.md#jitlquickjs-singlefile-browser-debug-sync)
+  - [@jitl/quickjs-singlefile-browser-debug-asyncify](README.md#jitlquickjs-singlefile-browser-debug-asyncify)
+  - [@jitl/quickjs-singlefile-browser-release-sync](README.md#jitlquickjs-singlefile-browser-release-sync)
+  - [@jitl/quickjs-singlefile-browser-release-asyncify](README.md#jitlquickjs-singlefile-browser-release-asyncify)
 
 ## What's a variant?
 
@@ -79,10 +74,11 @@ You can use [subpath imports in package.json](https://nodejs.org/api/packages.ht
 {
   "imports": {
     "#my-quickjs-variant": {
-      "types": "@jitl/quickjs-browser-release-sync-wasm",
-      "browser": "@jitl/quickjs-browser-release-sync-wasm",
-      "import": "@jitl/quickjs-node-esm-release-sync-wasm",
-      "require": "@jitl/quickjs-node-cjs-release-sync-wasm"
+      "types": "@jitl/quickjs-wasmfile-release-sync",
+      // In the browser, use the singlefile variant that doesn't need an external file
+      "browser": "@jitl/quickjs-singlefile-browser-release-sync",
+      // Otherwise, use the wasmfile variant, compatible with all environments
+      "default": "@jitl/quickjs-wasmfile-release-sync"
     }
   }
 }
@@ -97,8 +93,9 @@ const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
 
 ## Available variants
 
-### [@jitl/quickjs-wasmfile-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-sync/README.md)
+### @jitl/quickjs-wasmfile-debug-sync
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-sync/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                   |
@@ -108,8 +105,9 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 | emscriptenInclusion | wasm                   | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.  |
 | exports             | require import browser | Has these package.json export conditions                                                                                                                      |
 
-### [@jitl/quickjs-wasmfile-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-asyncify/README.md)
+### @jitl/quickjs-wasmfile-debug-asyncify
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-asyncify/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -119,8 +117,9 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 | emscriptenInclusion | wasm                   | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | exports             | require import browser | Has these package.json export conditions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
-### [@jitl/quickjs-wasmfile-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-sync/README.md)
+### @jitl/quickjs-wasmfile-release-sync
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-sync/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                  |
@@ -130,8 +129,9 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 | emscriptenInclusion | wasm                   | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
 | exports             | require import browser | Has these package.json export conditions                                                                                                                     |
 
-### [@jitl/quickjs-wasmfile-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-asyncify/README.md)
+### @jitl/quickjs-wasmfile-release-asyncify
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-asyncify/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -141,8 +141,9 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 | emscriptenInclusion | wasm                   | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | exports             | require import browser | Has these package.json export conditions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
-### [@jitl/quickjs-singlefile-cjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-sync/README.md)
+### @jitl/quickjs-singlefile-cjs-debug-sync
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-sync/README.md) |
 Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                                   |
@@ -152,8 +153,9 @@ Variant with the WASM data embedded into a universal (Node and Browser compatibl
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                |
 | exports             | require    | Has these package.json export conditions                                                                                                                      |
 
-### [@jitl/quickjs-singlefile-cjs-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-asyncify/README.md)
+### @jitl/quickjs-singlefile-cjs-debug-asyncify
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-asyncify/README.md) |
 Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -163,8 +165,9 @@ Variant with the WASM data embedded into a universal (Node and Browser compatibl
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | exports             | require    | Has these package.json export conditions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
-### [@jitl/quickjs-singlefile-cjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-sync/README.md)
+### @jitl/quickjs-singlefile-cjs-release-sync
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-sync/README.md) |
 Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                    |
@@ -174,8 +177,9 @@ Variant with the WASM data embedded into a universal (Node and Browser compatibl
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app. |
 | exports             | require    | Has these package.json export conditions                                                                                                       |
 
-### [@jitl/quickjs-singlefile-cjs-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-asyncify/README.md)
+### @jitl/quickjs-singlefile-cjs-release-asyncify
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-asyncify/README.md) |
 Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -185,8 +189,9 @@ Variant with the WASM data embedded into a universal (Node and Browser compatibl
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | exports             | require    | Has these package.json export conditions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
-### [@jitl/quickjs-singlefile-mjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-sync/README.md)
+### @jitl/quickjs-singlefile-mjs-debug-sync
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-sync/README.md) |
 Variant with the WASM data embedded into a NodeJS ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                   |
@@ -196,8 +201,9 @@ Variant with the WASM data embedded into a NodeJS ESModule.
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                |
 | exports             | import     | Has these package.json export conditions                                                                                                                      |
 
-### [@jitl/quickjs-singlefile-mjs-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-asyncify/README.md)
+### @jitl/quickjs-singlefile-mjs-debug-asyncify
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-asyncify/README.md) |
 Variant with the WASM data embedded into a NodeJS ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -207,8 +213,9 @@ Variant with the WASM data embedded into a NodeJS ESModule.
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | exports             | import     | Has these package.json export conditions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
-### [@jitl/quickjs-singlefile-mjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-sync/README.md)
+### @jitl/quickjs-singlefile-mjs-release-sync
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-sync/README.md) |
 Variant with the WASM data embedded into a NodeJS ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                    |
@@ -218,8 +225,9 @@ Variant with the WASM data embedded into a NodeJS ESModule.
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app. |
 | exports             | import     | Has these package.json export conditions                                                                                                       |
 
-### [@jitl/quickjs-singlefile-mjs-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-asyncify/README.md)
+### @jitl/quickjs-singlefile-mjs-release-asyncify
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-asyncify/README.md) |
 Variant with the WASM data embedded into a NodeJS ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -229,8 +237,9 @@ Variant with the WASM data embedded into a NodeJS ESModule.
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | exports             | import     | Has these package.json export conditions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
-### [@jitl/quickjs-singlefile-browser-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-sync/README.md)
+### @jitl/quickjs-singlefile-browser-debug-sync
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-sync/README.md) |
 Variant with the WASM data embedded into a browser ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                   |
@@ -240,8 +249,9 @@ Variant with the WASM data embedded into a browser ESModule.
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                |
 | exports             | browser    | Has these package.json export conditions                                                                                                                      |
 
-### [@jitl/quickjs-singlefile-browser-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-asyncify/README.md)
+### @jitl/quickjs-singlefile-browser-debug-asyncify
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-asyncify/README.md) |
 Variant with the WASM data embedded into a browser ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -251,8 +261,9 @@ Variant with the WASM data embedded into a browser ESModule.
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | exports             | browser    | Has these package.json export conditions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
-### [@jitl/quickjs-singlefile-browser-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-sync/README.md)
+### @jitl/quickjs-singlefile-browser-release-sync
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-sync/README.md) |
 Variant with the WASM data embedded into a browser ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                    |
@@ -262,8 +273,9 @@ Variant with the WASM data embedded into a browser ESModule.
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app. |
 | exports             | browser    | Has these package.json export conditions                                                                                                       |
 
-### [@jitl/quickjs-singlefile-browser-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-asyncify/README.md)
+### @jitl/quickjs-singlefile-browser-release-asyncify
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-asyncify/README.md) |
 Variant with the WASM data embedded into a browser ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |

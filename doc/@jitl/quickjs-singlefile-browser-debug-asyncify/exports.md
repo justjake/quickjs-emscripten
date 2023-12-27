@@ -10,7 +10,7 @@
 
 - [Variables](exports.md#variables)
   - [default](exports.md#default)
-  - [[@jitl/quickjs-singlefile-browser-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-asyncify/README.md)](exports.md#jitlquickjs-singlefile-browser-debug-asyncifyhttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-browser-debug-asyncifyreadmemd)
+  - [@jitl/quickjs-singlefile-browser-debug-asyncify](exports.md#jitlquickjs-singlefile-browser-debug-asyncify)
 
 ## Variables
 
@@ -18,9 +18,9 @@
 
 > **`const`** **default**: [`QuickJSAsyncVariant`](../../quickjs-emscripten/interfaces/QuickJSAsyncVariant.md)
 
-This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-singlefile-browser-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-asyncify/README.md)
+### @jitl/quickjs-singlefile-browser-debug-asyncify
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-asyncify/README.md) |
 Variant with the WASM data embedded into a browser ESModule.
 
 | Variable            |    Setting                     |    Description    |

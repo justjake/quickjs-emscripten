@@ -485,8 +485,9 @@ function renderReadmeSummary(
   const packageURL = `${baseURL}/${packageJson.name}/README.md`
   const inclusion = describeInclusion[variant.emscriptenInclusion]
   const hasExports = Object.keys(variant.exports).join(" ")
-  return `### [${packageJson.name}](${packageURL})
+  return `### ${packageJson.name}
 
+[Docs](${packageURL}) | 
 ${variant.description}
 
 | Variable            |    Setting                     |    Description    |
@@ -664,7 +665,6 @@ function renderIndexTs(
 import type { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
 
 /**
- * This export is a variant of the quickjs WASM library:
 ${docComment}
  */
 const variant: ${variantTypeName} = {

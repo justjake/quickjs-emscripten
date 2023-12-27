@@ -1,6 +1,10 @@
 # Changelog
 
-## v0.25.0 (unreleased)
+## v0.25.1
+
+- [#130](https://github.com/justjake/quickjs-emscripten/pull/129) Fix some README and docs quibbles.
+
+## v0.25.0
 
 - [#129](https://github.com/justjake/quickjs-emscripten/pull/129) Improve packaging strategy, native ES Modules, and browser-first builds.
 

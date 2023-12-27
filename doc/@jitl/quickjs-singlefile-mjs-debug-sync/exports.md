@@ -10,7 +10,7 @@
 
 - [Variables](exports.md#variables)
   - [default](exports.md#default)
-  - [[@jitl/quickjs-singlefile-mjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-sync/README.md)](exports.md#jitlquickjs-singlefile-mjs-debug-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-mjs-debug-syncreadmemd)
+  - [@jitl/quickjs-singlefile-mjs-debug-sync](exports.md#jitlquickjs-singlefile-mjs-debug-sync)
 
 ## Variables
 
@@ -18,9 +18,9 @@
 
 > **`const`** **default**: [`QuickJSSyncVariant`](../../quickjs-emscripten/interfaces/QuickJSSyncVariant.md)
 
-This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-singlefile-mjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-sync/README.md)
+### @jitl/quickjs-singlefile-mjs-debug-sync
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-sync/README.md) |
 Variant with the WASM data embedded into a NodeJS ESModule.
 
 | Variable            |    Setting                     |    Description    |
