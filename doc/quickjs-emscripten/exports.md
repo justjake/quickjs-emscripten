@@ -817,11 +817,11 @@ Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
 ##### importFFI
 
-> **`readonly`** **importFFI**: () => `Promise`\<*typeof* `QuickJSAsyncFFI` \| (`module`) => [`QuickJSAsyncFFI`](interfaces/QuickJSAsyncFFI.md)\>
+> **`readonly`** **importFFI**: () => `Promise`\<(`module`) => [`QuickJSAsyncFFI`](interfaces/QuickJSAsyncFFI.md) \| *typeof* `QuickJSAsyncFFI`\>
 
 ###### Returns
 
-`Promise`\<*typeof* `QuickJSAsyncFFI` \| (`module`) => [`QuickJSAsyncFFI`](interfaces/QuickJSAsyncFFI.md)\>
+`Promise`\<(`module`) => [`QuickJSAsyncFFI`](interfaces/QuickJSAsyncFFI.md) \| *typeof* `QuickJSAsyncFFI`\>
 
 ##### importModuleLoader
 
@@ -861,11 +861,11 @@ Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
 ##### importFFI
 
-> **`readonly`** **importFFI**: () => `Promise`\<(`module`) => [`QuickJSFFI`](interfaces/QuickJSFFI.md) \| *typeof* `QuickJSFFI`\>
+> **`readonly`** **importFFI**: () => `Promise`\<*typeof* `QuickJSFFI` \| (`module`) => [`QuickJSFFI`](interfaces/QuickJSFFI.md)\>
 
 ###### Returns
 
-`Promise`\<(`module`) => [`QuickJSFFI`](interfaces/QuickJSFFI.md) \| *typeof* `QuickJSFFI`\>
+`Promise`\<*typeof* `QuickJSFFI` \| (`module`) => [`QuickJSFFI`](interfaces/QuickJSFFI.md)\>
 
 ##### importModuleLoader
 

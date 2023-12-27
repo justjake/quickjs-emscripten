@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { load } from "../quickjs"
-import type { QuickJSAsyncContext, QuickJSContext } from "quickjs-emscripten-core";
+import type { QuickJSAsyncContext, QuickJSContext } from "quickjs-emscripten-core"
 
 const vms = ref<Array<QuickJSContext | QuickJSAsyncContext>>([])
-load().then(deps => {
+load().then((deps) => {
   vms.value = [
     deps.QuickJSAsync.newContext(),
     deps.QuickJSDefault.newContext(),
