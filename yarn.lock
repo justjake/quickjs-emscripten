@@ -652,7 +652,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-singlefile-cjs-debug-asyncify@workspace:*, @jitl/quickjs-singlefile-cjs-debug-asyncify@workspace:packages/variant-quickjs-singlefile-cjs-debug-asyncify":
+"@jitl/quickjs-singlefile-cjs-debug-asyncify@workspace:packages/variant-quickjs-singlefile-cjs-debug-asyncify":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-singlefile-cjs-debug-asyncify@workspace:packages/variant-quickjs-singlefile-cjs-debug-asyncify"
   dependencies:
@@ -660,7 +660,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-singlefile-cjs-debug-sync@workspace:*, @jitl/quickjs-singlefile-cjs-debug-sync@workspace:packages/variant-quickjs-singlefile-cjs-debug-sync":
+"@jitl/quickjs-singlefile-cjs-debug-sync@workspace:packages/variant-quickjs-singlefile-cjs-debug-sync":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-singlefile-cjs-debug-sync@workspace:packages/variant-quickjs-singlefile-cjs-debug-sync"
   dependencies:
@@ -5433,8 +5433,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "quickjs-emscripten@workspace:packages/quickjs-emscripten"
   dependencies:
-    "@jitl/quickjs-singlefile-cjs-debug-asyncify": "workspace:*"
-    "@jitl/quickjs-singlefile-cjs-debug-sync": "workspace:*"
     "@jitl/quickjs-singlefile-cjs-release-asyncify": "workspace:*"
     "@jitl/quickjs-singlefile-cjs-release-sync": "workspace:*"
     "@jitl/quickjs-wasmfile-debug-asyncify": "workspace:*"
