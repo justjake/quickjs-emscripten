@@ -1,5 +1,67 @@
 # Changelog
 
+## v0.25.0 (unreleased)
+
+- [#129](https://github.com/justjake/quickjs-emscripten/pull/129) Improve packaging strategy, native ES Modules, and browser-first builds.
+
+### New package layout
+
+`quickjs-emscripten` is re-organized into several NPM packages in a monorepo structure:
+
+- `quickjs-emscripten` (install size 7.5mb) - mostly backwards compatible all-in-one package. This package installs the WASM files for DEBUG_SYNC, DEBUG_ASYNC, RELEASE_SYNC and RELEASE_ASYNC variants as NPM dependencies. Its total install size is reduced from ~
+- `quickjs-emscripten-core` (install size 573kb) - just the Typescript code, should be compatible with almost any runtime. You can use this with a single a-la-carte build variant, such as `@jitl/quickjs-wasmfile-release-sync` to reduce the total install size needed to run QuickJS to ~1.1mb.
+- Several a-la-carte build variants, named `@jitl/quickjs-{wasmfile,singlefile-{esm,cjs,browser}}-{debug,release}-{sync,asyncify}`. See the [quickjs-emscripten-core docs][core-docs] for more details.
+
+[core-docs]: doc/quickjs-emscripten-core/README.md
+
+### ESModules & Browser support
+
+`quickjs-emscripten` uses [package.json export conditions][conditions] to provide native ES Modules for NodeJS and the browser when appropriate. Most bundlers, like Webpack@5 and Vite, will understand conditions and work out of the box. This should enable advanced tree-shaking, although I'm not sure how much benefit is possible with the library.
+
+You can also use quickjs-emscripten directly from an HTML file in two ways:
+
+```html
+<!-- Import from a ES Module CDN -->
+<script type="module">
+  import { getQuickJS } from "https://esm.run/quickjs-emscripten@0.25.0"
+  const QuickJS = await getQuickJS()
+  console.log(QuickJS.evalCode("1+1"))
+</script>
+```
+
+Or in older browsers, you can reference the IIFE build:
+
+```html
+<!-- Add a script tag to load the library globally -->
+<script
+  src="https://cdn.jsdelivr.net/npm/quickjs-emscripten@0.25.0/dist/index.global.js"
+  type="text/javascript"
+>
+  <!-- Then use in a script tag -->
+  <script type="text/javascript">
+    const QuickJS = window.QuickJS
+    getQuickJS().then(QuickJS => {
+      console.log(QuickJS.evalCode('1+1'))
+    })
+</script>
+```
+
+### Breaking Changes
+
+- We now differentiate between runtime environments at build time using Node.JS package.json [export conditions in subpath exports][conditions], instead of including support for all environments in a single build. While this resolves open issues with relatively modern bundlers like webpack@5 and vite, it may cause regressions if you use an older bundler that doesn't understand the "browser" condition.
+- The release variants - RELEASE_SYNC (the default), and RELEASE_ASYNC - no longer embed the WebAssembly code inside a JS file. Instead, they attempt to load the WebAssembly code from a separate file. Very old bundlers may not understand this syntax, or your web server may not serve the .wasm files correctly. Please test in a staging environment to verify your production build works as expected.
+- quickjs-emscripten now uses [subpath exports in package.json][conditions]. Imports of specific files must be removed. The only valid import paths for quickjs-emscripten are:
+
+  - `import * from 'quickjs-emscripten'` (the library)
+  - `import packageJson from 'quickjs-emscripten/package.json'`
+  - `import { DEBUG_SYNC, DEBUG_ASYNC, RELEASE_SYNC, RELEASE_ASYNC } from 'quickjs-emscripten/variants'` (these are exported from the main import, but are also available as their own files)
+
+  You should update your imports to use one of these paths. Notably, the WASM files can no longer be directly imported from the `quickjs-emscripten` package.
+
+- If you have errors about missing type files, you may need to upgrade to `typescript@5` and set moduleResolution to `node16` in your tsconfig.json. This shouldn't be necessary for most users.
+
+[conditions]: https://nodejs.org/api/packages.html#conditional-exports
+
 ## v0.24.0
 
 - [#127](https://github.com/justjake/quickjs-emscripten/pull/127) Upgrade to quickjs 2023-12-09:

@@ -1,6 +1,6 @@
 {
   "name": "quickjs-emscripten",
-  "version": "0.25.0-rc.7",
+  "version": "0.25.0-rc.8",
   "sideEffects": false,
   "license": "MIT",
   "type": "commonjs",
@@ -29,6 +29,7 @@
   ],
   "scripts": {
     "build": "npx tsup",
+    "clean": "git clean -fx dist",
     "tsc": "npx tsc -p . --noEmit",
     "test:vi": "VITEST=1 npx vitest run",
     "test:node": "npx tsc -p . && node -r source-map-support/register --test ./.output/*node-test*.*js",

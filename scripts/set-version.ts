@@ -11,6 +11,11 @@ async function main() {
   const set: Record<string, string> = {}
   for (const workspace of getYarnWorkspaces()) {
     const packageJson: PackageJson = readJson(workspace.location + "/package.json")
+    if (packageJson.version === NEXT_VERSION) {
+      set[packageJson.name] = `unchanged (${NEXT_VERSION})`
+      continue
+    }
+
     set[packageJson.name] = `${packageJson.version} -> ${NEXT_VERSION}`
     packageJson.version = NEXT_VERSION
     // get rid of annoying Yarn thingy

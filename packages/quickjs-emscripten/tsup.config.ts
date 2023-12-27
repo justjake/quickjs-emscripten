@@ -8,4 +8,5 @@ export default extendConfig({
     "#variants/release",
     "#variants/release-asyncify",
   ],
+  format: ["cjs", "esm", "iife"],
 })

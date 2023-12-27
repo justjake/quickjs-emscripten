@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-singlefile-cjs-release-asyncify",
-  "version": "0.25.0-rc.7",
+  "version": "0.25.0-rc.8",
   "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS CommonJS module.",
   "sideEffects": false,
   "repository": {
