@@ -326,6 +326,7 @@ async function main() {
         types: "./dist/index.d.ts",
         main: js ? "./dist/index.js" : "./dist/index.mjs",
         module: mjs ? "./dist/index.mjs" : undefined,
+        browser: variant.exports.browser ? "./dist/index.mjs" : undefined,
         exports: {
           ".": {
             types: "./dist/index.d.ts",

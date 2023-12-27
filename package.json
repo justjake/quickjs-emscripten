@@ -18,7 +18,7 @@
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:bellard/quickjs.git master",
     "smoketest-node": "yarn tarball && ./scripts/smoketest-node.ts",
     "smoketest-cra": "yarn tarball && ./scripts/smoketest-website.ts",
-    "check": "yarn check:format && yarn build && yarn check:packages && yarn check:types && yarn test",
+    "check": "yarn build && yarn check:packages && yarn check:format && yarn check:types && yarn test",
     "test": "yarn for-each-package test",
     "test:fast": "TEST_NO_ASYNC=true yarn test",
     "test:slow": "TEST_LEAK=1 yarn test",

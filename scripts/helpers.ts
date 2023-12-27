@@ -130,6 +130,7 @@ export interface PackageJson {
   types?: string
   main?: string
   module?: string
+  browser?: string
   author: {
     name: string
     email?: string

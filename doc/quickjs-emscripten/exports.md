@@ -861,11 +861,11 @@ Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
 ##### importFFI
 
-> **`readonly`** **importFFI**: () => `Promise`\<*typeof* `QuickJSFFI` \| (`module`) => [`QuickJSFFI`](interfaces/QuickJSFFI.md)\>
+> **`readonly`** **importFFI**: () => `Promise`\<(`module`) => [`QuickJSFFI`](interfaces/QuickJSFFI.md) \| *typeof* `QuickJSFFI`\>
 
 ###### Returns
 
-`Promise`\<*typeof* `QuickJSFFI` \| (`module`) => [`QuickJSFFI`](interfaces/QuickJSFFI.md)\>
+`Promise`\<(`module`) => [`QuickJSFFI`](interfaces/QuickJSFFI.md) \| *typeof* `QuickJSFFI`\>
 
 ##### importModuleLoader
 

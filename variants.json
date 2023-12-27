@@ -22,6 +22,7 @@
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
+      "browser": "./dist/index.mjs",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -81,6 +82,7 @@
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
+      "browser": "./dist/index.mjs",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -140,6 +142,7 @@
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
+      "browser": "./dist/index.mjs",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -199,6 +202,7 @@
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
+      "browser": "./dist/index.mjs",
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
@@ -642,6 +646,7 @@
       "types": "./dist/index.d.ts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
+      "browser": "./dist/index.mjs",
       "exports": {
         ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",
@@ -687,6 +692,7 @@
       "types": "./dist/index.d.ts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
+      "browser": "./dist/index.mjs",
       "exports": {
         ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",
@@ -732,6 +738,7 @@
       "types": "./dist/index.d.ts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
+      "browser": "./dist/index.mjs",
       "exports": {
         ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",
@@ -777,6 +784,7 @@
       "types": "./dist/index.d.ts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
+      "browser": "./dist/index.mjs",
       "exports": {
         ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",

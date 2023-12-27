@@ -9,3 +9,5 @@ examples/typescript-smoketest/*.js
 build
 emsdk-cache
 .output
+packages/internal-tsconfig/*.d.ts
+packages/internal-tsconfig/*.js
