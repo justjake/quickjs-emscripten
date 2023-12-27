@@ -23,7 +23,7 @@ import {
   errors,
 } from "."
 import assert from "assert"
-import fs, { chmod } from "fs"
+import fs from "fs"
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
 
@@ -555,7 +555,7 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
     it("interrupts infinite loop execution", () => {
       let calls = 0
       const interruptId = getTestId()
-      const interruptHandler: InterruptHandler = (interruptVm) => {
+      const interruptHandler: InterruptHandler = () => {
         debugLog("interruptHandler called", interruptId)
         if (calls > 10) {
           return true
@@ -971,7 +971,12 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
           loadedName = moduleName
           return `export default 5`
         },
-        function normalize(baseName: string, name: string, moduleVM: QuickJSAsyncContext) {
+        function normalize(
+          baseName: string,
+          name: string,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          _moduleVM: QuickJSAsyncContext,
+        ) {
           requestedBaseName = baseName
           requestedName = name
           return NORMALIZED_NAME

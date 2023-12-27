@@ -4,7 +4,7 @@ import variantsManifest from "../../../variants.json"
 
 function buildImportSpecifiers() {
   const specifiers: Record<string, { browser: boolean; import: boolean; require: boolean }> = {}
-  for (const [dir, variant] of Object.entries(variantsManifest)) {
+  for (const [, variant] of Object.entries(variantsManifest)) {
     specifiers[variant.packageJson.name] = {
       browser: "browser" in variant.variant.exports,
       import: "import" in variant.variant.exports,

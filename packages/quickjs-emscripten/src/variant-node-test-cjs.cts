@@ -8,6 +8,7 @@ for (const [name, conditions] of Object.entries(packageSpecifiers)) {
     VARIANT_LOADERS[`import(${name})`] = () => import(name)
   }
   if (conditions.require) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     VARIANT_LOADERS[`require(${name})`] = () => Promise.resolve(require(name))
   }
 }

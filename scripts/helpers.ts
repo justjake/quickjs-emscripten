@@ -39,8 +39,6 @@ export function exec(command: string) {
   p.execSync(command, { encoding: "utf-8", stdio: "inherit" })
 }
 
-const alreadyInstalled = new Map<string, Set<string>>()
-
 class InstallFlow {
   steps: Array<() => void> = []
 

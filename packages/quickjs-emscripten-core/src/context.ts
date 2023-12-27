@@ -1,25 +1,28 @@
 import { debugLog } from "./debug"
 import { QuickJSDeferredPromise } from "./deferred-promise"
-import { shouldInterruptAfterDeadline } from "./interrupt-helpers"
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import type {
   EitherModule,
   EvalDetectModule,
   EvalFlags,
   JSBorrowedCharPointer,
   JSContextPointer,
-  JSModuleDefPointer,
   JSRuntimePointer,
   JSValueConstPointer,
   JSValuePointer,
   JSValuePointerPointer,
-  JSVoidPointer,
   EitherFFI,
 } from "@jitl/quickjs-ffi-types"
 import { QuickJSUnwrapError } from "./errors"
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
-import { QuickJSRuntime, ExecutePendingJobsResult } from "./runtime"
+import type {
+  QuickJSRuntime,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ExecutePendingJobsResult,
+} from "./runtime"
 import {
   ContextEvalOptions,
   evalOptionsToFlags,
@@ -561,7 +564,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     if (!ptr) {
       throw new Error("Couldn't allocate memory to get ArrayBuffer")
     }
-    return new Lifetime(this.module.HEAPU8.subarray(ptr, ptr + len), undefined, (value) =>
+    return new Lifetime(this.module.HEAPU8.subarray(ptr, ptr + len), undefined, () =>
       this.module._free(ptr),
     )
   }

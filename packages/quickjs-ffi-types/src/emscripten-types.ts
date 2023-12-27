@@ -20,6 +20,7 @@ import {
   OwnedHeapCharPointer,
 } from "./ffi-types"
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 declare namespace Emscripten {
   interface FileSystemType {}
   type EnvironmentType = "WEB" | "NODE" | "SHELL" | "WORKER"

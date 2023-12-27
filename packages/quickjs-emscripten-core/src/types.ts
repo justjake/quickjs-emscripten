@@ -1,4 +1,3 @@
-import type { QuickJSFFI, QuickJSAsyncFFI } from "@jitl/quickjs-ffi-types"
 import type { QuickJSContext } from "./context"
 import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
 import type { Disposable, Lifetime } from "./lifetime"
@@ -103,7 +102,7 @@ export interface JSModuleNormalizer extends JSModuleNormalizerAsync {
   (baseModuleName: string, requestedName: string, vm: QuickJSContext): JSModuleNormalizeResult
 }
 
-type TODO<hint extends string = "?", typeHint = unknown> = never
+type TODO<hint extends string = "?", typeHint = unknown> = hint & typeHint & never
 
 const UnstableSymbol = Symbol("Unstable")
 
@@ -162,6 +161,7 @@ export type Intrinsic =
   | "BignumExt"
 
 // For informational purposes
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DefaultIntrinsicsList = [
   "BaseObjects",
   "Date",

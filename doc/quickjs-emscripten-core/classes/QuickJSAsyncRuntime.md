@@ -74,7 +74,7 @@ A context here may be allocated if one is needed by the runtime, eg for [compute
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:22](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L22)
+[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L26)
 
 ## Accessors
 
@@ -274,7 +274,7 @@ You should dispose a created context before disposing this runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:45](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L45)
+[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L49)
 
 ***
 
@@ -371,7 +371,7 @@ See the [pull request](https://github.com/justjake/quickjs-emscripten/pull/114) 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L87)
+[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L91)
 
 ***
 
@@ -425,7 +425,7 @@ The loader can be removed with [removeModuleLoader](QuickJSAsyncRuntime.md#remov
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:70](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L70)
+[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:74](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L74)
 
 ***
 

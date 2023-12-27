@@ -26,7 +26,7 @@
 
 ## Source
 
-[packages/quickjs-emscripten-core/src/types.ts:96](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L96)
+[packages/quickjs-emscripten-core/src/types.ts:95](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L95)
 
 ***
 

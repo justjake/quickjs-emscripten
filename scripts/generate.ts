@@ -24,7 +24,7 @@ const ASSERT_SYNC_FN = "assertSync"
 
 const INCLUDE_RE = /^#include.*$/gm
 const TYPEDEF_RE = /^\s*typedef\s+(.+)$/gm
-const DECL_RE = /^([\w\(\)* ]+[\s*]+)(QTS_\w+)(\((.*?)\)) ?{$/gm
+const DECL_RE = /^([\w()* ]+[\s*]+)(QTS_\w+)(\((.*?)\)) ?{$/gm
 const TS_EXPORT_TYPE_RE = /^export type (\w+)/gm
 const EM_JS_RE = /^\s*EM_JS\((.+), ?\{$/gm
 
@@ -139,6 +139,7 @@ interface ParsedType {
 }
 
 function cTypeToTypescriptType(ctype: string): ParsedType {
+  // eslint-disable-next-line prefer-const
   let { type, attributes } = parseAttributes(ctype)
 
   // simplify
@@ -391,7 +392,9 @@ function updateHashFile(src: string, dest: string) {
     if (existing === hash) {
       return
     }
-  } catch (e) {}
+  } catch (e) {
+    // pass
+  }
   fs.writeFileSync(dest, hash)
 }
 

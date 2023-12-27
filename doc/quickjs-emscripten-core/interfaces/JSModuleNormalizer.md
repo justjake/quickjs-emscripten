@@ -26,7 +26,7 @@
 
 ## Source
 
-[packages/quickjs-emscripten-core/src/types.ts:103](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L103)
+[packages/quickjs-emscripten-core/src/types.ts:102](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L102)
 
 > **JSModuleNormalizer**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult)\>
 
@@ -44,7 +44,7 @@
 
 ## Source
 
-[packages/quickjs-emscripten-core/src/types.ts:96](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L96)
+[packages/quickjs-emscripten-core/src/types.ts:95](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L95)
 
 ***
 

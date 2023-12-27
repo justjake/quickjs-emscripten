@@ -34,8 +34,8 @@ describe("Scope", () => {
     it("disposes all the lifetimes", () => {
       const { increment, count } = counter()
       const secondLifetime = Scope.withScope((scope) => {
-        scope.manage(new Lifetime("first", undefined, (s) => increment()))
-        return scope.manage(new Lifetime("second", undefined, (s) => increment()))
+        scope.manage(new Lifetime("first", undefined, () => increment()))
+        return scope.manage(new Lifetime("second", undefined, () => increment()))
       })
 
       assert.strictEqual(secondLifetime.alive, false)

@@ -1,8 +1,4 @@
-import {
-  QuickJSAsyncRuntime,
-  QuickJSWASMModule,
-  newQuickJSWASMModuleFromVariant,
-} from "quickjs-emscripten-core"
+import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
 import { getQuickJS, RELEASE_SYNC, newAsyncRuntime } from "quickjs-emscripten"
 
 export async function load() {

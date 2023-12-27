@@ -1,4 +1,8 @@
-import type { QuickJSAsyncWASMModule } from "./module-asyncify"
+import type {
+  // Used in doc
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  QuickJSAsyncWASMModule,
+} from "./module-asyncify"
 import { Lifetime } from "."
 import { QuickJSAsyncContext } from "./context-asyncify"
 import {

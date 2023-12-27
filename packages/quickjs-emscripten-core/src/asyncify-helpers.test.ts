@@ -23,6 +23,7 @@ describe("maybeAsync", () => {
   })
 
   it("throws any sync errors", () => {
+    // eslint-disable-next-line require-yield
     const fn = maybeAsyncFn(undefined, function* () {
       throw new Error("sync error")
     })

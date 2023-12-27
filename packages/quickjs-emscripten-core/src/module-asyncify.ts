@@ -9,7 +9,7 @@ import {
   QuickJSWASMModule,
 } from "./module"
 import { QuickJSAsyncRuntime } from "./runtime-asyncify"
-import { AsyncRuntimeOptions, ContextOptions, RuntimeOptions } from "./types"
+import { AsyncRuntimeOptions, ContextOptions } from "./types"
 
 /**
  * Asyncified version of {@link QuickJSWASMModule}.

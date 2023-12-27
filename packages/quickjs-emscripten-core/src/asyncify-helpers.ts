@@ -45,12 +45,12 @@ export function maybeAsyncFn<
   }
 }
 
-class Example {
-  private maybeAsyncMethod = maybeAsyncFn(this, function* (awaited, a: number) {
-    yield* awaited(new Promise((resolve) => setTimeout(resolve, a)))
-    return 5
-  })
-}
+// class Example {
+//   private maybeAsyncMethod = maybeAsyncFn(this, function* (awaited, a: number) {
+//     yield* awaited(new Promise((resolve) => setTimeout(resolve, a)))
+//     return 5
+//   })
+// }
 
 export type MaybeAsyncBlock<Return, This, Yielded, Args extends any[] = []> = (
   this: This,

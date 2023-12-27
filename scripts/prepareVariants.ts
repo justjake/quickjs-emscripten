@@ -29,12 +29,6 @@ enum CLibrary {
   NG = "quickjs-ng",
 }
 
-enum ModuleSystem {
-  CommonJS = "commonjs",
-  ESModule = "esm",
-  Both = "both",
-}
-
 enum EmscriptenInclusion {
   SingleFile = "singlefile",
   Separate = "wasm",

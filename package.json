@@ -44,8 +44,12 @@
   ],
   "devDependencies": {
     "@types/emscripten": "^1.38.0",
+    "@types/eslint": "^8",
     "@types/fs-extra": "^9.0.13",
     "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
+    "eslint": "^8.56.0",
     "fs-extra": "^10.0.1",
     "glob": "^10.3.10",
     "hads": "^3.0.3",
