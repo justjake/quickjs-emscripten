@@ -4,7 +4,8 @@
   "version": "0.25.0-rc.6",
   "stableVersion": "0.24.0",
   "scripts": {
-    "build": "npx tsc --project . && echo ran build script of $npm_package_json && ls",
+    "build": "yarn build:tsc && yarn build:tsc --listFiles && echo ran build script of $npm_package_json && ls",
+    "build:tsc": "npx tsc --project tsconfig.tsup.json",
     "clean": "git clean -fx ."
   }
 }

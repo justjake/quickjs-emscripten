@@ -54,6 +54,9 @@ jobs:
           path: "emsdk-cache"
           key: ${{ hashFiles('scripts/emcc.sh') }}
 
+      - name: Environment info
+        run: env ; which npx ; npx --version ; npx which tsc ; npx tsc --version
+
       - name: Build
         run: yarn build
 
@@ -67,13 +70,13 @@ jobs:
         run: yarn test:slow
 
       - name: Build tarballs
-        run: yarn tarball
+        run: yarn tarball && du -h build/tar/*
 
       - name: Test release with NodeJS/Typescript example
         run: ./scripts/smoketest-node.ts
 
       - name: Test release with create-react-app/Typescript example
-        run: ./scripts/smoketest-website.ts
+        run: ./scripts/smoketest-create-react-app.ts
 
       - name: Test release with Vite/Vue example
         run: ./scripts/smoketest-vite.ts
