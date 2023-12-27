@@ -730,26 +730,6 @@ packages/quickjs-ffi-types/dist/index.d.ts:85
 
 ### debugLog()
 
-#### debugLog(data)
-
-> **debugLog**(...`data`): `void`
-
-[MDN Reference](https://developer.mozilla.org/docs/Web/API/console/log)
-
-##### Parameters
-
-• ...**data**: `any`[]
-
-##### Returns
-
-`void`
-
-##### Source
-
-node\_modules/typescript/lib/lib.dom.d.ts:26455
-
-#### debugLog(message, optionalParams)
-
 > **debugLog**(`message`?, ...`optionalParams`?): `void`
 
 Prints to `stdout` with newline. Multiple arguments can be passed, with the
@@ -766,21 +746,21 @@ console.log('count:', count);
 
 See `util.format()` for more information.
 
-##### Parameters
+#### Parameters
 
 • **message?**: `any`
 
 • ...**optionalParams?**: `any`[]
 
-##### Returns
+#### Returns
 
 `void`
 
-##### Since
+#### Since
 
 v0.1.100
 
-##### Source
+#### Source
 
 node\_modules/@types/node/console.d.ts:221
 

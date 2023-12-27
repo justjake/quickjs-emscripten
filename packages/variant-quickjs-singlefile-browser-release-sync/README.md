@@ -25,7 +25,7 @@ Optimized for performance; use when building/deploying your application.
 
 Exports the following in package.json for the package entrypoint:
 
-- Exports a browser-compatible ESModule.
+- Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.
 
 ## Extra async magic? No
 

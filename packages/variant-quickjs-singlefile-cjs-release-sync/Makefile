@@ -3,7 +3,7 @@ EMSDK_VERSION=3.1.50
 EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.50
 EMCC_SRC=../../scripts/emcc.sh
 EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_PROJECT_ROOT=$(REPO_ROOT) EMSDK_DOCKER_CACHE=$(REPO_ROOT)/emsdk-cache/$(EMSDK_VERSION) $(EMCC_SRC)
-GENERATE_TS=$(GENERATE_TS_ENV) ../../generate.ts
+GENERATE_TS=$(GENERATE_TS_ENV) ../../scripts/generate.ts
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 REPO_ROOT := $(abspath $(THIS_DIR)/../..)
 
@@ -119,8 +119,8 @@ $(DIST)/emscripten-module%.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
 
 # Browser target needs intermediate build to avoid two copies of .wasm
 $(DIST)/emscripten-module.browser.mjs: $(BUILD_WRAPPER)/browser/emscripten-module.mjs
+	if [[ -e $(basename $<).wasm ]] ; then cp -v $(basename $<).wasm* $(dir $@); fi
 	cp $< $@
-	cp -v $(basename $<).wasm* $(dir $@)
 
 $(BUILD_WRAPPER)/browser/emscripten-module.mjs: CFLAGS_WASM+=$(CFLAGS_BROWSER)
 $(BUILD_WRAPPER)/browser/emscripten-module.mjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)

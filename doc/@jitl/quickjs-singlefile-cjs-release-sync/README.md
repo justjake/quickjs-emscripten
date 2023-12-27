@@ -38,7 +38,7 @@ Optimized for performance; use when building/deploying your application.
 
 Exports the following in package.json for the package entrypoint:
 
-- undefined
+- Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.
 
 ## Extra async magic? No
 

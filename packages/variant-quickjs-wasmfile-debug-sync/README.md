@@ -25,9 +25,9 @@ Enables assertions and memory sanitizers. Try to run your tests against debug va
 
 Exports the following in package.json for the package entrypoint:
 
-- undefined
-- undefined
-- Exports a browser-compatible ESModule.
+- Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.
+- Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
+- Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.
 
 ## Extra async magic? No
 
@@ -72,8 +72,6 @@ Variant-specific Emscripten build flags:
   "-s ASSERTIONS=1",
   "-DQTS_SANITIZE_LEAK",
   "-fsanitize=leak",
-  "-g2",
-  "-s ASYNCIFY_ADVISE=1",
-  "-O3"
+  "-g2"
 ]
 ```

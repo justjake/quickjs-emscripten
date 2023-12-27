@@ -10,7 +10,7 @@
 
 - [Variables](exports.md#variables)
   - [default](exports.md#default)
-  - [[@jitl/quickjs-singlefile-mjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-mjs-release-sync/README.md)](exports.md#jitlquickjs-singlefile-mjs-release-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocpackagesjitlquickjs-singlefile-mjs-release-syncreadmemd)
+  - [[@jitl/quickjs-singlefile-mjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-sync/README.md)](exports.md#jitlquickjs-singlefile-mjs-release-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-mjs-release-syncreadmemd)
 
 ## Variables
 
@@ -19,7 +19,7 @@
 > **`const`** **default**: `Object`
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-singlefile-mjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages/@jitl/quickjs-singlefile-mjs-release-sync/README.md)
+### [@jitl/quickjs-singlefile-mjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-sync/README.md)
 
 Variant with the WASM data embedded into a NodeJS ESModule.
 

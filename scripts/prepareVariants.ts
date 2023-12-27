@@ -6,7 +6,7 @@
 
 import path from "node:path"
 import fs from "node:fs"
-import { writePretty, tryReadJson, PackageJson } from "./scripts/helpers"
+import { writePretty, tryReadJson, PackageJson, repoRoot } from "./helpers"
 import { Context, getMatches, buildFFI } from "./generate"
 import { TypeDocOptions } from "typedoc"
 
@@ -189,12 +189,14 @@ function getCflags(targetName: string, variant: BuildVariant) {
         flags.push("-DQTS_SANITIZE_LEAK")
         flags.push("-fsanitize=leak")
         flags.push("-g2")
+        break
       case SyncMode.Asyncify:
         flags.push("-s ASYNCIFY_ADVISE=1")
         flags.push(
           // # Need to use -O3 - otherwise ASYNCIFY leads to stack overflows (why?)
           "-O3",
         )
+        break
     }
   }
 
@@ -254,7 +256,7 @@ async function main() {
   const variantsJson: Record<string, FinalVariant> = {}
   const coreReadmeVariantDescriptions: string[] = []
 
-  const ffiTypesDir = path.join(__dirname, "packages/quickjs-ffi-types")
+  const ffiTypesDir = path.join(repoRoot, "packages/quickjs-ffi-types")
   await writePretty(
     path.join(ffiTypesDir, "src/ffi.ts"),
     buildFFI(
@@ -277,7 +279,7 @@ async function main() {
   for (const [targetName, variants] of Object.entries(targets)) {
     for (const variant of variants) {
       const basename = getTargetPackageSuffix(targetName, variant)
-      const dir = path.join(__dirname, "packages", `variant-${basename}`)
+      const dir = path.join(repoRoot, "packages", `variant-${basename}`)
       const dist = path.join(dir, "dist")
       const src = path.join(dir, "src")
 
@@ -294,12 +296,17 @@ async function main() {
       }
 
       const rootPackageJson: PackageJson | undefined = tryReadJson(
-        path.join(__dirname, "package.json"),
+        path.join(repoRoot, "package.json"),
       )
       const packageJsonPath = path.join(dir, "package.json")
       const existingPackageJson: PackageJson | undefined = tryReadJson(packageJsonPath)
 
       const { js, mjs } = getTsupExtensions(variant)
+      const indexExports = {
+        types: js ? "./dist/index.d.ts" : "./dist/index.d.mts",
+        main: js ? "./dist/index.js" : "./dist/index.mjs",
+        module: mjs ? "./dist/index.mjs" : undefined,
+      }
 
       const packageJson: PackageJson = {
         name: `@jitl/${basename}`,
@@ -322,15 +329,15 @@ async function main() {
           clean: "make clean",
           prepare: "yarn clean && yarn build",
         },
-        files: ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
-        types: "./dist/index.d.ts",
-        main: js ? "./dist/index.js" : "./dist/index.mjs",
-        module: mjs ? "./dist/index.mjs" : undefined,
+        files: ["dist/**/*", "!dist/*.tsbuildinfo"],
+        types: indexExports.types,
+        main: indexExports.main,
+        module: indexExports.module,
         browser: variant.exports.browser ? "./dist/index.mjs" : undefined,
         exports: {
           ".": {
-            types: "./dist/index.d.ts",
-            import: mjs ? "./dist/index.mjs" : "./dist/index.js",
+            types: indexExports.types,
+            import: indexExports.module ?? indexExports.main,
             require: js ? "./dist/index.js" : undefined,
           },
           "./package.json": "./package.json",
@@ -376,9 +383,9 @@ async function main() {
       const finalVariant: FinalVariant = {
         basename,
         targetName,
-        dir: path.relative(__dirname, dir),
+        dir: path.relative(repoRoot, dir),
         packageJson,
-        indexJs: path.relative(__dirname, path.join(dist, "index.js")),
+        indexJs: path.relative(repoRoot, path.join(dist, "index.js")),
         variant,
       }
 
@@ -404,10 +411,10 @@ async function main() {
   }
 
   await writePretty(
-    path.join(__dirname, "packages/quickjs-emscripten-core/README.md"),
+    path.join(repoRoot, "packages/quickjs-emscripten-core/README.md"),
     renderCoreReadme(coreReadmeVariantDescriptions),
   )
-  await writePretty(path.join(__dirname, "variants.json"), JSON.stringify(variantsJson))
+  await writePretty(path.join(repoRoot, "variants.json"), JSON.stringify(variantsJson))
 }
 
 const describeInclusion = {
@@ -420,20 +427,28 @@ const describeMode = {
   [ReleaseMode.Release]: `Optimized for performance; use when building/deploying your application.`,
 }
 
+const DOC_ROOT_URL = `https://github.com/justjake/quickjs-emscripten/blob/main/doc`
+
 const describeSyncMode = {
   [SyncMode.Sync]: `The default, normal build. Note that both variants support regular async functions.`,
-  [SyncMode.Asyncify]: `Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to!`,
+  [SyncMode.Asyncify]: `
+Build run through the ASYNCIFY WebAssembly transform.
+This imposes substantial size (2x the size of sync) and speed penalties (40% the speed of sync).
+In return, allows synchronous calls from the QuickJS WASM runtime to async functions on the host.
+The extra magic makes this variant slower than sync variants.
+Note that both variants support regular async functions.
+Only adopt ASYNCIFY if you need to!
+The [QuickJSAsyncRuntime](${DOC_ROOT_URL}/quickjs-emscripten/classes/QuickJSAsyncRuntime.md)
+and [QuickJSAsyncContext](${DOC_ROOT_URL}/quickjs-emscripten/classes/QuickJSAsyncContext.md) classes expose the ASYNCIFY-specific APIs.
+`
+    .trim()
+    .split("\n")
+    .join(" "),
 }
 
 const describeLibrary = {
   [CLibrary.QuickJS]: `The original [bellard/quickjs](https://github.com/bellard/quickjs) library.`,
   [CLibrary.NG]: `[quickjs-ng](https://github.com/quickjs-ng/quickjs) is a newer fork of quickjs with more language features.`,
-}
-
-const describeModuleSystem = {
-  [ModuleSystem.CommonJS]: `This variant exports a CommonJS module, which is faster to load and run in Node.js.`,
-  [ModuleSystem.ESModule]: `This variant exports an ESModule, which is standardized for browsers and more modern browser-like environments. It cannot be imported from CommonJS without shenanigans.`,
-  [ModuleSystem.Both]: `Contains both CommonJS and ESModule exports.`,
 }
 
 const describeModuleFactory = {
@@ -442,15 +457,15 @@ const describeModuleFactory = {
 }
 
 const describeExport = {
-  browser: `Exports a browser-compatible ESModule.`,
-  cjs: `Exports a NodeJS CommonJS module.`,
-  mjs: `Exports a NodeJS ESModule.`,
+  browser: `Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.`,
+  require: `Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.`,
+  import: `Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.`,
 }
 
 function renderCoreReadme(variantDescriptions: string[]): string {
   const template = new TemplateFile(
     fs.readFileSync(
-      path.join(__dirname, "packages/quickjs-emscripten-core/README.template.md"),
+      path.join(repoRoot, "packages/quickjs-emscripten-core/README.template.md"),
       "utf-8",
     ),
   )
@@ -467,7 +482,7 @@ function renderReadmeSummary(
   variant: BuildVariant,
   packageJson: PackageJson,
 ): string {
-  const baseURL = "https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages"
+  const baseURL = "https://github.com/justjake/quickjs-emscripten/blob/main/doc"
   const packageURL = `${baseURL}/${packageJson.name}/README.md`
   const inclusion = describeInclusion[variant.emscriptenInclusion]
   const hasExports = Object.keys(variant.exports).join(" ")
@@ -489,7 +504,7 @@ function renderReadme(targetName: string, variant: BuildVariant, packageJson: Pa
   const json = (obj: any) => codeFence("json", JSON.stringify(obj, null, 2))
   const create = describeModuleFactory[variant.syncMode]
   const hasExports = Object.keys(variant.exports).join(" ")
-  const exportsList = Object.keys(variant.exports)
+  const exportsList = (Object.keys(variant.exports) as Array<keyof (typeof variant)["exports"]>)
     .map((exportName) => `- ${describeExport[exportName]}`)
     .join("\n")
 
@@ -563,7 +578,7 @@ class TemplateFile {
 
 function renderMakefile(targetName: string, variant: BuildVariant): string {
   const template = new TemplateFile(
-    fs.readFileSync(path.join(__dirname, "templates/Variant.mk"), "utf-8"),
+    fs.readFileSync(path.join(repoRoot, "templates/Variant.mk"), "utf-8"),
   )
 
   const appendEnvVars = (varname: string, flags: string[]) =>

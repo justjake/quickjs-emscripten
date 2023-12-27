@@ -21,16 +21,14 @@
   },
   "files": [
     "dist/**/*",
-    "!dist/ffi.ts",
-    "!dist/index.ts",
     "!dist/*.tsbuildinfo"
   ],
-  "types": "./dist/index.d.ts",
+  "types": "./dist/index.d.mts",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/index.d.mts",
       "import": "./dist/index.mjs"
     },
     "./package.json": "./package.json",

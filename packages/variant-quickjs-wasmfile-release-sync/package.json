@@ -21,8 +21,6 @@
   },
   "files": [
     "dist/**/*",
-    "!dist/ffi.ts",
-    "!dist/index.ts",
     "!dist/*.tsbuildinfo"
   ],
   "types": "./dist/index.d.ts",

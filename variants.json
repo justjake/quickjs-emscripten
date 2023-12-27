@@ -18,7 +18,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -78,7 +78,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -138,7 +138,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -198,7 +198,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -258,7 +258,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "exports": {
@@ -310,7 +310,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "exports": {
@@ -362,7 +362,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "exports": {
@@ -414,7 +414,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "exports": {
@@ -466,12 +466,12 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
-      "types": "./dist/index.d.ts",
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
       "exports": {
-        ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
+        ".": { "types": "./dist/index.d.mts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",
         "./ffi": { "types": "./dist/ffi.d.ts", "import": "./dist/ffi.mjs" },
         "./emscripten-module": {
@@ -510,12 +510,12 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
-      "types": "./dist/index.d.ts",
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
       "exports": {
-        ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
+        ".": { "types": "./dist/index.d.mts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",
         "./ffi": { "types": "./dist/ffi.d.ts", "import": "./dist/ffi.mjs" },
         "./emscripten-module": {
@@ -554,12 +554,12 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
-      "types": "./dist/index.d.ts",
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
       "exports": {
-        ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
+        ".": { "types": "./dist/index.d.mts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",
         "./ffi": { "types": "./dist/ffi.d.ts", "import": "./dist/ffi.mjs" },
         "./emscripten-module": {
@@ -598,12 +598,12 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
-      "types": "./dist/index.d.ts",
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
       "exports": {
-        ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
+        ".": { "types": "./dist/index.d.mts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",
         "./ffi": { "types": "./dist/ffi.d.ts", "import": "./dist/ffi.mjs" },
         "./emscripten-module": {
@@ -642,13 +642,13 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
-      "types": "./dist/index.d.ts",
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
       "browser": "./dist/index.mjs",
       "exports": {
-        ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
+        ".": { "types": "./dist/index.d.mts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",
         "./ffi": { "types": "./dist/ffi.d.ts", "import": "./dist/ffi.mjs" },
         "./emscripten-module": {
@@ -688,13 +688,13 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
-      "types": "./dist/index.d.ts",
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
       "browser": "./dist/index.mjs",
       "exports": {
-        ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
+        ".": { "types": "./dist/index.d.mts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",
         "./ffi": { "types": "./dist/ffi.d.ts", "import": "./dist/ffi.mjs" },
         "./emscripten-module": {
@@ -734,13 +734,13 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
-      "types": "./dist/index.d.ts",
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
       "browser": "./dist/index.mjs",
       "exports": {
-        ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
+        ".": { "types": "./dist/index.d.mts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",
         "./ffi": { "types": "./dist/ffi.d.ts", "import": "./dist/ffi.mjs" },
         "./emscripten-module": {
@@ -780,13 +780,13 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
-      "types": "./dist/index.d.ts",
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
       "browser": "./dist/index.mjs",
       "exports": {
-        ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs" },
+        ".": { "types": "./dist/index.d.mts", "import": "./dist/index.mjs" },
         "./package.json": "./package.json",
         "./ffi": { "types": "./dist/ffi.d.ts", "import": "./dist/ffi.mjs" },
         "./emscripten-module": {

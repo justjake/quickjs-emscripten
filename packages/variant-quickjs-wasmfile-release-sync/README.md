@@ -25,9 +25,9 @@ Optimized for performance; use when building/deploying your application.
 
 Exports the following in package.json for the package entrypoint:
 
-- undefined
-- undefined
-- Exports a browser-compatible ESModule.
+- Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.
+- Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
+- Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.
 
 ## Extra async magic? No
 

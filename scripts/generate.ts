@@ -4,11 +4,12 @@
 import * as fs from "fs-extra"
 import * as pathlib from "path"
 import * as crypto from "crypto"
+import { repoRoot } from "./helpers"
 const USAGE =
   "Usage: generate.ts [symbols | header | ffi] WRITE_PATH" +
   "\ngenerate.ts hash READ_PATH WRITE_PATH"
 
-const rooted = (path: string) => pathlib.join(__dirname, path)
+const rooted = (path: string) => pathlib.join(repoRoot, path)
 
 export class Context {
   public INTERFACE_FILE_PATH = process.env.HEADER_FILE_PATH || rooted("./c/interface.c")

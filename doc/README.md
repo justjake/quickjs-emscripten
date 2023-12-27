@@ -65,6 +65,7 @@ main()
     - [quickjs-emscripten-core, variants, and advanced packaging](#quickjs-emscripten-core-variants-and-advanced-packaging)
     - [Debugging](#debugging)
     - [More Documentation](#more-documentation)
+    - [Requirements](#requirements)
   - [Background](#background)
   - [Status \& Roadmap](#status--roadmap)
   - [Related](#related)
@@ -102,7 +103,7 @@ getQuickJS().then((QuickJS) => {
 
 ### Interfacing with the interpreter
 
-You can use [QuickJSContext](https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/QuickJSContext.md)
+You can use [QuickJSContext](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSContext.md)
 to build a scripting environment by modifying globals and exposing functions
 into the QuickJS interpreter.
 
@@ -226,7 +227,7 @@ calling `scope.dispose()` yourself.
 
 #### `Lifetime.consume(fn)`
 
-[`Lifetime.consume`](https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/lifetime.md#consume)
+[`Lifetime.consume`](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/lifetime.md#consume)
 is sugar for the common pattern of using a handle and then
 immediately disposing of it. `Lifetime.consume` takes a `map` function that
 produces a result of any type. The `map` fuction is called with the handle,
@@ -383,9 +384,9 @@ To use asyncify features, use the following functions:
   WebAssembly module.
 - [newQuickJSAsyncWASMModule][]: create an empty WebAssembly module.
 
-[newasyncruntime]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/modules.md#newasyncruntime
-[newasynccontext]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/modules.md#newasynccontext
-[newquickjsasyncwasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/modules.md#newquickjsasyncwasmmodule
+[newasyncruntime]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#newasyncruntime
+[newasynccontext]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#newasynccontext
+[newquickjsasyncwasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#newquickjsasyncwasmmodule
 
 These functions are asynchronous because they always create a new underlying
 WebAssembly module so that each instance can suspend and resume independently,
@@ -513,9 +514,9 @@ describe("Realistic test with QuickJS RELEASE build", () => {
 
 For more testing examples, please explore the typescript source of [quickjs-emscripten][ts] repository.
 
-[ts]: https://github.com/justjake/quickjs-emscripten/blob/main/ts
-[debug_sync]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/modules.md#debug_sync
-[testquickjswasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/classes/TestQuickJSWASMModule.md
+[ts]: https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/
+[debug_sync]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#debug_sync
+[testquickjswasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/TestQuickJSWASMModule.md
 
 ### quickjs-emscripten-core, variants, and advanced packaging
 
@@ -551,6 +552,21 @@ See the [documentation of quickjs-emscripten-core][core] for more details.
 ### More Documentation
 
 [Github] | [NPM] | [API Documentation][api] | [Variants][core] | [Examples][tests]
+
+### Requirements
+
+`quickjs-emscripten` and related packages should work in any environment that supports ES2020.
+
+- NodeJS: requires v14.6.0 or later. Tested with node@18.
+- We estimate support for the following browsers:
+  - Chrome 63+
+  - Edge 79+
+  - Safari 11.1+
+  - Firefox 58+
+- Webpack: tested with webpack@5.89.0 via create-react-app.
+- Vite: tested with vite@5.0.10.
+- Typescript: tested with typescript@4.5.5 and typescript@5.3.3.
+- Create react app: tested with react-scripts@5.0.1.
 
 ## Background
 

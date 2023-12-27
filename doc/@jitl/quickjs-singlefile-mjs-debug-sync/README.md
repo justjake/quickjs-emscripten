@@ -38,7 +38,7 @@ Enables assertions and memory sanitizers. Try to run your tests against debug va
 
 Exports the following in package.json for the package entrypoint:
 
-- undefined
+- Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
 
 ## Extra async magic? No
 
@@ -78,9 +78,7 @@ Variant-specific Emscripten build flags:
   "-s SINGLE_FILE=1",
   "-DQTS_SANITIZE_LEAK",
   "-fsanitize=leak",
-  "-g2",
-  "-s ASYNCIFY_ADVISE=1",
-  "-O3"
+  "-g2"
 ]
 ```
 

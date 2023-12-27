@@ -36,8 +36,13 @@ function checkFiles(pkg: sh.WorkspaceJson, packageJson: sh.PackageJson) {
   for (const [exportName, exportConditions] of Object.entries(packageJson.exports ?? {})) {
     if (typeof exportConditions === "string") {
       mustExist(exportConditions, `export ${exportName} file does not exist`)
+    } else if (!exportConditions) {
+      throw new Error(`export ${exportName} has no conditions`)
     } else {
       for (const [condition, exportFile] of Object.entries(exportConditions)) {
+        if (!exportFile) {
+          throw new Error(`export ${exportName} condition ${condition} has no file`)
+        }
         mustExist(exportFile, `export ${exportName} condition ${condition} file does not exist`)
       }
     }

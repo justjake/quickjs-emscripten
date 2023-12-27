@@ -2,13 +2,16 @@ import path from "node:path"
 import fs from "node:fs"
 import p from "node:child_process"
 import prettier from "prettier"
-import { remove } from "fs-extra"
 
-const packagesDir = path.resolve(__dirname, "../packages")
-const tarDir = path.resolve(__dirname, "../build/tar")
-const packageSubdirs = fs.readdirSync(packagesDir).map((name) => path.join(packagesDir, name))
+export const repoRoot = path.resolve(__dirname, "..")
+const packagesDir = path.resolve(repoRoot, "./packages")
+const tarDir = path.resolve(repoRoot, "./build/tar")
+let packageSubdirs: string[] | undefined
+
+const INSTALL_FROM_REGISTRY = Boolean(process.env.INSTALL_FROM_REGISTRY)
 
 function getPackageJson(packageName: string) {
+  packageSubdirs ??= fs.readdirSync(packagesDir).map((dir) => path.join(packagesDir, dir))
   const subname = packageName.split("/").at(-1) ?? "none"
   let searchDirs = packageSubdirs.filter((dir) => dir.endsWith(subname))
   if (searchDirs.length === 0) {
@@ -51,25 +54,30 @@ class InstallFlow {
     const added = new Set<string>()
     this.visit(packageName, {
       after: (pkg) => {
-        if (removed.has(pkg.name)) {
-          return
-        }
-        this.steps.push(() => exec(`cd ${this.into} && ${this.commands.remove} ${pkg.name}`))
         removed.add(pkg.name)
       },
     })
+    this.steps.push(() =>
+      exec(`cd ${this.into} && ${this.commands.remove} ${[...removed].join(" ")}`),
+    )
+
     this.visit(packageName, {
       after: (pkg) => {
-        if (added.has(pkg.name)) {
+        if (INSTALL_FROM_REGISTRY) {
+          if (pkg.name === packageName) {
+            added.add(`${pkg.name}@${pkg.version}`)
+          }
           return
         }
+
         const tarFile = getTarFile(pkg.name)
-        this.steps.push(() =>
-          exec(`cd ${this.into} && ${this.commands.install} ${pkg.name}@${tarFile}`),
-        )
-        added.add(pkg.name)
+        added.add(`${pkg.name}@${tarFile}`)
       },
     })
+    this.steps.push(() =>
+      exec(`cd ${this.into} && ${this.commands.install} ${[...added].join(" ")}`),
+    )
+
     return this
   }
 
