@@ -21,6 +21,7 @@
 You can also use quickjs-emscripten directly from an HTML file in two ways:
 
 ```html
+<!doctype html>
 <!-- Import from a ES Module CDN -->
 <script type="module">
   import { getQuickJS } from "https://esm.run/quickjs-emscripten@0.25.0"
@@ -29,15 +30,16 @@ You can also use quickjs-emscripten directly from an HTML file in two ways:
 </script>
 ```
 
-Or in older browsers, you can reference the IIFE build:
+In edge cases, you might want to use the IIFE build which provides QuickJS as the global `QJS`.
 
 ```html
-<!-- Add a script tag to load the library globally -->
+<!doctype html>
+<!-- Add a script tag to load the library as the QJS global -->
 <script
-  src="https://cdn.jsdelivr.net/npm/quickjs-emscripten@0.25.0/dist/index.global.js"
+  src="https://cdn.jsdelivr.net/npm/quickjs-emscripten@0.25.0-rc.11/dist/index.global.js"
   type="text/javascript"
 ></script>
-<!-- Then use in a script tag -->
+<!-- Then use the QJS global in a script tag -->
 <script type="text/javascript">
   QJS.getQuickJS().then((QuickJS) => {
     console.log(QuickJS.evalCode("1+1"))

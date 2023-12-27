@@ -62,6 +62,7 @@ main()
         - [Async module loader](#async-module-loader)
         - [Async on host, sync in QuickJS](#async-on-host-sync-in-quickjs)
     - [Testing your code](#testing-your-code)
+    - [Using in the browser without a build step](#using-in-the-browser-without-a-build-step)
     - [quickjs-emscripten-core, variants, and advanced packaging](#quickjs-emscripten-core-variants-and-advanced-packaging)
     - [Debugging](#debugging)
     - [More Documentation](#more-documentation)
@@ -82,6 +83,7 @@ main()
   - [Memory Management](README.md#memory-management)
   - [Exposing APIs](README.md#exposing-apis)
   - [Testing your code](README.md#testing-your-code)
+  - [Using in the browser without a build step](README.md#using-in-the-browser-without-a-build-step)
   - [quickjs-emscripten-core, variants, and advanced packaging](README.md#quickjs-emscripten-core-variants-and-advanced-packaging)
   - [Debugging](README.md#debugging)
   - [More Documentation](README.md#more-documentation)
@@ -538,6 +540,39 @@ For more testing examples, please explore the typescript source of [quickjs-emsc
 [debug_sync]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#debug_sync
 [testquickjswasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/TestQuickJSWASMModule.md
 
+### Using in the browser without a build step
+
+You can use quickjs-emscripten directly from an HTML file in two ways:
+
+1. Import it in an ES Module script tag
+
+  ```html
+  <!doctype html>
+  <!-- Import from a ES Module CDN -->
+  <script type="module">
+    import { getQuickJS } from "https://esm.sh/quickjs-emscripten@0.25.0"
+    const QuickJS = await getQuickJS()
+    console.log(QuickJS.evalCode("1+1"))
+  </script>
+  ```
+
+1. In edge cases, you might want to use the IIFE build which provides QuickJS as the global `QJS`. You should probably use the ES module though, any recent browser supports it.
+
+  ```html
+  <!doctype html>
+  <!-- Add a script tag to load the library as the QJS global -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/quickjs-emscripten@0.25.0/dist/index.global.js"
+    type="text/javascript"
+  ></script>
+  <!-- Then use the QJS global in a script tag -->
+  <script type="text/javascript">
+    QJS.getQuickJS().then((QuickJS) => {
+      console.log(QuickJS.evalCode("1+1"))
+    })
+  </script>
+  ```
+
 ### quickjs-emscripten-core, variants, and advanced packaging
 
 Them main `quickjs-emscripten` package includes several build variants of the WebAssembly module.
@@ -629,10 +664,7 @@ thinking comes next. Last updated 2022-03-18.
      for automatic translation.
    - Consider class-based or interface-type-based marshalling.
 
-4. EcmaScript Modules / WebAssembly files / Deno support. This requires me to
-   learn a lot of new things, but should be interesting for modern browser usage.
-
-5. SQLite integration.
+4. SQLite integration.
 
 ## Related
 
