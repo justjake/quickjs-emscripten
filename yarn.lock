@@ -4584,6 +4584,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"minipass@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "minipass@npm:5.0.0"
+  checksum: 61682162d29f45d3152b78b08bab7fb32ca10899bc5991ffe98afc18c9e9543bd1e3be94f8b8373ba6262497db63607079dc242ea62e43e7b2270837b7347c93
+  languageName: node
+  linkType: hard
+
 "minipass@npm:^5.0.0 || ^6.0.2 || ^7.0.0":
   version: 7.0.4
   resolution: "minipass@npm:7.0.4"
@@ -4591,13 +4598,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minizlib@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "minizlib@npm:2.1.0"
+"minizlib@npm:^2.1.1":
+  version: 2.1.2
+  resolution: "minizlib@npm:2.1.2"
   dependencies:
     minipass: "npm:^3.0.0"
     yallist: "npm:^4.0.0"
-  checksum: 1a24099f47ddba1f6aa6adf178d7e6f407eae78a5c534f32ec005eebae444cd7ebe75ddb5d9bd6642d0a93f1c143889f937e2a06fc85fbc0334b68ae33920602
+  checksum: ae0f45436fb51344dcb87938446a32fbebb540d0e191d63b35e1c773d47512e17307bf54aa88326cc6d176594d00e4423563a091f7266c2f9a6872cdc1e234d1
   languageName: node
   linkType: hard
 
@@ -6249,16 +6256,16 @@ __metadata:
   linkType: hard
 
 "tar@npm:^6.0.1":
-  version: 6.0.2
-  resolution: "tar@npm:6.0.2"
+  version: 6.2.0
+  resolution: "tar@npm:6.2.0"
   dependencies:
     chownr: "npm:^2.0.0"
     fs-minipass: "npm:^2.0.0"
-    minipass: "npm:^3.0.0"
-    minizlib: "npm:^2.1.0"
+    minipass: "npm:^5.0.0"
+    minizlib: "npm:^2.1.1"
     mkdirp: "npm:^1.0.3"
     yallist: "npm:^4.0.0"
-  checksum: b69cfd51cb62dec70636d71dfab4e9f48b0ae47faeb767a40fd8e0eecbc088324357d7c373a5392d0d4ba1182af62d2cca556a9771b80cbec93b46dae9beb2e4
+  checksum: 2042bbb14830b5cd0d584007db0eb0a7e933e66d1397e72a4293768d2332449bc3e312c266a0887ec20156dea388d8965e53b4fc5097f42d78593549016da089
   languageName: node
   linkType: hard
 
