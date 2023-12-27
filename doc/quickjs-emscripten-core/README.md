@@ -69,18 +69,18 @@ You can provide your own variant to control exactly how the large WebAssembly ob
 
 You can use [subpath imports in package.json](https://nodejs.org/api/packages.html#subpath-imports) to select the appropriate variant for a runtime. This is how the main `quickjs-emscripten` package picks between browser, Node ESM and Node CommonJS variants.
 
-```json5
+```json
 // in your package.json
 {
-  imports: {
+  "imports": {
     "#my-quickjs-variant": {
-      types: "@jitl/quickjs-wasmfile-release-sync",
+      "types": "@jitl/quickjs-wasmfile-release-sync",
       // In the browser, use the singlefile variant that doesn't need an external file
-      browser: "@jitl/quickjs-singlefile-browser-release-sync",
+      "browser": "@jitl/quickjs-singlefile-browser-release-sync",
       // Otherwise, use the wasmfile variant, compatible with all environments
-      default: "@jitl/quickjs-wasmfile-release-sync",
-    },
-  },
+      "default": "@jitl/quickjs-wasmfile-release-sync"
+    }
+  }
 }
 ```
 
