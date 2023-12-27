@@ -55,7 +55,13 @@ jobs:
           key: ${{ hashFiles('scripts/emcc.sh') }}
 
       - name: Environment info
-        run: env ; which npx ; npx --version ; npx which tsc ; npx tsc --version
+        run: |
+          echo $(which node) v$(node --version)
+          echo $(which yarn) v$(yarn --version)
+          echo $(which npx) v$(npx --version)
+          echo $(npx which tsc) $(npx tsc --version)
+          echo $(npx which tsup) $(npx tsup --version)
+          echo $(npx which esbuild) v$(npx esbuild --version)
 
       - name: Build
         run: yarn build
