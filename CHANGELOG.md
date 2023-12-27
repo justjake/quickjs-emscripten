@@ -39,8 +39,8 @@ Or in older browsers, you can reference the IIFE build:
 ></script>
 <!-- Then use in a script tag -->
 <script type="text/javascript">
-  QJS.getQuickJS().then(QuickJS => {
-    console.log(QuickJS.evalCode('1+1'))
+  QJS.getQuickJS().then((QuickJS) => {
+    console.log(QuickJS.evalCode("1+1"))
   })
 </script>
 ```

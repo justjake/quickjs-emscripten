@@ -5,7 +5,7 @@
     "outDir": ".output",
     "rootDir": "src",
     "paths": {
-      "#variants": ["./src/variants.ts", "./src/variants.js"],
+      "#variants": ["./src/variants.ts", "./src/variants.js"]
     }
   }
 }
