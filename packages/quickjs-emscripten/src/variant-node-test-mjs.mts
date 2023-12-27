@@ -1,8 +1,8 @@
 import { describe, it } from "node:test"
 import { createRequire } from "node:module"
 
-import * as quickjsEmscripten from "quickjs-emscripten"
 import { packageSpecifiers, testSuite } from "./variant-test-suite.js"
+import * as quickjsEmscripten from "./index.js"
 
 const require = createRequire(import.meta.url)
 

@@ -652,7 +652,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-singlefile-cjs-debug-asyncify@workspace:packages/variant-quickjs-singlefile-cjs-debug-asyncify":
+"@jitl/quickjs-singlefile-cjs-debug-asyncify@workspace:*, @jitl/quickjs-singlefile-cjs-debug-asyncify@workspace:packages/variant-quickjs-singlefile-cjs-debug-asyncify":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-singlefile-cjs-debug-asyncify@workspace:packages/variant-quickjs-singlefile-cjs-debug-asyncify"
   dependencies:
@@ -660,7 +660,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-singlefile-cjs-debug-sync@workspace:packages/variant-quickjs-singlefile-cjs-debug-sync":
+"@jitl/quickjs-singlefile-cjs-debug-sync@workspace:*, @jitl/quickjs-singlefile-cjs-debug-sync@workspace:packages/variant-quickjs-singlefile-cjs-debug-sync":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-singlefile-cjs-debug-sync@workspace:packages/variant-quickjs-singlefile-cjs-debug-sync"
   dependencies:
@@ -668,7 +668,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-singlefile-cjs-release-asyncify@workspace:packages/variant-quickjs-singlefile-cjs-release-asyncify":
+"@jitl/quickjs-singlefile-cjs-release-asyncify@workspace:*, @jitl/quickjs-singlefile-cjs-release-asyncify@workspace:packages/variant-quickjs-singlefile-cjs-release-asyncify":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-singlefile-cjs-release-asyncify@workspace:packages/variant-quickjs-singlefile-cjs-release-asyncify"
   dependencies:
@@ -676,7 +676,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jitl/quickjs-singlefile-cjs-release-sync@workspace:packages/variant-quickjs-singlefile-cjs-release-sync":
+"@jitl/quickjs-singlefile-cjs-release-sync@workspace:*, @jitl/quickjs-singlefile-cjs-release-sync@workspace:packages/variant-quickjs-singlefile-cjs-release-sync":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-singlefile-cjs-release-sync@workspace:packages/variant-quickjs-singlefile-cjs-release-sync"
   dependencies:
@@ -3545,6 +3545,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"globrex@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "globrex@npm:0.1.2"
+  checksum: 81ce62ee6f800d823d6b7da7687f841676d60ee8f51f934ddd862e4057316d26665c4edc0358d4340a923ac00a514f8b67c787e28fe693aae16350f4e60d55e9
+  languageName: node
+  linkType: hard
+
 "gopd@npm:^1.0.1":
   version: 1.0.1
   resolution: "gopd@npm:1.0.1"
@@ -5417,6 +5424,7 @@ __metadata:
     typedoc-plugin-inline-sources: "npm:^1.0.1"
     typedoc-plugin-markdown: "npm:4.0.0-next.38"
     typescript: "npm:^5.3.3"
+    vite-tsconfig-paths: "npm:^4.2.2"
     vitest: "npm:^1.1.0"
   languageName: unknown
   linkType: soft
@@ -5425,6 +5433,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "quickjs-emscripten@workspace:packages/quickjs-emscripten"
   dependencies:
+    "@jitl/quickjs-singlefile-cjs-debug-asyncify": "workspace:*"
+    "@jitl/quickjs-singlefile-cjs-debug-sync": "workspace:*"
+    "@jitl/quickjs-singlefile-cjs-release-asyncify": "workspace:*"
+    "@jitl/quickjs-singlefile-cjs-release-sync": "workspace:*"
     "@jitl/quickjs-wasmfile-debug-asyncify": "workspace:*"
     "@jitl/quickjs-wasmfile-debug-sync": "workspace:*"
     "@jitl/quickjs-wasmfile-release-asyncify": "workspace:*"
@@ -6379,6 +6391,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsconfck@npm:^2.1.0":
+  version: 2.1.2
+  resolution: "tsconfck@npm:2.1.2"
+  peerDependencies:
+    typescript: ^4.3.5 || ^5.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  bin:
+    tsconfck: bin/tsconfck.js
+  checksum: 61df3b03b334a25eabb0a52e67a0c8d85770c631f2739db7703af8fdd102a2ebd598f1c851cc5fc6d6a59f2497a26c845be71c934ea16d838a3ff95a885034fb
+  languageName: node
+  linkType: hard
+
 "tsconfig-paths@npm:^3.15.0":
   version: 3.15.0
   resolution: "tsconfig-paths@npm:3.15.0"
@@ -6714,6 +6740,22 @@ __metadata:
   bin:
     vite-node: vite-node.mjs
   checksum: 2978b2fa7091233c234a86d60be6d6b407748471ae7b0e10a93ccd707ed2c888f04bc1c0e0737fa243f85e8477c18d6ed998b5bf67fd42cdd8778cc9cd40868c
+  languageName: node
+  linkType: hard
+
+"vite-tsconfig-paths@npm:^4.2.2":
+  version: 4.2.2
+  resolution: "vite-tsconfig-paths@npm:4.2.2"
+  dependencies:
+    debug: "npm:^4.1.1"
+    globrex: "npm:^0.1.2"
+    tsconfck: "npm:^2.1.0"
+  peerDependencies:
+    vite: "*"
+  peerDependenciesMeta:
+    vite:
+      optional: true
+  checksum: 790b9a48dd69b6e93bc41455ef0cc63fc8149b40a6d344784067fc2487b0a02f2d6a6d71396214dab7537a52c5e1ddfc88c363232fa707377db161d05e8f68cd
   languageName: node
   linkType: hard
 
