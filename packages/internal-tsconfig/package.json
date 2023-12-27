@@ -4,7 +4,7 @@
   "version": "0.25.0-rc.6",
   "stableVersion": "0.24.0",
   "scripts": {
-    "build": "tsc --project .",
+    "build": "npx tsc --project . && echo ran build script of $npm_package_json && ls",
     "clean": "git clean -fx ."
   }
 }
