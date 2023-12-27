@@ -26,7 +26,7 @@
     "check:types": "yarn for-each-package tsc",
     "check:format": "prettier --check .",
     "check:packages": "./scripts/check-packages-built.ts",
-    "check:smoketest": "yarn tarball && ./scripts/smoketest-node.ts && ./scripts/smoketest-website.ts && ./scripts/smoketest-vite.ts",
+    "check:smoketest": "yarn tarball && ./scripts/smoketest-node.ts && ./scripts/smoketest-create-react-app.ts && ./scripts/smoketest-vite.ts",
     "lint": "npx eslint .",
     "fix": "yarn lint --fix ; yarn prettier > /dev/null",
     "build": "cp -v README.md packages/quickjs-emscripten && yarn build:codegen && yarn build:packages && yarn doc",
@@ -36,7 +36,7 @@
     "doc:serve": "cd doc && npx hads",
     "all:publish:stable": "yarn run check:packages && yarn for-each-publishable-package npm publish --access public",
     "all:publish:next": "yarn run check:packages && yarn for-each-publishable-package npm publish --access public --tag next",
-    "all:version": "yarn workspaces foreach --all version",
+    "all:version": "./scripts/set-version.ts",
     "for-each-package-cmd": "yarn workspaces foreach --from 'packages/*' -Rpt",
     "for-each-publishable-package": "yarn for-each-package-cmd --exclude 'packages/internal-*'",
     "for-each-package": "yarn for-each-package-cmd run"
@@ -67,6 +67,5 @@
     "typescript": "^5.3.3",
     "vitest": "^1.1.0"
   },
-  "packageManager": "yarn@4.0.2",
-  "stableVersion": "0.24.0"
+  "packageManager": "yarn@4.0.2"
 }

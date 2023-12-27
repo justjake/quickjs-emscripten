@@ -59,6 +59,5 @@
   },
   "engines": {
     "node": ">=16.0.0"
-  },
-  "stableVersion": "0.24.0"
+  }
 }

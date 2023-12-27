@@ -44,6 +44,5 @@
   },
   "dependencies": {
     "@jitl/quickjs-ffi-types": "workspace:*"
-  },
-  "stableVersion": "0.24.0"
+  }
 }
