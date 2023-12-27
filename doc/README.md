@@ -525,32 +525,32 @@ You can use quickjs-emscripten directly from an HTML file in two ways:
 
 1. Import it in an ES Module script tag
 
-  ```html
-  <!doctype html>
-  <!-- Import from a ES Module CDN -->
-  <script type="module">
-    import { getQuickJS } from "https://esm.sh/quickjs-emscripten@0.25.0"
-    const QuickJS = await getQuickJS()
-    console.log(QuickJS.evalCode("1+1"))
-  </script>
-  ```
+```html
+<!doctype html>
+<!-- Import from a ES Module CDN -->
+<script type="module">
+  import { getQuickJS } from "https://esm.sh/quickjs-emscripten@0.25.0"
+  const QuickJS = await getQuickJS()
+  console.log(QuickJS.evalCode("1+1"))
+</script>
+```
 
 1. In edge cases, you might want to use the IIFE build which provides QuickJS as the global `QJS`. You should probably use the ES module though, any recent browser supports it.
 
-  ```html
-  <!doctype html>
-  <!-- Add a script tag to load the library as the QJS global -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/quickjs-emscripten@0.25.0/dist/index.global.js"
-    type="text/javascript"
-  ></script>
-  <!-- Then use the QJS global in a script tag -->
-  <script type="text/javascript">
-    QJS.getQuickJS().then((QuickJS) => {
-      console.log(QuickJS.evalCode("1+1"))
-    })
-  </script>
-  ```
+```html
+<!doctype html>
+<!-- Add a script tag to load the library as the QJS global -->
+<script
+  src="https://cdn.jsdelivr.net/npm/quickjs-emscripten@0.25.0/dist/index.global.js"
+  type="text/javascript"
+></script>
+<!-- Then use the QJS global in a script tag -->
+<script type="text/javascript">
+  QJS.getQuickJS().then((QuickJS) => {
+    console.log(QuickJS.evalCode("1+1"))
+  })
+</script>
+```
 
 ### quickjs-emscripten-core, variants, and advanced packaging
 
