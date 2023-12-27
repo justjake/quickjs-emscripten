@@ -485,8 +485,9 @@ function renderReadmeSummary(
   const packageURL = `${baseURL}/${packageJson.name}/README.md`
   const inclusion = describeInclusion[variant.emscriptenInclusion]
   const hasExports = Object.keys(variant.exports).join(" ")
-  return `### [${packageJson.name}](${packageURL})
+  return `### ${packageJson.name}
 
+[Docs](${packageURL})
 ${variant.description}
 
 | Variable            |    Setting                     |    Description    |

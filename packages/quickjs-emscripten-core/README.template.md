@@ -12,17 +12,12 @@ import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
 
 // 2. Import a variant suitable for your use case. For example, if you only care to
 //    target with the fastest execution speed, import the release build variant
-import releaseVariant from "@jitl/quickjs-browser-release-sync-singlefile"
+import releaseVariant from "@jitl/quickjs-singlefile-cjs-release-sync"
 
 // 3. Create the "QuickJS" module that presents the quickjs-emscripten API.
 //    Export and use in other files, or consume directly.
 const QuickJS = await newQuickJSWASMModuleFromVariant(releaseVariant)
 ```
-
-- [quickjs-emscripten-core](#quickjs-emscripten-core)
-  - [What's a variant?](#whats-a-variant)
-  - [Environment-specific variants](#environment-specific-variants)
-  - [Available variants](#available-variants)
 
 ## What's a variant?
 
@@ -48,15 +43,16 @@ You can provide your own variant to control exactly how the large WebAssembly ob
 
 You can use [subpath imports in package.json](https://nodejs.org/api/packages.html#subpath-imports) to select the appropriate variant for a runtime. This is how the main `quickjs-emscripten` package picks between browser, Node ESM and Node CommonJS variants.
 
-```json
+```json5
 // in your package.json
 {
   "imports": {
     "#my-quickjs-variant": {
-      "types": "@jitl/quickjs-browser-release-sync-wasm",
-      "browser": "@jitl/quickjs-browser-release-sync-wasm",
-      "import": "@jitl/quickjs-node-esm-release-sync-wasm",
-      "require": "@jitl/quickjs-node-cjs-release-sync-wasm"
+      "types": "@jitl/quickjs-wasmfile-release-sync",
+      // In the browser, use the singlefile variant that doesn't need an external file
+      "browser": "@jitl/quickjs-singlefile-browser-release-sync",
+      // Otherwise, use the wasmfile variant, compatible with all environments
+      "default": "@jitl/quickjs-wasmfile-release-sync"
     }
   }
 }

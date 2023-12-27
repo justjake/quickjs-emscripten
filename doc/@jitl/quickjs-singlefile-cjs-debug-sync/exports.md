@@ -10,7 +10,7 @@
 
 - [Variables](exports.md#variables)
   - [default](exports.md#default)
-  - [[@jitl/quickjs-singlefile-cjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-sync/README.md)](exports.md#jitlquickjs-singlefile-cjs-debug-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-singlefile-cjs-debug-syncreadmemd)
+  - [@jitl/quickjs-singlefile-cjs-debug-sync](exports.md#jitlquickjs-singlefile-cjs-debug-sync)
 
 ## Variables
 
@@ -19,8 +19,9 @@
 > **`const`** **default**: [`QuickJSSyncVariant`](../../quickjs-emscripten/interfaces/QuickJSSyncVariant.md)
 
 This export is a variant of the quickjs WASM library:
-### [@jitl/quickjs-singlefile-cjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-sync/README.md)
+### @jitl/quickjs-singlefile-cjs-debug-sync
 
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-sync/README.md)
 Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            |    Setting                     |    Description    |
@@ -32,7 +33,7 @@ Variant with the WASM data embedded into a universal (Node and Browser compatibl
 
 #### Source
 
-[index.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-singlefile-cjs-debug-sync/src/index.ts#L17)
+[index.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-singlefile-cjs-debug-sync/src/index.ts#L18)
 
 ***
 
