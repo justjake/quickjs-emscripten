@@ -25,13 +25,11 @@ const configs = [
     globalName: "QJS",
     target: [...browsers],
     tsconfig: "./tsconfig.iife.json",
-    esbuildOptions(options, context) {
+    sourcemap: false,
+    dts: false,
+    esbuildOptions(options, _context) {
       options.conditions ??= []
       options.conditions.push("iife")
-      options.alias ??= {}
-      // options.alias["./src/variants.ts"] = "./src/variants.iife.ts"
-      options.alias["quickjs-emscripten/variants"] = "./src/variants.iife.ts"
-      console.log(context, options.conditions)
     },
   }),
 ]
