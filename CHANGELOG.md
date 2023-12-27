@@ -36,13 +36,12 @@ Or in older browsers, you can reference the IIFE build:
 <script
   src="https://cdn.jsdelivr.net/npm/quickjs-emscripten@0.25.0/dist/index.global.js"
   type="text/javascript"
->
-  <!-- Then use in a script tag -->
-  <script type="text/javascript">
-    const QuickJS = window.QuickJS
-    getQuickJS().then(QuickJS => {
-      console.log(QuickJS.evalCode('1+1'))
-    })
+></script>
+<!-- Then use in a script tag -->
+<script type="text/javascript">
+  QJS.getQuickJS().then(QuickJS => {
+    console.log(QuickJS.evalCode('1+1'))
+  })
 </script>
 ```
 

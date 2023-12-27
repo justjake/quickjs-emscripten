@@ -96,8 +96,8 @@ export function memoizePromiseFactory<T>(fn: () => Promise<T>): () => Promise<T>
 }
 
 function smartUnwrap<T extends object>(val: T | { default: T } | { default: { default: T } }): T {
-  if (`default` in val) {
-    if (`default` in val.default) {
+  if (val && `default` in val) {
+    if (val.default && `default` in val.default) {
       return val.default.default
     }
     return val.default

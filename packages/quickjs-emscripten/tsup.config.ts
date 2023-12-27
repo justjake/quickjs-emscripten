@@ -9,4 +9,5 @@ export default extendConfig({
     "#variants/release-asyncify",
   ],
   format: ["cjs", "esm", "iife"],
+  globalName: "QJS",
 })
