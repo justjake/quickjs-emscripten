@@ -18,10 +18,9 @@
 
 > **`const`** **default**: [`QuickJSAsyncVariant`](../../quickjs-emscripten/interfaces/QuickJSAsyncVariant.md)
 
-This export is a variant of the quickjs WASM library:
 ### @jitl/quickjs-singlefile-browser-release-asyncify
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-asyncify/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-asyncify/README.md) |
 Variant with the WASM data embedded into a browser ESModule.
 
 | Variable            |    Setting                     |    Description    |
@@ -33,7 +32,7 @@ Variant with the WASM data embedded into a browser ESModule.
 
 #### Source
 
-[index.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-singlefile-browser-release-asyncify/src/index.ts#L18)
+[index.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-singlefile-browser-release-asyncify/src/index.ts#L17)
 
 ***
 

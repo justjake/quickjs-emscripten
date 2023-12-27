@@ -95,7 +95,7 @@ const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
 
 ### @jitl/quickjs-wasmfile-debug-sync
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-sync/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-sync/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                   |
@@ -107,7 +107,7 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 
 ### @jitl/quickjs-wasmfile-debug-asyncify
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-asyncify/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-asyncify/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -119,7 +119,7 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 
 ### @jitl/quickjs-wasmfile-release-sync
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-sync/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-sync/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                  |
@@ -131,7 +131,7 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 
 ### @jitl/quickjs-wasmfile-release-asyncify
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-asyncify/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-asyncify/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -143,7 +143,7 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 
 ### @jitl/quickjs-singlefile-cjs-debug-sync
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-sync/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-sync/README.md) |
 Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                                   |
@@ -155,7 +155,7 @@ Variant with the WASM data embedded into a universal (Node and Browser compatibl
 
 ### @jitl/quickjs-singlefile-cjs-debug-asyncify
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-asyncify/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-asyncify/README.md) |
 Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -167,7 +167,7 @@ Variant with the WASM data embedded into a universal (Node and Browser compatibl
 
 ### @jitl/quickjs-singlefile-cjs-release-sync
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-sync/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-sync/README.md) |
 Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                    |
@@ -179,7 +179,7 @@ Variant with the WASM data embedded into a universal (Node and Browser compatibl
 
 ### @jitl/quickjs-singlefile-cjs-release-asyncify
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-asyncify/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-asyncify/README.md) |
 Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -191,7 +191,7 @@ Variant with the WASM data embedded into a universal (Node and Browser compatibl
 
 ### @jitl/quickjs-singlefile-mjs-debug-sync
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-sync/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-sync/README.md) |
 Variant with the WASM data embedded into a NodeJS ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                   |
@@ -203,7 +203,7 @@ Variant with the WASM data embedded into a NodeJS ESModule.
 
 ### @jitl/quickjs-singlefile-mjs-debug-asyncify
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-asyncify/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-debug-asyncify/README.md) |
 Variant with the WASM data embedded into a NodeJS ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -215,7 +215,7 @@ Variant with the WASM data embedded into a NodeJS ESModule.
 
 ### @jitl/quickjs-singlefile-mjs-release-sync
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-sync/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-sync/README.md) |
 Variant with the WASM data embedded into a NodeJS ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                    |
@@ -227,7 +227,7 @@ Variant with the WASM data embedded into a NodeJS ESModule.
 
 ### @jitl/quickjs-singlefile-mjs-release-asyncify
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-asyncify/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-mjs-release-asyncify/README.md) |
 Variant with the WASM data embedded into a NodeJS ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -239,7 +239,7 @@ Variant with the WASM data embedded into a NodeJS ESModule.
 
 ### @jitl/quickjs-singlefile-browser-debug-sync
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-sync/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-sync/README.md) |
 Variant with the WASM data embedded into a browser ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                   |
@@ -251,7 +251,7 @@ Variant with the WASM data embedded into a browser ESModule.
 
 ### @jitl/quickjs-singlefile-browser-debug-asyncify
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-asyncify/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-debug-asyncify/README.md) |
 Variant with the WASM data embedded into a browser ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -263,7 +263,7 @@ Variant with the WASM data embedded into a browser ESModule.
 
 ### @jitl/quickjs-singlefile-browser-release-sync
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-sync/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-sync/README.md) |
 Variant with the WASM data embedded into a browser ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                    |
@@ -275,7 +275,7 @@ Variant with the WASM data embedded into a browser ESModule.
 
 ### @jitl/quickjs-singlefile-browser-release-asyncify
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-asyncify/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-asyncify/README.md) |
 Variant with the WASM data embedded into a browser ESModule.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |

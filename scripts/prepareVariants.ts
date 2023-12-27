@@ -487,7 +487,7 @@ function renderReadmeSummary(
   const hasExports = Object.keys(variant.exports).join(" ")
   return `### ${packageJson.name}
 
-[Docs](${packageURL})
+[Docs](${packageURL}) | 
 ${variant.description}
 
 | Variable            |    Setting                     |    Description    |
@@ -665,7 +665,6 @@ function renderIndexTs(
 import type { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
 
 /**
- * This export is a variant of the quickjs WASM library:
 ${docComment}
  */
 const variant: ${variantTypeName} = {

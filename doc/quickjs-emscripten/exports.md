@@ -655,10 +655,9 @@ quickjs-emscripten-core/dist/index.d.ts:46
 
 > **`const`** **DEBUG\_ASYNC**: [`QuickJSAsyncVariant`](interfaces/QuickJSAsyncVariant.md)
 
-This export is a variant of the quickjs WASM library:
 ### @jitl/quickjs-wasmfile-debug-asyncify
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-asyncify/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-asyncify/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            |    Setting                     |    Description    |
@@ -670,7 +669,7 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 
 #### Source
 
-variant-quickjs-wasmfile-debug-asyncify/dist/index.d.ts:18
+variant-quickjs-wasmfile-debug-asyncify/dist/index.d.ts:17
 
 ***
 
@@ -678,10 +677,9 @@ variant-quickjs-wasmfile-debug-asyncify/dist/index.d.ts:18
 
 > **`const`** **DEBUG\_SYNC**: [`QuickJSSyncVariant`](interfaces/QuickJSSyncVariant.md)
 
-This export is a variant of the quickjs WASM library:
 ### @jitl/quickjs-wasmfile-debug-sync
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-sync/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-sync/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            |    Setting                     |    Description    |
@@ -693,7 +691,7 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 
 #### Source
 
-variant-quickjs-wasmfile-debug-sync/dist/index.d.ts:18
+variant-quickjs-wasmfile-debug-sync/dist/index.d.ts:17
 
 ***
 
@@ -769,10 +767,9 @@ quickjs-ffi-types/dist/index.d.ts:89
 
 > **`const`** **RELEASE\_ASYNC**: [`QuickJSAsyncVariant`](interfaces/QuickJSAsyncVariant.md)
 
-This export is a variant of the quickjs WASM library:
 ### @jitl/quickjs-wasmfile-release-asyncify
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-asyncify/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-asyncify/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            |    Setting                     |    Description    |
@@ -784,7 +781,7 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 
 #### Source
 
-variant-quickjs-wasmfile-release-asyncify/dist/index.d.ts:18
+variant-quickjs-wasmfile-release-asyncify/dist/index.d.ts:17
 
 ***
 
@@ -792,10 +789,9 @@ variant-quickjs-wasmfile-release-asyncify/dist/index.d.ts:18
 
 > **`const`** **RELEASE\_SYNC**: [`QuickJSSyncVariant`](interfaces/QuickJSSyncVariant.md)
 
-This export is a variant of the quickjs WASM library:
 ### @jitl/quickjs-wasmfile-release-sync
 
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-sync/README.md)
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-sync/README.md) |
 Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            |    Setting                     |    Description    |
@@ -807,7 +803,7 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 
 #### Source
 
-variant-quickjs-wasmfile-release-sync/dist/index.d.ts:18
+variant-quickjs-wasmfile-release-sync/dist/index.d.ts:17
 
 ## Functions
 

@@ -1,10 +1,9 @@
 import type { QuickJSSyncVariant } from "@jitl/quickjs-ffi-types"
 
 /**
- * This export is a variant of the quickjs WASM library:
  * ### @jitl/quickjs-singlefile-browser-release-sync
  *
- * [Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-sync/README.md)
+ * [Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-browser-release-sync/README.md) |
  * Variant with the WASM data embedded into a browser ESModule.
  *
  * | Variable            |    Setting                     |    Description    |
