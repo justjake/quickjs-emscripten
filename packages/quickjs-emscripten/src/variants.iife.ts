@@ -8,9 +8,7 @@ import {
   newQuickJSWASMModuleFromVariant,
   newQuickJSAsyncWASMModuleFromVariant,
 } from "quickjs-emscripten-core"
-import DEBUG_SYNC from "@jitl/quickjs-singlefile-cjs-debug-sync"
 import RELEASE_SYNC from "@jitl/quickjs-singlefile-cjs-release-sync"
-import DEBUG_ASYNC from "@jitl/quickjs-singlefile-cjs-debug-asyncify"
 import RELEASE_ASYNC from "@jitl/quickjs-singlefile-cjs-release-asyncify"
 
 /**
@@ -52,4 +50,4 @@ export async function newQuickJSAsyncWASMModule(
   return newQuickJSAsyncWASMModuleFromVariant(variant)
 }
 
-export { DEBUG_SYNC, RELEASE_SYNC, DEBUG_ASYNC, RELEASE_ASYNC }
+export { RELEASE_SYNC, RELEASE_SYNC as DEBUG_SYNC, RELEASE_ASYNC, RELEASE_ASYNC as DEBUG_ASYNC }

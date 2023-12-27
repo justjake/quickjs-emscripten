@@ -59,8 +59,6 @@
     "quickjs-emscripten-core": "workspace:*"
   },
   "devDependencies": {
-    "@jitl/quickjs-singlefile-cjs-debug-asyncify": "workspace:*",
-    "@jitl/quickjs-singlefile-cjs-debug-sync": "workspace:*",
     "@jitl/quickjs-singlefile-cjs-release-asyncify": "workspace:*",
     "@jitl/quickjs-singlefile-cjs-release-sync": "workspace:*"
   },
