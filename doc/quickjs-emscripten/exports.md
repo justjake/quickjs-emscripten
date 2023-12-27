@@ -817,11 +817,11 @@ Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
 ##### importFFI
 
-> **`readonly`** **importFFI**: () => `Promise`\<(`module`) => [`QuickJSAsyncFFI`](interfaces/QuickJSAsyncFFI.md) \| *typeof* `QuickJSAsyncFFI`\>
+> **`readonly`** **importFFI**: () => `Promise`\<*typeof* `QuickJSAsyncFFI` \| (`module`) => [`QuickJSAsyncFFI`](interfaces/QuickJSAsyncFFI.md)\>
 
 ###### Returns
 
-`Promise`\<(`module`) => [`QuickJSAsyncFFI`](interfaces/QuickJSAsyncFFI.md) \| *typeof* `QuickJSAsyncFFI`\>
+`Promise`\<*typeof* `QuickJSAsyncFFI` \| (`module`) => [`QuickJSAsyncFFI`](interfaces/QuickJSAsyncFFI.md)\>
 
 ##### importModuleLoader
 
