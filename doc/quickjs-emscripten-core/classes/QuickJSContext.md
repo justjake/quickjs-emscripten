@@ -332,7 +332,7 @@ socket.on("data", chunk => {
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1005](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1005)
+[packages/quickjs-emscripten-core/src/context.ts:1006](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1006)
 
 ***
 
@@ -443,7 +443,7 @@ socket.write(dataLifetime?.value)
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:988](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L988)
+[packages/quickjs-emscripten-core/src/context.ts:989](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L989)
 
 ***
 

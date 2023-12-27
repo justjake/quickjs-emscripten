@@ -48,6 +48,8 @@ const QuickJS = await newQuickJSWASMModuleFromVariant(releaseVariant)
   - [@jitl/quickjs-singlefile-browser-debug-asyncify](README.md#jitlquickjs-singlefile-browser-debug-asyncify)
   - [@jitl/quickjs-singlefile-browser-release-sync](README.md#jitlquickjs-singlefile-browser-release-sync)
   - [@jitl/quickjs-singlefile-browser-release-asyncify](README.md#jitlquickjs-singlefile-browser-release-asyncify)
+  - [@jitl/quickjs-purejs-mjs-release-sync](README.md#jitlquickjs-purejs-mjs-release-sync)
+  - [@jitl/quickjs-ng-purejs-mjs-release-sync](README.md#jitlquickjs-ng-purejs-mjs-release-sync)
 
 ## What's a variant?
 
@@ -356,6 +358,32 @@ Variant with the WASM data embedded into a browser ESModule.
 | syncMode            | asyncify   | Build run through the ASYNCIFY WebAssembly transform. This imposes substantial size (2x the size of sync) and speed penalties (40% the speed of sync). In return, allows synchronous calls from the QuickJS WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! The [QuickJSAsyncRuntime](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncRuntime.md) and [QuickJSAsyncContext](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncContext.md) classes expose the ASYNCIFY-specific APIs. |
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | exports             | browser    | Has these package.json export conditions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+
+### @jitl/quickjs-purejs-mjs-release-sync
+
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-purejs-mjs-release-sync/README.md) |
+Compiled to pure JS, no WebAssembly required. Very slow.
+
+| Variable            | Setting | Description                                                                                                                                     |
+| ------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| library             | quickjs | The original [bellard/quickjs](https://github.com/bellard/quickjs) library.                                                                     |
+| releaseMode         | release | Optimized for performance; use when building/deploying your application.                                                                        |
+| syncMode            | sync    | The default, normal build. Note that both variants support regular async functions.                                                             |
+| emscriptenInclusion | purejs  | The C library code is compiled directly to JS. This is the slowest possible option, and is intended only for humorous (quickjs-in-quickjs) use. |
+| exports             | import  | Has these package.json export conditions                                                                                                        |
+
+### @jitl/quickjs-ng-purejs-mjs-release-sync
+
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-ng-purejs-mjs-release-sync/README.md) |
+Compiled to pure JS, no WebAssembly required. Very slow.
+
+| Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                  |
+| ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| library             | quickjs-ng | [quickjs-ng/quickjs](https://github.com/quickjs-ng/quickjs) is a newer fork of quickjs under active community development. It implements more EcmaScript features, and drop some non-standard QuickJS only features like BigFloat. May become the default library in a future version of quickjs-emscripten. |
+| releaseMode         | release    | Optimized for performance; use when building/deploying your application.                                                                                                                                                                                                                                     |
+| syncMode            | sync       | The default, normal build. Note that both variants support regular async functions.                                                                                                                                                                                                                          |
+| emscriptenInclusion | purejs     | The C library code is compiled directly to JS. This is the slowest possible option, and is intended only for humorous (quickjs-in-quickjs) use.                                                                                                                                                              |
+| exports             | import     | Has these package.json export conditions                                                                                                                                                                                                                                                                     |
 
 ***
 
