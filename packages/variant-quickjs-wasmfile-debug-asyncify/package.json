@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-wasmfile-debug-asyncify",
-  "version": "0.25.0-rc.5",
+  "version": "0.25.0-rc.6",
   "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.",
   "sideEffects": false,
   "repository": {
