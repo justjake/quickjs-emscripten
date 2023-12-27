@@ -53,7 +53,6 @@
   - [EvalFlags](exports.md#evalflags)
 - [Functions](exports.md#functions)
   - [assertSync()](exports.md#assertsync)
-  - [debugLog()](exports.md#debuglog)
   - [isFail()](exports.md#isfail)
   - [isSuccess()](exports.md#issuccess)
   - [memoizePromiseFactory()](exports.md#memoizepromisefactory)
@@ -736,44 +735,6 @@ packages/quickjs-ffi-types/dist/index.d.ts:89
 #### Source
 
 packages/quickjs-ffi-types/dist/index.d.ts:85
-
-***
-
-### debugLog()
-
-> **debugLog**(`message`?, ...`optionalParams`?): `void`
-
-Prints to `stdout` with newline. Multiple arguments can be passed, with the
-first used as the primary message and all additional used as substitution
-values similar to [`printf(3)`](http://man7.org/linux/man-pages/man3/printf.3.html) (the arguments are all passed to `util.format()`).
-
-```js
-const count = 5;
-console.log('count: %d', count);
-// Prints: count: 5, to stdout
-console.log('count:', count);
-// Prints: count: 5, to stdout
-```
-
-See `util.format()` for more information.
-
-#### Parameters
-
-• **message?**: `any`
-
-• ...**optionalParams?**: `any`[]
-
-#### Returns
-
-`void`
-
-#### Since
-
-v0.1.100
-
-#### Source
-
-node\_modules/@types/node/console.d.ts:221
 
 ***
 

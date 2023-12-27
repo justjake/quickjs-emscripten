@@ -61,7 +61,6 @@
   - [[@jitl/quickjs-wasmfile-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-sync/README.md)](exports.md#jitlquickjs-wasmfile-release-synchttpsgithubcomjustjakequickjs-emscriptenblobmaindocjitlquickjs-wasmfile-release-syncreadmemd)
 - [Functions](exports.md#functions)
   - [assertSync()](exports.md#assertsync)
-  - [debugLog()](exports.md#debuglog)
   - [getQuickJS()](exports.md#getquickjs)
   - [getQuickJSSync()](exports.md#getquickjssync)
   - [isFail()](exports.md#isfail)
@@ -838,26 +837,6 @@ variant-quickjs-wasmfile-release-sync/dist/index.d.ts:17
 #### Source
 
 quickjs-ffi-types/dist/index.d.ts:85
-
-***
-
-### debugLog()
-
-> **debugLog**(`message`?, ...`optionalParams`?): `void`
-
-#### Parameters
-
-• **message?**: `any`
-
-• ...**optionalParams?**: `any`[]
-
-#### Returns
-
-`void`
-
-#### Source
-
-quickjs-emscripten-core/dist/index.d.ts:1389
 
 ***
 
