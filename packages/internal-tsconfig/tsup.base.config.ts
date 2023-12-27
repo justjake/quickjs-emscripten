@@ -17,5 +17,5 @@ export function extendConfig(options: Options = {}) {
       ...base,
       ...options,
     }
-  })
+  }) as (options: Options) => Options
 }

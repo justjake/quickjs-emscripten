@@ -1,7 +1,7 @@
 {
   "name": "@jitl/quickjs-singlefile-cjs-release-asyncify",
-  "version": "0.25.0-rc.9",
-  "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS CommonJS module.",
+  "version": "0.25.0-rc.10",
+  "description": "Variant of quickjs library: Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.",
   "sideEffects": false,
   "repository": {
     "type": "git",
@@ -29,18 +29,22 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./package.json": "./package.json",
     "./ffi": {
       "types": "./dist/ffi.d.ts",
       "import": "./dist/ffi.js",
-      "require": "./dist/ffi.js"
+      "require": "./dist/ffi.js",
+      "default": "./dist/ffi.js"
     },
     "./emscripten-module": {
       "types": "./dist/emscripten-module.d.ts",
+      "iife": "./dist/emscripten-module.cjs",
       "import": "./dist/emscripten-module.cjs",
-      "require": "./dist/emscripten-module.cjs"
+      "require": "./dist/emscripten-module.cjs",
+      "default": "./dist/emscripten-module.cjs"
     }
   },
   "dependencies": {

@@ -99,7 +99,7 @@ const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
 
 ### [@jitl/quickjs-wasmfile-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-sync/README.md)
 
-Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                   |
 | ------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -110,7 +110,7 @@ Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
 ### [@jitl/quickjs-wasmfile-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-asyncify/README.md)
 
-Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -121,7 +121,7 @@ Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
 ### [@jitl/quickjs-wasmfile-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-sync/README.md)
 
-Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                  |
 | ------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -132,7 +132,7 @@ Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
 ### [@jitl/quickjs-wasmfile-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-asyncify/README.md)
 
-Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            | Setting                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -143,7 +143,7 @@ Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 
 ### [@jitl/quickjs-singlefile-cjs-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-sync/README.md)
 
-Variant with the WASM data embedded into a NodeJS CommonJS module.
+Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                                   |
 | ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -154,7 +154,7 @@ Variant with the WASM data embedded into a NodeJS CommonJS module.
 
 ### [@jitl/quickjs-singlefile-cjs-debug-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-debug-asyncify/README.md)
 
-Variant with the WASM data embedded into a NodeJS CommonJS module.
+Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -165,7 +165,7 @@ Variant with the WASM data embedded into a NodeJS CommonJS module.
 
 ### [@jitl/quickjs-singlefile-cjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-sync/README.md)
 
-Variant with the WASM data embedded into a NodeJS CommonJS module.
+Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                    |
 | ------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -176,7 +176,7 @@ Variant with the WASM data embedded into a NodeJS CommonJS module.
 
 ### [@jitl/quickjs-singlefile-cjs-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-asyncify/README.md)
 
-Variant with the WASM data embedded into a NodeJS CommonJS module.
+Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 | Variable            | Setting    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

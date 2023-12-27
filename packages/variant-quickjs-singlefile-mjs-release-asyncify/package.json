@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-singlefile-mjs-release-asyncify",
-  "version": "0.25.0-rc.9",
+  "version": "0.25.0-rc.10",
   "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
   "sideEffects": false,
   "repository": {
@@ -29,12 +29,14 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json",
     "./ffi": {
       "types": "./dist/ffi.d.ts",
-      "import": "./dist/ffi.mjs"
+      "import": "./dist/ffi.mjs",
+      "default": "./dist/ffi.mjs"
     },
     "./emscripten-module": {
       "types": "./dist/emscripten-module.d.ts",

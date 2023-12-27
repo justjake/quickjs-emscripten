@@ -4,7 +4,7 @@ import type { QuickJSSyncVariant } from "@jitl/quickjs-ffi-types"
  * This export is a variant of the quickjs WASM library:
  * ### [@jitl/quickjs-singlefile-cjs-release-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-singlefile-cjs-release-sync/README.md)
  *
- * Variant with the WASM data embedded into a NodeJS CommonJS module.
+ * Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
  *
  * | Variable            |    Setting                     |    Description    |
  * | --                  | --                             | --                |

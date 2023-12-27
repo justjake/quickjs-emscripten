@@ -4,7 +4,7 @@
 
 # @jitl/quickjs-singlefile-cjs-release-asyncify
 
-Variant with the WASM data embedded into a NodeJS CommonJS module.
+Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.
 
 This generated package is part of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten).
 It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
@@ -57,11 +57,11 @@ Full variant JSON description:
   "library": "quickjs",
   "releaseMode": "release",
   "syncMode": "asyncify",
-  "description": "Variant with the WASM data embedded into a NodeJS CommonJS module.",
+  "description": "Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.",
   "emscriptenInclusion": "singlefile",
   "exports": {
     "require": {
-      "emscriptenEnvironment": ["node"]
+      "emscriptenEnvironment": ["web", "worker", "node"]
     }
   }
 }

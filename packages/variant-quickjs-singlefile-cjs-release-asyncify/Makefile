@@ -62,7 +62,6 @@ CFLAGS_MJS+=-s EXPORT_ES6=1
 CFLAGS_BROWSER+=-s EXPORT_ES6=1
 
 # VARIANT
-VARIANT={"library":"quickjs","releaseMode":"release","syncMode":"asyncify","description":"Variant with the WASM data embedded into a NodeJS CommonJS module.","emscriptenInclusion":"singlefile","exports":{"require":{"emscriptenEnvironment":["node"]}}}
 SYNC=ASYNCIFY
 CFLAGS_WASM_BROWSER=$(CFLAGS_WASM)
 
@@ -79,7 +78,7 @@ CFLAGS_WASM+=-flto
 CFLAGS_WASM+=--closure 1
 CFLAGS_WASM+=-s FILESYSTEM=0
 CFLAGS_WASM+=-s SINGLE_FILE=1
-CFLAGS_CJS+=-s ENVIRONMENT=node
+CFLAGS_CJS+=-s ENVIRONMENT=web,worker,node
 
 
 

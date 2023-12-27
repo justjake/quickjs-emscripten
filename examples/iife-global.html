@@ -8,13 +8,10 @@
   <body>
     Open your console
   </body>
-  <script
-    src="https://cdn.jsdelivr.net/npm/quickjs-emscripten@0.25.0-rc.8/dist/index.global.js"
-    type="text/javascript"
-  ></script>
+  <script src="../packages/quickjs-emscripten/dist/index.global.js" type="text/javascript"></script>
   <!-- Then use in a script tag -->
   <script type="text/javascript">
-    window.getQuickJS().then((QuickJS) => {
+    QJS.getQuickJS().then((QuickJS) => {
       console.log(QuickJS.evalCode("1+1"))
     })
   </script>

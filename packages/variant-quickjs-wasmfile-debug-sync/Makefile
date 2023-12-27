@@ -62,7 +62,6 @@ CFLAGS_MJS+=-s EXPORT_ES6=1
 CFLAGS_BROWSER+=-s EXPORT_ES6=1
 
 # VARIANT
-VARIANT={"library":"quickjs","releaseMode":"debug","syncMode":"sync","description":"Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.","emscriptenInclusion":"wasm","exports":{"require":{"emscriptenEnvironment":["node"]},"import":{"emscriptenEnvironment":["node"]},"browser":{"emscriptenEnvironment":["web","worker"]}}}
 SYNC=SYNC
 CFLAGS_WASM_BROWSER=$(CFLAGS_WASM)
 

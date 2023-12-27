@@ -1,7 +1,7 @@
 {
   "name": "@jitl/quickjs-wasmfile-debug-asyncify",
-  "version": "0.25.0-rc.9",
-  "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.",
+  "version": "0.25.0-rc.10",
+  "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
   "sideEffects": false,
   "repository": {
     "type": "git",
@@ -31,20 +31,24 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./package.json": "./package.json",
     "./ffi": {
       "types": "./dist/ffi.d.ts",
       "import": "./dist/ffi.mjs",
-      "require": "./dist/ffi.js"
+      "require": "./dist/ffi.js",
+      "default": "./dist/ffi.js"
     },
     "./wasm": "./dist/emscripten-module.wasm",
     "./emscripten-module": {
       "types": "./dist/emscripten-module.browser.d.ts",
+      "iife": "./dist/emscripten-module.cjs",
       "browser": "./dist/emscripten-module.browser.mjs",
       "import": "./dist/emscripten-module.mjs",
-      "require": "./dist/emscripten-module.cjs"
+      "require": "./dist/emscripten-module.cjs",
+      "default": "./dist/emscripten-module.cjs"
     }
   },
   "dependencies": {

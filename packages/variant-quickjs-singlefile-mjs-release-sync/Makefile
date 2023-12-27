@@ -62,7 +62,6 @@ CFLAGS_MJS+=-s EXPORT_ES6=1
 CFLAGS_BROWSER+=-s EXPORT_ES6=1
 
 # VARIANT
-VARIANT={"library":"quickjs","releaseMode":"release","syncMode":"sync","description":"Variant with the WASM data embedded into a NodeJS ESModule.","emscriptenInclusion":"singlefile","exports":{"import":{"emscriptenEnvironment":["node"]}}}
 SYNC=SYNC
 CFLAGS_WASM_BROWSER=$(CFLAGS_WASM)
 

@@ -21,7 +21,7 @@
 This export is a variant of the quickjs WASM library:
 ### [@jitl/quickjs-wasmfile-release-asyncify](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-asyncify/README.md)
 
-Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 | Variable            |    Setting                     |    Description    |
 | --                  | --                             | --                |

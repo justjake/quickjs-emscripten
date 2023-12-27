@@ -84,15 +84,21 @@ const buildMatrix = {
 
 const targets = {
   wasmfile: makeTarget({
-    description: `Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.`,
+    description: `Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.`,
     emscriptenInclusion: EmscriptenInclusion.Separate,
     exports: SEPARATE_FILE_INCLUSION,
   }),
   "singlefile-cjs": makeTarget({
-    description: `Variant with the WASM data embedded into a NodeJS CommonJS module.`,
+    description: `Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.`,
     emscriptenInclusion: EmscriptenInclusion.SingleFile,
     exports: {
-      require: SEPARATE_FILE_INCLUSION.require,
+      require: {
+        emscriptenEnvironment: [
+          EmscriptenEnvironment.web,
+          EmscriptenEnvironment.worker,
+          EmscriptenEnvironment.node,
+        ],
+      },
     },
   }),
   "singlefile-mjs": makeTarget({
@@ -328,12 +334,14 @@ async function main() {
             types: indexExports.types,
             import: indexExports.module ?? indexExports.main,
             require: js ? "./dist/index.js" : undefined,
+            default: indexExports.main,
           },
           "./package.json": "./package.json",
           "./ffi": {
             types: "./dist/ffi.d.ts",
             import: mjs ? "./dist/ffi.mjs" : "./dist/ffi.js",
             require: js ? "./dist/ffi.js" : undefined,
+            default: js ? "./dist/ffi.js" : "./dist/ffi.mjs",
           },
           "./wasm":
             variant.emscriptenInclusion === EmscriptenInclusion.Separate
@@ -343,6 +351,7 @@ async function main() {
             types: variant.exports.browser
               ? "./dist/emscripten-module.browser.d.ts"
               : "./dist/emscripten-module.d.ts",
+            iife: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
             browser: variant.exports.browser ? "./dist/emscripten-module.browser.mjs" : undefined,
             import: variant.exports.import
               ? "./dist/emscripten-module.mjs"
@@ -350,6 +359,7 @@ async function main() {
                 ? "./dist/emscripten-module.browser.mjs"
                 : "./dist/emscripten-module.cjs",
             require: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
+            default: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
           },
         },
         dependencies: {
@@ -603,7 +613,6 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
     ),
   )
 
-  template.replace("VARIANT=REPLACE_THIS", `VARIANT=${JSON.stringify(variant)}`)
   template.replace("SYNC=REPLACE_THIS", `SYNC=${variant.syncMode.toUpperCase()}`)
 
   const targets: string[] = []

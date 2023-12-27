@@ -1,6 +1,6 @@
 # @jitl/quickjs-wasmfile-debug-asyncify
 
-Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
 
 This generated package is part of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten).
 It contains a variant of the quickjs WASM library, and can be used with quickjs-emscripten-core.
@@ -46,7 +46,7 @@ Full variant JSON description:
   "library": "quickjs",
   "releaseMode": "debug",
   "syncMode": "asyncify",
-  "description": "Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.",
+  "description": "Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
   "emscriptenInclusion": "wasm",
   "exports": {
     "require": {
