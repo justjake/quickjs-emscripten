@@ -1,7 +1,7 @@
 {
   "name": "@jitl/tsconfig",
   "private": true,
-  "version": "0.25.0",
+  "version": "0.25.1",
   "scripts": {
     "build": "yarn build:tsc && echo built $npm_package_json && ls -l",
     "build:tsc": "npx tsc --project tsconfig.tsup.json",
