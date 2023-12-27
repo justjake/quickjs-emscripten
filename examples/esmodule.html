@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IIFE Global example</title>
+  </head>
+  <body>
+    Open your console
+  </body>
+
+  <!-- Import from a ES Module CDN -->
+  <script type="module">
+    import { getQuickJS } from "https://esm.run/quickjs-emscripten@0.25.0-rc.8"
+    const QuickJS = await getQuickJS()
+    console.log(QuickJS.evalCode("1+1"))
+  </script>
+</html>
