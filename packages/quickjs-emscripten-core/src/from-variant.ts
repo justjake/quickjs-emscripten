@@ -1,7 +1,6 @@
 import type { QuickJSSyncVariant, QuickJSAsyncVariant } from "@jitl/quickjs-ffi-types"
 import type { QuickJSWASMModule } from "./module.js"
 import type { QuickJSAsyncWASMModule } from "./module-asyncify.js"
-import { unwrapTypescript } from "./esmHelpers.js"
 
 // Otherwise we have build errors?
 export { QuickJSSyncVariant, QuickJSAsyncVariant }
@@ -37,7 +36,7 @@ export async function newQuickJSWASMModuleFromVariant(
   const [wasmModuleLoader, QuickJSFFI, { QuickJSWASMModule }] = await Promise.all([
     variant.importModuleLoader().then(smartUnwrap),
     variant.importFFI(),
-    import("./module.js").then(unwrapTypescript),
+    import("./module.js").then(smartUnwrap),
   ])
   const wasmModule = await wasmModuleLoader()
   wasmModule.type = "sync"
@@ -75,7 +74,7 @@ export async function newQuickJSAsyncWASMModuleFromVariant(
   const [wasmModuleLoader, QuickJSAsyncFFI, { QuickJSAsyncWASMModule }] = await Promise.all([
     variant.importModuleLoader().then(smartUnwrap),
     variant.importFFI(),
-    import("./module-asyncify.js").then(unwrapTypescript),
+    import("./module-asyncify.js").then(smartUnwrap),
   ])
   const wasmModule = await wasmModuleLoader()
   wasmModule.type = "async"

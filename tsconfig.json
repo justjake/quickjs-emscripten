@@ -3,5 +3,5 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["scripts/**/*", "packages/**/*"]
+  "include": ["scripts/**/*", "packages/*/tsup*"]
 }
