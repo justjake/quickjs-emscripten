@@ -553,7 +553,7 @@ See the [documentation of quickjs-emscripten-core][core] for more details.
 
 `quickjs-emscripten` and related packages should work in any environment that supports ES2020.
 
-- NodeJS: requires v14.6.0 or later. Tested with node@18.
+- NodeJS: requires v16.0.0 or later for WebAssembly compatibility. Tested with node@18.
 - We estimate support for the following browsers:
   - Chrome 63+
   - Edge 79+

@@ -50,6 +50,7 @@
 #include "../quickjs/quickjs.h"
 
 #define PKG "quickjs-emscripten: "
+#define LOG_LEN 500
 
 #ifdef QTS_DEBUG_MODE
 #define QTS_DEBUG(msg) qts_log(msg);
@@ -314,8 +315,7 @@ void qts_free_buffer(JSRuntime *unused_rt, void *unused_opaque, void *ptr) { fre
 
 JSValue *QTS_NewArrayBuffer(JSContext *ctx, JSVoid *buffer, size_t length) {
   return jsvalue_to_heap(
-    JS_NewArrayBuffer(ctx, (uint8_t*)buffer, length, qts_free_buffer, NULL, false)
-  );
+      JS_NewArrayBuffer(ctx, (uint8_t *)buffer, length, qts_free_buffer, NULL, false));
 }
 
 JSValue *QTS_NewFloat64(JSContext *ctx, double num) {
@@ -447,7 +447,7 @@ MaybeAsync(JSValue *) QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute,
   }
 #ifdef QTS_DEBUG_MODE
   char msg[500];
-  sprintf(msg, "QTS_ExecutePendingJob(executed: %d, pctx: %p, lastJobExecuted: %p)", executed, pctx, *lastJobContext);
+  snprintf(msg, 500, "QTS_ExecutePendingJob(executed: %d, pctx: %p, lastJobExecuted: %p)", executed, pctx, *lastJobContext);
   QTS_DEBUG(msg)
 #endif
   return jsvalue_to_heap(JS_NewFloat64(pctx, executed));
@@ -676,7 +676,7 @@ JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSVal
 JSValue *QTS_NewFunction(JSContext *ctx, uint32_t func_id, const char *name) {
 #ifdef QTS_DEBUG_MODE
   char msg[500];
-  sprintf(msg, "new_function(name: %s, magic: %d)", name, func_id);
+  snprintf(msg, 500, "new_function(name: %s, magic: %d)", name, func_id);
   QTS_DEBUG(msg)
 #endif
   JSValue func_obj = JS_NewCFunctionMagic(
@@ -860,8 +860,8 @@ JSValue *QTS_bjson_decode(JSContext *ctx, JSValueConst *data) {
   size_t length;
   uint8_t *buffer = JS_GetArrayBuffer(ctx, &length, *data);
   if (!buffer)
-   return jsvalue_to_heap(JS_EXCEPTION);
-  
+    return jsvalue_to_heap(JS_EXCEPTION);
+
   JSValue value = JS_ReadObject(ctx, buffer, length, 0);
   return jsvalue_to_heap(value);
 }

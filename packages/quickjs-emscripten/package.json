@@ -58,7 +58,7 @@
     "quickjs-emscripten-core": "workspace:*"
   },
   "engines": {
-    "node": ">=14.6.0"
+    "node": ">=16.0.0"
   },
   "stableVersion": "0.24.0"
 }

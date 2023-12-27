@@ -6,8 +6,8 @@
 
 import path from "node:path"
 import fs from "node:fs"
-import { writePretty, tryReadJson, PackageJson, repoRoot } from "./helpers"
-import { Context, getMatches, buildFFI } from "./generate"
+import { writePretty, tryReadJson, PackageJson } from "./scripts/helpers"
+import { Context, getMatches, buildFFI } from "./scripts/generate"
 import { TypeDocOptions } from "typedoc"
 
 const CLEAN = Boolean(process.env.CLEAN)
@@ -160,6 +160,12 @@ const SyncModeFlags = {
   ],
 }
 
+const ExportNameToModuleSystem = {
+  require: ModuleSystem.CommonJS,
+  import: ModuleSystem.ESModule,
+  browser: ModuleSystem.ESModule,
+}
+
 const ReleaseModeFlags = {
   [ReleaseMode.Release]: [`-Oz`, `-flto`, `--closure 1`, `-s FILESYSTEM=0`],
   [ReleaseMode.Debug]: [`-O0`, "-DQTS_DEBUG_MODE", `-gsource-map`, `-s ASSERTIONS=1`],
@@ -250,7 +256,7 @@ async function main() {
   const variantsJson: Record<string, FinalVariant> = {}
   const coreReadmeVariantDescriptions: string[] = []
 
-  const ffiTypesDir = path.join(repoRoot, "packages/quickjs-ffi-types")
+  const ffiTypesDir = path.join(__dirname, "packages/quickjs-ffi-types")
   await writePretty(
     path.join(ffiTypesDir, "src/ffi.ts"),
     buildFFI(
@@ -273,7 +279,7 @@ async function main() {
   for (const [targetName, variants] of Object.entries(targets)) {
     for (const variant of variants) {
       const basename = getTargetPackageSuffix(targetName, variant)
-      const dir = path.join(repoRoot, "packages", `variant-${basename}`)
+      const dir = path.join(__dirname, "packages", `variant-${basename}`)
       const dist = path.join(dir, "dist")
       const src = path.join(dir, "src")
 
@@ -290,17 +296,12 @@ async function main() {
       }
 
       const rootPackageJson: PackageJson | undefined = tryReadJson(
-        path.join(repoRoot, "package.json"),
+        path.join(__dirname, "package.json"),
       )
       const packageJsonPath = path.join(dir, "package.json")
       const existingPackageJson: PackageJson | undefined = tryReadJson(packageJsonPath)
 
       const { js, mjs } = getTsupExtensions(variant)
-      const indexExports = {
-        types: js ? "./dist/index.d.ts" : "./dist/index.d.mts",
-        main: js ? "./dist/index.js" : "./dist/index.mjs",
-        module: mjs ? "./dist/index.mjs" : undefined,
-      }
 
       const packageJson: PackageJson = {
         name: `@jitl/${basename}`,
@@ -323,15 +324,15 @@ async function main() {
           clean: "make clean",
           prepare: "yarn clean && yarn build",
         },
-        files: ["dist/**/*", "!dist/*.tsbuildinfo"],
-        types: indexExports.types,
-        main: indexExports.main,
-        module: indexExports.module,
+        files: ["dist/**/*", "!dist/ffi.ts", "!dist/index.ts", "!dist/*.tsbuildinfo"],
+        types: "./dist/index.d.ts",
+        main: js ? "./dist/index.js" : "./dist/index.mjs",
+        module: mjs ? "./dist/index.mjs" : undefined,
         browser: variant.exports.browser ? "./dist/index.mjs" : undefined,
         exports: {
           ".": {
-            types: indexExports.types,
-            import: indexExports.module ?? indexExports.main,
+            types: "./dist/index.d.ts",
+            import: mjs ? "./dist/index.mjs" : "./dist/index.js",
             require: js ? "./dist/index.js" : undefined,
           },
           "./package.json": "./package.json",
@@ -377,9 +378,9 @@ async function main() {
       const finalVariant: FinalVariant = {
         basename,
         targetName,
-        dir: path.relative(repoRoot, dir),
+        dir: path.relative(__dirname, dir),
         packageJson,
-        indexJs: path.relative(repoRoot, path.join(dist, "index.js")),
+        indexJs: path.relative(__dirname, path.join(dist, "index.js")),
         variant,
       }
 
@@ -405,10 +406,10 @@ async function main() {
   }
 
   await writePretty(
-    path.join(repoRoot, "packages/quickjs-emscripten-core/README.md"),
+    path.join(__dirname, "packages/quickjs-emscripten-core/README.md"),
     renderCoreReadme(coreReadmeVariantDescriptions),
   )
-  await writePretty(path.join(repoRoot, "variants.json"), JSON.stringify(variantsJson))
+  await writePretty(path.join(__dirname, "variants.json"), JSON.stringify(variantsJson))
 }
 
 const describeInclusion = {
@@ -421,23 +422,9 @@ const describeMode = {
   [ReleaseMode.Release]: `Optimized for performance; use when building/deploying your application.`,
 }
 
-const DOC_ROOT_URL = `https://github.com/justjake/quickjs-emscripten/blob/main/doc`
-
 const describeSyncMode = {
   [SyncMode.Sync]: `The default, normal build. Note that both variants support regular async functions.`,
-  [SyncMode.Asyncify]: `
-Build run through the ASYNCIFY WebAssembly transform.
-This imposes substantial size (2x the size of sync) and speed penalties (40% the speed of sync).
-In return, allows synchronous calls from the QuickJS WASM runtime to async functions on the host.
-The extra magic makes this variant slower than sync variants.
-Note that both variants support regular async functions.
-Only adopt ASYNCIFY if you need to!
-The [QuickJSAsyncRuntime](${DOC_ROOT_URL}/quickjs-emscripten/classes/QuickJSAsyncRuntime.md)
-and [QuickJSAsyncContext](${DOC_ROOT_URL}/quickjs-emscripten/classes/QuickJSAsyncContext.md) classes expose the ASYNCIFY-specific APIs.
-`
-    .trim()
-    .split("\n")
-    .join(" "),
+  [SyncMode.Asyncify]: `Build run through the ASYNCIFY WebAssembly transform. Larger and slower. Allows synchronous calls from the WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to!`,
 }
 
 const describeLibrary = {
@@ -459,7 +446,7 @@ const describeExport = {
 function renderCoreReadme(variantDescriptions: string[]): string {
   const template = new TemplateFile(
     fs.readFileSync(
-      path.join(repoRoot, "packages/quickjs-emscripten-core/README.template.md"),
+      path.join(__dirname, "packages/quickjs-emscripten-core/README.template.md"),
       "utf-8",
     ),
   )
@@ -498,7 +485,7 @@ function renderReadme(targetName: string, variant: BuildVariant, packageJson: Pa
   const json = (obj: any) => codeFence("json", JSON.stringify(obj, null, 2))
   const create = describeModuleFactory[variant.syncMode]
   const hasExports = Object.keys(variant.exports).join(" ")
-  const exportsList = (Object.keys(variant.exports) as Array<keyof (typeof variant)["exports"]>)
+  const exportsList = Object.keys(variant.exports)
     .map((exportName) => `- ${describeExport[exportName]}`)
     .join("\n")
 
@@ -572,7 +559,7 @@ class TemplateFile {
 
 function renderMakefile(targetName: string, variant: BuildVariant): string {
   const template = new TemplateFile(
-    fs.readFileSync(path.join(repoRoot, "templates/Variant.mk"), "utf-8"),
+    fs.readFileSync(path.join(__dirname, "templates/Variant.mk"), "utf-8"),
   )
 
   const appendEnvVars = (varname: string, flags: string[]) =>
