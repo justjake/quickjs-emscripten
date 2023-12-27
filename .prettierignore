@@ -9,5 +9,5 @@ examples/node-typescript/*.js
 build
 emsdk-cache
 .output
-packages/internal-tsconfig/*.d.ts
-packages/internal-tsconfig/*.js
+packages/internal-tsconfig/*.d.*ts
+packages/internal-tsconfig/*.*js
