@@ -19,11 +19,14 @@ module.exports = {
     "import/order": "error",
     "import/no-duplicates": "error",
     "import/no-cycle": "error",
-    "@typescript-eslint/no-unused-vars": ["error", {
-      varsIgnorePattern: "^_",
-      argsIgnorePattern: "^_",
-      destructuredArrayIgnorePattern: "^_",
-    }]
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        varsIgnorePattern: "^_",
+        argsIgnorePattern: "^_",
+        destructuredArrayIgnorePattern: "^_",
+      },
+    ],
   },
   settings: {
     // 'import/resolver': {
