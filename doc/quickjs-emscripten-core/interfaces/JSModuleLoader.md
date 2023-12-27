@@ -22,7 +22,7 @@ Load module (sync)
 
 ## Source
 
-[packages/quickjs-emscripten-core/src/types.ts:88](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L88)
+[packages/quickjs-emscripten-core/src/types.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L86)
 
 ***
 

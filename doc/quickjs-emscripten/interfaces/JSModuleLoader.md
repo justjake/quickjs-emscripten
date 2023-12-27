@@ -22,7 +22,7 @@ Load module (sync)
 
 ## Source
 
-quickjs-emscripten-core/dist/index.d.ts:392
+quickjs-emscripten-core/dist/index.d.ts:399
 
 ***
 

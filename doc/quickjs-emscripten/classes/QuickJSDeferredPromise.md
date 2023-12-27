@@ -52,7 +52,7 @@ itself, (2) the `resolve` callback, and (3) the `reject` callback.
 
 > **new QuickJSDeferredPromise**(`args`): [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
 
-Use [[QuickJSContext.newPromise]] to create a new promise instead of calling
+Use [QuickJSContext#newPromise](QuickJSContext.md#newpromise) to create a new promise instead of calling
 this constructor directly.
 
 #### Parameters
@@ -71,11 +71,9 @@ this constructor directly.
 
 [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
 
-#### Unstable
-
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:633
+quickjs-emscripten-core/dist/index.d.ts:639
 
 ## Properties
 
@@ -85,7 +83,7 @@ quickjs-emscripten-core/dist/index.d.ts:633
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:614
+quickjs-emscripten-core/dist/index.d.ts:621
 
 ***
 
@@ -103,7 +101,7 @@ quickjs-emscripten-core/dist/index.d.ts:614
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:658
+quickjs-emscripten-core/dist/index.d.ts:664
 
 ***
 
@@ -117,7 +115,7 @@ are finished with it.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:620
+quickjs-emscripten-core/dist/index.d.ts:627
 
 ***
 
@@ -127,7 +125,7 @@ quickjs-emscripten-core/dist/index.d.ts:620
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:613
+quickjs-emscripten-core/dist/index.d.ts:620
 
 ***
 
@@ -139,7 +137,7 @@ Reject [handle](QuickJSDeferredPromise.md#handle) with the given value, if any.
 Calling this method after calling [dispose](QuickJSDeferredPromise.md#dispose) is a no-op.
 
 Note that after rejecting a promise, you may need to call
-[[QuickJSContext.executePendingJobs]] to propagate the result to the promise's
+[QuickJSRuntime#executePendingJobs](QuickJSRuntime.md#executependingjobs) to propagate the result to the promise's
 callbacks.
 
 #### Parameters
@@ -152,7 +150,7 @@ callbacks.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:656
+quickjs-emscripten-core/dist/index.d.ts:662
 
 ***
 
@@ -164,7 +162,7 @@ Resolve [handle](QuickJSDeferredPromise.md#handle) with the given value, if any.
 Calling this method after calling [dispose](QuickJSDeferredPromise.md#dispose) is a no-op.
 
 Note that after resolving a promise, you may need to call
-[[QuickJSContext.executePendingJobs]] to propagate the result to the promise's
+[QuickJSRuntime#executePendingJobs](QuickJSRuntime.md#executependingjobs) to propagate the result to the promise's
 callbacks.
 
 #### Parameters
@@ -177,7 +175,7 @@ callbacks.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:647
+quickjs-emscripten-core/dist/index.d.ts:653
 
 ***
 
@@ -189,7 +187,7 @@ A native promise that will resolve once this deferred is settled.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:624
+quickjs-emscripten-core/dist/index.d.ts:631
 
 ## Accessors
 
@@ -207,7 +205,7 @@ false after the object has been [dispose](QuickJSDeferredPromise.md#dispose)d
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:657
+quickjs-emscripten-core/dist/index.d.ts:663
 
 ***
 

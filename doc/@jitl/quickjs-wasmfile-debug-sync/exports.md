@@ -16,7 +16,7 @@
 
 ### default
 
-> **`const`** **default**: `Object`
+> **`const`** **default**: [`QuickJSSyncVariant`](../../quickjs-emscripten/interfaces/QuickJSSyncVariant.md)
 
 This export is a variant of the quickjs WASM library:
 ### [@jitl/quickjs-wasmfile-debug-sync](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-sync/README.md)
@@ -30,31 +30,9 @@ Variant with separate .WASM file. Supports browser, NodeJS ESM, and NodeJS CJS.
 | emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
 | exports             | require import browser                  | Has these package.json export conditions |
 
-#### Type declaration
-
-##### importFFI
-
-> **`readonly`** **importFFI**: () => `Promise`\<*typeof* `QuickJSFFI` \| (`module`) => [`QuickJSFFI`](../../quickjs-emscripten/interfaces/QuickJSFFI.md)\>
-
-###### Returns
-
-`Promise`\<*typeof* `QuickJSFFI` \| (`module`) => [`QuickJSFFI`](../../quickjs-emscripten/interfaces/QuickJSFFI.md)\>
-
-##### importModuleLoader
-
-> **`readonly`** **importModuleLoader**: () => `Promise`\<`__module` \| [`EmscriptenModuleLoader`](../../quickjs-emscripten/interfaces/EmscriptenModuleLoader.md)\<[`QuickJSEmscriptenModule`](../../quickjs-emscripten/interfaces/QuickJSEmscriptenModule.md)\> \| `Object` \| `Object`\>
-
-###### Returns
-
-`Promise`\<`__module` \| [`EmscriptenModuleLoader`](../../quickjs-emscripten/interfaces/EmscriptenModuleLoader.md)\<[`QuickJSEmscriptenModule`](../../quickjs-emscripten/interfaces/QuickJSEmscriptenModule.md)\> \| `Object` \| `Object`\>
-
-##### type
-
-> **`readonly`** **type**: `"sync"` = `"sync"`
-
 #### Source
 
-[variant-quickjs-wasmfile-debug-sync/src/index.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-wasmfile-debug-sync/src/index.ts#L17)
+[index.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-wasmfile-debug-sync/src/index.ts#L17)
 
 ***
 

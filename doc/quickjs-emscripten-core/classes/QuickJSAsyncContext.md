@@ -80,7 +80,7 @@ to create a new QuickJSContext.
 
 • **args\.ctx**: [`Lifetime`](Lifetime.md)\<[`JSContextPointer`](../exports.md#jscontextpointer), `never`, `never`\>
 
-• **args\.ffi**: `EitherFFI`
+• **args\.ffi**: [`EitherFFI`](../exports.md#eitherffi)
 
 • **args\.module**: [`EitherModule`](../exports.md#eithermodule)
 

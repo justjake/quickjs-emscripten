@@ -12,7 +12,7 @@
   "scripts": {
     "prepack": "yarn build && yarn check:package",
     "tarball": "yarn check:packages && rm -rf $PWD/build/tar && mkdir -p $PWD/build/tar && yarn for-each-package-cmd pack --out $PWD/build/tar/%s.tgz",
-    "prepare": "yarn prettier-check && yarn tarball && yarn test && yarn test-dist && yarn smoketest-node",
+    "prepare": "yarn:check",
     "clean": "git clean -dfx ./build && yarn for-each-package clean",
     "prettier": "prettier --write .",
     "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:bellard/quickjs.git master",

@@ -46,9 +46,8 @@ export class QuickJSDeferredPromise implements Disposable {
   private onSettled!: () => void
 
   /**
-   * Use [[QuickJSContext.newPromise]] to create a new promise instead of calling
+   * Use {@link QuickJSContext#newPromise} to create a new promise instead of calling
    * this constructor directly.
-   * @unstable
    */
   constructor(args: {
     context: QuickJSContext
@@ -71,7 +70,7 @@ export class QuickJSDeferredPromise implements Disposable {
    * Calling this method after calling {@link dispose} is a no-op.
    *
    * Note that after resolving a promise, you may need to call
-   * [[QuickJSContext.executePendingJobs]] to propagate the result to the promise's
+   * {@link QuickJSRuntime#executePendingJobs} to propagate the result to the promise's
    * callbacks.
    */
   resolve = (value?: QuickJSHandle) => {
@@ -98,7 +97,7 @@ export class QuickJSDeferredPromise implements Disposable {
    * Calling this method after calling {@link dispose} is a no-op.
    *
    * Note that after rejecting a promise, you may need to call
-   * [[QuickJSContext.executePendingJobs]] to propagate the result to the promise's
+   * {@link QuickJSRuntime#executePendingJobs} to propagate the result to the promise's
    * callbacks.
    */
   reject = (value?: QuickJSHandle) => {

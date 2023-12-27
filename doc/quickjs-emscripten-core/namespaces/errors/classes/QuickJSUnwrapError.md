@@ -6,7 +6,7 @@
 
 # Class: QuickJSUnwrapError
 
-Error thrown if [[QuickJSContext.unwrapResult]] unwraps an error value that isn't an object.
+Error thrown if [QuickJSContext#unwrapResult](../../../classes/QuickJSContext.md#unwrapresult) unwraps an error value that isn't an object.
 
 ## Contents
 

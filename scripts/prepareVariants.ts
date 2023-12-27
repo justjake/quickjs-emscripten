@@ -663,11 +663,11 @@ import { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
  * This export is a variant of the quickjs WASM library:
 ${docComment}
  */
-const variant = {
+const variant: ${variantTypeName} = {
   type: '${modeName}',
   importFFI: () => import('./ffi.js').then(mod => mod.${className}),
   importModuleLoader: () => import('${packageJson.name}/emscripten-module').then(mod => mod.default),
-} as const satisfies ${variantTypeName}
+} as const
 
 export default variant
 `

@@ -53,7 +53,7 @@ false after the object has been [dispose](Scope.md#dispose)d
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:587
+quickjs-emscripten-core/dist/index.d.ts:594
 
 ## Methods
 
@@ -73,7 +73,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:588
+quickjs-emscripten-core/dist/index.d.ts:595
 
 ***
 
@@ -97,7 +97,7 @@ Track `lifetime` so that it is disposed when this scope is disposed.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:586
+quickjs-emscripten-core/dist/index.d.ts:593
 
 ***
 
@@ -127,7 +127,7 @@ Do not use with async functions. Instead, use [withScopeAsync](Scope.md#withscop
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:573
+quickjs-emscripten-core/dist/index.d.ts:580
 
 ***
 
@@ -154,7 +154,7 @@ block returns.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:581
+quickjs-emscripten-core/dist/index.d.ts:588
 
 ***
 
@@ -182,7 +182,7 @@ quickjs-emscripten-core/dist/index.d.ts:581
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:574
+quickjs-emscripten-core/dist/index.d.ts:581
 
 ***
 

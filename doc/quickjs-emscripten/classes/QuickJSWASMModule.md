@@ -48,12 +48,12 @@ To protect against infinite loops, use the `shouldInterrupt` option. The
 
 If you need more control over how the code executes, create a
 [QuickJSRuntime](QuickJSRuntime.md) (with [newRuntime](QuickJSWASMModule.md#newruntime)) or a [QuickJSContext](QuickJSContext.md) (with
-[newContext](QuickJSWASMModule.md#newcontext) or [[QuickJSRuntime.newContext]]), and use its
-[[QuickJSContext.evalCode]] method.
+[newContext](QuickJSWASMModule.md#newcontext) or [QuickJSRuntime#newContext](QuickJSRuntime.md#newcontext)), and use its
+[QuickJSContext#evalCode](QuickJSContext.md#evalcode) method.
 
 Asynchronous callbacks may not run during the first call to `evalCode`. If
 you need to work with async code inside QuickJS, create a runtime and use
-[[QuickJSRuntime.executePendingJobs]].
+[QuickJSRuntime#executePendingJobs](QuickJSRuntime.md#executependingjobs).
 
 #### Parameters
 
@@ -80,7 +80,7 @@ with name `"InternalError"` and  message `"interrupted"`.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1186
+quickjs-emscripten-core/dist/index.d.ts:1192
 
 ***
 
@@ -102,7 +102,7 @@ be disposed when the context is disposed.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1160
+quickjs-emscripten-core/dist/index.d.ts:1166
 
 ***
 
@@ -124,7 +124,7 @@ loading for one or more [QuickJSContext](QuickJSContext.md)s inside the runtime.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1154
+quickjs-emscripten-core/dist/index.d.ts:1160
 
 ***
 

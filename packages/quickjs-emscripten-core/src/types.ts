@@ -11,8 +11,6 @@ import {
   JSValuePointer,
 } from "@jitl/quickjs-ffi-types"
 
-export type EitherFFI = QuickJSFFI | QuickJSAsyncFFI
-
 /**
  * A QuickJSHandle to a constant that will never change, and does not need to
  * be disposed.

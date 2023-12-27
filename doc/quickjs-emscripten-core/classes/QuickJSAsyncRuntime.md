@@ -92,7 +92,7 @@ false after the object has been [dispose](QuickJSAsyncRuntime.md#dispose)d
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L126)
+[packages/quickjs-emscripten-core/src/runtime.ts:125](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L125)
 
 ## Methods
 
@@ -120,7 +120,7 @@ QuickJSWrongOwner if owned by a different runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:326](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L326)
+[packages/quickjs-emscripten-core/src/runtime.ts:332](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L332)
 
 ***
 
@@ -129,7 +129,7 @@ QuickJSWrongOwner if owned by a different runtime.
 > **computeMemoryUsage**(): [`QuickJSHandle`](../exports.md#quickjshandle)
 
 Compute memory usage for this runtime. Returns the result as a handle to a
-JSValue object. Use [[QuickJSContext.dump]] to convert to a native object.
+JSValue object. Use [QuickJSContext#dump](QuickJSContext.md#dump) to convert to a native object.
 Calling this method will allocate more memory inside the runtime. The information
 is accurate as of just before the call to `computeMemoryUsage`.
 For a human-digestible representation, see [dumpMemoryUsage](QuickJSAsyncRuntime.md#dumpmemoryusage).
@@ -144,7 +144,7 @@ For a human-digestible representation, see [dumpMemoryUsage](QuickJSAsyncRuntime
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:295](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L295)
+[packages/quickjs-emscripten-core/src/runtime.ts:301](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L301)
 
 ***
 
@@ -164,7 +164,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:130](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L130)
+[packages/quickjs-emscripten-core/src/runtime.ts:129](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L129)
 
 ***
 
@@ -185,7 +185,7 @@ For programmatic access to this information, see [computeMemoryUsage](QuickJSAsy
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:306](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L306)
+[packages/quickjs-emscripten-core/src/runtime.ts:312](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L312)
 
 ***
 
@@ -223,7 +223,7 @@ functions or rejected promises. Those errors are available by calling
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:240](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L240)
+[packages/quickjs-emscripten-core/src/runtime.ts:246](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L246)
 
 ***
 
@@ -246,13 +246,19 @@ true if there is at least one pendingJob queued up.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:191](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L191)
+[packages/quickjs-emscripten-core/src/runtime.ts:197](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L197)
 
 ***
 
 ### newContext()
 
 > **newContext**(`options`): [`QuickJSAsyncContext`](QuickJSAsyncContext.md)
+
+Create a new context within this runtime. Contexts have isolated globals,
+but you can explicitly share objects between contexts with the same
+runtime.
+
+You should dispose a created context before disposing this runtime.
 
 #### Parameters
 
@@ -289,7 +295,7 @@ See [setInterruptHandler](QuickJSAsyncRuntime.md#setinterrupthandler).
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:216](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L216)
+[packages/quickjs-emscripten-core/src/runtime.ts:222](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L222)
 
 ***
 
@@ -309,7 +315,7 @@ Remove the the loader set by [setModuleLoader](QuickJSAsyncRuntime.md#setmodulel
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:178](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L178)
+[packages/quickjs-emscripten-core/src/runtime.ts:184](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L184)
 
 ***
 
@@ -337,7 +343,7 @@ The interrupt handler can be removed with [removeInterruptHandler](QuickJSAsyncR
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:204](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L204)
+[packages/quickjs-emscripten-core/src/runtime.ts:210](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L210)
 
 ***
 
@@ -390,7 +396,7 @@ To remove the limit, set to `-1`.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:280](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L280)
+[packages/quickjs-emscripten-core/src/runtime.ts:286](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L286)
 
 ***
 

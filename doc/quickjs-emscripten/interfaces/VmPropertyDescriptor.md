@@ -30,7 +30,7 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:75
+quickjs-emscripten-core/dist/index.d.ts:76
 
 ***
 
@@ -40,7 +40,7 @@ quickjs-emscripten-core/dist/index.d.ts:75
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:76
+quickjs-emscripten-core/dist/index.d.ts:77
 
 ***
 
@@ -58,7 +58,7 @@ quickjs-emscripten-core/dist/index.d.ts:76
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:77
+quickjs-emscripten-core/dist/index.d.ts:78
 
 ***
 
@@ -78,7 +78,7 @@ quickjs-emscripten-core/dist/index.d.ts:77
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:78
+quickjs-emscripten-core/dist/index.d.ts:79
 
 ***
 
@@ -88,7 +88,7 @@ quickjs-emscripten-core/dist/index.d.ts:78
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:74
+quickjs-emscripten-core/dist/index.d.ts:75
 
 ***
 

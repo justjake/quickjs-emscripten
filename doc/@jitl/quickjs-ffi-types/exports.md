@@ -11,6 +11,7 @@
 - [Interfaces](exports.md#interfaces)
 - [Type Aliases](exports.md#type-aliases)
   - [BorrowedHeapCharPointer](exports.md#borrowedheapcharpointer)
+  - [EitherFFI](exports.md#eitherffi)
   - [EitherModule](exports.md#eithermodule)
   - [JSBorrowedCharPointer](exports.md#jsborrowedcharpointer)
   - [JSContextPointer](exports.md#jscontextpointer)
@@ -55,6 +56,16 @@ for the Emscripten stack.
 #### Source
 
 [ffi-types.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L77)
+
+***
+
+### EitherFFI
+
+> **EitherFFI**: [`QuickJSFFI`](interfaces/QuickJSFFI.md) \| [`QuickJSAsyncFFI`](interfaces/QuickJSAsyncFFI.md)
+
+#### Source
+
+[variant-types.ts:50](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L50)
 
 ***
 

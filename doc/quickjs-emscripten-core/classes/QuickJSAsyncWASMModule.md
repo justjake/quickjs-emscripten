@@ -65,7 +65,7 @@ This version allows for asynchronous Ecmascript module loading.
 Note that only a single async action can occur at a time inside the entire WebAssembly module.
 **Multiple concurrent async actions is an error.**
 
-See the documentation for [[QuickJSWASMModule.evalCode]] for more details.
+See the documentation for [QuickJSWASMModule#evalCode](QuickJSWASMModule.md#evalcode) for more details.
 
 #### Parameters
 

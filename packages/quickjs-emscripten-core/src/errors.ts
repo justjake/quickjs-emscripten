@@ -1,7 +1,7 @@
 import type { QuickJSContext } from "./context"
 
 /**
- * Error thrown if [[QuickJSContext.unwrapResult]] unwraps an error value that isn't an object.
+ * Error thrown if {@link QuickJSContext#unwrapResult} unwraps an error value that isn't an object.
  */
 export class QuickJSUnwrapError extends Error {
   name = "QuickJSUnwrapError"

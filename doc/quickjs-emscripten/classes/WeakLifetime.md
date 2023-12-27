@@ -73,7 +73,7 @@ Used for function arguments.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:558
+quickjs-emscripten-core/dist/index.d.ts:565
 
 ## Properties
 
@@ -87,7 +87,7 @@ quickjs-emscripten-core/dist/index.d.ts:558
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:504
+quickjs-emscripten-core/dist/index.d.ts:511
 
 ***
 
@@ -101,7 +101,7 @@ quickjs-emscripten-core/dist/index.d.ts:504
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:505
+quickjs-emscripten-core/dist/index.d.ts:512
 
 ***
 
@@ -115,7 +115,7 @@ quickjs-emscripten-core/dist/index.d.ts:505
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:503
+quickjs-emscripten-core/dist/index.d.ts:510
 
 ***
 
@@ -129,7 +129,7 @@ quickjs-emscripten-core/dist/index.d.ts:503
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:500
+quickjs-emscripten-core/dist/index.d.ts:507
 
 ***
 
@@ -151,7 +151,7 @@ quickjs-emscripten-core/dist/index.d.ts:500
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:501
+quickjs-emscripten-core/dist/index.d.ts:508
 
 ***
 
@@ -173,7 +173,7 @@ quickjs-emscripten-core/dist/index.d.ts:501
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:502
+quickjs-emscripten-core/dist/index.d.ts:509
 
 ## Accessors
 
@@ -191,7 +191,7 @@ false after the object has been [dispose](WeakLifetime.md#dispose)d
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:515
+quickjs-emscripten-core/dist/index.d.ts:522
 
 ***
 
@@ -205,7 +205,7 @@ quickjs-emscripten-core/dist/index.d.ts:515
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:524
+quickjs-emscripten-core/dist/index.d.ts:531
 
 ***
 
@@ -219,7 +219,7 @@ quickjs-emscripten-core/dist/index.d.ts:524
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:523
+quickjs-emscripten-core/dist/index.d.ts:530
 
 ***
 
@@ -240,7 +240,7 @@ If the lifetime has been [dispose](WeakLifetime.md#dispose)d already.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:522
+quickjs-emscripten-core/dist/index.d.ts:529
 
 ## Methods
 
@@ -272,7 +272,7 @@ the result of `map(this)`.
 
 ##### Source
 
-quickjs-emscripten-core/dist/index.d.ts:533
+quickjs-emscripten-core/dist/index.d.ts:540
 
 #### consume(map)
 
@@ -296,7 +296,7 @@ quickjs-emscripten-core/dist/index.d.ts:533
 
 ##### Source
 
-quickjs-emscripten-core/dist/index.d.ts:534
+quickjs-emscripten-core/dist/index.d.ts:541
 
 ***
 
@@ -316,7 +316,7 @@ Dispose of [value](WeakLifetime.md#value-1) and perform cleanup.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:559
+quickjs-emscripten-core/dist/index.d.ts:566
 
 ***
 
@@ -336,7 +336,7 @@ Create a new handle pointing to the same [value](WeakLifetime.md#value-1).
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:528
+quickjs-emscripten-core/dist/index.d.ts:535
 
 ***
 

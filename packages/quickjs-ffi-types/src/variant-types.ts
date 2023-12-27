@@ -47,3 +47,4 @@ export interface QuickJSAsyncVariant {
 }
 
 export type QuickJSVariant = QuickJSSyncVariant | QuickJSAsyncVariant
+export type EitherFFI = QuickJSFFI | QuickJSAsyncFFI

@@ -90,7 +90,7 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
    * Note that only a single async action can occur at a time inside the entire WebAssembly module.
    * **Multiple concurrent async actions is an error.**
    *
-   * See the documentation for [[QuickJSWASMModule.evalCode]] for more details.
+   * See the documentation for {@link QuickJSWASMModule#evalCode} for more details.
    */
   evalCodeAsync(code: string, options: ModuleEvalOptions): Promise<unknown> {
     // TODO: we should really figure out generator for the Promise monad...

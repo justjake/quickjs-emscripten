@@ -7,7 +7,7 @@ import {
   JSVoidPointer,
 } from "@jitl/quickjs-ffi-types"
 import { Lifetime } from "./lifetime"
-import { EitherFFI, QuickJSHandle } from "./types"
+import { QuickJSHandle } from "./types"
 
 /**
  * @private

@@ -1,14 +1,14 @@
 import { maybeAsyncFn } from "./asyncify-helpers"
 import { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
-import { EitherModule } from "@jitl/quickjs-ffi-types"
 import { QuickJSWrongOwner } from "./errors"
 import {
   BorrowedHeapCharPointer,
   JSContextPointer,
   JSContextPointerPointer,
-  JSModuleDefPointer,
   JSRuntimePointer,
+  EitherFFI,
+  EitherModule,
 } from "@jitl/quickjs-ffi-types"
 import { Disposable, Lifetime, Scope } from "./lifetime"
 import { ModuleMemory } from "./memory"
@@ -16,7 +16,6 @@ import { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
 import {
   ContextOptions,
   DefaultIntrinsics,
-  EitherFFI,
   JSModuleLoader,
   JSModuleNormalizer,
   QuickJSHandle,
@@ -131,6 +130,13 @@ export class QuickJSRuntime implements Disposable {
     return this.scope.dispose()
   }
 
+  /**
+   * Create a new context within this runtime. Contexts have isolated globals,
+   * but you can explicitly share objects between contexts with the same
+   * runtime.
+   *
+   * You should dispose a created context before disposing this runtime.
+   */
   newContext(options: ContextOptions = {}): QuickJSContext {
     if (options.intrinsics && options.intrinsics !== DefaultIntrinsics) {
       throw new Error("TODO: Custom intrinsics are not supported yet")
@@ -287,7 +293,7 @@ export class QuickJSRuntime implements Disposable {
 
   /**
    * Compute memory usage for this runtime. Returns the result as a handle to a
-   * JSValue object. Use [[QuickJSContext.dump]] to convert to a native object.
+   * JSValue object. Use {@link QuickJSContext#dump} to convert to a native object.
    * Calling this method will allocate more memory inside the runtime. The information
    * is accurate as of just before the call to `computeMemoryUsage`.
    * For a human-digestible representation, see {@link dumpMemoryUsage}.

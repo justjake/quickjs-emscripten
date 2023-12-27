@@ -14,13 +14,13 @@ import { QuickJSSyncVariant } from "@jitl/quickjs-ffi-types"
  * | exports             | browser                  | Has these package.json export conditions |
  *
  */
-const variant = {
+const variant: QuickJSSyncVariant = {
   type: "sync",
   importFFI: () => import("./ffi.js").then((mod) => mod.QuickJSFFI),
   importModuleLoader: () =>
     import("@jitl/quickjs-singlefile-browser-release-sync/emscripten-module").then(
       (mod) => mod.default,
     ),
-} as const satisfies QuickJSSyncVariant
+} as const
 
 export default variant

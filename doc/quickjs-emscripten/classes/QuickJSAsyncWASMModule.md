@@ -49,7 +49,7 @@ Synchronous evalCode is not supported.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1230
+quickjs-emscripten-core/dist/index.d.ts:1236
 
 ***
 
@@ -65,7 +65,7 @@ This version allows for asynchronous Ecmascript module loading.
 Note that only a single async action can occur at a time inside the entire WebAssembly module.
 **Multiple concurrent async actions is an error.**
 
-See the documentation for [[QuickJSWASMModule.evalCode]] for more details.
+See the documentation for [QuickJSWASMModule#evalCode](QuickJSWASMModule.md#evalcode) for more details.
 
 #### Parameters
 
@@ -79,7 +79,7 @@ See the documentation for [[QuickJSWASMModule.evalCode]] for more details.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1242
+quickjs-emscripten-core/dist/index.d.ts:1248
 
 ***
 
@@ -105,7 +105,7 @@ be disposed when the context is disposed.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1228
+quickjs-emscripten-core/dist/index.d.ts:1234
 
 ***
 
@@ -131,7 +131,7 @@ concurrent async actions, create multiple WebAssembly modules.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1222
+quickjs-emscripten-core/dist/index.d.ts:1228
 
 ***
 

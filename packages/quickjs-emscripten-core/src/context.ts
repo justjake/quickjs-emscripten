@@ -13,6 +13,7 @@ import type {
   JSValuePointer,
   JSValuePointerPointer,
   JSVoidPointer,
+  EitherFFI,
 } from "@jitl/quickjs-ffi-types"
 import { QuickJSUnwrapError } from "./errors"
 import { Disposable, Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
@@ -21,7 +22,6 @@ import { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
 import { QuickJSRuntime, ExecutePendingJobsResult } from "./runtime"
 import {
   ContextEvalOptions,
-  EitherFFI,
   evalOptionsToFlags,
   JSValue,
   PromiseExecutor,
@@ -37,7 +37,7 @@ import {
 
 /**
  * Property key for getting or setting a property on a handle with
- * [[QuickJSContext.getProp]], [[QuickJSContext.setProp]], or [[QuickJSContext.defineProp]].
+ * {@link QuickJSContext#getProp}, {@link QuickJSContext#setProp}, or {@link QuickJSContext#defineProp}.
  */
 export type QuickJSPropertyKey = number | string | QuickJSHandle
 

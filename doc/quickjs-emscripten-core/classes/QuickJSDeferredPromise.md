@@ -53,7 +53,7 @@ itself, (2) the `resolve` callback, and (3) the `reject` callback.
 
 > **new QuickJSDeferredPromise**(`args`): [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
 
-Use [[QuickJSContext.newPromise]] to create a new promise instead of calling
+Use [QuickJSContext#newPromise](QuickJSContext.md#newpromise) to create a new promise instead of calling
 this constructor directly.
 
 #### Parameters
@@ -72,11 +72,9 @@ this constructor directly.
 
 [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
 
-#### Unstable
-
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L53)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:52](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L52)
 
 ## Properties
 
@@ -140,7 +138,7 @@ false after the object has been [dispose](QuickJSDeferredPromise.md#dispose)d
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:123](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L123)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:122](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L122)
 
 ## Methods
 
@@ -160,7 +158,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:127](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L127)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L126)
 
 ***
 
@@ -172,7 +170,7 @@ Reject [handle](QuickJSDeferredPromise.md#handle) with the given value, if any.
 Calling this method after calling [dispose](QuickJSDeferredPromise.md#dispose) is a no-op.
 
 Note that after rejecting a promise, you may need to call
-[[QuickJSContext.executePendingJobs]] to propagate the result to the promise's
+[QuickJSRuntime#executePendingJobs](QuickJSRuntime.md#executependingjobs) to propagate the result to the promise's
 callbacks.
 
 #### Parameters
@@ -185,7 +183,7 @@ callbacks.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:104](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L104)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:103](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L103)
 
 ***
 
@@ -197,7 +195,7 @@ Resolve [handle](QuickJSDeferredPromise.md#handle) with the given value, if any.
 Calling this method after calling [dispose](QuickJSDeferredPromise.md#dispose) is a no-op.
 
 Note that after resolving a promise, you may need to call
-[[QuickJSContext.executePendingJobs]] to propagate the result to the promise's
+[QuickJSRuntime#executePendingJobs](QuickJSRuntime.md#executependingjobs) to propagate the result to the promise's
 callbacks.
 
 #### Parameters
@@ -210,7 +208,7 @@ callbacks.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L77)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L76)
 
 ***
 

@@ -9,19 +9,12 @@ import {
   JSContextPointer,
   JSRuntimePointer,
   JSValuePointer,
+  EitherFFI,
 } from "@jitl/quickjs-ffi-types"
 import { QuickJSAsyncifyError, QuickJSAsyncifySuspended } from "./errors"
 import { Lifetime, Scope } from "./lifetime"
 import { InterruptHandler, QuickJSRuntime } from "./runtime"
-import {
-  AsyncRuntimeOptions,
-  concat,
-  ContextOptions,
-  EitherFFI,
-  JSModuleLoader,
-  RuntimeOptions,
-  RuntimeOptionsBase,
-} from "./types"
+import { concat, ContextOptions, JSModuleLoader, RuntimeOptions, RuntimeOptionsBase } from "./types"
 
 type EmscriptenCallback<BaseArgs extends any[], Result> = (
   ...args: [Asyncify | undefined, ...BaseArgs]
@@ -64,7 +57,7 @@ class QuickJSEmscriptenModuleCallbacks implements EmscriptenModuleCallbacks {
 }
 
 /**
- * Options for [[QuickJSWASMModule.evalCode]].
+ * Options for {@link QuickJSWASMModule#evalCode}.
  */
 export interface ModuleEvalOptions {
   /**
@@ -379,12 +372,12 @@ export class QuickJSWASMModule {
    *
    * If you need more control over how the code executes, create a
    * {@link QuickJSRuntime} (with {@link newRuntime}) or a {@link QuickJSContext} (with
-   * {@link newContext} or [[QuickJSRuntime.newContext]]), and use its
-   * [[QuickJSContext.evalCode]] method.
+   * {@link newContext} or {@link QuickJSRuntime#newContext}), and use its
+   * {@link QuickJSContext#evalCode} method.
    *
    * Asynchronous callbacks may not run during the first call to `evalCode`. If
    * you need to work with async code inside QuickJS, create a runtime and use
-   * [[QuickJSRuntime.executePendingJobs]].
+   * {@link QuickJSRuntime#executePendingJobs}.
    *
    * @returns The result is coerced to a native Javascript value using JSON
    * serialization, so properties and values unsupported by JSON will be dropped.
