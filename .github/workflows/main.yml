@@ -87,5 +87,8 @@ jobs:
       - name: Test release with Vite/Vue example
         run: ./scripts/smoketest-vite.ts
 
+      - name: Check lint
+        run: yarn lint
+
       - name: Check format
         run: yarn check:format
