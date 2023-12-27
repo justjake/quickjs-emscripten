@@ -1,6 +1,6 @@
 {
   "name": "@jitl/quickjs-ffi-types",
-  "version": "0.25.0-rc.12",
+  "version": "0.25.0-rc.13",
   "repository": {
     "type": "git",
     "url": "https://github.com/justjake/quickjs-emscripten"
