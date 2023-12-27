@@ -20,7 +20,7 @@ import type {
   JSModuleNormalizerAsync,
 } from "./types"
 import { DefaultIntrinsics } from "./types"
-import { Lifetime } from "."
+import { Lifetime } from "./lifetime"
 
 export class QuickJSAsyncRuntime extends QuickJSRuntime {
   public declare context: QuickJSAsyncContext | undefined

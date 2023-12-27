@@ -18,6 +18,7 @@ module.exports = {
     "@typescript-eslint/consistent-type-imports": "error",
     "import/order": "error",
     "import/no-duplicates": "error",
+    "import/no-cycle": "error",
   },
   settings: {
     // 'import/resolver': {
