@@ -43,7 +43,7 @@ You can provide your own variant to control exactly how the large WebAssembly ob
 
 You can use [subpath imports in package.json](https://nodejs.org/api/packages.html#subpath-imports) to select the appropriate variant for a runtime. This is how the main `quickjs-emscripten` package picks between browser, Node ESM and Node CommonJS variants.
 
-```json5
+```json
 // in your package.json
 {
   "imports": {
