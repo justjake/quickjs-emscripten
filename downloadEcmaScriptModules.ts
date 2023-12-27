@@ -1,5 +1,5 @@
-import * as fs from "fs-extra"
 import * as pathlib from "path"
+import * as fs from "fs-extra"
 import fetch from "node-fetch-commonjs"
 import { matchAll, replaceAll } from "./generate"
 

@@ -1,4 +1,5 @@
 import assert from "assert"
+import { beforeEach, it, describe } from "vitest"
 import type { QuickJSWASMModule } from "."
 import {
   getQuickJS,
@@ -8,7 +9,6 @@ import {
   DEBUG_SYNC,
   memoizePromiseFactory as memoizeNewModule,
 } from "."
-import { beforeEach, it, describe } from "vitest"
 
 const TEST_LEAK = Boolean(process.env.TEST_LEAK)
 const testOptions = {

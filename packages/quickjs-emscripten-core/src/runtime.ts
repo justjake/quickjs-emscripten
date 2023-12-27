@@ -1,7 +1,3 @@
-import { maybeAsyncFn } from "./asyncify-helpers"
-import { QuickJSContext } from "./context"
-import { debugLog } from "./debug"
-import { QuickJSWrongOwner } from "./errors"
 import type {
   BorrowedHeapCharPointer,
   JSContextPointer,
@@ -10,6 +6,10 @@ import type {
   EitherFFI,
   EitherModule,
 } from "@jitl/quickjs-ffi-types"
+import { maybeAsyncFn } from "./asyncify-helpers"
+import { QuickJSContext } from "./context"
+import { debugLog } from "./debug"
+import { QuickJSWrongOwner } from "./errors"
 import type { Disposable } from "./lifetime"
 import { Lifetime, Scope } from "./lifetime"
 import { ModuleMemory } from "./memory"

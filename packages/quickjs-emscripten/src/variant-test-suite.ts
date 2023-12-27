@@ -1,6 +1,6 @@
 import assert from "assert"
-import type { QuickJSAsyncVariant, QuickJSSyncVariant, QuickJSWASMModule } from "."
 import variantsManifest from "../../../variants.json"
+import type { QuickJSAsyncVariant, QuickJSSyncVariant, QuickJSWASMModule } from "."
 
 function buildImportSpecifiers() {
   const specifiers: Record<string, { browser: boolean; import: boolean; require: boolean }> = {}

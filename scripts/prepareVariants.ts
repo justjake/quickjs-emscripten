@@ -6,10 +6,10 @@
 
 import path from "node:path"
 import fs from "node:fs"
+import type { TypeDocOptions } from "typedoc"
 import type { PackageJson } from "./helpers"
 import { writePretty, tryReadJson, repoRoot } from "./helpers"
 import { Context, getMatches, buildFFI } from "./generate"
-import type { TypeDocOptions } from "typedoc"
 
 const CLEAN = Boolean(process.env.CLEAN)
 

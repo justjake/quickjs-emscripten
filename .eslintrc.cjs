@@ -1,14 +1,27 @@
 /* eslint-env node */
 /* @type import("eslint").ESLintConfig */
 module.exports = {
-  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  plugins: ["@typescript-eslint", "import"],
+  extends: [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/typescript",
+  ],
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint"],
   root: true,
   rules: {
-    "@typescript-eslint/consistent-type-imports": "error",
+    // Disables
     "@typescript-eslint/no-explicit-any": "off",
-    // Covered by prettier
-    "no-extra-semi": "off",
+    "no-extra-semi": "off", // covered by prettier
+
+    // Enables
+    "@typescript-eslint/consistent-type-imports": "error",
+    "import/order": "error",
+  },
+  settings: {
+    // 'import/resolver': {
+    //   typescript: true,
+    //   node: true,
+    // }
   },
 }

@@ -1,16 +1,15 @@
 import type {
-  // Used in doc
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  QuickJSAsyncWASMModule,
-} from "./module-asyncify"
-import { Lifetime } from "."
-import { QuickJSAsyncContext } from "./context-asyncify"
-import type {
   QuickJSAsyncEmscriptenModule,
   QuickJSAsyncFFI,
   JSContextPointer,
   JSRuntimePointer,
 } from "@jitl/quickjs-ffi-types"
+import { QuickJSAsyncContext } from "./context-asyncify"
+import type {
+  // Used in doc
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  QuickJSAsyncWASMModule,
+} from "./module-asyncify"
 import type { QuickJSModuleCallbacks } from "./module"
 import { QuickJSRuntime } from "./runtime"
 import type {
@@ -21,6 +20,7 @@ import type {
   JSModuleNormalizerAsync,
 } from "./types"
 import { DefaultIntrinsics } from "./types"
+import { Lifetime } from "."
 
 export class QuickJSAsyncRuntime extends QuickJSRuntime {
   public declare context: QuickJSAsyncContext | undefined

@@ -1,6 +1,6 @@
-import * as quickjsEmscripten from "."
 import { describe, it } from "node:test"
 import { packageSpecifiers, testSuite } from "./variant-test-suite"
+import * as quickjsEmscripten from "."
 
 const VARIANT_LOADERS: Record<string, () => Promise<any>> = {}
 for (const [name, conditions] of Object.entries(packageSpecifiers)) {

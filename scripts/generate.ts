@@ -1,9 +1,9 @@
 #!/usr/bin/env -S npx tsx
 // Generate symbols list
 // Generate header file
-import * as fs from "fs-extra"
 import * as pathlib from "path"
 import * as crypto from "crypto"
+import * as fs from "fs-extra"
 import { repoRoot } from "./helpers"
 const USAGE =
   "Usage: generate.ts [symbols | header | ffi] WRITE_PATH" +

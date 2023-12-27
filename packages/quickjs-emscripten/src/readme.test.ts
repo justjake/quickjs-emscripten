@@ -1,5 +1,5 @@
-import { describe, beforeEach, afterEach, it } from "vitest"
 import assert from "assert"
+import { describe, beforeEach, afterEach, it } from "vitest"
 import type { QuickJSWASMModule } from "."
 import {
   DEBUG_SYNC,

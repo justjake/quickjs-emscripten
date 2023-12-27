@@ -1,6 +1,6 @@
 import assert from "assert"
-import { maybeAsyncFn } from "./asyncify-helpers"
 import { describe, it } from "vitest"
+import { maybeAsyncFn } from "./asyncify-helpers"
 
 describe("maybeAsync", () => {
   const addPromises = maybeAsyncFn(

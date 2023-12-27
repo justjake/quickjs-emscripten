@@ -1,7 +1,7 @@
 #!/usr/bin/env -S npx tsx
 import fs from "node:fs"
-import * as sh from "./helpers"
 import * as glob from "glob"
+import * as sh from "./helpers"
 
 function hasMagic(str: string) {
   return glob.hasMagic(str) || str.includes("!")

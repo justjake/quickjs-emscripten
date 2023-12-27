@@ -1,6 +1,6 @@
+import assert from "assert"
 import { describe, it } from "vitest"
 import { Lifetime, Scope } from "./lifetime"
-import assert from "assert"
 
 describe("Lifetime", () => {
   describe(".consume", () => {

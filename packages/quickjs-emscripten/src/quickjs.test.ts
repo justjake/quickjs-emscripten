@@ -2,6 +2,8 @@
  * These tests demonstrate some common patterns for using quickjs-emscripten.
  */
 
+import assert from "assert"
+import fs from "fs"
 import { describe, beforeEach, afterEach, afterAll as after, it } from "vitest"
 import type {
   QuickJSHandle,
@@ -24,8 +26,6 @@ import {
   debugLog,
   errors,
 } from "."
-import assert from "assert"
-import fs from "fs"
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
 

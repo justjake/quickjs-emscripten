@@ -1,5 +1,3 @@
-import type { QuickJSContext } from "./context"
-import { debugLog } from "./debug"
 import type {
   Asyncify,
   AsyncifySleepResult,
@@ -11,6 +9,8 @@ import type {
   JSValuePointer,
   EitherFFI,
 } from "@jitl/quickjs-ffi-types"
+import type { QuickJSContext } from "./context"
+import { debugLog } from "./debug"
 import { QuickJSAsyncifyError, QuickJSAsyncifySuspended } from "./errors"
 import { Lifetime, Scope } from "./lifetime"
 import type { InterruptHandler } from "./runtime"

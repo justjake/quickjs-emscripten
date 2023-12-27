@@ -1,7 +1,3 @@
-import { debugLog } from "./debug"
-import { QuickJSDeferredPromise } from "./deferred-promise"
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import type {
   EitherModule,
   EvalDetectModule,
@@ -14,6 +10,10 @@ import type {
   JSValuePointerPointer,
   EitherFFI,
 } from "@jitl/quickjs-ffi-types"
+import { debugLog } from "./debug"
+import { QuickJSDeferredPromise } from "./deferred-promise"
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import { QuickJSUnwrapError } from "./errors"
 import type { Disposable } from "./lifetime"
 import { Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"

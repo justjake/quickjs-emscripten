@@ -52,6 +52,7 @@
     "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.16.0",
     "eslint": "^8.56.0",
+    "eslint-plugin-import": "^2.29.1",
     "fs-extra": "^10.0.1",
     "glob": "^10.3.10",
     "hads": "^3.0.3",
