@@ -44,7 +44,7 @@ class InstallFlow {
 
   constructor(
     public into: string,
-    public commands: { install: string; remove: string },
+    public commands: { install: string; remove: string; fromRegistry: boolean },
   ) {}
 
   add(packageName: string) {
@@ -61,7 +61,7 @@ class InstallFlow {
 
     this.visit(packageName, {
       after: (pkg) => {
-        if (INSTALL_FROM_REGISTRY) {
+        if (this.commands.fromRegistry) {
           if (pkg.name === packageName) {
             added.add(`${pkg.name}@${pkg.version}`)
           }
@@ -104,9 +104,11 @@ export function installDependencyGraphFromTar(
   cmds: {
     install: string
     remove: string
+    fromRegistry: boolean
   } = {
     install: "npm install",
     remove: "npm remove",
+    fromRegistry: INSTALL_FROM_REGISTRY,
   },
 ) {
   new InstallFlow(into, cmds).add(packageName).run()
