@@ -1,0 +1,3 @@
+src/*.wasm
+node_modules
+.wrangler
