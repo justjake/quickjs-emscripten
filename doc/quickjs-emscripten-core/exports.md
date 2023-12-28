@@ -36,6 +36,7 @@
   - [JSValuePointer](exports.md#jsvaluepointer)
   - [JSValuePointerPointer](exports.md#jsvaluepointerpointer)
   - [JSVoidPointer](exports.md#jsvoidpointer)
+  - [OrLoader\<T\>](exports.md#orloadert)
   - [OwnedHeapCharPointer](exports.md#ownedheapcharpointer)
   - [PromiseExecutor\<ResolveT, RejectT\>](exports.md#promiseexecutorresolvet-rejectt)
   - [PromisedDefault\<T\>](exports.md#promiseddefaultt)
@@ -58,6 +59,7 @@
   - [memoizePromiseFactory()](exports.md#memoizepromisefactory)
   - [newQuickJSAsyncWASMModuleFromVariant()](exports.md#newquickjsasyncwasmmodulefromvariant)
   - [newQuickJSWASMModuleFromVariant()](exports.md#newquickjswasmmodulefromvariant)
+  - [newVariant()](exports.md#newvariant)
   - [shouldInterruptAfterDeadline()](exports.md#shouldinterruptafterdeadline)
 
 ## Namespaces
@@ -84,9 +86,11 @@
 - [AsyncRuntimeOptions](interfaces/AsyncRuntimeOptions.md)
 - [ContextEvalOptions](interfaces/ContextEvalOptions.md)
 - [ContextOptions](interfaces/ContextOptions.md)
+- [CustomizeVariantOptions](interfaces/CustomizeVariantOptions.md)
 - [Disposable](interfaces/Disposable.md)
 - [EmscriptenModule](interfaces/EmscriptenModule.md)
 - [EmscriptenModuleLoader](interfaces/EmscriptenModuleLoader.md)
+- [EmscriptenModuleLoaderOptions](interfaces/EmscriptenModuleLoaderOptions.md)
 - [JSModuleLoader](interfaces/JSModuleLoader.md)
 - [JSModuleLoaderAsync](interfaces/JSModuleLoaderAsync.md)
 - [JSModuleNormalizer](interfaces/JSModuleNormalizer.md)
@@ -101,6 +105,7 @@
 - [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md)
 - [RuntimeOptions](interfaces/RuntimeOptions.md)
 - [RuntimeOptionsBase](interfaces/RuntimeOptionsBase.md)
+- [SourceMapData](interfaces/SourceMapData.md)
 - [VmPropertyDescriptor](interfaces/VmPropertyDescriptor.md)
 
 ## Type Aliases
@@ -144,7 +149,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:392
+packages/quickjs-ffi-types/dist/index.d.ts:433
 
 ***
 
@@ -154,7 +159,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:392
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:206
+packages/quickjs-ffi-types/dist/index.d.ts:247
 
 ***
 
@@ -425,6 +430,20 @@ packages/quickjs-ffi-types/dist/index.d.ts:80
 
 ***
 
+### OrLoader\<T\>
+
+> **OrLoader**\<`T`\>: `T` \| () => `Promise`\<`T`\>
+
+#### Type parameters
+
+• **T**
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/from-variant.ts:117](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L117)
+
+***
+
 ### OwnedHeapCharPointer
 
 > **OwnedHeapCharPointer**: `Pointer`\<`"char"`\>
@@ -474,7 +493,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:71
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/from-variant.ts:8](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L8)
+[packages/quickjs-emscripten-core/src/from-variant.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L17)
 
 ***
 
@@ -549,7 +568,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:391
+packages/quickjs-ffi-types/dist/index.d.ts:432
 
 ***
 
@@ -814,7 +833,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/from-variant.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L91)
+[packages/quickjs-emscripten-core/src/from-variant.ts:100](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L100)
 
 ***
 
@@ -854,7 +873,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/from-variant.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L67)
+[packages/quickjs-emscripten-core/src/from-variant.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L76)
 
 ***
 
@@ -889,7 +908,34 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/from-variant.ts:29](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L29)
+[packages/quickjs-emscripten-core/src/from-variant.ts:38](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L38)
+
+***
+
+### newVariant()
+
+> **newVariant**\<`T`\>(`baseVariant`, `options`): `T`
+
+Create a new variant by overriding how Emscripten obtains the WebAssembly module.
+This may be necessary in Cloudflare Workers, which can't compile WebAssembly modules from binary data.
+
+#### Type parameters
+
+• **T** extends [`QuickJSVariant`](exports.md#quickjsvariant)
+
+#### Parameters
+
+• **baseVariant**: `T`
+
+• **options**: [`CustomizeVariantOptions`](interfaces/CustomizeVariantOptions.md)
+
+#### Returns
+
+`T`
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/from-variant.ts:142](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L142)
 
 ***
 

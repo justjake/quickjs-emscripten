@@ -45,7 +45,7 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:56
+packages/quickjs-emscripten-core/dist/index.d.ts:56
 
 ***
 
@@ -55,7 +55,7 @@ quickjs-emscripten-core/dist/index.d.ts:56
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:57
+packages/quickjs-emscripten-core/dist/index.d.ts:57
 
 ## Methods
 
@@ -77,7 +77,7 @@ quickjs-emscripten-core/dist/index.d.ts:57
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:68
+packages/quickjs-emscripten-core/dist/index.d.ts:68
 
 ***
 
@@ -99,7 +99,7 @@ quickjs-emscripten-core/dist/index.d.ts:68
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:67
+packages/quickjs-emscripten-core/dist/index.d.ts:67
 
 ***
 
@@ -119,7 +119,7 @@ quickjs-emscripten-core/dist/index.d.ts:67
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:69
+packages/quickjs-emscripten-core/dist/index.d.ts:69
 
 ***
 
@@ -137,7 +137,7 @@ quickjs-emscripten-core/dist/index.d.ts:69
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:59
+packages/quickjs-emscripten-core/dist/index.d.ts:59
 
 ***
 
@@ -157,7 +157,7 @@ quickjs-emscripten-core/dist/index.d.ts:59
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:65
+packages/quickjs-emscripten-core/dist/index.d.ts:65
 
 ***
 
@@ -175,7 +175,7 @@ quickjs-emscripten-core/dist/index.d.ts:65
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:60
+packages/quickjs-emscripten-core/dist/index.d.ts:60
 
 ***
 
@@ -195,7 +195,7 @@ quickjs-emscripten-core/dist/index.d.ts:60
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:64
+packages/quickjs-emscripten-core/dist/index.d.ts:64
 
 ***
 
@@ -213,7 +213,7 @@ quickjs-emscripten-core/dist/index.d.ts:64
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:61
+packages/quickjs-emscripten-core/dist/index.d.ts:61
 
 ***
 
@@ -231,7 +231,7 @@ quickjs-emscripten-core/dist/index.d.ts:61
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:63
+packages/quickjs-emscripten-core/dist/index.d.ts:63
 
 ***
 
@@ -249,7 +249,7 @@ quickjs-emscripten-core/dist/index.d.ts:63
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:62
+packages/quickjs-emscripten-core/dist/index.d.ts:62
 
 ***
 
@@ -271,7 +271,7 @@ quickjs-emscripten-core/dist/index.d.ts:62
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:66
+packages/quickjs-emscripten-core/dist/index.d.ts:66
 
 ***
 
@@ -289,7 +289,7 @@ quickjs-emscripten-core/dist/index.d.ts:66
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:58
+packages/quickjs-emscripten-core/dist/index.d.ts:58
 
 ***
 

@@ -36,6 +36,7 @@
   - [JSValuePointer](exports.md#jsvaluepointer)
   - [JSValuePointerPointer](exports.md#jsvaluepointerpointer)
   - [JSVoidPointer](exports.md#jsvoidpointer)
+  - [OrLoader\<T\>](exports.md#orloadert)
   - [OwnedHeapCharPointer](exports.md#ownedheapcharpointer)
   - [PromiseExecutor\<ResolveT, RejectT\>](exports.md#promiseexecutorresolvet-rejectt)
   - [PromisedDefault\<T\>](exports.md#promiseddefaultt)
@@ -72,6 +73,7 @@
   - [newQuickJSAsyncWASMModuleFromVariant()](exports.md#newquickjsasyncwasmmodulefromvariant)
   - [newQuickJSWASMModule()](exports.md#newquickjswasmmodule)
   - [newQuickJSWASMModuleFromVariant()](exports.md#newquickjswasmmodulefromvariant)
+  - [newVariant()](exports.md#newvariant)
   - [shouldInterruptAfterDeadline()](exports.md#shouldinterruptafterdeadline)
 
 ## Namespaces
@@ -98,9 +100,11 @@
 - [AsyncRuntimeOptions](interfaces/AsyncRuntimeOptions.md)
 - [ContextEvalOptions](interfaces/ContextEvalOptions.md)
 - [ContextOptions](interfaces/ContextOptions.md)
+- [CustomizeVariantOptions](interfaces/CustomizeVariantOptions.md)
 - [Disposable](interfaces/Disposable.md)
 - [EmscriptenModule](interfaces/EmscriptenModule.md)
 - [EmscriptenModuleLoader](interfaces/EmscriptenModuleLoader.md)
+- [EmscriptenModuleLoaderOptions](interfaces/EmscriptenModuleLoaderOptions.md)
 - [JSModuleLoader](interfaces/JSModuleLoader.md)
 - [JSModuleLoaderAsync](interfaces/JSModuleLoaderAsync.md)
 - [JSModuleNormalizer](interfaces/JSModuleNormalizer.md)
@@ -115,6 +119,7 @@
 - [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md)
 - [RuntimeOptions](interfaces/RuntimeOptions.md)
 - [RuntimeOptionsBase](interfaces/RuntimeOptionsBase.md)
+- [SourceMapData](interfaces/SourceMapData.md)
 - [VmPropertyDescriptor](interfaces/VmPropertyDescriptor.md)
 
 ## Type Aliases
@@ -135,7 +140,7 @@
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:310
+packages/quickjs-emscripten-core/dist/index.d.ts:310
 
 ***
 
@@ -148,7 +153,7 @@ for the Emscripten stack.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:66
+packages/quickjs-ffi-types/dist/index.d.ts:66
 
 ***
 
@@ -158,7 +163,7 @@ quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:392
+packages/quickjs-ffi-types/dist/index.d.ts:433
 
 ***
 
@@ -168,7 +173,7 @@ quickjs-ffi-types/dist/index.d.ts:392
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:206
+packages/quickjs-ffi-types/dist/index.d.ts:247
 
 ***
 
@@ -184,7 +189,7 @@ by the runtime.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:119
+packages/quickjs-emscripten-core/dist/index.d.ts:119
 
 ***
 
@@ -209,7 +214,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:112
+packages/quickjs-emscripten-core/dist/index.d.ts:112
 
 ***
 
@@ -222,7 +227,7 @@ for the Emscripten stack.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:76
+packages/quickjs-ffi-types/dist/index.d.ts:76
 
 ***
 
@@ -234,7 +239,7 @@ quickjs-ffi-types/dist/index.d.ts:76
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:20
+packages/quickjs-ffi-types/dist/index.d.ts:20
 
 ***
 
@@ -246,7 +251,7 @@ quickjs-ffi-types/dist/index.d.ts:20
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:24
+packages/quickjs-ffi-types/dist/index.d.ts:24
 
 ***
 
@@ -258,7 +263,7 @@ quickjs-ffi-types/dist/index.d.ts:24
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:28
+packages/quickjs-ffi-types/dist/index.d.ts:28
 
 ***
 
@@ -268,7 +273,7 @@ quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:391
+packages/quickjs-emscripten-core/dist/index.d.ts:391
 
 ***
 
@@ -278,7 +283,7 @@ quickjs-emscripten-core/dist/index.d.ts:391
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:392
+packages/quickjs-emscripten-core/dist/index.d.ts:392
 
 ***
 
@@ -288,7 +293,7 @@ quickjs-emscripten-core/dist/index.d.ts:392
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:390
+packages/quickjs-emscripten-core/dist/index.d.ts:390
 
 ***
 
@@ -298,7 +303,7 @@ quickjs-emscripten-core/dist/index.d.ts:390
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:402
+packages/quickjs-emscripten-core/dist/index.d.ts:402
 
 ***
 
@@ -308,7 +313,7 @@ quickjs-emscripten-core/dist/index.d.ts:402
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:403
+packages/quickjs-emscripten-core/dist/index.d.ts:403
 
 ***
 
@@ -318,7 +323,7 @@ quickjs-emscripten-core/dist/index.d.ts:403
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:401
+packages/quickjs-emscripten-core/dist/index.d.ts:401
 
 ***
 
@@ -330,7 +335,7 @@ quickjs-emscripten-core/dist/index.d.ts:401
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:16
+packages/quickjs-ffi-types/dist/index.d.ts:16
 
 ***
 
@@ -354,7 +359,7 @@ You can do so from Javascript by calling the .dispose() method.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:381
+packages/quickjs-emscripten-core/dist/index.d.ts:381
 
 ***
 
@@ -373,7 +378,7 @@ quickjs-emscripten takes care of disposing JSValueConst references.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:365
+packages/quickjs-emscripten-core/dist/index.d.ts:365
 
 ***
 
@@ -386,7 +391,7 @@ See [JSValueConst](exports.md#jsvalueconst) and [StaticJSValue](exports.md#stati
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:38
+packages/quickjs-ffi-types/dist/index.d.ts:38
 
 ***
 
@@ -398,7 +403,7 @@ Used internally for Javascript-to-C function calls.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:46
+packages/quickjs-ffi-types/dist/index.d.ts:46
 
 ***
 
@@ -411,7 +416,7 @@ See [JSValue](exports.md#jsvalue).
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:33
+packages/quickjs-ffi-types/dist/index.d.ts:33
 
 ***
 
@@ -423,7 +428,7 @@ Used internally for Javascript-to-C function calls.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:42
+packages/quickjs-ffi-types/dist/index.d.ts:42
 
 ***
 
@@ -435,7 +440,21 @@ Opaque pointer that was allocated by js_malloc.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:80
+packages/quickjs-ffi-types/dist/index.d.ts:80
+
+***
+
+### OrLoader\<T\>
+
+> **OrLoader**\<`T`\>: `T` \| () => `Promise`\<`T`\>
+
+#### Type parameters
+
+• **T**
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:1310
 
 ***
 
@@ -448,7 +467,7 @@ for the Emscripten stack.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:71
+packages/quickjs-ffi-types/dist/index.d.ts:71
 
 ***
 
@@ -474,7 +493,7 @@ quickjs-ffi-types/dist/index.d.ts:71
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:482
+packages/quickjs-emscripten-core/dist/index.d.ts:482
 
 ***
 
@@ -488,7 +507,7 @@ quickjs-emscripten-core/dist/index.d.ts:482
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1251
+packages/quickjs-emscripten-core/dist/index.d.ts:1251
 
 ***
 
@@ -500,7 +519,7 @@ Used internally for C-to-Javascript function calls.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:53
+packages/quickjs-ffi-types/dist/index.d.ts:53
 
 ***
 
@@ -512,7 +531,7 @@ Used internally for C-to-Javascript interrupt handlers.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:57
+packages/quickjs-ffi-types/dist/index.d.ts:57
 
 ***
 
@@ -524,7 +543,7 @@ Used internally for C-to-Javascript module loading.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:61
+packages/quickjs-ffi-types/dist/index.d.ts:61
 
 ***
 
@@ -540,7 +559,7 @@ You must dispose of any handles you create by calling the `.dispose()` method.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:389
+packages/quickjs-emscripten-core/dist/index.d.ts:389
 
 ***
 
@@ -553,7 +572,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:672
+packages/quickjs-emscripten-core/dist/index.d.ts:672
 
 ***
 
@@ -563,7 +582,7 @@ quickjs-emscripten-core/dist/index.d.ts:672
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:391
+packages/quickjs-ffi-types/dist/index.d.ts:432
 
 ***
 
@@ -576,7 +595,7 @@ be disposed.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:354
+packages/quickjs-emscripten-core/dist/index.d.ts:354
 
 ***
 
@@ -595,7 +614,7 @@ Used as an optional.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:17
+packages/quickjs-emscripten-core/dist/index.d.ts:17
 
 ***
 
@@ -612,7 +631,7 @@ Used as an optional for results of a Vm call.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:33
+packages/quickjs-emscripten-core/dist/index.d.ts:33
 
 ***
 
@@ -647,7 +666,7 @@ It should not retain a reference to its return value or thrown error.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:46
+packages/quickjs-emscripten-core/dist/index.d.ts:46
 
 ## Variables
 
@@ -665,11 +684,11 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 | releaseMode         | debug         | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
 | syncMode            | asyncify            | Build run through the ASYNCIFY WebAssembly transform. This imposes substantial size (2x the size of sync) and speed penalties (40% the speed of sync). In return, allows synchronous calls from the QuickJS WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! The [QuickJSAsyncRuntime](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncRuntime.md) and [QuickJSAsyncContext](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncContext.md) classes expose the ASYNCIFY-specific APIs. |
 | emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
-| exports             | require import browser                  | Has these package.json export conditions |
+| exports             | require import browser workerd                  | Has these package.json export conditions |
 
 #### Source
 
-variant-quickjs-wasmfile-debug-asyncify/dist/index.d.ts:17
+packages/variant-quickjs-wasmfile-debug-asyncify/dist/index.d.ts:17
 
 ***
 
@@ -687,11 +706,11 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 | releaseMode         | debug         | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
 | syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
 | emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
-| exports             | require import browser                  | Has these package.json export conditions |
+| exports             | require import browser workerd                  | Has these package.json export conditions |
 
 #### Source
 
-variant-quickjs-wasmfile-debug-sync/dist/index.d.ts:17
+packages/variant-quickjs-wasmfile-debug-sync/dist/index.d.ts:17
 
 ***
 
@@ -759,7 +778,7 @@ module code
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:89
+packages/quickjs-ffi-types/dist/index.d.ts:89
 
 ***
 
@@ -777,11 +796,11 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 | releaseMode         | release         | Optimized for performance; use when building/deploying your application. |
 | syncMode            | asyncify            | Build run through the ASYNCIFY WebAssembly transform. This imposes substantial size (2x the size of sync) and speed penalties (40% the speed of sync). In return, allows synchronous calls from the QuickJS WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! The [QuickJSAsyncRuntime](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncRuntime.md) and [QuickJSAsyncContext](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncContext.md) classes expose the ASYNCIFY-specific APIs. |
 | emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
-| exports             | require import browser                  | Has these package.json export conditions |
+| exports             | require import browser workerd                  | Has these package.json export conditions |
 
 #### Source
 
-variant-quickjs-wasmfile-release-asyncify/dist/index.d.ts:17
+packages/variant-quickjs-wasmfile-release-asyncify/dist/index.d.ts:17
 
 ***
 
@@ -799,11 +818,11 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 | releaseMode         | release         | Optimized for performance; use when building/deploying your application. |
 | syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
 | emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
-| exports             | require import browser                  | Has these package.json export conditions |
+| exports             | require import browser workerd                  | Has these package.json export conditions |
 
 #### Source
 
-variant-quickjs-wasmfile-release-sync/dist/index.d.ts:17
+packages/variant-quickjs-wasmfile-release-sync/dist/index.d.ts:17
 
 ## Functions
 
@@ -836,7 +855,7 @@ variant-quickjs-wasmfile-release-sync/dist/index.d.ts:17
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:85
+packages/quickjs-ffi-types/dist/index.d.ts:85
 
 ***
 
@@ -864,7 +883,7 @@ To work with the asyncified version of this library, see these functions:
 
 #### Source
 
-[quickjs-emscripten/src/mod.ts:28](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L28)
+[packages/quickjs-emscripten/src/mod.ts:28](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L28)
 
 ***
 
@@ -885,7 +904,7 @@ If called before `getQuickJS` resolves.
 
 #### Source
 
-[quickjs-emscripten/src/mod.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L41)
+[packages/quickjs-emscripten/src/mod.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L41)
 
 ***
 
@@ -909,7 +928,7 @@ If called before `getQuickJS` resolves.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:26
+packages/quickjs-emscripten-core/dist/index.d.ts:26
 
 ***
 
@@ -933,7 +952,7 @@ quickjs-emscripten-core/dist/index.d.ts:26
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:23
+packages/quickjs-emscripten-core/dist/index.d.ts:23
 
 ***
 
@@ -965,7 +984,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1309
+packages/quickjs-emscripten-core/dist/index.d.ts:1309
 
 ***
 
@@ -994,7 +1013,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Source
 
-[quickjs-emscripten/src/mod.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L76)
+[packages/quickjs-emscripten/src/mod.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L76)
 
 ***
 
@@ -1022,7 +1041,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Source
 
-[quickjs-emscripten/src/mod.ts:59](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L59)
+[packages/quickjs-emscripten/src/mod.ts:59](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L59)
 
 ***
 
@@ -1054,7 +1073,7 @@ Optionally, pass a [QuickJSAsyncVariant](interfaces/QuickJSAsyncVariant.md) to c
 
 #### Source
 
-[quickjs-emscripten/src/variants.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L46)
+[packages/quickjs-emscripten/src/variants.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L46)
 
 ***
 
@@ -1094,7 +1113,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1298
+packages/quickjs-emscripten-core/dist/index.d.ts:1298
 
 ***
 
@@ -1121,7 +1140,7 @@ Optionally, pass a [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md) to con
 
 #### Source
 
-[quickjs-emscripten/src/variants.ts:24](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L24)
+[packages/quickjs-emscripten/src/variants.ts:24](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L24)
 
 ***
 
@@ -1156,7 +1175,34 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1273
+packages/quickjs-emscripten-core/dist/index.d.ts:1273
+
+***
+
+### newVariant()
+
+> **newVariant**\<`T`\>(`baseVariant`, `options`): `T`
+
+Create a new variant by overriding how Emscripten obtains the WebAssembly module.
+This may be necessary in Cloudflare Workers, which can't compile WebAssembly modules from binary data.
+
+#### Type parameters
+
+• **T** extends [`QuickJSVariant`](exports.md#quickjsvariant)
+
+#### Parameters
+
+• **baseVariant**: `T`
+
+• **options**: [`CustomizeVariantOptions`](interfaces/CustomizeVariantOptions.md)
+
+#### Returns
+
+`T`
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:1333
 
 ***
 
@@ -1179,7 +1225,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1317
+packages/quickjs-emscripten-core/dist/index.d.ts:1341
 
 ***
 

@@ -37,12 +37,14 @@
 
 - [EmscriptenModule](interfaces/EmscriptenModule.md)
 - [EmscriptenModuleLoader](interfaces/EmscriptenModuleLoader.md)
+- [EmscriptenModuleLoaderOptions](interfaces/EmscriptenModuleLoaderOptions.md)
 - [QuickJSAsyncEmscriptenModule](interfaces/QuickJSAsyncEmscriptenModule.md)
 - [QuickJSAsyncFFI](interfaces/QuickJSAsyncFFI.md)
 - [QuickJSAsyncVariant](interfaces/QuickJSAsyncVariant.md)
 - [QuickJSEmscriptenModule](interfaces/QuickJSEmscriptenModule.md)
 - [QuickJSFFI](interfaces/QuickJSFFI.md)
 - [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md)
+- [SourceMapData](interfaces/SourceMapData.md)
 
 ## Type Aliases
 
@@ -55,7 +57,7 @@ for the Emscripten stack.
 
 #### Source
 
-[ffi-types.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L77)
+[packages/quickjs-ffi-types/src/ffi-types.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L77)
 
 ***
 
@@ -65,7 +67,7 @@ for the Emscripten stack.
 
 #### Source
 
-[variant-types.ts:50](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L50)
+[packages/quickjs-ffi-types/src/variant-types.ts:50](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L50)
 
 ***
 
@@ -75,7 +77,7 @@ for the Emscripten stack.
 
 #### Source
 
-[emscripten-types.ts:166](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L166)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:220](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L220)
 
 ***
 
@@ -88,7 +90,7 @@ for the Emscripten stack.
 
 #### Source
 
-[ffi-types.ts:89](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L89)
+[packages/quickjs-ffi-types/src/ffi-types.ts:89](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L89)
 
 ***
 
@@ -100,7 +102,7 @@ for the Emscripten stack.
 
 #### Source
 
-[ffi-types.ts:19](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L19)
+[packages/quickjs-ffi-types/src/ffi-types.ts:19](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L19)
 
 ***
 
@@ -112,7 +114,7 @@ for the Emscripten stack.
 
 #### Source
 
-[ffi-types.ts:24](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L24)
+[packages/quickjs-ffi-types/src/ffi-types.ts:24](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L24)
 
 ***
 
@@ -124,7 +126,7 @@ for the Emscripten stack.
 
 #### Source
 
-[ffi-types.ts:29](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L29)
+[packages/quickjs-ffi-types/src/ffi-types.ts:29](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L29)
 
 ***
 
@@ -136,7 +138,7 @@ for the Emscripten stack.
 
 #### Source
 
-[ffi-types.ts:14](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L14)
+[packages/quickjs-ffi-types/src/ffi-types.ts:14](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L14)
 
 ***
 
@@ -149,7 +151,7 @@ See JSValueConst and StaticJSValue.
 
 #### Source
 
-[ffi-types.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L41)
+[packages/quickjs-ffi-types/src/ffi-types.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L41)
 
 ***
 
@@ -161,7 +163,7 @@ Used internally for Javascript-to-C function calls.
 
 #### Source
 
-[ffi-types.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L51)
+[packages/quickjs-ffi-types/src/ffi-types.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L51)
 
 ***
 
@@ -174,7 +176,7 @@ See JSValue.
 
 #### Source
 
-[ffi-types.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L35)
+[packages/quickjs-ffi-types/src/ffi-types.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L35)
 
 ***
 
@@ -186,7 +188,7 @@ Used internally for Javascript-to-C function calls.
 
 #### Source
 
-[ffi-types.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L46)
+[packages/quickjs-ffi-types/src/ffi-types.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L46)
 
 ***
 
@@ -198,7 +200,7 @@ Opaque pointer that was allocated by js_malloc.
 
 #### Source
 
-[ffi-types.ts:94](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L94)
+[packages/quickjs-ffi-types/src/ffi-types.ts:94](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L94)
 
 ***
 
@@ -211,7 +213,7 @@ for the Emscripten stack.
 
 #### Source
 
-[ffi-types.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L83)
+[packages/quickjs-ffi-types/src/ffi-types.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L83)
 
 ***
 
@@ -223,7 +225,7 @@ Used internally for C-to-Javascript function calls.
 
 #### Source
 
-[ffi-types.ts:61](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L61)
+[packages/quickjs-ffi-types/src/ffi-types.ts:61](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L61)
 
 ***
 
@@ -235,7 +237,7 @@ Used internally for C-to-Javascript interrupt handlers.
 
 #### Source
 
-[ffi-types.ts:66](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L66)
+[packages/quickjs-ffi-types/src/ffi-types.ts:66](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L66)
 
 ***
 
@@ -247,7 +249,7 @@ Used internally for C-to-Javascript module loading.
 
 #### Source
 
-[ffi-types.ts:71](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L71)
+[packages/quickjs-ffi-types/src/ffi-types.ts:71](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L71)
 
 ***
 
@@ -257,7 +259,7 @@ Used internally for C-to-Javascript module loading.
 
 #### Source
 
-[variant-types.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L49)
+[packages/quickjs-ffi-types/src/variant-types.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L49)
 
 ## Variables
 
@@ -325,7 +327,7 @@ module code
 
 #### Source
 
-[ffi-types.ts:99](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L99)
+[packages/quickjs-ffi-types/src/ffi-types.ts:99](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L99)
 
 ## Functions
 
@@ -358,7 +360,7 @@ module code
 
 #### Source
 
-[ffi-types.ts:106](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L106)
+[packages/quickjs-ffi-types/src/ffi-types.ts:106](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L106)
 
 ***
 

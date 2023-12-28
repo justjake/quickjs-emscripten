@@ -41,13 +41,67 @@ declare namespace Emscripten {
   interface CCallOpts {
     async?: boolean
   }
+
+  class WasmOffsetConverter {
+    constructor(wasmBytes: ArrayBuffer, wasmModule: WebAssembly.Module)
+    convert(funcidx: number, offset: number): number
+    getIndex(offset: number): number
+    isSameFunc(offset1: number, offset2: number): boolean
+    getName(offset: number): string
+  }
+}
+
+export interface SourceMapData {
+  version: number
+  sources: string[]
+  names: string[]
+  mappings: string
+}
+
+/** @private */
+export interface QuickJSEmscriptenExtensions {
+  mock?: boolean
+  removeRunDependency?(name: string): void
+  receiveSourceMapJSON?(data: SourceMapData): void
+  WasmOffsetConverter?: typeof Emscripten.WasmOffsetConverter
+  existingWasmOffsetConverter?: Emscripten.WasmOffsetConverter
+  receiveWasmOffsetConverter?(bytes: ArrayBuffer, mod: WebAssembly.Module): void
+}
+
+/** It's possible to provide these parameters to an emscripten module loader. */
+export interface EmscriptenModuleLoaderOptions {
+  /** Give a path or URL where Emscripten should locate the given file */
+  locateFile?(
+    fileName: "emscripten-module.wasm" | "emscripten-module.wasm.map" | string,
+    /** Often `''` (empty string) */
+    relativeTo: string,
+  ): string
+
+  /** Compile this to WebAssembly.Module */
+  wasmBinary?: ArrayBuffer
+
+  /** Create an instance of the WASM module, call onSuccess(instance), then return instance.exports */
+  instantiateWasm?(
+    imports: WebAssembly.Imports,
+    onSuccess: (instance: WebAssembly.Instance) => void,
+  ): WebAssembly.Exports | Promise<WebAssembly.Exports>
+
+  /** Called by emscripten as dependencies blocking initialization are added or fulfilled. May only be called in debug builds. */
+  monitorRunDependencies?(left: number): void
+
+  /**
+   * Emscripten may mutate the loader options object to contain this function.
+   * It's added in our --pre-js / pre.js file, and used by custom variant loaders.
+   * @private
+   */
+  quickjsEmscriptenInit?(log: typeof console.log): QuickJSEmscriptenExtensions
 }
 
 /**
  * Typings for the features we use to interface with our Emscripten build of
  * QuickJS.
  */
-export interface EmscriptenModule {
+export interface EmscriptenModule extends EmscriptenModuleLoaderOptions {
   // No longer needed:
   // addFunction(fn: Function, type: string): number
   // removeFunction(pointer: number): void
@@ -166,5 +220,5 @@ export interface QuickJSAsyncEmscriptenModule extends EmscriptenModule {
 export type EitherModule = QuickJSEmscriptenModule | QuickJSAsyncEmscriptenModule
 
 export interface EmscriptenModuleLoader<T extends EmscriptenModule> {
-  (): Promise<T>
+  (options?: EmscriptenModuleLoaderOptions): Promise<T>
 }

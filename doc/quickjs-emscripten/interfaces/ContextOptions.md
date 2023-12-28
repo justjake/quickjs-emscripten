@@ -23,7 +23,7 @@ To omit all intrinsics, pass an empty array.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:454
+packages/quickjs-emscripten-core/dist/index.d.ts:454
 
 ***
 

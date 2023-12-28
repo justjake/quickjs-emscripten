@@ -25,7 +25,7 @@ don't include the stack frames before this eval in the Error() backtraces
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:480
+packages/quickjs-emscripten-core/dist/index.d.ts:480
 
 ***
 
@@ -39,7 +39,7 @@ with JS_EvalFunction().
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:478
+packages/quickjs-emscripten-core/dist/index.d.ts:478
 
 ***
 
@@ -51,7 +51,7 @@ Force "strict" mode
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:470
+packages/quickjs-emscripten-core/dist/index.d.ts:470
 
 ***
 
@@ -63,7 +63,7 @@ Force "strip" mode
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:472
+packages/quickjs-emscripten-core/dist/index.d.ts:472
 
 ***
 
@@ -75,7 +75,7 @@ Global code (default)
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:468
+packages/quickjs-emscripten-core/dist/index.d.ts:468
 
 ***
 

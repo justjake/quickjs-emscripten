@@ -178,6 +178,7 @@ export interface PackageJson {
         browser?: string
         module?: string
         iife?: string
+        workerd?: string
         import: string | undefined
         require: string | undefined
         default: string | undefined

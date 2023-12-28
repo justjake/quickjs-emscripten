@@ -75,6 +75,7 @@ CFLAGS_CJS+=-s ENVIRONMENT=web,worker,node
 
 
 
+
 # GENERATE_TS options - variant specific
 
 
@@ -98,6 +99,7 @@ EXPORTS: CJS
 CJS: $(DIST)/emscripten-module.cjs $(DIST)/emscripten-module.d.ts
 MJS: $(DIST)/emscripten-module.mjs $(DIST)/emscripten-module.d.ts
 BROWSER: $(DIST)/emscripten-module.browser.mjs $(DIST)/emscripten-module.browser.d.ts
+CLOUDFLARE: $(DIST)/emscripten-module.cloudflare.cjs $(DIST)/emscripten-module.cloudflare.d.ts
 
 $(DIST)/emscripten-module.mjs: CFLAGS_WASM+=$(CFLAGS_ESM)
 $(DIST)/emscripten-module.mjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
@@ -110,20 +112,29 @@ $(DIST)/emscripten-module.cjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OB
 	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 
 $(DIST)/emscripten-module.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
+	$(MKDIRP)
 	echo '// Generated from $<' > $@
 	cat $< >> $@
 
 $(DIST)/emscripten-module%.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
+	$(MKDIRP)
 	echo '// Generated from $<' > $@
 	cat $< >> $@
 
 # Browser target needs intermediate build to avoid two copies of .wasm
-$(DIST)/emscripten-module.browser.mjs: $(BUILD_WRAPPER)/browser/emscripten-module.mjs
+$(DIST)/emscripten-module.%.mjs: $(BUILD_WRAPPER)/%/emscripten-module.js
+	$(MKDIRP)
 	if [[ -e $(basename $<).wasm ]] ; then cp -v $(basename $<).wasm* $(dir $@); fi
 	cp $< $@
 
-$(BUILD_WRAPPER)/browser/emscripten-module.mjs: CFLAGS_WASM+=$(CFLAGS_BROWSER)
-$(BUILD_WRAPPER)/browser/emscripten-module.mjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
+$(DIST)/emscripten-module.%.cjs: $(BUILD_WRAPPER)/%/emscripten-module.js
+	$(MKDIRP)
+	if [[ -e $(basename $<).wasm ]] ; then cp -v $(basename $<).wasm* $(dir $@); fi
+	cp $< $@
+
+$(BUILD_WRAPPER)/browser/emscripten-module.js: CFLAGS_WASM+=$(CFLAGS_BROWSER)
+$(BUILD_WRAPPER)/cloudflare/emscripten-module.js: CFLAGS_WASM+=$(CFLAGS_CLOUDFLARE)
+$(BUILD_WRAPPER)/%/emscripten-module.js: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
 

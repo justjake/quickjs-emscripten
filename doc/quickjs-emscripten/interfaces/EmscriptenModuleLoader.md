@@ -10,7 +10,11 @@
 
 • **T** extends [`EmscriptenModule`](EmscriptenModule.md)
 
-> **EmscriptenModuleLoader**(): `Promise`\<`T`\>
+> **EmscriptenModuleLoader**(`options`?): `Promise`\<`T`\>
+
+## Parameters
+
+• **options?**: [`EmscriptenModuleLoaderOptions`](EmscriptenModuleLoaderOptions.md)
 
 ## Returns
 
@@ -18,7 +22,7 @@
 
 ## Source
 
-quickjs-ffi-types/dist/index.d.ts:208
+packages/quickjs-ffi-types/dist/index.d.ts:249
 
 ***
 

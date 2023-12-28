@@ -11,7 +11,7 @@ QuickJS.
 
 ## Contents
 
-- [Extended By](EmscriptenModule.md#extended-by)
+- [Extends](EmscriptenModule.md#extends)
 - [Properties](EmscriptenModule.md#properties)
   - [FAST\_MEMORY](EmscriptenModule.md#fast-memory)
   - [HEAP16](EmscriptenModule.md#heap16)
@@ -24,18 +24,21 @@ QuickJS.
   - [HEAPU8](EmscriptenModule.md#heapu8)
   - [TOTAL\_MEMORY](EmscriptenModule.md#total-memory)
   - [TOTAL\_STACK](EmscriptenModule.md#total-stack)
+  - [wasmBinary?](EmscriptenModule.md#wasmbinary)
 - [Methods](EmscriptenModule.md#methods)
   - [UTF8ToString()](EmscriptenModule.md#utf8tostring)
   - [\_free()](EmscriptenModule.md#free)
   - [\_malloc()](EmscriptenModule.md#malloc)
   - [cwrap()](EmscriptenModule.md#cwrap)
+  - [instantiateWasm()?](EmscriptenModule.md#instantiatewasm)
   - [lengthBytesUTF8()](EmscriptenModule.md#lengthbytesutf8)
+  - [locateFile()?](EmscriptenModule.md#locatefile)
+  - [monitorRunDependencies()?](EmscriptenModule.md#monitorrundependencies)
   - [stringToUTF8()](EmscriptenModule.md#stringtoutf8)
 
-## Extended By
+## Extends
 
-- [`QuickJSAsyncEmscriptenModule`](QuickJSAsyncEmscriptenModule.md)
-- [`QuickJSEmscriptenModule`](QuickJSEmscriptenModule.md)
+- [`EmscriptenModuleLoaderOptions`](EmscriptenModuleLoaderOptions.md)
 
 ## Properties
 
@@ -45,7 +48,7 @@ QuickJS.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:163
+packages/quickjs-ffi-types/dist/index.d.ts:204
 
 ***
 
@@ -55,7 +58,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:163
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:154
+packages/quickjs-ffi-types/dist/index.d.ts:195
 
 ***
 
@@ -65,7 +68,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:154
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:155
+packages/quickjs-ffi-types/dist/index.d.ts:196
 
 ***
 
@@ -75,7 +78,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:155
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:153
+packages/quickjs-ffi-types/dist/index.d.ts:194
 
 ***
 
@@ -85,7 +88,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:153
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:159
+packages/quickjs-ffi-types/dist/index.d.ts:200
 
 ***
 
@@ -95,7 +98,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:159
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:160
+packages/quickjs-ffi-types/dist/index.d.ts:201
 
 ***
 
@@ -105,7 +108,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:160
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:157
+packages/quickjs-ffi-types/dist/index.d.ts:198
 
 ***
 
@@ -115,7 +118,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:157
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:158
+packages/quickjs-ffi-types/dist/index.d.ts:199
 
 ***
 
@@ -125,7 +128,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:158
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:156
+packages/quickjs-ffi-types/dist/index.d.ts:197
 
 ***
 
@@ -135,7 +138,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:156
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:162
+packages/quickjs-ffi-types/dist/index.d.ts:203
 
 ***
 
@@ -145,7 +148,23 @@ packages/quickjs-ffi-types/dist/index.d.ts:162
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:161
+packages/quickjs-ffi-types/dist/index.d.ts:202
+
+***
+
+### wasmBinary?
+
+> **wasmBinary**?: `ArrayBuffer`
+
+Compile this to WebAssembly.Module
+
+#### Inherited from
+
+[`quickjs-emscripten-core.EmscriptenModuleLoaderOptions.wasmBinary`](EmscriptenModuleLoaderOptions.md#wasmbinary)
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:163
 
 ## Methods
 
@@ -168,7 +187,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:148
+packages/quickjs-ffi-types/dist/index.d.ts:189
 
 ***
 
@@ -186,7 +205,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:148
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:151
+packages/quickjs-ffi-types/dist/index.d.ts:192
 
 ***
 
@@ -204,7 +223,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:151
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:150
+packages/quickjs-ffi-types/dist/index.d.ts:191
 
 ***
 
@@ -237,7 +256,33 @@ packages/quickjs-ffi-types/dist/index.d.ts:150
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:152
+packages/quickjs-ffi-types/dist/index.d.ts:193
+
+***
+
+### instantiateWasm()?
+
+> **`optional`** **instantiateWasm**(`imports`, `onSuccess`): `Exports` \| `Promise`\<`Exports`\>
+
+Create an instance of the WASM module, call onSuccess(instance), then return instance.exports
+
+#### Parameters
+
+• **imports**: `Imports`
+
+• **onSuccess**: (`instance`) => `void`
+
+#### Returns
+
+`Exports` \| `Promise`\<`Exports`\>
+
+#### Inherited from
+
+[`quickjs-emscripten-core.EmscriptenModuleLoaderOptions.instantiateWasm`](EmscriptenModuleLoaderOptions.md#instantiatewasm)
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:165
 
 ***
 
@@ -255,7 +300,59 @@ packages/quickjs-ffi-types/dist/index.d.ts:152
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:149
+packages/quickjs-ffi-types/dist/index.d.ts:190
+
+***
+
+### locateFile()?
+
+> **`optional`** **locateFile**(`fileName`, `relativeTo`): `string`
+
+Give a path or URL where Emscripten should locate the given file
+
+#### Parameters
+
+• **fileName**: `string`
+
+• **relativeTo**: `string`
+
+Often `''` (empty string)
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`quickjs-emscripten-core.EmscriptenModuleLoaderOptions.locateFile`](EmscriptenModuleLoaderOptions.md#locatefile)
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:159
+
+***
+
+### monitorRunDependencies()?
+
+> **`optional`** **monitorRunDependencies**(`left`): `void`
+
+Called by emscripten as dependencies blocking initialization are added or fulfilled. May only be called in debug builds.
+
+#### Parameters
+
+• **left**: `number`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`quickjs-emscripten-core.EmscriptenModuleLoaderOptions.monitorRunDependencies`](EmscriptenModuleLoaderOptions.md#monitorrundependencies)
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:167
 
 ***
 
@@ -280,7 +377,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#stringToUTF8
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:143
+packages/quickjs-ffi-types/dist/index.d.ts:184
 
 ***
 
