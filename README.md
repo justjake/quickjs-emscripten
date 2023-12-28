@@ -62,7 +62,7 @@ main()
     - [quickjs-emscripten-core, variants, and advanced packaging](#quickjs-emscripten-core-variants-and-advanced-packaging)
     - [Debugging](#debugging)
     - [More Documentation](#more-documentation)
-    - [Requirements](#requirements)
+    - [Supported Platforms](#supported-platforms)
   - [Background](#background)
   - [Status \& Roadmap](#status--roadmap)
   - [Related](#related)
@@ -599,20 +599,30 @@ See the [documentation of quickjs-emscripten-core][core] for more details.
 
 [Github] | [NPM] | [API Documentation][api] | [Variants][core] | [Examples][tests]
 
-### Requirements
+### Supported Platforms
 
 `quickjs-emscripten` and related packages should work in any environment that supports ES2020.
 
-- NodeJS: requires v16.0.0 or later for WebAssembly compatibility. Tested with node@18.
-- We estimate support for the following browsers:
+- Browsers: we estimate support for the following browser versions. See the [global-iife][iife] and [esmodule][esm-html] HTML examples.
   - Chrome 63+
   - Edge 79+
   - Safari 11.1+
   - Firefox 58+
+- NodeJS: requires v16.0.0 or later for WebAssembly compatibility. Tested with node@18. See the [node-typescript example][tsx-example].
+- Typescript: tested with typescript@4.5.5 and typescript@5.3.3. See the [node-typescript example][tsx-example].
+- Vite: tested with vite@5.0.10. See the [Vite/Vue example][vite].
+- Create react app: tested with react-scripts@5.0.1. See the [create-react-app example][cra].
 - Webpack: tested with webpack@5.89.0 via create-react-app.
-- Vite: tested with vite@5.0.10.
-- Typescript: tested with typescript@4.5.5 and typescript@5.3.3.
-- Create react app: tested with react-scripts@5.0.1.
+- Cloudflare Workers: tested with wrangler@3.22.1. See the [Cloudflare Workers example][cloudflare].
+- Deno: tested with deno 1.39.1. See the [Deno example][deno].
+
+[iife]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/global-iife.html
+[esm-html]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/esmodule.html
+[deno]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/deno
+[vite]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/vite-vue
+[cra]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/create-react-app
+[cloudflare]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/cloudflare-workers
+[tsx-example]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/node-typescript
 
 ## Background
 

@@ -10,9 +10,14 @@
 
 import type { QuickJSWASMModule } from 'quickjs-emscripten';
 import { newQuickJSWASMModule, DEBUG_SYNC as baseVariant, newVariant } from 'quickjs-emscripten';
-import cloudflareWasmModule from '@jitl/quickjs-wasmfile-debug-sync/wasm';
+import cloudflareWasmModule from './DEBUG_SYNC.wasm';
 import cloudflareWasmModuleSourceMap from './DEBUG_SYNC.wasm.map.txt';
 
+/**
+ * We need to make a new variant that directly passes the imported WebAssembly.Module
+ * to Emscripten. Normally we'd load the wasm file as bytes from a URL, but
+ * that's forbidden in Cloudflare workers.
+ */
 const cloudflareVariant = newVariant(baseVariant, {
 	wasmModule: cloudflareWasmModule,
 	wasmSourceMapData: cloudflareWasmModuleSourceMap,
