@@ -15,7 +15,7 @@
     "prepare": "yarn:check",
     "clean": "git clean -dfx ./build && yarn for-each-package clean",
     "prettier": "prettier --write .",
-    "update-quickjs": "git subtree pull --prefix=quickjs --squash git@github.com:bellard/quickjs.git master",
+    "vendor:quickjs": "git subtree pull --prefix=vendor/quickjs --squash git@github.com:bellard/quickjs.git master",
     "smoketest-node": "yarn tarball && ./scripts/smoketest-node.ts",
     "smoketest-cra": "yarn tarball && ./scripts/smoketest-create-react-app.ts",
     "smoketest-vite": "yarn tarball && ./scripts/smoketest-vite.ts",
