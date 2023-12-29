@@ -11,17 +11,23 @@ Lifetimes. See [withScope](Scope.md#withscope). and [withScopeAsync](Scope.md#wi
 
 ## Contents
 
+- [Extends](Scope.md#extends)
 - [Implements](Scope.md#implements)
 - [Constructors](Scope.md#constructors)
   - [new Scope(undefined)](Scope.md#new-scopeundefined)
 - [Accessors](Scope.md#accessors)
   - [alive](Scope.md#alive)
 - [Methods](Scope.md#methods)
+  - [`[dispose]`()](Scope.md#dispose)
   - [dispose()](Scope.md#dispose)
   - [manage()](Scope.md#manage)
   - [withScope()](Scope.md#withscope)
   - [withScopeAsync()](Scope.md#withscopeasync)
   - [withScopeMaybeAsync()](Scope.md#withscopemaybeasync)
+
+## Extends
+
+- [`UsingDisposable`](UsingDisposable.md)
 
 ## Implements
 
@@ -37,6 +43,10 @@ Lifetimes. See [withScope](Scope.md#withscope). and [withScopeAsync](Scope.md#wi
 
 [`Scope`](Scope.md)
 
+#### Inherited from
+
+[`quickjs-emscripten.UsingDisposable.constructor`](UsingDisposable.md#constructors)
+
 ## Accessors
 
 ### alive
@@ -49,13 +59,37 @@ Lifetimes. See [withScope](Scope.md#withscope). and [withScopeAsync](Scope.md#wi
 
 true if the object is alive
 
-false after the object has been [dispose](Scope.md#dispose)d
+false after the object has been [dispose](Scope.md#dispose-1)d
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:594
+packages/quickjs-emscripten-core/dist/index.d.ts:616
 
 ## Methods
+
+### `[dispose]`()
+
+> **[dispose]**(): `void`
+
+Just calls the standard .dispose() method of this class.
+
+#### Returns
+
+`void`
+
+#### Implementation of
+
+[`quickjs-emscripten.Disposable.[dispose]`](../interfaces/Disposable.md#dispose)
+
+#### Inherited from
+
+[`quickjs-emscripten.UsingDisposable.[dispose]`](UsingDisposable.md#dispose)
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:520
+
+***
 
 ### dispose()
 
@@ -69,11 +103,15 @@ Dispose of the underlying resources used by this object.
 
 #### Implementation of
 
-[`quickjs-emscripten.Disposable.dispose`](../interfaces/Disposable.md#dispose)
+[`quickjs-emscripten.Disposable.dispose`](../interfaces/Disposable.md#dispose-1)
+
+#### Overrides
+
+[`quickjs-emscripten.UsingDisposable.dispose`](UsingDisposable.md#abstract-dispose)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:595
+packages/quickjs-emscripten-core/dist/index.d.ts:617
 
 ***
 
@@ -97,7 +135,7 @@ Track `lifetime` so that it is disposed when this scope is disposed.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:593
+packages/quickjs-emscripten-core/dist/index.d.ts:615
 
 ***
 
@@ -127,7 +165,7 @@ Do not use with async functions. Instead, use [withScopeAsync](Scope.md#withscop
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:580
+packages/quickjs-emscripten-core/dist/index.d.ts:602
 
 ***
 
@@ -154,7 +192,7 @@ block returns.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:588
+packages/quickjs-emscripten-core/dist/index.d.ts:610
 
 ***
 
@@ -182,7 +220,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:588
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:581
+packages/quickjs-emscripten-core/dist/index.d.ts:603
 
 ***
 

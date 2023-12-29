@@ -32,13 +32,14 @@ Configure ES module loading with [setModuleLoader](QuickJSRuntime.md#setmodulelo
 
 ## Contents
 
-- [Extended By](QuickJSRuntime.md#extended-by)
+- [Extends](QuickJSRuntime.md#extends)
 - [Implements](QuickJSRuntime.md#implements)
 - [Properties](QuickJSRuntime.md#properties)
   - [context](QuickJSRuntime.md#context)
 - [Accessors](QuickJSRuntime.md#accessors)
   - [alive](QuickJSRuntime.md#alive)
 - [Methods](QuickJSRuntime.md#methods)
+  - [`[dispose]`()](QuickJSRuntime.md#dispose)
   - [assertOwned()](QuickJSRuntime.md#assertowned)
   - [computeMemoryUsage()](QuickJSRuntime.md#computememoryusage)
   - [dispose()](QuickJSRuntime.md#dispose)
@@ -53,9 +54,9 @@ Configure ES module loading with [setModuleLoader](QuickJSRuntime.md#setmodulelo
   - [setMemoryLimit()](QuickJSRuntime.md#setmemorylimit)
   - [setModuleLoader()](QuickJSRuntime.md#setmoduleloader)
 
-## Extended By
+## Extends
 
-- [`QuickJSAsyncRuntime`](QuickJSAsyncRuntime.md)
+- [`UsingDisposable`](UsingDisposable.md)
 
 ## Implements
 
@@ -89,13 +90,37 @@ packages/quickjs-emscripten-core/dist/index.d.ts:160
 
 true if the object is alive
 
-false after the object has been [dispose](QuickJSRuntime.md#dispose)d
+false after the object has been [dispose](QuickJSRuntime.md#dispose-1)d
 
 #### Source
 
 packages/quickjs-emscripten-core/dist/index.d.ts:187
 
 ## Methods
+
+### `[dispose]`()
+
+> **[dispose]**(): `void`
+
+Just calls the standard .dispose() method of this class.
+
+#### Returns
+
+`void`
+
+#### Implementation of
+
+[`quickjs-emscripten.Disposable.[dispose]`](../interfaces/Disposable.md#dispose)
+
+#### Inherited from
+
+[`quickjs-emscripten.UsingDisposable.[dispose]`](UsingDisposable.md#dispose)
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:520
+
+***
 
 ### assertOwned()
 
@@ -153,7 +178,11 @@ Dispose of the underlying resources used by this object.
 
 #### Implementation of
 
-[`quickjs-emscripten.Disposable.dispose`](../interfaces/Disposable.md#dispose)
+[`quickjs-emscripten.Disposable.dispose`](../interfaces/Disposable.md#dispose-1)
+
+#### Overrides
+
+[`quickjs-emscripten.UsingDisposable.dispose`](UsingDisposable.md#abstract-dispose)
 
 #### Source
 

@@ -556,17 +556,25 @@ To use a variant, call `newQuickJSWASMModule` or `newQuickJSAsyncWASMModule` wit
 
 ```typescript
 import {
-  newQuickJSWASMModule, newQuickJSAsyncWASMModule,
-  RELEASE_SYNC, DEBUG_SYNC,
-  RELEASE_ASYNC, DEBUG_ASYNC,
-} from 'quickjs-emscripten'
+  newQuickJSWASMModule,
+  newQuickJSAsyncWASMModule,
+  RELEASE_SYNC,
+  DEBUG_SYNC,
+  RELEASE_ASYNC,
+  DEBUG_ASYNC,
+} from "quickjs-emscripten"
 
 const QuickJSReleaseSync = await newQuickJSWASMModule(RELEASE_SYNC)
 const QuickJSDebugSync = await newQuickJSWASMModule(DEBUG_SYNC)
 const QuickJSReleaseAsync = await newQuickJSAsyncWASMModule(RELEASE_ASYNC)
 const QuickJSDebugAsync = await newQuickJSAsyncWASMModule(DEBUG_ASYNC)
 
-for (const quickjs of [QuickJSReleaseSync, QuickJSDebugSync, QuickJSReleaseAsync, QuickJSDebugAsync]) {
+for (const quickjs of [
+  QuickJSReleaseSync,
+  QuickJSDebugSync,
+  QuickJSReleaseAsync,
+  QuickJSDebugAsync,
+]) {
   const vm = quickjs.newContext()
   const result = vm.unwrapResult(vm.evalCode("1 + 1")).consume(vm.getNumber)
   console.log(result)
@@ -579,7 +587,7 @@ for (const quickjs of [QuickJSReleaseSync, QuickJSDebugSync, QuickJSReleaseAsync
 
 Including 4 different copies of the WebAssembly module in the main package gives it an install size of [about 9.04mb](https://packagephobia.com/result?p=quickjs-emscripten). If you're building a CLI package or library of your own, or otherwise don't need to include 4 different variants in your `node_modules`, you can switch to the `quickjs-emscripten-core` package, which contains only the Javascript code for this library, and install one (or more) variants a-la-carte as separate packages.
 
-The most minimal setup would be to install `quickjs-emscripten-core` and `@jitl/quickjs-wasmfile-release-sync` (1.3M total):
+The most minimal setup would be to install `quickjs-emscripten-core` and `@jitl/quickjs-wasmfile-release-sync` (1.3mb total):
 
 ```bash
 yarn add quickjs-emscripten-core @jitl/quickjs-wasmfile-release-sync
@@ -594,12 +602,12 @@ Then, you can use quickjs-emscripten-core's `newQuickJSWASMModuleFromVariant` to
 
 ```typescript
 // src/quickjs.mjs
-import { newQuickJSWASMModuleFromVariant } from 'quickjs-emscripten-core'
-import RELEASE_SYNC from '@jitl/quickjs-wasmfile-release-sync'
+import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
+import RELEASE_SYNC from "@jitl/quickjs-wasmfile-release-sync"
 export const QuickJS = await newQuickJSWASMModuleFromVariant(RELEASE_SYNC)
 
 // src/app.mjs
-import { QuickJS } from './quickjs.mjs'
+import { QuickJS } from "./quickjs.mjs"
 console.log(QuickJS.evalCode("1 + 1"))
 ```
 
@@ -614,9 +622,9 @@ To run QuickJS, we need to load a WebAssembly module into the host Javascript ru
 To customize the loading of an existing variant, create a new variant with your loading settings using `newVariant`, passing [CustomizeVariantOptions][newVariant]. For example, you need to customize loading in Cloudflare Workers (see [the full example][cloudflare]).
 
 ```typescript
-import { newQuickJSWASMModule, DEBUG_SYNC as baseVariant, newVariant } from 'quickjs-emscripten';
-import cloudflareWasmModule from './DEBUG_SYNC.wasm';
-import cloudflareWasmModuleSourceMap from './DEBUG_SYNC.wasm.map.txt';
+import { newQuickJSWASMModule, DEBUG_SYNC as baseVariant, newVariant } from "quickjs-emscripten"
+import cloudflareWasmModule from "./DEBUG_SYNC.wasm"
+import cloudflareWasmModuleSourceMap from "./DEBUG_SYNC.wasm.map.txt"
 
 /**
  * We need to make a new variant that directly passes the imported WebAssembly.Module
@@ -626,7 +634,7 @@ import cloudflareWasmModuleSourceMap from './DEBUG_SYNC.wasm.map.txt';
 const cloudflareVariant = newVariant(baseVariant, {
   wasmModule: cloudflareWasmModule,
   wasmSourceMapData: cloudflareWasmModuleSourceMap,
-});
+})
 ```
 
 [newVariant]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/interfaces/CustomizeVariantOptions.md

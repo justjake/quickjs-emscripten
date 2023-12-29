@@ -15,6 +15,7 @@ Use [Scope](../classes/Scope.md) to manage cleaning up multiple disposables.
 - [Properties](Disposable.md#properties)
   - [alive](Disposable.md#alive)
 - [Methods](Disposable.md#methods)
+  - [`[dispose]`()](Disposable.md#dispose)
   - [dispose()](Disposable.md#dispose)
 
 ## Properties
@@ -28,6 +29,22 @@ Use [Scope](../classes/Scope.md) to manage cleaning up multiple disposables.
 packages/quickjs-emscripten-core/dist/index.d.ts:498
 
 ## Methods
+
+### `[dispose]`()
+
+> **[dispose]**(): `void`
+
+A method that is used to release resources held by an object. Called by the semantics of the `using` statement.
+
+#### Returns
+
+`void`
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:502
+
+***
 
 ### dispose()
 

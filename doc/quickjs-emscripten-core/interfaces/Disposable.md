@@ -15,6 +15,7 @@ Use [Scope](../classes/Scope.md) to manage cleaning up multiple disposables.
 - [Properties](Disposable.md#properties)
   - [alive](Disposable.md#alive)
 - [Methods](Disposable.md#methods)
+  - [`[dispose]`()](Disposable.md#dispose)
   - [dispose()](Disposable.md#dispose)
 
 ## Properties
@@ -25,9 +26,25 @@ Use [Scope](../classes/Scope.md) to manage cleaning up multiple disposables.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:22](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L22)
+[packages/quickjs-emscripten-core/src/lifetime.ts:25](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L25)
 
 ## Methods
+
+### `[dispose]`()
+
+> **[dispose]**(): `void`
+
+A method that is used to release resources held by an object. Called by the semantics of the `using` statement.
+
+#### Returns
+
+`void`
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:30](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L30)
+
+***
 
 ### dispose()
 
@@ -41,7 +58,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:16](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L16)
+[packages/quickjs-emscripten-core/src/lifetime.ts:19](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L19)
 
 ***
 

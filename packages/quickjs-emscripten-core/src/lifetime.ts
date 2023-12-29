@@ -4,15 +4,8 @@ import { QTS_DEBUG } from "./debug"
 import { QuickJSUseAfterFree } from "./errors"
 import type { QuickJSHandle } from "./types"
 
-// Polyfill Symbol.dispose if needed
-if (typeof Symbol.dispose !== "symbol") {
-  Object.defineProperty(Symbol, "dispose", {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: Symbol.for("dispose"),
-  })
-}
+// Note: we don't need to polyfill Symbol.dispose because ESBuild falls back to
+// Symbol.for("Symbol.dispose") when Symbol.dispose is not available.
 
 /**
  * An object that can be disposed.
@@ -37,9 +30,22 @@ export interface Disposable {
   [Symbol.dispose](): void
 }
 
+/**
+ * Base abstract class that helps implement {@link Disposable} by providing a default implementation of {@link Symbol.dispose}.
+ */
 export abstract class UsingDisposable implements Disposable {
+  /**
+   * @returns true if the object is alive
+   * @returns false after the object has been {@link dispose}d
+   */
   declare abstract readonly alive: boolean
+  /**
+   * Dispose of the underlying resources used by this object.
+   */
   abstract dispose(): void
+  /**
+   * Just calls the standard .dispose() method of this class.
+   */
   [Symbol.dispose]() {
     return this.dispose()
   }

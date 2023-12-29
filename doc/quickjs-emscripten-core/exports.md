@@ -79,6 +79,7 @@
 - [Scope](classes/Scope.md)
 - [StaticLifetime](classes/StaticLifetime.md)
 - [TestQuickJSWASMModule](classes/TestQuickJSWASMModule.md)
+- [UsingDisposable](classes/UsingDisposable.md)
 - [WeakLifetime](classes/WeakLifetime.md)
 
 ## Interfaces
