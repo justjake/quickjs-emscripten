@@ -15,3 +15,4 @@ packages/variant-*/src/ffi.ts
 packages/quickjs-ffi-types/src/ffi*.ts
 typedoc.js
 typedoc.base.js
+vendor
