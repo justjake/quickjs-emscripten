@@ -50,6 +50,7 @@ main()
     - [Interfacing with the interpreter](#interfacing-with-the-interpreter)
       - [Runtime](#runtime)
     - [Memory Management](#memory-management)
+      - [`using` statement](#using-statement)
       - [Scope](#scope)
       - [`Lifetime.consume(fn)`](#lifetimeconsumefn)
     - [Exposing APIs](#exposing-apis)
@@ -191,6 +192,33 @@ vm.dispose()
 
 Here are some strategies to reduce the toil of calling `.dispose()` on each
 handle you create:
+
+#### `using` statement
+
+The `using` statement is a Stage 3 (as of 2023-12-29) proposal for Javascript that declares a constant variable and automatically calls the `[Symbol.dispose]()` method of an object when it goes out of scope. Read more [in this Typescript release announcement][using]. Here's the "Interfacing with the interpreter" example re-written using `using`:
+
+```typescript
+using vm = QuickJS.newContext()
+let state = 0
+
+// The block here isn't needed for correctness, but it shows
+// how to get a tighter bound on the lifetime of `fnHandle`.
+{
+  using fnHandle = vm.newFunction("nextId", () => {
+    return vm.newNumber(++state)
+  })
+
+  vm.setProp(vm.global, "nextId", fnHandle)
+  // fnHandle.dispose() is called automatically when the block exits
+}
+
+using nextId = vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`))
+console.log("vm result:", vm.getNumber(nextId), "native state:", state)
+// nextId.dispose() is called automatically when the block exits
+// vm.dispose() is called automatically when the block exits
+```
+
+[using]: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html#using-declarations-and-explicit-resource-management
 
 #### Scope
 
