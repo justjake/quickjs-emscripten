@@ -65,8 +65,8 @@ main()
     - [Using in the browser without a build step](#using-in-the-browser-without-a-build-step)
     - [quickjs-emscripten-core, variants, and advanced packaging](#quickjs-emscripten-core-variants-and-advanced-packaging)
     - [Debugging](#debugging)
-    - [More Documentation](#more-documentation)
     - [Supported Platforms](#supported-platforms)
+    - [More Documentation](#more-documentation)
   - [Background](#background)
   - [Status \& Roadmap](#status--roadmap)
   - [Related](#related)
@@ -86,8 +86,8 @@ main()
   - [Using in the browser without a build step](README.md#using-in-the-browser-without-a-build-step)
   - [quickjs-emscripten-core, variants, and advanced packaging](README.md#quickjs-emscripten-core-variants-and-advanced-packaging)
   - [Debugging](README.md#debugging)
-  - [More Documentation](README.md#more-documentation)
   - [Supported Platforms](README.md#supported-platforms)
+  - [More Documentation](README.md#more-documentation)
 - [Background](README.md#background)
 - [Status & Roadmap](README.md#status-roadmap)
 - [Related](README.md#related)
@@ -620,10 +620,6 @@ See the [documentation of quickjs-emscripten-core][core] for more details.
 
 [setDebugMode]: doc/quickjs-emscripten/exports.md#setdebugmode
 
-### More Documentation
-
-[Github] | [NPM] | [API Documentation][api] | [Variants][core] | [Examples][tests]
-
 ### Supported Platforms
 
 `quickjs-emscripten` and related packages should work in any environment that supports ES2020.
@@ -648,6 +644,10 @@ See the [documentation of quickjs-emscripten-core][core] for more details.
 [cra]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/create-react-app
 [cloudflare]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/cloudflare-workers
 [tsx-example]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/node-typescript
+
+### More Documentation
+
+[Github] | [NPM] | [API Documentation][api] | [Variants][core] | [Examples][tests]
 
 ## Background
 
