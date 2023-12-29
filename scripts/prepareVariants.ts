@@ -83,7 +83,7 @@ const SEPARATE_FILE_INCLUSION: BuildVariant["exports"] = {
 }
 
 const buildMatrix = {
-  library: [CLibrary.QuickJS],
+  library: [CLibrary.QuickJS, CLibrary.NG],
   releaseMode: [ReleaseMode.Debug, ReleaseMode.Release],
   syncMode: [SyncMode.Sync, SyncMode.Asyncify],
 } as const
@@ -605,6 +605,8 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
 
   const appendEnvVars = (varname: string, flags: string[]) =>
     flags.map((flag) => `${varname}+=${flag}`).join("\n")
+
+  template.replace("QUICKJS_LIB=REPLACE_THIS", `QUICKJS_LIB=${variant.library}`)
 
   template.replace(
     "CFLAGS_ALL=REPLACE_THIS",

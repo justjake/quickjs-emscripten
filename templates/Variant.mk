@@ -9,8 +9,10 @@ REPO_ROOT := $(abspath $(THIS_DIR)/../..)
 
 DEBUG_MAKE=1
 
+QUICKJS_LIB=REPLACE_THIS
+
 # Paths
-QUICKJS_ROOT=../../vendor/quickjs
+QUICKJS_ROOT=../../vendor/$(QUICKJS_LIB)
 WRAPPER_ROOT=../../c
 TEMPLATES=../../templates
 # Intermediate build files
@@ -22,8 +24,12 @@ DIST=dist
 
 # QuickJS
 QUICKJS_OBJS=quickjs.o libregexp.o libunicode.o cutils.o quickjs-libc.o libbf.o
-QUICKJS_CONFIG_VERSION=$(shell cat $(QUICKJS_ROOT)/VERSION)
-QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\" -DCONFIG_STACK_CHECK -DCONFIG_BIGNUM
+ifeq ($(QUICKJS_LIB),quickjs-ng)
+	QUICKJS_DEFINES:=-D_GNU_SOURCE
+else
+	QUICKJS_CONFIG_VERSION=$(shell cat $(QUICKJS_ROOT)/VERSION)
+	QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\" -DCONFIG_STACK_CHECK -DCONFIG_BIGNUM
+endif
 VARIANT_QUICKJS_OBJS=$(patsubst %.o, $(BUILD_QUICKJS)/%.o, $(QUICKJS_OBJS))
 
 # quickjs-emscripten
