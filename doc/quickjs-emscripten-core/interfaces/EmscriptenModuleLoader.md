@@ -22,7 +22,7 @@
 
 ## Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:249
+packages/quickjs-ffi-types/dist/index.d.ts:271
 
 ***
 

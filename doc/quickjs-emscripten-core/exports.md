@@ -149,7 +149,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:433
+packages/quickjs-ffi-types/dist/index.d.ts:455
 
 ***
 
@@ -159,7 +159,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:433
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:247
+packages/quickjs-ffi-types/dist/index.d.ts:269
 
 ***
 
@@ -568,7 +568,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:432
+packages/quickjs-ffi-types/dist/index.d.ts:454
 
 ***
 
@@ -935,7 +935,7 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/from-variant.ts:142](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L142)
+[packages/quickjs-emscripten-core/src/from-variant.ts:160](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L160)
 
 ***
 

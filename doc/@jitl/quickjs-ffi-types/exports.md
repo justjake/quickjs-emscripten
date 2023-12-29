@@ -77,7 +77,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:220](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L220)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:242](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L242)
 
 ***
 

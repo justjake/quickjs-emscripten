@@ -62,8 +62,10 @@ main()
         - [Async module loader](#async-module-loader)
         - [Async on host, sync in QuickJS](#async-on-host-sync-in-quickjs)
     - [Testing your code](#testing-your-code)
-    - [Using in the browser without a build step](#using-in-the-browser-without-a-build-step)
-    - [quickjs-emscripten-core, variants, and advanced packaging](#quickjs-emscripten-core-variants-and-advanced-packaging)
+    - [Packaging](#packaging)
+      - [Reducing package size](#reducing-package-size)
+      - [WebAssembly loading](#webassembly-loading)
+      - [Using in the browser without a build step](#using-in-the-browser-without-a-build-step)
     - [Debugging](#debugging)
     - [Supported Platforms](#supported-platforms)
     - [More Documentation](#more-documentation)
@@ -519,7 +521,94 @@ For more testing examples, please explore the typescript source of [quickjs-emsc
 [debug_sync]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#debug_sync
 [testquickjswasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/TestQuickJSWASMModule.md
 
-### Using in the browser without a build step
+### Packaging
+
+The main `quickjs-emscripten` package includes several build variants of the WebAssembly module:
+
+- `RELEASE...` build variants should be used in production. They offer better performance and smaller file size compared to `DEBUG...` build variants.
+  - `RELEASE_SYNC`: This is the default variant used when you don't explicitly provide one. It offers the fastest performance and smallest file size.
+  - `RELEASE_ASYNC`: The default variant if you need [asyncify][] magic, which comes at a performance cost. See the asyncify docs for details.
+- `DEBUG...` build variants can be helpful during development and testing. They include source maps and assertions for catching bugs in your code. We recommend running your tests with _both_ a debug build variant and the release build variant you'll use in production.
+  - `DEBUG_SYNC`: Instrumented to detect memory leaks, in addition to assertions and source maps.
+  - `DEBUG_ASYNC`: An [asyncify][] variant with source maps.
+
+To use a variant, call `newQuickJSWASMModule` or `newQuickJSAsyncWASMModule` with the variant object. These functions return a promise that resolves to a [QuickJSWASMModule](./doc/quickjs-emscripten/classes/QuickJSWASMModule.md), the same as `getQuickJS`.
+
+```typescript
+import {
+  newQuickJSWASMModule, newQuickJSAsyncWASMModule,
+  RELEASE_SYNC, DEBUG_SYNC,
+  RELEASE_ASYNC, DEBUG_ASYNC,
+} from 'quickjs-emscripten'
+
+const QuickJSReleaseSync = await newQuickJSWASMModule(RELEASE_SYNC)
+const QuickJSDebugSync = await newQuickJSWASMModule(DEBUG_SYNC)
+const QuickJSReleaseAsync = await newQuickJSAsyncWASMModule(RELEASE_ASYNC)
+const QuickJSDebugAsync = await newQuickJSAsyncWASMModule(DEBUG_ASYNC)
+
+for (const quickjs of [QuickJSReleaseSync, QuickJSDebugSync, QuickJSReleaseAsync, QuickJSDebugAsync]) {
+  const vm = quickjs.newContext()
+  const result = vm.unwrapResult(vm.evalCode("1 + 1")).consume(vm.getNumber)
+  console.log(result)
+  vm.dispose()
+  quickjs.dispose()
+}
+```
+
+#### Reducing package size
+
+Including 4 different copies of the WebAssembly module in the main package gives it an install size of [about 9.04mb](https://packagephobia.com/result?p=quickjs-emscripten). If you're building a CLI package or library of your own, or otherwise don't need to include 4 different variants in your `node_modules`, you can switch to the `quickjs-emscripten-core` package, which contains only the Javascript code for this library, and install one (or more) variants a-la-carte as separate packages.
+
+The most minimal setup would be to install `quickjs-emscripten-core` and `@jitl/quickjs-wasmfile-release-sync`:
+
+```bash
+yarn add quickjs-emscripten-core @jitl/quickjs-wasmfile-release-sync
+du -h node_modules
+# -> 
+```
+
+Then, you can use quickjs-emscripten-core's `newQuickJSWASMModuleFromVariant` to create a QuickJS module (see [the minimal example][minimal]):
+
+```typescript
+// src/quickjs.mjs
+import { newQuickJSWASMModuleFromVariant } from 'quickjs-emscripten-core'
+import RELEASE_SYNC from '@jitl/quickjs-wasmfile-release-sync'
+export const QuickJS = await newQuickJSWASMModuleFromVariant(RELEASE_SYNC)
+
+// src/app.mjs
+import { QuickJS } from './quickjs.mjs'
+console.log(QuickJS.evalCode("1 + 1"))
+```
+
+See the [documentation of quickjs-emscripten-core][core] for more details and the list of variant packages.
+
+[core]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten-core/README.md
+
+#### WebAssembly loading
+
+To run QuickJS, we need to load a WebAssembly module into the host Javascript runtime's memory (usually as an ArrayBuffer or TypedArray) and [compile it](https://developer.mozilla.org/en-US/docs/WebAssembly/JavaScript_interface/instantiate_static) to a [WebAssembly.Module](https://developer.mozilla.org/en-US/docs/WebAssembly/JavaScript_interface/Module). This means we need to find the file path or URI of the WebAssembly module, and then read it using an API like `fetch` (browser) or `fs.readFile` (NodeJS). `quickjs-emscripten` tries to handle this automatically using patterns like `new URL('./local-path', import.meta.url)` that work in the browser or are handled automatically by bundlers, or `__dirname` in NodeJS, but you may need to configure this manually if these don't work in your environment, or you want more control about how the WebAssembly module is loaded.
+
+To customize the loading of an existing variant, create a new variant with your loading settings using `newVariant`, passing [CustomizeVariantOptions][newVariant]. For example, you need to customize loading in Cloudflare Workers (see [the full example][cloudflare]).
+
+```typescript
+import { newQuickJSWASMModule, DEBUG_SYNC as baseVariant, newVariant } from 'quickjs-emscripten';
+import cloudflareWasmModule from './DEBUG_SYNC.wasm';
+import cloudflareWasmModuleSourceMap from './DEBUG_SYNC.wasm.map.txt';
+
+/**
+ * We need to make a new variant that directly passes the imported WebAssembly.Module
+ * to Emscripten. Normally we'd load the wasm file as bytes from a URL, but
+ * that's forbidden in Cloudflare workers.
+ */
+const cloudflareVariant = newVariant(baseVariant, {
+  wasmModule: cloudflareWasmModule,
+  wasmSourceMapData: cloudflareWasmModuleSourceMap,
+});
+```
+
+[newVariant]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/interfaces/CustomizeVariantOptions.md
+
+#### Using in the browser without a build step
 
 You can use quickjs-emscripten directly from an HTML file in two ways:
 
@@ -551,16 +640,6 @@ You can use quickjs-emscripten directly from an HTML file in two ways:
      })
    </script>
    ```
-
-### quickjs-emscripten-core, variants, and advanced packaging
-
-Them main `quickjs-emscripten` package includes several build variants of the WebAssembly module.
-If these variants are too large for you, you can instead use the `quickjs-emscripten-core` package,
-and manually select your own build variant.
-
-See the [documentation of quickjs-emscripten-core][core] for more details.
-
-[core]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten-core/README.md
 
 ### Debugging
 
@@ -608,7 +687,7 @@ See the [documentation of quickjs-emscripten-core][core] for more details.
   - Edge 79+
   - Safari 11.1+
   - Firefox 58+
-- NodeJS: requires v16.0.0 or later for WebAssembly compatibility. Tested with node@18. See the [node-typescript example][tsx-example].
+- NodeJS: requires v16.0.0 or later for WebAssembly compatibility. Tested with node@18. See the [node-typescript][tsx-example] and [node-minimal][minimal] examples.
 - Typescript: tested with typescript@4.5.5 and typescript@5.3.3. See the [node-typescript example][tsx-example].
 - Vite: tested with vite@5.0.10. See the [Vite/Vue example][vite].
 - Create react app: tested with react-scripts@5.0.1. See the [create-react-app example][cra].
@@ -623,6 +702,7 @@ See the [documentation of quickjs-emscripten-core][core] for more details.
 [cra]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/create-react-app
 [cloudflare]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/cloudflare-workers
 [tsx-example]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/node-typescript
+[minimal]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/node-minimal
 
 ### More Documentation
 

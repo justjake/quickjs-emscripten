@@ -163,7 +163,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:433
+packages/quickjs-ffi-types/dist/index.d.ts:455
 
 ***
 
@@ -173,7 +173,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:433
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:247
+packages/quickjs-ffi-types/dist/index.d.ts:269
 
 ***
 
@@ -582,7 +582,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:672
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:432
+packages/quickjs-ffi-types/dist/index.d.ts:454
 
 ***
 
@@ -1202,7 +1202,7 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1333
+packages/quickjs-emscripten-core/dist/index.d.ts:1351
 
 ***
 
@@ -1225,7 +1225,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1341
+packages/quickjs-emscripten-core/dist/index.d.ts:1359
 
 ***
 
