@@ -10,7 +10,7 @@ REPO_ROOT := $(abspath $(THIS_DIR)/../..)
 DEBUG_MAKE=1
 
 # Paths
-QUICKJS_ROOT=../../quickjs
+QUICKJS_ROOT=../../vendor/quickjs
 WRAPPER_ROOT=../../c
 TEMPLATES=../../templates
 # Intermediate build files

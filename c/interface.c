@@ -45,9 +45,9 @@
 #include <sanitizer/lsan_interface.h>
 #endif
 
-#include "../quickjs/cutils.h"
-#include "../quickjs/quickjs-libc.h"
-#include "../quickjs/quickjs.h"
+#include "../vendor/quickjs/cutils.h"
+#include "../vendor/quickjs/quickjs-libc.h"
+#include "../vendor/quickjs/quickjs.h"
 
 #define PKG "quickjs-emscripten: "
 #define LOG_LEN 500
