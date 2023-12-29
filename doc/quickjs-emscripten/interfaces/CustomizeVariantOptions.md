@@ -28,7 +28,7 @@ The enumerable properties of this object will be passed verbatim, although they 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1343
+packages/quickjs-emscripten-core/dist/index.d.ts:1366
 
 ***
 
@@ -68,7 +68,7 @@ Often `''` (empty string)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1341
+packages/quickjs-emscripten-core/dist/index.d.ts:1364
 
 ***
 
@@ -100,7 +100,7 @@ Debug logger
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1345
+packages/quickjs-emscripten-core/dist/index.d.ts:1368
 
 ***
 
@@ -112,7 +112,7 @@ If given, Emscripten will compile the WebAssembly.Module from these bytes.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1315
+packages/quickjs-emscripten-core/dist/index.d.ts:1338
 
 ***
 
@@ -124,7 +124,7 @@ If given, Emscripten will try to load the WebAssembly module data from this loca
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1313
+packages/quickjs-emscripten-core/dist/index.d.ts:1336
 
 ***
 
@@ -136,7 +136,7 @@ If given, Emscripten will instantiate the WebAssembly.Instance from this existin
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1317
+packages/quickjs-emscripten-core/dist/index.d.ts:1340
 
 ***
 
@@ -148,7 +148,7 @@ If given, we will provide the source map to Emscripten directly. This may only b
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1321
+packages/quickjs-emscripten-core/dist/index.d.ts:1344
 
 ***
 
@@ -160,7 +160,7 @@ If given, Emscripten will try to load the source map for the WebAssembly module 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1319
+packages/quickjs-emscripten-core/dist/index.d.ts:1342
 
 ***
 

@@ -27,6 +27,7 @@ A Lifetime that lives forever. Used for constants.
   - [owner](StaticLifetime.md#owner)
   - [value](StaticLifetime.md#value)
 - [Methods](StaticLifetime.md#methods)
+  - [`[dispose]`()](StaticLifetime.md#dispose)
   - [consume()](StaticLifetime.md#consume)
   - [dispose()](StaticLifetime.md#dispose)
   - [dup()](StaticLifetime.md#dup)
@@ -63,7 +64,7 @@ A Lifetime that lives forever. Used for constants.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:552
+packages/quickjs-emscripten-core/dist/index.d.ts:574
 
 ## Properties
 
@@ -77,7 +78,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:552
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:511
+packages/quickjs-emscripten-core/dist/index.d.ts:533
 
 ***
 
@@ -91,7 +92,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:511
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:512
+packages/quickjs-emscripten-core/dist/index.d.ts:534
 
 ***
 
@@ -105,7 +106,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:512
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:510
+packages/quickjs-emscripten-core/dist/index.d.ts:532
 
 ***
 
@@ -119,7 +120,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:510
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:507
+packages/quickjs-emscripten-core/dist/index.d.ts:529
 
 ***
 
@@ -141,7 +142,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:507
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:508
+packages/quickjs-emscripten-core/dist/index.d.ts:530
 
 ***
 
@@ -163,7 +164,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:508
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:509
+packages/quickjs-emscripten-core/dist/index.d.ts:531
 
 ## Accessors
 
@@ -177,11 +178,11 @@ packages/quickjs-emscripten-core/dist/index.d.ts:509
 
 true if the object is alive
 
-false after the object has been [dispose](StaticLifetime.md#dispose)d
+false after the object has been [dispose](StaticLifetime.md#dispose-1)d
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:522
+packages/quickjs-emscripten-core/dist/index.d.ts:544
 
 ***
 
@@ -195,7 +196,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:522
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:553
+packages/quickjs-emscripten-core/dist/index.d.ts:575
 
 ***
 
@@ -209,7 +210,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:553
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:530
+packages/quickjs-emscripten-core/dist/index.d.ts:552
 
 ***
 
@@ -222,7 +223,7 @@ may become invalid, leading to memory errors.
 
 #### Throws
 
-If the lifetime has been [dispose](StaticLifetime.md#dispose)d already.
+If the lifetime has been [dispose](StaticLifetime.md#dispose-1)d already.
 
 #### Returns
 
@@ -230,9 +231,29 @@ If the lifetime has been [dispose](StaticLifetime.md#dispose)d already.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:529
+packages/quickjs-emscripten-core/dist/index.d.ts:551
 
 ## Methods
+
+### `[dispose]`()
+
+> **[dispose]**(): `void`
+
+Just calls the standard .dispose() method of this class.
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`quickjs-emscripten.Lifetime.[dispose]`](Lifetime.md#dispose)
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:520
+
+***
 
 ### consume()
 
@@ -262,7 +283,7 @@ the result of `map(this)`.
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:540
+packages/quickjs-emscripten-core/dist/index.d.ts:562
 
 #### consume(map)
 
@@ -286,7 +307,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:540
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:541
+packages/quickjs-emscripten-core/dist/index.d.ts:563
 
 ***
 
@@ -302,11 +323,11 @@ Dispose of [value](StaticLifetime.md#value-1) and perform cleanup.
 
 #### Overrides
 
-[`quickjs-emscripten.Lifetime.dispose`](Lifetime.md#dispose)
+[`quickjs-emscripten.Lifetime.dispose`](Lifetime.md#dispose-1)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:555
+packages/quickjs-emscripten-core/dist/index.d.ts:577
 
 ***
 
@@ -326,7 +347,7 @@ Create a new handle pointing to the same [value](StaticLifetime.md#value-1).
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:554
+packages/quickjs-emscripten-core/dist/index.d.ts:576
 
 ***
 

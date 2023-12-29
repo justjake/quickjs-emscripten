@@ -20,6 +20,20 @@ describe("Lifetime", () => {
       assert.strictEqual(disposed, true)
     })
   })
+
+  describe("using statement", () => {
+    it("disposes the lifetime", () => {
+      let outerLifetime
+
+      {
+        using lifetime = new Lifetime(1)
+        outerLifetime = lifetime
+        assert.strictEqual(outerLifetime.alive, true)
+      }
+
+      assert.strictEqual(outerLifetime.alive, false)
+    })
+  })
 })
 
 describe("Scope", () => {
