@@ -563,7 +563,7 @@ du -h node_modules
 # -> 
 ```
 
-Then, you can use `newQuickJSWASMModuleFromVariant` to create a QuickJS module from the variant (see [the minimal example][minimal]):
+Then, you can use quickjs-emscripten-core's `newQuickJSWASMModuleFromVariant` to create a QuickJS module (see [the minimal example][minimal]):
 
 ```typescript
 // src/quickjs.mjs

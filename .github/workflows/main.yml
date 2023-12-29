@@ -78,6 +78,9 @@ jobs:
       - name: Build tarballs
         run: yarn tarball && du -h build/tar/*
 
+      - name: Test release with NodeJS minimal ESModule example
+        run: ./scripts/smoketest-node-minimal.ts
+
       - name: Test release with NodeJS/Typescript example
         run: ./scripts/smoketest-node.ts
 
