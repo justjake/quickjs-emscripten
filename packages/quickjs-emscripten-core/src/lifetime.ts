@@ -4,6 +4,16 @@ import { QTS_DEBUG } from "./debug"
 import { QuickJSUseAfterFree } from "./errors"
 import type { QuickJSHandle } from "./types"
 
+// Polyfill Symbol.dispose if needed
+if (typeof Symbol.dispose !== "symbol") {
+  Object.defineProperty(Symbol, "dispose", {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: Symbol.for("dispose"),
+  })
+}
+
 /**
  * An object that can be disposed.
  * {@link Lifetime} is the canonical implementation of Disposable.
@@ -20,6 +30,19 @@ export interface Disposable {
    * @returns false after the object has been {@link dispose}d
    */
   alive: boolean
+
+  /**
+   * A method that is used to release resources held by an object. Called by the semantics of the `using` statement.
+   */
+  [Symbol.dispose](): void
+}
+
+export abstract class UsingDisposable implements Disposable {
+  declare abstract readonly alive: boolean
+  abstract dispose(): void
+  [Symbol.dispose]() {
+    return this.dispose()
+  }
 }
 
 /**
@@ -28,7 +51,10 @@ export interface Disposable {
  *
  * Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
  */
-export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
+export class Lifetime<T, TCopy = never, Owner = never>
+  extends UsingDisposable
+  implements Disposable
+{
   protected _alive: boolean = true
   protected _constructorStack = QTS_DEBUG ? new Error("Lifetime constructed").stack : undefined
 
@@ -45,7 +71,9 @@ export class Lifetime<T, TCopy = never, Owner = never> implements Disposable {
     protected readonly copier?: (value: T | TCopy) => TCopy,
     protected readonly disposer?: (value: T | TCopy) => void,
     protected readonly _owner?: Owner,
-  ) {}
+  ) {
+    super()
+  }
 
   get alive() {
     return this._alive
@@ -195,7 +223,7 @@ function scopeFinally(scope: Scope, blockError: Error | undefined) {
  * Scope helps reduce the burden of manually tracking and disposing of
  * Lifetimes. See {@link withScope}. and {@link withScopeAsync}.
  */
-export class Scope implements Disposable {
+export class Scope extends UsingDisposable implements Disposable {
   /**
    * Run `block` with a new Scope instance that will be disposed after the block returns.
    * Inside `block`, call `scope.manage` on each lifetime you create to have the lifetime

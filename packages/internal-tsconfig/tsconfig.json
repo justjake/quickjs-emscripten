@@ -15,7 +15,10 @@
     "lib": [
       "ES2020",
       // Need DOM for WebAssembty.XYZ namespace
-      "DOM"
+      "DOM",
+      // Symbol.dispose
+      // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html#using-declarations-and-explicit-resource-management
+      "esnext.disposable"
     ],
     // "allowJs": true /* Allow javascript files to be compiled. */,
     // "checkJs": true,                       /* Report errors in .js files. */

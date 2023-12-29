@@ -11,7 +11,7 @@ import { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
 import { QuickJSWrongOwner } from "./errors"
 import type { Disposable } from "./lifetime"
-import { Lifetime, Scope } from "./lifetime"
+import { Lifetime, Scope, UsingDisposable } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import type { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
 import type { ContextOptions, JSModuleLoader, JSModuleNormalizer, QuickJSHandle } from "./types"
@@ -68,7 +68,7 @@ export type ExecutePendingJobsResult = SuccessOrFail<
  *
  * Configure ES module loading with {@link setModuleLoader}.
  */
-export class QuickJSRuntime implements Disposable {
+export class QuickJSRuntime extends UsingDisposable implements Disposable {
   /**
    * If this runtime was created as as part of a context, points to the context
    * associated with the runtime.
@@ -106,6 +106,7 @@ export class QuickJSRuntime implements Disposable {
     callbacks: QuickJSModuleCallbacks
     ownedLifetimes?: Disposable[]
   }) {
+    super()
     args.ownedLifetimes?.forEach((lifetime) => this.scope.manage(lifetime))
     this.module = args.module
     this.memory = new ModuleMemory(this.module)

@@ -16,7 +16,7 @@ import { QuickJSDeferredPromise } from "./deferred-promise"
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import { QuickJSUnwrapError } from "./errors"
 import type { Disposable } from "./lifetime"
-import { Lifetime, Scope, StaticLifetime, WeakLifetime } from "./lifetime"
+import { Lifetime, Scope, StaticLifetime, UsingDisposable, WeakLifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import type { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
 import type {
@@ -75,6 +75,10 @@ class ContextMemory extends ModuleMemory implements Disposable {
 
   dispose() {
     return this.scope.dispose()
+  }
+
+  [Symbol.dispose]() {
+    return this.dispose()
   }
 
   /**
@@ -136,7 +140,10 @@ class ContextMemory extends ModuleMemory implements Disposable {
  *
  */
 // TODO: Manage own callback registration
-export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disposable {
+export class QuickJSContext
+  extends UsingDisposable
+  implements LowLevelJavascriptVm<QuickJSHandle>, Disposable
+{
   /**
    * The runtime that created this context.
    */
@@ -179,6 +186,7 @@ export class QuickJSContext implements LowLevelJavascriptVm<QuickJSHandle>, Disp
     ownedLifetimes?: Disposable[]
     callbacks: QuickJSModuleCallbacks
   }) {
+    super()
     this.runtime = args.runtime
     this.module = args.module
     this.ffi = args.ffi
