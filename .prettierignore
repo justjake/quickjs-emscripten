@@ -1,6 +1,7 @@
 ts/generated
 quickjs
 .yarn
+.*
 doc
 json-generator-dot-com-1024-rows.json
 dist
