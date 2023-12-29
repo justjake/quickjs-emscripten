@@ -9,7 +9,7 @@ REPO_ROOT := $(abspath $(THIS_DIR)/../..)
 
 DEBUG_MAKE=1
 
-QUICKJS_LIB=quickjs
+QUICKJS_LIB=quickjs-ng
 
 # Paths
 QUICKJS_ROOT=../../vendor/$(QUICKJS_LIB)
@@ -74,24 +74,17 @@ SYNC=SYNC
 CFLAGS_WASM_BROWSER=$(CFLAGS_WASM)
 
 # Emscripten options - variant & target specific
-CFLAGS_WASM+=-O0
-CFLAGS_WASM+=-DQTS_DEBUG_MODE
-CFLAGS_WASM+=-gsource-map
-CFLAGS_WASM+=-s ASSERTIONS=1
-CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-extension.js
-CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-sourceMapJson.js
-CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js
-CFLAGS_WASM+=-s SINGLE_FILE=1
-CFLAGS_WASM+=-DQTS_SANITIZE_LEAK
-CFLAGS_WASM+=-fsanitize=leak
-CFLAGS_WASM+=-g2
-
-
+CFLAGS_WASM+=-Oz
+CFLAGS_WASM+=-flto
+CFLAGS_WASM+=--closure 1
+CFLAGS_WASM+=-s FILESYSTEM=0
+CFLAGS_CJS+=-s ENVIRONMENT=node
+CFLAGS_MJS+=-s ENVIRONMENT=node
 CFLAGS_BROWSER+=-s ENVIRONMENT=web,worker
-
+CFLAGS_CLOUDFLARE+=-s ENVIRONMENT=web
 
 # GENERATE_TS options - variant specific
-GENERATE_TS_ENV+=DEBUG=true
+
 
 
 ifdef DEBUG_MAKE
@@ -109,7 +102,7 @@ clean:
 
 ###############################################################################
 # Emscripten output targets
-EXPORTS: BROWSER
+EXPORTS: BROWSER MJS CJS CLOUDFLARE
 CJS: $(DIST)/emscripten-module.cjs $(DIST)/emscripten-module.d.ts
 MJS: $(DIST)/emscripten-module.mjs $(DIST)/emscripten-module.d.ts
 BROWSER: $(DIST)/emscripten-module.browser.mjs $(DIST)/emscripten-module.browser.d.ts

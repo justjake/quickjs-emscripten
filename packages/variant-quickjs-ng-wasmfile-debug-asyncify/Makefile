@@ -9,7 +9,7 @@ REPO_ROOT := $(abspath $(THIS_DIR)/../..)
 
 DEBUG_MAKE=1
 
-QUICKJS_LIB=quickjs
+QUICKJS_LIB=quickjs-ng
 
 # Paths
 QUICKJS_ROOT=../../vendor/$(QUICKJS_LIB)
@@ -70,10 +70,17 @@ CFLAGS_MJS+=-s EXPORT_ES6=1
 CFLAGS_BROWSER+=-s EXPORT_ES6=1
 
 # VARIANT
-SYNC=SYNC
+SYNC=ASYNCIFY
 CFLAGS_WASM_BROWSER=$(CFLAGS_WASM)
 
 # Emscripten options - variant & target specific
+CFLAGS_WASM+=-s ASYNCIFY=1
+CFLAGS_WASM+=-DQTS_ASYNCIFY=1
+CFLAGS_WASM+=-DQTS_ASYNCIFY_DEFAULT_STACK_SIZE=81920
+CFLAGS_WASM+=-s ASYNCIFY_STACK_SIZE=81920
+CFLAGS_WASM+=-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json
+CFLAGS_WASM+=-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json
+CFLAGS_WASM+=-lasync.js
 CFLAGS_WASM+=-O0
 CFLAGS_WASM+=-DQTS_DEBUG_MODE
 CFLAGS_WASM+=-gsource-map
@@ -81,16 +88,15 @@ CFLAGS_WASM+=-s ASSERTIONS=1
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-extension.js
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-sourceMapJson.js
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js
-CFLAGS_WASM+=-s SINGLE_FILE=1
-CFLAGS_WASM+=-DQTS_SANITIZE_LEAK
-CFLAGS_WASM+=-fsanitize=leak
-CFLAGS_WASM+=-g2
-
-
+CFLAGS_WASM+=-s ASYNCIFY_ADVISE=1
+CFLAGS_WASM+=-O3
+CFLAGS_CJS+=-s ENVIRONMENT=node
+CFLAGS_MJS+=-s ENVIRONMENT=node
 CFLAGS_BROWSER+=-s ENVIRONMENT=web,worker
-
+CFLAGS_CLOUDFLARE+=-s ENVIRONMENT=web
 
 # GENERATE_TS options - variant specific
+GENERATE_TS_ENV+=ASYNCIFY=true
 GENERATE_TS_ENV+=DEBUG=true
 
 
@@ -109,7 +115,7 @@ clean:
 
 ###############################################################################
 # Emscripten output targets
-EXPORTS: BROWSER
+EXPORTS: BROWSER MJS CJS CLOUDFLARE
 CJS: $(DIST)/emscripten-module.cjs $(DIST)/emscripten-module.d.ts
 MJS: $(DIST)/emscripten-module.mjs $(DIST)/emscripten-module.d.ts
 BROWSER: $(DIST)/emscripten-module.browser.mjs $(DIST)/emscripten-module.browser.d.ts

@@ -620,6 +620,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@jitl/quickjs-ng-wasmfile-debug-asyncify@workspace:packages/variant-quickjs-ng-wasmfile-debug-asyncify":
+  version: 0.0.0-use.local
+  resolution: "@jitl/quickjs-ng-wasmfile-debug-asyncify@workspace:packages/variant-quickjs-ng-wasmfile-debug-asyncify"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
+"@jitl/quickjs-ng-wasmfile-debug-sync@workspace:packages/variant-quickjs-ng-wasmfile-debug-sync":
+  version: 0.0.0-use.local
+  resolution: "@jitl/quickjs-ng-wasmfile-debug-sync@workspace:packages/variant-quickjs-ng-wasmfile-debug-sync"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
+"@jitl/quickjs-ng-wasmfile-release-asyncify@workspace:packages/variant-quickjs-ng-wasmfile-release-asyncify":
+  version: 0.0.0-use.local
+  resolution: "@jitl/quickjs-ng-wasmfile-release-asyncify@workspace:packages/variant-quickjs-ng-wasmfile-release-asyncify"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
+"@jitl/quickjs-ng-wasmfile-release-sync@workspace:packages/variant-quickjs-ng-wasmfile-release-sync":
+  version: 0.0.0-use.local
+  resolution: "@jitl/quickjs-ng-wasmfile-release-sync@workspace:packages/variant-quickjs-ng-wasmfile-release-sync"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "@jitl/quickjs-singlefile-browser-debug-asyncify@workspace:packages/variant-quickjs-singlefile-browser-debug-asyncify":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-singlefile-browser-debug-asyncify@workspace:packages/variant-quickjs-singlefile-browser-debug-asyncify"

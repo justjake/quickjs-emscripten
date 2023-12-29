@@ -131,12 +131,22 @@ function makeTarget(partialVariant: TargetSpec): BuildVariant[] {
   const allVariants = buildMatrix.library.flatMap<BuildVariant>((library) => {
     return buildMatrix.releaseMode.flatMap((releaseMode) => {
       return buildMatrix.syncMode.flatMap((syncMode) => {
-        return {
+        const variant = {
           library,
           releaseMode,
           syncMode,
           ...partialVariant,
         }
+
+        // Eliminate singlefile builds for quickjs-ng
+        if (
+          variant.library === CLibrary.NG &&
+          variant.emscriptenInclusion === EmscriptenInclusion.SingleFile
+        ) {
+          return []
+        }
+
+        return variant
       })
     })
   })
