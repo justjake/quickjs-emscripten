@@ -31,7 +31,7 @@
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:421
+packages/quickjs-emscripten-core/dist/index.d.ts:421
 
 ***
 
@@ -41,7 +41,7 @@ quickjs-emscripten-core/dist/index.d.ts:421
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:416
+packages/quickjs-emscripten-core/dist/index.d.ts:416
 
 ***
 
@@ -51,7 +51,7 @@ quickjs-emscripten-core/dist/index.d.ts:416
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:417
+packages/quickjs-emscripten-core/dist/index.d.ts:417
 
 ***
 
@@ -61,7 +61,7 @@ quickjs-emscripten-core/dist/index.d.ts:417
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:418
+packages/quickjs-emscripten-core/dist/index.d.ts:418
 
 ***
 
@@ -71,7 +71,7 @@ quickjs-emscripten-core/dist/index.d.ts:418
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:419
+packages/quickjs-emscripten-core/dist/index.d.ts:419
 
 ***
 
@@ -81,7 +81,7 @@ quickjs-emscripten-core/dist/index.d.ts:419
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:420
+packages/quickjs-emscripten-core/dist/index.d.ts:420
 
 ***
 
@@ -91,7 +91,7 @@ quickjs-emscripten-core/dist/index.d.ts:420
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:422
+packages/quickjs-emscripten-core/dist/index.d.ts:422
 
 ***
 

@@ -81,7 +81,7 @@ the creator.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:521
+packages/quickjs-emscripten-core/dist/index.d.ts:521
 
 ## Properties
 
@@ -91,7 +91,7 @@ quickjs-emscripten-core/dist/index.d.ts:521
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:511
+packages/quickjs-emscripten-core/dist/index.d.ts:511
 
 ***
 
@@ -101,7 +101,7 @@ quickjs-emscripten-core/dist/index.d.ts:511
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:512
+packages/quickjs-emscripten-core/dist/index.d.ts:512
 
 ***
 
@@ -111,7 +111,7 @@ quickjs-emscripten-core/dist/index.d.ts:512
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:510
+packages/quickjs-emscripten-core/dist/index.d.ts:510
 
 ***
 
@@ -121,7 +121,7 @@ quickjs-emscripten-core/dist/index.d.ts:510
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:507
+packages/quickjs-emscripten-core/dist/index.d.ts:507
 
 ***
 
@@ -139,7 +139,7 @@ quickjs-emscripten-core/dist/index.d.ts:507
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:508
+packages/quickjs-emscripten-core/dist/index.d.ts:508
 
 ***
 
@@ -157,7 +157,7 @@ quickjs-emscripten-core/dist/index.d.ts:508
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:509
+packages/quickjs-emscripten-core/dist/index.d.ts:509
 
 ## Accessors
 
@@ -175,7 +175,7 @@ false after the object has been [dispose](Lifetime.md#dispose)d
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:522
+packages/quickjs-emscripten-core/dist/index.d.ts:522
 
 ***
 
@@ -189,7 +189,7 @@ quickjs-emscripten-core/dist/index.d.ts:522
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:531
+packages/quickjs-emscripten-core/dist/index.d.ts:531
 
 ***
 
@@ -203,7 +203,7 @@ quickjs-emscripten-core/dist/index.d.ts:531
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:530
+packages/quickjs-emscripten-core/dist/index.d.ts:530
 
 ***
 
@@ -224,7 +224,7 @@ If the lifetime has been [dispose](Lifetime.md#dispose)d already.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:529
+packages/quickjs-emscripten-core/dist/index.d.ts:529
 
 ## Methods
 
@@ -252,7 +252,7 @@ the result of `map(this)`.
 
 ##### Source
 
-quickjs-emscripten-core/dist/index.d.ts:540
+packages/quickjs-emscripten-core/dist/index.d.ts:540
 
 #### consume(map)
 
@@ -272,7 +272,7 @@ quickjs-emscripten-core/dist/index.d.ts:540
 
 ##### Source
 
-quickjs-emscripten-core/dist/index.d.ts:541
+packages/quickjs-emscripten-core/dist/index.d.ts:541
 
 ***
 
@@ -292,7 +292,7 @@ Dispose of [value](Lifetime.md#value-1) and perform cleanup.
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:545
+packages/quickjs-emscripten-core/dist/index.d.ts:545
 
 ***
 
@@ -308,7 +308,7 @@ Create a new handle pointing to the same [value](Lifetime.md#value-1).
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:535
+packages/quickjs-emscripten-core/dist/index.d.ts:535
 
 ***
 

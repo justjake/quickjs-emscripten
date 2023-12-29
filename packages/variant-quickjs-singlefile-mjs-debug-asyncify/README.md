@@ -69,6 +69,9 @@ Variant-specific Emscripten build flags:
   "-DQTS_DEBUG_MODE",
   "-gsource-map",
   "-s ASSERTIONS=1",
+  "--pre-js $(TEMPLATES)/pre-extension.js",
+  "--pre-js $(TEMPLATES)/pre-sourceMapJson.js",
+  "--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js",
   "-s SINGLE_FILE=1",
   "-s ASYNCIFY_ADVISE=1",
   "-O3"

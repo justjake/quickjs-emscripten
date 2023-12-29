@@ -11,6 +11,7 @@
 - [Type Aliases](README.md#type-aliases)
   - [QuickJSAsyncifyError](README.md#quickjsasyncifyerror)
   - [QuickJSAsyncifySuspended](README.md#quickjsasyncifysuspended)
+  - [QuickJSEmscriptenModuleError](README.md#quickjsemscriptenmoduleerror)
   - [QuickJSMemoryLeakDetected](README.md#quickjsmemoryleakdetected)
   - [QuickJSNotImplemented](README.md#quickjsnotimplemented)
   - [QuickJSUnwrapError](README.md#quickjsunwraperror)
@@ -19,6 +20,7 @@
 - [Variables](README.md#variables)
   - [QuickJSAsyncifyError](README.md#quickjsasyncifyerror-1)
   - [QuickJSAsyncifySuspended](README.md#quickjsasyncifysuspended-1)
+  - [QuickJSEmscriptenModuleError](README.md#quickjsemscriptenmoduleerror-1)
   - [QuickJSMemoryLeakDetected](README.md#quickjsmemoryleakdetected-1)
   - [QuickJSNotImplemented](README.md#quickjsnotimplemented-1)
   - [QuickJSUnwrapError](README.md#quickjsunwraperror-1)
@@ -33,7 +35,7 @@
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1347
+packages/quickjs-emscripten-core/dist/index.d.ts:1392
 
 ***
 
@@ -43,7 +45,17 @@ quickjs-emscripten-core/dist/index.d.ts:1347
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1349
+packages/quickjs-emscripten-core/dist/index.d.ts:1394
+
+***
+
+### QuickJSEmscriptenModuleError
+
+> **QuickJSEmscriptenModuleError**: `QuickJSEmscriptenModuleError`
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:1396
 
 ***
 
@@ -53,7 +65,7 @@ quickjs-emscripten-core/dist/index.d.ts:1349
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1351
+packages/quickjs-emscripten-core/dist/index.d.ts:1398
 
 ***
 
@@ -63,7 +75,7 @@ quickjs-emscripten-core/dist/index.d.ts:1351
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1353
+packages/quickjs-emscripten-core/dist/index.d.ts:1400
 
 ***
 
@@ -73,7 +85,7 @@ quickjs-emscripten-core/dist/index.d.ts:1353
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1355
+packages/quickjs-emscripten-core/dist/index.d.ts:1402
 
 ***
 
@@ -83,7 +95,7 @@ quickjs-emscripten-core/dist/index.d.ts:1355
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1357
+packages/quickjs-emscripten-core/dist/index.d.ts:1404
 
 ***
 
@@ -93,7 +105,7 @@ quickjs-emscripten-core/dist/index.d.ts:1357
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1359
+packages/quickjs-emscripten-core/dist/index.d.ts:1406
 
 ## Variables
 
@@ -103,7 +115,7 @@ quickjs-emscripten-core/dist/index.d.ts:1359
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1347
+packages/quickjs-emscripten-core/dist/index.d.ts:1392
 
 ***
 
@@ -113,7 +125,17 @@ quickjs-emscripten-core/dist/index.d.ts:1347
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1349
+packages/quickjs-emscripten-core/dist/index.d.ts:1394
+
+***
+
+### QuickJSEmscriptenModuleError
+
+> **QuickJSEmscriptenModuleError**: *typeof* `QuickJSEmscriptenModuleError`
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:1396
 
 ***
 
@@ -123,7 +145,7 @@ quickjs-emscripten-core/dist/index.d.ts:1349
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1351
+packages/quickjs-emscripten-core/dist/index.d.ts:1398
 
 ***
 
@@ -133,7 +155,7 @@ quickjs-emscripten-core/dist/index.d.ts:1351
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1353
+packages/quickjs-emscripten-core/dist/index.d.ts:1400
 
 ***
 
@@ -143,7 +165,7 @@ quickjs-emscripten-core/dist/index.d.ts:1353
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1355
+packages/quickjs-emscripten-core/dist/index.d.ts:1402
 
 ***
 
@@ -153,7 +175,7 @@ quickjs-emscripten-core/dist/index.d.ts:1355
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1357
+packages/quickjs-emscripten-core/dist/index.d.ts:1404
 
 ***
 
@@ -163,7 +185,7 @@ quickjs-emscripten-core/dist/index.d.ts:1357
 
 #### Source
 
-quickjs-emscripten-core/dist/index.d.ts:1359
+packages/quickjs-emscripten-core/dist/index.d.ts:1406
 
 ***
 

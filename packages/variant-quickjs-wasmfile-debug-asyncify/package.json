@@ -45,6 +45,7 @@
     "./emscripten-module": {
       "types": "./dist/emscripten-module.browser.d.ts",
       "iife": "./dist/emscripten-module.cjs",
+      "workerd": "./dist/emscripten-module.cloudflare.cjs",
       "browser": "./dist/emscripten-module.browser.mjs",
       "import": "./dist/emscripten-module.mjs",
       "require": "./dist/emscripten-module.cjs",

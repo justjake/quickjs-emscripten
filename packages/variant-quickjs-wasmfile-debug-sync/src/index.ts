@@ -11,7 +11,7 @@ import type { QuickJSSyncVariant } from "@jitl/quickjs-ffi-types"
  * | releaseMode         | debug         | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
  * | syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
  * | emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
- * | exports             | require import browser                  | Has these package.json export conditions |
+ * | exports             | require import browser workerd                  | Has these package.json export conditions |
  *
  */
 const variant: QuickJSSyncVariant = {

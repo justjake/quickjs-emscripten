@@ -21,7 +21,7 @@ This variant was built with the following settings:
 
 - [Library: quickjs](README.md#library-quickjs)
 - [Release mode: debug](README.md#release-mode-debug)
-- [Exports: require import browser](README.md#exports-require-import-browser)
+- [Exports: require import browser workerd](README.md#exports-require-import-browser-workerd)
 - [Extra async magic? Yes](README.md#extra-async-magic-yes)
 - [Single-file, or separate .wasm file? wasm](README.md#single-file-or-separate-wasm-file-wasm)
 - [More details](README.md#more-details)
@@ -34,13 +34,14 @@ The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
 
 Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs.
 
-## Exports: require import browser
+## Exports: require import browser workerd
 
 Exports the following in package.json for the package entrypoint:
 
 - Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.
 - Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
 - Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.
+- Targets Cloudflare Workers.
 
 ## Extra async magic? Yes
 
@@ -70,6 +71,9 @@ Full variant JSON description:
     },
     "browser": {
       "emscriptenEnvironment": ["web", "worker"]
+    },
+    "workerd": {
+      "emscriptenEnvironment": ["web"]
     }
   }
 }
@@ -90,6 +94,9 @@ Variant-specific Emscripten build flags:
   "-DQTS_DEBUG_MODE",
   "-gsource-map",
   "-s ASSERTIONS=1",
+  "--pre-js $(TEMPLATES)/pre-extension.js",
+  "--pre-js $(TEMPLATES)/pre-sourceMapJson.js",
+  "--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js",
   "-s ASYNCIFY_ADVISE=1",
   "-O3"
 ]

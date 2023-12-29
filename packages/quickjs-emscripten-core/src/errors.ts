@@ -36,3 +36,7 @@ export class QuickJSAsyncifySuspended extends Error {
 export class QuickJSMemoryLeakDetected extends Error {
   name = "QuickJSMemoryLeakDetected"
 }
+
+export class QuickJSEmscriptenModuleError extends Error {
+  name = "QuickJSEmscriptenModuleError"
+}

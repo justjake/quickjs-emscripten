@@ -59,6 +59,9 @@ interface BuildVariant {
     require?: {
       emscriptenEnvironment: EmscriptenEnvironment[]
     }
+    workerd?: {
+      emscriptenEnvironment: EmscriptenEnvironment[]
+    }
   }
 }
 
@@ -71,6 +74,11 @@ const SEPARATE_FILE_INCLUSION: BuildVariant["exports"] = {
   },
   browser: {
     emscriptenEnvironment: [EmscriptenEnvironment.web, EmscriptenEnvironment.worker],
+  },
+  workerd: {
+    // note: EmscriptenEnvironment.worker is broken in Cloudflare Workers
+    // see https://github.com/cloudflare/worker-emscripten-template/blob/master/pre.js
+    emscriptenEnvironment: [EmscriptenEnvironment.web],
   },
 }
 
@@ -163,7 +171,15 @@ const SyncModeFlags = {
 
 const ReleaseModeFlags = {
   [ReleaseMode.Release]: [`-Oz`, `-flto`, `--closure 1`, `-s FILESYSTEM=0`],
-  [ReleaseMode.Debug]: [`-O0`, "-DQTS_DEBUG_MODE", `-gsource-map`, `-s ASSERTIONS=1`],
+  [ReleaseMode.Debug]: [
+    `-O0`,
+    "-DQTS_DEBUG_MODE",
+    `-gsource-map`,
+    `-s ASSERTIONS=1`,
+    `--pre-js $(TEMPLATES)/pre-extension.js`,
+    `--pre-js $(TEMPLATES)/pre-sourceMapJson.js`,
+    `--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js`,
+  ],
 }
 
 const EmscriptenInclusionFlags = {
@@ -205,7 +221,9 @@ function getExportCflags(variant: BuildVariant, exportName: keyof BuildVariant["
   }
 
   const emscriptenEnvironment = exportVariant.emscriptenEnvironment.join(",")
-  return [`-s ENVIRONMENT=${emscriptenEnvironment}`]
+  const flags = [`-s ENVIRONMENT=${emscriptenEnvironment}`]
+
+  return flags
 }
 
 function getGenerateTsEnv(targetName: string, variant: BuildVariant): Record<string, string> {
@@ -352,6 +370,9 @@ async function main() {
               ? "./dist/emscripten-module.browser.d.ts"
               : "./dist/emscripten-module.d.ts",
             iife: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
+            workerd: variant.exports.workerd
+              ? "./dist/emscripten-module.cloudflare.cjs"
+              : undefined,
             browser: variant.exports.browser ? "./dist/emscripten-module.browser.mjs" : undefined,
             import: variant.exports.import
               ? "./dist/emscripten-module.mjs"
@@ -459,6 +480,7 @@ const describeExport = {
   browser: `Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.`,
   require: `Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.`,
   import: `Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.`,
+  workerd: `Targets Cloudflare Workers.`,
 }
 
 function renderCoreReadme(variantDescriptions: string[]): string {
@@ -605,6 +627,11 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
   )
 
   template.replace(
+    "CFLAGS_CLOUDFLARE=REPLACE_THIS",
+    appendEnvVars("CFLAGS_CLOUDFLARE", getExportCflags(variant, "workerd")),
+  )
+
+  template.replace(
     "GENERATE_TS_ENV_VARIANT=REPLACE_THIS",
     appendEnvVars(
       "GENERATE_TS_ENV",
@@ -625,6 +652,9 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
   }
   if (variant.exports.require) {
     targets.push("CJS")
+  }
+  if (variant.exports.workerd) {
+    targets.push("CLOUDFLARE")
   }
   template.replace(/^EXPORTS: __REPLACE_THIS__/gm, `EXPORTS: ${targets.join(" ")}`)
 

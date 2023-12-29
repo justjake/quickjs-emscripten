@@ -40,41 +40,34 @@ export function exec(command: string) {
 }
 
 class InstallFlow {
-  steps: Array<() => void> = []
+  removed = new Set<string>()
+  added = new Set<string>()
 
   constructor(
     public into: string,
-    public commands: { install: string; remove: string },
+    public commands: { install: string; remove: string; fromRegistry: boolean },
   ) {}
 
   add(packageName: string) {
-    const removed = new Set<string>()
-    const added = new Set<string>()
     this.visit(packageName, {
       after: (pkg) => {
-        removed.add(pkg.name)
+        this.removed.add(pkg.name)
       },
     })
-    this.steps.push(() =>
-      exec(`cd ${this.into} && ${this.commands.remove} ${[...removed].join(" ")}`),
-    )
 
     this.visit(packageName, {
       after: (pkg) => {
-        if (INSTALL_FROM_REGISTRY) {
+        if (this.commands.fromRegistry) {
           if (pkg.name === packageName) {
-            added.add(`${pkg.name}@${pkg.version}`)
+            this.added.add(`${pkg.name}@${pkg.version}`)
           }
           return
         }
 
         const tarFile = getTarFile(pkg.name)
-        added.add(`${pkg.name}@${tarFile}`)
+        this.added.add(`${pkg.name}@${tarFile}`)
       },
     })
-    this.steps.push(() =>
-      exec(`cd ${this.into} && ${this.commands.install} ${[...added].join(" ")}`),
-    )
 
     return this
   }
@@ -92,24 +85,35 @@ class InstallFlow {
   }
 
   run() {
-    for (const step of this.steps) {
-      step()
+    if (this.removed.size > 0) {
+      exec(`cd ${this.into} && ${this.commands.remove} ${[...this.removed].join(" ")}`)
+    }
+
+    if (this.added.size > 0) {
+      exec(`cd ${this.into} && ${this.commands.install} ${[...this.added].join(" ")}`)
     }
   }
 }
 
 export function installDependencyGraphFromTar(
   into: string,
-  packageName: string,
+  packageNameOrNames: string | string[],
   cmds: {
     install: string
     remove: string
+    fromRegistry: boolean
   } = {
     install: "npm install",
     remove: "npm remove",
+    fromRegistry: INSTALL_FROM_REGISTRY,
   },
 ) {
-  new InstallFlow(into, cmds).add(packageName).run()
+  const packageNames = Array.isArray(packageNameOrNames) ? packageNameOrNames : [packageNameOrNames]
+  const flow = new InstallFlow(into, cmds)
+  for (const packageName of packageNames) {
+    flow.add(packageName)
+  }
+  flow.run()
 }
 
 export function resolve(...parts: string[]) {
@@ -178,6 +182,7 @@ export interface PackageJson {
         browser?: string
         module?: string
         iife?: string
+        workerd?: string
         import: string | undefined
         require: string | undefined
         default: string | undefined

@@ -21,13 +21,14 @@ The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
 
 Optimized for performance; use when building/deploying your application.
 
-## Exports: require import browser
+## Exports: require import browser workerd
 
 Exports the following in package.json for the package entrypoint:
 
 - Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.
 - Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
 - Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.
+- Targets Cloudflare Workers.
 
 ## Extra async magic? Yes
 
@@ -57,6 +58,9 @@ Full variant JSON description:
     },
     "browser": {
       "emscriptenEnvironment": ["web", "worker"]
+    },
+    "workerd": {
+      "emscriptenEnvironment": ["web"]
     }
   }
 }

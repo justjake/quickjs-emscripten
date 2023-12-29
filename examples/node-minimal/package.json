@@ -1,0 +1,16 @@
+{
+  "name": "quickjs-emscripten-minimal-smoketest",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "main": "main.mjs",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "node ./main.mjs"
+  },
+  "dependencies": {
+    "@jitl/quickjs-ffi-types": "file:../../build/tar/@jitl-quickjs-ffi-types.tgz",
+    "@jitl/quickjs-wasmfile-release-sync": "file:../../build/tar/@jitl-quickjs-wasmfile-release-sync.tgz",
+    "quickjs-emscripten-core": "file:../../build/tar/quickjs-emscripten-core.tgz"
+  }
+}

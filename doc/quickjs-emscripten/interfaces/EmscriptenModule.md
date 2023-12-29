@@ -11,7 +11,7 @@ QuickJS.
 
 ## Contents
 
-- [Extended By](EmscriptenModule.md#extended-by)
+- [Extends](EmscriptenModule.md#extends)
 - [Properties](EmscriptenModule.md#properties)
   - [FAST\_MEMORY](EmscriptenModule.md#fast-memory)
   - [HEAP16](EmscriptenModule.md#heap16)
@@ -24,18 +24,21 @@ QuickJS.
   - [HEAPU8](EmscriptenModule.md#heapu8)
   - [TOTAL\_MEMORY](EmscriptenModule.md#total-memory)
   - [TOTAL\_STACK](EmscriptenModule.md#total-stack)
+  - [wasmBinary?](EmscriptenModule.md#wasmbinary)
 - [Methods](EmscriptenModule.md#methods)
   - [UTF8ToString()](EmscriptenModule.md#utf8tostring)
   - [\_free()](EmscriptenModule.md#free)
   - [\_malloc()](EmscriptenModule.md#malloc)
   - [cwrap()](EmscriptenModule.md#cwrap)
+  - [instantiateWasm()?](EmscriptenModule.md#instantiatewasm)
   - [lengthBytesUTF8()](EmscriptenModule.md#lengthbytesutf8)
+  - [locateFile()?](EmscriptenModule.md#locatefile)
+  - [monitorRunDependencies()?](EmscriptenModule.md#monitorrundependencies)
   - [stringToUTF8()](EmscriptenModule.md#stringtoutf8)
 
-## Extended By
+## Extends
 
-- [`QuickJSAsyncEmscriptenModule`](QuickJSAsyncEmscriptenModule.md)
-- [`QuickJSEmscriptenModule`](QuickJSEmscriptenModule.md)
+- [`EmscriptenModuleLoaderOptions`](EmscriptenModuleLoaderOptions.md)
 
 ## Properties
 
@@ -45,7 +48,7 @@ QuickJS.
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:163
+packages/quickjs-ffi-types/dist/index.d.ts:226
 
 ***
 
@@ -55,7 +58,7 @@ quickjs-ffi-types/dist/index.d.ts:163
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:154
+packages/quickjs-ffi-types/dist/index.d.ts:217
 
 ***
 
@@ -65,7 +68,7 @@ quickjs-ffi-types/dist/index.d.ts:154
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:155
+packages/quickjs-ffi-types/dist/index.d.ts:218
 
 ***
 
@@ -75,7 +78,7 @@ quickjs-ffi-types/dist/index.d.ts:155
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:153
+packages/quickjs-ffi-types/dist/index.d.ts:216
 
 ***
 
@@ -85,7 +88,7 @@ quickjs-ffi-types/dist/index.d.ts:153
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:159
+packages/quickjs-ffi-types/dist/index.d.ts:222
 
 ***
 
@@ -95,7 +98,7 @@ quickjs-ffi-types/dist/index.d.ts:159
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:160
+packages/quickjs-ffi-types/dist/index.d.ts:223
 
 ***
 
@@ -105,7 +108,7 @@ quickjs-ffi-types/dist/index.d.ts:160
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:157
+packages/quickjs-ffi-types/dist/index.d.ts:220
 
 ***
 
@@ -115,7 +118,7 @@ quickjs-ffi-types/dist/index.d.ts:157
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:158
+packages/quickjs-ffi-types/dist/index.d.ts:221
 
 ***
 
@@ -125,7 +128,7 @@ quickjs-ffi-types/dist/index.d.ts:158
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:156
+packages/quickjs-ffi-types/dist/index.d.ts:219
 
 ***
 
@@ -135,7 +138,7 @@ quickjs-ffi-types/dist/index.d.ts:156
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:162
+packages/quickjs-ffi-types/dist/index.d.ts:225
 
 ***
 
@@ -145,7 +148,23 @@ quickjs-ffi-types/dist/index.d.ts:162
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:161
+packages/quickjs-ffi-types/dist/index.d.ts:224
+
+***
+
+### wasmBinary?
+
+> **wasmBinary**?: `ArrayBuffer`
+
+Compile this to WebAssembly.Module
+
+#### Inherited from
+
+[`quickjs-emscripten.EmscriptenModuleLoaderOptions.wasmBinary`](EmscriptenModuleLoaderOptions.md#wasmbinary)
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:185
 
 ## Methods
 
@@ -168,7 +187,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:148
+packages/quickjs-ffi-types/dist/index.d.ts:211
 
 ***
 
@@ -186,7 +205,7 @@ quickjs-ffi-types/dist/index.d.ts:148
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:151
+packages/quickjs-ffi-types/dist/index.d.ts:214
 
 ***
 
@@ -204,7 +223,7 @@ quickjs-ffi-types/dist/index.d.ts:151
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:150
+packages/quickjs-ffi-types/dist/index.d.ts:213
 
 ***
 
@@ -237,7 +256,33 @@ quickjs-ffi-types/dist/index.d.ts:150
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:152
+packages/quickjs-ffi-types/dist/index.d.ts:215
+
+***
+
+### instantiateWasm()?
+
+> **`optional`** **instantiateWasm**(`imports`, `onSuccess`): `Exports` \| `Promise`\<`Exports`\>
+
+Create an instance of the WASM module, call onSuccess(instance), then return instance.exports
+
+#### Parameters
+
+• **imports**: `Imports`
+
+• **onSuccess**: (`instance`) => `void`
+
+#### Returns
+
+`Exports` \| `Promise`\<`Exports`\>
+
+#### Inherited from
+
+[`quickjs-emscripten.EmscriptenModuleLoaderOptions.instantiateWasm`](EmscriptenModuleLoaderOptions.md#instantiatewasm)
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:187
 
 ***
 
@@ -255,7 +300,75 @@ quickjs-ffi-types/dist/index.d.ts:152
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:149
+packages/quickjs-ffi-types/dist/index.d.ts:212
+
+***
+
+### locateFile()?
+
+> **`optional`** **locateFile**(`fileName`, `prefix`): `string`
+
+If set, this method will be called when the runtime needs to load a file,
+such as a .wasm WebAssembly file, .mem memory init file, or a file
+generated by the file packager.
+
+The function receives two parameters:
+
+- `fileName`, the relative path to the file as configured in build
+process, eg `"emscripten-module.wasm"`.
+- `prefix` (path to the main JavaScript file’s directory). This may be `''`
+(empty string) in some cases if the Emscripten Javascript code can't locate
+itself. Try logging it in your environment.
+
+It should return the actual URI or path to the requested file.
+
+This lets you host file packages on a different location than the directory
+of the JavaScript file (which is the default expectation), for example if
+you want to host them on a CDN.
+
+#### Parameters
+
+• **fileName**: `string`
+
+• **prefix**: `string`
+
+Often `''` (empty string)
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`quickjs-emscripten.EmscriptenModuleLoaderOptions.locateFile`](EmscriptenModuleLoaderOptions.md#locatefile)
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:181
+
+***
+
+### monitorRunDependencies()?
+
+> **`optional`** **monitorRunDependencies**(`left`): `void`
+
+Called by emscripten as dependencies blocking initialization are added or fulfilled. May only be called in debug builds.
+
+#### Parameters
+
+• **left**: `number`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`quickjs-emscripten.EmscriptenModuleLoaderOptions.monitorRunDependencies`](EmscriptenModuleLoaderOptions.md#monitorrundependencies)
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:189
 
 ***
 
@@ -280,7 +393,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#stringToUTF8
 
 #### Source
 
-quickjs-ffi-types/dist/index.d.ts:143
+packages/quickjs-ffi-types/dist/index.d.ts:206
 
 ***
 

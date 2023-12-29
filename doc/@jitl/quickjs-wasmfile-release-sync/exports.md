@@ -28,7 +28,7 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 | releaseMode         | release         | Optimized for performance; use when building/deploying your application. |
 | syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
 | emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
-| exports             | require import browser                  | Has these package.json export conditions |
+| exports             | require import browser workerd                  | Has these package.json export conditions |
 
 #### Source
 
