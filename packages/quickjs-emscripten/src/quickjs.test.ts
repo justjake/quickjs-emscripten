@@ -28,6 +28,7 @@ import {
 } from "."
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
+const TEST_NG = Boolean(process.env.TEST_NG ?? true)
 
 function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false) {
   let vm: QuickJSContext = undefined as any
@@ -382,10 +383,9 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
       if (!result.error) {
         assert.fail("result should be an error")
       }
-      assert.deepEqual(vm.dump(result.error), {
+      assertError(vm.dump(result.error), {
         name: "SyntaxError",
         message: "unexpected end of string",
-        stack: "    at eval.js:1\n",
       })
       result.error.dispose()
     })
@@ -1059,6 +1059,16 @@ describe("QuickJSContext", function () {
     const getContext = () => loader().then((mod) => mod.newContext())
     contextTests(getContext, true)
   })
+
+  if (TEST_NG) {
+    describe("quickjs-ng RELEASE_SYNC", function () {
+      const loader = memoizePromiseFactory(() =>
+        newQuickJSWASMModule(import("@jitl/quickjs-ng-wasmfile-release-sync")),
+      )
+      const getContext = () => loader().then((mod) => mod.newContext())
+      contextTests(getContext)
+    })
+  }
 })
 
 if (!TEST_NO_ASYNC) {
@@ -1088,6 +1098,23 @@ if (!TEST_NO_ASYNC) {
         asyncContextTests(getContext)
       })
     })
+
+    if (TEST_NG) {
+      describe("quickjs-ng RELEASE_ASYNC", function () {
+        const loader = memoizePromiseFactory(() =>
+          newQuickJSAsyncWASMModule(import("@jitl/quickjs-ng-wasmfile-release-asyncify")),
+        )
+        const getContext = () => loader().then((mod) => mod.newContext())
+
+        describe("sync API", () => {
+          contextTests(getContext)
+        })
+
+        describe("async API", () => {
+          asyncContextTests(getContext)
+        })
+      })
+    }
   })
 }
 
@@ -1114,4 +1141,15 @@ function assertBuildIsConsistent(vm: QuickJSContext) {
       "when FFI is generated without DEBUG, C code is compiled without DEBUG",
     )
   }
+}
+
+interface ErrorObj {
+  name: string
+  message: string
+  /** Ignored */
+  stack?: unknown
+}
+function assertError(actual: ErrorObj, expected: ErrorObj) {
+  assert.strictEqual(actual.name, expected.name)
+  assert.strictEqual(actual.message, expected.message)
 }
