@@ -19,7 +19,7 @@ import type {
   JSModuleNormalizer,
   JSModuleNormalizerAsync,
 } from "./types"
-import { DefaultIntrinsics, intrinsicsToEnum } from "./types"
+import { intrinsicsToFlags } from "./types"
 import { Lifetime } from "./lifetime"
 
 export class QuickJSAsyncRuntime extends QuickJSRuntime {
@@ -47,7 +47,7 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
   }
 
   override newContext(options: ContextOptions = {}): QuickJSAsyncContext {
-    const intrinsics = intrinsicsToEnum(options.intrinsics)
+    const intrinsics = intrinsicsToFlags(options.intrinsics)
     const ctx = new Lifetime(
       this.ffi.QTS_NewContext(this.rt.value, intrinsics),
       undefined,

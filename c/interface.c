@@ -90,6 +90,7 @@
 #define JSVoid void
 
 #define EvalFlags int
+#define IntrinsicsFlags enum QTS_Intrinsic
 #define EvalDetectModule int
 
 void qts_log(char *msg) {
@@ -294,7 +295,7 @@ enum QTS_Intrinsic {
   QTS_Intrinsic_BignumExt = 1 << 15,
 };
 
-JSContext *QTS_NewContext(JSRuntime *rt, enum QTS_Intrinsic intrinsics) {
+JSContext *QTS_NewContext(JSRuntime *rt, IntrinsicsFlags intrinsics) {
   if (intrinsics == 0) {
     return JS_NewContext(rt);
   }

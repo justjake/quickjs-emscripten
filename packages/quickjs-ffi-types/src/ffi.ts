@@ -17,6 +17,7 @@ import {
   JSBorrowedCharPointer,
   JSVoidPointer,
   EvalFlags,
+  IntrinsicsFlags,
   EvalDetectModule,
 } from "."
 
@@ -45,7 +46,7 @@ export interface QuickJSFFI {
   QTS_GetTrue: () => JSValueConstPointer
   QTS_NewRuntime: () => JSRuntimePointer
   QTS_FreeRuntime: (rt: JSRuntimePointer) => void
-  QTS_NewContext: (rt: JSRuntimePointer) => JSContextPointer
+  QTS_NewContext: (rt: JSRuntimePointer, intrinsics: IntrinsicsFlags) => JSContextPointer
   QTS_FreeContext: (ctx: JSContextPointer) => void
   QTS_FreeValuePointer: (ctx: JSContextPointer, value: JSValuePointer) => void
   QTS_FreeValuePointerRuntime: (rt: JSRuntimePointer, value: JSValuePointer) => void

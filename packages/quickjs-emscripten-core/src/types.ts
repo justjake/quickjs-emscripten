@@ -1,10 +1,11 @@
 import type { JSContextPointer, JSValueConstPointer, JSValuePointer } from "@jitl/quickjs-ffi-types"
-import { EvalFlags } from "@jitl/quickjs-ffi-types"
+import { EvalFlags, IntrinsicsFlags } from "@jitl/quickjs-ffi-types"
 import type { QuickJSContext } from "./context"
 import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
 import type { Disposable, Lifetime } from "./lifetime"
 import type { QuickJSAsyncContext } from "./context-asyncify"
 import type { InterruptHandler, QuickJSRuntime } from "./runtime"
+import { QuickJSUnknownIntrinsic } from "./errors"
 
 /**
  * A QuickJSHandle to a constant that will never change, and does not need to
@@ -139,62 +140,45 @@ export interface AsyncRuntimeOptions extends RuntimeOptionsBase {
  * Language features that can be enabled or disabled in a QuickJSContext.
  * @see {@link ContextOptions}
  */
-export type Intrinsic = keyof typeof IntrinsicEnum
-
-/** @private */
-const IntrinsicEnum = {
-  BaseObjects: 1 << 0,
-  Date: 1 << 1,
-  Eval: 1 << 2,
-  StringNormalize: 1 << 3,
-  RegExp: 1 << 4,
-  RegExpCompiler: 1 << 5,
-  JSON: 1 << 6,
-  Proxy: 1 << 7,
-  MapSet: 1 << 8,
-  TypedArrays: 1 << 9,
-  Promise: 1 << 10,
-  BigInt: 1 << 11,
-  BigFloat: 1 << 12,
-  BigDecimal: 1 << 13,
-  OperatorOverloading: 1 << 14,
-  BignumExt: 1 << 15,
-} as const
+export type Intrinsics = Partial<Record<keyof typeof IntrinsicsFlags, boolean>>
 
 /**
- * An array containing the default {@link Intrinsic} language features enabled in a QuickJSContext.
+ * The default {@link Intrinsics} language features enabled in a QuickJSContext.
  * @see {@link ContextOptions}
  */
-export const DefaultIntrinsics = [
-  "BaseObjects",
-  "Date",
-  "Eval",
-  "StringNormalize",
-  "RegExp",
-  "JSON",
-  "Proxy",
-  "MapSet",
-  "TypedArrays",
-  "Promise",
-] as const satisfies Intrinsic[]
+export const DefaultIntrinsics = Object.freeze({
+  BaseObjects: true,
+  Date: true,
+  Eval: true,
+  StringNormalize: true,
+  RegExp: true,
+  JSON: true,
+  Proxy: true,
+  MapSet: true,
+  TypedArrays: true,
+  Promise: true,
+} as const satisfies Intrinsics)
 
 /**
  * @private
  */
-export function intrinsicsToEnum(intrinsics: Array<Intrinsic | Intrinsic[]> | undefined): number {
+export function intrinsicsToFlags(intrinsics: Intrinsics | undefined): IntrinsicsFlags {
   if (!intrinsics) {
-    return 0
+    return 0 as IntrinsicsFlags
   }
 
   let result = 0
-  for (const intrinsic of intrinsics) {
-    if (Array.isArray(intrinsic)) {
-      result |= intrinsicsToEnum(intrinsic)
-    } else {
-      result |= IntrinsicEnum[intrinsic] ?? 0
+  for (const [maybeIntrinsicName, enabled] of Object.entries(intrinsics)) {
+    if (!(maybeIntrinsicName in IntrinsicsFlags)) {
+      throw new QuickJSUnknownIntrinsic(maybeIntrinsicName)
+    }
+    const intrinsicName = maybeIntrinsicName as keyof typeof IntrinsicsFlags
+
+    if (enabled) {
+      result |= IntrinsicsFlags[intrinsicName]
     }
   }
-  return result
+  return result as IntrinsicsFlags
 }
 
 /**
@@ -208,14 +192,17 @@ export interface ContextOptions {
    * To omit all intrinsics, pass an empty array.
    *
    * To remove a specific intrinsic, but retain the other defaults,
-   * filter it from {@link DefaultIntrinsics} array:
+   * override it from {@link DefaultIntrinsics}
    * ```ts
    * const contextWithoutDateOrEval = runtime.newContext({
-   *   intrinsics: DefaultIntrinsics.filter(x => x !== "Date" && x !== "Eval")
+   *   intrinsics: {
+   *     ...DefaultIntrinsics,
+   *     Date: false,
+   *   }
    * })
    * ```
    */
-  intrinsics?: Array<Intrinsic | Intrinsic[]>
+  intrinsics?: Intrinsics
 
   /**
    * Wrap the provided context instead of constructing a new one.

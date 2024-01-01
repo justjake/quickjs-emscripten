@@ -15,7 +15,7 @@ import { Lifetime, Scope, UsingDisposable } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import type { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
 import type { ContextOptions, JSModuleLoader, JSModuleNormalizer, QuickJSHandle } from "./types"
-import { intrinsicsToEnum } from "./types"
+import { intrinsicsToFlags } from "./types"
 import type { SuccessOrFail } from "./vm-interface"
 
 /**
@@ -135,7 +135,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
    * You should dispose a created context before disposing this runtime.
    */
   newContext(options: ContextOptions = {}): QuickJSContext {
-    const intrinsics = intrinsicsToEnum(options.intrinsics)
+    const intrinsics = intrinsicsToFlags(options.intrinsics)
     const ctx = new Lifetime(
       options.contextPointer || this.ffi.QTS_NewContext(this.rt.value, intrinsics),
       undefined,
