@@ -136,29 +136,36 @@ export interface AsyncRuntimeOptions extends RuntimeOptionsBase {
 }
 
 /**
- * Work in progress.
+ * Language features that can be enabled or disabled in a QuickJSContext.
+ * @see {@link ContextOptions}
  */
-export type Intrinsic =
-  | "BaseObjects"
-  | "Date"
-  | "Eval"
-  | "StringNormalize"
-  | "RegExp"
-  | "RegExpCompiler"
-  | "JSON"
-  | "Proxy"
-  | "MapSet"
-  | "TypedArrays"
-  | "Promise"
-  | "BigInt"
-  | "BigFloat"
-  | "BigDecimal"
-  | "OperatorOverloading"
-  | "BignumExt"
+export type Intrinsic = keyof typeof IntrinsicEnum
 
-// For informational purposes
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DefaultIntrinsicsList = [
+/** @private */
+const IntrinsicEnum = {
+  BaseObjects: 1 << 0,
+  Date: 1 << 1,
+  Eval: 1 << 2,
+  StringNormalize: 1 << 3,
+  RegExp: 1 << 4,
+  RegExpCompiler: 1 << 5,
+  JSON: 1 << 6,
+  Proxy: 1 << 7,
+  MapSet: 1 << 8,
+  TypedArrays: 1 << 9,
+  Promise: 1 << 10,
+  BigInt: 1 << 11,
+  BigFloat: 1 << 12,
+  BigDecimal: 1 << 13,
+  OperatorOverloading: 1 << 14,
+  BignumExt: 1 << 15,
+} as const
+
+/**
+ * An array containing the default {@link Intrinsic} language features enabled in a QuickJSContext.
+ * @see {@link ContextOptions}
+ */
+export const DefaultIntrinsics = [
   "BaseObjects",
   "Date",
   "Eval",
@@ -169,20 +176,46 @@ const DefaultIntrinsicsList = [
   "MapSet",
   "TypedArrays",
   "Promise",
-] as const
+] as const satisfies Intrinsic[]
 
 /**
- * Work in progress.
+ * @private
  */
-export const DefaultIntrinsics = Symbol("DefaultIntrinsics")
+export function intrinsicsToEnum(intrinsics: Array<Intrinsic | Intrinsic[]> | undefined): number {
+  if (!intrinsics) {
+    return 0
+  }
 
+  let result = 0
+  for (const intrinsic of intrinsics) {
+    if (Array.isArray(intrinsic)) {
+      result |= intrinsicsToEnum(intrinsic)
+    } else {
+      result |= IntrinsicEnum[intrinsic] ?? 0
+    }
+  }
+  return result
+}
+
+/**
+ * Options for creating a {@link QuickJSContext} or {@link QuickJSAsyncContext}
+ * Pass to {@link QuickJSRuntime#newContext}.
+ */
 export interface ContextOptions {
   /**
    * What built-in objects and language features to enable?
    * If unset, the default intrinsics will be used.
    * To omit all intrinsics, pass an empty array.
+   *
+   * To remove a specific intrinsic, but retain the other defaults,
+   * filter it from {@link DefaultIntrinsics} array:
+   * ```ts
+   * const contextWithoutDateOrEval = runtime.newContext({
+   *   intrinsics: DefaultIntrinsics.filter(x => x !== "Date" && x !== "Eval")
+   * })
+   * ```
    */
-  intrinsics?: PartiallyImplemented<Intrinsic[]> | typeof DefaultIntrinsics
+  intrinsics?: Array<Intrinsic | Intrinsic[]>
 
   /**
    * Wrap the provided context instead of constructing a new one.
