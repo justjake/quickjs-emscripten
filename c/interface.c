@@ -311,47 +311,51 @@ JSContext *QTS_NewContext(JSRuntime *rt, enum QTS_Intrinsic intrinsics) {
     JS_AddIntrinsicDate(ctx);
   }
   if (intrinsics & QTS_Intrinsic_Eval) {
-    JS_AddIntrinsicEval(ctx)
+    JS_AddIntrinsicEval(ctx);
   }
+#ifndef QTS_USE_QUICKJS_NG
   if (intrinsics & QTS_Intrinsic_StringNormalize) {
-    JS_AddIntrinsicStringNormalize(ctx)
+    JS_AddIntrinsicStringNormalize(ctx);
   }
+#endif
   if (intrinsics & QTS_Intrinsic_RegExp) {
-    JS_AddIntrinsicRegExp(ctx)
+    JS_AddIntrinsicRegExp(ctx);
   }
   if (intrinsics & QTS_Intrinsic_RegExpCompiler) {
-    JS_AddIntrinsicRegExpCompiler(ctx)
+    JS_AddIntrinsicRegExpCompiler(ctx);
   }
   if (intrinsics & QTS_Intrinsic_JSON) {
-    JS_AddIntrinsicJSON(ctx)
+    JS_AddIntrinsicJSON(ctx);
   }
   if (intrinsics & QTS_Intrinsic_Proxy) {
-    JS_AddIntrinsicProxy(ctx)
+    JS_AddIntrinsicProxy(ctx);
   }
   if (intrinsics & QTS_Intrinsic_MapSet) {
-    JS_AddIntrinsicMapSet(ctx)
+    JS_AddIntrinsicMapSet(ctx);
   }
   if (intrinsics & QTS_Intrinsic_TypedArrays) {
-    JS_AddIntrinsicTypedArrays(ctx)
+    JS_AddIntrinsicTypedArrays(ctx);
   }
   if (intrinsics & QTS_Intrinsic_Promise) {
-    JS_AddIntrinsicPromise(ctx)
+    JS_AddIntrinsicPromise(ctx);
   }
   if (intrinsics & QTS_Intrinsic_BigInt) {
-    JS_AddIntrinsicBigInt(ctx)
+    JS_AddIntrinsicBigInt(ctx);
   }
+#ifdef CONFIG_BIGNUM
   if (intrinsics & QTS_Intrinsic_BigFloat) {
-    JS_AddIntrinsicBigFloat(ctx)
+    JS_AddIntrinsicBigFloat(ctx);
   }
   if (intrinsics & QTS_Intrinsic_BigDecimal) {
-    JS_AddIntrinsicBigDecimal(ctx)
+    JS_AddIntrinsicBigDecimal(ctx);
   }
   if (intrinsics & QTS_Intrinsic_BignumExt) {
-    JS_EnableBignumExt(ctx)
+    JS_EnableBignumExt(ctx, TRUE);
   }
   if (intrinsics & QTS_Intrinsic_OperatorOverloading) {
-    JS_AddIntrinsicOperators(ctx)
+    JS_AddIntrinsicOperators(ctx);
   }
+#endif
 
   return ctx;
 }
