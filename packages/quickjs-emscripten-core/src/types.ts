@@ -136,11 +136,34 @@ export interface AsyncRuntimeOptions extends RuntimeOptionsBase {
   moduleLoader?: JSModuleLoaderAsync | JSModuleLoader
 }
 
+// This guy could be declared as Partial<Record<keyof typeof IntrinsicsFlags, boolean>>,
+// but it leads to bad docs.
 /**
  * Language features that can be enabled or disabled in a QuickJSContext.
  * @see {@link ContextOptions}
  */
-export type Intrinsics = Partial<Record<keyof typeof IntrinsicsFlags, boolean>>
+export type Intrinsics = {
+  BaseObjects?: boolean
+  Date?: boolean
+  Eval?: boolean
+  StringNormalize?: boolean
+  RegExp?: boolean
+  RegExpCompiler?: boolean
+  JSON?: boolean
+  Proxy?: boolean
+  MapSet?: boolean
+  TypedArrays?: boolean
+  Promise?: boolean
+  BigInt?: boolean
+  BigFloat?: boolean
+  BigDecimal?: boolean
+  OperatorOverloading?: boolean
+  BignumExt?: boolean
+}
+
+type _Assert<T, U extends T> = U
+type _intrinsicsHasKeysOfIntrinsicFlags = _Assert<keyof Intrinsics, keyof typeof IntrinsicsFlags>
+type _intrinsicsHasKeysOfIntrinsicFlags2 = _Assert<keyof typeof IntrinsicsFlags, keyof Intrinsics>
 
 /**
  * The default {@link Intrinsics} language features enabled in a QuickJSContext.

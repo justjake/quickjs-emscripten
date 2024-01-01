@@ -14,6 +14,7 @@ import type {
   QuickJSAsyncContext,
   QuickJSFFI,
   QuickJSAsyncFFI,
+  ContextOptions,
 } from "."
 import {
   getQuickJS,
@@ -25,12 +26,15 @@ import {
   memoizePromiseFactory,
   debugLog,
   errors,
+  DefaultIntrinsics,
 } from "."
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
 const TEST_NG = Boolean(process.env.TEST_NG ?? true)
 
-function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false) {
+type GetTestContext = (options?: ContextOptions) => Promise<QuickJSContext>
+
+function contextTests(getContext: GetTestContext, isDebug = false) {
   let vm: QuickJSContext = undefined as any
   let ffi: QuickJSFFI | QuickJSAsyncFFI = undefined as any
   let testId = 0
@@ -439,6 +443,47 @@ function contextTests(getContext: () => Promise<QuickJSContext>, isDebug = false
         ;(await getQuickJS()).evalCode('"ok"', { maxStackSizeBytes: 1 })
       } catch (e) {
         return
+      }
+    })
+  })
+
+  describe("intrinsices", () => {
+    it("evalCode - context respects intrinsic options - Date Unavailable", async () => {
+      // Eval is required to use `evalCode`
+      const newContext = await getContext({
+        intrinsics: {
+          BaseObjects: true,
+        },
+      })
+
+      const result = newContext.evalCode(`new Date()`)
+
+      if (!result.error) {
+        assert.fail("result should be an error")
+      }
+
+      assertError(newContext.dump(result.error), {
+        name: "ReferenceError",
+        message: "'Date' is not defined",
+        stack: "    at <eval> (eval.js)\n",
+      })
+
+      result.error.dispose()
+      newContext.dispose()
+    })
+
+    it("evalCode - context executes as expected with default intrinsics", async () => {
+      // Eval is required to use `evalCode`
+      const newContext = await getContext({ intrinsics: DefaultIntrinsics })
+
+      let handle
+      try {
+        handle = newContext.unwrapResult(newContext.evalCode(`new Date()`))
+      } finally {
+        if (handle?.alive) {
+          handle.dispose()
+        }
+        newContext.dispose()
       }
     })
   })
@@ -1050,13 +1095,13 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
 describe("QuickJSContext", function () {
   describe("QuickJS.newContext", function () {
     const loader = getQuickJS
-    const getContext = () => loader().then((mod) => mod.newContext())
+    const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
     contextTests(getContext)
   })
 
   describe("DEBUG sync module", function () {
     const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
-    const getContext = () => loader().then((mod) => mod.newContext())
+    const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
     contextTests(getContext, true)
   })
 
@@ -1065,7 +1110,7 @@ describe("QuickJSContext", function () {
       const loader = memoizePromiseFactory(() =>
         newQuickJSWASMModule(import("@jitl/quickjs-ng-wasmfile-release-sync")),
       )
-      const getContext = () => loader().then((mod) => mod.newContext())
+      const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
       contextTests(getContext)
     })
   }
@@ -1075,7 +1120,7 @@ if (!TEST_NO_ASYNC) {
   describe("QuickJSAsyncContext", () => {
     describe("newQuickJSAsyncWASMModule", function () {
       const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule())
-      const getContext = () => loader().then((mod) => mod.newContext())
+      const getContext = (opts?: ContextOptions) => loader().then((mod) => mod.newContext(opts))
 
       describe("sync API", () => {
         contextTests(getContext)

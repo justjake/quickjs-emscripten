@@ -41,7 +41,9 @@ export type {
   JSModuleNormalizeResult,
   JSModuleNormalizeFailure,
   JSModuleNormalizeSuccess,
+  Intrinsics,
 } from "./types"
+export { DefaultIntrinsics } from "./types"
 export type { ModuleEvalOptions } from "./module"
 export { QuickJSPropertyKey } from "./context"
 export { debugLog } from "./debug"
