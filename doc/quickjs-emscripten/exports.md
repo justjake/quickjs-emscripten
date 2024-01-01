@@ -1047,7 +1047,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 ### newQuickJSAsyncWASMModule()
 
-> **newQuickJSAsyncWASMModule**(`variant`): `Promise`\<[`QuickJSAsyncWASMModule`](classes/QuickJSAsyncWASMModule.md)\>
+> **newQuickJSAsyncWASMModule**(`variantOrPromise`): `Promise`\<[`QuickJSAsyncWASMModule`](classes/QuickJSAsyncWASMModule.md)\>
 
 Create a new, completely isolated WebAssembly module containing a version of the QuickJS library
 compiled with Emscripten's [ASYNCIFY](https://emscripten.org/docs/porting/asyncify.html) transform.
@@ -1063,7 +1063,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Parameters
 
-• **variant**: [`QuickJSAsyncVariant`](interfaces/QuickJSAsyncVariant.md)= `RELEASE_ASYNC`
+• **variantOrPromise**: [`PromisedDefault`](exports.md#promiseddefaultt)\<[`QuickJSAsyncVariant`](interfaces/QuickJSAsyncVariant.md)\>= `RELEASE_ASYNC`
 
 Optionally, pass a [QuickJSAsyncVariant](interfaces/QuickJSAsyncVariant.md) to construct a different WebAssembly module.
 
@@ -1073,7 +1073,7 @@ Optionally, pass a [QuickJSAsyncVariant](interfaces/QuickJSAsyncVariant.md) to c
 
 #### Source
 
-[packages/quickjs-emscripten/src/variants.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L46)
+[packages/quickjs-emscripten/src/variants.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L47)
 
 ***
 
@@ -1119,7 +1119,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1298
 
 ### newQuickJSWASMModule()
 
-> **newQuickJSWASMModule**(`variant`): `Promise`\<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
+> **newQuickJSWASMModule**(`variantOrPromise`): `Promise`\<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
 
 Create a new, completely isolated WebAssembly module containing the QuickJS library.
 See the documentation on [QuickJSWASMModule](classes/QuickJSWASMModule.md).
@@ -1130,7 +1130,7 @@ https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
 #### Parameters
 
-• **variant**: [`QuickJSSyncVariant`](interfaces/QuickJSSyncVariant.md)= `RELEASE_SYNC`
+• **variantOrPromise**: [`PromisedDefault`](exports.md#promiseddefaultt)\<[`QuickJSSyncVariant`](interfaces/QuickJSSyncVariant.md)\>= `RELEASE_SYNC`
 
 Optionally, pass a [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md) to construct a different WebAssembly module.
 
@@ -1140,7 +1140,7 @@ Optionally, pass a [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md) to con
 
 #### Source
 
-[packages/quickjs-emscripten/src/variants.ts:24](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L24)
+[packages/quickjs-emscripten/src/variants.ts:25](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L25)
 
 ***
 
