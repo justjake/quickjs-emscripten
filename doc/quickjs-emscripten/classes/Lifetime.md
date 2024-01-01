@@ -7,13 +7,13 @@
 # Class: Lifetime\<T, TCopy, Owner\>
 
 A lifetime prevents access to a value after the lifetime has been
-[dispose](Lifetime.md#dispose)ed.
+[dispose](Lifetime.md#dispose-1)ed.
 
 Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
 
 ## Contents
 
-- [Extended By](Lifetime.md#extended-by)
+- [Extends](Lifetime.md#extends)
 - [Type parameters](Lifetime.md#type-parameters)
 - [Implements](Lifetime.md#implements)
 - [Constructors](Lifetime.md#constructors)
@@ -31,14 +31,14 @@ Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
   - [owner](Lifetime.md#owner)
   - [value](Lifetime.md#value)
 - [Methods](Lifetime.md#methods)
+  - [`[dispose]`()](Lifetime.md#dispose)
   - [consume()](Lifetime.md#consume)
   - [dispose()](Lifetime.md#dispose)
   - [dup()](Lifetime.md#dup)
 
-## Extended By
+## Extends
 
-- [`StaticLifetime`](StaticLifetime.md)
-- [`WeakLifetime`](WeakLifetime.md)
+- [`UsingDisposable`](UsingDisposable.md)
 
 ## Type parameters
 
@@ -79,9 +79,13 @@ the creator.
 
 [`Lifetime`](Lifetime.md)\<`T`, `TCopy`, `Owner`\>
 
+#### Overrides
+
+[`quickjs-emscripten.UsingDisposable.constructor`](UsingDisposable.md#constructors)
+
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:521
+packages/quickjs-emscripten-core/dist/index.d.ts:543
 
 ## Properties
 
@@ -91,7 +95,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:521
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:511
+packages/quickjs-emscripten-core/dist/index.d.ts:533
 
 ***
 
@@ -101,7 +105,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:511
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:512
+packages/quickjs-emscripten-core/dist/index.d.ts:534
 
 ***
 
@@ -111,7 +115,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:512
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:510
+packages/quickjs-emscripten-core/dist/index.d.ts:532
 
 ***
 
@@ -121,7 +125,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:510
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:507
+packages/quickjs-emscripten-core/dist/index.d.ts:529
 
 ***
 
@@ -139,7 +143,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:507
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:508
+packages/quickjs-emscripten-core/dist/index.d.ts:530
 
 ***
 
@@ -157,7 +161,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:508
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:509
+packages/quickjs-emscripten-core/dist/index.d.ts:531
 
 ## Accessors
 
@@ -171,11 +175,11 @@ packages/quickjs-emscripten-core/dist/index.d.ts:509
 
 true if the object is alive
 
-false after the object has been [dispose](Lifetime.md#dispose)d
+false after the object has been [dispose](Lifetime.md#dispose-1)d
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:522
+packages/quickjs-emscripten-core/dist/index.d.ts:544
 
 ***
 
@@ -189,7 +193,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:522
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:531
+packages/quickjs-emscripten-core/dist/index.d.ts:553
 
 ***
 
@@ -203,7 +207,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:531
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:530
+packages/quickjs-emscripten-core/dist/index.d.ts:552
 
 ***
 
@@ -216,7 +220,7 @@ may become invalid, leading to memory errors.
 
 #### Throws
 
-If the lifetime has been [dispose](Lifetime.md#dispose)d already.
+If the lifetime has been [dispose](Lifetime.md#dispose-1)d already.
 
 #### Returns
 
@@ -224,9 +228,33 @@ If the lifetime has been [dispose](Lifetime.md#dispose)d already.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:529
+packages/quickjs-emscripten-core/dist/index.d.ts:551
 
 ## Methods
+
+### `[dispose]`()
+
+> **[dispose]**(): `void`
+
+Just calls the standard .dispose() method of this class.
+
+#### Returns
+
+`void`
+
+#### Implementation of
+
+[`quickjs-emscripten.Disposable.[dispose]`](../interfaces/Disposable.md#dispose)
+
+#### Inherited from
+
+[`quickjs-emscripten.UsingDisposable.[dispose]`](UsingDisposable.md#dispose)
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:520
+
+***
 
 ### consume()
 
@@ -252,7 +280,7 @@ the result of `map(this)`.
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:540
+packages/quickjs-emscripten-core/dist/index.d.ts:562
 
 #### consume(map)
 
@@ -272,7 +300,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:540
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:541
+packages/quickjs-emscripten-core/dist/index.d.ts:563
 
 ***
 
@@ -288,11 +316,15 @@ Dispose of [value](Lifetime.md#value-1) and perform cleanup.
 
 #### Implementation of
 
-[`quickjs-emscripten.Disposable.dispose`](../interfaces/Disposable.md#dispose)
+[`quickjs-emscripten.Disposable.dispose`](../interfaces/Disposable.md#dispose-1)
+
+#### Overrides
+
+[`quickjs-emscripten.UsingDisposable.dispose`](UsingDisposable.md#abstract-dispose)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:545
+packages/quickjs-emscripten-core/dist/index.d.ts:567
 
 ***
 
@@ -308,7 +340,7 @@ Create a new handle pointing to the same [value](Lifetime.md#value-1).
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:535
+packages/quickjs-emscripten-core/dist/index.d.ts:557
 
 ***
 

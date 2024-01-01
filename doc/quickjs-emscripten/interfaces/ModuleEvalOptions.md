@@ -27,7 +27,7 @@ To remove the limit, set to `0`.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1102
+packages/quickjs-emscripten-core/dist/index.d.ts:1125
 
 ***
 
@@ -39,7 +39,7 @@ Memory limit, in bytes, of WebAssembly heap memory used by the QuickJS VM.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1097
+packages/quickjs-emscripten-core/dist/index.d.ts:1120
 
 ***
 
@@ -51,7 +51,7 @@ Module loader for any `import` statements or expressions.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1106
+packages/quickjs-emscripten-core/dist/index.d.ts:1129
 
 ***
 
@@ -64,7 +64,7 @@ See [shouldInterruptAfterDeadline](../exports.md#shouldinterruptafterdeadline).
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1093
+packages/quickjs-emscripten-core/dist/index.d.ts:1116
 
 ***
 

@@ -38,6 +38,7 @@ Configure ES module loading with [setModuleLoader](QuickJSAsyncRuntime.md#setmod
 - [Accessors](QuickJSAsyncRuntime.md#accessors)
   - [alive](QuickJSAsyncRuntime.md#alive)
 - [Methods](QuickJSAsyncRuntime.md#methods)
+  - [`[dispose]`()](QuickJSAsyncRuntime.md#dispose)
   - [assertOwned()](QuickJSAsyncRuntime.md#assertowned)
   - [computeMemoryUsage()](QuickJSAsyncRuntime.md#computememoryusage)
   - [dispose()](QuickJSAsyncRuntime.md#dispose)
@@ -88,13 +89,33 @@ A context here may be allocated if one is needed by the runtime, eg for [compute
 
 true if the object is alive
 
-false after the object has been [dispose](QuickJSAsyncRuntime.md#dispose)d
+false after the object has been [dispose](QuickJSAsyncRuntime.md#dispose-1)d
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:121](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L121)
+[packages/quickjs-emscripten-core/src/runtime.ts:122](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L122)
 
 ## Methods
+
+### `[dispose]`()
+
+> **[dispose]**(): `void`
+
+Just calls the standard .dispose() method of this class.
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`quickjs-emscripten-core.QuickJSRuntime.[dispose]`](QuickJSRuntime.md#dispose)
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L49)
+
+***
 
 ### assertOwned()
 
@@ -160,11 +181,11 @@ Dispose of the underlying resources used by this object.
 
 #### Inherited from
 
-[`quickjs-emscripten-core.QuickJSRuntime.dispose`](QuickJSRuntime.md#dispose)
+[`quickjs-emscripten-core.QuickJSRuntime.dispose`](QuickJSRuntime.md#dispose-1)
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:125](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L125)
+[packages/quickjs-emscripten-core/src/runtime.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L126)
 
 ***
 
@@ -223,7 +244,7 @@ functions or rejected promises. Those errors are available by calling
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:242](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L242)
+[packages/quickjs-emscripten-core/src/runtime.ts:243](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L243)
 
 ***
 
@@ -246,7 +267,7 @@ true if there is at least one pendingJob queued up.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:193](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L193)
+[packages/quickjs-emscripten-core/src/runtime.ts:194](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L194)
 
 ***
 
@@ -295,7 +316,7 @@ See [setInterruptHandler](QuickJSAsyncRuntime.md#setinterrupthandler).
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:218](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L218)
+[packages/quickjs-emscripten-core/src/runtime.ts:219](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L219)
 
 ***
 
@@ -315,7 +336,7 @@ Remove the the loader set by [setModuleLoader](QuickJSAsyncRuntime.md#setmodulel
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:180](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L180)
+[packages/quickjs-emscripten-core/src/runtime.ts:181](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L181)
 
 ***
 
@@ -343,7 +364,7 @@ The interrupt handler can be removed with [removeInterruptHandler](QuickJSAsyncR
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:206](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L206)
+[packages/quickjs-emscripten-core/src/runtime.ts:207](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L207)
 
 ***
 

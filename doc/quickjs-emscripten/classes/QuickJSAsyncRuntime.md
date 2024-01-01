@@ -38,6 +38,7 @@ Configure ES module loading with [setModuleLoader](QuickJSAsyncRuntime.md#setmod
 - [Accessors](QuickJSAsyncRuntime.md#accessors)
   - [alive](QuickJSAsyncRuntime.md#alive)
 - [Methods](QuickJSAsyncRuntime.md#methods)
+  - [`[dispose]`()](QuickJSAsyncRuntime.md#dispose)
   - [assertOwned()](QuickJSAsyncRuntime.md#assertowned)
   - [computeMemoryUsage()](QuickJSAsyncRuntime.md#computememoryusage)
   - [dispose()](QuickJSAsyncRuntime.md#dispose)
@@ -88,13 +89,33 @@ packages/quickjs-emscripten-core/dist/index.d.ts:280
 
 true if the object is alive
 
-false after the object has been [dispose](QuickJSAsyncRuntime.md#dispose)d
+false after the object has been [dispose](QuickJSAsyncRuntime.md#dispose-1)d
 
 #### Source
 
 packages/quickjs-emscripten-core/dist/index.d.ts:187
 
 ## Methods
+
+### `[dispose]`()
+
+> **[dispose]**(): `void`
+
+Just calls the standard .dispose() method of this class.
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`quickjs-emscripten.QuickJSRuntime.[dispose]`](QuickJSRuntime.md#dispose)
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:520
+
+***
 
 ### assertOwned()
 
@@ -160,7 +181,7 @@ Dispose of the underlying resources used by this object.
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.dispose`](QuickJSRuntime.md#dispose)
+[`quickjs-emscripten.QuickJSRuntime.dispose`](QuickJSRuntime.md#dispose-1)
 
 #### Source
 

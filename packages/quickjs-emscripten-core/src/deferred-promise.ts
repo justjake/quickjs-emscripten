@@ -1,4 +1,4 @@
-import type { Disposable } from "./lifetime"
+import { UsingDisposable, type Disposable } from "./lifetime"
 import type { QuickJSHandle } from "./types"
 import type { QuickJSRuntime } from "./runtime"
 import type { QuickJSContext } from "./context"
@@ -25,7 +25,7 @@ export type { PromiseExecutor } from "./types"
  *   QuickJS handles that back {@link resolve} and {@link reject}. For this object,
  *   {@link dispose} is idempotent.
  */
-export class QuickJSDeferredPromise implements Disposable {
+export class QuickJSDeferredPromise extends UsingDisposable implements Disposable {
   public owner: QuickJSRuntime
   public context: QuickJSContext
 
@@ -55,6 +55,7 @@ export class QuickJSDeferredPromise implements Disposable {
     resolveHandle: QuickJSHandle
     rejectHandle: QuickJSHandle
   }) {
+    super()
     this.context = args.context
     this.owner = args.context.runtime
     this.handle = args.promiseHandle

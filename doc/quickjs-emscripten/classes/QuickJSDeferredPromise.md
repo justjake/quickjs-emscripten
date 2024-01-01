@@ -28,6 +28,7 @@ itself, (2) the `resolve` callback, and (3) the `reject` callback.
 
 ## Contents
 
+- [Extends](QuickJSDeferredPromise.md#extends)
 - [Implements](QuickJSDeferredPromise.md#implements)
 - [Constructors](QuickJSDeferredPromise.md#constructors)
   - [new QuickJSDeferredPromise(args)](QuickJSDeferredPromise.md#new-quickjsdeferredpromiseargs)
@@ -41,6 +42,12 @@ itself, (2) the `resolve` callback, and (3) the `reject` callback.
   - [settled](QuickJSDeferredPromise.md#settled)
 - [Accessors](QuickJSDeferredPromise.md#accessors)
   - [alive](QuickJSDeferredPromise.md#alive)
+- [Methods](QuickJSDeferredPromise.md#methods)
+  - [`[dispose]`()](QuickJSDeferredPromise.md#dispose)
+
+## Extends
+
+- [`UsingDisposable`](UsingDisposable.md)
 
 ## Implements
 
@@ -71,9 +78,13 @@ this constructor directly.
 
 [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
 
+#### Overrides
+
+[`quickjs-emscripten.UsingDisposable.constructor`](UsingDisposable.md#constructors)
+
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:639
+packages/quickjs-emscripten-core/dist/index.d.ts:661
 
 ## Properties
 
@@ -83,7 +94,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:639
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:621
+packages/quickjs-emscripten-core/dist/index.d.ts:643
 
 ***
 
@@ -97,11 +108,15 @@ packages/quickjs-emscripten-core/dist/index.d.ts:621
 
 #### Implementation of
 
-[`quickjs-emscripten.Disposable.dispose`](../interfaces/Disposable.md#dispose)
+[`quickjs-emscripten.Disposable.dispose`](../interfaces/Disposable.md#dispose-1)
+
+#### Overrides
+
+[`quickjs-emscripten.UsingDisposable.dispose`](UsingDisposable.md#abstract-dispose)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:664
+packages/quickjs-emscripten-core/dist/index.d.ts:686
 
 ***
 
@@ -115,7 +130,7 @@ are finished with it.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:627
+packages/quickjs-emscripten-core/dist/index.d.ts:649
 
 ***
 
@@ -125,7 +140,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:627
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:620
+packages/quickjs-emscripten-core/dist/index.d.ts:642
 
 ***
 
@@ -150,7 +165,7 @@ callbacks.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:662
+packages/quickjs-emscripten-core/dist/index.d.ts:684
 
 ***
 
@@ -175,7 +190,7 @@ callbacks.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:653
+packages/quickjs-emscripten-core/dist/index.d.ts:675
 
 ***
 
@@ -187,7 +202,7 @@ A native promise that will resolve once this deferred is settled.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:631
+packages/quickjs-emscripten-core/dist/index.d.ts:653
 
 ## Accessors
 
@@ -205,7 +220,31 @@ false after the object has been [dispose](QuickJSDeferredPromise.md#dispose)d
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:663
+packages/quickjs-emscripten-core/dist/index.d.ts:685
+
+## Methods
+
+### `[dispose]`()
+
+> **[dispose]**(): `void`
+
+Just calls the standard .dispose() method of this class.
+
+#### Returns
+
+`void`
+
+#### Implementation of
+
+[`quickjs-emscripten.Disposable.[dispose]`](../interfaces/Disposable.md#dispose)
+
+#### Inherited from
+
+[`quickjs-emscripten.UsingDisposable.[dispose]`](UsingDisposable.md#dispose)
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:520
 
 ***
 

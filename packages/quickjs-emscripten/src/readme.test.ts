@@ -101,6 +101,26 @@ describe("README.md", () => {
       assert.strictEqual(consoleLogCalls[0].join(" "), "vm result: 3 native state: 3")
     })
 
+    it("context example w/ using statement", () => {
+      {
+        using vm = QuickJS.newContext()
+        let state = 0
+
+        {
+          using fnHandle = vm.newFunction("nextId", () => {
+            return vm.newNumber(++state)
+          })
+
+          vm.setProp(vm.global, "nextId", fnHandle)
+        }
+
+        using nextId = vm.unwrapResult(vm.evalCode(`nextId(); nextId(); nextId()`))
+        console.log("vm result:", vm.getNumber(nextId), "native state:", state)
+      }
+
+      assert.strictEqual(consoleLogCalls[0].join(" "), "vm result: 3 native state: 3")
+    })
+
     it("runtime example", () => {
       // prettier-ignore
       {

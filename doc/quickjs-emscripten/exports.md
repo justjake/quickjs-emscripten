@@ -93,6 +93,7 @@
 - [Scope](classes/Scope.md)
 - [StaticLifetime](classes/StaticLifetime.md)
 - [TestQuickJSWASMModule](classes/TestQuickJSWASMModule.md)
+- [UsingDisposable](classes/UsingDisposable.md)
 - [WeakLifetime](classes/WeakLifetime.md)
 
 ## Interfaces
@@ -454,7 +455,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:80
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1310
+packages/quickjs-emscripten-core/dist/index.d.ts:1333
 
 ***
 
@@ -507,7 +508,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:482
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1251
+packages/quickjs-emscripten-core/dist/index.d.ts:1274
 
 ***
 
@@ -572,7 +573,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:672
+packages/quickjs-emscripten-core/dist/index.d.ts:694
 
 ***
 
@@ -984,7 +985,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1309
+packages/quickjs-emscripten-core/dist/index.d.ts:1332
 
 ***
 
@@ -1113,7 +1114,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1298
+packages/quickjs-emscripten-core/dist/index.d.ts:1321
 
 ***
 
@@ -1175,7 +1176,7 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1273
+packages/quickjs-emscripten-core/dist/index.d.ts:1296
 
 ***
 
@@ -1202,7 +1203,7 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1351
+packages/quickjs-emscripten-core/dist/index.d.ts:1374
 
 ***
 
@@ -1225,7 +1226,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1359
+packages/quickjs-emscripten-core/dist/index.d.ts:1382
 
 ***
 
