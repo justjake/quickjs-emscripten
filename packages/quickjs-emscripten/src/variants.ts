@@ -3,6 +3,7 @@ import type {
   QuickJSAsyncVariant,
   QuickJSWASMModule,
   QuickJSAsyncWASMModule,
+  PromisedDefault,
 } from "quickjs-emscripten-core"
 import {
   newQuickJSWASMModuleFromVariant,
@@ -25,9 +26,9 @@ export async function newQuickJSWASMModule(
   /**
    * Optionally, pass a {@link QuickJSSyncVariant} to construct a different WebAssembly module.
    */
-  variant: QuickJSSyncVariant = RELEASE_SYNC,
+  variantOrPromise: PromisedDefault<QuickJSSyncVariant> = RELEASE_SYNC,
 ): Promise<QuickJSWASMModule> {
-  return newQuickJSWASMModuleFromVariant(variant)
+  return newQuickJSWASMModuleFromVariant(variantOrPromise)
 }
 
 /**
@@ -47,9 +48,9 @@ export async function newQuickJSAsyncWASMModule(
   /**
    * Optionally, pass a {@link QuickJSAsyncVariant} to construct a different WebAssembly module.
    */
-  variant: QuickJSAsyncVariant = RELEASE_ASYNC,
+  variantOrPromise: PromisedDefault<QuickJSAsyncVariant> = RELEASE_ASYNC,
 ): Promise<QuickJSAsyncWASMModule> {
-  return newQuickJSAsyncWASMModuleFromVariant(variant)
+  return newQuickJSAsyncWASMModuleFromVariant(variantOrPromise)
 }
 
 export { DEBUG_SYNC, RELEASE_SYNC, DEBUG_ASYNC, RELEASE_ASYNC }
