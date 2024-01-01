@@ -17,6 +17,7 @@ import {
   JSBorrowedCharPointer,
   JSVoidPointer,
   EvalFlags,
+  IntrinsicsFlags,
   EvalDetectModule,
   assertSync,
 } from "@jitl/quickjs-ffi-types"
@@ -84,11 +85,8 @@ export class QuickJSAsyncFFI {
     "number",
   ])
 
-  QTS_NewContext: (rt: JSRuntimePointer) => JSContextPointer = this.module.cwrap(
-    "QTS_NewContext",
-    "number",
-    ["number"],
-  )
+  QTS_NewContext: (rt: JSRuntimePointer, intrinsics: IntrinsicsFlags) => JSContextPointer =
+    this.module.cwrap("QTS_NewContext", "number", ["number", "number"])
 
   QTS_FreeContext: (ctx: JSContextPointer) => void = this.module.cwrap("QTS_FreeContext", null, [
     "number",
