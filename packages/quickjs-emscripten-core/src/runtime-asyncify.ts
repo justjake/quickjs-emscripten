@@ -19,7 +19,7 @@ import type {
   JSModuleNormalizer,
   JSModuleNormalizerAsync,
 } from "./types"
-import { DefaultIntrinsics } from "./types"
+import { intrinsicsToFlags } from "./types"
 import { Lifetime } from "./lifetime"
 
 export class QuickJSAsyncRuntime extends QuickJSRuntime {
@@ -47,15 +47,16 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
   }
 
   override newContext(options: ContextOptions = {}): QuickJSAsyncContext {
-    if (options.intrinsics && options.intrinsics !== DefaultIntrinsics) {
-      throw new Error("TODO: Custom intrinsics are not supported yet")
-    }
-
-    const ctx = new Lifetime(this.ffi.QTS_NewContext(this.rt.value), undefined, (ctx_ptr) => {
-      this.contextMap.delete(ctx_ptr)
-      this.callbacks.deleteContext(ctx_ptr)
-      this.ffi.QTS_FreeContext(ctx_ptr)
-    })
+    const intrinsics = intrinsicsToFlags(options.intrinsics)
+    const ctx = new Lifetime(
+      this.ffi.QTS_NewContext(this.rt.value, intrinsics),
+      undefined,
+      (ctx_ptr) => {
+        this.contextMap.delete(ctx_ptr)
+        this.callbacks.deleteContext(ctx_ptr)
+        this.ffi.QTS_FreeContext(ctx_ptr)
+      },
+    )
 
     const context = new QuickJSAsyncContext({
       module: this.module,

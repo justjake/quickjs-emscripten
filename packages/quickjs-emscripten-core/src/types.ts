@@ -1,10 +1,11 @@
 import type { JSContextPointer, JSValueConstPointer, JSValuePointer } from "@jitl/quickjs-ffi-types"
-import { EvalFlags } from "@jitl/quickjs-ffi-types"
+import { EvalFlags, IntrinsicsFlags } from "@jitl/quickjs-ffi-types"
 import type { QuickJSContext } from "./context"
 import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
 import type { Disposable, Lifetime } from "./lifetime"
 import type { QuickJSAsyncContext } from "./context-asyncify"
 import type { InterruptHandler, QuickJSRuntime } from "./runtime"
+import { QuickJSUnknownIntrinsic } from "./errors"
 
 /**
  * A QuickJSHandle to a constant that will never change, and does not need to
@@ -135,54 +136,96 @@ export interface AsyncRuntimeOptions extends RuntimeOptionsBase {
   moduleLoader?: JSModuleLoaderAsync | JSModuleLoader
 }
 
+// This guy could be declared as Partial<Record<keyof typeof IntrinsicsFlags, boolean>>,
+// but it leads to bad docs.
 /**
- * Work in progress.
+ * Language features that can be enabled or disabled in a QuickJSContext.
+ * @see {@link ContextOptions}
  */
-export type Intrinsic =
-  | "BaseObjects"
-  | "Date"
-  | "Eval"
-  | "StringNormalize"
-  | "RegExp"
-  | "RegExpCompiler"
-  | "JSON"
-  | "Proxy"
-  | "MapSet"
-  | "TypedArrays"
-  | "Promise"
-  | "BigInt"
-  | "BigFloat"
-  | "BigDecimal"
-  | "OperatorOverloading"
-  | "BignumExt"
+export type Intrinsics = {
+  BaseObjects?: boolean
+  Date?: boolean
+  Eval?: boolean
+  StringNormalize?: boolean
+  RegExp?: boolean
+  RegExpCompiler?: boolean
+  JSON?: boolean
+  Proxy?: boolean
+  MapSet?: boolean
+  TypedArrays?: boolean
+  Promise?: boolean
+  BigInt?: boolean
+  BigFloat?: boolean
+  BigDecimal?: boolean
+  OperatorOverloading?: boolean
+  BignumExt?: boolean
+}
 
-// For informational purposes
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DefaultIntrinsicsList = [
-  "BaseObjects",
-  "Date",
-  "Eval",
-  "StringNormalize",
-  "RegExp",
-  "JSON",
-  "Proxy",
-  "MapSet",
-  "TypedArrays",
-  "Promise",
-] as const
+type _Assert<T, U extends T> = U
+type _intrinsicsHasKeysOfIntrinsicFlags = _Assert<keyof Intrinsics, keyof typeof IntrinsicsFlags>
+type _intrinsicsHasKeysOfIntrinsicFlags2 = _Assert<keyof typeof IntrinsicsFlags, keyof Intrinsics>
 
 /**
- * Work in progress.
+ * The default {@link Intrinsics} language features enabled in a QuickJSContext.
+ * @see {@link ContextOptions}
  */
-export const DefaultIntrinsics = Symbol("DefaultIntrinsics")
+export const DefaultIntrinsics = Object.freeze({
+  BaseObjects: true,
+  Date: true,
+  Eval: true,
+  StringNormalize: true,
+  RegExp: true,
+  JSON: true,
+  Proxy: true,
+  MapSet: true,
+  TypedArrays: true,
+  Promise: true,
+} as const satisfies Intrinsics)
 
+/**
+ * @private
+ */
+export function intrinsicsToFlags(intrinsics: Intrinsics | undefined): IntrinsicsFlags {
+  if (!intrinsics) {
+    return 0 as IntrinsicsFlags
+  }
+
+  let result = 0
+  for (const [maybeIntrinsicName, enabled] of Object.entries(intrinsics)) {
+    if (!(maybeIntrinsicName in IntrinsicsFlags)) {
+      throw new QuickJSUnknownIntrinsic(maybeIntrinsicName)
+    }
+    const intrinsicName = maybeIntrinsicName as keyof typeof IntrinsicsFlags
+
+    if (enabled) {
+      result |= IntrinsicsFlags[intrinsicName]
+    }
+  }
+  return result as IntrinsicsFlags
+}
+
+/**
+ * Options for creating a {@link QuickJSContext} or {@link QuickJSAsyncContext}
+ * Pass to {@link QuickJSRuntime#newContext}.
+ */
 export interface ContextOptions {
   /**
    * What built-in objects and language features to enable?
    * If unset, the default intrinsics will be used.
    * To omit all intrinsics, pass an empty array.
+   *
+   * To remove a specific intrinsic, but retain the other defaults,
+   * override it from {@link DefaultIntrinsics}
+   * ```ts
+   * const contextWithoutDateOrEval = runtime.newContext({
+   *   intrinsics: {
+   *     ...DefaultIntrinsics,
+   *     Date: false,
+   *   }
+   * })
+   * ```
    */
-  intrinsics?: PartiallyImplemented<Intrinsic[]> | typeof DefaultIntrinsics
+  intrinsics?: Intrinsics
 
   /**
    * Wrap the provided context instead of constructing a new one.

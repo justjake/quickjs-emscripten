@@ -101,6 +101,11 @@ export type EvalFlags = Brand<number, "EvalFlags">
 /**
  * @private
  */
+export type IntrinsicsFlags = Brand<number, "IntrinsicsFlags">
+
+/**
+ * @private
+ */
 export type EvalDetectModule = Brand<number, "EvalDetectModule">
 
 export function assertSync<Args extends any[], R>(fn: (...args: Args) => R): (...args: Args) => R {
@@ -136,4 +141,24 @@ export const EvalFlags = {
   JS_EVAL_FLAG_COMPILE_ONLY: 1 << 5,
   /** don't include the stack frames before this eval in the Error() backtraces */
   JS_EVAL_FLAG_BACKTRACE_BARRIER: 1 << 6,
-}
+} as const
+
+/** Bitfield options for QTS_NewContext intrinsices */
+export const IntrinsicsFlags = {
+  BaseObjects: 1 << 0,
+  Date: 1 << 1,
+  Eval: 1 << 2,
+  StringNormalize: 1 << 3,
+  RegExp: 1 << 4,
+  RegExpCompiler: 1 << 5,
+  JSON: 1 << 6,
+  Proxy: 1 << 7,
+  MapSet: 1 << 8,
+  TypedArrays: 1 << 9,
+  Promise: 1 << 10,
+  BigInt: 1 << 11,
+  BigFloat: 1 << 12,
+  BigDecimal: 1 << 13,
+  OperatorOverloading: 1 << 14,
+  BignumExt: 1 << 15,
+} as const

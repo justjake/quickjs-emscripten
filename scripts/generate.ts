@@ -153,6 +153,10 @@ function cTypeToTypescriptType(ctype: string): ParsedType {
     return { ffi: "string", typescript: "string", ctype, attributes }
   }
 
+  if (type.startsWith("enum")) {
+    return { ffi: "number", typescript: "number", ctype, attributes }
+  }
+
   let typescript = type.replace(/\*/g, "Pointer")
   let ffi: string | null = "number"
 

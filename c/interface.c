@@ -90,6 +90,7 @@
 #define JSVoid void
 
 #define EvalFlags int
+#define IntrinsicsFlags enum QTS_Intrinsic
 #define EvalDetectModule int
 
 void qts_log(char *msg) {
@@ -275,8 +276,89 @@ void QTS_FreeRuntime(JSRuntime *rt) {
   JS_FreeRuntime(rt);
 }
 
-JSContext *QTS_NewContext(JSRuntime *rt) {
-  return JS_NewContext(rt);
+enum QTS_Intrinsic {
+  QTS_Intrinsic_BaseObjects = 1 << 0,
+  QTS_Intrinsic_Date = 1 << 1,
+  QTS_Intrinsic_Eval = 1 << 2,
+  QTS_Intrinsic_StringNormalize = 1 << 3,
+  QTS_Intrinsic_RegExp = 1 << 4,
+  QTS_Intrinsic_RegExpCompiler = 1 << 5,
+  QTS_Intrinsic_JSON = 1 << 6,
+  QTS_Intrinsic_Proxy = 1 << 7,
+  QTS_Intrinsic_MapSet = 1 << 8,
+  QTS_Intrinsic_TypedArrays = 1 << 9,
+  QTS_Intrinsic_Promise = 1 << 10,
+  QTS_Intrinsic_BigInt = 1 << 11,
+  QTS_Intrinsic_BigFloat = 1 << 12,
+  QTS_Intrinsic_BigDecimal = 1 << 13,
+  QTS_Intrinsic_OperatorOverloading = 1 << 14,
+  QTS_Intrinsic_BignumExt = 1 << 15,
+};
+
+JSContext *QTS_NewContext(JSRuntime *rt, IntrinsicsFlags intrinsics) {
+  if (intrinsics == 0) {
+    return JS_NewContext(rt);
+  }
+
+  JSContext *ctx = JS_NewContextRaw(rt);
+  if (ctx == NULL) {
+    return NULL;
+  }
+
+  if (intrinsics & QTS_Intrinsic_BaseObjects) {
+    JS_AddIntrinsicBaseObjects(ctx);
+  }
+  if (intrinsics & QTS_Intrinsic_Date) {
+    JS_AddIntrinsicDate(ctx);
+  }
+  if (intrinsics & QTS_Intrinsic_Eval) {
+    JS_AddIntrinsicEval(ctx);
+  }
+#ifndef QTS_USE_QUICKJS_NG
+  if (intrinsics & QTS_Intrinsic_StringNormalize) {
+    JS_AddIntrinsicStringNormalize(ctx);
+  }
+#endif
+  if (intrinsics & QTS_Intrinsic_RegExp) {
+    JS_AddIntrinsicRegExp(ctx);
+  }
+  if (intrinsics & QTS_Intrinsic_RegExpCompiler) {
+    JS_AddIntrinsicRegExpCompiler(ctx);
+  }
+  if (intrinsics & QTS_Intrinsic_JSON) {
+    JS_AddIntrinsicJSON(ctx);
+  }
+  if (intrinsics & QTS_Intrinsic_Proxy) {
+    JS_AddIntrinsicProxy(ctx);
+  }
+  if (intrinsics & QTS_Intrinsic_MapSet) {
+    JS_AddIntrinsicMapSet(ctx);
+  }
+  if (intrinsics & QTS_Intrinsic_TypedArrays) {
+    JS_AddIntrinsicTypedArrays(ctx);
+  }
+  if (intrinsics & QTS_Intrinsic_Promise) {
+    JS_AddIntrinsicPromise(ctx);
+  }
+  if (intrinsics & QTS_Intrinsic_BigInt) {
+    JS_AddIntrinsicBigInt(ctx);
+  }
+#ifdef CONFIG_BIGNUM
+  if (intrinsics & QTS_Intrinsic_BigFloat) {
+    JS_AddIntrinsicBigFloat(ctx);
+  }
+  if (intrinsics & QTS_Intrinsic_BigDecimal) {
+    JS_AddIntrinsicBigDecimal(ctx);
+  }
+  if (intrinsics & QTS_Intrinsic_BignumExt) {
+    JS_EnableBignumExt(ctx, TRUE);
+  }
+  if (intrinsics & QTS_Intrinsic_OperatorOverloading) {
+    JS_AddIntrinsicOperators(ctx);
+  }
+#endif
+
+  return ctx;
 }
 
 void QTS_FreeContext(JSContext *ctx) {

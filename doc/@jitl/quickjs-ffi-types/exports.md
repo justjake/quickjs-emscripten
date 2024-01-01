@@ -30,6 +30,7 @@
   - [QuickJSVariant](exports.md#quickjsvariant)
 - [Variables](exports.md#variables)
   - [EvalFlags](exports.md#evalflags)
+  - [IntrinsicsFlags](exports.md#intrinsicsflags)
 - [Functions](exports.md#functions)
   - [assertSync()](exports.md#assertsync)
 
@@ -273,13 +274,13 @@ Bitfield options for JS_Eval() C function.
 
 ##### JS\_EVAL\_FLAG\_BACKTRACE\_BARRIER
 
-> **JS\_EVAL\_FLAG\_BACKTRACE\_BARRIER**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_BACKTRACE\_BARRIER**: `number`
 
 don't include the stack frames before this eval in the Error() backtraces
 
 ##### JS\_EVAL\_FLAG\_COMPILE\_ONLY
 
-> **JS\_EVAL\_FLAG\_COMPILE\_ONLY**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_COMPILE\_ONLY**: `number`
 
 compile but do not run. The result is an object with a
 JS_TAG_FUNCTION_BYTECODE or JS_TAG_MODULE tag. It can be executed
@@ -287,47 +288,125 @@ with JS_EvalFunction().
 
 ##### JS\_EVAL\_FLAG\_STRICT
 
-> **JS\_EVAL\_FLAG\_STRICT**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_STRICT**: `number`
 
 force 'strict' mode
 
 ##### JS\_EVAL\_FLAG\_STRIP
 
-> **JS\_EVAL\_FLAG\_STRIP**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_STRIP**: `number`
 
 force 'strip' mode
 
 ##### JS\_EVAL\_TYPE\_DIRECT
 
-> **JS\_EVAL\_TYPE\_DIRECT**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_DIRECT**: `number`
 
 direct call (internal use)
 
 ##### JS\_EVAL\_TYPE\_GLOBAL
 
-> **JS\_EVAL\_TYPE\_GLOBAL**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_GLOBAL**: `number`
 
 global code (default)
 
 ##### JS\_EVAL\_TYPE\_INDIRECT
 
-> **JS\_EVAL\_TYPE\_INDIRECT**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_INDIRECT**: `number`
 
 indirect call (internal use)
 
 ##### JS\_EVAL\_TYPE\_MASK
 
-> **JS\_EVAL\_TYPE\_MASK**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_MASK**: `number`
 
 ##### JS\_EVAL\_TYPE\_MODULE
 
-> **JS\_EVAL\_TYPE\_MODULE**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_MODULE**: `number`
 
 module code
 
 #### Source
 
 [packages/quickjs-ffi-types/src/ffi-types.ts:99](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L99)
+
+***
+
+### IntrinsicsFlags
+
+> **IntrinsicsFlags**: `Object`
+
+Bitfield options for QTS_NewContext intrinsices
+
+#### Type declaration
+
+##### BaseObjects
+
+> **`readonly`** **BaseObjects**: `number`
+
+##### BigDecimal
+
+> **`readonly`** **BigDecimal**: `number`
+
+##### BigFloat
+
+> **`readonly`** **BigFloat**: `number`
+
+##### BigInt
+
+> **`readonly`** **BigInt**: `number`
+
+##### BignumExt
+
+> **`readonly`** **BignumExt**: `number`
+
+##### Date
+
+> **`readonly`** **Date**: `number`
+
+##### Eval
+
+> **`readonly`** **Eval**: `number`
+
+##### JSON
+
+> **`readonly`** **JSON**: `number`
+
+##### MapSet
+
+> **`readonly`** **MapSet**: `number`
+
+##### OperatorOverloading
+
+> **`readonly`** **OperatorOverloading**: `number`
+
+##### Promise
+
+> **`readonly`** **Promise**: `number`
+
+##### Proxy
+
+> **`readonly`** **Proxy**: `number`
+
+##### RegExp
+
+> **`readonly`** **RegExp**: `number`
+
+##### RegExpCompiler
+
+> **`readonly`** **RegExpCompiler**: `number`
+
+##### StringNormalize
+
+> **`readonly`** **StringNormalize**: `number`
+
+##### TypedArrays
+
+> **`readonly`** **TypedArrays**: `number`
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi-types.ts:104](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L104)
 
 ## Functions
 
@@ -360,7 +439,7 @@ module code
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:106](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L106)
+[packages/quickjs-ffi-types/src/ffi-types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L111)
 
 ***
 

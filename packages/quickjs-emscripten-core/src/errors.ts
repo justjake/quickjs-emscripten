@@ -40,3 +40,7 @@ export class QuickJSMemoryLeakDetected extends Error {
 export class QuickJSEmscriptenModuleError extends Error {
   name = "QuickJSEmscriptenModuleError"
 }
+
+export class QuickJSUnknownIntrinsic extends TypeError {
+  name = "QuickJSUnknownIntrinsic"
+}

@@ -113,7 +113,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:520
+packages/quickjs-emscripten-core/dist/index.d.ts:561
 
 ***
 

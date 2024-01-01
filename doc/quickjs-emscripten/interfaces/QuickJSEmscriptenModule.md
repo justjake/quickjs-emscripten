@@ -54,7 +54,7 @@ QuickJS.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:226
+packages/quickjs-ffi-types/dist/index.d.ts:249
 
 ***
 
@@ -68,7 +68,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:226
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:217
+packages/quickjs-ffi-types/dist/index.d.ts:240
 
 ***
 
@@ -82,7 +82,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:217
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:218
+packages/quickjs-ffi-types/dist/index.d.ts:241
 
 ***
 
@@ -96,7 +96,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:218
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:216
+packages/quickjs-ffi-types/dist/index.d.ts:239
 
 ***
 
@@ -110,7 +110,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:216
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:222
+packages/quickjs-ffi-types/dist/index.d.ts:245
 
 ***
 
@@ -124,7 +124,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:222
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:223
+packages/quickjs-ffi-types/dist/index.d.ts:246
 
 ***
 
@@ -138,7 +138,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:223
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:220
+packages/quickjs-ffi-types/dist/index.d.ts:243
 
 ***
 
@@ -152,7 +152,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:220
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:221
+packages/quickjs-ffi-types/dist/index.d.ts:244
 
 ***
 
@@ -166,7 +166,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:221
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:219
+packages/quickjs-ffi-types/dist/index.d.ts:242
 
 ***
 
@@ -180,7 +180,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:219
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:225
+packages/quickjs-ffi-types/dist/index.d.ts:248
 
 ***
 
@@ -194,7 +194,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:225
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:224
+packages/quickjs-ffi-types/dist/index.d.ts:247
 
 ***
 
@@ -204,7 +204,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:224
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:262
+packages/quickjs-ffi-types/dist/index.d.ts:285
 
 ***
 
@@ -214,7 +214,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:262
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:261
+packages/quickjs-ffi-types/dist/index.d.ts:284
 
 ***
 
@@ -230,7 +230,7 @@ Compile this to WebAssembly.Module
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:185
+packages/quickjs-ffi-types/dist/index.d.ts:208
 
 ## Methods
 
@@ -257,7 +257,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:211
+packages/quickjs-ffi-types/dist/index.d.ts:234
 
 ***
 
@@ -279,7 +279,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:211
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:214
+packages/quickjs-ffi-types/dist/index.d.ts:237
 
 ***
 
@@ -301,7 +301,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:214
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:213
+packages/quickjs-ffi-types/dist/index.d.ts:236
 
 ***
 
@@ -338,7 +338,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:213
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:215
+packages/quickjs-ffi-types/dist/index.d.ts:238
 
 ***
 
@@ -364,7 +364,7 @@ Create an instance of the WASM module, call onSuccess(instance), then return ins
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:187
+packages/quickjs-ffi-types/dist/index.d.ts:210
 
 ***
 
@@ -386,7 +386,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:187
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:212
+packages/quickjs-ffi-types/dist/index.d.ts:235
 
 ***
 
@@ -430,7 +430,7 @@ Often `''` (empty string)
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:181
+packages/quickjs-ffi-types/dist/index.d.ts:204
 
 ***
 
@@ -454,7 +454,7 @@ Called by emscripten as dependencies blocking initialization are added or fulfil
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:189
+packages/quickjs-ffi-types/dist/index.d.ts:212
 
 ***
 
@@ -483,7 +483,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#stringToUTF8
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:206
+packages/quickjs-ffi-types/dist/index.d.ts:229
 
 ***
 

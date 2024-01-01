@@ -34,7 +34,7 @@ Compile this to WebAssembly.Module
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:185
+packages/quickjs-ffi-types/dist/index.d.ts:208
 
 ## Methods
 
@@ -56,7 +56,7 @@ Create an instance of the WASM module, call onSuccess(instance), then return ins
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:187
+packages/quickjs-ffi-types/dist/index.d.ts:210
 
 ***
 
@@ -96,7 +96,7 @@ Often `''` (empty string)
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:181
+packages/quickjs-ffi-types/dist/index.d.ts:204
 
 ***
 
@@ -116,7 +116,7 @@ Called by emscripten as dependencies blocking initialization are added or fulfil
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:189
+packages/quickjs-ffi-types/dist/index.d.ts:212
 
 ***
 
