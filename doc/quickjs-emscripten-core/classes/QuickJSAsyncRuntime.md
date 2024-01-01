@@ -141,7 +141,7 @@ QuickJSWrongOwner if owned by a different runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:328](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L328)
+[packages/quickjs-emscripten-core/src/runtime.ts:325](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L325)
 
 ***
 
@@ -165,7 +165,7 @@ For a human-digestible representation, see [dumpMemoryUsage](QuickJSAsyncRuntime
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:297](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L297)
+[packages/quickjs-emscripten-core/src/runtime.ts:294](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L294)
 
 ***
 
@@ -206,7 +206,7 @@ For programmatic access to this information, see [computeMemoryUsage](QuickJSAsy
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:308](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L308)
+[packages/quickjs-emscripten-core/src/runtime.ts:305](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L305)
 
 ***
 
@@ -244,7 +244,7 @@ functions or rejected promises. Those errors are available by calling
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:243](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L243)
+[packages/quickjs-emscripten-core/src/runtime.ts:240](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L240)
 
 ***
 
@@ -267,7 +267,7 @@ true if there is at least one pendingJob queued up.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:194](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L194)
+[packages/quickjs-emscripten-core/src/runtime.ts:191](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L191)
 
 ***
 
@@ -316,7 +316,7 @@ See [setInterruptHandler](QuickJSAsyncRuntime.md#setinterrupthandler).
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:219](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L219)
+[packages/quickjs-emscripten-core/src/runtime.ts:216](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L216)
 
 ***
 
@@ -336,7 +336,7 @@ Remove the the loader set by [setModuleLoader](QuickJSAsyncRuntime.md#setmodulel
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:181](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L181)
+[packages/quickjs-emscripten-core/src/runtime.ts:178](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L178)
 
 ***
 
@@ -364,7 +364,7 @@ The interrupt handler can be removed with [removeInterruptHandler](QuickJSAsyncR
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:207](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L207)
+[packages/quickjs-emscripten-core/src/runtime.ts:204](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L204)
 
 ***
 
@@ -392,7 +392,7 @@ See the [pull request](https://github.com/justjake/quickjs-emscripten/pull/114) 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L91)
+[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L92)
 
 ***
 
@@ -417,7 +417,7 @@ To remove the limit, set to `-1`.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:282](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L282)
+[packages/quickjs-emscripten-core/src/runtime.ts:279](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L279)
 
 ***
 
@@ -446,7 +446,7 @@ The loader can be removed with [removeModuleLoader](QuickJSAsyncRuntime.md#remov
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:74](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L74)
+[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:75](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L75)
 
 ***
 

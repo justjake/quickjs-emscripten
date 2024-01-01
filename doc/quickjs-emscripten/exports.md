@@ -18,6 +18,7 @@
   - [EitherModule](exports.md#eithermodule)
   - [ExecutePendingJobsResult](exports.md#executependingjobsresult)
   - [InterruptHandler](exports.md#interrupthandler)
+  - [Intrinsics](exports.md#intrinsics)
   - [JSBorrowedCharPointer](exports.md#jsborrowedcharpointer)
   - [JSContextPointer](exports.md#jscontextpointer)
   - [JSContextPointerPointer](exports.md#jscontextpointerpointer)
@@ -55,7 +56,9 @@
   - [@jitl/quickjs-wasmfile-debug-asyncify](exports.md#jitlquickjs-wasmfile-debug-asyncify)
   - [DEBUG\_SYNC](exports.md#debug-sync)
   - [@jitl/quickjs-wasmfile-debug-sync](exports.md#jitlquickjs-wasmfile-debug-sync)
+  - [DefaultIntrinsics](exports.md#defaultintrinsics)
   - [EvalFlags](exports.md#evalflags)
+  - [IntrinsicsFlags](exports.md#intrinsicsflags)
   - [RELEASE\_ASYNC](exports.md#release-async)
   - [@jitl/quickjs-wasmfile-release-asyncify](exports.md#jitlquickjs-wasmfile-release-asyncify)
   - [RELEASE\_SYNC](exports.md#release-sync)
@@ -164,7 +167,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:455
+packages/quickjs-ffi-types/dist/index.d.ts:478
 
 ***
 
@@ -174,7 +177,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:455
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:269
+packages/quickjs-ffi-types/dist/index.d.ts:292
 
 ***
 
@@ -216,6 +219,88 @@ Determines if a VM's execution should be interrupted.
 #### Source
 
 packages/quickjs-emscripten-core/dist/index.d.ts:112
+
+***
+
+### Intrinsics
+
+> **Intrinsics**: `Object`
+
+Language features that can be enabled or disabled in a QuickJSContext.
+
+#### See
+
+[ContextOptions](interfaces/ContextOptions.md)
+
+#### Type declaration
+
+##### BaseObjects?
+
+> **BaseObjects**?: `boolean`
+
+##### BigDecimal?
+
+> **BigDecimal**?: `boolean`
+
+##### BigFloat?
+
+> **BigFloat**?: `boolean`
+
+##### BigInt?
+
+> **BigInt**?: `boolean`
+
+##### BignumExt?
+
+> **BignumExt**?: `boolean`
+
+##### Date?
+
+> **Date**?: `boolean`
+
+##### Eval?
+
+> **Eval**?: `boolean`
+
+##### JSON?
+
+> **JSON**?: `boolean`
+
+##### MapSet?
+
+> **MapSet**?: `boolean`
+
+##### OperatorOverloading?
+
+> **OperatorOverloading**?: `boolean`
+
+##### Promise?
+
+> **Promise**?: `boolean`
+
+##### Proxy?
+
+> **Proxy**?: `boolean`
+
+##### RegExp?
+
+> **RegExp**?: `boolean`
+
+##### RegExpCompiler?
+
+> **RegExpCompiler**?: `boolean`
+
+##### StringNormalize?
+
+> **StringNormalize**?: `boolean`
+
+##### TypedArrays?
+
+> **TypedArrays**?: `boolean`
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:440
 
 ***
 
@@ -455,7 +540,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:80
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1333
+packages/quickjs-emscripten-core/dist/index.d.ts:1374
 
 ***
 
@@ -494,7 +579,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:71
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:482
+packages/quickjs-emscripten-core/dist/index.d.ts:523
 
 ***
 
@@ -508,7 +593,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:482
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1274
+packages/quickjs-emscripten-core/dist/index.d.ts:1315
 
 ***
 
@@ -573,7 +658,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:694
+packages/quickjs-emscripten-core/dist/index.d.ts:735
 
 ***
 
@@ -583,7 +668,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:694
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:454
+packages/quickjs-ffi-types/dist/index.d.ts:477
 
 ***
 
@@ -715,6 +800,64 @@ packages/variant-quickjs-wasmfile-debug-sync/dist/index.d.ts:17
 
 ***
 
+### DefaultIntrinsics
+
+> **`const`** **DefaultIntrinsics**: `Readonly`\<`Object`\>
+
+The default [Intrinsics](exports.md#intrinsics) language features enabled in a QuickJSContext.
+
+#### See
+
+[ContextOptions](interfaces/ContextOptions.md)
+
+#### Type declaration
+
+##### BaseObjects
+
+> **`readonly`** **BaseObjects**: `true`
+
+##### Date
+
+> **`readonly`** **Date**: `true`
+
+##### Eval
+
+> **`readonly`** **Eval**: `true`
+
+##### JSON
+
+> **`readonly`** **JSON**: `true`
+
+##### MapSet
+
+> **`readonly`** **MapSet**: `true`
+
+##### Promise
+
+> **`readonly`** **Promise**: `true`
+
+##### Proxy
+
+> **`readonly`** **Proxy**: `true`
+
+##### RegExp
+
+> **`readonly`** **RegExp**: `true`
+
+##### StringNormalize
+
+> **`readonly`** **StringNormalize**: `true`
+
+##### TypedArrays
+
+> **`readonly`** **TypedArrays**: `true`
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:462
+
+***
+
 ### EvalFlags
 
 > **EvalFlags**: `Object`
@@ -725,13 +868,13 @@ Bitfield options for JS_Eval() C function.
 
 ##### JS\_EVAL\_FLAG\_BACKTRACE\_BARRIER
 
-> **JS\_EVAL\_FLAG\_BACKTRACE\_BARRIER**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_BACKTRACE\_BARRIER**: `number`
 
 don't include the stack frames before this eval in the Error() backtraces
 
 ##### JS\_EVAL\_FLAG\_COMPILE\_ONLY
 
-> **JS\_EVAL\_FLAG\_COMPILE\_ONLY**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_COMPILE\_ONLY**: `number`
 
 compile but do not run. The result is an object with a
 JS_TAG_FUNCTION_BYTECODE or JS_TAG_MODULE tag. It can be executed
@@ -739,47 +882,125 @@ with JS_EvalFunction().
 
 ##### JS\_EVAL\_FLAG\_STRICT
 
-> **JS\_EVAL\_FLAG\_STRICT**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_STRICT**: `number`
 
 force 'strict' mode
 
 ##### JS\_EVAL\_FLAG\_STRIP
 
-> **JS\_EVAL\_FLAG\_STRIP**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_STRIP**: `number`
 
 force 'strip' mode
 
 ##### JS\_EVAL\_TYPE\_DIRECT
 
-> **JS\_EVAL\_TYPE\_DIRECT**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_DIRECT**: `number`
 
 direct call (internal use)
 
 ##### JS\_EVAL\_TYPE\_GLOBAL
 
-> **JS\_EVAL\_TYPE\_GLOBAL**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_GLOBAL**: `number`
 
 global code (default)
 
 ##### JS\_EVAL\_TYPE\_INDIRECT
 
-> **JS\_EVAL\_TYPE\_INDIRECT**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_INDIRECT**: `number`
 
 indirect call (internal use)
 
 ##### JS\_EVAL\_TYPE\_MASK
 
-> **JS\_EVAL\_TYPE\_MASK**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_MASK**: `number`
 
 ##### JS\_EVAL\_TYPE\_MODULE
 
-> **JS\_EVAL\_TYPE\_MODULE**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_MODULE**: `number`
 
 module code
 
 #### Source
 
 packages/quickjs-ffi-types/dist/index.d.ts:89
+
+***
+
+### IntrinsicsFlags
+
+> **IntrinsicsFlags**: `Object`
+
+Bitfield options for QTS_NewContext intrinsices
+
+#### Type declaration
+
+##### BaseObjects
+
+> **`readonly`** **BaseObjects**: `number`
+
+##### BigDecimal
+
+> **`readonly`** **BigDecimal**: `number`
+
+##### BigFloat
+
+> **`readonly`** **BigFloat**: `number`
+
+##### BigInt
+
+> **`readonly`** **BigInt**: `number`
+
+##### BignumExt
+
+> **`readonly`** **BignumExt**: `number`
+
+##### Date
+
+> **`readonly`** **Date**: `number`
+
+##### Eval
+
+> **`readonly`** **Eval**: `number`
+
+##### JSON
+
+> **`readonly`** **JSON**: `number`
+
+##### MapSet
+
+> **`readonly`** **MapSet**: `number`
+
+##### OperatorOverloading
+
+> **`readonly`** **OperatorOverloading**: `number`
+
+##### Promise
+
+> **`readonly`** **Promise**: `number`
+
+##### Proxy
+
+> **`readonly`** **Proxy**: `number`
+
+##### RegExp
+
+> **`readonly`** **RegExp**: `number`
+
+##### RegExpCompiler
+
+> **`readonly`** **RegExpCompiler**: `number`
+
+##### StringNormalize
+
+> **`readonly`** **StringNormalize**: `number`
+
+##### TypedArrays
+
+> **`readonly`** **TypedArrays**: `number`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:117
 
 ***
 
@@ -985,7 +1206,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1332
+packages/quickjs-emscripten-core/dist/index.d.ts:1373
 
 ***
 
@@ -1114,7 +1335,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1321
+packages/quickjs-emscripten-core/dist/index.d.ts:1362
 
 ***
 
@@ -1176,7 +1397,7 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1296
+packages/quickjs-emscripten-core/dist/index.d.ts:1337
 
 ***
 
@@ -1203,7 +1424,7 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1374
+packages/quickjs-emscripten-core/dist/index.d.ts:1415
 
 ***
 
@@ -1226,7 +1447,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1382
+packages/quickjs-emscripten-core/dist/index.d.ts:1423
 
 ***
 

@@ -66,6 +66,7 @@ main()
     - [Packaging](#packaging)
       - [Reducing package size](#reducing-package-size)
       - [WebAssembly loading](#webassembly-loading)
+      - [quickjs-ng](#quickjs-ng)
       - [Using in the browser without a build step](#using-in-the-browser-without-a-build-step)
     - [Debugging](#debugging)
     - [Supported Platforms](#supported-platforms)
@@ -646,6 +647,12 @@ const cloudflareVariant = newVariant(baseVariant, {
 ```
 
 [newVariant]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/interfaces/CustomizeVariantOptions.md
+
+#### quickjs-ng
+
+[quickjs-ng/quickjs](https://github.com/quickjs-ng/quickjs) (aka quickjs-ng) is a fork of the original [bellard/quickjs](https://github.com/quickjs-ng/quickjs) under active development. It implements more EcmaScript standards and removes some of quickjs's custom language features like BigFloat.
+
+There are several variants of quickjs-ng available, and quickjs-emscripten may switch to using quickjs-ng by default in the future. See [the list of variants][core].
 
 #### Using in the browser without a build step
 

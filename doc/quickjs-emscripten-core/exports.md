@@ -18,6 +18,7 @@
   - [EitherModule](exports.md#eithermodule)
   - [ExecutePendingJobsResult](exports.md#executependingjobsresult)
   - [InterruptHandler](exports.md#interrupthandler)
+  - [Intrinsics](exports.md#intrinsics)
   - [JSBorrowedCharPointer](exports.md#jsborrowedcharpointer)
   - [JSContextPointer](exports.md#jscontextpointer)
   - [JSContextPointerPointer](exports.md#jscontextpointerpointer)
@@ -51,7 +52,9 @@
   - [VmCallResult\<VmHandle\>](exports.md#vmcallresultvmhandle)
   - [VmFunctionImplementation\<VmHandle\>](exports.md#vmfunctionimplementationvmhandle)
 - [Variables](exports.md#variables)
+  - [DefaultIntrinsics](exports.md#defaultintrinsics)
   - [EvalFlags](exports.md#evalflags)
+  - [IntrinsicsFlags](exports.md#intrinsicsflags)
 - [Functions](exports.md#functions)
   - [assertSync()](exports.md#assertsync)
   - [isFail()](exports.md#isfail)
@@ -150,7 +153,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:455
+packages/quickjs-ffi-types/dist/index.d.ts:478
 
 ***
 
@@ -160,7 +163,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:455
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:269
+packages/quickjs-ffi-types/dist/index.d.ts:292
 
 ***
 
@@ -202,6 +205,88 @@ Determines if a VM's execution should be interrupted.
 #### Source
 
 [packages/quickjs-emscripten-core/src/runtime.ts:28](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L28)
+
+***
+
+### Intrinsics
+
+> **Intrinsics**: `Object`
+
+Language features that can be enabled or disabled in a QuickJSContext.
+
+#### See
+
+[ContextOptions](interfaces/ContextOptions.md)
+
+#### Type declaration
+
+##### BaseObjects?
+
+> **BaseObjects**?: `boolean`
+
+##### BigDecimal?
+
+> **BigDecimal**?: `boolean`
+
+##### BigFloat?
+
+> **BigFloat**?: `boolean`
+
+##### BigInt?
+
+> **BigInt**?: `boolean`
+
+##### BignumExt?
+
+> **BignumExt**?: `boolean`
+
+##### Date?
+
+> **Date**?: `boolean`
+
+##### Eval?
+
+> **Eval**?: `boolean`
+
+##### JSON?
+
+> **JSON**?: `boolean`
+
+##### MapSet?
+
+> **MapSet**?: `boolean`
+
+##### OperatorOverloading?
+
+> **OperatorOverloading**?: `boolean`
+
+##### Promise?
+
+> **Promise**?: `boolean`
+
+##### Proxy?
+
+> **Proxy**?: `boolean`
+
+##### RegExp?
+
+> **RegExp**?: `boolean`
+
+##### RegExpCompiler?
+
+> **RegExpCompiler**?: `boolean`
+
+##### StringNormalize?
+
+> **StringNormalize**?: `boolean`
+
+##### TypedArrays?
+
+> **TypedArrays**?: `boolean`
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/types.ts:145](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L145)
 
 ***
 
@@ -260,7 +345,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L67)
+[packages/quickjs-emscripten-core/src/types.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L68)
 
 ***
 
@@ -270,7 +355,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L68)
+[packages/quickjs-emscripten-core/src/types.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L69)
 
 ***
 
@@ -280,7 +365,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:66](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L66)
+[packages/quickjs-emscripten-core/src/types.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L67)
 
 ***
 
@@ -290,7 +375,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L85)
+[packages/quickjs-emscripten-core/src/types.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L86)
 
 ***
 
@@ -300,7 +385,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L86)
+[packages/quickjs-emscripten-core/src/types.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L87)
 
 ***
 
@@ -310,7 +395,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L84)
+[packages/quickjs-emscripten-core/src/types.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L85)
 
 ***
 
@@ -346,7 +431,7 @@ You can do so from Javascript by calling the .dispose() method.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L42)
+[packages/quickjs-emscripten-core/src/types.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L43)
 
 ***
 
@@ -365,7 +450,7 @@ quickjs-emscripten takes care of disposing JSValueConst references.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:25](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L25)
+[packages/quickjs-emscripten-core/src/types.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L26)
 
 ***
 
@@ -480,7 +565,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:71
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:238](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L238)
+[packages/quickjs-emscripten-core/src/types.ts:281](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L281)
 
 ***
 
@@ -546,7 +631,7 @@ You must dispose of any handles you create by calling the `.dispose()` method.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L51)
+[packages/quickjs-emscripten-core/src/types.ts:52](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L52)
 
 ***
 
@@ -569,7 +654,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:454
+packages/quickjs-ffi-types/dist/index.d.ts:477
 
 ***
 
@@ -582,7 +667,7 @@ be disposed.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:13](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L13)
+[packages/quickjs-emscripten-core/src/types.ts:14](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L14)
 
 ***
 
@@ -657,6 +742,64 @@ It should not retain a reference to its return value or thrown error.
 
 ## Variables
 
+### DefaultIntrinsics
+
+> **`const`** **DefaultIntrinsics**: `Readonly`\<`Object`\>
+
+The default [Intrinsics](exports.md#intrinsics) language features enabled in a QuickJSContext.
+
+#### See
+
+[ContextOptions](interfaces/ContextOptions.md)
+
+#### Type declaration
+
+##### BaseObjects
+
+> **`readonly`** **BaseObjects**: `true` = `true`
+
+##### Date
+
+> **`readonly`** **Date**: `true` = `true`
+
+##### Eval
+
+> **`readonly`** **Eval**: `true` = `true`
+
+##### JSON
+
+> **`readonly`** **JSON**: `true` = `true`
+
+##### MapSet
+
+> **`readonly`** **MapSet**: `true` = `true`
+
+##### Promise
+
+> **`readonly`** **Promise**: `true` = `true`
+
+##### Proxy
+
+> **`readonly`** **Proxy**: `true` = `true`
+
+##### RegExp
+
+> **`readonly`** **RegExp**: `true` = `true`
+
+##### StringNormalize
+
+> **`readonly`** **StringNormalize**: `true` = `true`
+
+##### TypedArrays
+
+> **`readonly`** **TypedArrays**: `true` = `true`
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/types.ts:172](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L172)
+
+***
+
 ### EvalFlags
 
 > **EvalFlags**: `Object`
@@ -667,13 +810,13 @@ Bitfield options for JS_Eval() C function.
 
 ##### JS\_EVAL\_FLAG\_BACKTRACE\_BARRIER
 
-> **JS\_EVAL\_FLAG\_BACKTRACE\_BARRIER**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_BACKTRACE\_BARRIER**: `number`
 
 don't include the stack frames before this eval in the Error() backtraces
 
 ##### JS\_EVAL\_FLAG\_COMPILE\_ONLY
 
-> **JS\_EVAL\_FLAG\_COMPILE\_ONLY**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_COMPILE\_ONLY**: `number`
 
 compile but do not run. The result is an object with a
 JS_TAG_FUNCTION_BYTECODE or JS_TAG_MODULE tag. It can be executed
@@ -681,47 +824,125 @@ with JS_EvalFunction().
 
 ##### JS\_EVAL\_FLAG\_STRICT
 
-> **JS\_EVAL\_FLAG\_STRICT**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_STRICT**: `number`
 
 force 'strict' mode
 
 ##### JS\_EVAL\_FLAG\_STRIP
 
-> **JS\_EVAL\_FLAG\_STRIP**: `number`
+> **`readonly`** **JS\_EVAL\_FLAG\_STRIP**: `number`
 
 force 'strip' mode
 
 ##### JS\_EVAL\_TYPE\_DIRECT
 
-> **JS\_EVAL\_TYPE\_DIRECT**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_DIRECT**: `number`
 
 direct call (internal use)
 
 ##### JS\_EVAL\_TYPE\_GLOBAL
 
-> **JS\_EVAL\_TYPE\_GLOBAL**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_GLOBAL**: `number`
 
 global code (default)
 
 ##### JS\_EVAL\_TYPE\_INDIRECT
 
-> **JS\_EVAL\_TYPE\_INDIRECT**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_INDIRECT**: `number`
 
 indirect call (internal use)
 
 ##### JS\_EVAL\_TYPE\_MASK
 
-> **JS\_EVAL\_TYPE\_MASK**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_MASK**: `number`
 
 ##### JS\_EVAL\_TYPE\_MODULE
 
-> **JS\_EVAL\_TYPE\_MODULE**: `number`
+> **`readonly`** **JS\_EVAL\_TYPE\_MODULE**: `number`
 
 module code
 
 #### Source
 
 packages/quickjs-ffi-types/dist/index.d.ts:89
+
+***
+
+### IntrinsicsFlags
+
+> **IntrinsicsFlags**: `Object`
+
+Bitfield options for QTS_NewContext intrinsices
+
+#### Type declaration
+
+##### BaseObjects
+
+> **`readonly`** **BaseObjects**: `number`
+
+##### BigDecimal
+
+> **`readonly`** **BigDecimal**: `number`
+
+##### BigFloat
+
+> **`readonly`** **BigFloat**: `number`
+
+##### BigInt
+
+> **`readonly`** **BigInt**: `number`
+
+##### BignumExt
+
+> **`readonly`** **BignumExt**: `number`
+
+##### Date
+
+> **`readonly`** **Date**: `number`
+
+##### Eval
+
+> **`readonly`** **Eval**: `number`
+
+##### JSON
+
+> **`readonly`** **JSON**: `number`
+
+##### MapSet
+
+> **`readonly`** **MapSet**: `number`
+
+##### OperatorOverloading
+
+> **`readonly`** **OperatorOverloading**: `number`
+
+##### Promise
+
+> **`readonly`** **Promise**: `number`
+
+##### Proxy
+
+> **`readonly`** **Proxy**: `number`
+
+##### RegExp
+
+> **`readonly`** **RegExp**: `number`
+
+##### RegExpCompiler
+
+> **`readonly`** **RegExpCompiler**: `number`
+
+##### StringNormalize
+
+> **`readonly`** **StringNormalize**: `number`
+
+##### TypedArrays
+
+> **`readonly`** **TypedArrays**: `number`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:117
 
 ## Functions
 

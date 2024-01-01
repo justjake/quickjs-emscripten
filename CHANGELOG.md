@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.26.0
+
+- [#136](https://github.com/justjake/quickjs-emscripten/pull/136), [#116](https://github.com/justjake/quickjs-emscripten/pull/116) (thanks to @GrantMatejka) Expose ability to configure Context's intrinsic objects.
+- [#135](https://github.com/justjake/quickjs-emscripten/pull/135) (thanks to @saghul) Add `quickjs-ng` variants. quickjs-ng is a fork of quickjs under active development. It implements more EcmaScript standards and removes some of quickjs's custom language features like BigFloat.
+- [#134](https://github.com/justjake/quickjs-emscripten/pull/134) Support using statement for Disposable. If you `using value = vm.unwrapResult(vm.evalCode("1+1"))`, the value will be automatically disposed when the scope exits.
+- [#133](https://github.com/justjake/quickjs-emscripten/pull/133) WebAssembly loading options & Cloudflare Worker support. Added an example of using quickjs-emscripten in a Cloudflare Worker.
+
 ## v0.25.1
 
 - [#130](https://github.com/justjake/quickjs-emscripten/pull/129) Fix some README and docs quibbles.
