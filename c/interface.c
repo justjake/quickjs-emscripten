@@ -306,7 +306,7 @@ JSContext *QTS_NewContext(JSRuntime *rt, IntrinsicsFlags intrinsics) {
   }
 
   if (intrinsics & QTS_Intrinsic_BaseObjects) {
-    JS_AddIntrinsicDate(ctx);
+    JS_AddIntrinsicBaseObjects(ctx);
   }
   if (intrinsics & QTS_Intrinsic_Date) {
     JS_AddIntrinsicDate(ctx);
