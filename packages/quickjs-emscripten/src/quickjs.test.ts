@@ -447,18 +447,20 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
     })
   })
 
-  describe("intrinsices", () => {
+  describe("intrinsics", () => {
     it("evalCode - context respects intrinsic options - Date Unavailable", async () => {
       // Eval is required to use `evalCode`
       const newContext = await getContext({
         intrinsics: {
           BaseObjects: true,
+          Eval: true,
         },
       })
 
       const result = newContext.evalCode(`new Date()`)
 
       if (!result.error) {
+        result.value.dispose()
         assert.fail("result should be an error")
       }
 
@@ -1133,7 +1135,7 @@ if (!TEST_NO_ASYNC) {
 
     describe("DEBUG async module", function () {
       const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule(DEBUG_ASYNC))
-      const getContext = () => loader().then((mod) => mod.newContext())
+      const getContext = (opts?: ContextOptions) => loader().then((mod) => mod.newContext(opts))
 
       describe("sync API", () => {
         contextTests(getContext, true)
@@ -1149,7 +1151,7 @@ if (!TEST_NO_ASYNC) {
         const loader = memoizePromiseFactory(() =>
           newQuickJSAsyncWASMModule(import("@jitl/quickjs-ng-wasmfile-release-asyncify")),
         )
-        const getContext = () => loader().then((mod) => mod.newContext())
+        const getContext = (opts?: ContextOptions) => loader().then((mod) => mod.newContext(opts))
 
         describe("sync API", () => {
           contextTests(getContext)
@@ -1195,6 +1197,7 @@ interface ErrorObj {
   stack?: unknown
 }
 function assertError(actual: ErrorObj, expected: ErrorObj) {
-  assert.strictEqual(actual.name, expected.name)
+  assert.strictEqual(`${actual.name}: ${actual.message}`, `${expected.name}: ${expected.message}`)
   assert.strictEqual(actual.message, expected.message)
+  assert.strictEqual(actual.name, expected.name)
 }
