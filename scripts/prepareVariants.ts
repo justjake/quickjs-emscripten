@@ -478,7 +478,7 @@ and [QuickJSAsyncContext](${DOC_ROOT_URL}/quickjs-emscripten/classes/QuickJSAsyn
 
 const describeLibrary = {
   [CLibrary.QuickJS]: `The original [bellard/quickjs](https://github.com/bellard/quickjs) library.`,
-  [CLibrary.NG]: `[quickjs-ng](https://github.com/quickjs-ng/quickjs) is a newer fork of quickjs with more language features.`,
+  [CLibrary.NG]: `[quickjs-ng/quickjs](https://github.com/quickjs-ng/quickjs) is a newer fork of quickjs under active community development. It implements more EcmaScript features, and drop some non-standard QuickJS only features like BigFloat. May become the default library in a future version of quickjs-emscripten.`,
 }
 
 const describeModuleFactory = {
@@ -524,6 +524,7 @@ ${variant.description}
 
 | Variable            |    Setting                     |    Description    |
 | --                  | --                             | --                |
+| library             | ${variant.library}             | ${describeLibrary[variant.library]} |
 | releaseMode         | ${variant.releaseMode}         | ${describeMode[variant.releaseMode]} |
 | syncMode            | ${variant.syncMode}            | ${describeSyncMode[variant.syncMode]} |
 | emscriptenInclusion | ${variant.emscriptenInclusion} | ${inclusion} |

@@ -8,6 +8,7 @@ import type { QuickJSSyncVariant } from "@jitl/quickjs-ffi-types"
  *
  * | Variable            |    Setting                     |    Description    |
  * | --                  | --                             | --                |
+ * | library             | quickjs             | The original [bellard/quickjs](https://github.com/bellard/quickjs) library. |
  * | releaseMode         | release         | Optimized for performance; use when building/deploying your application. |
  * | syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
  * | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app. |

@@ -28,7 +28,7 @@ This variant was built with the following settings:
 
 ## Library: quickjs-ng
 
-[quickjs-ng](https://github.com/quickjs-ng/quickjs) is a newer fork of quickjs with more language features.
+[quickjs-ng/quickjs](https://github.com/quickjs-ng/quickjs) is a newer fork of quickjs under active community development. It implements more EcmaScript features, and drop some non-standard QuickJS only features like BigFloat. May become the default library in a future version of quickjs-emscripten.
 
 ## Release mode: debug
 

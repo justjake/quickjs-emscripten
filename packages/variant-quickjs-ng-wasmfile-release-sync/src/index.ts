@@ -8,6 +8,7 @@ import type { QuickJSSyncVariant } from "@jitl/quickjs-ffi-types"
  *
  * | Variable            |    Setting                     |    Description    |
  * | --                  | --                             | --                |
+ * | library             | quickjs-ng             | [quickjs-ng/quickjs](https://github.com/quickjs-ng/quickjs) is a newer fork of quickjs under active community development. It implements more EcmaScript features, and drop some non-standard QuickJS only features like BigFloat. May become the default library in a future version of quickjs-emscripten. |
  * | releaseMode         | release         | Optimized for performance; use when building/deploying your application. |
  * | syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
  * | emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
