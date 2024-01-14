@@ -462,11 +462,87 @@ export class QuickJSContext
    * value. A VmFunctionImplementation should also not retain any references to
    * its return value.
    *
+   * The function argument handles are automatically disposed when the function
+   * returns. If you want to retain a handle beyond the end of the function, you
+   * can call {@link Lifetime#dup} to create a copy of the handle that you own
+   * and must dispose manually. For example, you need to use this API and do some
+   * extra book keeping to implement `setInterval`:
+   *
+   * ```typescript
+   * // This won't work because `callbackHandle` expires when the function returns,
+   * // so when the interval fires, the callback handle is already disposed.
+   * const WRONG_setIntervalHandle = context.newFunction("setInterval", (callbackHandle, delayHandle) => {
+   *   const delayMs = context.getNumber(delayHandle)
+   *   const intervalId = globalThis.setInterval(() => {
+   *     // ERROR: callbackHandle is already disposed here.
+   *     context.callFunction(callbackHandle)
+   *   }, intervalId)
+   *   return context.newNumber(intervalId)
+   * })
+   *
+   * // This works since we dup the callbackHandle.
+   * // We just need to make sure we clean it up manually when the interval is cleared --
+   * // so we need to keep track of those interval IDs, and make sure we clean all
+   * // of them up when we dispose the owning context.
+   *
+   * const setIntervalHandle = context.newFunction("setInterval", (callbackHandle, delayHandle) => {
+   *   // Ensure the guest can't overload us by scheduling too many intervals.
+   *   if (QuickJSInterval.INTERVALS.size > 100) {
+   *     throw new Error(`Too many intervals scheduled already`)
+   *   }
+   *
+   *   const delayMs = context.getNumber(delayHandle)
+   *   const longLivedCallbackHandle = callbackHandle.dup()
+   *   const intervalId = globalThis.setInterval(() => {
+   *     context.callFunction(longLivedCallbackHandle)
+   *   }, intervalId)
+   *   const disposable = new QuickJSInterval(longLivedCallbackHandle, context, intervalId)
+   *   QuickJSInterval.INTERVALS.set(intervalId, disposable)
+   *   return context.newNumber(intervalId)
+   * })
+   *
+   * const clearIntervalHandle = context.newFunction("clearInterval", (intervalIdHandle) => {
+   *   const intervalId = context.getNumber(intervalIdHandle)
+   *   const disposable = QuickJSInterval.INTERVALS.get(intervalId)
+   *   disposable?.dispose()
+   * })
+   *
+   * class QuickJSInterval extends UsingDisposable {
+   *   static INTERVALS = new Map<number, QuickJSInterval>()
+   *
+   *   static disposeContext(context: QuickJSContext) {
+   *     for (const interval of QuickJSInterval.INTERVALS.values()) {
+   *       if (interval.context === context) {
+   *         interval.dispose()
+   *       }
+   *     }
+   *   }
+   *
+   *   constructor(
+   *     public fnHandle: QuickJSHandle,
+   *     public context: QuickJSContext,
+   *     public intervalId: number,
+   *   ) {
+   *     super()
+   *   }
+   *
+   *   dispose() {
+   *     globalThis.clearInterval(this.intervalId)
+   *     this.fnHandle.dispose()
+   *     QuickJSInterval.INTERVALS.delete(this.fnHandle.value)
+   *   }
+   *
+   *   get alive() {
+   *     return this.fnHandle.alive
+   *   }
+   * }
+   * ```
+   *
    * To implement an async function, create a promise with {@link newPromise}, then
    * return the deferred promise handle from `deferred.handle` from your
    * function implementation:
    *
-   * ```
+   * ```typescript
    * const deferred = vm.newPromise()
    * someNativeAsyncFunction().then(deferred.resolve)
    * return deferred.handle
