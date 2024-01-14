@@ -275,7 +275,7 @@ value.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1034
+packages/quickjs-emscripten-core/dist/index.d.ts:1110
 
 ***
 
@@ -308,7 +308,7 @@ socket.on("data", chunk => {
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1127
+packages/quickjs-emscripten-core/dist/index.d.ts:1203
 
 ***
 
@@ -339,7 +339,7 @@ Javascript string or number (which will be converted automatically to a JSValue)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1020
+packages/quickjs-emscripten-core/dist/index.d.ts:1096
 
 ***
 
@@ -389,7 +389,7 @@ Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1080
+packages/quickjs-emscripten-core/dist/index.d.ts:1156
 
 ***
 
@@ -423,7 +423,7 @@ socket.write(dataLifetime?.value)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1114
+packages/quickjs-emscripten-core/dist/index.d.ts:1190
 
 ***
 
@@ -473,7 +473,7 @@ interrupted, the error will have name `InternalError` and message
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1055
+packages/quickjs-emscripten-core/dist/index.d.ts:1131
 
 ***
 
@@ -523,7 +523,7 @@ Coverts `handle` to a JavaScript ArrayBuffer
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:982
+packages/quickjs-emscripten-core/dist/index.d.ts:1058
 
 ***
 
@@ -547,7 +547,7 @@ Converts `handle` to a Javascript bigint.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:978
+packages/quickjs-emscripten-core/dist/index.d.ts:1054
 
 ***
 
@@ -573,7 +573,7 @@ Converts `handle` into a Javascript number.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:965
+packages/quickjs-emscripten-core/dist/index.d.ts:1041
 
 ***
 
@@ -603,7 +603,7 @@ Javascript string (which will be converted automatically).
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1001
+packages/quickjs-emscripten-core/dist/index.d.ts:1077
 
 ***
 
@@ -627,7 +627,7 @@ Converts `handle` to a Javascript string.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:969
+packages/quickjs-emscripten-core/dist/index.d.ts:1045
 
 ***
 
@@ -652,7 +652,7 @@ registry in the guest, it will be created with Symbol.for on the host.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:974
+packages/quickjs-emscripten-core/dist/index.d.ts:1050
 
 ***
 
@@ -781,7 +781,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:890
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:948
+packages/quickjs-emscripten-core/dist/index.d.ts:1024
 
 #### newError(message)
 
@@ -801,7 +801,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:948
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:952
+packages/quickjs-emscripten-core/dist/index.d.ts:1028
 
 #### newError(undefined)
 
@@ -817,7 +817,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:952
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:953
+packages/quickjs-emscripten-core/dist/index.d.ts:1029
 
 ***
 
@@ -832,11 +832,87 @@ A [VmFunctionImplementation](../exports.md#vmfunctionimplementationvmhandle) sho
 value. A VmFunctionImplementation should also not retain any references to
 its return value.
 
+The function argument handles are automatically disposed when the function
+returns. If you want to retain a handle beyond the end of the function, you
+can call [Lifetime#dup](Lifetime.md#dup) to create a copy of the handle that you own
+and must dispose manually. For example, you need to use this API and do some
+extra book keeping to implement `setInterval`:
+
+```typescript
+// This won't work because `callbackHandle` expires when the function returns,
+// so when the interval fires, the callback handle is already disposed.
+const WRONG_setIntervalHandle = context.newFunction("setInterval", (callbackHandle, delayHandle) => {
+  const delayMs = context.getNumber(delayHandle)
+  const intervalId = globalThis.setInterval(() => {
+    // ERROR: callbackHandle is already disposed here.
+    context.callFunction(callbackHandle)
+  }, intervalId)
+  return context.newNumber(intervalId)
+})
+
+// This works since we dup the callbackHandle.
+// We just need to make sure we clean it up manually when the interval is cleared --
+// so we need to keep track of those interval IDs, and make sure we clean all
+// of them up when we dispose the owning context.
+
+const setIntervalHandle = context.newFunction("setInterval", (callbackHandle, delayHandle) => {
+  // Ensure the guest can't overload us by scheduling too many intervals.
+  if (QuickJSInterval.INTERVALS.size > 100) {
+    throw new Error(`Too many intervals scheduled already`)
+  }
+
+  const delayMs = context.getNumber(delayHandle)
+  const longLivedCallbackHandle = callbackHandle.dup()
+  const intervalId = globalThis.setInterval(() => {
+    context.callFunction(longLivedCallbackHandle)
+  }, intervalId)
+  const disposable = new QuickJSInterval(longLivedCallbackHandle, context, intervalId)
+  QuickJSInterval.INTERVALS.set(intervalId, disposable)
+  return context.newNumber(intervalId)
+})
+
+const clearIntervalHandle = context.newFunction("clearInterval", (intervalIdHandle) => {
+  const intervalId = context.getNumber(intervalIdHandle)
+  const disposable = QuickJSInterval.INTERVALS.get(intervalId)
+  disposable?.dispose()
+})
+
+class QuickJSInterval extends UsingDisposable {
+  static INTERVALS = new Map<number, QuickJSInterval>()
+
+  static disposeContext(context: QuickJSContext) {
+    for (const interval of QuickJSInterval.INTERVALS.values()) {
+      if (interval.context === context) {
+        interval.dispose()
+      }
+    }
+  }
+
+  constructor(
+    public fnHandle: QuickJSHandle,
+    public context: QuickJSContext,
+    public intervalId: number,
+  ) {
+    super()
+  }
+
+  dispose() {
+    globalThis.clearInterval(this.intervalId)
+    this.fnHandle.dispose()
+    QuickJSInterval.INTERVALS.delete(this.fnHandle.value)
+  }
+
+  get alive() {
+    return this.fnHandle.alive
+  }
+}
+```
+
 To implement an async function, create a promise with [newPromise](QuickJSAsyncContext.md#newpromise), then
 return the deferred promise handle from `deferred.handle` from your
 function implementation:
 
-```
+```typescript
 const deferred = vm.newPromise()
 someNativeAsyncFunction().then(deferred.resolve)
 return deferred.handle
@@ -858,7 +934,7 @@ return deferred.handle
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:947
+packages/quickjs-emscripten-core/dist/index.d.ts:1023
 
 ***
 
@@ -1091,7 +1167,7 @@ You may need to call [runtime](QuickJSAsyncContext.md#runtime).[QuickJSRuntime#e
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:993
+packages/quickjs-emscripten-core/dist/index.d.ts:1069
 
 ***
 
@@ -1128,7 +1204,7 @@ properties.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1013
+packages/quickjs-emscripten-core/dist/index.d.ts:1089
 
 ***
 
@@ -1152,7 +1228,7 @@ Throw an error in the VM, interrupted whatever current execution is in progress 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1067
+packages/quickjs-emscripten-core/dist/index.d.ts:1143
 
 ***
 
@@ -1180,7 +1256,7 @@ Does not support BigInt values correctly.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:960
+packages/quickjs-emscripten-core/dist/index.d.ts:1036
 
 ***
 
@@ -1211,7 +1287,7 @@ If the result is an error, converts the error to a native object and throws the 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1087
+packages/quickjs-emscripten-core/dist/index.d.ts:1163
 
 ***
 

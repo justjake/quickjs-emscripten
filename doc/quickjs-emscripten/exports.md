@@ -540,7 +540,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:80
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1374
+packages/quickjs-emscripten-core/dist/index.d.ts:1450
 
 ***
 
@@ -593,7 +593,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:523
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1315
+packages/quickjs-emscripten-core/dist/index.d.ts:1391
 
 ***
 
@@ -1206,7 +1206,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1373
+packages/quickjs-emscripten-core/dist/index.d.ts:1449
 
 ***
 
@@ -1335,7 +1335,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1362
+packages/quickjs-emscripten-core/dist/index.d.ts:1438
 
 ***
 
@@ -1397,7 +1397,7 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1337
+packages/quickjs-emscripten-core/dist/index.d.ts:1413
 
 ***
 
@@ -1424,7 +1424,7 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1415
+packages/quickjs-emscripten-core/dist/index.d.ts:1491
 
 ***
 
@@ -1447,7 +1447,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1423
+packages/quickjs-emscripten-core/dist/index.d.ts:1499
 
 ***
 
