@@ -1,0 +1,18 @@
+{
+  "name": "quickjs-emscripten-smoketest",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@jitl/quickjs-ffi-types": "file:../../build/tar/@jitl-quickjs-ffi-types.tgz",
+    "@jitl/quickjs-wasmfile-debug-asyncify": "file:../../build/tar/@jitl-quickjs-wasmfile-debug-asyncify.tgz",
+    "@jitl/quickjs-wasmfile-debug-sync": "file:../../build/tar/@jitl-quickjs-wasmfile-debug-sync.tgz",
+    "@jitl/quickjs-wasmfile-release-asyncify": "file:../../build/tar/@jitl-quickjs-wasmfile-release-asyncify.tgz",
+    "@jitl/quickjs-wasmfile-release-sync": "file:../../build/tar/@jitl-quickjs-wasmfile-release-sync.tgz",
+    "quickjs-emscripten": "file:../../build/tar/quickjs-emscripten.tgz",
+    "quickjs-emscripten-core": "file:../../build/tar/quickjs-emscripten-core.tgz",
+    "typescript": "5"
+  },
+  "workspaces": []
+}

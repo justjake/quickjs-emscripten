@@ -788,7 +788,8 @@
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.d.ts",
-          "import": "./dist/emscripten-module.mjs"
+          "import": "./dist/emscripten-module.mjs",
+          "default": "./dist/emscripten-module.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
@@ -840,7 +841,8 @@
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.d.ts",
-          "import": "./dist/emscripten-module.mjs"
+          "import": "./dist/emscripten-module.mjs",
+          "default": "./dist/emscripten-module.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
@@ -892,7 +894,8 @@
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.d.ts",
-          "import": "./dist/emscripten-module.mjs"
+          "import": "./dist/emscripten-module.mjs",
+          "default": "./dist/emscripten-module.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
@@ -944,7 +947,8 @@
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.d.ts",
-          "import": "./dist/emscripten-module.mjs"
+          "import": "./dist/emscripten-module.mjs",
+          "default": "./dist/emscripten-module.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
@@ -998,7 +1002,8 @@
         "./emscripten-module": {
           "types": "./dist/emscripten-module.browser.d.ts",
           "browser": "./dist/emscripten-module.browser.mjs",
-          "import": "./dist/emscripten-module.browser.mjs"
+          "import": "./dist/emscripten-module.browser.mjs",
+          "default": "./dist/emscripten-module.browser.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
@@ -1052,7 +1057,8 @@
         "./emscripten-module": {
           "types": "./dist/emscripten-module.browser.d.ts",
           "browser": "./dist/emscripten-module.browser.mjs",
-          "import": "./dist/emscripten-module.browser.mjs"
+          "import": "./dist/emscripten-module.browser.mjs",
+          "default": "./dist/emscripten-module.browser.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
@@ -1106,7 +1112,8 @@
         "./emscripten-module": {
           "types": "./dist/emscripten-module.browser.d.ts",
           "browser": "./dist/emscripten-module.browser.mjs",
-          "import": "./dist/emscripten-module.browser.mjs"
+          "import": "./dist/emscripten-module.browser.mjs",
+          "default": "./dist/emscripten-module.browser.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
@@ -1160,7 +1167,8 @@
         "./emscripten-module": {
           "types": "./dist/emscripten-module.browser.d.ts",
           "browser": "./dist/emscripten-module.browser.mjs",
-          "import": "./dist/emscripten-module.browser.mjs"
+          "import": "./dist/emscripten-module.browser.mjs",
+          "default": "./dist/emscripten-module.browser.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
@@ -1173,6 +1181,112 @@
       "description": "Variant with the WASM data embedded into a browser ESModule.",
       "emscriptenInclusion": "singlefile",
       "exports": { "browser": { "emscriptenEnvironment": ["web", "worker"] } }
+    }
+  },
+  "packages/variant-quickjs-purejs-mjs-release-sync": {
+    "basename": "quickjs-purejs-mjs-release-sync",
+    "targetName": "purejs-mjs",
+    "dir": "packages/variant-quickjs-purejs-mjs-release-sync",
+    "packageJson": {
+      "name": "@jitl/quickjs-purejs-mjs-release-sync",
+      "version": "0.25.1",
+      "description": "Variant of quickjs library: Compiled to pure JS, no WebAssembly required. Very slow.",
+      "sideEffects": false,
+      "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
+      "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
+      "scripts": {
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j2",
+        "build:ts": "npx tsup",
+        "check:types": "npx tsc --project . --noEmit",
+        "clean": "make clean",
+        "prepare": "yarn clean && yarn build"
+      },
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.mts",
+      "main": "./dist/index.mjs",
+      "module": "./dist/index.mjs",
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.mts",
+          "import": "./dist/index.mjs",
+          "default": "./dist/index.mjs"
+        },
+        "./package.json": "./package.json",
+        "./ffi": {
+          "types": "./dist/ffi.d.ts",
+          "import": "./dist/ffi.mjs",
+          "default": "./dist/ffi.mjs"
+        },
+        "./emscripten-module": {
+          "types": "./dist/emscripten-module.d.ts",
+          "import": "./dist/emscripten-module.mjs",
+          "default": "./dist/emscripten-module.mjs"
+        }
+      },
+      "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
+    },
+    "indexJs": "packages/variant-quickjs-purejs-mjs-release-sync/dist/index.js",
+    "variant": {
+      "library": "quickjs",
+      "releaseMode": "release",
+      "syncMode": "sync",
+      "description": "Compiled to pure JS, no WebAssembly required. Very slow.",
+      "emscriptenInclusion": "purejs",
+      "exports": { "import": { "emscriptenEnvironment": ["web", "worker", "node"] } }
+    }
+  },
+  "packages/variant-quickjs-ng-purejs-mjs-release-sync": {
+    "basename": "quickjs-ng-purejs-mjs-release-sync",
+    "targetName": "purejs-mjs",
+    "dir": "packages/variant-quickjs-ng-purejs-mjs-release-sync",
+    "packageJson": {
+      "name": "@jitl/quickjs-ng-purejs-mjs-release-sync",
+      "version": "0.26.0",
+      "description": "Variant of quickjs library: Compiled to pure JS, no WebAssembly required. Very slow.",
+      "sideEffects": false,
+      "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
+      "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
+      "scripts": {
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j2",
+        "build:ts": "npx tsup",
+        "check:types": "npx tsc --project . --noEmit",
+        "clean": "make clean",
+        "prepare": "yarn clean && yarn build"
+      },
+      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.mts",
+      "main": "./dist/index.mjs",
+      "module": "./dist/index.mjs",
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.mts",
+          "import": "./dist/index.mjs",
+          "default": "./dist/index.mjs"
+        },
+        "./package.json": "./package.json",
+        "./ffi": {
+          "types": "./dist/ffi.d.ts",
+          "import": "./dist/ffi.mjs",
+          "default": "./dist/ffi.mjs"
+        },
+        "./emscripten-module": {
+          "types": "./dist/emscripten-module.d.ts",
+          "import": "./dist/emscripten-module.mjs",
+          "default": "./dist/emscripten-module.mjs"
+        }
+      },
+      "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
+    },
+    "indexJs": "packages/variant-quickjs-ng-purejs-mjs-release-sync/dist/index.js",
+    "variant": {
+      "library": "quickjs-ng",
+      "releaseMode": "release",
+      "syncMode": "sync",
+      "description": "Compiled to pure JS, no WebAssembly required. Very slow.",
+      "emscriptenInclusion": "purejs",
+      "exports": { "import": { "emscriptenEnvironment": ["web", "worker", "node"] } }
     }
   }
 }

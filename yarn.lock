@@ -620,6 +620,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@jitl/quickjs-ng-purejs-mjs-release-sync@workspace:packages/variant-quickjs-ng-purejs-mjs-release-sync":
+  version: 0.0.0-use.local
+  resolution: "@jitl/quickjs-ng-purejs-mjs-release-sync@workspace:packages/variant-quickjs-ng-purejs-mjs-release-sync"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "@jitl/quickjs-ng-wasmfile-debug-asyncify@workspace:packages/variant-quickjs-ng-wasmfile-debug-asyncify":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-ng-wasmfile-debug-asyncify@workspace:packages/variant-quickjs-ng-wasmfile-debug-asyncify"
@@ -647,6 +655,14 @@ __metadata:
 "@jitl/quickjs-ng-wasmfile-release-sync@workspace:packages/variant-quickjs-ng-wasmfile-release-sync":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-ng-wasmfile-release-sync@workspace:packages/variant-quickjs-ng-wasmfile-release-sync"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
+"@jitl/quickjs-purejs-mjs-release-sync@workspace:packages/variant-quickjs-purejs-mjs-release-sync":
+  version: 0.0.0-use.local
+  resolution: "@jitl/quickjs-purejs-mjs-release-sync@workspace:packages/variant-quickjs-purejs-mjs-release-sync"
   dependencies:
     "@jitl/quickjs-ffi-types": "workspace:*"
   languageName: unknown

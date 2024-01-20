@@ -25,6 +25,7 @@ Variant with the WASM data embedded into a NodeJS ESModule.
 
 | Variable            |    Setting                     |    Description    |
 | --                  | --                             | --                |
+| library             | quickjs             | The original [bellard/quickjs](https://github.com/bellard/quickjs) library. |
 | releaseMode         | release         | Optimized for performance; use when building/deploying your application. |
 | syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
 | emscriptenInclusion | singlefile | The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app. |
@@ -32,7 +33,7 @@ Variant with the WASM data embedded into a NodeJS ESModule.
 
 #### Source
 
-[index.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-singlefile-mjs-release-sync/src/index.ts#L17)
+[index.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-singlefile-mjs-release-sync/src/index.ts#L18)
 
 ***
 
