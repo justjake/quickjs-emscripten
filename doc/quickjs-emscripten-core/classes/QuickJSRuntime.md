@@ -118,7 +118,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L49)
+[packages/quickjs-emscripten-core/src/lifetime.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L46)
 
 ***
 
@@ -142,7 +142,7 @@ QuickJSWrongOwner if owned by a different runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:325](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L325)
+[packages/quickjs-emscripten-core/src/runtime.ts:326](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L326)
 
 ***
 
@@ -162,7 +162,7 @@ For a human-digestible representation, see [dumpMemoryUsage](QuickJSRuntime.md#d
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:294](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L294)
+[packages/quickjs-emscripten-core/src/runtime.ts:295](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L295)
 
 ***
 
@@ -203,7 +203,7 @@ For programmatic access to this information, see [computeMemoryUsage](QuickJSRun
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:305](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L305)
+[packages/quickjs-emscripten-core/src/runtime.ts:306](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L306)
 
 ***
 
@@ -358,7 +358,7 @@ To remove the limit, set to `0`.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:313](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L313)
+[packages/quickjs-emscripten-core/src/runtime.ts:314](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L314)
 
 ***
 
@@ -379,7 +379,7 @@ To remove the limit, set to `-1`.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:279](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L279)
+[packages/quickjs-emscripten-core/src/runtime.ts:280](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L280)
 
 ***
 
