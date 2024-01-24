@@ -27,6 +27,7 @@ freed all the memory you've ever allocated.
   - [assertNoMemoryAllocated()](TestQuickJSWASMModule.md#assertnomemoryallocated)
   - [disposeAll()](TestQuickJSWASMModule.md#disposeall)
   - [evalCode()](TestQuickJSWASMModule.md#evalcode)
+  - [getWasmMemory()](TestQuickJSWASMModule.md#getwasmmemory)
   - [newContext()](TestQuickJSWASMModule.md#newcontext)
   - [newRuntime()](TestQuickJSWASMModule.md#newruntime)
 
@@ -123,6 +124,24 @@ freed all the memory you've ever allocated.
 #### Source
 
 [packages/quickjs-emscripten-core/src/module-test.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L47)
+
+***
+
+### getWasmMemory()
+
+> **getWasmMemory**(): `Memory`
+
+#### Returns
+
+`Memory`
+
+#### Implementation of
+
+`Pick.getWasmMemory`
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/module-test.ts:79](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L79)
 
 ***
 

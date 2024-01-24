@@ -24,6 +24,7 @@ modules.
 - [Methods](QuickJSAsyncWASMModule.md#methods)
   - [evalCode()](QuickJSAsyncWASMModule.md#evalcode)
   - [evalCodeAsync()](QuickJSAsyncWASMModule.md#evalcodeasync)
+  - [getWasmMemory()](QuickJSAsyncWASMModule.md#getwasmmemory)
   - [newContext()](QuickJSAsyncWASMModule.md#newcontext)
   - [newRuntime()](QuickJSAsyncWASMModule.md#newruntime)
 
@@ -80,6 +81,30 @@ See the documentation for [QuickJSWASMModule#evalCode](QuickJSWASMModule.md#eval
 #### Source
 
 [packages/quickjs-emscripten-core/src/module-asyncify.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L91)
+
+***
+
+### getWasmMemory()
+
+> **getWasmMemory**(): `Memory`
+
+Retrieve the WebAssembly memory used by this QuickJS module.
+Use this access very carefully - you are responsible for safe interaction with the memory.
+
+To supply a custom, pre-initialized memory to QuickJS, create a new variant
+and provide the [CustomizeVariantOptions#wasmMemory](../interfaces/CustomizeVariantOptions.md#wasmmemory) option.
+
+#### Returns
+
+`Memory`
+
+#### Inherited from
+
+[`quickjs-emscripten-core.QuickJSWASMModule.getWasmMemory`](QuickJSWASMModule.md#getwasmmemory)
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/module.ts:426](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L426)
 
 ***
 

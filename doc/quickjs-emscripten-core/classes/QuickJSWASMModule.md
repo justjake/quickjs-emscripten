@@ -27,6 +27,7 @@ inside QuickJS, create a context with [newContext](QuickJSWASMModule.md#newconte
 - [Extended By](QuickJSWASMModule.md#extended-by)
 - [Methods](QuickJSWASMModule.md#methods)
   - [evalCode()](QuickJSWASMModule.md#evalcode)
+  - [getWasmMemory()](QuickJSWASMModule.md#getwasmmemory)
   - [newContext()](QuickJSWASMModule.md#newcontext)
   - [newRuntime()](QuickJSWASMModule.md#newruntime)
 
@@ -80,7 +81,27 @@ with name `"InternalError"` and  message `"interrupted"`.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:393](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L393)
+[packages/quickjs-emscripten-core/src/module.ts:395](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L395)
+
+***
+
+### getWasmMemory()
+
+> **getWasmMemory**(): `Memory`
+
+Retrieve the WebAssembly memory used by this QuickJS module.
+Use this access very carefully - you are responsible for safe interaction with the memory.
+
+To supply a custom, pre-initialized memory to QuickJS, create a new variant
+and provide the [CustomizeVariantOptions#wasmMemory](../interfaces/CustomizeVariantOptions.md#wasmmemory) option.
+
+#### Returns
+
+`Memory`
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/module.ts:426](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L426)
 
 ***
 
@@ -102,7 +123,7 @@ be disposed when the context is disposed.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:358](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L358)
+[packages/quickjs-emscripten-core/src/module.ts:360](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L360)
 
 ***
 
@@ -124,7 +145,7 @@ loading for one or more [QuickJSContext](QuickJSContext.md)s inside the runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:331](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L331)
+[packages/quickjs-emscripten-core/src/module.ts:333](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L333)
 
 ***
 

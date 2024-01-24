@@ -26,7 +26,7 @@ Use [Scope](../classes/Scope.md) to manage cleaning up multiple disposables.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:25](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L25)
+[packages/quickjs-emscripten-core/src/lifetime.ts:22](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L22)
 
 ## Methods
 
@@ -42,7 +42,7 @@ A method that is used to release resources held by an object. Called by the sema
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:30](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L30)
+[packages/quickjs-emscripten-core/src/lifetime.ts:27](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L27)
 
 ***
 
@@ -58,7 +58,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:19](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L19)
+[packages/quickjs-emscripten-core/src/lifetime.ts:16](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L16)
 
 ***
 

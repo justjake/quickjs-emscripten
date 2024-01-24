@@ -66,6 +66,7 @@ export interface QuickJSEmscriptenExtensions {
   WasmOffsetConverter?: typeof Emscripten.WasmOffsetConverter
   existingWasmOffsetConverter?: Emscripten.WasmOffsetConverter
   receiveWasmOffsetConverter?(bytes: ArrayBuffer, mod: WebAssembly.Module): void
+  getWasmMemory?(): WebAssembly.Memory
 }
 
 /**
@@ -101,6 +102,9 @@ export interface EmscriptenModuleLoaderOptions {
 
   /** Compile this to WebAssembly.Module */
   wasmBinary?: ArrayBuffer
+
+  /** If provided, use this WebAssembly.Memory instead of an automatically created one. */
+  wasmMemory?: WebAssembly.Memory
 
   /** Create an instance of the WASM module, call onSuccess(instance), then return instance.exports */
   instantiateWasm?(

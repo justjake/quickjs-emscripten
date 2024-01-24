@@ -36,7 +36,7 @@ build variant to [newQuickJSWASMModule](../exports.md#newquickjswasmmodule) or [
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:474
+packages/quickjs-ffi-types/dist/index.d.ts:477
 
 ***
 
@@ -50,7 +50,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:474
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:475
+packages/quickjs-ffi-types/dist/index.d.ts:478
 
 ***
 
@@ -60,7 +60,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:475
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:473
+packages/quickjs-ffi-types/dist/index.d.ts:476
 
 ***
 

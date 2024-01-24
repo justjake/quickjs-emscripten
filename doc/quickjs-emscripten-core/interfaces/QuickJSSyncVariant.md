@@ -36,7 +36,7 @@ build variant to newQuickJSWASMModule or newQuickJSAsyncWASMModule.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:460
+packages/quickjs-ffi-types/dist/index.d.ts:463
 
 ***
 
@@ -50,7 +50,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:460
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:461
+packages/quickjs-ffi-types/dist/index.d.ts:464
 
 ***
 
@@ -60,7 +60,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:461
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:459
+packages/quickjs-ffi-types/dist/index.d.ts:462
 
 ***
 

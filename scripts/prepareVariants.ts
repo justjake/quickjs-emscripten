@@ -180,7 +180,14 @@ const SyncModeFlags = {
 }
 
 const ReleaseModeFlags = {
-  [ReleaseMode.Release]: [`-Oz`, `-flto`, `--closure 1`, `-s FILESYSTEM=0`],
+  [ReleaseMode.Release]: [
+    `-Oz`,
+    `-flto`,
+    `--closure 1`,
+    `-s FILESYSTEM=0`,
+    `--pre-js $(TEMPLATES)/pre-extension.js`,
+    `--pre-js $(TEMPLATES)/pre-wasmMemory.js`,
+  ],
   [ReleaseMode.Debug]: [
     `-O0`,
     "-DQTS_DEBUG_MODE",
@@ -189,6 +196,7 @@ const ReleaseModeFlags = {
     `--pre-js $(TEMPLATES)/pre-extension.js`,
     `--pre-js $(TEMPLATES)/pre-sourceMapJson.js`,
     `--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js`,
+    `--pre-js $(TEMPLATES)/pre-wasmMemory.js`,
   ],
 }
 

@@ -14,6 +14,7 @@
   - [log?](CustomizeVariantOptions.md#log)
   - [wasmBinary?](CustomizeVariantOptions.md#wasmbinary)
   - [wasmLocation?](CustomizeVariantOptions.md#wasmlocation)
+  - [wasmMemory?](CustomizeVariantOptions.md#wasmmemory)
   - [wasmModule?](CustomizeVariantOptions.md#wasmmodule)
   - [wasmSourceMapData?](CustomizeVariantOptions.md#wasmsourcemapdata)
   - [wasmSourceMapLocation?](CustomizeVariantOptions.md#wasmsourcemaplocation)
@@ -28,7 +29,7 @@ The enumerable properties of this object will be passed verbatim, although they 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/from-variant.ts:151](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L151)
+[packages/quickjs-emscripten-core/src/from-variant.ts:153](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L153)
 
 ***
 
@@ -68,7 +69,7 @@ Often `''` (empty string)
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/from-variant.ts:149](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L149)
+[packages/quickjs-emscripten-core/src/from-variant.ts:151](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L151)
 
 ***
 
@@ -100,7 +101,7 @@ Debug logger
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/from-variant.ts:153](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L153)
+[packages/quickjs-emscripten-core/src/from-variant.ts:155](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L155)
 
 ***
 
@@ -128,6 +129,18 @@ If given, Emscripten will try to load the WebAssembly module data from this loca
 
 ***
 
+### wasmMemory?
+
+> **wasmMemory**?: [`OrLoader`](../exports.md#orloadert)\<`Memory`\>
+
+If given, use the Memory when instantiating the WebAssembly.Instance.
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/from-variant.ts:127](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L127)
+
+***
+
 ### wasmModule?
 
 > **wasmModule**?: [`OrLoader`](../exports.md#orloadert)\<`Module`\>
@@ -148,7 +161,7 @@ If given, we will provide the source map to Emscripten directly. This may only b
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/from-variant.ts:129](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L129)
+[packages/quickjs-emscripten-core/src/from-variant.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L131)
 
 ***
 
@@ -160,7 +173,7 @@ If given, Emscripten will try to load the source map for the WebAssembly module 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/from-variant.ts:127](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L127)
+[packages/quickjs-emscripten-core/src/from-variant.ts:129](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L129)
 
 ***
 

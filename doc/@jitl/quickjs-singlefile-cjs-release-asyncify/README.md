@@ -82,6 +82,8 @@ Variant-specific Emscripten build flags:
   "-flto",
   "--closure 1",
   "-s FILESYSTEM=0",
+  "--pre-js $(TEMPLATES)/pre-extension.js",
+  "--pre-js $(TEMPLATES)/pre-wasmMemory.js",
   "-s SINGLE_FILE=1"
 ]
 ```

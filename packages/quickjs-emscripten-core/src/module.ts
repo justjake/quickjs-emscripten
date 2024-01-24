@@ -12,6 +12,8 @@ import type {
 import type { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
 import { QuickJSAsyncifyError, QuickJSAsyncifySuspended } from "./errors"
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { CustomizeVariantOptions } from "./from-variant"
 import { Lifetime, Scope } from "./lifetime"
 import type { InterruptHandler } from "./runtime"
 import { QuickJSRuntime } from "./runtime"
@@ -410,6 +412,24 @@ export class QuickJSWASMModule {
       const value = vm.dump(scope.manage(result.value))
       return value
     })
+  }
+
+  /**
+   * Retrieve the WebAssembly memory used by this QuickJS module.
+   * Use this access very carefully - you are responsible for safe interaction with the memory.
+   *
+   * To supply a custom, pre-initialized memory to QuickJS, create a new variant
+   * and provide the {@link CustomizeVariantOptions#wasmMemory} option.
+   *
+   * @experimental
+   */
+  getWasmMemory(): WebAssembly.Memory {
+    const extensions = this.module.quickjsEmscriptenInit?.(() => {})
+    const memory = extensions?.getWasmMemory?.()
+    if (!memory) {
+      throw new Error(`Variant does not support getting WebAssembly.Memory`)
+    }
+    return memory
   }
 
   /**

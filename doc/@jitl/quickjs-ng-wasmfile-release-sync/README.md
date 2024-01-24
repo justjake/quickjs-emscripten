@@ -82,7 +82,14 @@ Full variant JSON description:
 Variant-specific Emscripten build flags:
 
 ```json
-["-Oz", "-flto", "--closure 1", "-s FILESYSTEM=0"]
+[
+  "-Oz",
+  "-flto",
+  "--closure 1",
+  "-s FILESYSTEM=0",
+  "--pre-js $(TEMPLATES)/pre-extension.js",
+  "--pre-js $(TEMPLATES)/pre-wasmMemory.js"
+]
 ```
 
 ***

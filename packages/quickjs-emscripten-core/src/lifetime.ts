@@ -4,9 +4,6 @@ import { QTS_DEBUG } from "./debug"
 import { QuickJSUseAfterFree } from "./errors"
 import type { QuickJSHandle } from "./types"
 
-// Note: we don't need to polyfill Symbol.dispose because ESBuild falls back to
-// Symbol.for("Symbol.dispose") when Symbol.dispose is not available.
-
 /**
  * An object that can be disposed.
  * {@link Lifetime} is the canonical implementation of Disposable.
@@ -47,6 +44,16 @@ export abstract class UsingDisposable implements Disposable {
    * Just calls the standard .dispose() method of this class.
    */
   [Symbol.dispose]() {
+    return this.dispose()
+  }
+}
+
+// Polyfill as needed if Symbol.dispose is not available.
+// This polyfill matches ESBuild's behavior.
+const SymbolDispose = Symbol.dispose ?? Symbol.for("Symbol.dispose")
+const prototypeAsAny = UsingDisposable.prototype as any
+if (!prototypeAsAny[SymbolDispose]) {
+  prototypeAsAny[SymbolDispose] = function () {
     return this.dispose()
   }
 }

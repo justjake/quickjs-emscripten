@@ -238,7 +238,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
    * {@link QuickJSContext#resolvePromise} on the promise handle returned by the async function.
    */
   executePendingJobs(maxJobsToExecute: number | void = -1): ExecutePendingJobsResult {
-    using ctxPtrOut = this.memory.newMutablePointerArray<JSContextPointerPointer>(1)
+    const ctxPtrOut = this.memory.newMutablePointerArray<JSContextPointerPointer>(1)
     const valuePtr = this.ffi.QTS_ExecutePendingJob(
       this.rt.value,
       maxJobsToExecute ?? -1,
@@ -246,6 +246,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     )
 
     const ctxPtr = ctxPtrOut.value.typedArray[0] as JSContextPointer
+    ctxPtrOut.dispose()
     if (ctxPtr === 0) {
       // No jobs executed.
       this.ffi.QTS_FreeValuePointerRuntime(this.rt.value, valuePtr)

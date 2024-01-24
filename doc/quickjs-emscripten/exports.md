@@ -167,7 +167,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:478
+packages/quickjs-ffi-types/dist/index.d.ts:481
 
 ***
 
@@ -177,7 +177,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:478
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:292
+packages/quickjs-ffi-types/dist/index.d.ts:295
 
 ***
 
@@ -540,7 +540,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:80
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1450
+packages/quickjs-emscripten-core/dist/index.d.ts:1460
 
 ***
 
@@ -593,7 +593,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:523
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1391
+packages/quickjs-emscripten-core/dist/index.d.ts:1401
 
 ***
 
@@ -668,7 +668,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:735
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:477
+packages/quickjs-ffi-types/dist/index.d.ts:480
 
 ***
 
@@ -1206,7 +1206,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1449
+packages/quickjs-emscripten-core/dist/index.d.ts:1459
 
 ***
 
@@ -1335,7 +1335,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1438
+packages/quickjs-emscripten-core/dist/index.d.ts:1448
 
 ***
 
@@ -1397,7 +1397,7 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1413
+packages/quickjs-emscripten-core/dist/index.d.ts:1423
 
 ***
 
@@ -1424,7 +1424,7 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1491
+packages/quickjs-emscripten-core/dist/index.d.ts:1503
 
 ***
 
@@ -1447,7 +1447,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1499
+packages/quickjs-emscripten-core/dist/index.d.ts:1511
 
 ***
 

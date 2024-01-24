@@ -27,6 +27,7 @@ inside QuickJS, create a context with [newContext](QuickJSWASMModule.md#newconte
 - [Extended By](QuickJSWASMModule.md#extended-by)
 - [Methods](QuickJSWASMModule.md#methods)
   - [evalCode()](QuickJSWASMModule.md#evalcode)
+  - [getWasmMemory()](QuickJSWASMModule.md#getwasmmemory)
   - [newContext()](QuickJSWASMModule.md#newcontext)
   - [newRuntime()](QuickJSWASMModule.md#newruntime)
 
@@ -81,6 +82,26 @@ with name `"InternalError"` and  message `"interrupted"`.
 #### Source
 
 packages/quickjs-emscripten-core/dist/index.d.ts:1332
+
+***
+
+### getWasmMemory()
+
+> **getWasmMemory**(): `Memory`
+
+Retrieve the WebAssembly memory used by this QuickJS module.
+Use this access very carefully - you are responsible for safe interaction with the memory.
+
+To supply a custom, pre-initialized memory to QuickJS, create a new variant
+and provide the [CustomizeVariantOptions#wasmMemory](../interfaces/CustomizeVariantOptions.md#wasmmemory) option.
+
+#### Returns
+
+`Memory`
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:1342
 
 ***
 
