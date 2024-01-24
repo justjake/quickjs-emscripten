@@ -49,7 +49,7 @@ Synchronous evalCode is not supported.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1300
+packages/quickjs-emscripten-core/dist/index.d.ts:1376
 
 ***
 
@@ -79,7 +79,7 @@ See the documentation for [QuickJSWASMModule#evalCode](QuickJSWASMModule.md#eval
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1312
+packages/quickjs-emscripten-core/dist/index.d.ts:1388
 
 ***
 
@@ -105,7 +105,7 @@ be disposed when the context is disposed.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1298
+packages/quickjs-emscripten-core/dist/index.d.ts:1374
 
 ***
 
@@ -131,7 +131,7 @@ concurrent async actions, create multiple WebAssembly modules.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1292
+packages/quickjs-emscripten-core/dist/index.d.ts:1368
 
 ***
 
