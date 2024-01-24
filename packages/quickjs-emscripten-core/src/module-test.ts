@@ -76,6 +76,10 @@ export class TestQuickJSWASMModule implements Pick<QuickJSWASMModule, keyof Quic
     }
   }
 
+  getWasmMemory(): WebAssembly.Memory {
+    return this.parent.getWasmMemory()
+  }
+
   /** @private */
   getFFI() {
     return this.parent.getFFI()

@@ -4,7 +4,7 @@
 
 import assert from "assert"
 import fs from "fs"
-import { describe, beforeEach, afterEach, afterAll as after, it } from "vitest"
+import { describe, beforeEach, afterEach, afterAll as after, it, expect } from "vitest"
 import type {
   QuickJSHandle,
   InterruptHandler,
@@ -15,6 +15,7 @@ import type {
   QuickJSFFI,
   QuickJSAsyncFFI,
   ContextOptions,
+  QuickJSWASMModule,
 } from "."
 import {
   getQuickJS,
@@ -27,6 +28,8 @@ import {
   debugLog,
   errors,
   DefaultIntrinsics,
+  RELEASE_SYNC,
+  RELEASE_ASYNC,
 } from "."
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
@@ -1162,6 +1165,35 @@ if (!TEST_NO_ASYNC) {
         })
       })
     }
+  })
+}
+
+describe("QuickJSWASMModule", () => {
+  const variants = [
+    { name: "getQuickJS", loader: getQuickJS },
+    { name: "RELEASE_SYNC", loader: () => newQuickJSWASMModule(RELEASE_SYNC) },
+    { name: "DEBUG_SYNC", loader: () => newQuickJSWASMModule(DEBUG_SYNC) },
+    { name: "DEBUG_ASYNC", loader: () => newQuickJSAsyncWASMModule(DEBUG_ASYNC) },
+    { name: "RELEASE_ASYNC", loader: () => newQuickJSAsyncWASMModule(RELEASE_ASYNC) },
+  ]
+
+  for (const variant of variants) {
+    moduleTests(variant)
+  }
+})
+
+function moduleTests(args: { name: string; loader: () => Promise<QuickJSWASMModule> }) {
+  const { name, loader } = args
+  describe(`variant ${name}`, () => {
+    let instance: QuickJSWASMModule
+    beforeEach(async () => {
+      instance = await loader()
+    })
+
+    it(".getWasmMemory returns a memory", () => {
+      const memory = instance.getWasmMemory()
+      expect(memory).toBeInstanceOf(WebAssembly.Memory)
+    })
   })
 }
 

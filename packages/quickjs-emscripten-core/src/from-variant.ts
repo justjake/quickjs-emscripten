@@ -123,6 +123,8 @@ export interface CustomizeVariantOptions {
   wasmBinary?: OrLoader<ArrayBuffer>
   /** If given, Emscripten will instantiate the WebAssembly.Instance from this existing WebAssembly.Module */
   wasmModule?: OrLoader<WebAssembly.Module>
+  /** If given, use the Memory when instantiating the WebAssembly.Instance. */
+  wasmMemory?: OrLoader<WebAssembly.Memory>
   /** If given, Emscripten will try to load the source map for the WebAssembly module from this location (path or URI) as appropriate for the current platform. */
   wasmSourceMapLocation?: string
   /** If given, we will provide the source map to Emscripten directly. This may only be respected if wasmModule is also provided. */
@@ -222,6 +224,10 @@ export function newVariant<T extends QuickJSVariant>(
 
         if (options.wasmBinary) {
           moduleLoaderArg.wasmBinary = await force(options.wasmBinary)
+        }
+
+        if (options.wasmMemory) {
+          moduleLoaderArg.wasmMemory = await force(options.wasmMemory)
         }
 
         const optionsWasmModule = options.wasmModule

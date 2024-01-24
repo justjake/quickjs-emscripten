@@ -77,6 +77,7 @@ Variant-specific Emscripten build flags:
   "--pre-js $(TEMPLATES)/pre-extension.js",
   "--pre-js $(TEMPLATES)/pre-sourceMapJson.js",
   "--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js",
+  "--pre-js $(TEMPLATES)/pre-wasmMemory.js",
   "-DQTS_SANITIZE_LEAK",
   "-fsanitize=leak",
   "-g2"
