@@ -53,7 +53,9 @@ export abstract class UsingDisposable implements Disposable {
 const SymbolDispose = Symbol.dispose ?? Symbol.for("Symbol.dispose")
 const prototypeAsAny = UsingDisposable.prototype as any
 if (!prototypeAsAny[SymbolDispose]) {
-  prototypeAsAny[SymbolDispose] = function () { return this.dispose() }
+  prototypeAsAny[SymbolDispose] = function () {
+    return this.dispose()
+  }
 }
 
 /**

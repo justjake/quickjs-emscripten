@@ -30,6 +30,7 @@ import {
   DefaultIntrinsics,
   RELEASE_SYNC,
   RELEASE_ASYNC,
+  newVariant,
 } from "."
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
@@ -1180,6 +1181,21 @@ describe("QuickJSWASMModule", () => {
   for (const variant of variants) {
     moduleTests(variant)
   }
+
+  describe("newVariant", () => {
+    it("uses the provided WebAssembly.Memory", async () => {
+      const wasmMemory = new WebAssembly.Memory({
+        initial: 16777216 / 65536,
+        maximum: 2147483648 / 65536,
+      })
+      const variant = newVariant(RELEASE_SYNC, {
+        wasmMemory,
+      })
+      const mod = await newQuickJSWASMModule(variant)
+
+      expect(mod.getWasmMemory()).toBe(wasmMemory)
+    })
+  })
 })
 
 function moduleTests(args: { name: string; loader: () => Promise<QuickJSWASMModule> }) {
