@@ -27,6 +27,7 @@ freed all the memory you've ever allocated.
   - [assertNoMemoryAllocated()](TestQuickJSWASMModule.md#assertnomemoryallocated)
   - [disposeAll()](TestQuickJSWASMModule.md#disposeall)
   - [evalCode()](TestQuickJSWASMModule.md#evalcode)
+  - [getWasmMemory()](TestQuickJSWASMModule.md#getwasmmemory)
   - [newContext()](TestQuickJSWASMModule.md#newcontext)
   - [newRuntime()](TestQuickJSWASMModule.md#newruntime)
 
@@ -50,7 +51,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1571
+packages/quickjs-emscripten-core/dist/index.d.ts:1583
 
 ## Properties
 
@@ -60,7 +61,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1571
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1569
+packages/quickjs-emscripten-core/dist/index.d.ts:1581
 
 ***
 
@@ -70,7 +71,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1569
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1570
+packages/quickjs-emscripten-core/dist/index.d.ts:1582
 
 ## Methods
 
@@ -84,7 +85,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1570
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1576
+packages/quickjs-emscripten-core/dist/index.d.ts:1588
 
 ***
 
@@ -98,7 +99,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1576
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1575
+packages/quickjs-emscripten-core/dist/index.d.ts:1587
 
 ***
 
@@ -122,7 +123,25 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1575
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1574
+packages/quickjs-emscripten-core/dist/index.d.ts:1586
+
+***
+
+### getWasmMemory()
+
+> **getWasmMemory**(): `Memory`
+
+#### Returns
+
+`Memory`
+
+#### Implementation of
+
+`Pick.getWasmMemory`
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:1589
 
 ***
 
@@ -144,7 +163,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1574
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1573
+packages/quickjs-emscripten-core/dist/index.d.ts:1585
 
 ***
 
@@ -166,7 +185,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1573
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1572
+packages/quickjs-emscripten-core/dist/index.d.ts:1584
 
 ***
 

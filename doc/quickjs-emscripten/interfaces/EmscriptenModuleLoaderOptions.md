@@ -15,6 +15,7 @@ See [the Emscripten Module API reference](https://emscripten.org/docs/api_refere
 - [Extended By](EmscriptenModuleLoaderOptions.md#extended-by)
 - [Properties](EmscriptenModuleLoaderOptions.md#properties)
   - [wasmBinary?](EmscriptenModuleLoaderOptions.md#wasmbinary)
+  - [wasmMemory?](EmscriptenModuleLoaderOptions.md#wasmmemory)
 - [Methods](EmscriptenModuleLoaderOptions.md#methods)
   - [instantiateWasm()?](EmscriptenModuleLoaderOptions.md#instantiatewasm)
   - [locateFile()?](EmscriptenModuleLoaderOptions.md#locatefile)
@@ -34,7 +35,19 @@ Compile this to WebAssembly.Module
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:208
+packages/quickjs-ffi-types/dist/index.d.ts:209
+
+***
+
+### wasmMemory?
+
+> **wasmMemory**?: `Memory`
+
+If provided, use this WebAssembly.Memory instead of an automatically created one.
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:211
 
 ## Methods
 
@@ -56,7 +69,7 @@ Create an instance of the WASM module, call onSuccess(instance), then return ins
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:210
+packages/quickjs-ffi-types/dist/index.d.ts:213
 
 ***
 
@@ -96,7 +109,7 @@ Often `''` (empty string)
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:204
+packages/quickjs-ffi-types/dist/index.d.ts:205
 
 ***
 
@@ -116,7 +129,7 @@ Called by emscripten as dependencies blocking initialization are added or fulfil
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:212
+packages/quickjs-ffi-types/dist/index.d.ts:215
 
 ***
 

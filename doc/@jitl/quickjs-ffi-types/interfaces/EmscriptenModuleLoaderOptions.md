@@ -15,6 +15,7 @@ See [the Emscripten Module API reference](https://emscripten.org/docs/api_refere
 - [Extended By](EmscriptenModuleLoaderOptions.md#extended-by)
 - [Properties](EmscriptenModuleLoaderOptions.md#properties)
   - [wasmBinary?](EmscriptenModuleLoaderOptions.md#wasmbinary)
+  - [wasmMemory?](EmscriptenModuleLoaderOptions.md#wasmmemory)
 - [Methods](EmscriptenModuleLoaderOptions.md#methods)
   - [instantiateWasm()?](EmscriptenModuleLoaderOptions.md#instantiatewasm)
   - [locateFile()?](EmscriptenModuleLoaderOptions.md#locatefile)
@@ -34,7 +35,19 @@ Compile this to WebAssembly.Module
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:103](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L103)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:104](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L104)
+
+***
+
+### wasmMemory?
+
+> **wasmMemory**?: `Memory`
+
+If provided, use this WebAssembly.Memory instead of an automatically created one.
+
+#### Source
+
+[packages/quickjs-ffi-types/src/emscripten-types.ts:107](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L107)
 
 ## Methods
 
@@ -56,7 +69,7 @@ Create an instance of the WASM module, call onSuccess(instance), then return ins
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:106](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L106)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:110](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L110)
 
 ***
 
@@ -96,7 +109,7 @@ Often `''` (empty string)
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:96](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L96)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:97](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L97)
 
 ***
 
@@ -116,7 +129,7 @@ Called by emscripten as dependencies blocking initialization are added or fulfil
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:112](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L112)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:116](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L116)
 
 ***
 

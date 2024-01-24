@@ -27,6 +27,7 @@ QuickJS.
   - [callbacks](QuickJSAsyncEmscriptenModule.md#callbacks)
   - [type](QuickJSAsyncEmscriptenModule.md#type)
   - [wasmBinary?](QuickJSAsyncEmscriptenModule.md#wasmbinary)
+  - [wasmMemory?](QuickJSAsyncEmscriptenModule.md#wasmmemory)
 - [Methods](QuickJSAsyncEmscriptenModule.md#methods)
   - [UTF8ToString()](QuickJSAsyncEmscriptenModule.md#utf8tostring)
   - [\_free()](QuickJSAsyncEmscriptenModule.md#free)
@@ -54,7 +55,7 @@ QuickJS.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:249
+packages/quickjs-ffi-types/dist/index.d.ts:252
 
 ***
 
@@ -68,7 +69,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:249
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:240
+packages/quickjs-ffi-types/dist/index.d.ts:243
 
 ***
 
@@ -82,7 +83,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:240
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:241
+packages/quickjs-ffi-types/dist/index.d.ts:244
 
 ***
 
@@ -96,7 +97,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:241
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:239
+packages/quickjs-ffi-types/dist/index.d.ts:242
 
 ***
 
@@ -110,7 +111,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:239
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:245
+packages/quickjs-ffi-types/dist/index.d.ts:248
 
 ***
 
@@ -124,7 +125,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:245
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:246
+packages/quickjs-ffi-types/dist/index.d.ts:249
 
 ***
 
@@ -138,7 +139,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:246
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:243
+packages/quickjs-ffi-types/dist/index.d.ts:246
 
 ***
 
@@ -152,7 +153,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:243
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:244
+packages/quickjs-ffi-types/dist/index.d.ts:247
 
 ***
 
@@ -166,7 +167,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:244
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:242
+packages/quickjs-ffi-types/dist/index.d.ts:245
 
 ***
 
@@ -180,7 +181,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:242
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:248
+packages/quickjs-ffi-types/dist/index.d.ts:251
 
 ***
 
@@ -194,7 +195,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:248
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:247
+packages/quickjs-ffi-types/dist/index.d.ts:250
 
 ***
 
@@ -204,7 +205,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:247
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:290
+packages/quickjs-ffi-types/dist/index.d.ts:293
 
 ***
 
@@ -218,7 +219,7 @@ Implement this field
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:289
+packages/quickjs-ffi-types/dist/index.d.ts:292
 
 ***
 
@@ -234,7 +235,23 @@ Compile this to WebAssembly.Module
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:208
+packages/quickjs-ffi-types/dist/index.d.ts:209
+
+***
+
+### wasmMemory?
+
+> **wasmMemory**?: `Memory`
+
+If provided, use this WebAssembly.Memory instead of an automatically created one.
+
+#### Inherited from
+
+[`quickjs-emscripten-core.EmscriptenModule.wasmMemory`](EmscriptenModule.md#wasmmemory)
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:211
 
 ## Methods
 
@@ -261,7 +278,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:234
+packages/quickjs-ffi-types/dist/index.d.ts:237
 
 ***
 
@@ -283,7 +300,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:234
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:237
+packages/quickjs-ffi-types/dist/index.d.ts:240
 
 ***
 
@@ -305,7 +322,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:237
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:236
+packages/quickjs-ffi-types/dist/index.d.ts:239
 
 ***
 
@@ -342,7 +359,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:236
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:238
+packages/quickjs-ffi-types/dist/index.d.ts:241
 
 ***
 
@@ -368,7 +385,7 @@ Create an instance of the WASM module, call onSuccess(instance), then return ins
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:210
+packages/quickjs-ffi-types/dist/index.d.ts:213
 
 ***
 
@@ -390,7 +407,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:210
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:235
+packages/quickjs-ffi-types/dist/index.d.ts:238
 
 ***
 
@@ -434,7 +451,7 @@ Often `''` (empty string)
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:204
+packages/quickjs-ffi-types/dist/index.d.ts:205
 
 ***
 
@@ -458,7 +475,7 @@ Called by emscripten as dependencies blocking initialization are added or fulfil
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:212
+packages/quickjs-ffi-types/dist/index.d.ts:215
 
 ***
 
@@ -487,7 +504,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#stringToUTF8
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:229
+packages/quickjs-ffi-types/dist/index.d.ts:232
 
 ***
 

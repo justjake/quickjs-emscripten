@@ -14,6 +14,7 @@
   - [log?](CustomizeVariantOptions.md#log)
   - [wasmBinary?](CustomizeVariantOptions.md#wasmbinary)
   - [wasmLocation?](CustomizeVariantOptions.md#wasmlocation)
+  - [wasmMemory?](CustomizeVariantOptions.md#wasmmemory)
   - [wasmModule?](CustomizeVariantOptions.md#wasmmodule)
   - [wasmSourceMapData?](CustomizeVariantOptions.md#wasmsourcemapdata)
   - [wasmSourceMapLocation?](CustomizeVariantOptions.md#wasmsourcemaplocation)
@@ -28,7 +29,7 @@ The enumerable properties of this object will be passed verbatim, although they 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1483
+packages/quickjs-emscripten-core/dist/index.d.ts:1495
 
 ***
 
@@ -68,7 +69,7 @@ Often `''` (empty string)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1481
+packages/quickjs-emscripten-core/dist/index.d.ts:1493
 
 ***
 
@@ -100,7 +101,7 @@ Debug logger
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1485
+packages/quickjs-emscripten-core/dist/index.d.ts:1497
 
 ***
 
@@ -112,7 +113,7 @@ If given, Emscripten will compile the WebAssembly.Module from these bytes.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1455
+packages/quickjs-emscripten-core/dist/index.d.ts:1465
 
 ***
 
@@ -124,7 +125,19 @@ If given, Emscripten will try to load the WebAssembly module data from this loca
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1453
+packages/quickjs-emscripten-core/dist/index.d.ts:1463
+
+***
+
+### wasmMemory?
+
+> **wasmMemory**?: [`OrLoader`](../exports.md#orloadert)\<`Memory`\>
+
+If given, use the Memory when instantiating the WebAssembly.Instance.
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:1469
 
 ***
 
@@ -136,7 +149,7 @@ If given, Emscripten will instantiate the WebAssembly.Instance from this existin
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1457
+packages/quickjs-emscripten-core/dist/index.d.ts:1467
 
 ***
 
@@ -148,7 +161,7 @@ If given, we will provide the source map to Emscripten directly. This may only b
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1461
+packages/quickjs-emscripten-core/dist/index.d.ts:1473
 
 ***
 
@@ -160,7 +173,7 @@ If given, Emscripten will try to load the source map for the WebAssembly module 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1459
+packages/quickjs-emscripten-core/dist/index.d.ts:1471
 
 ***
 
