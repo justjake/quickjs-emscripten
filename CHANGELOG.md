@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.27.0
+
+- [#147] Support providing and retrieving WebAssembly.Memory
+  - Fixes #146 by adding `wasmMemory: WebAssembly.Memory` option for `newVariant`, and `mod.getWasmMemory()` method for `QuickJS[Async]WASMModule`.
+  - Fixes #138 by
+    - removing internal use of `using` statement.
+    - Use ESBuild `Symbol.for('Symbol.dispose')` if `Symbol.dispose` isn't defined globally.
+
 ## v0.26.0
 
 - [#136](https://github.com/justjake/quickjs-emscripten/pull/136), [#116](https://github.com/justjake/quickjs-emscripten/pull/116) (thanks to @GrantMatejka) Expose ability to configure Context's intrinsic objects.
