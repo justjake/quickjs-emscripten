@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, toRaw } from "vue"
 import { load } from "../quickjs"
 import type { QuickJSAsyncContext, QuickJSContext } from "quickjs-emscripten-core"
 
 const vms = ref<Array<QuickJSContext | QuickJSAsyncContext>>([])
 load().then((deps) => {
   vms.value = [
-    deps.QuickJSAsync.newContext(),
-    deps.QuickJSDefault.newContext(),
-    deps.QuickJSFromVariant.newContext(),
+    deps.newContext()
   ]
 })
 
 const code = ref("1 + 2")
 
 function evaluate() {
-  return vms.value.map((vm) => {
+  return vms.value.map((vmRef) => {
+    const vm = toRaw(vmRef)
     const result = vm.evalCode(code.value)
     if (result.error) {
       return result.error.consume(vm.dump)
@@ -32,7 +31,6 @@ function evaluate() {
 
     <div><label for="code">Code:</label></div>
     <textarea v-model="code" id="code"></textarea>
-    <Eval vm="{vm}"></Eval>
     <pre class="result">Results: {{ evaluate() }}</pre>
   </div>
 </template>

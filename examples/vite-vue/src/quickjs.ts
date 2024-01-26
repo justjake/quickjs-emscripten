@@ -1,13 +1,12 @@
-import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
-import { getQuickJS, RELEASE_SYNC, newAsyncRuntime } from "quickjs-emscripten"
+import { newQuickJSWASMModuleFromVariant, newVariant, RELEASE_SYNC } from "quickjs-emscripten"
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error - ?url returns a URL resolving to the given asset.
+import wasmLocation from "@jitl/quickjs-wasmfile-release-sync/wasm?url"
+
+const variant = newVariant(RELEASE_SYNC, {
+  wasmLocation,
+})
 
 export async function load() {
-  const QuickJSFromVariant = await newQuickJSWASMModuleFromVariant(RELEASE_SYNC)
-  const QuickJSDefault = await getQuickJS()
-  const QuickJSAsync = await newAsyncRuntime()
-  return {
-    QuickJSFromVariant,
-    QuickJSDefault,
-    QuickJSAsync,
-  } as const
+  return await newQuickJSWASMModuleFromVariant(variant)
 }
