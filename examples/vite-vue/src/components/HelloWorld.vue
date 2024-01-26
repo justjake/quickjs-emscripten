@@ -5,9 +5,7 @@ import type { QuickJSAsyncContext, QuickJSContext } from "quickjs-emscripten-cor
 
 const vms = ref<Array<QuickJSContext | QuickJSAsyncContext>>([])
 load().then((deps) => {
-  vms.value = [
-    deps.newContext()
-  ]
+  vms.value = [deps.newContext()]
 })
 
 const code = ref("1 + 2")
