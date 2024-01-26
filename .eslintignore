@@ -5,6 +5,7 @@ doc
 json-generator-dot-com-1024-rows.json
 dist
 examples/imports
+examples/create-react-app
 examples/node-typescript/*.js
 build
 emsdk-cache
