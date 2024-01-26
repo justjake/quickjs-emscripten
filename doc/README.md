@@ -287,9 +287,10 @@ Generally working with `Scope` leads to more straight-forward code, but
 
 ### Exposing APIs
 
-To add APIs inside the QuickJS environment, you'll need to create objects to
-define the shape of your API, and add properties and functions to those objects
+To add APIs inside the QuickJS environment, you'll need to [create objects][newObject] to
+define the shape of your API, and [add properties][setProp] and [functions][newFunction] to those objects
 to allow code inside QuickJS to call code on the host.
+The [newFunction][] documentation covers writing functions in detail.
 
 By default, no host functionality is exposed to code running inside QuickJS.
 
@@ -309,6 +310,10 @@ logHandle.dispose()
 
 vm.unwrapResult(vm.evalCode(`console.log("Hello from QuickJS!")`)).dispose()
 ```
+
+[newObject]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSContext.md#newobject
+[newFunction]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSContext.md#newfunction
+[setProp]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSContext.md#setprop
 
 #### Promises
 
