@@ -31,6 +31,7 @@ import {
   RELEASE_SYNC,
   RELEASE_ASYNC,
   newVariant,
+  shouldInterruptAfterDeadline,
 } from "."
 
 const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
@@ -639,6 +640,27 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       } else {
         result.value.dispose()
         assert.fail("Should have returned an interrupt error")
+      }
+    })
+
+    it("shouldInterruptAfterDeadline: interrupts", () => {
+      const deadline = Date.now() + 100
+      vm.runtime.setInterruptHandler(shouldInterruptAfterDeadline(deadline))
+
+      const result = vm.evalCode("i = 0; while (1) { i++ }")
+      try {
+        const interruptedAfterIterations = vm.getProp(vm.global, "i").consume(vm.dump)
+        assert(interruptedAfterIterations > 0, "Allowed at least 1 iteration")
+
+        if (result.error) {
+          const errorJson = vm.dump(result.error)
+          assert.equal(errorJson.name, "InternalError")
+          assert.equal(errorJson.message, "interrupted")
+        } else {
+          assert.fail("Should have returned an interrupt error")
+        }
+      } finally {
+        result.error ? result.error.dispose() : result.value.dispose()
       }
     })
   })
