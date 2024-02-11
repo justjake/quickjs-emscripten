@@ -21,6 +21,7 @@
     "vendor:ng:subtree": "git subtree $ACTION --prefix=vendor/quickjs-ng --squash git@github.com:quickjs-ng/quickjs.git master",
     "vendor:ng:pull": "ACTION=pull yarn vendor:ng:subtree",
     "vendor:ng:add": "ACTION=add yarn vendor:ng:subtree",
+    "vendor:update": "yarn vendor:quickjs:pull && yarn vendor:ng:pull",
     "smoketest-node": "yarn tarball && ./scripts/smoketest-node-minimal.ts && ./scripts/smoketest-node.ts",
     "smoketest-cra": "yarn tarball && ./scripts/smoketest-create-react-app.ts",
     "smoketest-vite": "yarn tarball && ./scripts/smoketest-vite.ts",
