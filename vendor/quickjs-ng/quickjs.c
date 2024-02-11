@@ -1726,6 +1726,8 @@ static const JSMallocFunctions def_malloc_funcs = {
     malloc_size,
 #elif defined(_WIN32)
     (size_t (*)(const void *))_msize,
+#elif defined(__ANDROID__)
+    (size_t (*)(const void *))dlmalloc_usable_size,
 #elif defined(__linux__) || defined (__CYGWIN__)
     (size_t (*)(const void *))malloc_usable_size,
 #else
@@ -5561,7 +5563,7 @@ static void mark_children(JSRuntime *rt, JSGCObjectHeader *gp,
         {
             JSShape **shape, *(*shapes)[IC_CACHE_ITEM_CAPACITY];
             JSFunctionBytecode *b = (JSFunctionBytecode *)gp;
-            int i, j;
+            int i;
             for(i = 0; i < b->cpool_count; i++) {
                 JS_MarkValue(rt, b->cpool[i], mark_func);
             }
@@ -5571,7 +5573,7 @@ static void mark_children(JSRuntime *rt, JSGCObjectHeader *gp,
                 for (i = 0; i < b->ic->count; i++) {
                     shapes = &b->ic->cache[i].shape;
                     for (shape = *shapes; shape != endof(*shapes); shape++)
-                        if (*shape) 
+                        if (*shape)
                             mark_func(rt, &(*shape)->header);
                 }
             }
@@ -5839,7 +5841,7 @@ void JS_ComputeMemoryUsage(JSRuntime *rt, JSMemoryUsage *s)
     s->malloc_limit = rt->malloc_state.malloc_limit;
 
     s->memory_used_count = 2; /* rt + rt->class_array */
-    s->memory_used_size = sizeof(JSRuntime) + sizeof(JSValue) * rt->class_count;
+    s->memory_used_size = sizeof(JSRuntime) + sizeof(JSClass) * rt->class_count;
 
     list_for_each(el, &rt->context_list) {
         JSContext *ctx = list_entry(el, JSContext, link);
@@ -7217,8 +7219,8 @@ JSValue JS_GetPropertyInternal(JSContext *ctx, JSValue obj,
 
 static JSValue JS_GetPropertyInternalWithIC(JSContext *ctx, JSValue obj,
                                             JSAtom prop, JSValue this_obj,
-                                            JSInlineCache *ic, int32_t offset, 
-                                            BOOL throw_ref_error) 
+                                            JSInlineCache *ic, int32_t offset,
+                                            BOOL throw_ref_error)
 {
     uint32_t tag;
     JSObject *p;
@@ -7230,7 +7232,7 @@ static JSValue JS_GetPropertyInternalWithIC(JSContext *ctx, JSValue obj,
     if (likely(offset >= 0))
         return js_dup(p->prop[offset].u.value);
 slow_path:
-    return JS_GetPropertyInternal2(ctx, obj, prop, this_obj, ic, throw_ref_error);      
+    return JS_GetPropertyInternal2(ctx, obj, prop, this_obj, ic, throw_ref_error);
 }
 
 static JSValue JS_ThrowTypeErrorPrivateNotFound(JSContext *ctx, JSAtom atom)
@@ -8673,7 +8675,7 @@ static int JS_SetPropertyValue(JSContext *ctx, JSValue this_obj,
             break;
         case JS_CLASS_UINT8C_ARRAY:
             if (JS_ToUint8ClampFree(ctx, &v, val))
-                return -1;
+                goto ta_cvt_fail;
             /* Note: the conversion can detach the typed array, so the
                array bound check must be done after */
             if (unlikely(idx >= (uint32_t)p->u.array.count))
@@ -8683,7 +8685,7 @@ static int JS_SetPropertyValue(JSContext *ctx, JSValue this_obj,
         case JS_CLASS_INT8_ARRAY:
         case JS_CLASS_UINT8_ARRAY:
             if (JS_ToInt32Free(ctx, &v, val))
-                return -1;
+                goto ta_cvt_fail;
             if (unlikely(idx >= (uint32_t)p->u.array.count))
                 goto ta_out_of_bound;
             p->u.array.u.uint8_ptr[idx] = v;
@@ -8691,7 +8693,7 @@ static int JS_SetPropertyValue(JSContext *ctx, JSValue this_obj,
         case JS_CLASS_INT16_ARRAY:
         case JS_CLASS_UINT16_ARRAY:
             if (JS_ToInt32Free(ctx, &v, val))
-                return -1;
+                goto ta_cvt_fail;
             if (unlikely(idx >= (uint32_t)p->u.array.count))
                 goto ta_out_of_bound;
             p->u.array.u.uint16_ptr[idx] = v;
@@ -8699,7 +8701,7 @@ static int JS_SetPropertyValue(JSContext *ctx, JSValue this_obj,
         case JS_CLASS_INT32_ARRAY:
         case JS_CLASS_UINT32_ARRAY:
             if (JS_ToInt32Free(ctx, &v, val))
-                return -1;
+                goto ta_cvt_fail;
             if (unlikely(idx >= (uint32_t)p->u.array.count))
                 goto ta_out_of_bound;
             p->u.array.u.uint32_ptr[idx] = v;
@@ -8710,7 +8712,7 @@ static int JS_SetPropertyValue(JSContext *ctx, JSValue this_obj,
             {
                 int64_t v;
                 if (JS_ToBigInt64Free(ctx, &v, val))
-                    return -1;
+                    goto ta_cvt_fail;
                 if (unlikely(idx >= (uint32_t)p->u.array.count))
                     goto ta_out_of_bound;
                 p->u.array.u.uint64_ptr[idx] = v;
@@ -8718,14 +8720,20 @@ static int JS_SetPropertyValue(JSContext *ctx, JSValue this_obj,
             break;
         case JS_CLASS_FLOAT32_ARRAY:
             if (JS_ToFloat64Free(ctx, &d, val))
-                return -1;
+                goto ta_cvt_fail;
             if (unlikely(idx >= (uint32_t)p->u.array.count))
                 goto ta_out_of_bound;
             p->u.array.u.float_ptr[idx] = d;
             break;
         case JS_CLASS_FLOAT64_ARRAY:
-            if (JS_ToFloat64Free(ctx, &d, val))
+            if (JS_ToFloat64Free(ctx, &d, val)) {
+            ta_cvt_fail:
+                if (flags & JS_PROP_REFLECT_DEFINE_PROPERTY) {
+                    JS_FreeValue(ctx, JS_GetException(ctx));
+                    return FALSE;
+                }
                 return -1;
+            }
             if (unlikely(idx >= (uint32_t)p->u.array.count)) {
             ta_out_of_bound:
                 if (typed_array_is_detached(ctx, p))
@@ -10147,7 +10155,7 @@ static JSValue js_atof2(JSContext *ctx, const char *str, const char **pp,
         if (!(flags & ATOD_INT_ONLY) &&
             atod_type == ATOD_TYPE_FLOAT64 &&
             strstart(p, "Infinity", &p)) {
-            double d = 1.0 / 0.0;
+            double d = INF;
             if (is_neg)
                 d = -d;
             val = js_float64(d);
@@ -13381,8 +13389,14 @@ static __exception int js_for_in_next(JSContext *ctx, JSValue *sp)
             if (prop == JS_ATOM_NULL || !(prs->flags & JS_PROP_ENUMERABLE))
                 continue;
         }
-        /* check if the property was deleted */
-        ret = JS_HasProperty(ctx, it->obj, prop);
+        // check if the property was deleted unless we're dealing with a proxy
+        JSValue obj = it->obj;
+        if (JS_VALUE_GET_TAG(obj) == JS_TAG_OBJECT) {
+            JSObject *p = JS_VALUE_GET_OBJ(obj);
+            if (p->class_id == JS_CLASS_PROXY)
+                break;
+        }
+        ret = JS_HasProperty(ctx, obj, prop);
         if (ret < 0)
             return ret;
         if (ret)
@@ -15706,7 +15720,7 @@ static JSValue JS_CallInternal(JSContext *caller_ctx, JSValue func_obj,
             }
             BREAK;
 
-        CASE(OP_get_field_ic): 
+        CASE(OP_get_field_ic):
             {
                 JSValue val;
                 JSAtom atom;
@@ -15789,7 +15803,7 @@ static JSValue JS_CallInternal(JSContext *caller_ctx, JSValue func_obj,
                 atom = get_ic_atom(ic, ic_offset);
                 pc += 4;
                 ret = JS_SetPropertyInternalWithIC(ctx, sp[-2], atom, sp[-1], JS_PROP_THROW_STRICT, ic, ic_offset);
-                ic->updated = FALSE;                
+                ic->updated = FALSE;
                 JS_FreeValue(ctx, sp[-2]);
                 sp -= 2;
                 if (unlikely(ret < 0))
@@ -22070,6 +22084,8 @@ static int js_parse_destructuring_element(JSParseState *s, int tok, int is_arg,
     int opcode, scope, tok1, skip_bits;
     BOOL has_initializer;
 
+    label_lvalue = -1;
+
     if (has_ellipsis < 0) {
         /* pre-parse destructuration target for spread detection */
         js_parse_skip_parens_token(s, &skip_bits, FALSE);
@@ -23702,9 +23718,38 @@ static __exception int js_parse_assign_expr2(JSParseState *s, int parse_flags)
         if (get_lvalue(s, &opcode, &scope, &name, &label, NULL, (op != '='), op) < 0)
             return -1;
 
+        // comply with rather obtuse evaluation order of computed properties:
+        // obj[key]=val evaluates val->obj->key when obj is null/undefined
+        // but key->obj->val when an object
+        // FIXME(bnoordhuis) less stack shuffling; don't to_propkey twice in
+        // happy path; replace `dup is_undefined_or_null if_true` with new
+        // opcode if_undefined_or_null? replace `swap dup` with over?
+        if (op == '=' && opcode == OP_get_array_el) {
+            int label_next = -1;
+            JSFunctionDef *fd = s->cur_func;
+            assert(OP_to_propkey2 == fd->byte_code.buf[fd->last_opcode_pos]);
+            fd->byte_code.size = fd->last_opcode_pos;
+            fd->last_opcode_pos = -1;
+            emit_op(s, OP_swap); // obj key -> key obj
+            emit_op(s, OP_dup);
+            emit_op(s, OP_is_undefined_or_null);
+            label_next = emit_goto(s, OP_if_true, -1);
+            emit_op(s, OP_swap);
+            emit_op(s, OP_to_propkey);
+            emit_op(s, OP_swap);
+            emit_label(s, label_next);
+            emit_op(s, OP_swap);
+        }
+
         if (js_parse_assign_expr2(s, parse_flags)) {
             JS_FreeAtom(s->ctx, name);
             return -1;
+        }
+
+        if (op == '=' && opcode == OP_get_array_el) {
+            emit_op(s, OP_swap); // obj key val -> obj val key
+            emit_op(s, OP_to_propkey);
+            emit_op(s, OP_swap);
         }
 
         if (op == '=') {
@@ -25232,7 +25277,7 @@ static int add_req_module_entry(JSContext *ctx, JSModuleDef *m,
     return i;
 }
 
-static JSExportEntry *find_export_entry(JSContext *ctx, JSModuleDef *m,
+static JSExportEntry *find_export_entry(JSContext *ctx, const JSModuleDef *m,
                                         JSAtom export_name)
 {
     JSExportEntry *me;
@@ -34351,6 +34396,37 @@ int JS_SetModuleExportList(JSContext *ctx, JSModuleDef *m,
     return 0;
 }
 
+JSValue JS_GetModuleExport(JSContext *ctx, const JSModuleDef *m, const char *export_name) {
+    JSExportEntry *me;
+    JSAtom name;
+    name = JS_NewAtom(ctx, export_name);
+    if (name == JS_ATOM_NULL)
+        goto fail;
+    me = find_export_entry(ctx, m, name);
+    JS_FreeAtom(ctx, name);
+    if (!me)
+        goto fail;
+    return JS_DupValue(ctx, me->u.local.var_ref->value);
+ fail:
+    return JS_UNDEFINED;
+}
+
+int JS_CountModuleExport(JSContext *ctx, const JSModuleDef *m) {
+    return m->export_entries_count;
+}
+
+JSAtom JS_GetModuleExportName(JSContext *ctx, const JSModuleDef *m, int idx) {
+    if (idx >= m->export_entries_count || idx < 0)
+        return JS_ATOM_NULL;
+    return JS_DupAtom(ctx, m->export_entries[idx].export_name);
+}
+
+JSValue JS_GetModuleExportValue(JSContext *ctx, const JSModuleDef *m, int idx) {
+    if (idx >= m->export_entries_count || idx < 0)
+        return JS_UNDEFINED;
+    return JS_DupValue(ctx, m->export_entries[idx].u.local.var_ref->value);
+}
+
 /* Note: 'func_obj' is not necessarily a constructor */
 static void JS_SetConstructor2(JSContext *ctx,
                                JSValue func_obj,
@@ -34718,9 +34794,9 @@ static JSValue js_object_defineProperty(JSContext *ctx, JSValue this_val,
     atom = JS_ValueToAtom(ctx, prop);
     if (unlikely(atom == JS_ATOM_NULL))
         return JS_EXCEPTION;
-    flags = 0;
-    if (!magic)
-        flags = JS_PROP_THROW | JS_PROP_DEFINE_PROPERTY;
+    flags = JS_PROP_THROW | JS_PROP_DEFINE_PROPERTY;
+    if (magic)
+        flags = JS_PROP_REFLECT_DEFINE_PROPERTY;
     ret = JS_DefinePropertyDesc(ctx, obj, atom, desc, flags);
     JS_FreeAtom(ctx, atom);
     if (ret < 0) {
@@ -36198,7 +36274,7 @@ static const JSCFunctionListEntry js_error_proto_funcs[] = {
 
 static JSValue js_error_get_stackTraceLimit(JSContext *ctx, JSValue this_val)
 {
-    JSValue val, ret;
+    JSValue val;
 
     val = JS_ToObject(ctx, this_val);
     if (JS_IsException(val))
@@ -36220,7 +36296,7 @@ static JSValue js_error_set_stackTraceLimit(JSContext *ctx, JSValue this_val, JS
 
 static JSValue js_error_get_prepareStackTrace(JSContext *ctx, JSValue this_val)
 {
-    JSValue val, ret;
+    JSValue val;
 
     val = JS_ToObject(ctx, this_val);
     if (JS_IsException(val))
@@ -40429,7 +40505,7 @@ static JSValue js_math_min_max(JSContext *ctx, JSValue this_val,
     uint32_t tag;
 
     if (unlikely(argc == 0)) {
-        return __JS_NewFloat64(is_max ? -1.0 / 0.0 : 1.0 / 0.0);
+        return __JS_NewFloat64(is_max ? NEG_INF : INF);
     }
 
     tag = JS_VALUE_GET_TAG(argv[0]);
@@ -48752,7 +48828,7 @@ static JSValue js_typed_array_at(JSContext *ctx, JSValue this_val,
 static JSValue js_typed_array_with(JSContext *ctx, JSValue this_val,
                                    int argc, JSValue *argv)
 {
-    JSValue arr, val, ret;
+    JSValue arr, val;
     JSObject *p;
     int64_t idx, len;
 
@@ -51633,7 +51709,7 @@ fail:
 
 int free_ic(JSRuntime* rt, JSInlineCache *ic)
 {
-    uint32_t i, j;
+    uint32_t i;
     JSInlineCacheHashSlot *ch, *ch_next;
     JSShape **shape, *(*shapes)[IC_CACHE_ITEM_CAPACITY];
     if (ic->cache) {

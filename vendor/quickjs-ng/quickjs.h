@@ -247,6 +247,7 @@ static inline JS_BOOL JS_VALUE_IS_NAN(JSValue v)
 #define JS_PROP_NO_ADD           (1 << 16) /* internal use */
 #define JS_PROP_NO_EXOTIC        (1 << 17) /* internal use */
 #define JS_PROP_DEFINE_PROPERTY  (1 << 18) /* internal use */
+#define JS_PROP_REFLECT_DEFINE_PROPERTY (1 << 19) /* internal use */
 
 #define JS_DEFAULT_STACK_SIZE (256 * 1024)
 
@@ -965,6 +966,11 @@ JS_EXTERN int JS_SetModuleExport(JSContext *ctx, JSModuleDef *m, const char *exp
                                  JSValue val);
 JS_EXTERN int JS_SetModuleExportList(JSContext *ctx, JSModuleDef *m,
                                      const JSCFunctionListEntry *tab, int len);
+/* can only be called after the module is initialized */
+JS_EXTERN JSValue JS_GetModuleExport(JSContext *ctx, const JSModuleDef *m, const char *export_name);
+JS_EXTERN int JS_CountModuleExport(JSContext *ctx, const JSModuleDef *m);
+JS_EXTERN JSAtom JS_GetModuleExportName(JSContext *ctx, const JSModuleDef *m, int idx);
+JS_EXTERN JSValue JS_GetModuleExportValue(JSContext *ctx, const JSModuleDef *m, int idx);
 
 /* Promise */
 

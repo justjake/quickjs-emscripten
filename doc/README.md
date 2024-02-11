@@ -834,7 +834,7 @@ to build the C code. The Makefile is generated from a template in ./templates/Va
 
 Related NPM scripts:
 
-- `yarn update-quickjs` will sync the ./quickjs folder with a github repo tracking the upstream QuickJS.
+- `yarn vendor:update` updates vendor/quickjs and vendor/quickjs-ng to the latest versions on Github.
 - `yarn build:codegen` updates the ./packages from the template script `./prepareVariants.ts` and Variant.mk.
 - `yarn build:packages` builds the variant packages in parallel.
 

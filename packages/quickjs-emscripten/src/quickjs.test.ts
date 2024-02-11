@@ -34,8 +34,9 @@ import {
   shouldInterruptAfterDeadline,
 } from "."
 
-const TEST_NO_ASYNC = Boolean(process.env.TEST_NO_ASYNC)
-const TEST_NG = Boolean(process.env.TEST_NG ?? true)
+const TEST_NG = !process.env.TEST_NO_NG
+const TEST_DEBUG = !process.env.TEST_NO_DEBUG
+const TEST_ASYNC = !process.env.TEST_NO_ASYNC
 
 type GetTestContext = (options?: ContextOptions) => Promise<QuickJSContext>
 
@@ -907,6 +908,24 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
 function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
   let vm: QuickJSAsyncContext = undefined as any
 
+  function assertModuleEvalResult(actual: QuickJSHandle) {
+    const type = vm.typeof(actual)
+    if (type === "undefined") {
+      // OK: older versions of quickjs return undefined
+      return
+    }
+
+    if (type === "object") {
+      // Newer versions should return a Promise
+      using ctor = vm.getProp(actual, "constructor")
+      const name = vm.getProp(ctor, "name").consume(vm.dump)
+      assert.strictEqual(name, "Promise")
+      return
+    }
+
+    assert.fail(`Expected a Promise or undefined, got ${type} (${vm.dump(actual)})`)
+  }
+
   beforeEach(async () => {
     vm = await getContext()
     assertBuildIsConsistent(vm)
@@ -992,10 +1011,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
         const unwrapped = vm.unwrapResult(result)
         debugLog("unwrapped result")
 
-        const dumped = unwrapped.consume(vm.dump)
-        debugLog("consumed result")
-
-        assert.strictEqual(dumped, undefined)
+        assertModuleEvalResult(unwrapped)
         debugLog("asserted result")
 
         const stuff = vm.getProp(vm.global, "stuff").consume(vm.dump)
@@ -1022,8 +1038,8 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       const result = vm.evalCode("import otherModule from './other-module.js'")
 
       // Asserts that the eval worked without incident
-      const unwrapped = vm.unwrapResult(result).consume(vm.dump)
-      assert.strictEqual(unwrapped, undefined)
+      using unwrapped = vm.unwrapResult(result)
+      assertModuleEvalResult(unwrapped)
 
       assert.strictEqual(callCtx!, vm, "expected VM")
       assert.strictEqual(
@@ -1060,8 +1076,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
 
       // Asserts that the eval worked without incident
       const result = vm.evalCode(`import otherModule from '${IMPORT_PATH}'`, EVAL_FILE_NAME)
-      const unwrapped = vm.unwrapResult(result).consume(vm.dump)
-      assert.strictEqual(unwrapped, undefined)
+      vm.unwrapResult(result).consume(assertModuleEvalResult)
 
       // Check our request
       assert.strictEqual(requestedName, IMPORT_PATH, "requested name is the literal import string")
@@ -1127,11 +1142,13 @@ describe("QuickJSContext", function () {
     contextTests(getContext)
   })
 
-  describe("DEBUG sync module", function () {
-    const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
-    const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
-    contextTests(getContext, true)
-  })
+  if (TEST_DEBUG) {
+    describe("DEBUG sync module", function () {
+      const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
+      const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
+      contextTests(getContext, true)
+    })
+  }
 
   if (TEST_NG) {
     describe("quickjs-ng RELEASE_SYNC", function () {
@@ -1144,7 +1161,7 @@ describe("QuickJSContext", function () {
   }
 })
 
-if (!TEST_NO_ASYNC) {
+if (TEST_ASYNC) {
   describe("QuickJSAsyncContext", () => {
     describe("newQuickJSAsyncWASMModule", function () {
       const loader = memoizePromiseFactory(() => newQuickJSAsyncWASMModule())
