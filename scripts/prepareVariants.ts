@@ -6,6 +6,7 @@
 
 import path from "node:path"
 import fs from "node:fs"
+import child_process from "node:child_process"
 import type { TypeDocOptions } from "typedoc"
 import type { PackageJson } from "./helpers"
 import { writePretty, tryReadJson, repoRoot } from "./helpers"
@@ -486,7 +487,7 @@ and [QuickJSAsyncContext](${DOC_ROOT_URL}/quickjs-emscripten/classes/QuickJSAsyn
 
 const describeLibrary = {
   [CLibrary.QuickJS]: `The original [bellard/quickjs](https://github.com/bellard/quickjs) library.`,
-  [CLibrary.NG]: `[quickjs-ng](https://github.com/quickjs-ng/quickjs) is a newer fork of quickjs with more language features.`,
+  [CLibrary.NG]: `[quickjs-ng](https://github.com/quickjs-ng/quickjs) is a fork of quickjs that tends to add features more quickly.`,
 }
 
 const describeModuleFactory = {
@@ -532,6 +533,9 @@ ${variant.description}
 
 | Variable            |    Setting                     |    Description    |
 | --                  | --                             | --                |
+| library             | ${variant.library}             | ${
+    describeLibrary[variant.library]
+  } Version ${getLibraryVersionLink(variant.library)} |
 | releaseMode         | ${variant.releaseMode}         | ${describeMode[variant.releaseMode]} |
 | syncMode            | ${variant.syncMode}            | ${describeSyncMode[variant.syncMode]} |
 | emscriptenInclusion | ${variant.emscriptenInclusion} | ${inclusion} |
@@ -569,6 +573,8 @@ This variant was built with the following settings:
 ## Library: ${variant.library}
 
 ${describeLibrary[variant.library]}
+
+Version ${getLibraryVersionLink(variant.library)}
 
 ## Release mode: ${variant.releaseMode}
 
@@ -774,4 +780,63 @@ function getTargetPackageSuffix(targetName: string, variant: BuildVariant): stri
     syncMode, // sync
   ].join("-")
   return filename
+}
+
+const CLibrarySubtree: Record<CLibrary, string> = {
+  quickjs: "vendor/quickjs",
+  "quickjs-ng": "vendor/quickjs-ng",
+}
+
+const CLibraryGithubRepo: Record<CLibrary, string> = {
+  quickjs: "bellard/quickjs",
+  "quickjs-ng": "quickjs-ng/quickjs",
+}
+
+function getLibraryVersionLink(library: CLibrary): string {
+  if (getLibraryVersionMemo.has(library)) {
+    return getLibraryVersionMemo.get(library)!
+  }
+
+  const { sha, date } = getGitSubtreeSha(CLibrarySubtree[library])
+  let version = "git"
+  try {
+    version = fs.readFileSync(path.join(CLibrarySubtree[library], "VERSION"), "utf-8").trim()
+  } catch (err) {
+    const error = err as NodeJS.ErrnoException
+    if (error.code === "ENOENT") {
+      // pass
+    } else {
+      throw error
+    }
+  }
+
+  const result = `[${version}+${sha.slice(0, 8)}](https://github.com/${
+    CLibraryGithubRepo[library]
+  }/commit/${sha}) vendored to quickjs-emscripten on ${date}.`
+  getLibraryVersionMemo.set(library, result)
+  return result
+}
+
+const getLibraryVersionMemo = new Map<CLibrary, string>()
+
+function getGitSubtreeSha(subtree: string) {
+  const log = child_process.execFileSync(
+    "git",
+    [
+      "log",
+      `--grep=git-subtree-dir: ${subtree}`,
+      `--grep=git-subtree-split:`,
+      `--date=format:%Y-%m-%d`,
+      "-1",
+    ],
+    {
+      encoding: "utf-8",
+    },
+  )
+  const sha = log.match(/git-subtree-split: ([^\n]+)/)?.[1]
+  const date = log.match(/Date: ([^\n]+)/)?.[1]
+  if (!sha || !date) {
+    throw new Error(`${subtree}: date or git-subtree-split not found in log: \n${log}`)
+  }
+  return { sha: sha.trim(), date: date.trim() }
 }
