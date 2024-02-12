@@ -824,7 +824,8 @@ function getGitSubtreeSha(subtree: string) {
     "git",
     [
       "log",
-      `--grep=git-subtree-dir: ${subtree}`,
+      `--all-match`,
+      `--grep=git-subtree-dir: ${subtree}$`,
       `--grep=git-subtree-split:`,
       `--date=format:%Y-%m-%d`,
       "-1",
