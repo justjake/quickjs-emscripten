@@ -30,7 +30,7 @@ This variant was built with the following settings:
 
 [quickjs-ng](https://github.com/quickjs-ng/quickjs) is a fork of quickjs that tends to add features more quickly.
 
-Version [git+229b07b9](https://github.com/quickjs-ng/quickjs/commit/229b07b9b2c811eaf84db209a1d6f9e2a8a7b0d9) vendored to quickjs-emscripten on 2024-02-11.
+Version [git+7ded62c5](https://github.com/quickjs-ng/quickjs/commit/7ded62c536fca860b8106c39fb75f2df8fe27180) vendored to quickjs-emscripten on 2024-02-12.
 
 ## Release mode: debug
 
