@@ -30,7 +30,7 @@ This variant was built with the following settings:
 
 The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
 
-Version [2024-01-13+229b07b9](https://github.com/bellard/quickjs/commit/229b07b9b2c811eaf84db209a1d6f9e2a8a7b0d9) vendored to quickjs-emscripten on 2024-02-11.
+Version [2024-01-13+626e0d4e](https://github.com/bellard/quickjs/commit/626e0d4e60db2b81a0505fa9c61941e608624e7e) vendored to quickjs-emscripten on 2024-02-11.
 
 ## Release mode: debug
 
