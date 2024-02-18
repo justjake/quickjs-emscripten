@@ -1,5 +1,6 @@
 {
   "name": "@jitl/quickjs-singlefile-mjs-release-asyncify",
+  "license": "MIT",
   "version": "0.28.0",
   "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
   "sideEffects": false,
@@ -20,6 +21,8 @@
     "prepare": "yarn clean && yarn build"
   },
   "files": [
+    "LICENSE",
+    "README.md",
     "dist/**/*",
     "!dist/*.tsbuildinfo"
   ],
