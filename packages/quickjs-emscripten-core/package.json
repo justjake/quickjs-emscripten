@@ -23,6 +23,7 @@
     "url": "https://github.com/justjake/quickjs-emscripten"
   },
   "files": [
+    "LICENSE",
     "dist/**/*",
     "!dist/*.test.js",
     "!dist/*.tsbuildinfo"
