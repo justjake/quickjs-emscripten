@@ -308,6 +308,13 @@ async function main() {
     ),
   )
 
+  // Maintain license files
+  const coreDir = path.join(repoRoot, "packages/quickjs-emscripten-core")
+  const mainDir = path.join(repoRoot, "packages/quickjs-emscripten")
+  for (const ownPackage of [coreDir, mainDir, ffiTypesDir]) {
+    fs.copyFileSync(path.join(repoRoot, "LICENSE"), path.join(ownPackage, "LICENSE"))
+  }
+
   for (const [targetName, variants] of Object.entries(targets)) {
     for (const variant of variants) {
       const basename = getTargetPackageSuffix(targetName, variant)
@@ -342,6 +349,7 @@ async function main() {
 
       const packageJson: PackageJson = {
         name: `@jitl/${basename}`,
+        license: rootPackageJson?.license,
         version: existingPackageJson?.version ?? rootPackageJson?.version ?? "0.0.0",
         description: `Variant of quickjs library: ${variant.description}`,
         sideEffects: false,
@@ -361,7 +369,7 @@ async function main() {
           clean: "make clean",
           prepare: "yarn clean && yarn build",
         },
-        files: ["dist/**/*", "!dist/*.tsbuildinfo"],
+        files: ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
         types: indexExports.types,
         main: indexExports.main,
         module: indexExports.module,
@@ -434,6 +442,7 @@ async function main() {
       variantsJson[finalVariant.dir] = finalVariant
 
       await writePretty(path.join(dir, "package.json"), JSON.stringify(packageJson))
+      await writePretty(path.join(dir, "LICENSE"), renderLicense(targetName, variant))
       await writePretty(path.join(dir, "tsconfig.json"), JSON.stringify(tsConfig))
       await writePretty(path.join(dir, "typedoc.json"), JSON.stringify(typedocConfig))
       await writePretty(path.join(dir, "README.md"), renderReadme(targetName, variant, packageJson))
@@ -736,6 +745,15 @@ export default variant
 function renderFfiTs(targetName: string, variant: BuildVariant): string {
   const env = getGenerateTsEnv(targetName, variant)
   return buildFFI(...createContext(env))
+}
+
+function renderLicense(targetName: string, variant: BuildVariant): string {
+  const baseLicense = fs.readFileSync(path.join(repoRoot, "LICENSE"), "utf-8")
+  const libraryLicense = fs.readFileSync(
+    path.join(repoRoot, CLibrarySubtree[variant.library], "LICENSE"),
+    "utf-8",
+  )
+  return `quickjs-emscripten:\n${baseLicense}\n\n${variant.library}:\n${libraryLicense}`
 }
 
 function getTsupExtensions(variant: BuildVariant) {

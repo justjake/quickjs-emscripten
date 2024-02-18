@@ -5,6 +5,7 @@
     "dir": "packages/variant-quickjs-wasmfile-debug-sync",
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-debug-sync",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
@@ -18,7 +19,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -71,6 +72,7 @@
     "dir": "packages/variant-quickjs-wasmfile-debug-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-debug-asyncify",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
@@ -84,7 +86,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -137,6 +139,7 @@
     "dir": "packages/variant-quickjs-wasmfile-release-sync",
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-release-sync",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
@@ -150,7 +153,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -203,6 +206,7 @@
     "dir": "packages/variant-quickjs-wasmfile-release-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-release-asyncify",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
@@ -216,7 +220,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -269,6 +273,7 @@
     "dir": "packages/variant-quickjs-ng-wasmfile-debug-sync",
     "packageJson": {
       "name": "@jitl/quickjs-ng-wasmfile-debug-sync",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
@@ -282,7 +287,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -335,6 +340,7 @@
     "dir": "packages/variant-quickjs-ng-wasmfile-debug-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-ng-wasmfile-debug-asyncify",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
@@ -348,7 +354,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -401,6 +407,7 @@
     "dir": "packages/variant-quickjs-ng-wasmfile-release-sync",
     "packageJson": {
       "name": "@jitl/quickjs-ng-wasmfile-release-sync",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
@@ -414,7 +421,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -467,6 +474,7 @@
     "dir": "packages/variant-quickjs-ng-wasmfile-release-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-ng-wasmfile-release-asyncify",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
@@ -480,7 +488,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "module": "./dist/index.mjs",
@@ -533,6 +541,7 @@
     "dir": "packages/variant-quickjs-singlefile-cjs-debug-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-debug-sync",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.",
       "sideEffects": false,
@@ -546,7 +555,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "exports": {
@@ -589,6 +598,7 @@
     "dir": "packages/variant-quickjs-singlefile-cjs-debug-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-debug-asyncify",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.",
       "sideEffects": false,
@@ -602,7 +612,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "exports": {
@@ -645,6 +655,7 @@
     "dir": "packages/variant-quickjs-singlefile-cjs-release-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-release-sync",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.",
       "sideEffects": false,
@@ -658,7 +669,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "exports": {
@@ -701,6 +712,7 @@
     "dir": "packages/variant-quickjs-singlefile-cjs-release-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-release-asyncify",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.",
       "sideEffects": false,
@@ -714,7 +726,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
       "main": "./dist/index.js",
       "exports": {
@@ -757,6 +769,7 @@
     "dir": "packages/variant-quickjs-singlefile-mjs-debug-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-debug-sync",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
@@ -770,7 +783,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
@@ -809,6 +822,7 @@
     "dir": "packages/variant-quickjs-singlefile-mjs-debug-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-debug-asyncify",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
@@ -822,7 +836,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
@@ -861,6 +875,7 @@
     "dir": "packages/variant-quickjs-singlefile-mjs-release-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-release-sync",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
@@ -874,7 +889,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
@@ -913,6 +928,7 @@
     "dir": "packages/variant-quickjs-singlefile-mjs-release-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-release-asyncify",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
@@ -926,7 +942,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
@@ -965,6 +981,7 @@
     "dir": "packages/variant-quickjs-singlefile-browser-debug-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-debug-sync",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
@@ -978,7 +995,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
@@ -1019,6 +1036,7 @@
     "dir": "packages/variant-quickjs-singlefile-browser-debug-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-debug-asyncify",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
@@ -1032,7 +1050,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
@@ -1073,6 +1091,7 @@
     "dir": "packages/variant-quickjs-singlefile-browser-release-sync",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-release-sync",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
@@ -1086,7 +1105,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",
@@ -1127,6 +1146,7 @@
     "dir": "packages/variant-quickjs-singlefile-browser-release-asyncify",
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-release-asyncify",
+      "license": "MIT",
       "version": "0.28.0",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
@@ -1140,7 +1160,7 @@
         "clean": "make clean",
         "prepare": "yarn clean && yarn build"
       },
-      "files": ["dist/**/*", "!dist/*.tsbuildinfo"],
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
       "main": "./dist/index.mjs",
       "module": "./dist/index.mjs",

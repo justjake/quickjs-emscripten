@@ -123,7 +123,8 @@ export function resolve(...parts: string[]) {
 export async function writePretty(filePath: string, text: string) {
   let output = text
 
-  const isPrettierUnsupportedType = filePath.endsWith(".mk") || filePath.endsWith("Makefile")
+  const isPrettierUnsupportedType =
+    filePath.endsWith(".mk") || filePath.endsWith("Makefile") || path.extname(filePath) === ""
   if (!isPrettierUnsupportedType) {
     const prettierConfig = (await prettier.resolveConfig(filePath)) ?? {}
     output = await prettier.format(text, {
@@ -162,6 +163,7 @@ export function tryReadJson<T>(filepath: string): T | undefined {
 
 export interface PackageJson {
   name: string
+  license: "MIT" | undefined
   type?: "module"
   private?: boolean
   version: string

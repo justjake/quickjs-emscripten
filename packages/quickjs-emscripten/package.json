@@ -23,6 +23,7 @@
     "url": "https://jake.tl"
   },
   "files": [
+    "LICENSE",
     "dist/**/*",
     "!dist/*.test.js",
     "!dist/*.tsbuildinfo"
