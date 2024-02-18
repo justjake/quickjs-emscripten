@@ -442,6 +442,7 @@ async function main() {
       variantsJson[finalVariant.dir] = finalVariant
 
       await writePretty(path.join(dir, "package.json"), JSON.stringify(packageJson))
+      await writePretty(path.join(dir, "LICENSE"), renderLicense(targetName, variant))
       await writePretty(path.join(dir, "tsconfig.json"), JSON.stringify(tsConfig))
       await writePretty(path.join(dir, "typedoc.json"), JSON.stringify(typedocConfig))
       await writePretty(path.join(dir, "README.md"), renderReadme(targetName, variant, packageJson))
@@ -453,7 +454,6 @@ async function main() {
         renderIndexTs(targetName, variant, readmeSummary, packageJson),
       )
       await writePretty(path.join(src, "ffi.ts"), renderFfiTs(targetName, variant))
-      await writePretty(path.join(src, "LICENSE"), renderLicense(targetName, variant))
       coreReadmeVariantDescriptions.push(readmeSummary)
     }
   }
