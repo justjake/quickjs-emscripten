@@ -727,11 +727,11 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
   if (
       // quickjs@2024-01-14 evaluating module
       // produced a promise
-      state == JS_PROMISE_FULFILLED
+      (state == JS_PROMISE_FULFILLED)
       // quickjs in compile mode
       // quickjs-ng before rebasing on quickjs@2024-01-14
       // not a promise.
-      || state < 0) {
+      || (state == -1)) {
     QTS_DEBUG("QTS_Eval: result: JS_PROMISE_FULFILLED or not a promise")
     JS_FreeValue(ctx, eval_result);
     return jsvalue_to_heap(JS_GetModuleNamespace(ctx, module));

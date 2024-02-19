@@ -468,31 +468,25 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       const s = vm.getProp(modExports, "s").consume(vm.dump)
       const n = vm.getProp(modExports, "n").consume(vm.dump)
       const defaultExport = vm.getProp(modExports, "default").consume(vm.dump)
-      modExports.dispose()
-      assert.equal(s, "hello")
-      assert.equal(n, 42)
-      assert.equal(defaultExport, "the default")
+      const asJson = modExports.consume(vm.dump)
+      try {
+        assert.equal(s, "hello")
+        assert.equal(n, 42)
+        assert.equal(defaultExport, "the default")
+      } catch (error) {
+        console.log("Error with module exports:", asJson)
+        throw error
+      }
     })
 
     it("returns a promise of module exports", () => {
-      const log = vm.newFunction("log", (msg) => {
-        console.log(`vmlog: ${vm.getString(msg)}`)
-      })
-      vm.setProp(vm.global, "log", log)
-      log.dispose()
-
       const promise = vm.unwrapResult(
         vm.evalCode(
           `
-log('eval started');
 await Promise.resolve(0);
-log('await finished');
 export const s = "hello";
-log('exported s');
 export const n = 42;
-log('exported n');
 export default "the default";
-log('exported default');
 `,
           "mod.js",
           { type: "module" },
@@ -509,10 +503,15 @@ log('exported default');
       const s = vm.getProp(modExports, "s").consume(vm.dump)
       const n = vm.getProp(modExports, "n").consume(vm.dump)
       const defaultExport = vm.getProp(modExports, "default").consume(vm.dump)
-      modExports.dispose()
-      assert.equal(s, "hello")
-      assert.equal(n, 42)
-      assert.equal(defaultExport, "the default")
+      const asJson = modExports.consume(vm.dump)
+      try {
+        assert.equal(s, "hello")
+        assert.equal(n, 42)
+        assert.equal(defaultExport, "the default")
+      } catch (error) {
+        console.log("Error with module exports:", asJson)
+        throw error
+      }
     })
   })
 
@@ -1216,13 +1215,25 @@ describe("QuickJSContext", function () {
   }
 
   if (TEST_NG) {
-    describe("quickjs-ng RELEASE_SYNC", function () {
-      const loader = memoizePromiseFactory(() =>
-        newQuickJSWASMModule(import("@jitl/quickjs-ng-wasmfile-release-sync")),
-      )
-      const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
-      contextTests(getContext)
-    })
+    if (TEST_RELEASE) {
+      describe("quickjs-ng RELEASE_SYNC", function () {
+        const loader = memoizePromiseFactory(() =>
+          newQuickJSWASMModule(import("@jitl/quickjs-ng-wasmfile-release-sync")),
+        )
+        const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
+        contextTests(getContext)
+      })
+    }
+
+    if (TEST_DEBUG) {
+      describe("quickjs-ng DEBUG_SYNC", function () {
+        const loader = memoizePromiseFactory(() =>
+          newQuickJSWASMModule(import("@jitl/quickjs-ng-wasmfile-debug-sync")),
+        )
+        const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
+        contextTests(getContext)
+      })
+    }
   }
 })
 
