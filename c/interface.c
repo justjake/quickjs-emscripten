@@ -644,6 +644,16 @@ MaybeAsync(JSBorrowedChar *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   return QTS_GetString(ctx, obj);
 }
 
+JSValue qts_resolve_func_data(
+    JSContext *ctx,
+    JSValueConst this_val,
+    int argc,
+    JSValueConst *argv,
+    int magic,
+    JSValue *func_data) {
+  return JS_DupValue(ctx, func_data[0]);
+}
+
 MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t js_code_length, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
   if (detectModule) {
     if (JS_DetectModule((const char *)js_code, js_code_length)) {
@@ -659,8 +669,8 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
   JSModuleDef *module;
   JSValue eval_result;
   if (
-      evalFlags & JS_EVAL_TYPE_MODULE != 0 &&
-      evalFlags & JS_EVAL_FLAG_COMPILE_ONLY == 0) {
+      (evalFlags & JS_EVAL_TYPE_MODULE) != 0 &&
+      (evalFlags & JS_EVAL_FLAG_COMPILE_ONLY) == 0) {
     QTS_DEBUG("QTS_Eval: JS_EVAL_TYPE_MODULE");
     JSValue func_obj = JS_Eval(ctx, js_code, js_code_length, filename, evalFlags | JS_EVAL_FLAG_COMPILE_ONLY);
     if (JS_IsException(func_obj)) {
@@ -674,7 +684,7 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
 
     module = JS_VALUE_GET_PTR(func_obj);
     if (module == NULL) {
-      JS_FreeValue(func_obj);
+      JS_FreeValue(ctx, func_obj);
       return jsvalue_to_heap(JS_ThrowInternalError(ctx, "Module compiled to null"));
     }
 
@@ -688,13 +698,13 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
       // Error - nothing more to do.
       JS_IsException(eval_result)
       // Non-module eval - return the result
-      || (evalFlags & JS_EVAL_TYPE_MODULE == 0)) {
+      || (evalFlags & JS_EVAL_TYPE_MODULE) == 0) {
     return jsvalue_to_heap(eval_result);
   }
 
   // We eval'd a module
   // Make our return type `ModuleExports | Promise<ModuleExports>>`
-  JSPromiseStateEnum state = JS_PromiseState(eval_result);
+  JSPromiseStateEnum state = JS_PromiseState(ctx, eval_result);
   if (
       // quickjs@2024-01-14 evaluating module
       // produced a promise
@@ -734,15 +744,6 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
     // Unknown case
     return jsvalue_to_heap(eval_result);
   }
-}
-
-JSValue qts_resolve_func_data(
-    JSContext *ctx,
-    JSValueConst this_val,
-    int argc,
-    JSValueConst *argv int magic,
-    JSValue *func_data) {
-  return JS_DupValue(ctx, func_data[0]);
 }
 
 JSValue *QTS_GetModuleNamespace(JSContext *ctx, JSValueConst *module_func_obj) {
