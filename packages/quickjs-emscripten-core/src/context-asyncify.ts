@@ -56,7 +56,8 @@ export class QuickJSAsyncContext extends QuickJSContext {
         .consume((charHandle) =>
           this.ffi.QTS_Eval_MaybeAsync(
             this.ctx.value,
-            charHandle.value,
+            charHandle.value.ptr,
+            charHandle.value.strlen,
             filename,
             detectModule,
             flags,

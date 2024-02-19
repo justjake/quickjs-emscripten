@@ -312,7 +312,7 @@ export class QuickJSContext
   newString(str: string): QuickJSHandle {
     const ptr = this.memory
       .newHeapCharPointer(str)
-      .consume((charHandle) => this.ffi.QTS_NewString(this.ctx.value, charHandle.value))
+      .consume((charHandle) => this.ffi.QTS_NewString(this.ctx.value, charHandle.value.ptr))
     return this.memory.heapValueHandle(ptr)
   }
 
@@ -324,7 +324,7 @@ export class QuickJSContext
     const key = (typeof description === "symbol" ? description.description : description) ?? ""
     const ptr = this.memory
       .newHeapCharPointer(key)
-      .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value, 0))
+      .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value.ptr, 0))
     return this.memory.heapValueHandle(ptr)
   }
 
@@ -336,7 +336,7 @@ export class QuickJSContext
     const description = (typeof key === "symbol" ? key.description : key) ?? ""
     const ptr = this.memory
       .newHeapCharPointer(description)
-      .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value, 1))
+      .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value.ptr, 1))
     return this.memory.heapValueHandle(ptr)
   }
 
@@ -850,7 +850,14 @@ export class QuickJSContext
     const resultPtr = this.memory
       .newHeapCharPointer(code)
       .consume((charHandle) =>
-        this.ffi.QTS_Eval(this.ctx.value, charHandle.value, filename, detectModule, flags),
+        this.ffi.QTS_Eval(
+          this.ctx.value,
+          charHandle.value.ptr,
+          charHandle.value.strlen,
+          filename,
+          detectModule,
+          flags,
+        ),
       )
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {

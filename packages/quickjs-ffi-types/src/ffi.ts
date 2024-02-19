@@ -135,9 +135,14 @@ export interface QuickJSFFI {
   QTS_Eval: (
     ctx: JSContextPointer,
     js_code: BorrowedHeapCharPointer,
+    js_code_length: number,
     filename: string,
     detectModule: EvalDetectModule,
     evalFlags: EvalFlags,
+  ) => JSValuePointer
+  QTS_GetModuleNamespace: (
+    ctx: JSContextPointer,
+    module_func_obj: JSValuePointer | JSValueConstPointer,
   ) => JSValuePointer
   QTS_Typeof: (
     ctx: JSContextPointer,

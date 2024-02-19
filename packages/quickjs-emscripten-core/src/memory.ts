@@ -43,11 +43,12 @@ export class ModuleMemory {
     return new Lifetime({ typedArray, ptr }, undefined, (value) => this.module._free(value.ptr))
   }
 
-  newHeapCharPointer(string: string): Lifetime<OwnedHeapCharPointer> {
-    const numBytes = this.module.lengthBytesUTF8(string) + 1
-    const ptr: OwnedHeapCharPointer = this.module._malloc(numBytes) as OwnedHeapCharPointer
-    this.module.stringToUTF8(string, ptr, numBytes)
-    return new Lifetime(ptr, undefined, (value) => this.module._free(value))
+  newHeapCharPointer(string: string): Lifetime<{ ptr: OwnedHeapCharPointer; strlen: number }> {
+    const strlen = this.module.lengthBytesUTF8(string)
+    const dataBytes = strlen + 1
+    const ptr: OwnedHeapCharPointer = this.module._malloc(dataBytes) as OwnedHeapCharPointer
+    this.module.stringToUTF8(string, ptr, dataBytes)
+    return new Lifetime({ ptr, strlen }, undefined, (value) => this.module._free(value.ptr))
   }
 
   newHeapBufferPointer(buffer: Uint8Array): Lifetime<HeapUint8Array> {
