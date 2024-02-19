@@ -44,3 +44,7 @@ export class QuickJSEmscriptenModuleError extends Error {
 export class QuickJSUnknownIntrinsic extends TypeError {
   name = "QuickJSUnknownIntrinsic"
 }
+
+export class QuickJSPromisePending extends Error {
+  name = "QuickJSPromisePending"
+}

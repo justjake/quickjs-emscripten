@@ -14,6 +14,7 @@
   - [QuickJSEmscriptenModuleError](README.md#quickjsemscriptenmoduleerror)
   - [QuickJSMemoryLeakDetected](README.md#quickjsmemoryleakdetected)
   - [QuickJSNotImplemented](README.md#quickjsnotimplemented)
+  - [QuickJSPromisePending](README.md#quickjspromisepending)
   - [QuickJSUnknownIntrinsic](README.md#quickjsunknownintrinsic)
   - [QuickJSUnwrapError](README.md#quickjsunwraperror)
   - [QuickJSUseAfterFree](README.md#quickjsuseafterfree)
@@ -24,6 +25,7 @@
   - [QuickJSEmscriptenModuleError](README.md#quickjsemscriptenmoduleerror-1)
   - [QuickJSMemoryLeakDetected](README.md#quickjsmemoryleakdetected-1)
   - [QuickJSNotImplemented](README.md#quickjsnotimplemented-1)
+  - [QuickJSPromisePending](README.md#quickjspromisepending-1)
   - [QuickJSUnknownIntrinsic](README.md#quickjsunknownintrinsic-1)
   - [QuickJSUnwrapError](README.md#quickjsunwraperror-1)
   - [QuickJSUseAfterFree](README.md#quickjsuseafterfree-1)
@@ -37,7 +39,7 @@
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1547
+packages/quickjs-emscripten-core/dist/index.d.ts:1621
 
 ***
 
@@ -47,7 +49,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1547
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1549
+packages/quickjs-emscripten-core/dist/index.d.ts:1623
 
 ***
 
@@ -57,7 +59,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1549
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1551
+packages/quickjs-emscripten-core/dist/index.d.ts:1625
 
 ***
 
@@ -67,7 +69,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1551
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1553
+packages/quickjs-emscripten-core/dist/index.d.ts:1627
 
 ***
 
@@ -77,7 +79,17 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1553
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1555
+packages/quickjs-emscripten-core/dist/index.d.ts:1629
+
+***
+
+### QuickJSPromisePending
+
+> **QuickJSPromisePending**: `QuickJSPromisePending`
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:1631
 
 ***
 
@@ -87,7 +99,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1555
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1557
+packages/quickjs-emscripten-core/dist/index.d.ts:1633
 
 ***
 
@@ -97,7 +109,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1557
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1559
+packages/quickjs-emscripten-core/dist/index.d.ts:1635
 
 ***
 
@@ -107,7 +119,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1559
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1561
+packages/quickjs-emscripten-core/dist/index.d.ts:1637
 
 ***
 
@@ -117,7 +129,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1561
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1563
+packages/quickjs-emscripten-core/dist/index.d.ts:1639
 
 ## Variables
 
@@ -127,7 +139,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1563
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1547
+packages/quickjs-emscripten-core/dist/index.d.ts:1621
 
 ***
 
@@ -137,7 +149,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1547
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1549
+packages/quickjs-emscripten-core/dist/index.d.ts:1623
 
 ***
 
@@ -147,7 +159,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1549
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1551
+packages/quickjs-emscripten-core/dist/index.d.ts:1625
 
 ***
 
@@ -157,7 +169,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1551
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1553
+packages/quickjs-emscripten-core/dist/index.d.ts:1627
 
 ***
 
@@ -167,7 +179,17 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1553
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1555
+packages/quickjs-emscripten-core/dist/index.d.ts:1629
+
+***
+
+### QuickJSPromisePending
+
+> **QuickJSPromisePending**: *typeof* `QuickJSPromisePending`
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:1631
 
 ***
 
@@ -177,7 +199,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1555
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1557
+packages/quickjs-emscripten-core/dist/index.d.ts:1633
 
 ***
 
@@ -187,7 +209,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1557
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1559
+packages/quickjs-emscripten-core/dist/index.d.ts:1635
 
 ***
 
@@ -197,7 +219,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1559
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1561
+packages/quickjs-emscripten-core/dist/index.d.ts:1637
 
 ***
 
@@ -207,7 +229,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1561
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1563
+packages/quickjs-emscripten-core/dist/index.d.ts:1639
 
 ***
 

@@ -51,7 +51,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1583
+packages/quickjs-emscripten-core/dist/index.d.ts:1659
 
 ## Properties
 
@@ -61,7 +61,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1583
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1581
+packages/quickjs-emscripten-core/dist/index.d.ts:1657
 
 ***
 
@@ -71,7 +71,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1581
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1582
+packages/quickjs-emscripten-core/dist/index.d.ts:1658
 
 ## Methods
 
@@ -85,7 +85,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1582
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1588
+packages/quickjs-emscripten-core/dist/index.d.ts:1664
 
 ***
 
@@ -99,7 +99,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1588
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1587
+packages/quickjs-emscripten-core/dist/index.d.ts:1663
 
 ***
 
@@ -123,7 +123,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1587
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1586
+packages/quickjs-emscripten-core/dist/index.d.ts:1662
 
 ***
 
@@ -141,7 +141,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1586
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1589
+packages/quickjs-emscripten-core/dist/index.d.ts:1665
 
 ***
 
@@ -163,7 +163,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1589
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1585
+packages/quickjs-emscripten-core/dist/index.d.ts:1661
 
 ***
 
@@ -185,7 +185,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1585
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1584
+packages/quickjs-emscripten-core/dist/index.d.ts:1660
 
 ***
 

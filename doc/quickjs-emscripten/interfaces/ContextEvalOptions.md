@@ -25,7 +25,7 @@ don't include the stack frames before this eval in the Error() backtraces
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:521
+packages/quickjs-emscripten-core/dist/index.d.ts:529
 
 ***
 
@@ -39,7 +39,7 @@ with JS_EvalFunction().
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:519
+packages/quickjs-emscripten-core/dist/index.d.ts:527
 
 ***
 
@@ -51,7 +51,7 @@ Force "strict" mode
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:511
+packages/quickjs-emscripten-core/dist/index.d.ts:519
 
 ***
 
@@ -63,7 +63,7 @@ Force "strip" mode
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:513
+packages/quickjs-emscripten-core/dist/index.d.ts:521
 
 ***
 
@@ -71,11 +71,14 @@ packages/quickjs-emscripten-core/dist/index.d.ts:513
 
 > **type**?: `"global"` \| `"module"`
 
-Global code (default)
+Global code (default), or "module" code?
+
+- When type is `"global"`, the code is evaluated in the global scope of the QuickJSContext, and the return value is the result of the last expression.
+- When type is `"module"`, the code is evaluated is a module scope, may use `import`, `export`, and top-level `await`. The return value is the module's exports, or a promise for the module's exports.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:509
+packages/quickjs-emscripten-core/dist/index.d.ts:517
 
 ***
 

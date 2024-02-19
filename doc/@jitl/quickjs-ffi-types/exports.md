@@ -17,6 +17,7 @@
   - [JSContextPointer](exports.md#jscontextpointer)
   - [JSContextPointerPointer](exports.md#jscontextpointerpointer)
   - [JSModuleDefPointer](exports.md#jsmoduledefpointer)
+  - [JSPromiseStateEnum](exports.md#jspromisestateenum)
   - [JSRuntimePointer](exports.md#jsruntimepointer)
   - [JSValueConstPointer](exports.md#jsvalueconstpointer)
   - [JSValueConstPointerPointer](exports.md#jsvalueconstpointerpointer)
@@ -31,6 +32,7 @@
 - [Variables](exports.md#variables)
   - [EvalFlags](exports.md#evalflags)
   - [IntrinsicsFlags](exports.md#intrinsicsflags)
+  - [JSPromiseStateEnum](exports.md#jspromisestateenum-1)
 - [Functions](exports.md#functions)
   - [assertSync()](exports.md#assertsync)
 
@@ -128,6 +130,18 @@ for the Emscripten stack.
 #### Source
 
 [packages/quickjs-ffi-types/src/ffi-types.ts:29](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L29)
+
+***
+
+### JSPromiseStateEnum
+
+> **JSPromiseStateEnum**: `Brand`\<*typeof* [`JSPromiseStateEnum`](exports.md#jspromisestateenum-1)\[keyof *typeof* [`JSPromiseStateEnum`](exports.md#jspromisestateenum-1)\], `"JSPromiseStateEnum"`\>
+
+State of a promise.
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi-types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L114)
 
 ***
 
@@ -408,6 +422,30 @@ Bitfield options for QTS_NewContext intrinsices
 
 [packages/quickjs-ffi-types/src/ffi-types.ts:104](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L104)
 
+***
+
+### JSPromiseStateEnum
+
+> **JSPromiseStateEnum**: `Object`
+
+#### Type declaration
+
+##### Fulfilled
+
+> **`readonly`** **Fulfilled**: `1` = `1`
+
+##### Pending
+
+> **`readonly`** **Pending**: `0` = `0`
+
+##### Rejected
+
+> **`readonly`** **Rejected**: `2` = `2`
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi-types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L114)
+
 ## Functions
 
 ### assertSync()
@@ -439,7 +477,7 @@ Bitfield options for QTS_NewContext intrinsices
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L111)
+[packages/quickjs-ffi-types/src/ffi-types.ts:119](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L119)
 
 ***
 

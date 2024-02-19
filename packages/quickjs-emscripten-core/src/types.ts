@@ -241,7 +241,12 @@ export interface ContextOptions {
 }
 
 export interface ContextEvalOptions {
-  /** Global code (default) */
+  /**
+   * Global code (default), or "module" code?
+   *
+   * - When type is `"global"`, the code is evaluated in the global scope of the QuickJSContext, and the return value is the result of the last expression.
+   * - When type is `"module"`, the code is evaluated is a module scope, may use `import`, `export`, and top-level `await`. The return value is the module's exports, or a promise for the module's exports.
+   */
   type?: "global" | "module"
   /** Force "strict" mode */
   strict?: boolean

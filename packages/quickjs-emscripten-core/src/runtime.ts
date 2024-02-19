@@ -380,7 +380,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
         const moduleSource =
           typeof result === "string" ? result : "value" in result ? result.value : result
 
-        return this.memory.newHeapCharPointer(moduleSource).value
+        return this.memory.newHeapCharPointer(moduleSource).value.ptr
       } catch (error) {
         debugLog("cToHostLoadModule: caught error", error)
         context.throw(error as any)
@@ -400,7 +400,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
           throw new Error("Runtime pointer mismatch")
         }
 
-        const context =
+        const context: QuickJSContext =
           this.contextMap.get(ctx) ??
           this.newContext({
             /* TODO: Does this happen? Are we responsible for disposing? I don't think so */
@@ -418,7 +418,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
           }
 
           const name = typeof result === "string" ? result : result.value
-          return context.getMemory(this.rt.value).newHeapCharPointer(name).value
+          return context.getMemory(this.rt.value).newHeapCharPointer(name).value.ptr
         } catch (error) {
           debugLog("normalizeModule: caught error", error)
           context.throw(error as any)

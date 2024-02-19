@@ -1,20 +1,22 @@
-import type {
-  EitherModule,
-  EvalDetectModule,
-  EvalFlags,
-  JSBorrowedCharPointer,
-  JSContextPointer,
-  JSRuntimePointer,
-  JSValueConstPointer,
-  JSValuePointer,
-  JSValuePointerPointer,
-  EitherFFI,
+import {
+  type EitherModule,
+  type EvalDetectModule,
+  type EvalFlags,
+  type JSBorrowedCharPointer,
+  type JSContextPointer,
+  type JSRuntimePointer,
+  type JSValueConstPointer,
+  type JSValuePointer,
+  type JSValuePointerPointer,
+  type EitherFFI,
+  JSPromiseStateEnum,
 } from "@jitl/quickjs-ffi-types"
 import { debugLog } from "./debug"
+import type { JSPromiseState } from "./deferred-promise"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
-import { QuickJSUnwrapError } from "./errors"
+import { QuickJSPromisePending, QuickJSUnwrapError } from "./errors"
 import type { Disposable } from "./lifetime"
 import { Lifetime, Scope, StaticLifetime, UsingDisposable, WeakLifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
@@ -312,7 +314,7 @@ export class QuickJSContext
   newString(str: string): QuickJSHandle {
     const ptr = this.memory
       .newHeapCharPointer(str)
-      .consume((charHandle) => this.ffi.QTS_NewString(this.ctx.value, charHandle.value))
+      .consume((charHandle) => this.ffi.QTS_NewString(this.ctx.value, charHandle.value.ptr))
     return this.memory.heapValueHandle(ptr)
   }
 
@@ -324,7 +326,7 @@ export class QuickJSContext
     const key = (typeof description === "symbol" ? description.description : description) ?? ""
     const ptr = this.memory
       .newHeapCharPointer(key)
-      .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value, 0))
+      .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value.ptr, 0))
     return this.memory.heapValueHandle(ptr)
   }
 
@@ -336,7 +338,7 @@ export class QuickJSContext
     const description = (typeof key === "symbol" ? key.description : key) ?? ""
     const ptr = this.memory
       .newHeapCharPointer(description)
-      .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value, 1))
+      .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value.ptr, 1))
     return this.memory.heapValueHandle(ptr)
   }
 
@@ -650,6 +652,48 @@ export class QuickJSContext
   }
 
   /**
+   * Get the current state of a QuickJS promise, see {@link JSPromiseState} for the possible states.
+   * This can be used to expect a promise to be fulfilled when combined with {@link unwrapResult}:
+   *
+   * ```typescript
+   * const promiseHandle = context.evalCode(`Promise.resolve(42)`);
+   * const resultHandle = context.unwrapResult(
+   *  context.getPromiseState(promiseHandle)
+   * );
+   * context.getNumber(resultHandle) === 42; // true
+   * resultHandle.dispose();
+   * ```
+   */
+  getPromiseState(handle: QuickJSHandle): JSPromiseState {
+    this.runtime.assertOwned(handle)
+    const state = this.ffi.QTS_PromiseState(this.ctx.value, handle.value)
+    if (state < 0) {
+      // Not a promise, but act like `await` would with non-promise, and just return the value.
+      return { type: "fulfilled", value: handle, notAPromise: true }
+    }
+
+    if (state === JSPromiseStateEnum.Pending) {
+      return {
+        type: "pending",
+        get error() {
+          return new QuickJSPromisePending(`Cannot unwrap a pending promise`)
+        },
+      }
+    }
+
+    const ptr = this.ffi.QTS_PromiseResult(this.ctx.value, handle.value)
+    const result = this.memory.heapValueHandle(ptr)
+    if (state === JSPromiseStateEnum.Fulfilled) {
+      return { type: "fulfilled", value: result }
+    }
+    if (state === JSPromiseStateEnum.Rejected) {
+      return { type: "rejected", error: result }
+    }
+    result.dispose()
+    throw new Error(`Unknown JSPromiseStateEnum: ${state}`)
+  }
+
+  /**
    * `Promise.resolve(value)`.
    * Convert a handle containing a Promise-like value inside the VM into an
    * actual promise on the host.
@@ -816,7 +860,20 @@ export class QuickJSContext
 
   /**
    * Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
-   * Evaluates the Javascript source `code` in the global scope of this VM.
+   *
+   * Evaluates `code`, as though it's in a file named `filename`, with options `options`.
+   *
+   * - When `options.type` is `"global"`, the code is evaluated in the global
+   *   scope of the QuickJSContext, and the return value is the result of the last
+   *   expression.
+   * - When `options.type` is `"module"`, the code is evaluated is a module scope.
+   *   It may use `import` and `export` if {@link runtime}.{@link QuickJSRuntime#setModuleLoader} was called.
+   *   It may use top-level await if supported by the underlying QuickJS library.
+   *   The return value is the module's exports, or a promise for the module's exports.
+   * - When `options.type` is unset, the code is evaluated as a module if it
+   *   contains an `import` or `export` statement, otherwise it is evaluated in
+   *   the global scope.
+   *
    * When working with async code, you many need to call {@link runtime}.{@link QuickJSRuntime#executePendingJobs}
    * to execute callbacks pending after synchronous evaluation returns.
    *
@@ -850,7 +907,14 @@ export class QuickJSContext
     const resultPtr = this.memory
       .newHeapCharPointer(code)
       .consume((charHandle) =>
-        this.ffi.QTS_Eval(this.ctx.value, charHandle.value, filename, detectModule, flags),
+        this.ffi.QTS_Eval(
+          this.ctx.value,
+          charHandle.value.ptr,
+          charHandle.value.strlen,
+          filename,
+          detectModule,
+          flags,
+        ),
       )
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {

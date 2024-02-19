@@ -29,6 +29,8 @@
   - [JSModuleNormalizeFailure](exports.md#jsmodulenormalizefailure)
   - [JSModuleNormalizeResult](exports.md#jsmodulenormalizeresult)
   - [JSModuleNormalizeSuccess](exports.md#jsmodulenormalizesuccess)
+  - [JSPromiseState](exports.md#jspromisestate)
+  - [JSPromiseStateEnum](exports.md#jspromisestateenum)
   - [JSRuntimePointer](exports.md#jsruntimepointer)
   - [JSValue](exports.md#jsvalue)
   - [JSValueConst](exports.md#jsvalueconst)
@@ -55,6 +57,7 @@
   - [DefaultIntrinsics](exports.md#defaultintrinsics)
   - [EvalFlags](exports.md#evalflags)
   - [IntrinsicsFlags](exports.md#intrinsicsflags)
+  - [JSPromiseStateEnum](exports.md#jspromisestateenum-1)
 - [Functions](exports.md#functions)
   - [assertSync()](exports.md#assertsync)
   - [isFail()](exports.md#isfail)
@@ -99,6 +102,9 @@
 - [JSModuleLoaderAsync](interfaces/JSModuleLoaderAsync.md)
 - [JSModuleNormalizer](interfaces/JSModuleNormalizer.md)
 - [JSModuleNormalizerAsync](interfaces/JSModuleNormalizerAsync.md)
+- [JSPromiseStateFulfilled](interfaces/JSPromiseStateFulfilled.md)
+- [JSPromiseStatePending](interfaces/JSPromiseStatePending.md)
+- [JSPromiseStateRejected](interfaces/JSPromiseStateRejected.md)
 - [LowLevelJavascriptVm](interfaces/LowLevelJavascriptVm.md)
 - [ModuleEvalOptions](interfaces/ModuleEvalOptions.md)
 - [QuickJSAsyncEmscriptenModule](interfaces/QuickJSAsyncEmscriptenModule.md)
@@ -153,7 +159,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:481
+packages/quickjs-ffi-types/dist/index.d.ts:496
 
 ***
 
@@ -163,7 +169,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:481
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:295
+packages/quickjs-ffi-types/dist/index.d.ts:304
 
 ***
 
@@ -399,6 +405,31 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 ***
 
+### JSPromiseState
+
+> **JSPromiseState**: [`JSPromiseStatePending`](interfaces/JSPromiseStatePending.md) \| [`JSPromiseStateFulfilled`](interfaces/JSPromiseStateFulfilled.md) \| [`JSPromiseStateRejected`](interfaces/JSPromiseStateRejected.md)
+
+A promise state inside QuickJS, which can be pending, fulfilled, or rejected.
+You can unwrap a JSPromiseState with [QuickJSContext#unwrapResult](classes/QuickJSContext.md#unwrapresult).
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:11](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L11)
+
+***
+
+### JSPromiseStateEnum
+
+> **JSPromiseStateEnum**: `Brand`\<*typeof* [`JSPromiseStateEnum`](exports.md#jspromisestateenum-1)\[keyof *typeof* [`JSPromiseStateEnum`](exports.md#jspromisestateenum-1)\], `"JSPromiseStateEnum"`\>
+
+State of a promise.
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:140
+
+***
+
 ### JSRuntimePointer
 
 > **JSRuntimePointer**: `Pointer`\<`"JSRuntime"`\>
@@ -565,7 +596,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:71
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:281](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L281)
+[packages/quickjs-emscripten-core/src/types.ts:286](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L286)
 
 ***
 
@@ -644,7 +675,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L41)
+[packages/quickjs-emscripten-core/src/context.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L43)
 
 ***
 
@@ -654,7 +685,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:480
+packages/quickjs-ffi-types/dist/index.d.ts:495
 
 ***
 
@@ -943,6 +974,30 @@ Bitfield options for QTS_NewContext intrinsices
 #### Source
 
 packages/quickjs-ffi-types/dist/index.d.ts:117
+
+***
+
+### JSPromiseStateEnum
+
+> **JSPromiseStateEnum**: `Object`
+
+#### Type declaration
+
+##### Fulfilled
+
+> **`readonly`** **Fulfilled**: `1`
+
+##### Pending
+
+> **`readonly`** **Pending**: `0`
+
+##### Rejected
+
+> **`readonly`** **Rejected**: `2`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:140
 
 ## Functions
 

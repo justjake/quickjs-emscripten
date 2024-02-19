@@ -17,6 +17,7 @@ Collects the informative errors this library may throw.
 - [QuickJSEmscriptenModuleError](classes/QuickJSEmscriptenModuleError.md)
 - [QuickJSMemoryLeakDetected](classes/QuickJSMemoryLeakDetected.md)
 - [QuickJSNotImplemented](classes/QuickJSNotImplemented.md)
+- [QuickJSPromisePending](classes/QuickJSPromisePending.md)
 - [QuickJSUnknownIntrinsic](classes/QuickJSUnknownIntrinsic.md)
 - [QuickJSUnwrapError](classes/QuickJSUnwrapError.md)
 - [QuickJSUseAfterFree](classes/QuickJSUseAfterFree.md)

@@ -10,14 +10,16 @@ import type {
   InterruptHandler,
   QuickJSDeferredPromise,
   VmCallResult,
-  QuickJSContext,
-  QuickJSAsyncContext,
   QuickJSFFI,
   QuickJSAsyncFFI,
   ContextOptions,
-  QuickJSWASMModule,
 } from "."
 import {
+  QuickJSContext,
+  QuickJSAsyncContext,
+  QuickJSWASMModule,
+  QuickJSRuntime,
+  QuickJSAsyncRuntime,
   getQuickJS,
   newQuickJSAsyncWASMModule,
   newQuickJSWASMModule,
@@ -37,6 +39,13 @@ import {
 const TEST_NG = !process.env.TEST_NO_NG
 const TEST_DEBUG = !process.env.TEST_NO_DEBUG
 const TEST_ASYNC = !process.env.TEST_NO_ASYNC
+const TEST_RELEASE = !process.env.TEST_NO_RELEASE
+console.log("test sets:", {
+  TEST_RELEASE,
+  TEST_DEBUG,
+  TEST_NG,
+  TEST_ASYNC,
+})
 
 type GetTestContext = (options?: ContextOptions) => Promise<QuickJSContext>
 
@@ -58,6 +67,10 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
   })
 
   after(() => {
+    if (!ffi) {
+      return
+    }
+
     if (ffi.QTS_BuildIsAsyncify()) {
       // Asyncify explodes during leak checking.
       return
@@ -421,7 +434,6 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       nextId.dispose()
     })
 
-    // TODO: bring back import support.
     it("can handle imports", () => {
       let moduleLoaderCalls = 0
       vm.runtime.setModuleLoader(() => {
@@ -449,6 +461,60 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
         ;(await getQuickJS()).evalCode('"ok"', { maxStackSizeBytes: 1 })
       } catch (e) {
         return
+      }
+    })
+
+    it("returns the module exports", () => {
+      const modExports = vm.unwrapResult(
+        vm.evalCode(`export const s = "hello"; export const n = 42; export default "the default";`),
+      )
+
+      const s = vm.getProp(modExports, "s").consume(vm.dump)
+      const n = vm.getProp(modExports, "n").consume(vm.dump)
+      const defaultExport = vm.getProp(modExports, "default").consume(vm.dump)
+      const asJson = modExports.consume(vm.dump)
+      try {
+        assert.equal(s, "hello")
+        assert.equal(n, 42)
+        assert.equal(defaultExport, "the default")
+      } catch (error) {
+        console.log("Error with module exports:", asJson)
+        throw error
+      }
+    })
+
+    it("returns a promise of module exports", () => {
+      const promise = vm.unwrapResult(
+        vm.evalCode(
+          `
+await Promise.resolve(0);
+export const s = "hello";
+export const n = 42;
+export default "the default";
+`,
+          "mod.js",
+          { type: "module" },
+        ),
+      )
+
+      vm.runtime.executePendingJobs()
+      const promiseState = promise.consume((p) => vm.getPromiseState(p))
+      if (promiseState.type === "pending") {
+        throw new Error(`By now promise should be resolved.`)
+      }
+
+      const modExports = vm.unwrapResult(promiseState)
+      const s = vm.getProp(modExports, "s").consume(vm.dump)
+      const n = vm.getProp(modExports, "n").consume(vm.dump)
+      const defaultExport = vm.getProp(modExports, "default").consume(vm.dump)
+      const asJson = modExports.consume(vm.dump)
+      try {
+        assert.equal(s, "hello")
+        assert.equal(n, 42)
+        assert.equal(defaultExport, "the default")
+      } catch (error) {
+        console.log("Error with module exports:", asJson)
+        throw error
       }
     })
   })
@@ -908,24 +974,6 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
 function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
   let vm: QuickJSAsyncContext = undefined as any
 
-  function assertModuleEvalResult(actual: QuickJSHandle) {
-    const type = vm.typeof(actual)
-    if (type === "undefined") {
-      // OK: older versions of quickjs return undefined
-      return
-    }
-
-    if (type === "object") {
-      // Newer versions should return a Promise
-      using ctor = vm.getProp(actual, "constructor")
-      const name = vm.getProp(ctor, "name").consume(vm.dump)
-      assert.strictEqual(name, "Promise")
-      return
-    }
-
-    assert.fail(`Expected a Promise or undefined, got ${type} (${vm.dump(actual)})`)
-  }
-
   beforeEach(async () => {
     vm = await getContext()
     assertBuildIsConsistent(vm)
@@ -1007,12 +1055,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
 
         const result = await promise
         debugLog("awaited vm.evalCodeAsync", result, { alive: vm.alive })
-
-        const unwrapped = vm.unwrapResult(result)
-        debugLog("unwrapped result")
-
-        assertModuleEvalResult(unwrapped)
-        debugLog("asserted result")
+        vm.unwrapResult(result).dispose()
 
         const stuff = vm.getProp(vm.global, "stuff").consume(vm.dump)
         assert.strictEqual(stuff, "hello from module")
@@ -1036,10 +1079,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       })
 
       const result = vm.evalCode("import otherModule from './other-module.js'")
-
-      // Asserts that the eval worked without incident
-      using unwrapped = vm.unwrapResult(result)
-      assertModuleEvalResult(unwrapped)
+      vm.unwrapResult(result).dispose()
 
       assert.strictEqual(callCtx!, vm, "expected VM")
       assert.strictEqual(
@@ -1076,7 +1116,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
 
       // Asserts that the eval worked without incident
       const result = vm.evalCode(`import otherModule from '${IMPORT_PATH}'`, EVAL_FILE_NAME)
-      vm.unwrapResult(result).consume(assertModuleEvalResult)
+      vm.unwrapResult(result).dispose()
 
       // Check our request
       assert.strictEqual(requestedName, IMPORT_PATH, "requested name is the literal import string")
@@ -1136,11 +1176,13 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
 }
 
 describe("QuickJSContext", function () {
-  describe("QuickJS.newContext", function () {
-    const loader = getQuickJS
-    const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
-    contextTests(getContext)
-  })
+  if (TEST_RELEASE) {
+    describe("QuickJS.newContext", function () {
+      const loader = getQuickJS
+      const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
+      contextTests(getContext)
+    })
+  }
 
   if (TEST_DEBUG) {
     describe("DEBUG sync module", function () {
@@ -1151,13 +1193,25 @@ describe("QuickJSContext", function () {
   }
 
   if (TEST_NG) {
-    describe("quickjs-ng RELEASE_SYNC", function () {
-      const loader = memoizePromiseFactory(() =>
-        newQuickJSWASMModule(import("@jitl/quickjs-ng-wasmfile-release-sync")),
-      )
-      const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
-      contextTests(getContext)
-    })
+    if (TEST_RELEASE) {
+      describe("quickjs-ng RELEASE_SYNC", function () {
+        const loader = memoizePromiseFactory(() =>
+          newQuickJSWASMModule(import("@jitl/quickjs-ng-wasmfile-release-sync")),
+        )
+        const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
+        contextTests(getContext)
+      })
+    }
+
+    if (TEST_DEBUG) {
+      describe("quickjs-ng DEBUG_SYNC", function () {
+        const loader = memoizePromiseFactory(() =>
+          newQuickJSWASMModule(import("@jitl/quickjs-ng-wasmfile-debug-sync")),
+        )
+        const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
+        contextTests(getContext)
+      })
+    }
   }
 })
 
@@ -1288,3 +1342,38 @@ function assertError(actual: ErrorObj, expected: ErrorObj) {
   assert.strictEqual(actual.message, expected.message)
   assert.strictEqual(actual.name, expected.name)
 }
+
+function applyVitestHack<T>(
+  klass: new (...args: never[]) => T,
+  serialize: (instance: T) => unknown,
+) {
+  klass.prototype["@@__IMMUTABLE_RECORD__@@"] = true
+  klass.prototype.toJSON = function vitestHackToJSON() {
+    return serialize(this)
+  }
+}
+
+applyVitestHack(QuickJSContext, (vm) => ({
+  type: "QuickJSContext",
+  __vitest__: true,
+  alive: vm.alive,
+}))
+applyVitestHack(QuickJSAsyncContext, (vm) => ({
+  type: "QuickJSAsyncContext",
+  __vitest__: true,
+  alive: vm.alive,
+}))
+applyVitestHack(QuickJSRuntime, (rt) => ({
+  type: "QuickJSRuntime",
+  __vitest__: true,
+  alive: rt.alive,
+}))
+applyVitestHack(QuickJSAsyncRuntime, (rt) => ({
+  type: "QuickJSAsyncRuntime",
+  __vitest__: true,
+  alive: rt.alive,
+}))
+applyVitestHack(QuickJSWASMModule, () => ({
+  type: "QuickJSWASMModule",
+  __vitest__: true,
+}))

@@ -19,6 +19,7 @@ import {
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
+  JSPromiseStateEnum,
   assertSync,
 } from "@jitl/quickjs-ffi-types"
 
@@ -333,25 +334,39 @@ export class QuickJSAsyncFFI {
   QTS_Eval: (
     ctx: JSContextPointer,
     js_code: BorrowedHeapCharPointer,
+    js_code_length: number,
     filename: string,
     detectModule: EvalDetectModule,
     evalFlags: EvalFlags,
   ) => JSValuePointer = assertSync(
-    this.module.cwrap("QTS_Eval", "number", ["number", "number", "string", "number", "number"]),
+    this.module.cwrap("QTS_Eval", "number", [
+      "number",
+      "number",
+      "number",
+      "string",
+      "number",
+      "number",
+    ]),
   )
 
   QTS_Eval_MaybeAsync: (
     ctx: JSContextPointer,
     js_code: BorrowedHeapCharPointer,
+    js_code_length: number,
     filename: string,
     detectModule: EvalDetectModule,
     evalFlags: EvalFlags,
   ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
     "QTS_Eval",
     "number",
-    ["number", "number", "string", "number", "number"],
+    ["number", "number", "number", "string", "number", "number"],
     { async: true },
   )
+
+  QTS_GetModuleNamespace: (
+    ctx: JSContextPointer,
+    module_func_obj: JSValuePointer | JSValueConstPointer,
+  ) => JSValuePointer = this.module.cwrap("QTS_GetModuleNamespace", "number", ["number", "number"])
 
   QTS_Typeof: (
     ctx: JSContextPointer,
@@ -371,6 +386,16 @@ export class QuickJSAsyncFFI {
     "number",
     "number",
   ])
+
+  QTS_PromiseState: (
+    ctx: JSContextPointer,
+    promise: JSValuePointer | JSValueConstPointer,
+  ) => JSPromiseStateEnum = this.module.cwrap("QTS_PromiseState", "number", ["number", "number"])
+
+  QTS_PromiseResult: (
+    ctx: JSContextPointer,
+    promise: JSValuePointer | JSValueConstPointer,
+  ) => JSValuePointer = this.module.cwrap("QTS_PromiseResult", "number", ["number", "number"])
 
   QTS_TestStringArg: (string: string) => void = this.module.cwrap("QTS_TestStringArg", null, [
     "string",

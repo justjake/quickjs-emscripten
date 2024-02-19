@@ -54,7 +54,7 @@ Base abstract class that helps implement [Disposable](../interfaces/Disposable.m
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:553
+packages/quickjs-emscripten-core/dist/index.d.ts:561
 
 ## Methods
 
@@ -74,7 +74,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:561
+packages/quickjs-emscripten-core/dist/index.d.ts:569
 
 ***
 
@@ -94,7 +94,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:557
+packages/quickjs-emscripten-core/dist/index.d.ts:565
 
 ***
 

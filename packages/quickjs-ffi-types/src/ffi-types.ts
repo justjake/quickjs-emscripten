@@ -108,6 +108,14 @@ export type IntrinsicsFlags = Brand<number, "IntrinsicsFlags">
  */
 export type EvalDetectModule = Brand<number, "EvalDetectModule">
 
+/**
+ * State of a promise.
+ */
+export type JSPromiseStateEnum = Brand<
+  (typeof JSPromiseStateEnum)[keyof typeof JSPromiseStateEnum],
+  "JSPromiseStateEnum"
+>
+
 export function assertSync<Args extends any[], R>(fn: (...args: Args) => R): (...args: Args) => R {
   return function mustBeSync(...args: Args): R {
     const result = fn(...args)
@@ -161,4 +169,10 @@ export const IntrinsicsFlags = {
   BigDecimal: 1 << 13,
   OperatorOverloading: 1 << 14,
   BignumExt: 1 << 15,
+} as const
+
+export const JSPromiseStateEnum = {
+  Pending: 0,
+  Fulfilled: 1,
+  Rejected: 2,
 } as const

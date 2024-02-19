@@ -19,6 +19,7 @@ import {
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
+  JSPromiseStateEnum,
 } from "."
 
 /**
@@ -135,9 +136,14 @@ export interface QuickJSFFI {
   QTS_Eval: (
     ctx: JSContextPointer,
     js_code: BorrowedHeapCharPointer,
+    js_code_length: number,
     filename: string,
     detectModule: EvalDetectModule,
     evalFlags: EvalFlags,
+  ) => JSValuePointer
+  QTS_GetModuleNamespace: (
+    ctx: JSContextPointer,
+    module_func_obj: JSValuePointer | JSValueConstPointer,
   ) => JSValuePointer
   QTS_Typeof: (
     ctx: JSContextPointer,
@@ -147,6 +153,14 @@ export interface QuickJSFFI {
   QTS_NewPromiseCapability: (
     ctx: JSContextPointer,
     resolve_funcs_out: JSValuePointerPointer,
+  ) => JSValuePointer
+  QTS_PromiseState: (
+    ctx: JSContextPointer,
+    promise: JSValuePointer | JSValueConstPointer,
+  ) => JSPromiseStateEnum
+  QTS_PromiseResult: (
+    ctx: JSContextPointer,
+    promise: JSValuePointer | JSValueConstPointer,
   ) => JSValuePointer
   QTS_TestStringArg: (string: string) => void
   QTS_BuildIsDebug: () => number
