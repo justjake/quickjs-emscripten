@@ -644,11 +644,9 @@ MaybeAsync(JSBorrowedChar *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
   return QTS_GetString(ctx, obj);
 }
 
-MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
-  size_t js_code_len = strlen(js_code);
-
+MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t js_code_length, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
   if (detectModule) {
-    if (JS_DetectModule((const char *)js_code, js_code_len)) {
+    if (JS_DetectModule((const char *)js_code, js_code_length)) {
       QTS_DEBUG("QTS_Eval: Detected module = true");
       evalFlags |= JS_EVAL_TYPE_MODULE;
     } else {
@@ -658,7 +656,102 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, const 
     QTS_DEBUG("QTS_Eval: do not detect module");
   }
 
-  return jsvalue_to_heap(JS_Eval(ctx, js_code, strlen(js_code), filename, evalFlags));
+  JSModuleDef *module;
+  JSValue eval_result;
+  if (
+      evalFlags & JS_EVAL_TYPE_MODULE != 0 &&
+      evalFlags & JS_EVAL_FLAG_COMPILE_ONLY == 0) {
+    QTS_DEBUG("QTS_Eval: JS_EVAL_TYPE_MODULE");
+    JSValue func_obj = JS_Eval(ctx, js_code, js_code_length, filename, evalFlags | JS_EVAL_FLAG_COMPILE_ONLY);
+    if (JS_IsException(func_obj)) {
+      return jsvalue_to_heap(func_obj);
+    }
+
+    if (JS_VALUE_GET_TAG(func_obj) != JS_TAG_MODULE) {
+      JS_FreeValue(ctx, func_obj);
+      return jsvalue_to_heap(JS_ThrowInternalError(ctx, "Module code compiled to non-module object"));
+    }
+
+    module = JS_VALUE_GET_PTR(func_obj);
+    if (module == NULL) {
+      JS_FreeValue(func_obj);
+      return jsvalue_to_heap(JS_ThrowInternalError(ctx, "Module compiled to null"));
+    }
+
+    eval_result = JS_EvalFunction(ctx, func_obj);
+    JS_FreeValue(ctx, func_obj);
+  } else {
+    eval_result = JS_Eval(ctx, js_code, js_code_length, filename, evalFlags);
+  }
+
+  if (
+      // Error - nothing more to do.
+      JS_IsException(eval_result)
+      // Non-module eval - return the result
+      || (evalFlags & JS_EVAL_TYPE_MODULE == 0)) {
+    return jsvalue_to_heap(eval_result);
+  }
+
+  // We eval'd a module
+  // Make our return type `ModuleExports | Promise<ModuleExports>>`
+  JSPromiseStateEnum state = JS_PromiseState(eval_result);
+  if (
+      // quickjs@2024-01-14 evaluating module
+      // produced a promise
+      state == JS_PROMISE_FULFILLED
+      // quickjs in compile mode
+      // quickjs-ng before rebasing on quickjs@2024-01-14
+      // not a promise.
+      || state == -1) {
+    JS_FreeValue(ctx, eval_result);
+    return jsvalue_to_heap(JS_GetModuleNamespace(ctx, module));
+  } else if (state == JS_PROMISE_REJECTED) {
+    // Module failed, just return the rejected result.
+    return jsvalue_to_heap(eval_result);
+  } else if (state == JS_PROMISE_PENDING) {
+    // return moduleDone.then(() => module_namespace)
+    JSValue module_namespace = JS_GetModuleNamespace(ctx, module);
+    if (JS_IsException(module_namespace)) {
+      JS_FreeValue(ctx, eval_result);
+      return jsvalue_to_heap(module_namespace);
+    }
+
+    JSValue then_resolve_module_namespace = JS_NewCFunctionData(ctx, &qts_resolve_func_data, 0, 0, 1, &module_namespace);
+    JS_FreeValue(ctx, module_namespace);
+    if (JS_IsException(then_resolve_module_namespace)) {
+      JS_FreeValue(ctx, eval_result);
+      return jsvalue_to_heap(then_resolve_module_namespace);
+    }
+
+    JSAtom then_atom = JS_NewAtom(ctx, "then");
+    JSValue new_promise = JS_Invoke(ctx, eval_result, then_atom, 1, &then_resolve_module_namespace);
+    JS_FreeAtom(ctx, then_atom);
+    JS_FreeValue(ctx, then_resolve_module_namespace);
+    JS_FreeValue(ctx, eval_result);
+
+    return jsvalue_to_heap(new_promise);
+  } else {
+    // Unknown case
+    return jsvalue_to_heap(eval_result);
+  }
+}
+
+JSValue qts_resolve_func_data(
+    JSContext *ctx,
+    JSValueConst this_val,
+    int argc,
+    JSValueConst *argv int magic,
+    JSValue *func_data) {
+  return JS_DupValue(ctx, func_data[0]);
+}
+
+JSValue *QTS_GetModuleNamespace(JSContext *ctx, JSValueConst *module_func_obj) {
+  if (JS_VALUE_GET_TAG(*module_func_obj) != JS_TAG_MODULE) {
+    return jsvalue_to_heap(JS_ThrowInternalError(ctx, "Not a module"));
+  }
+
+  JSModuleDef *module = JS_VALUE_GET_PTR(*module_func_obj);
+  return jsvalue_to_heap(JS_GetModuleNamespace(ctx, module));
 }
 
 OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
