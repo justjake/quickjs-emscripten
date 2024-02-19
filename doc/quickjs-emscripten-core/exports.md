@@ -153,7 +153,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:481
+packages/quickjs-ffi-types/dist/index.d.ts:483
 
 ***
 
@@ -565,7 +565,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:71
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:281](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L281)
+[packages/quickjs-emscripten-core/src/types.ts:286](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L286)
 
 ***
 
@@ -654,7 +654,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:480
+packages/quickjs-ffi-types/dist/index.d.ts:482
 
 ***
 

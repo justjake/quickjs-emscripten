@@ -75,7 +75,7 @@ A context here may be allocated if one is needed by the runtime, eg for [compute
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:280
+packages/quickjs-emscripten-core/dist/index.d.ts:283
 
 ## Accessors
 
@@ -93,7 +93,7 @@ false after the object has been [dispose](QuickJSAsyncRuntime.md#dispose-1)d
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:187
+packages/quickjs-emscripten-core/dist/index.d.ts:190
 
 ## Methods
 
@@ -113,7 +113,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:561
+packages/quickjs-emscripten-core/dist/index.d.ts:569
 
 ***
 
@@ -141,7 +141,7 @@ QuickJSWrongOwner if owned by a different runtime.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:274
+packages/quickjs-emscripten-core/dist/index.d.ts:277
 
 ***
 
@@ -165,7 +165,7 @@ For a human-digestible representation, see [dumpMemoryUsage](QuickJSAsyncRuntime
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:259
+packages/quickjs-emscripten-core/dist/index.d.ts:262
 
 ***
 
@@ -185,7 +185,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:188
+packages/quickjs-emscripten-core/dist/index.d.ts:191
 
 ***
 
@@ -206,7 +206,7 @@ For programmatic access to this information, see [computeMemoryUsage](QuickJSAsy
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:264
+packages/quickjs-emscripten-core/dist/index.d.ts:267
 
 ***
 
@@ -244,7 +244,7 @@ functions or rejected promises. Those errors are available by calling
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:246
+packages/quickjs-emscripten-core/dist/index.d.ts:249
 
 ***
 
@@ -267,7 +267,7 @@ true if there is at least one pendingJob queued up.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:214
+packages/quickjs-emscripten-core/dist/index.d.ts:217
 
 ***
 
@@ -295,7 +295,7 @@ You should dispose a created context before disposing this runtime.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:298
+packages/quickjs-emscripten-core/dist/index.d.ts:301
 
 ***
 
@@ -316,7 +316,7 @@ See [setInterruptHandler](QuickJSAsyncRuntime.md#setinterrupthandler).
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:228
+packages/quickjs-emscripten-core/dist/index.d.ts:231
 
 ***
 
@@ -336,7 +336,7 @@ Remove the the loader set by [setModuleLoader](QuickJSAsyncRuntime.md#setmodulel
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:207
+packages/quickjs-emscripten-core/dist/index.d.ts:210
 
 ***
 
@@ -364,7 +364,7 @@ The interrupt handler can be removed with [removeInterruptHandler](QuickJSAsyncR
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:223
+packages/quickjs-emscripten-core/dist/index.d.ts:226
 
 ***
 
@@ -392,7 +392,7 @@ See the [pull request](https://github.com/justjake/quickjs-emscripten/pull/114) 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:307
+packages/quickjs-emscripten-core/dist/index.d.ts:310
 
 ***
 
@@ -417,7 +417,7 @@ To remove the limit, set to `-1`.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:251
+packages/quickjs-emscripten-core/dist/index.d.ts:254
 
 ***
 
@@ -446,7 +446,7 @@ The loader can be removed with [removeModuleLoader](QuickJSAsyncRuntime.md#remov
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:299
+packages/quickjs-emscripten-core/dist/index.d.ts:302
 
 ***
 

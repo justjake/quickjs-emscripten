@@ -37,7 +37,7 @@ const contextWithoutDateOrEval = runtime.newContext({
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:495
+packages/quickjs-emscripten-core/dist/index.d.ts:498
 
 ***
 

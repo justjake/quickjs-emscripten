@@ -144,7 +144,7 @@
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:310
+packages/quickjs-emscripten-core/dist/index.d.ts:313
 
 ***
 
@@ -167,7 +167,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:481
+packages/quickjs-ffi-types/dist/index.d.ts:483
 
 ***
 
@@ -193,7 +193,7 @@ by the runtime.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:119
+packages/quickjs-emscripten-core/dist/index.d.ts:122
 
 ***
 
@@ -218,7 +218,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:112
+packages/quickjs-emscripten-core/dist/index.d.ts:115
 
 ***
 
@@ -300,7 +300,7 @@ Language features that can be enabled or disabled in a QuickJSContext.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:440
+packages/quickjs-emscripten-core/dist/index.d.ts:443
 
 ***
 
@@ -359,7 +359,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:391
+packages/quickjs-emscripten-core/dist/index.d.ts:394
 
 ***
 
@@ -369,7 +369,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:391
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:392
+packages/quickjs-emscripten-core/dist/index.d.ts:395
 
 ***
 
@@ -379,7 +379,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:392
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:390
+packages/quickjs-emscripten-core/dist/index.d.ts:393
 
 ***
 
@@ -389,7 +389,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:390
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:402
+packages/quickjs-emscripten-core/dist/index.d.ts:405
 
 ***
 
@@ -399,7 +399,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:402
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:403
+packages/quickjs-emscripten-core/dist/index.d.ts:406
 
 ***
 
@@ -409,7 +409,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:403
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:401
+packages/quickjs-emscripten-core/dist/index.d.ts:404
 
 ***
 
@@ -445,7 +445,7 @@ You can do so from Javascript by calling the .dispose() method.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:381
+packages/quickjs-emscripten-core/dist/index.d.ts:384
 
 ***
 
@@ -464,7 +464,7 @@ quickjs-emscripten takes care of disposing JSValueConst references.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:365
+packages/quickjs-emscripten-core/dist/index.d.ts:368
 
 ***
 
@@ -540,7 +540,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:80
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1460
+packages/quickjs-emscripten-core/dist/index.d.ts:1481
 
 ***
 
@@ -579,7 +579,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:71
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:523
+packages/quickjs-emscripten-core/dist/index.d.ts:531
 
 ***
 
@@ -593,7 +593,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:523
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1401
+packages/quickjs-emscripten-core/dist/index.d.ts:1422
 
 ***
 
@@ -645,7 +645,7 @@ You must dispose of any handles you create by calling the `.dispose()` method.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:389
+packages/quickjs-emscripten-core/dist/index.d.ts:392
 
 ***
 
@@ -658,7 +658,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:735
+packages/quickjs-emscripten-core/dist/index.d.ts:743
 
 ***
 
@@ -668,7 +668,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:735
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:480
+packages/quickjs-ffi-types/dist/index.d.ts:482
 
 ***
 
@@ -681,7 +681,7 @@ be disposed.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:354
+packages/quickjs-emscripten-core/dist/index.d.ts:357
 
 ***
 
@@ -856,7 +856,7 @@ The default [Intrinsics](exports.md#intrinsics) language features enabled in a Q
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:462
+packages/quickjs-emscripten-core/dist/index.d.ts:465
 
 ***
 
@@ -1210,7 +1210,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1459
+packages/quickjs-emscripten-core/dist/index.d.ts:1480
 
 ***
 
@@ -1339,7 +1339,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1448
+packages/quickjs-emscripten-core/dist/index.d.ts:1469
 
 ***
 
@@ -1401,7 +1401,7 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1423
+packages/quickjs-emscripten-core/dist/index.d.ts:1444
 
 ***
 
@@ -1428,7 +1428,7 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1503
+packages/quickjs-emscripten-core/dist/index.d.ts:1524
 
 ***
 
@@ -1451,7 +1451,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1511
+packages/quickjs-emscripten-core/dist/index.d.ts:1532
 
 ***
 

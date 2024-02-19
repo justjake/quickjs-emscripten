@@ -84,7 +84,7 @@ this constructor directly.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:702
+packages/quickjs-emscripten-core/dist/index.d.ts:710
 
 ## Properties
 
@@ -94,7 +94,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:702
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:684
+packages/quickjs-emscripten-core/dist/index.d.ts:692
 
 ***
 
@@ -116,7 +116,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:684
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:727
+packages/quickjs-emscripten-core/dist/index.d.ts:735
 
 ***
 
@@ -130,7 +130,7 @@ are finished with it.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:690
+packages/quickjs-emscripten-core/dist/index.d.ts:698
 
 ***
 
@@ -140,7 +140,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:690
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:683
+packages/quickjs-emscripten-core/dist/index.d.ts:691
 
 ***
 
@@ -165,7 +165,7 @@ callbacks.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:725
+packages/quickjs-emscripten-core/dist/index.d.ts:733
 
 ***
 
@@ -190,7 +190,7 @@ callbacks.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:716
+packages/quickjs-emscripten-core/dist/index.d.ts:724
 
 ***
 
@@ -202,7 +202,7 @@ A native promise that will resolve once this deferred is settled.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:694
+packages/quickjs-emscripten-core/dist/index.d.ts:702
 
 ## Accessors
 
@@ -220,7 +220,7 @@ false after the object has been [dispose](QuickJSDeferredPromise.md#dispose)d
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:726
+packages/quickjs-emscripten-core/dist/index.d.ts:734
 
 ## Methods
 
@@ -244,7 +244,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:561
+packages/quickjs-emscripten-core/dist/index.d.ts:569
 
 ***
 

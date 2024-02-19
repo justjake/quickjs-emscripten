@@ -26,7 +26,7 @@
 
 ## Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:405
+packages/quickjs-emscripten-core/dist/index.d.ts:408
 
 ***
 

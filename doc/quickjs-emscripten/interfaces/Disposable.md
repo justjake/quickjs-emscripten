@@ -26,7 +26,7 @@ Use [Scope](../classes/Scope.md) to manage cleaning up multiple disposables.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:539
+packages/quickjs-emscripten-core/dist/index.d.ts:547
 
 ## Methods
 
@@ -42,7 +42,7 @@ A method that is used to release resources held by an object. Called by the sema
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:543
+packages/quickjs-emscripten-core/dist/index.d.ts:551
 
 ***
 
@@ -58,7 +58,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:534
+packages/quickjs-emscripten-core/dist/index.d.ts:542
 
 ***
 

@@ -308,7 +308,7 @@ socket.on("data", chunk => {
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1081](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1081)
+[packages/quickjs-emscripten-core/src/context.ts:1101](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1101)
 
 ***
 
@@ -389,7 +389,7 @@ Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:907](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L907)
+[packages/quickjs-emscripten-core/src/context.ts:927](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L927)
 
 ***
 
@@ -423,7 +423,7 @@ socket.write(dataLifetime?.value)
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1064](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1064)
+[packages/quickjs-emscripten-core/src/context.ts:1084](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1084)
 
 ***
 
@@ -432,7 +432,20 @@ socket.write(dataLifetime?.value)
 > **evalCode**(`code`, `filename`, `options`?): [`VmCallResult`](../exports.md#vmcallresultvmhandle)\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
 
 Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
-Evaluates the Javascript source `code` in the global scope of this VM.
+
+Evaluates `code`, as though it's in a file named `filename`, with options `options`.
+
+- When `options.type` is `"global"`, the code is evaluated in the global
+  scope of the QuickJSContext, and the return value is the result of the last
+  expression.
+- When `options.type` is `"module"`, the code is evaluated is a module scope.
+  It may use `import` and `export` if [runtime](QuickJSAsyncContext.md#runtime).[QuickJSRuntime#setModuleLoader](QuickJSRuntime.md#setmoduleloader) was called.
+  It may use top-level await if supported by the underlying QuickJS library.
+  The return value is the module's exports, or a promise for the module's exports.
+- When `options.type` is unset, the code is evaluated as a module if it
+  contains an `import` or `export` statement, otherwise it is evaluated in
+  the global scope.
+
 When working with async code, you many need to call [runtime](QuickJSAsyncContext.md#runtime).[QuickJSRuntime#executePendingJobs](QuickJSRuntime.md#executependingjobs)
 to execute callbacks pending after synchronous evaluation returns.
 
@@ -473,7 +486,7 @@ interrupted, the error will have name `InternalError` and message
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:837](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L837)
+[packages/quickjs-emscripten-core/src/context.ts:850](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L850)
 
 ***
 
@@ -729,7 +742,7 @@ See [Emscripten's docs on Asyncify](https://emscripten.org/docs/porting/asyncify
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context-asyncify.ts:90](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context-asyncify.ts#L90)
+[packages/quickjs-emscripten-core/src/context-asyncify.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context-asyncify.ts#L91)
 
 ***
 
@@ -1228,7 +1241,7 @@ Throw an error in the VM, interrupted whatever current execution is in progress 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:867](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L867)
+[packages/quickjs-emscripten-core/src/context.ts:887](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L887)
 
 ***
 
@@ -1287,7 +1300,7 @@ If the result is an error, converts the error to a native object and throws the 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:936](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L936)
+[packages/quickjs-emscripten-core/src/context.ts:956](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L956)
 
 ***
 

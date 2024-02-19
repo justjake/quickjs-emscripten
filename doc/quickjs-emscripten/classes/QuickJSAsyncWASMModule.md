@@ -50,7 +50,7 @@ Synchronous evalCode is not supported.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1386
+packages/quickjs-emscripten-core/dist/index.d.ts:1407
 
 ***
 
@@ -80,7 +80,7 @@ See the documentation for [QuickJSWASMModule#evalCode](QuickJSWASMModule.md#eval
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1398
+packages/quickjs-emscripten-core/dist/index.d.ts:1419
 
 ***
 
@@ -104,7 +104,7 @@ and provide the [CustomizeVariantOptions#wasmMemory](../interfaces/CustomizeVari
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1342
+packages/quickjs-emscripten-core/dist/index.d.ts:1363
 
 ***
 
@@ -130,7 +130,7 @@ be disposed when the context is disposed.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1384
+packages/quickjs-emscripten-core/dist/index.d.ts:1405
 
 ***
 
@@ -156,7 +156,7 @@ concurrent async actions, create multiple WebAssembly modules.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1378
+packages/quickjs-emscripten-core/dist/index.d.ts:1399
 
 ***
 
