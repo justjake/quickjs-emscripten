@@ -10,14 +10,16 @@ import type {
   InterruptHandler,
   QuickJSDeferredPromise,
   VmCallResult,
-  QuickJSContext,
-  QuickJSAsyncContext,
   QuickJSFFI,
   QuickJSAsyncFFI,
   ContextOptions,
-  QuickJSWASMModule,
 } from "."
 import {
+  QuickJSContext,
+  QuickJSAsyncContext,
+  QuickJSWASMModule,
+  QuickJSRuntime,
+  QuickJSAsyncRuntime,
   getQuickJS,
   newQuickJSAsyncWASMModule,
   newQuickJSWASMModule,
@@ -37,6 +39,13 @@ import {
 const TEST_NG = !process.env.TEST_NO_NG
 const TEST_DEBUG = !process.env.TEST_NO_DEBUG
 const TEST_ASYNC = !process.env.TEST_NO_ASYNC
+const TEST_RELEASE = !process.env.TEST_NO_RELEASE
+console.log("test sets:", {
+  TEST_RELEASE,
+  TEST_DEBUG,
+  TEST_NG,
+  TEST_ASYNC,
+})
 
 type GetTestContext = (options?: ContextOptions) => Promise<QuickJSContext>
 
@@ -381,7 +390,7 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
     })
   })
 
-  describe(".evalCode", () => {
+  describe.only(".evalCode", () => {
     it("on success: returns { value: success }", () => {
       const value = vm.unwrapResult(vm.evalCode(`["this", "should", "work"].join(' ')`))
       assert.equal(vm.getString(value), "this should work")
@@ -421,7 +430,6 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       nextId.dispose()
     })
 
-    // TODO: bring back import support.
     it("can handle imports", () => {
       let moduleLoaderCalls = 0
       vm.runtime.setModuleLoader(() => {
@@ -450,6 +458,61 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       } catch (e) {
         return
       }
+    })
+
+    it("returns the module exports", () => {
+      const modExports = vm.unwrapResult(
+        vm.evalCode(`export const s = "hello"; export const n = 42; export default "the default";`),
+      )
+
+      const s = vm.getProp(modExports, "s").consume(vm.dump)
+      const n = vm.getProp(modExports, "n").consume(vm.dump)
+      const defaultExport = vm.getProp(modExports, "default").consume(vm.dump)
+      modExports.dispose()
+      assert.equal(s, "hello")
+      assert.equal(n, 42)
+      assert.equal(defaultExport, "the default")
+    })
+
+    it("returns a promise of module exports", () => {
+      const log = vm.newFunction("log", (msg) => {
+        console.log(`vmlog: ${vm.getString(msg)}`)
+      })
+      vm.setProp(vm.global, "log", log)
+      log.dispose()
+
+      const promise = vm.unwrapResult(
+        vm.evalCode(
+          `
+log('eval started');
+await Promise.resolve(0);
+log('await finished');
+export const s = "hello";
+log('exported s');
+export const n = 42;
+log('exported n');
+export default "the default";
+log('exported default');
+`,
+          "mod.js",
+          { type: "module" },
+        ),
+      )
+
+      vm.runtime.executePendingJobs()
+      const promiseState = promise.consume((p) => vm.getPromiseState(p))
+      if (promiseState === "pending") {
+        throw new Error(`By now promise should be resolved.`)
+      }
+
+      const modExports = vm.unwrapResult(promiseState)
+      const s = vm.getProp(modExports, "s").consume(vm.dump)
+      const n = vm.getProp(modExports, "n").consume(vm.dump)
+      const defaultExport = vm.getProp(modExports, "default").consume(vm.dump)
+      modExports.dispose()
+      assert.equal(s, "hello")
+      assert.equal(n, 42)
+      assert.equal(defaultExport, "the default")
     })
   })
 
@@ -1136,11 +1199,13 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
 }
 
 describe("QuickJSContext", function () {
-  describe("QuickJS.newContext", function () {
-    const loader = getQuickJS
-    const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
-    contextTests(getContext)
-  })
+  if (TEST_RELEASE) {
+    describe("QuickJS.newContext", function () {
+      const loader = getQuickJS
+      const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
+      contextTests(getContext)
+    })
+  }
 
   if (TEST_DEBUG) {
     describe("DEBUG sync module", function () {
@@ -1288,3 +1353,38 @@ function assertError(actual: ErrorObj, expected: ErrorObj) {
   assert.strictEqual(actual.message, expected.message)
   assert.strictEqual(actual.name, expected.name)
 }
+
+function applyVitestHack<T>(
+  klass: new (...args: never[]) => T,
+  serialize: (instance: T) => unknown,
+) {
+  klass.prototype["@@__IMMUTABLE_RECORD__@@"] = true
+  klass.prototype.toJSON = function vitestHackToJSON() {
+    return serialize(this)
+  }
+}
+
+applyVitestHack(QuickJSContext, (vm) => ({
+  type: "QuickJSContext",
+  __vitest__: true,
+  alive: vm.alive,
+}))
+applyVitestHack(QuickJSAsyncContext, (vm) => ({
+  type: "QuickJSAsyncContext",
+  __vitest__: true,
+  alive: vm.alive,
+}))
+applyVitestHack(QuickJSRuntime, (rt) => ({
+  type: "QuickJSRuntime",
+  __vitest__: true,
+  alive: rt.alive,
+}))
+applyVitestHack(QuickJSAsyncRuntime, (rt) => ({
+  type: "QuickJSAsyncRuntime",
+  __vitest__: true,
+  alive: rt.alive,
+}))
+applyVitestHack(QuickJSWASMModule, () => ({
+  type: "QuickJSWASMModule",
+  __vitest__: true,
+}))

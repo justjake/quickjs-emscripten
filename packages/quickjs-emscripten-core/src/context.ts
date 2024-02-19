@@ -11,7 +11,7 @@ import type {
   EitherFFI,
 } from "@jitl/quickjs-ffi-types"
 import { debugLog } from "./debug"
-import { QuickJSDeferredPromise } from "./deferred-promise"
+import { JSPromiseState, QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import { QuickJSUnwrapError } from "./errors"
@@ -647,6 +647,30 @@ export class QuickJSContext
     return new Lifetime(this.module.HEAPU8.subarray(ptr, ptr + len), undefined, () =>
       this.module._free(ptr),
     )
+  }
+
+  getPromiseState(handle: QuickJSHandle): JSPromiseState {
+    this.runtime.assertOwned(handle)
+    const state = this.ffi.QTS_PromiseState(this.ctx.value, handle.value)
+    if (state < 0) {
+      // Not a promise, but act like `await` would with non-promise, and just return the value.
+      return { type: "fulfilled", value: handle, notAPromise: true }
+    }
+
+    if (state === 0) {
+      return { type: "pending" }
+    }
+
+    const ptr = this.ffi.QTS_PromiseResult(this.ctx.value, handle.value)
+    const result = this.memory.heapValueHandle(ptr)
+    if (state === 1) {
+      return { type: "fulfilled", value: result }
+    }
+    if (state === 2) {
+      return { type: "rejected", error: result }
+    }
+    result.dispose()
+    throw new Error(`Unknown JSPromiseStateEnum: ${state}`)
   }
 
   /**

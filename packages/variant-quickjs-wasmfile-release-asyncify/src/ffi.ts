@@ -19,6 +19,7 @@ import {
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
+  JSPromiseStateEnum,
   assertSync,
 } from "@jitl/quickjs-ffi-types"
 
@@ -384,6 +385,16 @@ export class QuickJSAsyncFFI {
     "number",
     "number",
   ])
+
+  QTS_PromiseState: (
+    ctx: JSContextPointer,
+    promise: JSValuePointer | JSValueConstPointer,
+  ) => JSPromiseStateEnum = this.module.cwrap("QTS_PromiseState", "number", ["number", "number"])
+
+  QTS_PromiseResult: (
+    ctx: JSContextPointer,
+    promise: JSValuePointer | JSValueConstPointer,
+  ) => JSValuePointer = this.module.cwrap("QTS_PromiseResult", "number", ["number", "number"])
 
   QTS_TestStringArg: (string: string) => void = this.module.cwrap("QTS_TestStringArg", null, [
     "string",

@@ -4,6 +4,11 @@ import type { QuickJSRuntime } from "./runtime"
 import type { QuickJSContext } from "./context"
 export type { PromiseExecutor } from "./types"
 
+export type JSPromiseState =
+  | { type: "pending" }
+  | { type: "fulfilled"; value: QuickJSHandle; error?: undefined; notAPromise?: boolean }
+  | { type: "rejected"; error: QuickJSHandle }
+
 /**
  * QuickJSDeferredPromise wraps a QuickJS promise {@link handle} and allows
  * {@link resolve}ing or {@link reject}ing that promise. Use it to bridge asynchronous
