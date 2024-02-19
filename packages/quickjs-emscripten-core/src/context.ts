@@ -651,6 +651,19 @@ export class QuickJSContext
     )
   }
 
+  /**
+   * Get the current state of a QuickJS promise, see {@link JSPromiseState} for the possible states.
+   * This can be used to expect a promise to be fulfilled when combined with {@link unwrapResult}:
+   *
+   * ```typescript
+   * const promiseHandle = context.evalCode(`Promise.resolve(42)`);
+   * const resultHandle = context.unwrapResult(
+   *  context.getPromiseState(promiseHandle)
+   * );
+   * context.getNumber(resultHandle) === 42; // true
+   * resultHandle.dispose();
+   * ```
+   */
   getPromiseState(handle: QuickJSHandle): JSPromiseState {
     this.runtime.assertOwned(handle)
     const state = this.ffi.QTS_PromiseState(this.ctx.value, handle.value)

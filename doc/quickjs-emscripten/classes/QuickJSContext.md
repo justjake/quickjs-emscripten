@@ -304,7 +304,7 @@ value.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1140
+packages/quickjs-emscripten-core/dist/index.d.ts:1153
 
 ***
 
@@ -333,7 +333,7 @@ socket.on("data", chunk => {
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1246
+packages/quickjs-emscripten-core/dist/index.d.ts:1259
 
 ***
 
@@ -364,7 +364,7 @@ Javascript string or number (which will be converted automatically to a JSValue)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1126
+packages/quickjs-emscripten-core/dist/index.d.ts:1139
 
 ***
 
@@ -414,7 +414,7 @@ Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1199
+packages/quickjs-emscripten-core/dist/index.d.ts:1212
 
 ***
 
@@ -444,7 +444,7 @@ socket.write(dataLifetime?.value)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1233
+packages/quickjs-emscripten-core/dist/index.d.ts:1246
 
 ***
 
@@ -507,7 +507,7 @@ interrupted, the error will have name `InternalError` and message
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1174
+packages/quickjs-emscripten-core/dist/index.d.ts:1187
 
 ***
 
@@ -581,6 +581,18 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1070
 
 > **getPromiseState**(`handle`): [`JSPromiseState`](../exports.md#jspromisestate)
 
+Get the current state of a QuickJS promise, see [JSPromiseState](../exports.md#jspromisestate) for the possible states.
+This can be used to expect a promise to be fulfilled when combined with [unwrapResult](QuickJSContext.md#unwrapresult):
+
+```typescript
+const promiseHandle = context.evalCode(`Promise.resolve(42)`);
+const resultHandle = context.unwrapResult(
+ context.getPromiseState(promiseHandle)
+);
+context.getNumber(resultHandle) === 42; // true
+resultHandle.dispose();
+```
+
 #### Parameters
 
 • **handle**: [`QuickJSHandle`](../exports.md#quickjshandle)
@@ -591,7 +603,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1070
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1088
+packages/quickjs-emscripten-core/dist/index.d.ts:1101
 
 ***
 
@@ -621,7 +633,7 @@ Javascript string (which will be converted automatically).
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1107
+packages/quickjs-emscripten-core/dist/index.d.ts:1120
 
 ***
 
@@ -1101,7 +1113,7 @@ You may need to call [runtime](QuickJSContext.md#runtime).[QuickJSRuntime#execut
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1099
+packages/quickjs-emscripten-core/dist/index.d.ts:1112
 
 ***
 
@@ -1138,7 +1150,7 @@ properties.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1119
+packages/quickjs-emscripten-core/dist/index.d.ts:1132
 
 ***
 
@@ -1158,7 +1170,7 @@ Throw an error in the VM, interrupted whatever current execution is in progress 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1186
+packages/quickjs-emscripten-core/dist/index.d.ts:1199
 
 ***
 
@@ -1213,7 +1225,7 @@ If the result is an error, converts the error to a native object and throws the 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1206
+packages/quickjs-emscripten-core/dist/index.d.ts:1219
 
 ***
 

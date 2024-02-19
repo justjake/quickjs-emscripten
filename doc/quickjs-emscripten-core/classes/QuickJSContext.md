@@ -304,7 +304,7 @@ value.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:821](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L821)
+[packages/quickjs-emscripten-core/src/context.ts:834](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L834)
 
 ***
 
@@ -333,7 +333,7 @@ socket.on("data", chunk => {
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1132](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1132)
+[packages/quickjs-emscripten-core/src/context.ts:1145](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1145)
 
 ***
 
@@ -364,7 +364,7 @@ Javascript string or number (which will be converted automatically to a JSValue)
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:772](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L772)
+[packages/quickjs-emscripten-core/src/context.ts:785](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L785)
 
 ***
 
@@ -414,7 +414,7 @@ Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:958](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L958)
+[packages/quickjs-emscripten-core/src/context.ts:971](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L971)
 
 ***
 
@@ -444,7 +444,7 @@ socket.write(dataLifetime?.value)
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1115](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1115)
+[packages/quickjs-emscripten-core/src/context.ts:1128](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1128)
 
 ***
 
@@ -507,7 +507,7 @@ interrupted, the error will have name `InternalError` and message
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:881](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L881)
+[packages/quickjs-emscripten-core/src/context.ts:894](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L894)
 
 ***
 
@@ -581,6 +581,18 @@ Converts `handle` into a Javascript number.
 
 > **getPromiseState**(`handle`): [`JSPromiseState`](../exports.md#jspromisestate)
 
+Get the current state of a QuickJS promise, see [JSPromiseState](../exports.md#jspromisestate) for the possible states.
+This can be used to expect a promise to be fulfilled when combined with [unwrapResult](QuickJSContext.md#unwrapresult):
+
+```typescript
+const promiseHandle = context.evalCode(`Promise.resolve(42)`);
+const resultHandle = context.unwrapResult(
+ context.getPromiseState(promiseHandle)
+);
+context.getNumber(resultHandle) === 42; // true
+resultHandle.dispose();
+```
+
 #### Parameters
 
 • **handle**: [`QuickJSHandle`](../exports.md#quickjshandle)
@@ -591,7 +603,7 @@ Converts `handle` into a Javascript number.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:654](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L654)
+[packages/quickjs-emscripten-core/src/context.ts:667](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L667)
 
 ***
 
@@ -621,7 +633,7 @@ Javascript string (which will be converted automatically).
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:736](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L736)
+[packages/quickjs-emscripten-core/src/context.ts:749](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L749)
 
 ***
 
@@ -1101,7 +1113,7 @@ You may need to call [runtime](QuickJSContext.md#runtime).[QuickJSRuntime#execut
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:693](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L693)
+[packages/quickjs-emscripten-core/src/context.ts:706](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L706)
 
 ***
 
@@ -1138,7 +1150,7 @@ properties.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:757](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L757)
+[packages/quickjs-emscripten-core/src/context.ts:770](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L770)
 
 ***
 
@@ -1158,7 +1170,7 @@ Throw an error in the VM, interrupted whatever current execution is in progress 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:918](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L918)
+[packages/quickjs-emscripten-core/src/context.ts:931](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L931)
 
 ***
 
@@ -1213,7 +1225,7 @@ If the result is an error, converts the error to a native object and throws the 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:987](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L987)
+[packages/quickjs-emscripten-core/src/context.ts:1000](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1000)
 
 ***
 
