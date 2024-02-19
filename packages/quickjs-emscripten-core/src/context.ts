@@ -816,7 +816,20 @@ export class QuickJSContext
 
   /**
    * Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
-   * Evaluates the Javascript source `code` in the global scope of this VM.
+   *
+   * Evaluates `code`, as though it's in a file named `filename`, with options `options`.
+   *
+   * - When `options.type` is `"global"`, the code is evaluated in the global
+   *   scope of the QuickJSContext, and the return value is the result of the last
+   *   expression.
+   * - When `options.type` is `"module"`, the code is evaluated is a module scope.
+   *   It may use `import` and `export` if {@link runtime}.{@link QuickJSRuntime#setModuleLoader} was called.
+   *   It may use top-level await if supported by the underlying QuickJS library.
+   *   The return value is the module's exports, or a promise for the module's exports.
+   * - When `options.type` is unset, the code is evaluated as a module if it
+   *   contains an `import` or `export` statement, otherwise it is evaluated in
+   *   the global scope.
+   *
    * When working with async code, you many need to call {@link runtime}.{@link QuickJSRuntime#executePendingJobs}
    * to execute callbacks pending after synchronous evaluation returns.
    *
