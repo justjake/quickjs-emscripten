@@ -390,7 +390,7 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
     })
   })
 
-  describe.only(".evalCode", () => {
+  describe(".evalCode", () => {
     it("on success: returns { value: success }", () => {
       const value = vm.unwrapResult(vm.evalCode(`["this", "should", "work"].join(' ')`))
       assert.equal(vm.getString(value), "this should work")
