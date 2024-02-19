@@ -67,6 +67,10 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
   })
 
   after(() => {
+    if (!ffi) {
+      return
+    }
+
     if (ffi.QTS_BuildIsAsyncify()) {
       // Asyncify explodes during leak checking.
       return
