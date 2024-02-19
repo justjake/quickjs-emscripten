@@ -1,15 +1,22 @@
 # Changelog
 
+## v0.29.0
+
+- [#154](https://github.com/justjake/quickjs-emscripten/pull/154) ESModule exports
+  - `context.evalCode(code, filename, { type: "module" })` or when `code` is detected to be a module: now returns a handle to the module's exports, or a promise handle that resolves to the module's exports.
+  - Added `context.getPromiseState(handle)` which returns the state of a promise handle, and can be unwrapped with `context.unwrapResult(promiseState)`.
+- [#159](https://github.com/justjake/quickjs-emscripten/pull/159) add LICENSE file and SPDX license identifiers to all packages.
+
 ## v0.28.0
 
-- [#155] Update library versions and add versions to documentation.
+- [#155](https://github.com/justjake/quickjs-emscripten/pull/155) Update library versions and add versions to documentation.
   - quickjs version [2024-01-13+229b07b9](https://github.com/bellard/quickjs/commit/229b07b9b2c811eaf84db209a1d6f9e2a8a7b0d9) vendored to quickjs-emscripten on 2024-02-11.
     - Evaluating a ES Module with `context.evalCode(...)` now returns a Promise object instead of `undefined`.
   - quickjs-ng version [git+229b07b9](https://github.com/quickjs-ng/quickjs/commit/229b07b9b2c811eaf84db209a1d6f9e2a8a7b0d9) vendored to quickjs-emscripten on 2024-02-11.
 
 ## v0.27.0
 
-- [#147] Support providing and retrieving WebAssembly.Memory
+- [#147](https://github.com/justjake/quickjs-emscripten/pull/147) Support providing and retrieving WebAssembly.Memory
   - Fixes #146 by adding `wasmMemory: WebAssembly.Memory` option for `newVariant`, and `mod.getWasmMemory()` method for `QuickJS[Async]WASMModule`.
   - Fixes #138 by
     - removing internal use of `using` statement.
