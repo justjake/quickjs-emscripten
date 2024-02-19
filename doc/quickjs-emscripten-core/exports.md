@@ -29,6 +29,8 @@
   - [JSModuleNormalizeFailure](exports.md#jsmodulenormalizefailure)
   - [JSModuleNormalizeResult](exports.md#jsmodulenormalizeresult)
   - [JSModuleNormalizeSuccess](exports.md#jsmodulenormalizesuccess)
+  - [JSPromiseState](exports.md#jspromisestate)
+  - [JSPromiseStateEnum](exports.md#jspromisestateenum)
   - [JSRuntimePointer](exports.md#jsruntimepointer)
   - [JSValue](exports.md#jsvalue)
   - [JSValueConst](exports.md#jsvalueconst)
@@ -55,6 +57,7 @@
   - [DefaultIntrinsics](exports.md#defaultintrinsics)
   - [EvalFlags](exports.md#evalflags)
   - [IntrinsicsFlags](exports.md#intrinsicsflags)
+  - [JSPromiseStateEnum](exports.md#jspromisestateenum-1)
 - [Functions](exports.md#functions)
   - [assertSync()](exports.md#assertsync)
   - [isFail()](exports.md#isfail)
@@ -153,7 +156,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:483
+packages/quickjs-ffi-types/dist/index.d.ts:496
 
 ***
 
@@ -163,7 +166,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:483
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:295
+packages/quickjs-ffi-types/dist/index.d.ts:304
 
 ***
 
@@ -396,6 +399,28 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 #### Source
 
 [packages/quickjs-emscripten-core/src/types.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L85)
+
+***
+
+### JSPromiseState
+
+> **JSPromiseState**: `Object` \| `Object` \| `Object`
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:7](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L7)
+
+***
+
+### JSPromiseStateEnum
+
+> **JSPromiseStateEnum**: `Brand`\<*typeof* [`JSPromiseStateEnum`](exports.md#jspromisestateenum-1)\[keyof *typeof* [`JSPromiseStateEnum`](exports.md#jspromisestateenum-1)\], `"JSPromiseStateEnum"`\>
+
+State of a promise.
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:140
 
 ***
 
@@ -644,7 +669,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L41)
+[packages/quickjs-emscripten-core/src/context.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L42)
 
 ***
 
@@ -654,7 +679,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:482
+packages/quickjs-ffi-types/dist/index.d.ts:495
 
 ***
 
@@ -943,6 +968,30 @@ Bitfield options for QTS_NewContext intrinsices
 #### Source
 
 packages/quickjs-ffi-types/dist/index.d.ts:117
+
+***
+
+### JSPromiseStateEnum
+
+> **JSPromiseStateEnum**: `Object`
+
+#### Type declaration
+
+##### Fulfilled
+
+> **`readonly`** **Fulfilled**: `1`
+
+##### Pending
+
+> **`readonly`** **Pending**: `0`
+
+##### Rejected
+
+> **`readonly`** **Rejected**: `2`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:140
 
 ## Functions
 

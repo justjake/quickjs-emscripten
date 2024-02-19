@@ -29,6 +29,8 @@
   - [JSModuleNormalizeFailure](exports.md#jsmodulenormalizefailure)
   - [JSModuleNormalizeResult](exports.md#jsmodulenormalizeresult)
   - [JSModuleNormalizeSuccess](exports.md#jsmodulenormalizesuccess)
+  - [JSPromiseState](exports.md#jspromisestate)
+  - [JSPromiseStateEnum](exports.md#jspromisestateenum)
   - [JSRuntimePointer](exports.md#jsruntimepointer)
   - [JSValue](exports.md#jsvalue)
   - [JSValueConst](exports.md#jsvalueconst)
@@ -59,6 +61,7 @@
   - [DefaultIntrinsics](exports.md#defaultintrinsics)
   - [EvalFlags](exports.md#evalflags)
   - [IntrinsicsFlags](exports.md#intrinsicsflags)
+  - [JSPromiseStateEnum](exports.md#jspromisestateenum-1)
   - [RELEASE\_ASYNC](exports.md#release-async)
   - [@jitl/quickjs-wasmfile-release-asyncify](exports.md#jitlquickjs-wasmfile-release-asyncify)
   - [RELEASE\_SYNC](exports.md#release-sync)
@@ -167,7 +170,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:483
+packages/quickjs-ffi-types/dist/index.d.ts:496
 
 ***
 
@@ -177,7 +180,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:483
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:295
+packages/quickjs-ffi-types/dist/index.d.ts:304
 
 ***
 
@@ -413,6 +416,28 @@ packages/quickjs-emscripten-core/dist/index.d.ts:404
 
 ***
 
+### JSPromiseState
+
+> **JSPromiseState**: `Object` \| `Object` \| `Object`
+
+#### Source
+
+packages/quickjs-emscripten-core/dist/index.d.ts:669
+
+***
+
+### JSPromiseStateEnum
+
+> **JSPromiseStateEnum**: `Brand`\<*typeof* [`JSPromiseStateEnum`](exports.md#jspromisestateenum-1)\[keyof *typeof* [`JSPromiseStateEnum`](exports.md#jspromisestateenum-1)\], `"JSPromiseStateEnum"`\>
+
+State of a promise.
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:140
+
+***
+
 ### JSRuntimePointer
 
 > **JSRuntimePointer**: `Pointer`\<`"JSRuntime"`\>
@@ -540,7 +565,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:80
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1481
+packages/quickjs-emscripten-core/dist/index.d.ts:1493
 
 ***
 
@@ -593,7 +618,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:531
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1422
+packages/quickjs-emscripten-core/dist/index.d.ts:1434
 
 ***
 
@@ -658,7 +683,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:743
+packages/quickjs-emscripten-core/dist/index.d.ts:754
 
 ***
 
@@ -668,7 +693,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:743
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:482
+packages/quickjs-ffi-types/dist/index.d.ts:495
 
 ***
 
@@ -1006,6 +1031,30 @@ packages/quickjs-ffi-types/dist/index.d.ts:117
 
 ***
 
+### JSPromiseStateEnum
+
+> **JSPromiseStateEnum**: `Object`
+
+#### Type declaration
+
+##### Fulfilled
+
+> **`readonly`** **Fulfilled**: `1`
+
+##### Pending
+
+> **`readonly`** **Pending**: `0`
+
+##### Rejected
+
+> **`readonly`** **Rejected**: `2`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:140
+
+***
+
 ### RELEASE\_ASYNC
 
 > **`const`** **RELEASE\_ASYNC**: [`QuickJSAsyncVariant`](interfaces/QuickJSAsyncVariant.md)
@@ -1210,7 +1259,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1480
+packages/quickjs-emscripten-core/dist/index.d.ts:1492
 
 ***
 
@@ -1339,7 +1388,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1469
+packages/quickjs-emscripten-core/dist/index.d.ts:1481
 
 ***
 
@@ -1401,7 +1450,7 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1444
+packages/quickjs-emscripten-core/dist/index.d.ts:1456
 
 ***
 
@@ -1428,7 +1477,7 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1524
+packages/quickjs-emscripten-core/dist/index.d.ts:1536
 
 ***
 
@@ -1451,7 +1500,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1532
+packages/quickjs-emscripten-core/dist/index.d.ts:1544
 
 ***
 

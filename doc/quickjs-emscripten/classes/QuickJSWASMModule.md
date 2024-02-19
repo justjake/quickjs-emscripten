@@ -81,7 +81,7 @@ with name `"InternalError"` and  message `"interrupted"`.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1353
+packages/quickjs-emscripten-core/dist/index.d.ts:1365
 
 ***
 
@@ -101,7 +101,7 @@ and provide the [CustomizeVariantOptions#wasmMemory](../interfaces/CustomizeVari
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1363
+packages/quickjs-emscripten-core/dist/index.d.ts:1375
 
 ***
 
@@ -123,7 +123,7 @@ be disposed when the context is disposed.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1327
+packages/quickjs-emscripten-core/dist/index.d.ts:1339
 
 ***
 
@@ -145,7 +145,7 @@ loading for one or more [QuickJSContext](QuickJSContext.md)s inside the runtime.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1321
+packages/quickjs-emscripten-core/dist/index.d.ts:1333
 
 ***
 

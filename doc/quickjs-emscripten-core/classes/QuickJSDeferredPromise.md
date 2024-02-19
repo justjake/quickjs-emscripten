@@ -84,7 +84,7 @@ this constructor directly.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:52](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L52)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L57)
 
 ## Properties
 
@@ -94,7 +94,7 @@ this constructor directly.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:30](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L30)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L35)
 
 ***
 
@@ -108,7 +108,7 @@ are finished with it.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:37](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L37)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L42)
 
 ***
 
@@ -118,7 +118,7 @@ are finished with it.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:29](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L29)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:34](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L34)
 
 ***
 
@@ -130,7 +130,7 @@ A native promise that will resolve once this deferred is settled.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L42)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L47)
 
 ## Accessors
 
@@ -148,7 +148,7 @@ false after the object has been [dispose](QuickJSDeferredPromise.md#dispose-1)d
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:123](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L123)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:128](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L128)
 
 ## Methods
 
@@ -196,7 +196,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:127](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L127)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:132](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L132)
 
 ***
 
@@ -221,7 +221,7 @@ callbacks.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:104](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L104)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:109](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L109)
 
 ***
 
@@ -246,7 +246,7 @@ callbacks.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L77)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:82](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L82)
 
 ***
 
