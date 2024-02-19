@@ -501,7 +501,7 @@ log('exported default');
 
       vm.runtime.executePendingJobs()
       const promiseState = promise.consume((p) => vm.getPromiseState(p))
-      if (promiseState === "pending") {
+      if (promiseState.type === "pending") {
         throw new Error(`By now promise should be resolved.`)
       }
 

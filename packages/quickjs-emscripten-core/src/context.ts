@@ -11,7 +11,8 @@ import type {
   EitherFFI,
 } from "@jitl/quickjs-ffi-types"
 import { debugLog } from "./debug"
-import { JSPromiseState, QuickJSDeferredPromise } from "./deferred-promise"
+import type { JSPromiseState } from "./deferred-promise"
+import { QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import { QuickJSUnwrapError } from "./errors"
