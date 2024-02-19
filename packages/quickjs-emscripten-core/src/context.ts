@@ -1,21 +1,22 @@
-import type {
-  EitherModule,
-  EvalDetectModule,
-  EvalFlags,
-  JSBorrowedCharPointer,
-  JSContextPointer,
-  JSRuntimePointer,
-  JSValueConstPointer,
-  JSValuePointer,
-  JSValuePointerPointer,
-  EitherFFI,
+import {
+  type EitherModule,
+  type EvalDetectModule,
+  type EvalFlags,
+  type JSBorrowedCharPointer,
+  type JSContextPointer,
+  type JSRuntimePointer,
+  type JSValueConstPointer,
+  type JSValuePointer,
+  type JSValuePointerPointer,
+  type EitherFFI,
+  JSPromiseStateEnum,
 } from "@jitl/quickjs-ffi-types"
 import { debugLog } from "./debug"
 import type { JSPromiseState } from "./deferred-promise"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
-import { QuickJSUnwrapError } from "./errors"
+import { QuickJSPromisePending, QuickJSUnwrapError } from "./errors"
 import type { Disposable } from "./lifetime"
 import { Lifetime, Scope, StaticLifetime, UsingDisposable, WeakLifetime } from "./lifetime"
 import { ModuleMemory } from "./memory"
@@ -658,16 +659,21 @@ export class QuickJSContext
       return { type: "fulfilled", value: handle, notAPromise: true }
     }
 
-    if (state === 0) {
-      return { type: "pending" }
+    if (state === JSPromiseStateEnum.Pending) {
+      return {
+        type: "pending",
+        get error() {
+          return new QuickJSPromisePending(`Cannot unwrap a pending promise`)
+        },
+      }
     }
 
     const ptr = this.ffi.QTS_PromiseResult(this.ctx.value, handle.value)
     const result = this.memory.heapValueHandle(ptr)
-    if (state === 1) {
+    if (state === JSPromiseStateEnum.Fulfilled) {
       return { type: "fulfilled", value: result }
     }
-    if (state === 2) {
+    if (state === JSPromiseStateEnum.Rejected) {
       return { type: "rejected", error: result }
     }
     result.dispose()
