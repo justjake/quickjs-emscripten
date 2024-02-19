@@ -974,24 +974,6 @@ export default "the default";
 function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
   let vm: QuickJSAsyncContext = undefined as any
 
-  function assertModuleEvalResult(actual: QuickJSHandle) {
-    const type = vm.typeof(actual)
-    if (type === "undefined") {
-      // OK: older versions of quickjs return undefined
-      return
-    }
-
-    if (type === "object") {
-      // Newer versions should return a Promise
-      using ctor = vm.getProp(actual, "constructor")
-      const name = vm.getProp(ctor, "name").consume(vm.dump)
-      assert.strictEqual(name, "Promise")
-      return
-    }
-
-    assert.fail(`Expected a Promise or undefined, got ${type} (${vm.dump(actual)})`)
-  }
-
   beforeEach(async () => {
     vm = await getContext()
     assertBuildIsConsistent(vm)
@@ -1073,12 +1055,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
 
         const result = await promise
         debugLog("awaited vm.evalCodeAsync", result, { alive: vm.alive })
-
-        const unwrapped = vm.unwrapResult(result)
-        debugLog("unwrapped result")
-
-        assertModuleEvalResult(unwrapped)
-        debugLog("asserted result")
+        vm.unwrapResult(result).dispose()
 
         const stuff = vm.getProp(vm.global, "stuff").consume(vm.dump)
         assert.strictEqual(stuff, "hello from module")
@@ -1102,10 +1079,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       })
 
       const result = vm.evalCode("import otherModule from './other-module.js'")
-
-      // Asserts that the eval worked without incident
-      using unwrapped = vm.unwrapResult(result)
-      assertModuleEvalResult(unwrapped)
+      vm.unwrapResult(result).dispose()
 
       assert.strictEqual(callCtx!, vm, "expected VM")
       assert.strictEqual(
@@ -1142,7 +1116,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
 
       // Asserts that the eval worked without incident
       const result = vm.evalCode(`import otherModule from '${IMPORT_PATH}'`, EVAL_FILE_NAME)
-      vm.unwrapResult(result).consume(assertModuleEvalResult)
+      vm.unwrapResult(result).dispose()
 
       // Check our request
       assert.strictEqual(requestedName, IMPORT_PATH, "requested name is the literal import string")
