@@ -102,6 +102,9 @@
 - [JSModuleLoaderAsync](interfaces/JSModuleLoaderAsync.md)
 - [JSModuleNormalizer](interfaces/JSModuleNormalizer.md)
 - [JSModuleNormalizerAsync](interfaces/JSModuleNormalizerAsync.md)
+- [JSPromiseStateFulfilled](interfaces/JSPromiseStateFulfilled.md)
+- [JSPromiseStatePending](interfaces/JSPromiseStatePending.md)
+- [JSPromiseStateRejected](interfaces/JSPromiseStateRejected.md)
 - [LowLevelJavascriptVm](interfaces/LowLevelJavascriptVm.md)
 - [ModuleEvalOptions](interfaces/ModuleEvalOptions.md)
 - [QuickJSAsyncEmscriptenModule](interfaces/QuickJSAsyncEmscriptenModule.md)
@@ -404,7 +407,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 ### JSPromiseState
 
-> **JSPromiseState**: `Object` \| `Object` \| `Object`
+> **JSPromiseState**: [`JSPromiseStatePending`](interfaces/JSPromiseStatePending.md) \| [`JSPromiseStateFulfilled`](interfaces/JSPromiseStateFulfilled.md) \| [`JSPromiseStateRejected`](interfaces/JSPromiseStateRejected.md)
 
 A promise state inside QuickJS, which can be pending, fulfilled, or rejected.
 You can unwrap a JSPromiseState with [QuickJSContext#unwrapResult](classes/QuickJSContext.md#unwrapresult).

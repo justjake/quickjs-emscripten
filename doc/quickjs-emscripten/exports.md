@@ -116,6 +116,9 @@
 - [JSModuleLoaderAsync](interfaces/JSModuleLoaderAsync.md)
 - [JSModuleNormalizer](interfaces/JSModuleNormalizer.md)
 - [JSModuleNormalizerAsync](interfaces/JSModuleNormalizerAsync.md)
+- [JSPromiseStateFulfilled](interfaces/JSPromiseStateFulfilled.md)
+- [JSPromiseStatePending](interfaces/JSPromiseStatePending.md)
+- [JSPromiseStateRejected](interfaces/JSPromiseStateRejected.md)
 - [LowLevelJavascriptVm](interfaces/LowLevelJavascriptVm.md)
 - [ModuleEvalOptions](interfaces/ModuleEvalOptions.md)
 - [QuickJSAsyncEmscriptenModule](interfaces/QuickJSAsyncEmscriptenModule.md)
@@ -418,7 +421,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:404
 
 ### JSPromiseState
 
-> **JSPromiseState**: `Object` \| `Object` \| `Object`
+> **JSPromiseState**: [`JSPromiseStatePending`](interfaces/JSPromiseStatePending.md) \| [`JSPromiseStateFulfilled`](interfaces/JSPromiseStateFulfilled.md) \| [`JSPromiseStateRejected`](interfaces/JSPromiseStateRejected.md)
 
 A promise state inside QuickJS, which can be pending, fulfilled, or rejected.
 You can unwrap a JSPromiseState with [QuickJSContext#unwrapResult](classes/QuickJSContext.md#unwrapresult).
@@ -568,7 +571,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:80
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1516
+packages/quickjs-emscripten-core/dist/index.d.ts:1531
 
 ***
 
@@ -621,7 +624,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:531
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1457
+packages/quickjs-emscripten-core/dist/index.d.ts:1472
 
 ***
 
@@ -686,7 +689,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:764
+packages/quickjs-emscripten-core/dist/index.d.ts:779
 
 ***
 
@@ -1262,7 +1265,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1515
+packages/quickjs-emscripten-core/dist/index.d.ts:1530
 
 ***
 
@@ -1391,7 +1394,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1504
+packages/quickjs-emscripten-core/dist/index.d.ts:1519
 
 ***
 
@@ -1453,7 +1456,7 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1479
+packages/quickjs-emscripten-core/dist/index.d.ts:1494
 
 ***
 
@@ -1480,7 +1483,7 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1559
+packages/quickjs-emscripten-core/dist/index.d.ts:1574
 
 ***
 
@@ -1503,7 +1506,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1567
+packages/quickjs-emscripten-core/dist/index.d.ts:1582
 
 ***
 

@@ -9,22 +9,43 @@ export type { PromiseExecutor } from "./types"
  * You can unwrap a JSPromiseState with {@link QuickJSContext#unwrapResult}.
  */
 export type JSPromiseState =
-  | {
-      type: "pending"
-      /**
-       * The error property here allows unwrapping a JSPromiseState with {@link QuickJSContext#unwrapResult}.
-       * Unwrapping a pending promise will throw a {@link QuickJSPromisePending} error.
-       */
-      get error(): Error
-    }
-  | {
-      type: "fulfilled"
-      value: QuickJSHandle
-      error?: undefined
-      /** Trying to get the promise state of a non-Promise value returns a fulfilled state with the original value, and `notAPromise: true`. */
-      notAPromise?: boolean
-    }
-  | { type: "rejected"; error: QuickJSHandle }
+  | JSPromiseStatePending
+  | JSPromiseStateFulfilled
+  | JSPromiseStateRejected
+
+/**
+ * Pending promise state.
+ * See {@link JSPromiseState}.
+ */
+export interface JSPromiseStatePending {
+  type: "pending"
+  /**
+   * The error property here allows unwrapping a JSPromiseState with {@link QuickJSContext#unwrapResult}.
+   * Unwrapping a pending promise will throw a {@link QuickJSPromisePending} error.
+   */
+  get error(): Error
+}
+
+/**
+ * Fulfilled promise state.
+ * See {@link JSPromiseState}.
+ */
+export interface JSPromiseStateFulfilled {
+  type: "fulfilled"
+  value: QuickJSHandle
+  error?: undefined
+  /** Trying to get the promise state of a non-Promise value returns a fulfilled state with the original value, and `notAPromise: true`. */
+  notAPromise?: boolean
+}
+
+/**
+ * Rejected promise state.
+ * See {@link JSPromiseState}.
+ */
+export interface JSPromiseStateRejected {
+  type: "rejected"
+  error: QuickJSHandle
+}
 
 /**
  * QuickJSDeferredPromise wraps a QuickJS promise {@link handle} and allows
