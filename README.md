@@ -169,6 +169,29 @@ context.dispose()
 runtime.dispose()
 ```
 
+#### EcmaScript Module Exports
+
+When you evaluate code as an ES Module, the result will be a handle to the
+module's exports, or a handle to a promise that resolves to the module's
+exports if the module depends on a top-level await.
+
+```typescript
+const context = QuickJS.newContext()
+const result = context.evalCode(
+  `
+  export const name = 'Jake'
+  export const favoriteBean = 'wax bean'
+  export default 'potato'
+`,
+  "jake.js",
+  { type: "module" },
+)
+const moduleExports = context.unwrapResult(result)
+console.log(context.dump(moduleExports))
+// -> { name: 'Jake', favoriteBean: 'wax bean', default: 'potato' }
+moduleExports.dispose()
+```
+
 ### Memory Management
 
 Many methods in this library return handles to memory allocated inside the
