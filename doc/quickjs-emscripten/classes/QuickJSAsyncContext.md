@@ -102,7 +102,7 @@ to create a new QuickJSContext.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:849
+packages/quickjs-emscripten-core/dist/index.d.ts:859
 
 ## Properties
 
@@ -136,7 +136,7 @@ false after the object has been [dispose](QuickJSAsyncContext.md#dispose-1)d
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:858
+packages/quickjs-emscripten-core/dist/index.d.ts:868
 
 ***
 
@@ -152,7 +152,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:858
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:881
+packages/quickjs-emscripten-core/dist/index.d.ts:891
 
 ***
 
@@ -170,7 +170,7 @@ You can set properties to create global variables.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:887
+packages/quickjs-emscripten-core/dist/index.d.ts:897
 
 ***
 
@@ -186,7 +186,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:887
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:873
+packages/quickjs-emscripten-core/dist/index.d.ts:883
 
 ***
 
@@ -202,7 +202,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:873
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:877
+packages/quickjs-emscripten-core/dist/index.d.ts:887
 
 ***
 
@@ -218,7 +218,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:877
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:869
+packages/quickjs-emscripten-core/dist/index.d.ts:879
 
 ## Methods
 
@@ -276,7 +276,7 @@ value.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1130
+packages/quickjs-emscripten-core/dist/index.d.ts:1140
 
 ***
 
@@ -309,7 +309,7 @@ socket.on("data", chunk => {
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1236
+packages/quickjs-emscripten-core/dist/index.d.ts:1246
 
 ***
 
@@ -340,7 +340,7 @@ Javascript string or number (which will be converted automatically to a JSValue)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1116
+packages/quickjs-emscripten-core/dist/index.d.ts:1126
 
 ***
 
@@ -365,7 +365,7 @@ will result in an error.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:865
+packages/quickjs-emscripten-core/dist/index.d.ts:875
 
 ***
 
@@ -390,7 +390,7 @@ Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1189
+packages/quickjs-emscripten-core/dist/index.d.ts:1199
 
 ***
 
@@ -424,7 +424,7 @@ socket.write(dataLifetime?.value)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1223
+packages/quickjs-emscripten-core/dist/index.d.ts:1233
 
 ***
 
@@ -487,7 +487,7 @@ interrupted, the error will have name `InternalError` and message
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1164
+packages/quickjs-emscripten-core/dist/index.d.ts:1174
 
 ***
 
@@ -537,7 +537,7 @@ Coverts `handle` to a JavaScript ArrayBuffer
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1077
+packages/quickjs-emscripten-core/dist/index.d.ts:1087
 
 ***
 
@@ -561,7 +561,7 @@ Converts `handle` to a Javascript bigint.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1073
+packages/quickjs-emscripten-core/dist/index.d.ts:1083
 
 ***
 
@@ -587,7 +587,7 @@ Converts `handle` into a Javascript number.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1060
+packages/quickjs-emscripten-core/dist/index.d.ts:1070
 
 ***
 
@@ -609,7 +609,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1060
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1078
+packages/quickjs-emscripten-core/dist/index.d.ts:1088
 
 ***
 
@@ -639,7 +639,7 @@ Javascript string (which will be converted automatically).
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1097
+packages/quickjs-emscripten-core/dist/index.d.ts:1107
 
 ***
 
@@ -663,7 +663,7 @@ Converts `handle` to a Javascript string.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1064
+packages/quickjs-emscripten-core/dist/index.d.ts:1074
 
 ***
 
@@ -688,7 +688,7 @@ registry in the guest, it will be created with Symbol.for on the host.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1069
+packages/quickjs-emscripten-core/dist/index.d.ts:1079
 
 ***
 
@@ -709,7 +709,7 @@ Create a new QuickJS [array](https://developer.mozilla.org/en-US/docs/Web/JavaSc
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:921
+packages/quickjs-emscripten-core/dist/index.d.ts:931
 
 ***
 
@@ -733,7 +733,7 @@ Create a new QuickJS [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:925
+packages/quickjs-emscripten-core/dist/index.d.ts:935
 
 ***
 
@@ -789,7 +789,7 @@ Create a QuickJS [bigint](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:909
+packages/quickjs-emscripten-core/dist/index.d.ts:919
 
 ***
 
@@ -817,7 +817,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:909
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1043
+packages/quickjs-emscripten-core/dist/index.d.ts:1053
 
 #### newError(message)
 
@@ -837,7 +837,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1043
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1047
+packages/quickjs-emscripten-core/dist/index.d.ts:1057
 
 #### newError(undefined)
 
@@ -853,7 +853,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1047
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1048
+packages/quickjs-emscripten-core/dist/index.d.ts:1058
 
 ***
 
@@ -970,7 +970,7 @@ return deferred.handle
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1042
+packages/quickjs-emscripten-core/dist/index.d.ts:1052
 
 ***
 
@@ -994,7 +994,7 @@ Converts a Javascript number into a QuickJS value.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:891
+packages/quickjs-emscripten-core/dist/index.d.ts:901
 
 ***
 
@@ -1021,7 +1021,7 @@ Like [`Object.create`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/R
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:916
+packages/quickjs-emscripten-core/dist/index.d.ts:926
 
 ***
 
@@ -1046,7 +1046,7 @@ resources; see the documentation on [QuickJSDeferredPromise](QuickJSDeferredProm
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:932
+packages/quickjs-emscripten-core/dist/index.d.ts:942
 
 #### newPromise(promise)
 
@@ -1072,7 +1072,7 @@ You can still resolve/reject the created promise "early" using its methods.
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:940
+packages/quickjs-emscripten-core/dist/index.d.ts:950
 
 #### newPromise(newPromiseFn)
 
@@ -1097,7 +1097,7 @@ You can still resolve/reject the created promise "early" using its methods.
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:947
+packages/quickjs-emscripten-core/dist/index.d.ts:957
 
 ***
 
@@ -1121,7 +1121,7 @@ Create a QuickJS [string](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:895
+packages/quickjs-emscripten-core/dist/index.d.ts:905
 
 ***
 
@@ -1146,7 +1146,7 @@ All symbols created with the same key will be the same value.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:905
+packages/quickjs-emscripten-core/dist/index.d.ts:915
 
 ***
 
@@ -1171,7 +1171,7 @@ No two symbols created with this function will be the same value.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:900
+packages/quickjs-emscripten-core/dist/index.d.ts:910
 
 ***
 
@@ -1203,7 +1203,7 @@ You may need to call [runtime](QuickJSAsyncContext.md#runtime).[QuickJSRuntime#e
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1089
+packages/quickjs-emscripten-core/dist/index.d.ts:1099
 
 ***
 
@@ -1240,7 +1240,7 @@ properties.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1109
+packages/quickjs-emscripten-core/dist/index.d.ts:1119
 
 ***
 
@@ -1264,7 +1264,7 @@ Throw an error in the VM, interrupted whatever current execution is in progress 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1176
+packages/quickjs-emscripten-core/dist/index.d.ts:1186
 
 ***
 
@@ -1292,7 +1292,7 @@ Does not support BigInt values correctly.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1055
+packages/quickjs-emscripten-core/dist/index.d.ts:1065
 
 ***
 
@@ -1323,7 +1323,7 @@ If the result is an error, converts the error to a native object and throws the 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1196
+packages/quickjs-emscripten-core/dist/index.d.ts:1206
 
 ***
 

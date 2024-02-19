@@ -406,9 +406,12 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 > **JSPromiseState**: `Object` \| `Object` \| `Object`
 
+A promise state inside QuickJS, which can be pending, fulfilled, or rejected.
+You can unwrap a JSPromiseState with [QuickJSContext#unwrapResult](classes/QuickJSContext.md#unwrapresult).
+
 #### Source
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:7](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L7)
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:11](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L11)
 
 ***
 
@@ -669,7 +672,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L42)
+[packages/quickjs-emscripten-core/src/context.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L43)
 
 ***
 

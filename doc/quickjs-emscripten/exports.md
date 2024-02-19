@@ -420,9 +420,12 @@ packages/quickjs-emscripten-core/dist/index.d.ts:404
 
 > **JSPromiseState**: `Object` \| `Object` \| `Object`
 
+A promise state inside QuickJS, which can be pending, fulfilled, or rejected.
+You can unwrap a JSPromiseState with [QuickJSContext#unwrapResult](classes/QuickJSContext.md#unwrapresult).
+
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:669
+packages/quickjs-emscripten-core/dist/index.d.ts:673
 
 ***
 
@@ -565,7 +568,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:80
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1493
+packages/quickjs-emscripten-core/dist/index.d.ts:1503
 
 ***
 
@@ -618,7 +621,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:531
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1434
+packages/quickjs-emscripten-core/dist/index.d.ts:1444
 
 ***
 
@@ -683,7 +686,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:754
+packages/quickjs-emscripten-core/dist/index.d.ts:764
 
 ***
 
@@ -1259,7 +1262,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1492
+packages/quickjs-emscripten-core/dist/index.d.ts:1502
 
 ***
 
@@ -1388,7 +1391,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1481
+packages/quickjs-emscripten-core/dist/index.d.ts:1491
 
 ***
 
@@ -1450,7 +1453,7 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1456
+packages/quickjs-emscripten-core/dist/index.d.ts:1466
 
 ***
 
@@ -1477,7 +1480,7 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1536
+packages/quickjs-emscripten-core/dist/index.d.ts:1546
 
 ***
 
@@ -1500,7 +1503,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1544
+packages/quickjs-emscripten-core/dist/index.d.ts:1554
 
 ***
 
