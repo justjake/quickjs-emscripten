@@ -1,15 +1,15 @@
-import {
-  type EitherModule,
-  type EvalDetectModule,
-  type EvalFlags,
-  type JSBorrowedCharPointer,
-  type JSContextPointer,
-  type JSRuntimePointer,
-  type JSValueConstPointer,
-  type JSValuePointer,
-  type JSValuePointerPointer,
-  type EitherFFI,
-  JSPromiseStateEnum,
+import { JSPromiseStateEnum } from "@jitl/quickjs-ffi-types"
+import type {
+  EvalFlags,
+  EitherModule,
+  EvalDetectModule,
+  JSBorrowedCharPointer,
+  JSContextPointer,
+  JSRuntimePointer,
+  JSValueConstPointer,
+  JSValuePointer,
+  JSValuePointerPointer,
+  EitherFFI,
 } from "@jitl/quickjs-ffi-types"
 import { debugLog } from "./debug"
 import type { JSPromiseState } from "./deferred-promise"
@@ -966,9 +966,10 @@ export class QuickJSContext
 
   /**
    * Dump a JSValue to Javascript in a best-effort fashion.
+   * If the value is a promise, dumps the promise's state.
    * Returns `handle.toString()` if it cannot be serialized to JSON.
    */
-  dump(handle: QuickJSHandle) {
+  dump(handle: QuickJSHandle): any {
     this.runtime.assertOwned(handle)
     const type = this.typeof(handle)
     if (type === "string") {
@@ -981,6 +982,20 @@ export class QuickJSContext
       return undefined
     } else if (type === "symbol") {
       return this.getSymbol(handle)
+    }
+
+    // It's confusing if we dump(promise) and just get back {} because promise
+    // has no properties, so dump promise state.
+    const asPromiseState = this.getPromiseState(handle)
+    if (asPromiseState.type === "fulfilled" && !asPromiseState.notAPromise) {
+      handle.dispose()
+      return { type: asPromiseState.type, value: asPromiseState.value.consume(this.dump) }
+    } else if (asPromiseState.type === "pending") {
+      handle.dispose()
+      return { type: asPromiseState.type }
+    } else if (asPromiseState.type === "rejected") {
+      handle.dispose()
+      return { type: asPromiseState.type, error: asPromiseState.error.consume(this.dump) }
     }
 
     const str = this.memory.consumeJSCharPointer(this.ffi.QTS_Dump(this.ctx.value, handle.value))

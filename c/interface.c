@@ -736,9 +736,12 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
     JS_FreeValue(ctx, eval_result);
     return jsvalue_to_heap(JS_GetModuleNamespace(ctx, module));
   } else if (state == JS_PROMISE_REJECTED) {
-    QTS_DEBUG("QTS_Eval: result: JS_PROMISE_REJECTED")
-    // Module failed, just return the rejected result.
-    return jsvalue_to_heap(eval_result);
+    // Throw the rejection response, to match evaluation of non-module code,
+    // or of code with a syntax error.
+    QTS_DEBUG("QTS_Eval: result: JS_PROMISE_REJECTED - throw rejection reason")
+    JS_Throw(ctx, JS_PromiseResult(ctx, eval_result));
+    JS_FreeValue(ctx, eval_result);
+    return jsvalue_to_heap(JS_EXCEPTION);
   } else if (state == JS_PROMISE_PENDING) {
     QTS_DEBUG("QTS_Eval: result: JS_PROMISE_PENDING")
     // return moduleDone.then(() => module_namespace)
@@ -783,7 +786,6 @@ JSValue *QTS_GetModuleNamespace(JSContext *ctx, JSValueConst *module_func_obj) {
 
 OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   const char *result = "unknown";
-  uint32_t tag = JS_VALUE_GET_TAG(*value);
 
   if (JS_IsNumber(*value)) {
     result = "number";

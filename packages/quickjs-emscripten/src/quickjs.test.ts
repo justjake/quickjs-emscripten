@@ -4,6 +4,7 @@
 
 import assert from "assert"
 import fs from "fs"
+import { inspect as baseInspect } from "node:util"
 import { describe, beforeEach, afterEach, afterAll as after, it, expect } from "vitest"
 import type {
   QuickJSHandle,
@@ -401,7 +402,7 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       value.dispose()
     })
 
-    it("on failure: returns { error: exception }", () => {
+    it("on syntax error: returns { error: exception }", () => {
       const result = vm.evalCode(`["this", "should", "fail].join(' ')`)
       if (!result.error) {
         assert.fail("result should be an error")
@@ -411,6 +412,35 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
         message: "unexpected end of string",
       })
       result.error.dispose()
+    })
+
+    it("module: on syntax error: returns { error: exception }", () => {
+      const result = vm.evalCode(`["this", "should", "fail].join(' ')`, "mod.js", {
+        type: "module",
+      })
+      if (!result.error) {
+        assert.fail("result should be an error")
+      }
+      assertError(vm.dump(result.error), {
+        name: "SyntaxError",
+        message: "unexpected end of string",
+      })
+      result.error.dispose()
+    })
+
+    it("module: on TypeError: returns { error: exception }", () => {
+      const result = vm.evalCode(`null.prop`, "mod.js", { type: "module" })
+      if (!result.error) {
+        result.value.consume((val) =>
+          assert.fail(`result should be an error, instead is: ${inspect(vm.dump(val))}`),
+        )
+        return
+      }
+      const error = result.error.consume(vm.dump)
+      assertError(error, {
+        name: "TypeError",
+        message: "cannot read property 'prop' of null",
+      })
     })
 
     it("runs in the global context", () => {
@@ -1377,3 +1407,10 @@ applyVitestHack(QuickJSWASMModule, () => ({
   type: "QuickJSWASMModule",
   __vitest__: true,
 }))
+
+const inspect = (val: unknown) => {
+  return baseInspect(val, {
+    depth: 30,
+    colors: true,
+  })
+}
