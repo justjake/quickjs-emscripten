@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.29.1
+
+- [#161](https://github.com/justjake/quickjs-emscripten/pull/161) Fix a bug where `context.evalCode(..., { type: 'module' })` would return success when some kinds of error occurred when using `quickjs` variants.
+  - Also adds `context.getPromiseState(handle)` to resolve promises synchronously.
+
 ## v0.29.0
 
 - [#154](https://github.com/justjake/quickjs-emscripten/pull/154) ESModule exports
