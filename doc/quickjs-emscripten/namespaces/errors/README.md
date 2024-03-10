@@ -39,7 +39,7 @@
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1621
+packages/quickjs-emscripten-core/dist/index.d.ts:1622
 
 ***
 
@@ -49,7 +49,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1621
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1623
+packages/quickjs-emscripten-core/dist/index.d.ts:1624
 
 ***
 
@@ -59,7 +59,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1623
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1625
+packages/quickjs-emscripten-core/dist/index.d.ts:1626
 
 ***
 
@@ -69,7 +69,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1625
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1627
+packages/quickjs-emscripten-core/dist/index.d.ts:1628
 
 ***
 
@@ -79,7 +79,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1627
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1629
+packages/quickjs-emscripten-core/dist/index.d.ts:1630
 
 ***
 
@@ -89,7 +89,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1629
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1631
+packages/quickjs-emscripten-core/dist/index.d.ts:1632
 
 ***
 
@@ -99,7 +99,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1631
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1633
+packages/quickjs-emscripten-core/dist/index.d.ts:1634
 
 ***
 
@@ -109,7 +109,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1633
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1635
+packages/quickjs-emscripten-core/dist/index.d.ts:1636
 
 ***
 
@@ -119,7 +119,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1635
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1637
+packages/quickjs-emscripten-core/dist/index.d.ts:1638
 
 ***
 
@@ -129,7 +129,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1637
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1639
+packages/quickjs-emscripten-core/dist/index.d.ts:1640
 
 ## Variables
 
@@ -139,7 +139,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1639
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1621
+packages/quickjs-emscripten-core/dist/index.d.ts:1622
 
 ***
 
@@ -149,7 +149,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1621
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1623
+packages/quickjs-emscripten-core/dist/index.d.ts:1624
 
 ***
 
@@ -159,7 +159,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1623
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1625
+packages/quickjs-emscripten-core/dist/index.d.ts:1626
 
 ***
 
@@ -169,7 +169,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1625
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1627
+packages/quickjs-emscripten-core/dist/index.d.ts:1628
 
 ***
 
@@ -179,7 +179,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1627
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1629
+packages/quickjs-emscripten-core/dist/index.d.ts:1630
 
 ***
 
@@ -189,7 +189,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1629
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1631
+packages/quickjs-emscripten-core/dist/index.d.ts:1632
 
 ***
 
@@ -199,7 +199,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1631
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1633
+packages/quickjs-emscripten-core/dist/index.d.ts:1634
 
 ***
 
@@ -209,7 +209,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1633
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1635
+packages/quickjs-emscripten-core/dist/index.d.ts:1636
 
 ***
 
@@ -219,7 +219,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1635
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1637
+packages/quickjs-emscripten-core/dist/index.d.ts:1638
 
 ***
 
@@ -229,7 +229,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1637
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1639
+packages/quickjs-emscripten-core/dist/index.d.ts:1640
 
 ***
 

@@ -333,7 +333,7 @@ socket.on("data", chunk => {
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1274
+packages/quickjs-emscripten-core/dist/index.d.ts:1275
 
 ***
 
@@ -402,6 +402,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:890
 > **dump**(`handle`): `any`
 
 Dump a JSValue to Javascript in a best-effort fashion.
+If the value is a promise, dumps the promise's state.
 Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Parameters
@@ -414,7 +415,7 @@ Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1227
+packages/quickjs-emscripten-core/dist/index.d.ts:1228
 
 ***
 
@@ -444,7 +445,7 @@ socket.write(dataLifetime?.value)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1261
+packages/quickjs-emscripten-core/dist/index.d.ts:1262
 
 ***
 
@@ -1225,7 +1226,7 @@ If the result is an error, converts the error to a native object and throws the 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1234
+packages/quickjs-emscripten-core/dist/index.d.ts:1235
 
 ***
 

@@ -309,7 +309,7 @@ socket.on("data", chunk => {
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1145](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1145)
+[packages/quickjs-emscripten-core/src/context.ts:1160](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1160)
 
 ***
 
@@ -374,6 +374,7 @@ will result in an error.
 > **dump**(`handle`): `any`
 
 Dump a JSValue to Javascript in a best-effort fashion.
+If the value is a promise, dumps the promise's state.
 Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Parameters
@@ -390,7 +391,7 @@ Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:971](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L971)
+[packages/quickjs-emscripten-core/src/context.ts:972](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L972)
 
 ***
 
@@ -424,7 +425,7 @@ socket.write(dataLifetime?.value)
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1128](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1128)
+[packages/quickjs-emscripten-core/src/context.ts:1143](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1143)
 
 ***
 
@@ -1335,7 +1336,7 @@ If the result is an error, converts the error to a native object and throws the 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1000](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1000)
+[packages/quickjs-emscripten-core/src/context.ts:1015](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1015)
 
 ***
 

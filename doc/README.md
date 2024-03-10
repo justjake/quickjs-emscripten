@@ -60,6 +60,8 @@ main()
       - [`Lifetime.consume(fn)`](#lifetimeconsumefn)
     - [Exposing APIs](#exposing-apis)
       - [Promises](#promises)
+        - [context.getPromiseState(handle)](#contextgetpromisestatehandle)
+        - [context.resolvePromise(handle)](#contextresolvepromisehandle)
       - [Asyncify](#asyncify)
         - [Async module loader](#async-module-loader)
         - [Async on host, sync in QuickJS](#async-on-host-sync-in-quickjs)
@@ -352,8 +354,36 @@ execute immediately. Your code needs to explicitly call
 gives your code maximum control to _schedule_ when QuickJS will block the host's
 event loop by resuming execution.
 
-To work with QuickJS handles that contain a promise inside the environment, you
-can convert the QuickJSHandle into a native promise using
+To work with QuickJS handles that contain a promise inside the environment,
+there are two options:
+
+##### context.getPromiseState(handle)
+
+You can synchronously peek into a QuickJS promise handle and get its state
+without introducing asynchronous host code, described by the type [JSPromiseState][]:
+
+```typescript
+type JSPromiseState =
+  | { type: "pending"; error: Error }
+  | { type: "fulfilled"; value: QuickJSHandle; notAPromise?: boolean }
+  | { type: "rejected"; error: QuickJSHandle }
+```
+
+The result conforms to the `SuccessOrFail` type returned by `context.evalCode`, so you can use `context.unwrapResult(context.getPromiseState(promiseHandle))` to assert a promise is settled successfully and retrieve its value. Calling `context.unwrapResult` on a pending or rejected promise will throw an error.
+
+```typescript
+const promiseHandle = context.evalCode(`Promise.resolve(42)`)
+const resultHandle = context.unwrapResult(context.getPromiseState(promiseHandle))
+context.getNumber(resultHandle) === 42 // true
+resultHandle.dispose()
+promiseHandle.dispose()
+```
+
+[JSPromiseState]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#jspromisestate
+
+##### context.resolvePromise(handle)
+
+You can convert the QuickJSHandle into a native promise using
 `context.resolvePromise()`. Take care with this API to avoid 'deadlocks' where
 the host awaits a guest promise, but the guest cannot make progress until the
 host calls `runtime.executePendingJobs()`. The simplest way to avoid this kind

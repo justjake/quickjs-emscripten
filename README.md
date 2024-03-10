@@ -360,21 +360,19 @@ without introducing asynchronous host code, described by the type [JSPromiseStat
 
 ```typescript
 type JSPromiseState =
-  | { type: 'pending', error: Error }
-  | { type: 'fulfilled', value: QuickJSHandle, notAPromise?: boolean }
-  | { type: 'rejected', error: QuickJSHandle }
+  | { type: "pending"; error: Error }
+  | { type: "fulfilled"; value: QuickJSHandle; notAPromise?: boolean }
+  | { type: "rejected"; error: QuickJSHandle }
 ```
 
 The result conforms to the `SuccessOrFail` type returned by `context.evalCode`, so you can use `context.unwrapResult(context.getPromiseState(promiseHandle))` to assert a promise is settled successfully and retrieve its value. Calling `context.unwrapResult` on a pending or rejected promise will throw an error.
 
 ```typescript
-const promiseHandle = context.evalCode(`Promise.resolve(42)`);
-const resultHandle = context.unwrapResult(
-  context.getPromiseState(promiseHandle)
-);
-context.getNumber(resultHandle) === 42; // true
-resultHandle.dispose();
-promiseHandle.dispose();
+const promiseHandle = context.evalCode(`Promise.resolve(42)`)
+const resultHandle = context.unwrapResult(context.getPromiseState(promiseHandle))
+context.getNumber(resultHandle) === 42 // true
+resultHandle.dispose()
+promiseHandle.dispose()
 ```
 
 [JSPromiseState]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#jspromisestate
