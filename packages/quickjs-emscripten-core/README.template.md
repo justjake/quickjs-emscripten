@@ -2,7 +2,7 @@
 
 # quickjs-emscripten-core
 
-This package is part of [quickjs-emscripten](https://github.com/justjakel/quickjs-emscripten), a Javascript interface for QuickJS compiled to WebAssembly via Emscripten.
+This package is part of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten), a Javascript interface for QuickJS compiled to WebAssembly via Emscripten.
 
 This package (`quickjs-emscripten-core`) contains only Javascript code - no WebAssembly. To use this package, you'll need to install one or more _variants_ of the QuickJS WebAssembly build, see [available variants](#Available-variants) below.
 
