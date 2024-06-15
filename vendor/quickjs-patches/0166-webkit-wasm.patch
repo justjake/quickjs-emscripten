@@ -1,0 +1,20 @@
+diff --git a/vendor/quickjs/quickjs.c b/vendor/quickjs/quickjs.c
+index f000ff74..fa7742a2 100644
+--- a/vendor/quickjs/quickjs.c
++++ b/vendor/quickjs/quickjs.c
+@@ -32053,6 +32053,7 @@ static void push_short_int(DynBuf *bc_out, int val)
+         dbuf_putc(bc_out, OP_push_0 + val);
+         return;
+     }
++#if !defined(__EMSCRIPTEN__) // Workaround for WebKit WASM https://github.com/justjake/quickjs-emscripten/issues/166
+     if (val == (int8_t)val) {
+         dbuf_putc(bc_out, OP_push_i8);
+         dbuf_putc(bc_out, val);
+@@ -32063,6 +32064,7 @@ static void push_short_int(DynBuf *bc_out, int val)
+         dbuf_put_u16(bc_out, val);
+         return;
+     }
++#endif // !defined(__EMSCRIPTEN__)
+ #endif
+     dbuf_putc(bc_out, OP_push_i32);
+     dbuf_put_u32(bc_out, val);
