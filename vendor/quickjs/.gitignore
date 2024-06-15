@@ -1,5 +1,9 @@
 *.a
 .obj/
+tests/bjson.so
+examples/test_fib
+test_fib.c
+examples/*.so
 examples/hello
 examples/hello_module
 hello.c
@@ -16,3 +20,5 @@ test262o
 test262o_*.txt
 unicode
 unicode_gen
+run_octane
+run_sunspider_like

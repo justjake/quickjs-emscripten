@@ -499,7 +499,10 @@ typedef struct JSClassDef {
     JSClassExoticMethods *exotic;
 } JSClassDef;
 
+#define JS_INVALID_CLASS_ID 0
 JSClassID JS_NewClassID(JSClassID *pclass_id);
+/* Returns the class ID if `v` is an object, otherwise returns JS_INVALID_CLASS_ID. */
+JSClassID JS_GetClassID(JSValue v);
 int JS_NewClass(JSRuntime *rt, JSClassID class_id, const JSClassDef *class_def);
 int JS_IsRegisteredClass(JSRuntime *rt, JSClassID class_id);
 
@@ -547,23 +550,21 @@ JSValue JS_NewBigUint64(JSContext *ctx, uint64_t v);
 
 static js_force_inline JSValue JS_NewFloat64(JSContext *ctx, double d)
 {
-    JSValue v;
     int32_t val;
     union {
         double d;
         uint64_t u;
     } u, t;
-    u.d = d;
-    val = (int32_t)d;
-    t.d = val;
-    /* -0 cannot be represented as integer, so we compare the bit
-        representation */
-    if (u.u == t.u) {
-        v = JS_MKVAL(JS_TAG_INT, val);
-    } else {
-        v = __JS_NewFloat64(ctx, d);
+    if (d >= INT32_MIN && d <= INT32_MAX) {
+        u.d = d;
+        val = (int32_t)d;
+        t.d = val;
+        /* -0 cannot be represented as integer, so we compare the bit
+           representation */
+        if (u.u == t.u)
+            return JS_MKVAL(JS_TAG_INT, val);
     }
-    return v;
+    return __JS_NewFloat64(ctx, d);
 }
 
 static inline JS_BOOL JS_IsNumber(JSValueConst v)
@@ -632,7 +633,9 @@ static inline JS_BOOL JS_IsObject(JSValueConst v)
 
 JSValue JS_Throw(JSContext *ctx, JSValue obj);
 JSValue JS_GetException(JSContext *ctx);
+JS_BOOL JS_HasException(JSContext *ctx);
 JS_BOOL JS_IsError(JSContext *ctx, JSValueConst val);
+void JS_SetUncatchableError(JSContext *ctx, JSValueConst val, JS_BOOL flag);
 void JS_ResetUncatchableError(JSContext *ctx);
 JSValue JS_NewError(JSContext *ctx);
 JSValue __js_printf_like(2, 3) JS_ThrowSyntaxError(JSContext *ctx, const char *fmt, ...);
@@ -681,6 +684,10 @@ static inline JSValue JS_DupValueRT(JSRuntime *rt, JSValueConst v)
     return (JSValue)v;
 }
 
+JS_BOOL JS_StrictEq(JSContext *ctx, JSValueConst op1, JSValueConst op2);
+JS_BOOL JS_SameValue(JSContext *ctx, JSValueConst op1, JSValueConst op2);
+JS_BOOL JS_SameValueZero(JSContext *ctx, JSValueConst op1, JSValueConst op2);
+
 int JS_ToBool(JSContext *ctx, JSValueConst val); /* return -1 for JS_EXCEPTION */
 int JS_ToInt32(JSContext *ctx, int32_t *pres, JSValueConst val);
 static inline int JS_ToUint32(JSContext *ctx, uint32_t *pres, JSValueConst val)
@@ -722,6 +729,8 @@ JS_BOOL JS_SetConstructorBit(JSContext *ctx, JSValueConst func_obj, JS_BOOL val)
 
 JSValue JS_NewArray(JSContext *ctx);
 int JS_IsArray(JSContext *ctx, JSValueConst val);
+
+JSValue JS_NewDate(JSContext *ctx, double epoch_ms);
 
 JSValue JS_GetPropertyInternal(JSContext *ctx, JSValueConst obj,
                                JSAtom prop, JSValueConst receiver,
@@ -821,6 +830,23 @@ JSValue JS_NewArrayBuffer(JSContext *ctx, uint8_t *buf, size_t len,
 JSValue JS_NewArrayBufferCopy(JSContext *ctx, const uint8_t *buf, size_t len);
 void JS_DetachArrayBuffer(JSContext *ctx, JSValueConst obj);
 uint8_t *JS_GetArrayBuffer(JSContext *ctx, size_t *psize, JSValueConst obj);
+
+typedef enum JSTypedArrayEnum {
+    JS_TYPED_ARRAY_UINT8C = 0,
+    JS_TYPED_ARRAY_INT8,
+    JS_TYPED_ARRAY_UINT8,
+    JS_TYPED_ARRAY_INT16,
+    JS_TYPED_ARRAY_UINT16,
+    JS_TYPED_ARRAY_INT32,
+    JS_TYPED_ARRAY_UINT32,
+    JS_TYPED_ARRAY_BIG_INT64,
+    JS_TYPED_ARRAY_BIG_UINT64,
+    JS_TYPED_ARRAY_FLOAT32,
+    JS_TYPED_ARRAY_FLOAT64,
+} JSTypedArrayEnum;
+
+JSValue JS_NewTypedArray(JSContext *ctx, int argc, JSValueConst *argv,
+                         JSTypedArrayEnum array_type);
 JSValue JS_GetTypedArrayBuffer(JSContext *ctx, JSValueConst obj,
                                size_t *pbyte_offset,
                                size_t *pbyte_length,
