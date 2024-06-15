@@ -25,6 +25,9 @@
 ifeq ($(shell uname -s),Darwin)
 CONFIG_DARWIN=y
 endif
+ifeq ($(shell uname -s),FreeBSD)
+CONFIG_FREEBSD=y
+endif
 # Windows cross compilation from Linux
 #CONFIG_WIN32=y
 # use link time optimization (smaller and faster executables but slower build)
@@ -43,15 +46,36 @@ PREFIX?=/usr/local
 #CONFIG_PROFILE=y
 # use address sanitizer
 #CONFIG_ASAN=y
-# include the code for BigFloat/BigDecimal, math mode and faster large integers
+# use memory sanitizer
+#CONFIG_MSAN=y
+# use UB sanitizer
+#CONFIG_UBSAN=y
+
+# include the code for BigFloat/BigDecimal and math mode
 CONFIG_BIGNUM=y
 
 OBJDIR=.obj
+
+ifdef CONFIG_ASAN
+OBJDIR:=$(OBJDIR)/asan
+endif
+ifdef CONFIG_MSAN
+OBJDIR:=$(OBJDIR)/msan
+endif
+ifdef CONFIG_UBSAN
+OBJDIR:=$(OBJDIR)/ubsan
+endif
 
 ifdef CONFIG_DARWIN
 # use clang instead of gcc
 CONFIG_CLANG=y
 CONFIG_DEFAULT_AR=y
+endif
+ifdef CONFIG_FREEBSD
+# use clang instead of gcc
+CONFIG_CLANG=y
+CONFIG_DEFAULT_AR=y
+CONFIG_LTO=
 endif
 
 ifdef CONFIG_WIN32
@@ -87,6 +111,7 @@ ifdef CONFIG_CLANG
       AR=$(CROSS_PREFIX)ar
     endif
   endif
+  LIB_FUZZING_ENGINE ?= "-fsanitize=fuzzer"
 else ifdef CONFIG_COSMO
   CONFIG_LTO=
   HOST_CC=gcc
@@ -118,6 +143,11 @@ endif
 ifdef CONFIG_WIN32
 DEFINES+=-D__USE_MINGW_ANSI_STDIO # for standard snprintf behavior
 endif
+ifndef CONFIG_WIN32
+ifeq ($(shell $(CC) -o /dev/null compat/test-closefrom.c 2>/dev/null && echo 1),1)
+DEFINES+=-DHAVE_CLOSEFROM
+endif
+endif
 
 CFLAGS+=$(DEFINES)
 CFLAGS_DEBUG=$(CFLAGS) -O0
@@ -141,6 +171,14 @@ endif
 ifdef CONFIG_ASAN
 CFLAGS+=-fsanitize=address -fno-omit-frame-pointer
 LDFLAGS+=-fsanitize=address -fno-omit-frame-pointer
+endif
+ifdef CONFIG_MSAN
+CFLAGS+=-fsanitize=memory -fno-omit-frame-pointer
+LDFLAGS+=-fsanitize=memory -fno-omit-frame-pointer
+endif
+ifdef CONFIG_UBSAN
+CFLAGS+=-fsanitize=undefined -fno-omit-frame-pointer
+LDFLAGS+=-fsanitize=undefined -fno-omit-frame-pointer
 endif
 ifdef CONFIG_WIN32
 LDEXPORT=
@@ -176,12 +214,15 @@ endif
 
 # examples
 ifeq ($(CROSS_PREFIX),)
-PROGS+=examples/hello
 ifndef CONFIG_ASAN
-PROGS+=examples/hello_module
-endif
+ifndef CONFIG_MSAN
+ifndef CONFIG_UBSAN
+PROGS+=examples/hello examples/hello_module examples/test_fib
 ifdef CONFIG_SHARED_LIBS
-PROGS+=examples/test_fib examples/fib.so examples/point.so
+PROGS+=examples/fib.so examples/point.so
+endif
+endif
+endif
 endif
 endif
 
@@ -212,6 +253,17 @@ qjs-debug$(EXE): $(patsubst %.o, %.debug.o, $(QJS_OBJS))
 
 qjsc$(EXE): $(OBJDIR)/qjsc.o $(QJS_LIB_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+fuzz_eval: $(OBJDIR)/fuzz_eval.o $(OBJDIR)/fuzz_common.o libquickjs.fuzz.a
+	$(CC) $(CFLAGS_OPT) $^ -o fuzz_eval $(LIB_FUZZING_ENGINE)
+
+fuzz_compile: $(OBJDIR)/fuzz_compile.o $(OBJDIR)/fuzz_common.o libquickjs.fuzz.a
+	$(CC) $(CFLAGS_OPT) $^ -o fuzz_compile $(LIB_FUZZING_ENGINE)
+
+fuzz_regexp: $(OBJDIR)/fuzz_regexp.o $(OBJDIR)/libregexp.fuzz.o $(OBJDIR)/cutils.fuzz.o $(OBJDIR)/libunicode.fuzz.o
+	$(CC) $(CFLAGS_OPT) $^ -o fuzz_regexp $(LIB_FUZZING_ENGINE)
+
+libfuzzer: fuzz_eval fuzz_compile fuzz_regexp
 
 ifneq ($(CROSS_PREFIX),)
 
@@ -254,6 +306,9 @@ libquickjs.a: $(patsubst %.o, %.nolto.o, $(QJS_LIB_OBJS))
 	$(AR) rcs $@ $^
 endif # CONFIG_LTO
 
+libquickjs.fuzz.a: $(patsubst %.o, %.fuzz.o, $(QJS_LIB_OBJS))
+	$(AR) rcs $@ $^
+
 repl.c: $(QJSC) repl.js
 	$(QJSC) -c -o $@ -m repl.js
 
@@ -282,6 +337,9 @@ run-test262-32: $(patsubst %.o, %.m32.o, $(OBJDIR)/run-test262.o $(QJS_LIB_OBJS)
 $(OBJDIR)/%.o: %.c | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -c -o $@ $<
 
+$(OBJDIR)/fuzz_%.o: fuzz/fuzz_%.c | $(OBJDIR)
+	$(CC) $(CFLAGS_OPT) -c -I. -o $@ $<
+
 $(OBJDIR)/%.host.o: %.c | $(OBJDIR)
 	$(HOST_CC) $(CFLAGS_OPT) -c -o $@ $<
 
@@ -300,6 +358,9 @@ $(OBJDIR)/%.m32s.o: %.c | $(OBJDIR)
 $(OBJDIR)/%.debug.o: %.c | $(OBJDIR)
 	$(CC) $(CFLAGS_DEBUG) -c -o $@ $<
 
+$(OBJDIR)/%.fuzz.o: %.c | $(OBJDIR)
+	$(CC) $(CFLAGS_OPT) -fsanitize=fuzzer-no-link -c -o $@ $<
+
 $(OBJDIR)/%.check.o: %.c | $(OBJDIR)
 	$(CC) $(CFLAGS) -DCONFIG_CHECK_JSVALUE -c -o $@ $<
 
@@ -311,11 +372,12 @@ unicode_gen: $(OBJDIR)/unicode_gen.host.o $(OBJDIR)/cutils.host.o libunicode.c u
 
 clean:
 	rm -f repl.c qjscalc.c out.c
-	rm -f *.a *.o *.d *~ unicode_gen regexp_test $(PROGS)
+	rm -f *.a *.o *.d *~ unicode_gen regexp_test fuzz_eval fuzz_compile fuzz_regexp $(PROGS)
 	rm -f hello.c test_fib.c
 	rm -f examples/*.so tests/*.so
 	rm -rf $(OBJDIR)/ *.dSYM/ qjs-debug
 	rm -rf run-test262-debug run-test262-32
+	rm -f run_octane run_sunspider_like
 
 install: all
 	mkdir -p "$(DESTDIR)$(PREFIX)/bin"
@@ -404,8 +466,9 @@ endif
 test: qjs
 	./qjs tests/test_closure.js
 	./qjs tests/test_language.js
-	./qjs tests/test_builtin.js
+	./qjs --std tests/test_builtin.js
 	./qjs tests/test_loop.js
+	./qjs tests/test_bignum.js
 	./qjs tests/test_std.js
 	./qjs tests/test_worker.js
 ifdef CONFIG_SHARED_LIBS
@@ -418,19 +481,20 @@ endif
 endif
 ifdef CONFIG_BIGNUM
 	./qjs --bignum tests/test_op_overloading.js
-	./qjs --bignum tests/test_bignum.js
+	./qjs --bignum tests/test_bigfloat.js
 	./qjs --qjscalc tests/test_qjscalc.js
 endif
 ifdef CONFIG_M32
 	./qjs32 tests/test_closure.js
 	./qjs32 tests/test_language.js
-	./qjs32 tests/test_builtin.js
+	./qjs32 --std tests/test_builtin.js
 	./qjs32 tests/test_loop.js
+	./qjs32 tests/test_bignum.js
 	./qjs32 tests/test_std.js
 	./qjs32 tests/test_worker.js
 ifdef CONFIG_BIGNUM
 	./qjs32 --bignum tests/test_op_overloading.js
-	./qjs32 --bignum tests/test_bignum.js
+	./qjs32 --bignum tests/test_bigfloat.js
 	./qjs32 --qjscalc tests/test_qjscalc.js
 endif
 endif
@@ -445,31 +509,41 @@ microbench: qjs
 microbench-32: qjs32
 	./qjs32 --std tests/microbench.js
 
+ifeq ($(wildcard test262o/tests.txt),)
+test2o test2o-32 test2o-update:
+	@echo test262o tests not installed
+else
 # ES5 tests (obsolete)
 test2o: run-test262
-	time ./run-test262 -m -c test262o.conf
+	time ./run-test262 -t -m -c test262o.conf
 
 test2o-32: run-test262-32
-	time ./run-test262-32 -m -c test262o.conf
+	time ./run-test262-32 -t -m -c test262o.conf
 
 test2o-update: run-test262
-	./run-test262 -u -c test262o.conf
+	./run-test262 -t -u -c test262o.conf
+endif
 
+ifeq ($(wildcard test262/features.txt),)
+test2 test2-32 test2-update test2-default test2-check:
+	@echo test262 tests not installed
+else
 # Test262 tests
 test2-default: run-test262
-	time ./run-test262 -m -c test262.conf
+	time ./run-test262 -t -m -c test262.conf
 
 test2: run-test262
-	time ./run-test262 -m -c test262.conf -a
+	time ./run-test262 -t -m -c test262.conf -a
 
 test2-32: run-test262-32
-	time ./run-test262-32 -m -c test262.conf -a
+	time ./run-test262-32 -t -m -c test262.conf -a
 
 test2-update: run-test262
-	./run-test262 -u -c test262.conf -a
+	./run-test262 -t -u -c test262.conf -a
 
 test2-check: run-test262
-	time ./run-test262 -m -c test262.conf -E -a
+	time ./run-test262 -t -m -c test262.conf -E -a
+endif
 
 testall: all test microbench test2o test2
 
@@ -477,11 +551,40 @@ testall-32: all test-32 microbench-32 test2o-32 test2-32
 
 testall-complete: testall testall-32
 
+node-test:
+	node tests/test_closure.js
+	node tests/test_language.js
+	node tests/test_builtin.js
+	node tests/test_loop.js
+	node tests/test_bignum.js
+
+node-microbench:
+	node tests/microbench.js -s microbench-node.txt
+	node --jitless tests/microbench.js -s microbench-node-jitless.txt
+
 bench-v8: qjs
 	make -C tests/bench-v8
 	./qjs -d tests/bench-v8/combined.js
 
+node-bench-v8:
+	make -C tests/bench-v8
+	node --jitless tests/bench-v8/combined.js
+
 tests/bjson.so: $(OBJDIR)/tests/bjson.pic.o
 	$(CC) $(LDFLAGS) -shared -o $@ $^ $(LIBS)
+
+BENCHMARKDIR=../quickjs-benchmarks
+
+run_sunspider_like: $(BENCHMARKDIR)/run_sunspider_like.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -DNO_INCLUDE_DIR -I. -o $@ $< libquickjs$(LTOEXT).a $(LIBS)
+
+run_octane: $(BENCHMARKDIR)/run_octane.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -DNO_INCLUDE_DIR -I. -o $@ $< libquickjs$(LTOEXT).a $(LIBS)
+
+benchmarks: run_sunspider_like run_octane
+	./run_sunspider_like $(BENCHMARKDIR)/kraken-1.0/
+	./run_sunspider_like $(BENCHMARKDIR)/kraken-1.1/
+	./run_sunspider_like $(BENCHMARKDIR)/sunspider-1.0/
+	./run_octane $(BENCHMARKDIR)/
 
 -include $(wildcard $(OBJDIR)/*.d)
