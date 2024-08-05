@@ -46,4 +46,4 @@ export type {
 export { DefaultIntrinsics } from "./types"
 export type { ModuleEvalOptions } from "./module"
 export { QuickJSPropertyKey } from "./context"
-export { debugLog } from "./debug"
+export { debugLog, setDebugMode } from "./debug"
