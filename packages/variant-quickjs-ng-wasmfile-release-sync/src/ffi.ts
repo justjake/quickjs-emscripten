@@ -16,9 +16,11 @@ import {
   OwnedHeapCharPointer,
   JSBorrowedCharPointer,
   JSVoidPointer,
+  UInt32Pointer,
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
+  GetOwnPropertyNamesFlags,
   JSPromiseStateEnum,
 } from "@jitl/quickjs-ffi-types"
 
@@ -213,6 +215,16 @@ export class QuickJSFFI {
     prop_name: JSValuePointer | JSValueConstPointer,
   ) => JSValuePointer = this.module.cwrap("QTS_GetProp", "number", ["number", "number", "number"])
 
+  QTS_GetPropNumber: (
+    ctx: JSContextPointer,
+    this_val: JSValuePointer | JSValueConstPointer,
+    prop_name: number,
+  ) => JSValuePointer = this.module.cwrap("QTS_GetPropNumber", "number", [
+    "number",
+    "number",
+    "number",
+  ])
+
   QTS_SetProp: (
     ctx: JSContextPointer,
     this_val: JSValuePointer | JSValueConstPointer,
@@ -240,6 +252,20 @@ export class QuickJSFFI {
     "boolean",
     "boolean",
     "boolean",
+  ])
+
+  QTS_GetOwnPropertyNames: (
+    ctx: JSContextPointer,
+    out_ptrs: JSValuePointerPointer,
+    out_len: uint32_tPointer,
+    obj: JSValuePointer | JSValueConstPointer,
+    flags: number,
+  ) => JSValuePointer = this.module.cwrap("QTS_GetOwnPropertyNames", "number", [
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
   ])
 
   QTS_Call: (
@@ -289,6 +315,19 @@ export class QuickJSFFI {
     ctx: JSContextPointer,
     value: JSValuePointer | JSValueConstPointer,
   ) => OwnedHeapCharPointer = this.module.cwrap("QTS_Typeof", "number", ["number", "number"])
+
+  QTS_GetLength: (
+    ctx: JSContextPointer,
+    out_len: uint32_tPointer,
+    value: JSValuePointer | JSValueConstPointer,
+  ) => number = this.module.cwrap("QTS_GetLength", "number", ["number", "number", "number"])
+
+  QTS_IsEqual: (
+    ctx: JSContextPointer,
+    a: JSValuePointer | JSValueConstPointer,
+    b: JSValuePointer | JSValueConstPointer,
+    op: IsEqualOp,
+  ) => number = this.module.cwrap("QTS_IsEqual", "number", ["number", "number", "number", "number"])
 
   QTS_GetGlobalObject: (ctx: JSContextPointer) => JSValuePointer = this.module.cwrap(
     "QTS_GetGlobalObject",

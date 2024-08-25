@@ -16,9 +16,11 @@ import {
   OwnedHeapCharPointer,
   JSBorrowedCharPointer,
   JSVoidPointer,
+  UInt32Pointer,
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
+  GetOwnPropertyNamesFlags,
   JSPromiseStateEnum,
   assertSync,
 } from "@jitl/quickjs-ffi-types"
@@ -242,6 +244,24 @@ export class QuickJSAsyncFFI {
     "number",
   ])
 
+  QTS_GetPropNumber: (
+    ctx: JSContextPointer,
+    this_val: JSValuePointer | JSValueConstPointer,
+    prop_name: number,
+  ) => JSValuePointer = assertSync(
+    this.module.cwrap("QTS_GetPropNumber", "number", ["number", "number", "number"]),
+  )
+
+  QTS_GetPropNumber_MaybeAsync: (
+    ctx: JSContextPointer,
+    this_val: JSValuePointer | JSValueConstPointer,
+    prop_name: number,
+  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap("QTS_GetPropNumber", "number", [
+    "number",
+    "number",
+    "number",
+  ])
+
   QTS_SetProp: (
     ctx: JSContextPointer,
     this_val: JSValuePointer | JSValueConstPointer,
@@ -284,6 +304,34 @@ export class QuickJSAsyncFFI {
     "boolean",
     "boolean",
   ])
+
+  QTS_GetOwnPropertyNames: (
+    ctx: JSContextPointer,
+    out_ptrs: JSValuePointerPointer,
+    out_len: uint32_tPointer,
+    obj: JSValuePointer | JSValueConstPointer,
+    flags: number,
+  ) => JSValuePointer = assertSync(
+    this.module.cwrap("QTS_GetOwnPropertyNames", "number", [
+      "number",
+      "number",
+      "number",
+      "number",
+      "number",
+    ]),
+  )
+
+  QTS_GetOwnPropertyNames_MaybeAsync: (
+    ctx: JSContextPointer,
+    out_ptrs: JSValuePointerPointer,
+    out_len: uint32_tPointer,
+    obj: JSValuePointer | JSValueConstPointer,
+    flags: number,
+  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
+    "QTS_GetOwnPropertyNames",
+    "number",
+    ["number", "number", "number", "number", "number"],
+  )
 
   QTS_Call: (
     ctx: JSContextPointer,
@@ -371,6 +419,19 @@ export class QuickJSAsyncFFI {
     ctx: JSContextPointer,
     value: JSValuePointer | JSValueConstPointer,
   ) => OwnedHeapCharPointer = this.module.cwrap("QTS_Typeof", "number", ["number", "number"])
+
+  QTS_GetLength: (
+    ctx: JSContextPointer,
+    out_len: uint32_tPointer,
+    value: JSValuePointer | JSValueConstPointer,
+  ) => number = this.module.cwrap("QTS_GetLength", "number", ["number", "number", "number"])
+
+  QTS_IsEqual: (
+    ctx: JSContextPointer,
+    a: JSValuePointer | JSValueConstPointer,
+    b: JSValuePointer | JSValueConstPointer,
+    op: IsEqualOp,
+  ) => number = this.module.cwrap("QTS_IsEqual", "number", ["number", "number", "number", "number"])
 
   QTS_GetGlobalObject: (ctx: JSContextPointer) => JSValuePointer = this.module.cwrap(
     "QTS_GetGlobalObject",
