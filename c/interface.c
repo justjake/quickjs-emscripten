@@ -591,6 +591,22 @@ void QTS_DefineProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_n
   JS_FreeAtom(ctx, prop_atom);
 }
 
+MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue **out_ptrs, uint32_t *out_len, JSValueConst *obj, int flags) {
+  JSPropertyEnum *tab = NULL;
+  int status = 0;
+  status = JS_GetOwnPropertyNames(ctx, &tab, out_len, *obj, flags);
+  if (status < 0) {
+    return jsvalue_to_heap(JS_GetException(ctx));
+  }
+  *out_ptrs = malloc(sizeof(JSValue) * *out_len);
+  for (int i = 0; i < *out_len; i++) {
+    (*out_ptrs)[i] = jsvalue_to_heap(JS_AtomToValue(ctx, tab[i].atom));
+    JS_FreeAtom(ctx, tab[i].atom);
+  }
+  js_free(ctx, tab);
+  return NULL;
+}
+
 MaybeAsync(JSValue *) QTS_Call(JSContext *ctx, JSValueConst *func_obj, JSValueConst *this_obj, int argc, JSValueConst **argv_ptrs) {
   // convert array of pointers to array of values
   JSValueConst argv[argc];

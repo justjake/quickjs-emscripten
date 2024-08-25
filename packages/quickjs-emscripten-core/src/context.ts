@@ -18,8 +18,15 @@ import { QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import { QuickJSPromisePending, QuickJSUnwrapError } from "./errors"
-import type { Disposable } from "./lifetime"
-import { Lifetime, Scope, StaticLifetime, UsingDisposable, WeakLifetime } from "./lifetime"
+import type { Disposable, DisposableArray } from "./lifetime"
+import {
+  Lifetime,
+  Scope,
+  StaticLifetime,
+  UsingDisposable,
+  WeakLifetime,
+  createDisposableArray,
+} from "./lifetime"
 import type { HeapTypedArray } from "./memory"
 import { ModuleMemory } from "./memory"
 import type { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
@@ -28,8 +35,15 @@ import type {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ExecutePendingJobsResult,
 } from "./runtime"
-import type { ContextEvalOptions, JSValue, PromiseExecutor, QuickJSHandle } from "./types"
-import { evalOptionsToFlags } from "./types"
+import {
+  ContextEvalOptions,
+  GetOwnPropertyNamesOptions,
+  JSValue,
+  PromiseExecutor,
+  QuickJSHandle,
+  StaticJSValue,
+} from "./types"
+import { evalOptionsToFlags, getOwnPropertyNamesOptionsToFlags } from "./types"
 import type {
   LowLevelJavascriptVm,
   SuccessOrFail,
@@ -37,6 +51,7 @@ import type {
   VmFunctionImplementation,
   VmPropertyDescriptor,
 } from "./vm-interface"
+import { QuickJSIterator } from "./QuickJSIterator"
 
 /**
  * Property key for getting or setting a property on a handle with
@@ -109,6 +124,15 @@ class ContextMemory extends ModuleMemory implements Disposable {
   heapValueHandle(ptr: JSValuePointer): JSValue {
     return new Lifetime(ptr, this.copyJSValue, this.freeJSValue, this.owner)
   }
+
+  /** Manage a heap pointer with the lifetime of the context */
+  staticHeapValueHandle(ptr: JSValuePointer | JSValueConstPointer): StaticJSValue {
+    this.manage(this.heapValueHandle(ptr as JSValuePointer))
+    // This isn't technically a static lifetime, but since it has the same
+    // lifetime as the VM, it's okay to fake one since when the VM is
+    // disposed, no other functions will accept the value.
+    return new StaticLifetime(ptr as JSValueConstPointer, this.owner) as StaticJSValue
+  }
 }
 
 /**
@@ -178,6 +202,12 @@ export class QuickJSContext
   protected _BigInt: QuickJSHandle | undefined = undefined
   /** @private  */
   protected uint32Out: HeapTypedArray<Uint32Array, UInt32Pointer>
+  /** @private */
+  protected _Symbol: QuickJSHandle | undefined = undefined
+  /** @private */
+  protected _SymbolIterator: QuickJSHandle | undefined = undefined
+  /** @private */
+  protected _SymbolAsyncIterator: QuickJSHandle | undefined = undefined
 
   /**
    * Use {@link QuickJSRuntime#newContext} or {@link QuickJSWASMModule#newContext}
@@ -297,12 +327,7 @@ export class QuickJSContext
     const ptr = this.ffi.QTS_GetGlobalObject(this.ctx.value)
 
     // Automatically clean up this reference when we dispose
-    this.memory.manage(this.memory.heapValueHandle(ptr))
-
-    // This isn't technically a static lifetime, but since it has the same
-    // lifetime as the VM, it's okay to fake one since when the VM is
-    // disposed, no other functions will accept the value.
-    this._global = new StaticLifetime(ptr, this.runtime)
+    this._global = this.memory.staticHeapValueHandle(ptr)
     return this._global
   }
 
@@ -347,6 +372,14 @@ export class QuickJSContext
       .newHeapCharPointer(description)
       .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value.ptr, 1))
     return this.memory.heapValueHandle(ptr)
+  }
+
+  /**
+   * Access a well-known symbol that is a property of the global Symbol object, like `Symbol.iterator`.
+   */
+  getWellKnownSymbol(name: string): QuickJSHandle {
+    this._Symbol ??= this.memory.manage(this.getProp(this.global, "Symbol"))
+    return this.getProp(this._Symbol, name)
   }
 
   /**
@@ -779,6 +812,73 @@ export class QuickJSContext
       return undefined
     }
     return this.uint32Out.value.typedArray[0]
+  }
+
+  /**
+   * `Object.getOwnPropertyNames(handle)`.
+   * Similar to the [standard semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames).
+   */
+  getPropNames(
+    handle: QuickJSHandle,
+    options: GetOwnPropertyNamesOptions,
+  ): SuccessOrFail<DisposableArray<JSValue>, QuickJSHandle> {
+    this.runtime.assertOwned(handle)
+    handle.value // assert alive
+    const flags = getOwnPropertyNamesOptionsToFlags(options)
+    return Scope.withScope((scope) => {
+      const outPtr = scope.manage(this.memory.newMutablePointerArray<JSValuePointerPointer>(1))
+      const errorPtr = this.ffi.QTS_GetOwnPropertyNames(
+        this.ctx.value,
+        outPtr.value.ptr,
+        this.uint32Out.value.ptr,
+        handle.value,
+        flags,
+      )
+      if (errorPtr) {
+        return { error: this.memory.heapValueHandle(errorPtr) }
+      }
+      const len = this.uint32Out.value.typedArray[0]
+      const ptr = outPtr.value.typedArray[0]
+      const pointerArray = new Uint32Array(this.module.HEAP8.buffer, ptr, len)
+      const handles = Array.from(pointerArray).map((ptr) =>
+        this.memory.heapValueHandle(ptr as JSValuePointer),
+      )
+      this.module._free(ptr)
+      return { value: createDisposableArray(handles) }
+    })
+  }
+
+  /**
+   * `handle[Symbol.iterator]()`. See {@link QuickJSIterator}.
+   * Returns a host iterator that wraps and proxies calls to a guest iterator handle.
+   * Each step of the iteration returns a result, either an error or a handle to the next value.
+   * Once the iterator is done, the handle is automatically disposed, and the iterator
+   * is considered done if the handle is disposed.
+   *
+   * ```typescript
+   * for (const nextResult of context.unwrapResult(context.getIterator(arrayHandle)) {
+   *   const nextHandle = context.unwrapResult(nextResult)
+   *   try {
+   *     // Do something with nextHandle
+   *     console.log(context.dump(nextHandle))
+   *   } finally {
+   *     nextHandle.dispose()
+   *   }
+   * }
+   * ```
+   */
+  getIterator(handle: QuickJSHandle): SuccessOrFail<QuickJSIterator, QuickJSHandle> {
+    const SymbolIterator = (this._SymbolIterator ??= this.memory.manage(
+      this.getWellKnownSymbol("iterator"),
+    ))
+    return Scope.withScope((scope) => {
+      const methodHandle = scope.manage(this.getProp(handle, SymbolIterator))
+      const iteratorCallResult = this.callFunction(methodHandle, handle)
+      if (iteratorCallResult.error) {
+        return iteratorCallResult
+      }
+      return { value: new QuickJSIterator(iteratorCallResult.value, this) }
+    })
   }
 
   /**

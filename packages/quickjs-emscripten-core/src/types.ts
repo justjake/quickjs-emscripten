@@ -1,5 +1,5 @@
 import type { JSContextPointer, JSValueConstPointer, JSValuePointer } from "@jitl/quickjs-ffi-types"
-import { EvalFlags, IntrinsicsFlags } from "@jitl/quickjs-ffi-types"
+import { EvalFlags, GetOwnPropertyNamesFlags, IntrinsicsFlags } from "@jitl/quickjs-ffi-types"
 import type { QuickJSContext } from "./context"
 import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
 import type { Disposable, Lifetime } from "./lifetime"
@@ -296,14 +296,14 @@ export interface GetOwnPropertyNamesOptions {
 
 /** Convert {@link GetOwnPropertyNamesOptions} to bitfield flags */
 export function getOwnPropertyNamesOptionsToFlags(
-  options: GetOwnPropertyNamesOptions | number | undefined,
-): number {
+  options: GetOwnPropertyNamesOptions | GetOwnPropertyNamesFlags | undefined,
+): GetOwnPropertyNamesFlags {
   if (typeof options === "number") {
     return options
   }
 
   if (options === undefined) {
-    return 0
+    return 0 as GetOwnPropertyNamesFlags
   }
 
   const { includeStrings, includeSymbols, includePrivate, onlyEnumerable } = options
@@ -312,7 +312,7 @@ export function getOwnPropertyNamesOptionsToFlags(
   if (includeSymbols) flags |= GetOwnPropertyNamesFlags.JS_GPN_SYMBOL_MASK
   if (includePrivate) flags |= GetOwnPropertyNamesFlags.JS_GPN_PRIVATE_MASK
   if (onlyEnumerable) flags |= GetOwnPropertyNamesFlags.JS_GPN_ENUM_ONLY
-  return flags
+  return flags as GetOwnPropertyNamesFlags
 }
 
 export type PromiseExecutor<ResolveT, RejectT> = (

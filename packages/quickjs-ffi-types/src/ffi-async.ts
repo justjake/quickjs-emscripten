@@ -20,6 +20,7 @@ import {
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
+  GetOwnPropertyNamesFlags,
   JSPromiseStateEnum,
   assertSync,
 } from "."
@@ -153,6 +154,20 @@ export interface QuickJSAsyncFFI {
     enumerable: boolean,
     has_value: boolean,
   ) => void
+  QTS_GetOwnPropertyNames: (
+    ctx: JSContextPointer,
+    out_ptrs: JSValuePointerPointer,
+    out_len: uint32_tPointer,
+    obj: JSValuePointer | JSValueConstPointer,
+    flags: number,
+  ) => JSValuePointer
+  QTS_GetOwnPropertyNames_MaybeAsync: (
+    ctx: JSContextPointer,
+    out_ptrs: JSValuePointerPointer,
+    out_len: uint32_tPointer,
+    obj: JSValuePointer | JSValueConstPointer,
+    flags: number,
+  ) => JSValuePointer | Promise<JSValuePointer>
   QTS_Call: (
     ctx: JSContextPointer,
     func_obj: JSValuePointer | JSValueConstPointer,

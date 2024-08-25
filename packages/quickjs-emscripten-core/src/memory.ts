@@ -1,9 +1,7 @@
 import type {
   EitherModule,
   OwnedHeapCharPointer,
-  JSContextPointerPointer,
   JSValueConstPointerPointer,
-  JSValuePointerPointer,
   JSVoidPointer,
 } from "@jitl/quickjs-ffi-types"
 import { Lifetime } from "./lifetime"

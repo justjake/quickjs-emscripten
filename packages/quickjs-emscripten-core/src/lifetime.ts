@@ -318,3 +318,48 @@ export class Scope extends UsingDisposable implements Disposable {
     this._disposables.dispose()
   }
 }
+
+/**
+ * An `Array` that also implements {@link Disposable}:
+ *
+ * - Considered {@link Disposable#alive} if any of its elements are `alive`.
+ * - When {@link Disposable#dispose}d, it will dispose of all its elements that are `alive`.
+ */
+export type DisposableArray<T> = T[] & Disposable
+
+/**
+ * Create an array that also implements {@link Disposable}.
+ */
+export function createDisposableArray<T extends Disposable>(
+  items?: Iterable<T>,
+): DisposableArray<T> {
+  const array = items ? Array.from(items) : []
+
+  function disposeAlive() {
+    return array.forEach((disposable) => (disposable.alive ? disposable.dispose() : undefined))
+  }
+
+  function someIsAlive() {
+    return array.some((disposable) => disposable.alive)
+  }
+
+  Object.defineProperty(array, SymbolDispose, {
+    configurable: true,
+    enumerable: false,
+    value: disposeAlive,
+  })
+
+  Object.defineProperty(array, "dispose", {
+    configurable: true,
+    enumerable: false,
+    value: disposeAlive,
+  })
+
+  Object.defineProperty(array, "alive", {
+    configurable: true,
+    enumerable: false,
+    get: someIsAlive,
+  })
+
+  return array as T[] & Disposable
+}

@@ -369,6 +369,72 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
     })
   })
 
+  describe("getPropNames", () => {
+    it("gets array indexes as *numbers*", () => {
+      const array = vm.newArray()
+      vm.setProp(array, 0, vm.undefined)
+      vm.setProp(array, 1, vm.undefined)
+      vm.setProp(array, 2, vm.undefined)
+
+      const props = vm.unwrapResult(
+        vm.getPropNames(array, {
+          onlyEnumerable: true,
+        }),
+      )
+
+      assert.strictEqual(props.length, 3)
+      assert.strictEqual(vm.dump(props[0]), 0)
+      assert.strictEqual(vm.dump(props[1]), 1)
+      assert.strictEqual(vm.dump(props[2]), 2)
+      props.dispose()
+    })
+
+    it("gets object keys as *strings*, but does not include symbols", () => {
+      const obj = vm.newObject()
+      vm.setProp(obj, "a", vm.undefined)
+      vm.setProp(obj, "b", vm.undefined)
+      vm.setProp(obj, "c", vm.undefined)
+      const sym = vm.newUniqueSymbol("d")
+      vm.setProp(obj, sym, vm.undefined)
+
+      const props = vm.unwrapResult(
+        vm.getPropNames(obj, {
+          onlyEnumerable: true,
+          includeStrings: true,
+        }),
+      )
+
+      assert.strictEqual(props.length, 3)
+      assert.strictEqual(vm.dump(props[0]), "a")
+      assert.strictEqual(vm.dump(props[1]), "b")
+      assert.strictEqual(vm.dump(props[2]), "c")
+      props.dispose()
+    })
+
+    it('gets object keys that are symbols only when "includeSymbols" is true', () => {
+      const obj = vm.newObject()
+      const symA = vm.newUniqueSymbol("a")
+      const symB = vm.newUniqueSymbol("b")
+      const symC = vm.newUniqueSymbol("c")
+      vm.setProp(obj, symA, vm.undefined)
+      vm.setProp(obj, symB, vm.undefined)
+      vm.setProp(obj, symC, vm.undefined)
+
+      const props = vm.unwrapResult(
+        vm.getPropNames(obj, {
+          onlyEnumerable: true,
+          includeSymbols: true,
+        }),
+      )
+
+      assert.strictEqual(props.length, 3)
+      assert.strictEqual(vm.dump(props[0]), symA)
+      assert.strictEqual(vm.dump(props[1]), symB)
+      assert.strictEqual(vm.dump(props[2]), symC)
+      props.dispose()
+    })
+  })
+
   describe(".unwrapResult", () => {
     it("successful result: returns the value", () => {
       const handle = vm.newString("OK!")

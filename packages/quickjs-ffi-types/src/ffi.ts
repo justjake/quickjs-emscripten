@@ -20,6 +20,7 @@ import {
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
+  GetOwnPropertyNamesFlags,
   JSPromiseStateEnum,
 } from "."
 
@@ -127,6 +128,13 @@ export interface QuickJSFFI {
     enumerable: boolean,
     has_value: boolean,
   ) => void
+  QTS_GetOwnPropertyNames: (
+    ctx: JSContextPointer,
+    out_ptrs: JSValuePointerPointer,
+    out_len: uint32_tPointer,
+    obj: JSValuePointer | JSValueConstPointer,
+    flags: number,
+  ) => JSValuePointer
   QTS_Call: (
     ctx: JSContextPointer,
     func_obj: JSValuePointer | JSValueConstPointer,
