@@ -116,6 +116,11 @@ export type EvalDetectModule = Brand<number, "EvalDetectModule">
 export type GetOwnPropertyNamesFlags = Brand<number, "GetOwnPropertyNamesFlags">
 
 /**
+ * @private
+ */
+export type IsEqualOp = Brand<number, "IsEqualOp">
+
+/**
  * State of a promise.
  */
 export type JSPromiseStateEnum = Brand<
@@ -193,4 +198,10 @@ export const GetOwnPropertyNamesFlags = {
   JS_GPN_ENUM_ONLY: 1 << 4,
   /* set theJSPropertyEnum.is_enumerable field */
   JS_GPN_SET_ENUM: 1 << 5,
+}
+
+export const IsEqualOp = {
+  IsStrictlyEqual: 0 as IsEqualOp,
+  IsSameValue: 1 as IsEqualOp,
+  IsSameValueZero: 2 as IsEqualOp,
 }

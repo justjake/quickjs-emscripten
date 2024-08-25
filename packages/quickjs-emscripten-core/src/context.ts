@@ -1,4 +1,4 @@
-import { JSPromiseStateEnum } from "@jitl/quickjs-ffi-types"
+import { IsEqualOp, JSPromiseStateEnum } from "@jitl/quickjs-ffi-types"
 import type {
   EvalFlags,
   EitherModule,
@@ -44,7 +44,7 @@ import type {
   QuickJSHandle,
   StaticJSValue,
 } from "./types"
-import { IsEqualOp, evalOptionsToFlags, getOwnPropertyNamesOptionsToFlags } from "./types"
+import { evalOptionsToFlags, getOwnPropertyNamesOptionsToFlags } from "./types"
 import type {
   LowLevelJavascriptVm,
   SuccessOrFail,
