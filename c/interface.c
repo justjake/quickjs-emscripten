@@ -600,7 +600,7 @@ MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue **out_ptrs
   }
   *out_ptrs = malloc(sizeof(JSValue) * *out_len);
   for (int i = 0; i < *out_len; i++) {
-    (*out_ptrs)[i] = jsvalue_to_heap(JS_AtomToValue(ctx, tab[i].atom));
+    out_ptrs[i] = jsvalue_to_heap(JS_AtomToValue(ctx, tab[i].atom));
     JS_FreeAtom(ctx, tab[i].atom);
   }
   js_free(ctx, tab);
@@ -840,6 +840,7 @@ OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   return out;
 }
 
+JSAtom QTS_AtomLength = 0;
 int QTS_GetLength(JSContext *ctx, uint32_t *out_len, JSValueConst *value) {
   JSValue len_val;
   int result;
@@ -848,7 +849,13 @@ int QTS_GetLength(JSContext *ctx, uint32_t *out_len, JSValueConst *value) {
     return -1;
   }
 
-  len_val = JS_GetProperty(ctx, *value, JS_ATOM_length);
+  if (QTS_AtomLength == 0) {
+    // This should result in a constant static atom we don't actually need to
+    // free, since it's interned within quickjs.c
+    QTS_AtomLength = JS_NewAtom(ctx, "length");
+  }
+
+  len_val = JS_GetProperty(ctx, *value, QTS_AtomLength);
   if (JS_IsException(len_val)) {
     return -1;
   }
@@ -865,6 +872,9 @@ typedef enum IsEqualOp {
 } IsEqualOp;
 
 int QTS_IsEqual(JSContext *ctx, JSValueConst *a, JSValueConst *b, IsEqualOp op) {
+#ifdef QTS_USE_QUICKJS_NG
+  return -1;
+#else
   switch (op) {
     case QTS_EqualOp_SameValue:
       return JS_SameValue(ctx, *a, *b);
@@ -874,6 +884,7 @@ int QTS_IsEqual(JSContext *ctx, JSValueConst *a, JSValueConst *b, IsEqualOp op) 
     case QTS_EqualOp_StrictEq:
       return JS_StrictEq(ctx, *a, *b);
   }
+#endif
 }
 
 JSValue *QTS_GetGlobalObject(JSContext *ctx) {

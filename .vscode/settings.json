@@ -8,6 +8,7 @@
     "lsan_interface.h": "c",
     "math.h": "c",
     "stdbool.h": "c",
-    "emscripten.h": "c"
+    "emscripten.h": "c",
+    "quickjs-atom.h": "c"
   }
 }

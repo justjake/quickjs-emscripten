@@ -17,7 +17,12 @@ import type { JSPromiseState } from "./deferred-promise"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
-import { QuickJSPromisePending, QuickJSUnwrapError } from "./errors"
+import {
+  QuickJSEmscriptenModuleError,
+  QuickJSNotImplemented,
+  QuickJSPromisePending,
+  QuickJSUnwrapError,
+} from "./errors"
 import type { Disposable, DisposableArray, DisposableFail, DisposableSuccess } from "./lifetime"
 import {
   DisposableResult,
@@ -791,7 +796,11 @@ export class QuickJSContext
     }
     this.runtime.assertOwned(a)
     this.runtime.assertOwned(b)
-    return Boolean(this.ffi.QTS_IsEqual(this.ctx.value, a.value, b.value, equalityType))
+    const result = this.ffi.QTS_IsEqual(this.ctx.value, a.value, b.value, equalityType)
+    if (result === -1) {
+      throw new QuickJSNotImplemented("WASM variant does not expose equality")
+    }
+    return Boolean(result)
   }
 
   /**

@@ -2,8 +2,6 @@
   "extends": "@jitl/tsconfig/tsconfig.json",
   "include": ["src/**/*"],
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
     "paths": {
       "@jitl/quickjs-ffi-types": ["../quickjs-ffi-types/src"],
       "@jitl/quickjs-ffi-types/*": ["../quickjs-ffi-types/src/*"]
