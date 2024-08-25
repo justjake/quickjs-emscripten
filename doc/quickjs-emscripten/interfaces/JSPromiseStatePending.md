@@ -24,7 +24,7 @@ See [JSPromiseState](../exports.md#jspromisestate).
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:679
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:21](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L21)
 
 ## Accessors
 
@@ -33,7 +33,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:679
 > **`get`** **error**(): `Error`
 
 The error property here allows unwrapping a JSPromiseState with [QuickJSContext#unwrapResult](../classes/QuickJSContext.md#unwrapresult).
-Unwrapping a pending promise will throw a [QuickJSPromisePending]([object Object]) error.
+Unwrapping a pending promise will throw a QuickJSPromisePending error.
 
 #### Returns
 
@@ -41,7 +41,7 @@ Unwrapping a pending promise will throw a [QuickJSPromisePending]([object Object
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:684
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L26)
 
 ***
 

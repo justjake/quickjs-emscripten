@@ -20,8 +20,8 @@
 
 ## Extended By
 
-- [`AsyncRuntimeOptions`](AsyncRuntimeOptions.md)
 - [`RuntimeOptions`](RuntimeOptions.md)
+- [`AsyncRuntimeOptions`](AsyncRuntimeOptions.md)
 
 ## Properties
 
@@ -31,7 +31,7 @@
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:420
+[packages/quickjs-emscripten-core/src/types.ts:118](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L118)
 
 ***
 
@@ -41,7 +41,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:420
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:415
+[packages/quickjs-emscripten-core/src/types.ts:112](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L112)
 
 ***
 
@@ -51,7 +51,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:415
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:416
+[packages/quickjs-emscripten-core/src/types.ts:113](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L113)
 
 ***
 
@@ -61,7 +61,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:416
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:417
+[packages/quickjs-emscripten-core/src/types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L114)
 
 ***
 
@@ -71,7 +71,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:417
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:418
+[packages/quickjs-emscripten-core/src/types.ts:116](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L116)
 
 ***
 
@@ -81,7 +81,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:418
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:419
+[packages/quickjs-emscripten-core/src/types.ts:117](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L117)
 
 ***
 
@@ -91,7 +91,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:419
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:421
+[packages/quickjs-emscripten-core/src/types.ts:119](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L119)
 
 ***
 

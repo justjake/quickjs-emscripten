@@ -30,7 +30,7 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:76
+[packages/quickjs-emscripten-core/src/vm-interface.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L85)
 
 ***
 
@@ -40,7 +40,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:76
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:77
+[packages/quickjs-emscripten-core/src/vm-interface.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L86)
 
 ***
 
@@ -58,7 +58,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:77
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:78
+[packages/quickjs-emscripten-core/src/vm-interface.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L87)
 
 ***
 
@@ -78,7 +78,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:78
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:79
+[packages/quickjs-emscripten-core/src/vm-interface.ts:88](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L88)
 
 ***
 
@@ -88,7 +88,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:79
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:75
+[packages/quickjs-emscripten-core/src/vm-interface.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L84)
 
 ***
 

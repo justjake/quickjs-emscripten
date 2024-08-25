@@ -23,7 +23,7 @@ See [JSPromiseState](../exports.md#jspromisestate).
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:703
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L47)
 
 ***
 
@@ -33,7 +33,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:703
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:702
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L46)
 
 ***
 

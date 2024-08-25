@@ -36,13 +36,17 @@ library.
   - [QTS\_GetFalse](QuickJSFFI.md#qts-getfalse)
   - [QTS\_GetFloat64](QuickJSFFI.md#qts-getfloat64)
   - [QTS\_GetGlobalObject](QuickJSFFI.md#qts-getglobalobject)
+  - [QTS\_GetLength](QuickJSFFI.md#qts-getlength)
   - [QTS\_GetModuleNamespace](QuickJSFFI.md#qts-getmodulenamespace)
   - [QTS\_GetNull](QuickJSFFI.md#qts-getnull)
+  - [QTS\_GetOwnPropertyNames](QuickJSFFI.md#qts-getownpropertynames)
   - [QTS\_GetProp](QuickJSFFI.md#qts-getprop)
+  - [QTS\_GetPropNumber](QuickJSFFI.md#qts-getpropnumber)
   - [QTS\_GetString](QuickJSFFI.md#qts-getstring)
   - [QTS\_GetSymbolDescriptionOrKey](QuickJSFFI.md#qts-getsymboldescriptionorkey)
   - [QTS\_GetTrue](QuickJSFFI.md#qts-gettrue)
   - [QTS\_GetUndefined](QuickJSFFI.md#qts-getundefined)
+  - [QTS\_IsEqual](QuickJSFFI.md#qts-isequal)
   - [QTS\_IsGlobalSymbol](QuickJSFFI.md#qts-isglobalsymbol)
   - [QTS\_IsJobPending](QuickJSFFI.md#qts-isjobpending)
   - [QTS\_NewArray](QuickJSFFI.md#qts-newarray)
@@ -90,7 +94,7 @@ Set at compile time.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:318
+[packages/quickjs-ffi-types/src/ffi.ts:37](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L37)
 
 ***
 
@@ -100,7 +104,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:318
 
 #### Parameters
 
-• **argv**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **argv**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 • **index**: `number`
 
@@ -110,7 +114,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:318
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:372
+[packages/quickjs-ffi-types/src/ffi.ts:195](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L195)
 
 ***
 
@@ -124,7 +128,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:372
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:370
+[packages/quickjs-ffi-types/src/ffi.ts:193](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L193)
 
 ***
 
@@ -138,7 +142,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:370
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:369
+[packages/quickjs-ffi-types/src/ffi.ts:192](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L192)
 
 ***
 
@@ -152,7 +156,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:369
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:325
+[packages/quickjs-ffi-types/src/ffi.ts:45](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L45)
 
 ***
 
@@ -164,9 +168,9 @@ packages/quickjs-ffi-types/dist/index.d.ts:325
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **func\_obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **func\_obj**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **this\_obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **this\_obj**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 • **argc**: `number`
 
@@ -178,7 +182,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:325
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:358
+[packages/quickjs-ffi-types/src/ffi.ts:139](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L139)
 
 ***
 
@@ -190,15 +194,15 @@ packages/quickjs-ffi-types/dist/index.d.ts:358
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **this\_val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **prop\_name**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **prop\_name**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **prop\_value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **prop\_value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **get**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **get**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **set**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **set**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 • **configurable**: `boolean`
 
@@ -212,7 +216,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:358
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:357
+[packages/quickjs-ffi-types/src/ffi.ts:121](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L121)
 
 ***
 
@@ -224,7 +228,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:357
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **obj**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -232,7 +236,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:357
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:360
+[packages/quickjs-ffi-types/src/ffi.ts:147](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L147)
 
 ***
 
@@ -244,7 +248,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:360
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -252,7 +256,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:360
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:339
+[packages/quickjs-ffi-types/src/ffi.ts:59](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L59)
 
 ***
 
@@ -280,7 +284,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:339
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:361
+[packages/quickjs-ffi-types/src/ffi.ts:151](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L151)
 
 ***
 
@@ -302,7 +306,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:361
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:354
+[packages/quickjs-ffi-types/src/ffi.ts:100](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L100)
 
 ***
 
@@ -322,7 +326,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:354
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:338
+[packages/quickjs-ffi-types/src/ffi.ts:58](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L58)
 
 ***
 
@@ -340,7 +344,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:338
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:334
+[packages/quickjs-ffi-types/src/ffi.ts:54](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L54)
 
 ***
 
@@ -358,7 +362,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:334
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:332
+[packages/quickjs-ffi-types/src/ffi.ts:52](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L52)
 
 ***
 
@@ -378,7 +382,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:332
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:335
+[packages/quickjs-ffi-types/src/ffi.ts:55](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L55)
 
 ***
 
@@ -398,7 +402,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:335
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:336
+[packages/quickjs-ffi-types/src/ffi.ts:56](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L56)
 
 ***
 
@@ -418,7 +422,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:336
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:337
+[packages/quickjs-ffi-types/src/ffi.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L57)
 
 ***
 
@@ -430,7 +434,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:337
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **data**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **data**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -438,7 +442,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:337
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:348
+[packages/quickjs-ffi-types/src/ffi.ts:81](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L81)
 
 ***
 
@@ -450,7 +454,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:348
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **data**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **data**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -458,7 +462,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:348
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:349
+[packages/quickjs-ffi-types/src/ffi.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L85)
 
 ***
 
@@ -472,7 +476,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:349
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:329
+[packages/quickjs-ffi-types/src/ffi.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L49)
 
 ***
 
@@ -484,7 +488,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:329
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -492,7 +496,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:329
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:345
+[packages/quickjs-ffi-types/src/ffi.ts:75](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L75)
 
 ***
 
@@ -510,7 +514,29 @@ packages/quickjs-ffi-types/dist/index.d.ts:345
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:364
+[packages/quickjs-ffi-types/src/ffi.ts:178](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L178)
+
+***
+
+### QTS\_GetLength
+
+> **QTS\_GetLength**: (`ctx`, `out_len`, `value`) => `number`
+
+#### Parameters
+
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+
+• **out\_len**: [`UInt32Pointer`](../exports.md#uint32pointer)
+
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+
+#### Returns
+
+`number`
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi.ts:167](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L167)
 
 ***
 
@@ -522,7 +548,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:364
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **module\_func\_obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **module\_func\_obj**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -530,7 +556,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:364
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:362
+[packages/quickjs-ffi-types/src/ffi.ts:159](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L159)
 
 ***
 
@@ -544,7 +570,33 @@ packages/quickjs-ffi-types/dist/index.d.ts:362
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:328
+[packages/quickjs-ffi-types/src/ffi.ts:48](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L48)
+
+***
+
+### QTS\_GetOwnPropertyNames
+
+> **QTS\_GetOwnPropertyNames**: (`ctx`, `out_ptrs`, `out_len`, `obj`, `flags`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+
+#### Parameters
+
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+
+• **out\_ptrs**: [`JSValuePointerPointer`](../exports.md#jsvaluepointerpointer)
+
+• **out\_len**: [`UInt32Pointer`](../exports.md#uint32pointer)
+
+• **obj**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+
+• **flags**: `number`
+
+#### Returns
+
+[`JSValuePointer`](../exports.md#jsvaluepointer)
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi.ts:132](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L132)
 
 ***
 
@@ -556,9 +608,9 @@ packages/quickjs-ffi-types/dist/index.d.ts:328
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **this\_val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **prop\_name**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **prop\_name**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -566,7 +618,29 @@ packages/quickjs-ffi-types/dist/index.d.ts:328
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:355
+[packages/quickjs-ffi-types/src/ffi.ts:105](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L105)
+
+***
+
+### QTS\_GetPropNumber
+
+> **QTS\_GetPropNumber**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+
+#### Parameters
+
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+
+• **this\_val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+
+• **prop\_name**: `number`
+
+#### Returns
+
+[`JSValuePointer`](../exports.md#jsvaluepointer)
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi.ts:110](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L110)
 
 ***
 
@@ -578,7 +652,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:355
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -586,7 +660,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:355
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:347
+[packages/quickjs-ffi-types/src/ffi.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L77)
 
 ***
 
@@ -598,7 +672,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:347
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -606,7 +680,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:347
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:351
+[packages/quickjs-ffi-types/src/ffi.ts:94](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L94)
 
 ***
 
@@ -620,7 +694,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:351
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:330
+[packages/quickjs-ffi-types/src/ffi.ts:50](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L50)
 
 ***
 
@@ -634,7 +708,31 @@ packages/quickjs-ffi-types/dist/index.d.ts:330
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:327
+[packages/quickjs-ffi-types/src/ffi.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L47)
+
+***
+
+### QTS\_IsEqual
+
+> **QTS\_IsEqual**: (`ctx`, `a`, `b`, `op`) => `number`
+
+#### Parameters
+
+• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+
+• **a**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+
+• **b**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+
+• **op**: [`IsEqualOp`](../exports.md#isequalop)
+
+#### Returns
+
+`number`
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi.ts:172](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L172)
 
 ***
 
@@ -646,7 +744,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:327
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -654,7 +752,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:327
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:352
+[packages/quickjs-ffi-types/src/ffi.ts:98](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L98)
 
 ***
 
@@ -672,7 +770,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:352
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:353
+[packages/quickjs-ffi-types/src/ffi.ts:99](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L99)
 
 ***
 
@@ -690,7 +788,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:353
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:342
+[packages/quickjs-ffi-types/src/ffi.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L68)
 
 ***
 
@@ -712,7 +810,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:342
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:343
+[packages/quickjs-ffi-types/src/ffi.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L69)
 
 ***
 
@@ -732,7 +830,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:343
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:333
+[packages/quickjs-ffi-types/src/ffi.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L53)
 
 ***
 
@@ -750,7 +848,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:333
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:320
+[packages/quickjs-ffi-types/src/ffi.ts:40](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L40)
 
 ***
 
@@ -770,7 +868,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:320
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:344
+[packages/quickjs-ffi-types/src/ffi.ts:74](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L74)
 
 ***
 
@@ -792,7 +890,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:344
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:371
+[packages/quickjs-ffi-types/src/ffi.ts:194](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L194)
 
 ***
 
@@ -810,7 +908,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:371
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:340
+[packages/quickjs-ffi-types/src/ffi.ts:63](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L63)
 
 ***
 
@@ -822,7 +920,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:340
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **proto**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **proto**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -830,7 +928,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:340
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:341
+[packages/quickjs-ffi-types/src/ffi.ts:64](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L64)
 
 ***
 
@@ -850,7 +948,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:341
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:365
+[packages/quickjs-ffi-types/src/ffi.ts:179](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L179)
 
 ***
 
@@ -864,7 +962,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:365
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:331
+[packages/quickjs-ffi-types/src/ffi.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L51)
 
 ***
 
@@ -884,7 +982,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:331
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:346
+[packages/quickjs-ffi-types/src/ffi.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L76)
 
 ***
 
@@ -906,7 +1004,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:346
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:350
+[packages/quickjs-ffi-types/src/ffi.ts:89](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L89)
 
 ***
 
@@ -918,7 +1016,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:350
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **promise**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **promise**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -926,7 +1024,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:350
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:367
+[packages/quickjs-ffi-types/src/ffi.ts:187](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L187)
 
 ***
 
@@ -938,7 +1036,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:367
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **promise**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **promise**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -946,7 +1044,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:367
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:366
+[packages/quickjs-ffi-types/src/ffi.ts:183](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L183)
 
 ***
 
@@ -960,7 +1058,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:366
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:324
+[packages/quickjs-ffi-types/src/ffi.ts:44](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L44)
 
 ***
 
@@ -980,7 +1078,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:324
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:359
+[packages/quickjs-ffi-types/src/ffi.ts:146](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L146)
 
 ***
 
@@ -1000,7 +1098,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:359
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:322
+[packages/quickjs-ffi-types/src/ffi.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L42)
 
 ***
 
@@ -1018,7 +1116,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:322
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:374
+[packages/quickjs-ffi-types/src/ffi.ts:200](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L200)
 
 ***
 
@@ -1036,7 +1134,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:374
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:376
+[packages/quickjs-ffi-types/src/ffi.ts:202](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L202)
 
 ***
 
@@ -1054,7 +1152,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:376
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:323
+[packages/quickjs-ffi-types/src/ffi.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L43)
 
 ***
 
@@ -1072,7 +1170,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:323
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:373
+[packages/quickjs-ffi-types/src/ffi.ts:199](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L199)
 
 ***
 
@@ -1092,7 +1190,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:373
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:375
+[packages/quickjs-ffi-types/src/ffi.ts:201](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L201)
 
 ***
 
@@ -1112,7 +1210,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:375
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:326
+[packages/quickjs-ffi-types/src/ffi.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L46)
 
 ***
 
@@ -1132,7 +1230,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:326
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:321
+[packages/quickjs-ffi-types/src/ffi.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L41)
 
 ***
 
@@ -1144,11 +1242,11 @@ packages/quickjs-ffi-types/dist/index.d.ts:321
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **this\_val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **prop\_name**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **prop\_name**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
-• **prop\_value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **prop\_value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -1156,7 +1254,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:321
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:356
+[packages/quickjs-ffi-types/src/ffi.ts:115](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L115)
 
 ***
 
@@ -1174,7 +1272,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:356
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:368
+[packages/quickjs-ffi-types/src/ffi.ts:191](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L191)
 
 ***
 
@@ -1186,7 +1284,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:368
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **error**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **error**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -1194,7 +1292,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:368
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:319
+[packages/quickjs-ffi-types/src/ffi.ts:39](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L39)
 
 ***
 
@@ -1206,7 +1304,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:319
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -1214,7 +1312,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:319
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:363
+[packages/quickjs-ffi-types/src/ffi.ts:163](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L163)
 
 ***
 
@@ -1226,7 +1324,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:363
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **data**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **data**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -1234,7 +1332,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:363
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:378
+[packages/quickjs-ffi-types/src/ffi.ts:207](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L207)
 
 ***
 
@@ -1246,7 +1344,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:378
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+• **val**: [`JSValuePointer`](../exports.md#jsvaluepointer) \| [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
 
 #### Returns
 
@@ -1254,7 +1352,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:378
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:377
+[packages/quickjs-ffi-types/src/ffi.ts:203](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L203)
 
 ***
 

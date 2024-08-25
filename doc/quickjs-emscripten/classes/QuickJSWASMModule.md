@@ -39,7 +39,7 @@ inside QuickJS, create a context with [newContext](QuickJSWASMModule.md#newconte
 
 ### evalCode()
 
-> **evalCode**(`code`, `options`?): `unknown`
+> **evalCode**(`code`, `options`): `unknown`
 
 One-off evaluate code without needing to create a [QuickJSRuntime](QuickJSRuntime.md) or
 [QuickJSContext](QuickJSContext.md) explicitly.
@@ -60,7 +60,7 @@ you need to work with async code inside QuickJS, create a runtime and use
 
 • **code**: `string`
 
-• **options?**: [`ModuleEvalOptions`](../interfaces/ModuleEvalOptions.md)
+• **options**: [`ModuleEvalOptions`](../interfaces/ModuleEvalOptions.md)= `{}`
 
 #### Returns
 
@@ -81,7 +81,7 @@ with name `"InternalError"` and  message `"interrupted"`.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1404
+[packages/quickjs-emscripten-core/src/module.ts:395](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L395)
 
 ***
 
@@ -101,13 +101,13 @@ and provide the [CustomizeVariantOptions#wasmMemory](../interfaces/CustomizeVari
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1414
+[packages/quickjs-emscripten-core/src/module.ts:426](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L426)
 
 ***
 
 ### newContext()
 
-> **newContext**(`options`?): [`QuickJSContext`](QuickJSContext.md)
+> **newContext**(`options`): [`QuickJSContext`](QuickJSContext.md)
 
 A simplified API to create a new [QuickJSRuntime](QuickJSRuntime.md) and a
 [QuickJSContext](QuickJSContext.md) inside that runtime at the same time. The runtime will
@@ -115,7 +115,7 @@ be disposed when the context is disposed.
 
 #### Parameters
 
-• **options?**: [`ContextOptions`](../interfaces/ContextOptions.md)
+• **options**: [`ContextOptions`](../interfaces/ContextOptions.md)= `{}`
 
 #### Returns
 
@@ -123,13 +123,13 @@ be disposed when the context is disposed.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1378
+[packages/quickjs-emscripten-core/src/module.ts:360](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L360)
 
 ***
 
 ### newRuntime()
 
-> **newRuntime**(`options`?): [`QuickJSRuntime`](QuickJSRuntime.md)
+> **newRuntime**(`options`): [`QuickJSRuntime`](QuickJSRuntime.md)
 
 Create a runtime.
 Use the runtime to set limits on CPU and memory usage and configure module
@@ -137,7 +137,7 @@ loading for one or more [QuickJSContext](QuickJSContext.md)s inside the runtime.
 
 #### Parameters
 
-• **options?**: [`RuntimeOptions`](../interfaces/RuntimeOptions.md)
+• **options**: [`RuntimeOptions`](../interfaces/RuntimeOptions.md)= `{}`
 
 #### Returns
 
@@ -145,7 +145,7 @@ loading for one or more [QuickJSContext](QuickJSContext.md)s inside the runtime.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1372
+[packages/quickjs-emscripten-core/src/module.ts:333](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L333)
 
 ***
 

@@ -25,7 +25,7 @@ See [JSPromiseState](../exports.md#jspromisestate).
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:693
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:36](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L36)
 
 ***
 
@@ -37,7 +37,7 @@ Trying to get the promise state of a non-Promise value returns a fulfilled state
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:695
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:38](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L38)
 
 ***
 
@@ -47,7 +47,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:695
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:691
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:34](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L34)
 
 ***
 
@@ -57,7 +57,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:691
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:692
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L35)
 
 ***
 

@@ -29,9 +29,12 @@
   - [QTS\_C\_To\_HostInterruptFuncPointer](exports.md#qts-c-to-hostinterruptfuncpointer)
   - [QTS\_C\_To\_HostLoadModuleFuncPointer](exports.md#qts-c-to-hostloadmodulefuncpointer)
   - [QuickJSVariant](exports.md#quickjsvariant)
+  - [UInt32Pointer](exports.md#uint32pointer)
 - [Variables](exports.md#variables)
   - [EvalFlags](exports.md#evalflags)
+  - [GetOwnPropertyNamesFlags](exports.md#getownpropertynamesflags)
   - [IntrinsicsFlags](exports.md#intrinsicsflags)
+  - [IsEqualOp](exports.md#isequalop)
   - [JSPromiseStateEnum](exports.md#jspromisestateenum-1)
 - [Functions](exports.md#functions)
   - [assertSync()](exports.md#assertsync)
@@ -141,7 +144,7 @@ State of a promise.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L114)
+[packages/quickjs-ffi-types/src/ffi-types.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L126)
 
 ***
 
@@ -276,6 +279,16 @@ Used internally for C-to-Javascript module loading.
 
 [packages/quickjs-ffi-types/src/variant-types.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L49)
 
+***
+
+### UInt32Pointer
+
+> **UInt32Pointer**: `Pointer`\<`"uint32_t"`\>
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi-types.ts:96](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L96)
+
 ## Variables
 
 ### EvalFlags
@@ -342,7 +355,41 @@ module code
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:99](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L99)
+[packages/quickjs-ffi-types/src/ffi-types.ts:101](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L101)
+
+***
+
+### GetOwnPropertyNamesFlags
+
+> **GetOwnPropertyNamesFlags**: `Object`
+
+Bitfield options for QTS_GetOwnPropertyNames
+
+#### Type declaration
+
+##### JS\_GPN\_ENUM\_ONLY
+
+> **JS\_GPN\_ENUM\_ONLY**: `number`
+
+##### JS\_GPN\_PRIVATE\_MASK
+
+> **JS\_GPN\_PRIVATE\_MASK**: `number`
+
+##### JS\_GPN\_SET\_ENUM
+
+> **JS\_GPN\_SET\_ENUM**: `number`
+
+##### JS\_GPN\_STRING\_MASK
+
+> **JS\_GPN\_STRING\_MASK**: `number`
+
+##### JS\_GPN\_SYMBOL\_MASK
+
+> **JS\_GPN\_SYMBOL\_MASK**: `number`
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi-types.ts:116](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L116)
 
 ***
 
@@ -350,7 +397,7 @@ module code
 
 > **IntrinsicsFlags**: `Object`
 
-Bitfield options for QTS_NewContext intrinsices
+Bitfield options for QTS_NewContext intrinsics
 
 #### Type declaration
 
@@ -420,7 +467,31 @@ Bitfield options for QTS_NewContext intrinsices
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:104](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L104)
+[packages/quickjs-ffi-types/src/ffi-types.ts:106](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L106)
+
+***
+
+### IsEqualOp
+
+> **IsEqualOp**: `Object`
+
+#### Type declaration
+
+##### IsSameValue
+
+> **IsSameValue**: [`IsEqualOp`](exports.md#isequalop)
+
+##### IsSameValueZero
+
+> **IsSameValueZero**: [`IsEqualOp`](exports.md#isequalop)
+
+##### IsStrictlyEqual
+
+> **IsStrictlyEqual**: [`IsEqualOp`](exports.md#isequalop)
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi-types.ts:121](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L121)
 
 ***
 
@@ -444,7 +515,7 @@ Bitfield options for QTS_NewContext intrinsices
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L114)
+[packages/quickjs-ffi-types/src/ffi-types.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L126)
 
 ## Functions
 
@@ -477,7 +548,7 @@ Bitfield options for QTS_NewContext intrinsices
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:119](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L119)
+[packages/quickjs-ffi-types/src/ffi-types.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L131)
 
 ***
 

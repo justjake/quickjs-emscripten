@@ -50,7 +50,7 @@ Synchronous evalCode is not supported.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1458
+[packages/quickjs-emscripten-core/src/module-asyncify.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L76)
 
 ***
 
@@ -80,7 +80,7 @@ See the documentation for [QuickJSWASMModule#evalCode](QuickJSWASMModule.md#eval
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1470
+[packages/quickjs-emscripten-core/src/module-asyncify.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L91)
 
 ***
 
@@ -104,13 +104,13 @@ and provide the [CustomizeVariantOptions#wasmMemory](../interfaces/CustomizeVari
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1414
+[packages/quickjs-emscripten-core/src/module.ts:426](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L426)
 
 ***
 
 ### newContext()
 
-> **newContext**(`options`?): [`QuickJSAsyncContext`](QuickJSAsyncContext.md)
+> **newContext**(`options`): [`QuickJSAsyncContext`](QuickJSAsyncContext.md)
 
 A simplified API to create a new [QuickJSAsyncRuntime](QuickJSAsyncRuntime.md) and a
 [QuickJSAsyncContext](QuickJSAsyncContext.md) inside that runtime at the same time. The runtime will
@@ -118,7 +118,7 @@ be disposed when the context is disposed.
 
 #### Parameters
 
-• **options?**: [`ContextOptions`](../interfaces/ContextOptions.md)
+• **options**: [`ContextOptions`](../interfaces/ContextOptions.md)= `{}`
 
 #### Returns
 
@@ -130,13 +130,13 @@ be disposed when the context is disposed.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1456
+[packages/quickjs-emscripten-core/src/module-asyncify.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L67)
 
 ***
 
 ### newRuntime()
 
-> **newRuntime**(`options`?): [`QuickJSAsyncRuntime`](QuickJSAsyncRuntime.md)
+> **newRuntime**(`options`): [`QuickJSAsyncRuntime`](QuickJSAsyncRuntime.md)
 
 Create a new async runtime inside this WebAssembly module. All runtimes inside a
 module are limited to a single async call at a time. For multiple
@@ -144,7 +144,7 @@ concurrent async actions, create multiple WebAssembly modules.
 
 #### Parameters
 
-• **options?**: [`AsyncRuntimeOptions`](../interfaces/AsyncRuntimeOptions.md)
+• **options**: [`AsyncRuntimeOptions`](../interfaces/AsyncRuntimeOptions.md)= `{}`
 
 #### Returns
 
@@ -156,7 +156,7 @@ concurrent async actions, create multiple WebAssembly modules.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1450
+[packages/quickjs-emscripten-core/src/module-asyncify.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L41)
 
 ***
 
