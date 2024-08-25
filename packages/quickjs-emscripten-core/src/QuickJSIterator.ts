@@ -1,8 +1,7 @@
-import type { QuickJSContext } from "./context"
-import { Lifetime, UsingDisposable } from "./lifetime"
+import type { ContextResult, QuickJSContext } from "./context"
+import { DisposableResult, Lifetime, UsingDisposable } from "./lifetime"
 import type { QuickJSRuntime } from "./runtime"
 import type { QuickJSHandle } from "./types"
-import type { VmCallResult } from "./vm-interface"
 
 /**
  * Proxies the iteration protocol from the host to a guest iterator.
@@ -29,7 +28,7 @@ import type { VmCallResult } from "./vm-interface"
  */
 export class QuickJSIterator
   extends UsingDisposable
-  implements Disposable, Iterator<VmCallResult<QuickJSHandle>>
+  implements Disposable, Iterator<ContextResult<QuickJSHandle>>
 {
   public owner: QuickJSRuntime
   private _next: QuickJSHandle | undefined
@@ -43,7 +42,7 @@ export class QuickJSIterator
     this.owner = context.runtime
   }
 
-  next(value?: QuickJSHandle): IteratorResult<VmCallResult<QuickJSHandle>, any> {
+  next(value?: QuickJSHandle): IteratorResult<ContextResult<QuickJSHandle>, any> {
     if (!this.alive || this._isDone) {
       return {
         done: true,
@@ -55,7 +54,7 @@ export class QuickJSIterator
     return this.callIteratorMethod(nextMethod, value)
   }
 
-  return(value?: QuickJSHandle): IteratorResult<VmCallResult<QuickJSHandle>, any> {
+  return(value?: QuickJSHandle): IteratorResult<ContextResult<QuickJSHandle>, any> {
     if (!this.alive) {
       return {
         done: true,
@@ -81,7 +80,7 @@ export class QuickJSIterator
     return result
   }
 
-  throw(e?: any): IteratorResult<VmCallResult<QuickJSHandle>, any> {
+  throw(e?: any): IteratorResult<ContextResult<QuickJSHandle>, any> {
     if (!this.alive) {
       return {
         done: true,
@@ -113,7 +112,7 @@ export class QuickJSIterator
   private callIteratorMethod(
     method: QuickJSHandle,
     input?: QuickJSHandle,
-  ): IteratorResult<VmCallResult<QuickJSHandle>, any> {
+  ): IteratorResult<ContextResult<QuickJSHandle>, any> {
     const callResult = input
       ? this.context.callFunction(method, this.handle, input)
       : this.context.callFunction(method, this.handle)
@@ -137,8 +136,8 @@ export class QuickJSIterator
     const value = this.context.getProp(callResult.value, "value")
     callResult.value.dispose()
     return {
-      value: { value },
-      done,
+      value: DisposableResult.success(value),
+      done: done as false,
     }
   }
 }

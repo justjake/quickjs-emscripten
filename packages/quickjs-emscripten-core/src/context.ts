@@ -925,7 +925,7 @@ export class QuickJSContext
       const methodHandle = scope.manage(this.getProp(handle, SymbolIterator))
       const iteratorCallResult = this.callFunction(methodHandle, handle)
       if (iteratorCallResult.error) {
-        return iteratorCallResult.cast()
+        return iteratorCallResult
       }
       return this.success(new QuickJSIterator(iteratorCallResult.value, this))
     })
