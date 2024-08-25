@@ -548,6 +548,11 @@ MaybeAsync(JSValue *) QTS_GetProp(JSContext *ctx, JSValueConst *this_val, JSValu
   return jsvalue_to_heap(prop_val);
 }
 
+MaybeAsync(JSValue *) QTS_GetPropNumber(JSContext *ctx, JSValueConst *this_val, int prop_name) {
+  JSValue prop_val = JS_GetPropertyUint32(ctx, *this_val, (uint32_t)prop_name);
+  return jsvalue_to_heap(prop_val);
+}
+
 MaybeAsync(void) QTS_SetProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_name, JSValueConst *prop_value) {
   JSAtom prop_atom = JS_ValueToAtom(ctx, *prop_name);
   JSValue extra_prop_value = JS_DupValue(ctx, *prop_value);
@@ -817,6 +822,24 @@ OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
 
   char *out = strdup(result);
   return out;
+}
+
+int QTS_GetLength(JSContext *ctx, uint32_t *out_len, JSValueConst *value) {
+  JSValue len_val;
+  int result;
+
+  if (!JS_IsObject(*value)) {
+    return -1;
+  }
+
+  len_val = JS_GetProperty(ctx, *value, JS_ATOM_length);
+  if (JS_IsException(len_val)) {
+    return -1;
+  }
+
+  result = JS_ToUint32(ctx, out_len, len_val);
+  JS_FreeValue(ctx, len_val);
+  return result;
 }
 
 JSValue *QTS_GetGlobalObject(JSContext *ctx) {

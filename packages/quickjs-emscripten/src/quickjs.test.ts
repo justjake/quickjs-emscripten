@@ -359,6 +359,14 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       array.dispose()
       vals.forEach((val) => val.dispose())
     })
+
+    it("can access .length as a number", () => {
+      const array = vm.newArray()
+      assert.strictEqual(vm.getLength(array), 0)
+      vm.newNumber(100).consume((n) => vm.setProp(array, 5, n))
+      assert.strictEqual(vm.getLength(array), 6)
+      array.dispose()
+    })
   })
 
   describe(".unwrapResult", () => {

@@ -16,6 +16,7 @@ import {
   OwnedHeapCharPointer,
   JSBorrowedCharPointer,
   JSVoidPointer,
+  UInt32Pointer,
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
@@ -104,6 +105,11 @@ export interface QuickJSFFI {
     this_val: JSValuePointer | JSValueConstPointer,
     prop_name: JSValuePointer | JSValueConstPointer,
   ) => JSValuePointer
+  QTS_GetPropNumber: (
+    ctx: JSContextPointer,
+    this_val: JSValuePointer | JSValueConstPointer,
+    prop_name: number,
+  ) => JSValuePointer
   QTS_SetProp: (
     ctx: JSContextPointer,
     this_val: JSValuePointer | JSValueConstPointer,
@@ -149,6 +155,11 @@ export interface QuickJSFFI {
     ctx: JSContextPointer,
     value: JSValuePointer | JSValueConstPointer,
   ) => OwnedHeapCharPointer
+  QTS_GetLength: (
+    ctx: JSContextPointer,
+    out_len: uint32_tPointer,
+    value: JSValuePointer | JSValueConstPointer,
+  ) => number
   QTS_GetGlobalObject: (ctx: JSContextPointer) => JSValuePointer
   QTS_NewPromiseCapability: (
     ctx: JSContextPointer,

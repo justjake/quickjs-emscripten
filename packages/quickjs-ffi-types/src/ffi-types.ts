@@ -93,6 +93,8 @@ export type JSBorrowedCharPointer = Pointer<"js const char">
  */
 export type JSVoidPointer = Pointer<any>
 
+export type UInt32Pointer = Pointer<"uint32_t">
+
 /**
  * @private
  */

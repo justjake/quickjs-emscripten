@@ -16,6 +16,7 @@ import {
   OwnedHeapCharPointer,
   JSBorrowedCharPointer,
   JSVoidPointer,
+  UInt32Pointer,
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
@@ -240,6 +241,25 @@ export class QuickJSAsyncFFI {
     prop_name: JSValuePointer | JSValueConstPointer,
   ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
     "QTS_GetProp",
+    "number",
+    ["number", "number", "number"],
+    { async: true },
+  )
+
+  QTS_GetPropNumber: (
+    ctx: JSContextPointer,
+    this_val: JSValuePointer | JSValueConstPointer,
+    prop_name: number,
+  ) => JSValuePointer = assertSync(
+    this.module.cwrap("QTS_GetPropNumber", "number", ["number", "number", "number"]),
+  )
+
+  QTS_GetPropNumber_MaybeAsync: (
+    ctx: JSContextPointer,
+    this_val: JSValuePointer | JSValueConstPointer,
+    prop_name: number,
+  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
+    "QTS_GetPropNumber",
     "number",
     ["number", "number", "number"],
     { async: true },

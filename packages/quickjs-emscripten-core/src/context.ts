@@ -10,6 +10,7 @@ import type {
   JSValuePointer,
   JSValuePointerPointer,
   EitherFFI,
+  UInt32Pointer,
 } from "@jitl/quickjs-ffi-types"
 import { debugLog } from "./debug"
 import type { JSPromiseState } from "./deferred-promise"
@@ -19,6 +20,7 @@ import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import { QuickJSPromisePending, QuickJSUnwrapError } from "./errors"
 import type { Disposable } from "./lifetime"
 import { Lifetime, Scope, StaticLifetime, UsingDisposable, WeakLifetime } from "./lifetime"
+import type { HeapTypedArray } from "./memory"
 import { ModuleMemory } from "./memory"
 import type { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
 import type {
@@ -174,6 +176,8 @@ export class QuickJSContext
   protected _global: QuickJSHandle | undefined = undefined
   /** @private */
   protected _BigInt: QuickJSHandle | undefined = undefined
+  /** @private  */
+  protected uint32Out: HeapTypedArray<Uint32Array, UInt32Pointer>
 
   /**
    * Use {@link QuickJSRuntime#newContext} or {@link QuickJSWASMModule#newContext}
@@ -203,6 +207,9 @@ export class QuickJSContext
     this.getString = this.getString.bind(this)
     this.getNumber = this.getNumber.bind(this)
     this.resolvePromise = this.resolvePromise.bind(this)
+    this.uint32Out = this.memory.manage(
+      this.memory.newTypedArray<Uint32Array, UInt32Pointer>(Uint32Array, 1),
+    )
   }
 
   // @implement Disposable ----------------------------------------------------
@@ -748,12 +755,30 @@ export class QuickJSContext
    */
   getProp(handle: QuickJSHandle, key: QuickJSPropertyKey): QuickJSHandle {
     this.runtime.assertOwned(handle)
-    const ptr = this.borrowPropertyKey(key).consume((quickJSKey) =>
-      this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value),
-    )
+    let ptr: JSValuePointer
+    if (typeof key === "number" && key >= 0) {
+      // Index access fast path
+      ptr = this.ffi.QTS_GetPropNumber(this.ctx.value, handle.value, key)
+    } else {
+      ptr = this.borrowPropertyKey(key).consume((quickJSKey) =>
+        this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value),
+      )
+    }
     const result = this.memory.heapValueHandle(ptr)
 
     return result
+  }
+
+  /**
+   * `handle.length`.
+   */
+  getLength(handle: QuickJSHandle): number | undefined {
+    this.runtime.assertOwned(handle)
+    const status = this.ffi.QTS_GetLength(this.ctx.value, this.uint32Out.value.ptr, handle.value)
+    if (status < 0) {
+      return undefined
+    }
+    return this.uint32Out.value.typedArray[0]
   }
 
   /**
