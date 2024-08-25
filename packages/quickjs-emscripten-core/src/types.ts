@@ -283,6 +283,38 @@ export function evalOptionsToFlags(evalOptions: ContextEvalOptions | number | un
   return flags
 }
 
+export interface GetOwnPropertyNamesOptions {
+  /** Include strings in the result */
+  includeStrings?: boolean
+  /** Include symbols in the result */
+  includeSymbols?: boolean
+  /** Include private properties in the result */
+  includePrivate?: boolean
+  /** Only include the enumerable properties */
+  onlyEnumerable?: boolean
+}
+
+/** Convert {@link GetOwnPropertyNamesOptions} to bitfield flags */
+export function getOwnPropertyNamesOptionsToFlags(
+  options: GetOwnPropertyNamesOptions | number | undefined,
+): number {
+  if (typeof options === "number") {
+    return options
+  }
+
+  if (options === undefined) {
+    return 0
+  }
+
+  const { includeStrings, includeSymbols, includePrivate, onlyEnumerable } = options
+  let flags = 0
+  if (includeStrings) flags |= GetOwnPropertyNamesFlags.JS_GPN_STRING_MASK
+  if (includeSymbols) flags |= GetOwnPropertyNamesFlags.JS_GPN_SYMBOL_MASK
+  if (includePrivate) flags |= GetOwnPropertyNamesFlags.JS_GPN_PRIVATE_MASK
+  if (onlyEnumerable) flags |= GetOwnPropertyNamesFlags.JS_GPN_ENUM_ONLY
+  return flags
+}
+
 export type PromiseExecutor<ResolveT, RejectT> = (
   resolve: (value: ResolveT | PromiseLike<ResolveT>) => void,
   reject: (reason: RejectT) => void,
