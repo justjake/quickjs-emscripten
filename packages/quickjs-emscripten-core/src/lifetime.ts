@@ -1,3 +1,4 @@
+import { SuccessOrFail } from "./vm-interface"
 import type { MaybeAsyncBlock } from "./asyncify-helpers"
 import { maybeAsync } from "./asyncify-helpers"
 import { QTS_DEBUG } from "./debug"
@@ -363,3 +364,95 @@ export function createDisposableArray<T extends Disposable>(
 
   return array as T[] & Disposable
 }
+
+function isDisposable(value: unknown): value is { alive: boolean; dispose(): unknown } {
+  return Boolean(
+    value &&
+      (typeof value === "object" || typeof value === "function") &&
+      "alive" in value &&
+      typeof value.alive === "boolean" &&
+      "dispose" in value &&
+      typeof value.dispose === "function",
+  )
+}
+
+abstract class AbstractDisposableResult<S, F> extends UsingDisposable {
+  static success<S, F>(value: S): DisposableSuccess<S, F> {
+    return new DisposableSuccess(value) satisfies SuccessOrFail<S, F>
+  }
+
+  static fail<S, F>(
+    error: F,
+    onUnwrap: (status: SuccessOrFail<S, F>) => void,
+  ): DisposableFail<S, F> {
+    return new DisposableFail(error, onUnwrap) satisfies SuccessOrFail<S, F>
+  }
+
+  static is<S, F>(result: SuccessOrFail<S, F>): result is DisposableResult<S, F> {
+    return result instanceof AbstractDisposableResult
+  }
+
+  abstract get alive(): boolean
+  abstract dispose(): void
+  abstract unwrap(): S
+  abstract unwrapOr<T>(fallback: T): S | T
+}
+
+export class DisposableSuccess<S, F> extends AbstractDisposableResult<S, F> {
+  declare error?: undefined
+
+  constructor(readonly value: S) {
+    super()
+  }
+
+  override get alive() {
+    return isDisposable(this.value) ? this.value.alive : true
+  }
+
+  override dispose(): void {
+    if (isDisposable(this.value)) {
+      this.value.dispose()
+    }
+  }
+
+  override unwrap(): S {
+    return this.value
+  }
+
+  override unwrapOr<T>(_fallback: T): S | T {
+    return this.value
+  }
+}
+
+export class DisposableFail<S, F> extends AbstractDisposableResult<S, F> {
+  constructor(
+    readonly error: F,
+    private readonly onUnwrap: (status: SuccessOrFail<S, F>) => void,
+  ) {
+    super()
+  }
+
+  override get alive(): boolean {
+    return isDisposable(this.error) ? this.error.alive : true
+  }
+
+  override dispose(): void {
+    throw new Error("Method not implemented.")
+  }
+
+  override unwrap(): S {
+    this.onUnwrap(this)
+    throw this.error
+  }
+
+  override unwrapOr<T>(fallback: T): S | T {
+    return fallback
+  }
+
+  cast<S2 = never>(): DisposableFail<S2, F> {
+    return this as unknown as DisposableFail<S2, F>
+  }
+}
+
+export type DisposableResult<S, F> = DisposableSuccess<S, F> | DisposableFail<S, F>
+export const DisposableResult = AbstractDisposableResult

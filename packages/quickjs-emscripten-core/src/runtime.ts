@@ -11,12 +11,11 @@ import { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
 import { QuickJSWrongOwner } from "./errors"
 import type { Disposable } from "./lifetime"
-import { Lifetime, Scope, UsingDisposable } from "./lifetime"
+import { DisposableResult, Lifetime, Scope, UsingDisposable } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import type { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
 import type { ContextOptions, JSModuleLoader, JSModuleNormalizer, QuickJSHandle } from "./types"
 import { intrinsicsToFlags } from "./types"
-import type { SuccessOrFail } from "./vm-interface"
 
 /**
  * Callback called regularly while the VM executes code.
@@ -33,7 +32,7 @@ export type InterruptHandler = (runtime: QuickJSRuntime) => boolean | undefined
  * by the runtime.
  * @source
  */
-export type ExecutePendingJobsResult = SuccessOrFail<
+export type ExecutePendingJobsResult = DisposableResult<
   /** Number of jobs successfully executed. */
   number,
   /** The error that occurred. */
@@ -250,7 +249,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     if (ctxPtr === 0) {
       // No jobs executed.
       this.ffi.QTS_FreeValuePointerRuntime(this.rt.value, valuePtr)
-      return { value: 0 }
+      return DisposableResult.success(0)
     }
 
     const context =
@@ -264,12 +263,10 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     if (typeOfRet === "number") {
       const executedJobs = context.getNumber(resultValue)
       resultValue.dispose()
-      return { value: executedJobs }
+      return DisposableResult.success(executedJobs)
     } else {
-      const error = Object.assign(resultValue, { context })
-      return {
-        error,
-      }
+      const error = Object.assign(resultValue as QuickJSHandle, { context })
+      return DisposableResult.fail(error, (error) => context.unwrapResult(error))
     }
   }
 

@@ -6,6 +6,7 @@ import type {
   JSRuntimePointer,
   JSValuePointer,
 } from "@jitl/quickjs-ffi-types"
+import type { ContextResult } from "./context"
 import { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
 import type { Lifetime } from "./lifetime"
@@ -46,7 +47,7 @@ export class QuickJSAsyncContext extends QuickJSContext {
     filename: string = "eval.js",
     /** See {@link EvalFlags} for number semantics */
     options?: number | ContextEvalOptions,
-  ): Promise<VmCallResult<QuickJSHandle>> {
+  ): Promise<ContextResult<QuickJSHandle>> {
     const detectModule = (options === undefined ? 1 : 0) as EvalDetectModule
     const flags = evalOptionsToFlags(options) as EvalFlags
     let resultPtr = 0 as JSValuePointer
@@ -70,9 +71,9 @@ export class QuickJSAsyncContext extends QuickJSContext {
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
-      return { error: this.memory.heapValueHandle(errorPtr) }
+      return this.fail(this.memory.heapValueHandle(errorPtr))
     }
-    return { value: this.memory.heapValueHandle(resultPtr) }
+    return this.success(this.memory.heapValueHandle(resultPtr))
   }
 
   /**

@@ -18,8 +18,9 @@ import { QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import { QuickJSPromisePending, QuickJSUnwrapError } from "./errors"
-import type { Disposable, DisposableArray } from "./lifetime"
+import type { Disposable, DisposableArray, DisposableFail, DisposableSuccess } from "./lifetime"
 import {
+  DisposableResult,
   Lifetime,
   Scope,
   StaticLifetime,
@@ -35,24 +36,24 @@ import type {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ExecutePendingJobsResult,
 } from "./runtime"
-import {
+import type {
   ContextEvalOptions,
-  IsEqualOp,
   GetOwnPropertyNamesOptions,
   JSValue,
   PromiseExecutor,
   QuickJSHandle,
   StaticJSValue,
 } from "./types"
-import { evalOptionsToFlags, getOwnPropertyNamesOptionsToFlags } from "./types"
+import { IsEqualOp, evalOptionsToFlags, getOwnPropertyNamesOptionsToFlags } from "./types"
 import type {
   LowLevelJavascriptVm,
   SuccessOrFail,
-  VmCallResult,
   VmFunctionImplementation,
   VmPropertyDescriptor,
 } from "./vm-interface"
 import { QuickJSIterator } from "./QuickJSIterator"
+
+export type ContextResult<S> = DisposableResult<S, QuickJSHandle>
 
 /**
  * Property key for getting or setting a property on a handle with
@@ -744,7 +745,7 @@ export class QuickJSContext
    *
    * @param promiseLikeHandle - A handle to a Promise-like value with a `.then(onSuccess, onError)` method.
    */
-  resolvePromise(promiseLikeHandle: QuickJSHandle): Promise<VmCallResult<QuickJSHandle>> {
+  resolvePromise(promiseLikeHandle: QuickJSHandle): Promise<ContextResult<QuickJSHandle>> {
     this.runtime.assertOwned(promiseLikeHandle)
     const vmResolveResult = Scope.withScope((scope) => {
       const vmPromise = scope.manage(this.getProp(this.global, "Promise"))
@@ -755,25 +756,25 @@ export class QuickJSContext
       return Promise.resolve(vmResolveResult)
     }
 
-    return new Promise<VmCallResult<QuickJSHandle>>((resolve) => {
+    return new Promise<ContextResult<QuickJSHandle>>((resolve) => {
       Scope.withScope((scope) => {
         const resolveHandle = scope.manage(
           this.newFunction("resolve", (value) => {
-            resolve({ value: value && value.dup() })
+            resolve(this.success(value && value.dup()))
           }),
         )
 
         const rejectHandle = scope.manage(
           this.newFunction("reject", (error) => {
-            resolve({ error: error && error.dup() })
+            resolve(this.fail(error && error.dup()))
           }),
         )
 
         const promiseHandle = scope.manage(vmResolveResult.value)
         const promiseThenHandle = scope.manage(this.getProp(promiseHandle, "then"))
-        this.unwrapResult(
-          this.callFunction(promiseThenHandle, promiseHandle, resolveHandle, rejectHandle),
-        ).dispose()
+        this.callFunction(promiseThenHandle, promiseHandle, resolveHandle, rejectHandle)
+          .unwrap()
+          .dispose()
       })
     })
   }
@@ -861,7 +862,7 @@ export class QuickJSContext
   getPropNames(
     handle: QuickJSHandle,
     options: GetOwnPropertyNamesOptions,
-  ): SuccessOrFail<DisposableArray<JSValue>, QuickJSHandle> {
+  ): ContextResult<DisposableArray<JSValue>> {
     this.runtime.assertOwned(handle)
     handle.value // assert alive
     const flags = getOwnPropertyNamesOptionsToFlags(options)
@@ -875,7 +876,7 @@ export class QuickJSContext
         flags,
       )
       if (errorPtr) {
-        return { error: this.memory.heapValueHandle(errorPtr) }
+        return this.fail(this.memory.heapValueHandle(errorPtr))
       }
       const len = this.uint32Out.value.typedArray[0]
       const ptr = outPtr.value.typedArray[0]
@@ -884,7 +885,7 @@ export class QuickJSContext
         this.memory.heapValueHandle(ptr as JSValuePointer),
       )
       this.module._free(ptr)
-      return { value: createDisposableArray(handles) }
+      return this.success(createDisposableArray(handles))
     })
   }
 
@@ -907,7 +908,7 @@ export class QuickJSContext
    * }
    * ```
    */
-  getIterator(handle: QuickJSHandle): SuccessOrFail<QuickJSIterator, QuickJSHandle> {
+  getIterator(handle: QuickJSHandle): ContextResult<QuickJSIterator> {
     const SymbolIterator = (this._SymbolIterator ??= this.memory.manage(
       this.getWellKnownSymbol("iterator"),
     ))
@@ -915,9 +916,9 @@ export class QuickJSContext
       const methodHandle = scope.manage(this.getProp(handle, SymbolIterator))
       const iteratorCallResult = this.callFunction(methodHandle, handle)
       if (iteratorCallResult.error) {
-        return iteratorCallResult
+        return iteratorCallResult.cast()
       }
-      return { value: new QuickJSIterator(iteratorCallResult.value, this) }
+      return this.success(new QuickJSIterator(iteratorCallResult.value, this))
     })
   }
 
@@ -1000,7 +1001,7 @@ export class QuickJSContext
     func: QuickJSHandle,
     thisVal: QuickJSHandle,
     ...args: QuickJSHandle[]
-  ): VmCallResult<QuickJSHandle> {
+  ): ContextResult<QuickJSHandle> {
     this.runtime.assertOwned(func)
     const resultPtr = this.memory
       .toPointerArray(args)
@@ -1017,10 +1018,10 @@ export class QuickJSContext
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
-      return { error: this.memory.heapValueHandle(errorPtr) }
+      return this.fail(this.memory.heapValueHandle(errorPtr))
     }
 
-    return { value: this.memory.heapValueHandle(resultPtr) }
+    return this.success(this.memory.heapValueHandle(resultPtr))
   }
 
   /**
@@ -1066,7 +1067,7 @@ export class QuickJSContext
      * See {@link EvalFlags} for number semantics.
      */
     options?: number | ContextEvalOptions,
-  ): VmCallResult<QuickJSHandle> {
+  ): ContextResult<QuickJSHandle> {
     const detectModule = (options === undefined ? 1 : 0) as EvalDetectModule
     const flags = evalOptionsToFlags(options) as EvalFlags
     const resultPtr = this.memory
@@ -1084,9 +1085,9 @@ export class QuickJSContext
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
-      return { error: this.memory.heapValueHandle(errorPtr) }
+      return this.fail(this.memory.heapValueHandle(errorPtr))
     }
-    return { value: this.memory.heapValueHandle(resultPtr) }
+    return this.success(this.memory.heapValueHandle(resultPtr))
   }
 
   /**
@@ -1325,5 +1326,13 @@ export class QuickJSContext
   decodeBinaryJSON(handle: QuickJSHandle): QuickJSHandle {
     const ptr = this.ffi.QTS_bjson_decode(this.ctx.value, handle.value)
     return this.memory.heapValueHandle(ptr)
+  }
+
+  protected success<S>(value: S): DisposableSuccess<S, QuickJSHandle> {
+    return DisposableResult.success(value)
+  }
+
+  protected fail<S>(error: QuickJSHandle): DisposableFail<S, QuickJSHandle> {
+    return DisposableResult.fail(error, (error) => this.unwrapResult(error))
   }
 }

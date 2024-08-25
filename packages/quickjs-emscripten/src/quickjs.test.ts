@@ -414,11 +414,9 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
     it('gets object keys that are symbols only when "includeSymbols" is true', () => {
       const obj = vm.newObject()
       const symA = vm.newUniqueSymbol("a")
-      const symB = vm.newUniqueSymbol("b")
-      const symC = vm.newUniqueSymbol("c")
       vm.setProp(obj, symA, vm.undefined)
-      vm.setProp(obj, symB, vm.undefined)
-      vm.setProp(obj, symC, vm.undefined)
+      vm.setProp(obj, "b", vm.undefined)
+      vm.setProp(obj, "c", vm.undefined)
 
       const props = vm.unwrapResult(
         vm.getPropNames(obj, {
@@ -427,10 +425,8 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
         }),
       )
 
-      assert.strictEqual(props.length, 3)
-      assert.strictEqual(vm.dump(props[0]), symA)
-      assert.strictEqual(vm.dump(props[1]), symB)
-      assert.strictEqual(vm.dump(props[2]), symC)
+      assert.strictEqual(props.length, 1)
+      assert.ok(vm.eq(props[0], symA))
       props.dispose()
     })
   })
