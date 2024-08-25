@@ -168,6 +168,12 @@ export interface QuickJSFFI {
     out_len: uint32_tPointer,
     value: JSValuePointer | JSValueConstPointer,
   ) => number
+  QTS_IsEqual: (
+    ctx: JSContextPointer,
+    a: JSValuePointer | JSValueConstPointer,
+    b: JSValuePointer | JSValueConstPointer,
+    op: IsEqualOp,
+  ) => number
   QTS_GetGlobalObject: (ctx: JSContextPointer) => JSValuePointer
   QTS_NewPromiseCapability: (
     ctx: JSContextPointer,

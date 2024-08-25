@@ -37,6 +37,7 @@ import type {
 } from "./runtime"
 import {
   ContextEvalOptions,
+  IsEqualOp,
   GetOwnPropertyNamesOptions,
   JSValue,
   PromiseExecutor,
@@ -775,6 +776,45 @@ export class QuickJSContext
         ).dispose()
       })
     })
+  }
+
+  // Compare -----------------------------------------------------------
+
+  private isEqual(
+    a: QuickJSHandle,
+    b: QuickJSHandle,
+    equalityType: IsEqualOp = IsEqualOp.IsStrictlyEqual,
+  ): boolean {
+    if (a === b) {
+      return true
+    }
+    this.runtime.assertOwned(a)
+    this.runtime.assertOwned(b)
+    return Boolean(this.ffi.QTS_IsEqual(this.ctx.value, a.value, b.value, equalityType))
+  }
+
+  /**
+   * `handle === other` - IsStrictlyEqual.
+   * See [Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness).
+   */
+  eq(handle: QuickJSHandle, other: QuickJSHandle): boolean {
+    return this.isEqual(handle, other, IsEqualOp.IsStrictlyEqual)
+  }
+
+  /**
+   * `Object.is(a, b)`
+   * See [Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness).
+   */
+  sameValue(handle: QuickJSHandle, other: QuickJSHandle): boolean {
+    return this.isEqual(handle, other, IsEqualOp.IsSameValue)
+  }
+
+  /**
+   * SameValueZero comparison.
+   * See [Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness).
+   */
+  sameValueZero(handle: QuickJSHandle, other: QuickJSHandle): boolean {
+    return this.isEqual(handle, other, IsEqualOp.IsSameValueZero)
   }
 
   // Properties ---------------------------------------------------------------

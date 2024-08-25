@@ -329,3 +329,9 @@ export function concat<T>(...values: Array<T[] | T | undefined>): T[] {
   }
   return result
 }
+
+export enum IsEqualOp {
+  IsStrictlyEqual = 0,
+  IsSameValue = 1,
+  IsSameValueZero = 2,
+}

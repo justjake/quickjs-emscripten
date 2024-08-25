@@ -858,6 +858,24 @@ int QTS_GetLength(JSContext *ctx, uint32_t *out_len, JSValueConst *value) {
   return result;
 }
 
+typedef enum IsEqualOp {
+  QTS_EqualOp_StrictEq = 0,
+  QTS_EqualOp_SameValue = 1,
+  QTS_EqualOp_SameValueZero = 2,
+} IsEqualOp;
+
+int QTS_IsEqual(JSContext *ctx, JSValueConst *a, JSValueConst *b, IsEqualOp op) {
+  switch (op) {
+    case QTS_EqualOp_SameValue:
+      return JS_SameValue(ctx, *a, *b);
+    case QTS_EqualOp_SameValueZero:
+      return JS_SameValueZero(ctx, *a, *b);
+    default:
+    case QTS_EqualOp_StrictEq:
+      return JS_StrictEq(ctx, *a, *b);
+  }
+}
+
 JSValue *QTS_GetGlobalObject(JSContext *ctx) {
   return jsvalue_to_heap(JS_GetGlobalObject(ctx));
 }
