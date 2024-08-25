@@ -17,12 +17,7 @@ import type { JSPromiseState } from "./deferred-promise"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
-import {
-  QuickJSEmscriptenModuleError,
-  QuickJSNotImplemented,
-  QuickJSPromisePending,
-  QuickJSUnwrapError,
-} from "./errors"
+import { QuickJSNotImplemented, QuickJSPromisePending, QuickJSUnwrapError } from "./errors"
 import type { Disposable, DisposableArray, DisposableFail, DisposableSuccess } from "./lifetime"
 import {
   DisposableResult,
@@ -1337,11 +1332,11 @@ export class QuickJSContext
     return this.memory.heapValueHandle(ptr)
   }
 
-  protected success<S>(value: S): DisposableSuccess<S, QuickJSHandle> {
+  protected success<S>(value: S): DisposableSuccess<S> {
     return DisposableResult.success(value)
   }
 
-  protected fail<S>(error: QuickJSHandle): DisposableFail<S, QuickJSHandle> {
+  protected fail(error: QuickJSHandle): DisposableFail<QuickJSHandle> {
     return DisposableResult.fail(error, (error) => this.unwrapResult(error))
   }
 }
