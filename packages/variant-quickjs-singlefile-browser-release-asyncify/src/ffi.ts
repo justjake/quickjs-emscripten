@@ -21,6 +21,7 @@ import {
   IntrinsicsFlags,
   EvalDetectModule,
   GetOwnPropertyNamesFlags,
+  IsEqualOp,
   JSPromiseStateEnum,
   assertSync,
 } from "@jitl/quickjs-ffi-types"
@@ -308,7 +309,7 @@ export class QuickJSAsyncFFI {
   QTS_GetOwnPropertyNames: (
     ctx: JSContextPointer,
     out_ptrs: JSValuePointerPointer,
-    out_len: uint32_tPointer,
+    out_len: UInt32Pointer,
     obj: JSValuePointer | JSValueConstPointer,
     flags: number,
   ) => JSValuePointer = assertSync(
@@ -324,7 +325,7 @@ export class QuickJSAsyncFFI {
   QTS_GetOwnPropertyNames_MaybeAsync: (
     ctx: JSContextPointer,
     out_ptrs: JSValuePointerPointer,
-    out_len: uint32_tPointer,
+    out_len: UInt32Pointer,
     obj: JSValuePointer | JSValueConstPointer,
     flags: number,
   ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
@@ -422,7 +423,7 @@ export class QuickJSAsyncFFI {
 
   QTS_GetLength: (
     ctx: JSContextPointer,
-    out_len: uint32_tPointer,
+    out_len: UInt32Pointer,
     value: JSValuePointer | JSValueConstPointer,
   ) => number = this.module.cwrap("QTS_GetLength", "number", ["number", "number", "number"])
 

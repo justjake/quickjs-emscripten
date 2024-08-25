@@ -21,6 +21,7 @@ import {
   IntrinsicsFlags,
   EvalDetectModule,
   GetOwnPropertyNamesFlags,
+  IsEqualOp,
   JSPromiseStateEnum,
 } from "."
 
@@ -131,7 +132,7 @@ export interface QuickJSFFI {
   QTS_GetOwnPropertyNames: (
     ctx: JSContextPointer,
     out_ptrs: JSValuePointerPointer,
-    out_len: uint32_tPointer,
+    out_len: UInt32Pointer,
     obj: JSValuePointer | JSValueConstPointer,
     flags: number,
   ) => JSValuePointer
@@ -165,7 +166,7 @@ export interface QuickJSFFI {
   ) => OwnedHeapCharPointer
   QTS_GetLength: (
     ctx: JSContextPointer,
-    out_len: uint32_tPointer,
+    out_len: UInt32Pointer,
     value: JSValuePointer | JSValueConstPointer,
   ) => number
   QTS_IsEqual: (

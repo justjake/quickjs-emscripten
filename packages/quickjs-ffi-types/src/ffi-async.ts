@@ -21,6 +21,7 @@ import {
   IntrinsicsFlags,
   EvalDetectModule,
   GetOwnPropertyNamesFlags,
+  IsEqualOp,
   JSPromiseStateEnum,
   assertSync,
 } from "."
@@ -157,14 +158,14 @@ export interface QuickJSAsyncFFI {
   QTS_GetOwnPropertyNames: (
     ctx: JSContextPointer,
     out_ptrs: JSValuePointerPointer,
-    out_len: uint32_tPointer,
+    out_len: UInt32Pointer,
     obj: JSValuePointer | JSValueConstPointer,
     flags: number,
   ) => JSValuePointer
   QTS_GetOwnPropertyNames_MaybeAsync: (
     ctx: JSContextPointer,
     out_ptrs: JSValuePointerPointer,
-    out_len: uint32_tPointer,
+    out_len: UInt32Pointer,
     obj: JSValuePointer | JSValueConstPointer,
     flags: number,
   ) => JSValuePointer | Promise<JSValuePointer>
@@ -217,7 +218,7 @@ export interface QuickJSAsyncFFI {
   ) => OwnedHeapCharPointer
   QTS_GetLength: (
     ctx: JSContextPointer,
-    out_len: uint32_tPointer,
+    out_len: UInt32Pointer,
     value: JSValuePointer | JSValueConstPointer,
   ) => number
   QTS_IsEqual: (

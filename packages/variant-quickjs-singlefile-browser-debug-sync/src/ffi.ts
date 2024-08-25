@@ -21,6 +21,7 @@ import {
   IntrinsicsFlags,
   EvalDetectModule,
   GetOwnPropertyNamesFlags,
+  IsEqualOp,
   JSPromiseStateEnum,
 } from "@jitl/quickjs-ffi-types"
 
@@ -257,7 +258,7 @@ export class QuickJSFFI {
   QTS_GetOwnPropertyNames: (
     ctx: JSContextPointer,
     out_ptrs: JSValuePointerPointer,
-    out_len: uint32_tPointer,
+    out_len: UInt32Pointer,
     obj: JSValuePointer | JSValueConstPointer,
     flags: number,
   ) => JSValuePointer = this.module.cwrap("QTS_GetOwnPropertyNames", "number", [
@@ -318,7 +319,7 @@ export class QuickJSFFI {
 
   QTS_GetLength: (
     ctx: JSContextPointer,
-    out_len: uint32_tPointer,
+    out_len: UInt32Pointer,
     value: JSValuePointer | JSValueConstPointer,
   ) => number = this.module.cwrap("QTS_GetLength", "number", ["number", "number", "number"])
 
