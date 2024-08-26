@@ -12,6 +12,7 @@ import type {
   EitherFFI,
   UInt32Pointer,
   JSValuePointerPointerPointer,
+  JSVoidPointer,
 } from "@jitl/quickjs-ffi-types"
 import { debugLog } from "./debug"
 import type { JSPromiseState } from "./deferred-promise"
@@ -58,7 +59,6 @@ import type {
   VmPropertyDescriptor,
 } from "./vm-interface"
 import { QuickJSIterator } from "./QuickJSIterator"
-import { JSVoidPointer } from "@jitl/quickjs-ffi-types"
 
 export type ContextResult<S> = DisposableResult<S, QuickJSHandle>
 
@@ -868,7 +868,17 @@ export class QuickJSContext
 
   /**
    * `Object.getOwnPropertyNames(handle)`.
-   * Similar to the [standard semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames).
+   * Similar to the [standard semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames),
+   * but with extra, non-standard options for:
+   *
+   * - fetching array indexes as numbers
+   * - including symbols
+   * - only iterating over enumerable properties
+   *
+   * To emulate the standard, use these options:
+   * ```typescript
+   * context.getOwnPropertyNames(handle, { strings: true, numbersAsStrings: true })
+   * ```
    */
   getOwnPropertyNames(
     handle: QuickJSHandle,
@@ -924,13 +934,13 @@ export class QuickJSContext
    * }
    * ```
    */
-  getIterator(handle: QuickJSHandle): ContextResult<QuickJSIterator> {
+  getIterator(iterableHandle: QuickJSHandle): ContextResult<QuickJSIterator> {
     const SymbolIterator = (this._SymbolIterator ??= this.memory.manage(
       this.getWellKnownSymbol("iterator"),
     ))
     return Scope.withScope((scope) => {
-      const methodHandle = scope.manage(this.getProp(handle, SymbolIterator))
-      const iteratorCallResult = this.callFunction(methodHandle, handle)
+      const methodHandle = scope.manage(this.getProp(iterableHandle, SymbolIterator))
+      const iteratorCallResult = this.callFunction(methodHandle, iterableHandle)
       if (iteratorCallResult.error) {
         return iteratorCallResult
       }
