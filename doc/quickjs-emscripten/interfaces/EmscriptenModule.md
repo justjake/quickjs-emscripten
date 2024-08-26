@@ -49,7 +49,7 @@ QuickJS.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:283
+packages/quickjs-ffi-types/dist/index.d.ts:289
 
 ***
 
@@ -59,7 +59,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:283
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:274
+packages/quickjs-ffi-types/dist/index.d.ts:280
 
 ***
 
@@ -69,7 +69,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:274
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:275
+packages/quickjs-ffi-types/dist/index.d.ts:281
 
 ***
 
@@ -79,7 +79,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:275
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:273
+packages/quickjs-ffi-types/dist/index.d.ts:279
 
 ***
 
@@ -89,7 +89,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:273
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:279
+packages/quickjs-ffi-types/dist/index.d.ts:285
 
 ***
 
@@ -99,7 +99,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:279
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:280
+packages/quickjs-ffi-types/dist/index.d.ts:286
 
 ***
 
@@ -109,7 +109,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:280
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:277
+packages/quickjs-ffi-types/dist/index.d.ts:283
 
 ***
 
@@ -119,7 +119,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:277
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:278
+packages/quickjs-ffi-types/dist/index.d.ts:284
 
 ***
 
@@ -129,7 +129,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:278
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:276
+packages/quickjs-ffi-types/dist/index.d.ts:282
 
 ***
 
@@ -139,7 +139,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:276
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:282
+packages/quickjs-ffi-types/dist/index.d.ts:288
 
 ***
 
@@ -149,7 +149,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:282
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:281
+packages/quickjs-ffi-types/dist/index.d.ts:287
 
 ***
 
@@ -165,7 +165,7 @@ Compile this to WebAssembly.Module
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:240
+packages/quickjs-ffi-types/dist/index.d.ts:246
 
 ***
 
@@ -181,7 +181,7 @@ If provided, use this WebAssembly.Memory instead of an automatically created one
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:242
+packages/quickjs-ffi-types/dist/index.d.ts:248
 
 ## Methods
 
@@ -204,7 +204,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:268
+packages/quickjs-ffi-types/dist/index.d.ts:274
 
 ***
 
@@ -222,7 +222,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:268
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:271
+packages/quickjs-ffi-types/dist/index.d.ts:277
 
 ***
 
@@ -240,7 +240,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:271
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:270
+packages/quickjs-ffi-types/dist/index.d.ts:276
 
 ***
 
@@ -273,7 +273,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:270
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:272
+packages/quickjs-ffi-types/dist/index.d.ts:278
 
 ***
 
@@ -299,7 +299,7 @@ Create an instance of the WASM module, call onSuccess(instance), then return ins
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:244
+packages/quickjs-ffi-types/dist/index.d.ts:250
 
 ***
 
@@ -317,7 +317,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:244
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:269
+packages/quickjs-ffi-types/dist/index.d.ts:275
 
 ***
 
@@ -361,7 +361,7 @@ Often `''` (empty string)
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:236
+packages/quickjs-ffi-types/dist/index.d.ts:242
 
 ***
 
@@ -385,7 +385,7 @@ Called by emscripten as dependencies blocking initialization are added or fulfil
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:246
+packages/quickjs-ffi-types/dist/index.d.ts:252
 
 ***
 
@@ -410,7 +410,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#stringToUTF8
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:263
+packages/quickjs-ffi-types/dist/index.d.ts:269
 
 ***
 

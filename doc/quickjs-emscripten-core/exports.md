@@ -40,6 +40,7 @@
   - [JSValueConstPointerPointer](exports.md#jsvalueconstpointerpointer)
   - [JSValuePointer](exports.md#jsvaluepointer)
   - [JSValuePointerPointer](exports.md#jsvaluepointerpointer)
+  - [JSValuePointerPointerPointer](exports.md#jsvaluepointerpointerpointer)
   - [JSVoidPointer](exports.md#jsvoidpointer)
   - [OrLoader\<T\>](exports.md#orloadert)
   - [OwnedHeapCharPointer](exports.md#ownedheapcharpointer)
@@ -158,7 +159,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L77)
+[packages/quickjs-ffi-types/src/ffi-types.ts:82](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L82)
 
 ***
 
@@ -183,7 +184,7 @@ An `Array` that also implements [Disposable](interfaces/Disposable.md):
 
 ### DisposableResult\<S, F\>
 
-> **DisposableResult**\<`S`, `F`\>: [`DisposableSuccess`](classes/DisposableSuccess.md)\<`S`, `F`\> \| [`DisposableFail`](classes/DisposableFail.md)\<`S`, `F`\>
+> **DisposableResult**\<`S`, `F`\>: [`DisposableSuccess`](classes/DisposableSuccess.md)\<`S`\> \| [`DisposableFail`](classes/DisposableFail.md)\<`F`\>
 
 #### Type parameters
 
@@ -193,7 +194,7 @@ An `Array` that also implements [Disposable](interfaces/Disposable.md):
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:457](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L457)
+[packages/quickjs-emscripten-core/src/lifetime.ts:453](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L453)
 
 ***
 
@@ -349,7 +350,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:89](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L89)
+[packages/quickjs-ffi-types/src/ffi-types.ts:94](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L94)
 
 ***
 
@@ -470,7 +471,7 @@ State of a promise.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L126)
+[packages/quickjs-ffi-types/src/ffi-types.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L131)
 
 ***
 
@@ -550,7 +551,7 @@ Used internally for Javascript-to-C function calls.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L51)
+[packages/quickjs-ffi-types/src/ffi-types.ts:56](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L56)
 
 ***
 
@@ -579,6 +580,18 @@ Used internally for Javascript-to-C function calls.
 
 ***
 
+### JSValuePointerPointerPointer
+
+> **JSValuePointerPointerPointer**: `Pointer`\<`"*JSValue[]"`\>
+
+Used internally for Javascript-to-C function calls.
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi-types.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L51)
+
+***
+
 ### JSVoidPointer
 
 > **JSVoidPointer**: `Pointer`\<`any`\>
@@ -587,7 +600,7 @@ Opaque pointer that was allocated by js_malloc.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:94](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L94)
+[packages/quickjs-ffi-types/src/ffi-types.ts:99](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L99)
 
 ***
 
@@ -614,7 +627,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L83)
+[packages/quickjs-ffi-types/src/ffi-types.ts:88](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L88)
 
 ***
 
@@ -640,7 +653,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:318](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L318)
+[packages/quickjs-emscripten-core/src/types.ts:332](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L332)
 
 ***
 
@@ -666,7 +679,7 @@ Used internally for C-to-Javascript function calls.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:61](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L61)
+[packages/quickjs-ffi-types/src/ffi-types.ts:66](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L66)
 
 ***
 
@@ -678,7 +691,7 @@ Used internally for C-to-Javascript interrupt handlers.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:66](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L66)
+[packages/quickjs-ffi-types/src/ffi-types.ts:71](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L71)
 
 ***
 
@@ -690,7 +703,7 @@ Used internally for C-to-Javascript module loading.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:71](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L71)
+[packages/quickjs-ffi-types/src/ffi-types.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L76)
 
 ***
 
@@ -719,7 +732,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L67)
+[packages/quickjs-emscripten-core/src/context.ts:64](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L64)
 
 ***
 
@@ -771,7 +784,7 @@ Used as an optional.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:96](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L96)
+[packages/quickjs-ffi-types/src/ffi-types.ts:101](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L101)
 
 ***
 
@@ -891,7 +904,7 @@ The default [Intrinsics](exports.md#intrinsics) language features enabled in a Q
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:457](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L457)
+[packages/quickjs-emscripten-core/src/lifetime.ts:453](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L453)
 
 ***
 
@@ -959,7 +972,7 @@ module code
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:101](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L101)
+[packages/quickjs-ffi-types/src/ffi-types.ts:106](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L106)
 
 ***
 
@@ -991,9 +1004,17 @@ Bitfield options for QTS_GetOwnPropertyNames
 
 > **JS\_GPN\_SYMBOL\_MASK**: `number`
 
+##### QTS\_GPN\_NUMBER\_MASK
+
+> **QTS\_GPN\_NUMBER\_MASK**: `number`
+
+##### QTS\_STANDARD\_COMPLIANT\_NUMBER
+
+> **QTS\_STANDARD\_COMPLIANT\_NUMBER**: `number`
+
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:116](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L116)
+[packages/quickjs-ffi-types/src/ffi-types.ts:121](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L121)
 
 ***
 
@@ -1071,7 +1092,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:106](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L106)
+[packages/quickjs-ffi-types/src/ffi-types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L111)
 
 ***
 
@@ -1095,7 +1116,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:121](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L121)
+[packages/quickjs-ffi-types/src/ffi-types.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L126)
 
 ***
 
@@ -1119,7 +1140,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L126)
+[packages/quickjs-ffi-types/src/ffi-types.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L131)
 
 ## Functions
 
@@ -1152,7 +1173,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L131)
+[packages/quickjs-ffi-types/src/ffi-types.ts:136](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L136)
 
 ***
 

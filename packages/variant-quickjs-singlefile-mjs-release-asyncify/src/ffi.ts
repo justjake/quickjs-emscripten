@@ -8,6 +8,7 @@ import {
   JSValuePointer,
   JSValueConstPointer,
   JSValuePointerPointer,
+  JSValuePointerPointerPointer,
   JSValueConstPointerPointer,
   QTS_C_To_HostCallbackFuncPointer,
   QTS_C_To_HostInterruptFuncPointer,
@@ -308,7 +309,7 @@ export class QuickJSAsyncFFI {
 
   QTS_GetOwnPropertyNames: (
     ctx: JSContextPointer,
-    out_ptrs: JSValuePointerPointer,
+    out_ptrs: JSValuePointerPointerPointer,
     out_len: UInt32Pointer,
     obj: JSValuePointer | JSValueConstPointer,
     flags: number,
@@ -324,7 +325,7 @@ export class QuickJSAsyncFFI {
 
   QTS_GetOwnPropertyNames_MaybeAsync: (
     ctx: JSContextPointer,
-    out_ptrs: JSValuePointerPointer,
+    out_ptrs: JSValuePointerPointerPointer,
     out_len: UInt32Pointer,
     obj: JSValuePointer | JSValueConstPointer,
     flags: number,

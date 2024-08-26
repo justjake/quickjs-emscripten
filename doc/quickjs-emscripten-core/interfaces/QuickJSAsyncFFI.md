@@ -103,7 +103,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:38](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L38)
+[packages/quickjs-ffi-types/src/ffi-async.ts:39](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L39)
 
 ***
 
@@ -123,7 +123,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:247](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L247)
+[packages/quickjs-ffi-types/src/ffi-async.ts:248](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L248)
 
 ***
 
@@ -137,7 +137,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:245](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L245)
+[packages/quickjs-ffi-types/src/ffi-async.ts:246](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L246)
 
 ***
 
@@ -151,7 +151,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:244](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L244)
+[packages/quickjs-ffi-types/src/ffi-async.ts:245](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L245)
 
 ***
 
@@ -165,7 +165,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L46)
+[packages/quickjs-ffi-types/src/ffi-async.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L47)
 
 ***
 
@@ -191,7 +191,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:172](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L172)
+[packages/quickjs-ffi-types/src/ffi-async.ts:173](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L173)
 
 ***
 
@@ -217,7 +217,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:179](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L179)
+[packages/quickjs-ffi-types/src/ffi-async.ts:180](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L180)
 
 ***
 
@@ -251,7 +251,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:147](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L147)
+[packages/quickjs-ffi-types/src/ffi-async.ts:148](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L148)
 
 ***
 
@@ -271,7 +271,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:187](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L187)
+[packages/quickjs-ffi-types/src/ffi-async.ts:188](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L188)
 
 ***
 
@@ -291,7 +291,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:191](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L191)
+[packages/quickjs-ffi-types/src/ffi-async.ts:192](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L192)
 
 ***
 
@@ -311,7 +311,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:60](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L60)
+[packages/quickjs-ffi-types/src/ffi-async.ts:61](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L61)
 
 ***
 
@@ -339,7 +339,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:195](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L195)
+[packages/quickjs-ffi-types/src/ffi-async.ts:196](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L196)
 
 ***
 
@@ -367,7 +367,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:203](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L203)
+[packages/quickjs-ffi-types/src/ffi-async.ts:204](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L204)
 
 ***
 
@@ -389,7 +389,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:105](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L105)
+[packages/quickjs-ffi-types/src/ffi-async.ts:106](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L106)
 
 ***
 
@@ -411,7 +411,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:110](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L110)
+[packages/quickjs-ffi-types/src/ffi-async.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L111)
 
 ***
 
@@ -431,7 +431,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:59](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L59)
+[packages/quickjs-ffi-types/src/ffi-async.ts:60](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L60)
 
 ***
 
@@ -449,7 +449,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:55](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L55)
+[packages/quickjs-ffi-types/src/ffi-async.ts:56](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L56)
 
 ***
 
@@ -467,7 +467,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L53)
+[packages/quickjs-ffi-types/src/ffi-async.ts:54](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L54)
 
 ***
 
@@ -487,7 +487,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:56](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L56)
+[packages/quickjs-ffi-types/src/ffi-async.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L57)
 
 ***
 
@@ -507,7 +507,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L57)
+[packages/quickjs-ffi-types/src/ffi-async.ts:58](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L58)
 
 ***
 
@@ -527,7 +527,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:58](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L58)
+[packages/quickjs-ffi-types/src/ffi-async.ts:59](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L59)
 
 ***
 
@@ -547,7 +547,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:82](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L82)
+[packages/quickjs-ffi-types/src/ffi-async.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L83)
 
 ***
 
@@ -567,7 +567,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L86)
+[packages/quickjs-ffi-types/src/ffi-async.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L87)
 
 ***
 
@@ -581,7 +581,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:50](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L50)
+[packages/quickjs-ffi-types/src/ffi-async.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L51)
 
 ***
 
@@ -601,7 +601,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L76)
+[packages/quickjs-ffi-types/src/ffi-async.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L77)
 
 ***
 
@@ -619,7 +619,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:230](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L230)
+[packages/quickjs-ffi-types/src/ffi-async.ts:231](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L231)
 
 ***
 
@@ -641,7 +641,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:219](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L219)
+[packages/quickjs-ffi-types/src/ffi-async.ts:220](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L220)
 
 ***
 
@@ -661,7 +661,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:211](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L211)
+[packages/quickjs-ffi-types/src/ffi-async.ts:212](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L212)
 
 ***
 
@@ -675,7 +675,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L49)
+[packages/quickjs-ffi-types/src/ffi-async.ts:50](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L50)
 
 ***
 
@@ -687,7 +687,7 @@ Set at compile time.
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **out\_ptrs**: [`JSValuePointerPointer`](../exports.md#jsvaluepointerpointer)
+• **out\_ptrs**: [`JSValuePointerPointerPointer`](../exports.md#jsvaluepointerpointerpointer)
 
 • **out\_len**: [`UInt32Pointer`](../exports.md#uint32pointer)
 
@@ -701,7 +701,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:158](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L158)
+[packages/quickjs-ffi-types/src/ffi-async.ts:159](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L159)
 
 ***
 
@@ -713,7 +713,7 @@ Set at compile time.
 
 • **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
 
-• **out\_ptrs**: [`JSValuePointerPointer`](../exports.md#jsvaluepointerpointer)
+• **out\_ptrs**: [`JSValuePointerPointerPointer`](../exports.md#jsvaluepointerpointerpointer)
 
 • **out\_len**: [`UInt32Pointer`](../exports.md#uint32pointer)
 
@@ -727,7 +727,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:165](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L165)
+[packages/quickjs-ffi-types/src/ffi-async.ts:166](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L166)
 
 ***
 
@@ -749,7 +749,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:115](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L115)
+[packages/quickjs-ffi-types/src/ffi-async.ts:116](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L116)
 
 ***
 
@@ -771,7 +771,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:125](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L125)
+[packages/quickjs-ffi-types/src/ffi-async.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L126)
 
 ***
 
@@ -793,7 +793,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:130](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L130)
+[packages/quickjs-ffi-types/src/ffi-async.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L131)
 
 ***
 
@@ -815,7 +815,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:120](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L120)
+[packages/quickjs-ffi-types/src/ffi-async.ts:121](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L121)
 
 ***
 
@@ -835,7 +835,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:78](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L78)
+[packages/quickjs-ffi-types/src/ffi-async.ts:79](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L79)
 
 ***
 
@@ -855,7 +855,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:95](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L95)
+[packages/quickjs-ffi-types/src/ffi-async.ts:96](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L96)
 
 ***
 
@@ -875,7 +875,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:99](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L99)
+[packages/quickjs-ffi-types/src/ffi-async.ts:100](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L100)
 
 ***
 
@@ -889,7 +889,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L51)
+[packages/quickjs-ffi-types/src/ffi-async.ts:52](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L52)
 
 ***
 
@@ -903,7 +903,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:48](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L48)
+[packages/quickjs-ffi-types/src/ffi-async.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L49)
 
 ***
 
@@ -927,7 +927,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:224](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L224)
+[packages/quickjs-ffi-types/src/ffi-async.ts:225](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L225)
 
 ***
 
@@ -947,7 +947,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:103](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L103)
+[packages/quickjs-ffi-types/src/ffi-async.ts:104](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L104)
 
 ***
 
@@ -965,7 +965,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:104](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L104)
+[packages/quickjs-ffi-types/src/ffi-async.ts:105](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L105)
 
 ***
 
@@ -983,7 +983,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L69)
+[packages/quickjs-ffi-types/src/ffi-async.ts:70](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L70)
 
 ***
 
@@ -1005,7 +1005,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:70](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L70)
+[packages/quickjs-ffi-types/src/ffi-async.ts:71](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L71)
 
 ***
 
@@ -1025,7 +1025,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:54](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L54)
+[packages/quickjs-ffi-types/src/ffi-async.ts:55](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L55)
 
 ***
 
@@ -1043,7 +1043,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L41)
+[packages/quickjs-ffi-types/src/ffi-async.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L42)
 
 ***
 
@@ -1063,7 +1063,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:75](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L75)
+[packages/quickjs-ffi-types/src/ffi-async.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L76)
 
 ***
 
@@ -1085,7 +1085,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:246](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L246)
+[packages/quickjs-ffi-types/src/ffi-async.ts:247](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L247)
 
 ***
 
@@ -1103,7 +1103,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:64](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L64)
+[packages/quickjs-ffi-types/src/ffi-async.ts:65](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L65)
 
 ***
 
@@ -1123,7 +1123,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:65](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L65)
+[packages/quickjs-ffi-types/src/ffi-async.ts:66](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L66)
 
 ***
 
@@ -1143,7 +1143,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:231](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L231)
+[packages/quickjs-ffi-types/src/ffi-async.ts:232](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L232)
 
 ***
 
@@ -1157,7 +1157,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:52](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L52)
+[packages/quickjs-ffi-types/src/ffi-async.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L53)
 
 ***
 
@@ -1177,7 +1177,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L77)
+[packages/quickjs-ffi-types/src/ffi-async.ts:78](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L78)
 
 ***
 
@@ -1199,7 +1199,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:90](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L90)
+[packages/quickjs-ffi-types/src/ffi-async.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L91)
 
 ***
 
@@ -1219,7 +1219,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:239](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L239)
+[packages/quickjs-ffi-types/src/ffi-async.ts:240](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L240)
 
 ***
 
@@ -1239,7 +1239,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:235](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L235)
+[packages/quickjs-ffi-types/src/ffi-async.ts:236](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L236)
 
 ***
 
@@ -1253,7 +1253,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:45](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L45)
+[packages/quickjs-ffi-types/src/ffi-async.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L46)
 
 ***
 
@@ -1273,7 +1273,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:186](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L186)
+[packages/quickjs-ffi-types/src/ffi-async.ts:187](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L187)
 
 ***
 
@@ -1293,7 +1293,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L43)
+[packages/quickjs-ffi-types/src/ffi-async.ts:44](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L44)
 
 ***
 
@@ -1311,7 +1311,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:252](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L252)
+[packages/quickjs-ffi-types/src/ffi-async.ts:253](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L253)
 
 ***
 
@@ -1329,7 +1329,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:254](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L254)
+[packages/quickjs-ffi-types/src/ffi-async.ts:255](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L255)
 
 ***
 
@@ -1347,7 +1347,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:44](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L44)
+[packages/quickjs-ffi-types/src/ffi-async.ts:45](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L45)
 
 ***
 
@@ -1365,7 +1365,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:251](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L251)
+[packages/quickjs-ffi-types/src/ffi-async.ts:252](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L252)
 
 ***
 
@@ -1385,7 +1385,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:253](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L253)
+[packages/quickjs-ffi-types/src/ffi-async.ts:254](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L254)
 
 ***
 
@@ -1405,7 +1405,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L47)
+[packages/quickjs-ffi-types/src/ffi-async.ts:48](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L48)
 
 ***
 
@@ -1425,7 +1425,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L42)
+[packages/quickjs-ffi-types/src/ffi-async.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L43)
 
 ***
 
@@ -1449,7 +1449,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:135](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L135)
+[packages/quickjs-ffi-types/src/ffi-async.ts:136](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L136)
 
 ***
 
@@ -1473,7 +1473,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:141](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L141)
+[packages/quickjs-ffi-types/src/ffi-async.ts:142](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L142)
 
 ***
 
@@ -1491,7 +1491,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:243](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L243)
+[packages/quickjs-ffi-types/src/ffi-async.ts:244](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L244)
 
 ***
 
@@ -1511,7 +1511,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:40](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L40)
+[packages/quickjs-ffi-types/src/ffi-async.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L41)
 
 ***
 
@@ -1531,7 +1531,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:215](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L215)
+[packages/quickjs-ffi-types/src/ffi-async.ts:216](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L216)
 
 ***
 
@@ -1551,7 +1551,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:259](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L259)
+[packages/quickjs-ffi-types/src/ffi-async.ts:260](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L260)
 
 ***
 
@@ -1571,7 +1571,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-async.ts:255](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L255)
+[packages/quickjs-ffi-types/src/ffi-async.ts:256](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-async.ts#L256)
 
 ***
 

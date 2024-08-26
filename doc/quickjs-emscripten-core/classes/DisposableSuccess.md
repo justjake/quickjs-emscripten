@@ -4,7 +4,7 @@
 
 [quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../exports.md) / DisposableSuccess
 
-# Class: DisposableSuccess\<S, F\>
+# Class: DisposableSuccess\<S\>
 
 ## Contents
 
@@ -28,19 +28,17 @@
 
 ## Extends
 
-- `AbstractDisposableResult`\<`S`, `F`\>
+- `AbstractDisposableResult`
 
 ## Type parameters
 
 • **S**
 
-• **F**
-
 ## Constructors
 
 ### new DisposableSuccess(value)
 
-> **new DisposableSuccess**\<`S`, `F`\>(`value`): [`DisposableSuccess`](DisposableSuccess.md)\<`S`, `F`\>
+> **new DisposableSuccess**\<`S`\>(`value`): [`DisposableSuccess`](DisposableSuccess.md)\<`S`\>
 
 #### Parameters
 
@@ -48,15 +46,15 @@
 
 #### Returns
 
-[`DisposableSuccess`](DisposableSuccess.md)\<`S`, `F`\>
+[`DisposableSuccess`](DisposableSuccess.md)\<`S`\>
 
 #### Overrides
 
-`AbstractDisposableResult<S, F>.constructor`
+`AbstractDisposableResult.constructor`
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:404](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L404)
+[packages/quickjs-emscripten-core/src/lifetime.ts:402](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L402)
 
 ## Properties
 
@@ -66,7 +64,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:402](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L402)
+[packages/quickjs-emscripten-core/src/lifetime.ts:400](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L400)
 
 ***
 
@@ -76,7 +74,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:404](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L404)
+[packages/quickjs-emscripten-core/src/lifetime.ts:402](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L402)
 
 ## Accessors
 
@@ -90,7 +88,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:408](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L408)
+[packages/quickjs-emscripten-core/src/lifetime.ts:406](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L406)
 
 ## Methods
 
@@ -128,7 +126,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:412](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L412)
+[packages/quickjs-emscripten-core/src/lifetime.ts:410](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L410)
 
 ***
 
@@ -140,13 +138,9 @@ Just calls the standard .dispose() method of this class.
 
 `S`
 
-#### Overrides
-
-`AbstractDisposableResult.unwrap`
-
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:418](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L418)
+[packages/quickjs-emscripten-core/src/lifetime.ts:416](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L416)
 
 ***
 
@@ -166,19 +160,15 @@ Just calls the standard .dispose() method of this class.
 
 `S` \| `T`
 
-#### Overrides
-
-`AbstractDisposableResult.unwrapOr`
-
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:422](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L422)
+[packages/quickjs-emscripten-core/src/lifetime.ts:420](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L420)
 
 ***
 
 ### fail()
 
-> **`static`** **fail**\<`S`, `F`\>(`error`, `onUnwrap`): [`DisposableFail`](DisposableFail.md)\<`S`, `F`\>
+> **`static`** **fail**\<`S`, `F`\>(`error`, `onUnwrap`): [`DisposableFail`](DisposableFail.md)\<`F`\>
 
 #### Type parameters
 
@@ -194,7 +184,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Returns
 
-[`DisposableFail`](DisposableFail.md)\<`S`, `F`\>
+[`DisposableFail`](DisposableFail.md)\<`F`\>
 
 #### Inherited from
 
@@ -236,7 +226,7 @@ Just calls the standard .dispose() method of this class.
 
 ### success()
 
-> **`static`** **success**\<`S`, `F`\>(`value`): [`DisposableSuccess`](DisposableSuccess.md)\<`S`, `F`\>
+> **`static`** **success**\<`S`, `F`\>(`value`): [`DisposableSuccess`](DisposableSuccess.md)\<`S`\>
 
 #### Type parameters
 
@@ -250,7 +240,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Returns
 
-[`DisposableSuccess`](DisposableSuccess.md)\<`S`, `F`\>
+[`DisposableSuccess`](DisposableSuccess.md)\<`S`\>
 
 #### Inherited from
 

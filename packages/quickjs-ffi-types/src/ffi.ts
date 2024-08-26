@@ -8,6 +8,7 @@ import {
   JSValuePointer,
   JSValueConstPointer,
   JSValuePointerPointer,
+  JSValuePointerPointerPointer,
   JSValueConstPointerPointer,
   QTS_C_To_HostCallbackFuncPointer,
   QTS_C_To_HostInterruptFuncPointer,
@@ -131,7 +132,7 @@ export interface QuickJSFFI {
   ) => void
   QTS_GetOwnPropertyNames: (
     ctx: JSContextPointer,
-    out_ptrs: JSValuePointerPointer,
+    out_ptrs: JSValuePointerPointerPointer,
     out_len: UInt32Pointer,
     obj: JSValuePointer | JSValueConstPointer,
     flags: number,

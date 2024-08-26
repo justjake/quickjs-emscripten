@@ -77,6 +77,7 @@ CFLAGS_WASM_BROWSER=$(CFLAGS_WASM)
 # Emscripten options - variant & target specific
 CFLAGS_WASM+=-O0
 CFLAGS_WASM+=-DQTS_DEBUG_MODE
+CFLAGS_WASM+=-DDUMP_LEAKS=1
 CFLAGS_WASM+=-gsource-map
 CFLAGS_WASM+=-s ASSERTIONS=1
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-extension.js

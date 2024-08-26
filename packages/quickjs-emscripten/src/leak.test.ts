@@ -11,6 +11,7 @@ import {
 } from "."
 
 const TEST_LEAK = Boolean(process.env.TEST_LEAK)
+const TEST_SLOW = !process.env.TEST_FAST
 const testOptions = {
   timeout: Infinity,
 }
@@ -144,7 +145,8 @@ function checkModuleForLeaks(getModule: () => Promise<QuickJSWASMModule>) {
 
   for (const checkName of checkNames) {
     const fn = checks[checkName as keyof typeof checks]
-    it(
+    const test = TEST_LEAK ? it : it.skip
+    test(
       `should not leak: ${checkName}`,
       () => {
         console.log(`Running ${checkName}...`)

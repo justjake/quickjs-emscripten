@@ -300,7 +300,7 @@ export class Scope extends UsingDisposable implements Disposable {
   /**
    * Track `lifetime` so that it is disposed when this scope is disposed.
    */
-  manage<T extends Disposable>(lifetime: T): T {
+  manage = <T extends Disposable>(lifetime: T): T => {
     this._disposables.value.add(lifetime)
     return lifetime
   }

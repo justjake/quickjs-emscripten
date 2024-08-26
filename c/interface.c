@@ -591,19 +591,73 @@ void QTS_DefineProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_n
   JS_FreeAtom(ctx, prop_atom);
 }
 
-MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue **out_ptrs, uint32_t *out_len, JSValueConst *obj, int flags) {
+#define JS_ATOM_TAG_INT (1U << 31)
+static inline BOOL __JS_AtomIsTaggedInt(JSAtom v) {
+  return (v & JS_ATOM_TAG_INT) != 0;
+}
+
+static inline uint32_t __JS_AtomToUInt32(JSAtom atom) {
+  return atom & ~JS_ATOM_TAG_INT;
+}
+
+/* include numbers. when only this is set, we filter out strings */
+#define QTS_GPN_NUMBER_MASK (1 << 6)
+/* Treat numbers as strings */
+#define QTS_STANDARD_COMPLIANT_NUMBER (1 << 7)
+
+MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue ***out_ptrs, uint32_t *out_len, JSValueConst *obj, int flags) {
   JSPropertyEnum *tab = NULL;
+  uint32_t total_props = 0;
+  uint32_t out_props = 0;
+
+  BOOL qts_standard_compliant_number = (flags & QTS_STANDARD_COMPLIANT_NUMBER) != 0;
+  BOOL qts_include_string = (flags & JS_GPN_STRING_MASK) != 0;
+  BOOL qts_include_number = qts_standard_compliant_number ? 0 : (flags & QTS_GPN_NUMBER_MASK) != 0;
+  if (qts_include_number) {
+    // if we want numbers, we must include strings in call down
+    flags = flags | JS_GPN_STRING_MASK;
+  }
+
   int status = 0;
-  status = JS_GetOwnPropertyNames(ctx, &tab, out_len, *obj, flags);
+  status = JS_GetOwnPropertyNames(ctx, &tab, &total_props, *obj, flags);
   if (status < 0) {
+    if (tab != NULL) {
+      js_free(ctx, tab);
+    }
     return jsvalue_to_heap(JS_GetException(ctx));
   }
   *out_ptrs = malloc(sizeof(JSValue) * *out_len);
-  for (int i = 0; i < *out_len; i++) {
-    out_ptrs[i] = jsvalue_to_heap(JS_AtomToValue(ctx, tab[i].atom));
-    JS_FreeAtom(ctx, tab[i].atom);
+  for (int i = 0; i < total_props; i++) {
+    JSAtom atom = tab[i].atom;
+
+    if (__JS_AtomIsTaggedInt(atom)) {
+      if (qts_include_number) {
+        uint32_t v = __JS_AtomToUInt32(atom);
+        (*out_ptrs)[out_props++] = jsvalue_to_heap(JS_NewUint32(ctx, v));
+      } else if (qts_include_string && qts_standard_compliant_number) {
+        (*out_ptrs)[out_props++] = jsvalue_to_heap(JS_AtomToValue(ctx, tab[i].atom));
+      }
+      JS_FreeAtom(ctx, atom);
+      continue;
+    }
+
+    JSValue atom_value = JS_AtomToValue(ctx, atom);
+    JS_FreeAtom(ctx, atom);
+
+    if (JS_IsString(atom_value)) {
+      if (qts_include_string) {
+        (*out_ptrs)[out_props++] = jsvalue_to_heap(atom_value);
+      } else {
+        JS_FreeValue(ctx, atom_value);
+      }
+    } else {  // Symbol
+      // We must have set the includeSymbol or includePrivate flags
+      // if it's present
+      (*out_ptrs)[out_props++] = jsvalue_to_heap(atom_value);
+    }
   }
   js_free(ctx, tab);
+  *out_len = out_props;
   return NULL;
 }
 

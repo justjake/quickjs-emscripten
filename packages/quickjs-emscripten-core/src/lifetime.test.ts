@@ -1,6 +1,6 @@
 import assert from "assert"
 import { describe, it } from "vitest"
-import { DisposableResult, Lifetime, Scope } from "./lifetime"
+import { DisposableResult, Lifetime, Scope, createDisposableArray } from "./lifetime"
 
 describe("Lifetime", () => {
   describe(".consume", () => {
@@ -55,6 +55,29 @@ describe("Scope", () => {
       assert.strictEqual(secondLifetime.alive, false)
       assert.strictEqual(count(), 2)
     })
+  })
+})
+
+describe("createDisposableArray", () => {
+  it("is alive if any element is alive", () => {
+    const lifetimes = [new Lifetime(1), new Lifetime(2)]
+    const result = createDisposableArray(lifetimes)
+    assert.strictEqual(result.alive, true)
+
+    lifetimes[0].dispose()
+    assert.strictEqual(result.alive, true)
+
+    lifetimes[1].dispose()
+    assert.strictEqual(result.alive, false)
+  })
+
+  it(".dispose() disposes all alive elements and ignores dead elements", () => {
+    const lifetimes = [new Lifetime(1), new Lifetime(2)]
+    lifetimes[0].dispose()
+    const result = createDisposableArray(lifetimes)
+    result.dispose()
+    assert.strictEqual(lifetimes[0].alive, false)
+    assert.strictEqual(lifetimes[1].alive, false)
   })
 })
 

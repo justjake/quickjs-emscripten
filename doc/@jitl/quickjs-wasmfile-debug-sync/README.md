@@ -87,6 +87,7 @@ Variant-specific Emscripten build flags:
 [
   "-O0",
   "-DQTS_DEBUG_MODE",
+  "-DDUMP_LEAKS=1",
   "-gsource-map",
   "-s ASSERTIONS=1",
   "--pre-js $(TEMPLATES)/pre-extension.js",

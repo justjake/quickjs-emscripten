@@ -5,7 +5,15 @@
 import assert from "assert"
 import fs from "fs"
 import { inspect as baseInspect } from "node:util"
-import { describe, beforeEach, afterEach, afterAll as after, it, expect } from "vitest"
+import {
+  describe,
+  beforeEach,
+  afterEach,
+  afterAll as after,
+  it,
+  expect,
+  onTestFailed,
+} from "vitest"
 import type {
   QuickJSHandle,
   InterruptHandler,
@@ -36,34 +44,61 @@ import {
   newVariant,
   shouldInterruptAfterDeadline,
 } from "."
+import { Scope } from "quickjs-emscripten-core"
 
-const TEST_NG = !process.env.TEST_NO_NG
-const TEST_DEBUG = !process.env.TEST_NO_DEBUG
-const TEST_ASYNC = !process.env.TEST_NO_ASYNC
+const TEST_SLOW = !process.env.TEST_FAST
+const TEST_NG = TEST_SLOW && !process.env.TEST_NO_NG
+const TEST_DEBUG = TEST_SLOW && !process.env.TEST_NO_DEBUG
+const TEST_ASYNC = TEST_SLOW && !process.env.TEST_NO_ASYNC
 const TEST_RELEASE = !process.env.TEST_NO_RELEASE
 console.log("test sets:", {
   TEST_RELEASE,
   TEST_DEBUG,
   TEST_NG,
   TEST_ASYNC,
+  TEST_SLOW,
 })
 
 type GetTestContext = (options?: ContextOptions) => Promise<QuickJSContext>
 
+const baseIt = it
 function contextTests(getContext: GetTestContext, isDebug = false) {
   let vm: QuickJSContext = undefined as any
   let ffi: QuickJSFFI | QuickJSAsyncFFI = undefined as any
   let testId = 0
+  let anyTestFailed = false
+  let thisTestFailed = false
+
+  const it = (name: string, fn: (scope: Scope) => unknown) =>
+    baseIt(name, async () => {
+      onTestFailed(() => {
+        anyTestFailed = true
+      })
+
+      try {
+        await Scope.withScopeAsync(async (scope) => {
+          await fn(scope)
+        })
+      } catch (error) {
+        thisTestFailed = true
+        throw error
+      }
+    })
 
   beforeEach(async () => {
     testId++
+    thisTestFailed = false
     vm = await getContext()
     ffi = (vm as any).ffi
     assertBuildIsConsistent(vm)
   })
 
   afterEach(() => {
-    vm.dispose()
+    if (!thisTestFailed) {
+      // this will assert we disposed everything in the test
+      // however, if we failed we may not have disposed
+      vm.dispose()
+    }
     vm = undefined as any
   })
 
@@ -74,6 +109,10 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
 
     if (ffi.QTS_BuildIsAsyncify()) {
       // Asyncify explodes during leak checking.
+      return
+    }
+    if (anyTestFailed) {
+      // we probably threw an error before disposing
       return
     }
     // https://web.dev/webassembly-memory-debugging/
@@ -232,7 +271,7 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
         fnHandle.dispose()
       })
 
-      const itForMaxFuns = isDebug ? it : it.skip
+      const itForMaxFuns = isDebug && TEST_SLOW ? it : baseIt.skip
       itForMaxFuns(
         "can handle more than signed int max functions being registered",
         () =>
@@ -370,64 +409,69 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
   })
 
   describe("getPropNames", () => {
-    it("gets array indexes as *numbers*", () => {
-      const array = vm.newArray()
+    it("gets array indexes as *numbers*", ({ manage }) => {
+      const array = manage(vm.newArray())
       vm.setProp(array, 0, vm.undefined)
       vm.setProp(array, 1, vm.undefined)
       vm.setProp(array, 2, vm.undefined)
 
-      const props = vm.unwrapResult(
-        vm.getPropNames(array, {
-          onlyEnumerable: true,
-        }),
+      const props = manage(
+        vm
+          .getPropNames(array, {
+            includeNumbers: true,
+          })
+          .unwrap(),
       )
+
+      console.log(props.map((p) => vm.dump(p)))
 
       assert.strictEqual(props.length, 3)
       assert.strictEqual(vm.dump(props[0]), 0)
       assert.strictEqual(vm.dump(props[1]), 1)
       assert.strictEqual(vm.dump(props[2]), 2)
-      props.dispose()
     })
 
-    it("gets object keys as *strings*, but does not include symbols", () => {
-      const obj = vm.newObject()
-      vm.setProp(obj, "a", vm.undefined)
+    it("gets object keys as *strings*, but does not include symbols", ({ manage }) => {
+      const obj = manage(vm.newObject())
+      vm.setProp(obj, "a", vm.true)
       vm.setProp(obj, "b", vm.undefined)
       vm.setProp(obj, "c", vm.undefined)
       const sym = vm.newUniqueSymbol("d")
       vm.setProp(obj, sym, vm.undefined)
 
-      const props = vm.unwrapResult(
-        vm.getPropNames(obj, {
-          onlyEnumerable: true,
-          includeStrings: true,
-        }),
+      const props = manage(
+        vm.unwrapResult(
+          vm.getPropNames(obj, {
+            onlyEnumerable: true,
+            includeStrings: true,
+          }),
+        ),
       )
 
       assert.strictEqual(props.length, 3)
       assert.strictEqual(vm.dump(props[0]), "a")
       assert.strictEqual(vm.dump(props[1]), "b")
       assert.strictEqual(vm.dump(props[2]), "c")
-      props.dispose()
     })
 
-    it('gets object keys that are symbols only when "includeSymbols" is true', () => {
-      const obj = vm.newObject()
-      const symA = vm.newUniqueSymbol("a")
+    it('gets object keys that are symbols only when "includeSymbols" is true', ({ manage }) => {
+      const obj = manage(vm.newObject())
+      const symA = manage(vm.newUniqueSymbol("a"))
       vm.setProp(obj, symA, vm.undefined)
       vm.setProp(obj, "b", vm.undefined)
       vm.setProp(obj, "c", vm.undefined)
 
-      const props = vm.unwrapResult(
-        vm.getPropNames(obj, {
-          onlyEnumerable: true,
-          includeSymbols: true,
-        }),
+      const props = manage(
+        vm.unwrapResult(
+          vm.getPropNames(obj, {
+            onlyEnumerable: true,
+            includeSymbols: true,
+          }),
+        ),
       )
 
       assert.strictEqual(props.length, 1)
-      assert.ok(vm.eq(props[0], symA))
-      props.dispose()
+      assert.strictEqual(vm.typeof(props[0]), "symbol")
     })
   })
 

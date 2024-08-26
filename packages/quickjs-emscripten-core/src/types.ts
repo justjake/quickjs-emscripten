@@ -284,6 +284,10 @@ export function evalOptionsToFlags(evalOptions: ContextEvalOptions | number | un
 }
 
 export interface GetOwnPropertyNamesOptions {
+  /** Include number properties like array indexes *as numbers* in the result. This is not standards-compliant */
+  includeNumbers?: boolean
+  /** Enable standards-compliant number properties. When set, `includeNumbers` is ignored. */
+  numbersAsStrings?: boolean
   /** Include strings in the result */
   includeStrings?: boolean
   /** Include symbols in the result */
@@ -306,12 +310,22 @@ export function getOwnPropertyNamesOptionsToFlags(
     return 0 as GetOwnPropertyNamesFlags
   }
 
-  const { includeStrings, includeSymbols, includePrivate, onlyEnumerable } = options
+  const {
+    includeStrings,
+    includeSymbols,
+    includePrivate,
+    onlyEnumerable,
+    includeNumbers,
+    numbersAsStrings,
+  } = options
   let flags = 0
   if (includeStrings) flags |= GetOwnPropertyNamesFlags.JS_GPN_STRING_MASK
   if (includeSymbols) flags |= GetOwnPropertyNamesFlags.JS_GPN_SYMBOL_MASK
   if (includePrivate) flags |= GetOwnPropertyNamesFlags.JS_GPN_PRIVATE_MASK
   if (onlyEnumerable) flags |= GetOwnPropertyNamesFlags.JS_GPN_ENUM_ONLY
+  if (includeNumbers) flags |= GetOwnPropertyNamesFlags.QTS_GPN_NUMBER_MASK
+  if (numbersAsStrings) flags |= GetOwnPropertyNamesFlags.QTS_STANDARD_COMPLIANT_NUMBER
+
   return flags as GetOwnPropertyNamesFlags
 }
 

@@ -48,6 +48,11 @@ export type JSValuePointerPointer = Pointer<"JSValue[]">
 /**
  * Used internally for Javascript-to-C function calls.
  */
+export type JSValuePointerPointerPointer = Pointer<"*JSValue[]">
+
+/**
+ * Used internally for Javascript-to-C function calls.
+ */
 export type JSValueConstPointerPointer = Pointer<"JSValueConst[]">
 
 /**
@@ -198,6 +203,10 @@ export const GetOwnPropertyNamesFlags = {
   JS_GPN_ENUM_ONLY: 1 << 4,
   /* set theJSPropertyEnum.is_enumerable field */
   JS_GPN_SET_ENUM: 1 << 5,
+  /* include numbers. when only this is set, we filter out strings */
+  QTS_GPN_NUMBER_MASK: 1 << 6,
+  /* Treat numbers as strings */
+  QTS_STANDARD_COMPLIANT_NUMBER: 1 << 7,
 }
 
 export const IsEqualOp = {

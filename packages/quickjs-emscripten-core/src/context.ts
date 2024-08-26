@@ -11,6 +11,7 @@ import type {
   JSValuePointerPointer,
   EitherFFI,
   UInt32Pointer,
+  JSValuePointerPointerPointer,
 } from "@jitl/quickjs-ffi-types"
 import { debugLog } from "./debug"
 import type { JSPromiseState } from "./deferred-promise"
@@ -52,6 +53,7 @@ import type {
   VmPropertyDescriptor,
 } from "./vm-interface"
 import { QuickJSIterator } from "./QuickJSIterator"
+import { JSVoidPointer } from "@jitl/quickjs-ffi-types"
 
 export type ContextResult<S> = DisposableResult<S, QuickJSHandle>
 
@@ -871,7 +873,9 @@ export class QuickJSContext
     handle.value // assert alive
     const flags = getOwnPropertyNamesOptionsToFlags(options)
     return Scope.withScope((scope) => {
-      const outPtr = scope.manage(this.memory.newMutablePointerArray<JSValuePointerPointer>(1))
+      const outPtr = scope.manage(
+        this.memory.newMutablePointerArray<JSValuePointerPointerPointer>(1),
+      )
       const errorPtr = this.ffi.QTS_GetOwnPropertyNames(
         this.ctx.value,
         outPtr.value.ptr,
@@ -883,12 +887,13 @@ export class QuickJSContext
         return this.fail(this.memory.heapValueHandle(errorPtr))
       }
       const len = this.uint32Out.value.typedArray[0]
+      console.log("getPropNames length", len)
       const ptr = outPtr.value.typedArray[0]
       const pointerArray = new Uint32Array(this.module.HEAP8.buffer, ptr, len)
       const handles = Array.from(pointerArray).map((ptr) =>
         this.memory.heapValueHandle(ptr as JSValuePointer),
       )
-      this.module._free(ptr)
+      this.ffi.QTS_FreeVoidPointer(this.ctx.value, ptr as JSVoidPointer)
       return this.success(createDisposableArray(handles))
     })
   }
