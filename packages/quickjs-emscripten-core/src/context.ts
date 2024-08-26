@@ -18,7 +18,12 @@ import type { JSPromiseState } from "./deferred-promise"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
-import { QuickJSNotImplemented, QuickJSPromisePending, QuickJSUnwrapError } from "./errors"
+import {
+  QuickJSEmptyGetOwnPropertyNames,
+  QuickJSNotImplemented,
+  QuickJSPromisePending,
+  QuickJSUnwrapError,
+} from "./errors"
 import type { Disposable, DisposableArray, DisposableFail, DisposableSuccess } from "./lifetime"
 import {
   DisposableResult,
@@ -865,13 +870,16 @@ export class QuickJSContext
    * `Object.getOwnPropertyNames(handle)`.
    * Similar to the [standard semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames).
    */
-  getPropNames(
+  getOwnPropertyNames(
     handle: QuickJSHandle,
     options: GetOwnPropertyNamesOptions,
   ): ContextResult<DisposableArray<JSValue>> {
     this.runtime.assertOwned(handle)
     handle.value // assert alive
     const flags = getOwnPropertyNamesOptionsToFlags(options)
+    if (flags === 0) {
+      throw new QuickJSEmptyGetOwnPropertyNames("No options set, will return an empty array")
+    }
     return Scope.withScope((scope) => {
       const outPtr = scope.manage(
         this.memory.newMutablePointerArray<JSValuePointerPointerPointer>(1),
@@ -887,7 +895,6 @@ export class QuickJSContext
         return this.fail(this.memory.heapValueHandle(errorPtr))
       }
       const len = this.uint32Out.value.typedArray[0]
-      console.log("getPropNames length", len)
       const ptr = outPtr.value.typedArray[0]
       const pointerArray = new Uint32Array(this.module.HEAP8.buffer, ptr, len)
       const handles = Array.from(pointerArray).map((ptr) =>

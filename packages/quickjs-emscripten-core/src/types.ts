@@ -41,6 +41,7 @@ export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJS
  * You can do so from Javascript by calling the .dispose() method.
  */
 export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSRuntime>
+// | Lifetime<JSValueUInt8Array, JSValueUInt8Array, QuickJSRuntime>
 
 /**
  * Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
@@ -285,15 +286,15 @@ export function evalOptionsToFlags(evalOptions: ContextEvalOptions | number | un
 
 export interface GetOwnPropertyNamesOptions {
   /** Include number properties like array indexes *as numbers* in the result. This is not standards-compliant */
-  includeNumbers?: boolean
+  numbers?: boolean
   /** Enable standards-compliant number properties. When set, `includeNumbers` is ignored. */
   numbersAsStrings?: boolean
   /** Include strings in the result */
-  includeStrings?: boolean
+  strings?: boolean
   /** Include symbols in the result */
-  includeSymbols?: boolean
-  /** Include private properties in the result */
-  includePrivate?: boolean
+  symbols?: boolean
+  /** Include implementation-specific private properties in the result */
+  quickjsPrivate?: boolean
   /** Only include the enumerable properties */
   onlyEnumerable?: boolean
 }
@@ -311,11 +312,11 @@ export function getOwnPropertyNamesOptionsToFlags(
   }
 
   const {
-    includeStrings,
-    includeSymbols,
-    includePrivate,
+    strings: includeStrings,
+    symbols: includeSymbols,
+    quickjsPrivate: includePrivate,
     onlyEnumerable,
-    includeNumbers,
+    numbers: includeNumbers,
     numbersAsStrings,
   } = options
   let flags = 0

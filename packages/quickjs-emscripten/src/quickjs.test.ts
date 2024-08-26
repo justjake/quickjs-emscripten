@@ -408,7 +408,7 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
     })
   })
 
-  describe("getPropNames", () => {
+  describe("getOwnPropertyNames", () => {
     it("gets array indexes as *numbers*", ({ manage }) => {
       const array = manage(vm.newArray())
       vm.setProp(array, 0, vm.undefined)
@@ -417,8 +417,8 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
 
       const props = manage(
         vm
-          .getPropNames(array, {
-            includeNumbers: true,
+          .getOwnPropertyNames(array, {
+            numbers: true,
           })
           .unwrap(),
       )
@@ -440,12 +440,12 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       vm.setProp(obj, sym, vm.undefined)
 
       const props = manage(
-        vm.unwrapResult(
-          vm.getPropNames(obj, {
+        vm
+          .getOwnPropertyNames(obj, {
             onlyEnumerable: true,
-            includeStrings: true,
-          }),
-        ),
+            strings: true,
+          })
+          .unwrap(),
       )
 
       assert.strictEqual(props.length, 3)
@@ -463,15 +463,34 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
 
       const props = manage(
         vm.unwrapResult(
-          vm.getPropNames(obj, {
+          vm.getOwnPropertyNames(obj, {
             onlyEnumerable: true,
-            includeSymbols: true,
+            symbols: true,
           }),
         ),
       )
 
       assert.strictEqual(props.length, 1)
       assert.strictEqual(vm.typeof(props[0]), "symbol")
+    })
+
+    it("gets number keys as strings when in standard compliant mode", ({ manage }) => {
+      const array = manage(vm.newArray())
+      vm.setProp(array, 0, vm.undefined)
+      vm.setProp(array, 1, vm.undefined)
+      vm.setProp(array, 2, vm.undefined)
+      vm.setProp(array, "dog", vm.undefined)
+      const props = manage(
+        vm.getOwnPropertyNames(array, {
+          strings: true,
+          numbersAsStrings: true,
+          onlyEnumerable: true,
+        }),
+      )
+        .unwrap()
+        .map((p) => vm.dump(p))
+
+      assert.deepStrictEqual(["0", "1", "2", "dog"], props)
     })
   })
 
