@@ -28,7 +28,7 @@ import type { QuickJSHandle } from "./types"
  */
 export class QuickJSIterator
   extends UsingDisposable
-  implements Disposable, Iterator<ContextResult<QuickJSHandle>>
+  implements Disposable, IterableIterator<ContextResult<QuickJSHandle>>
 {
   public owner: QuickJSRuntime
   private _next: QuickJSHandle | undefined
@@ -40,6 +40,10 @@ export class QuickJSIterator
   ) {
     super()
     this.owner = context.runtime
+  }
+
+  [Symbol.iterator]() {
+    return this
   }
 
   next(value?: QuickJSHandle): IteratorResult<ContextResult<QuickJSHandle>, any> {
