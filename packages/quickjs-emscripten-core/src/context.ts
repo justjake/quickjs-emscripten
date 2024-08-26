@@ -1075,6 +1075,25 @@ export class QuickJSContext
   }
 
   /**
+   * `handle[key](...args)`
+   *
+   * Call a method on a JSValue. This is a convenience method that calls {@link getProp} and {@link callFunction}.
+   *
+   * @returns A result. If the function threw synchronously, `result.error` be a
+   * handle to the exception. Otherwise `result.value` will be a handle to the
+   * value.
+   */
+  callMethod(
+    thisHandle: QuickJSHandle,
+    key: QuickJSPropertyKey,
+    args: QuickJSHandle[] = [],
+  ): ContextResult<QuickJSHandle> {
+    return this.getProp(thisHandle, key).consume((func) =>
+      this.callFunction(func, thisHandle, ...args),
+    )
+  }
+
+  /**
    * Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
    *
    * Evaluates `code`, as though it's in a file named `filename`, with options `options`.
