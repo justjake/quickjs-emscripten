@@ -855,7 +855,18 @@ export class QuickJSContext
   }
 
   /**
-   * `handle.length`.
+   * `handle.length` as a host number.
+   *
+   * Example use:
+   * ```typescript
+   * const length = context.getLength(arrayHandle) ?? 0
+   * for (let i = 0; i < length; i++) {
+   *   using value = context.getProp(arrayHandle, i)
+   *   console.log(`array[${i}] =`, context.dump(value))
+   * }
+   * ```
+   *
+   * @returns a number if the handle has a numeric length property, otherwise `undefined`.
    */
   getLength(handle: QuickJSHandle): number | undefined {
     this.runtime.assertOwned(handle)
@@ -871,19 +882,36 @@ export class QuickJSContext
    * Similar to the [standard semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames),
    * but with extra, non-standard options for:
    *
-   * - fetching array indexes as numbers
-   * - including symbols
-   * - only iterating over enumerable properties
+   * - fetching array indexes as numbers (`numbers: true`)
+   * - including symbols (`symbols: true`)
+   * - only iterating over enumerable properties (`onlyEnumerable: true`)
    *
-   * To emulate the standard, use these options:
+   * The default behavior is to emulate the standard:
    * ```typescript
    * context.getOwnPropertyNames(handle, { strings: true, numbersAsStrings: true })
    * ```
+   *
+   * Note when passing an explicit options object, you must set at least one
+   * option, and `strings` are not included unless specified.
+   *
+   * Example use:
+   * ```typescript
+   * for (using prop of context.getOwnPropertyNames(objectHandle).unwrap()) {
+   *   using value = context.getProp(handle, prop)
+   *   console.log(context.dump(prop), '->', context.dump(value))
+   * }
+   * ```
+   *
+   * @returns an an array of handles of the property names. The array itself is disposable for your convenience.
+   * @throws QuickJSEmptyGetOwnPropertyNames if no options are set.
    */
   getOwnPropertyNames(
     handle: QuickJSHandle,
-    options: GetOwnPropertyNamesOptions,
-  ): ContextResult<DisposableArray<JSValue>> {
+    options: GetOwnPropertyNamesOptions = {
+      strings: true,
+      numbersAsStrings: true,
+    },
+  ): ContextResult<DisposableArray<QuickJSHandle>> {
     this.runtime.assertOwned(handle)
     handle.value // assert alive
     const flags = getOwnPropertyNamesOptionsToFlags(options)
@@ -923,14 +951,10 @@ export class QuickJSContext
    * is considered done if the handle is disposed.
    *
    * ```typescript
-   * for (const nextResult of context.unwrapResult(context.getIterator(arrayHandle)) {
-   *   const nextHandle = context.unwrapResult(nextResult)
-   *   try {
-   *     // Do something with nextHandle
-   *     console.log(context.dump(nextHandle))
-   *   } finally {
-   *     nextHandle.dispose()
-   *   }
+   * for (using entriesHandle of context.getIterator(mapHandle).unwrap()) {
+   *   using keyHandle = context.getProp(entriesHandle, 0)
+   *   using valueHandle = context.getProp(entriesHandle, 1)
+   *   console.log(context.dump(keyHandle), '->', context.dump(valueHandle))
    * }
    * ```
    */
