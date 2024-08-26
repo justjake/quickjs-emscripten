@@ -1035,7 +1035,8 @@ export class QuickJSContext
   // Evaluation ---------------------------------------------------------------
 
   /**
-   * [`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call).
+   * [`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call) or
+   * [`func.apply(thisVal, args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply).
    * Call a JSValue as a function.
    *
    * See {@link unwrapResult}, which will throw if the function returned an error, or
@@ -1046,13 +1047,40 @@ export class QuickJSContext
    * @returns A result. If the function threw synchronously, `result.error` be a
    * handle to the exception. Otherwise `result.value` will be a handle to the
    * value.
+   *
+   * Example:
+   *
+   * ```typescript
+   * using parseIntHandle = context.getProp(global, "parseInt")
+   * using stringHandle = context.newString("42")
+   * using resultHandle = context.callFunction(parseIntHandle, context.undefined, stringHandle).unwrap()
+   * console.log(context.dump(resultHandle)) // 42
+   * ```
    */
   callFunction(
     func: QuickJSHandle,
     thisVal: QuickJSHandle,
+    args?: QuickJSHandle[],
+  ): ContextResult<QuickJSHandle>
+  callFunction(
+    func: QuickJSHandle,
+    thisVal: QuickJSHandle,
     ...args: QuickJSHandle[]
+  ): ContextResult<QuickJSHandle>
+  callFunction(
+    func: QuickJSHandle,
+    thisVal: QuickJSHandle,
+    ...restArgs: Array<QuickJSHandle | QuickJSHandle[] | undefined>
   ): ContextResult<QuickJSHandle> {
     this.runtime.assertOwned(func)
+    let args
+    const firstArg = restArgs[0]
+    if (firstArg === undefined || Array.isArray(firstArg)) {
+      args = firstArg ?? []
+    } else {
+      args = restArgs as QuickJSHandle[]
+    }
+
     const resultPtr = this.memory
       .toPointerArray(args)
       .consume((argsArrayPtr) =>
@@ -1089,7 +1117,7 @@ export class QuickJSContext
     args: QuickJSHandle[] = [],
   ): ContextResult<QuickJSHandle> {
     return this.getProp(thisHandle, key).consume((func) =>
-      this.callFunction(func, thisHandle, ...args),
+      this.callFunction(func, thisHandle, args),
     )
   }
 
