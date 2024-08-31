@@ -8,7 +8,7 @@ import type {
 } from "@jitl/quickjs-ffi-types"
 import { maybeAsyncFn } from "./asyncify-helpers"
 import { QuickJSContext } from "./context"
-import { QTS_DEBUG, debugLog } from "./debug"
+import { QTS_DEBUG } from "./debug"
 import { QuickJSWrongOwner } from "./errors"
 import type { Disposable } from "./lifetime"
 import { DisposableResult, Lifetime, Scope, UsingDisposable } from "./lifetime"
@@ -362,7 +362,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
    */
   debugLog(...msg: unknown[]) {
     if (this._debugMode) {
-      console.log("QuickJS:", ...msg)
+      console.log("quickjs-emscripten:", ...msg)
     }
   }
 

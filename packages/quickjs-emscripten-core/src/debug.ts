@@ -23,6 +23,6 @@ export function isDebugMode() {
  */
 export function debugLog(...args: any[]) {
   if (QTS_DEBUG) {
-    console.log(...args)
+    console.log("quickjs-emscripten:", ...args)
   }
 }
