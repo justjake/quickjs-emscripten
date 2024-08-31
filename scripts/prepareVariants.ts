@@ -34,6 +34,7 @@ enum CLibrary {
 enum EmscriptenInclusion {
   SingleFile = "singlefile",
   Separate = "wasm",
+  NoWASM = "purejs",
 }
 
 // https://github.com/emscripten-core/emscripten/blob/7bed0e2477000603c26766897e1f455c08bc3358/src/settings.js#L647
@@ -124,6 +125,21 @@ const targets = {
       browser: SEPARATE_FILE_INCLUSION.browser,
     },
   }),
+  "purejs-mjs": makeTarget({
+    description: `Compiled to pure JS, no WebAssembly required. Very slow.`,
+    emscriptenInclusion: EmscriptenInclusion.NoWASM,
+    releaseMode: ReleaseMode.Release,
+    syncMode: SyncMode.Sync,
+    exports: {
+      import: {
+        emscriptenEnvironment: [
+          EmscriptenEnvironment.web,
+          EmscriptenEnvironment.worker,
+          EmscriptenEnvironment.node,
+        ],
+      },
+    },
+  }),
 }
 
 type TargetSpec = Partial<BuildVariant> &
@@ -205,6 +221,7 @@ const ReleaseModeFlags = {
 const EmscriptenInclusionFlags = {
   [EmscriptenInclusion.Separate]: [],
   [EmscriptenInclusion.SingleFile]: [`-s SINGLE_FILE=1`],
+  [EmscriptenInclusion.NoWASM]: [`-s WASM=0`, `-s SINGLE_FILE=1`],
 }
 
 function getCflags(targetName: string, variant: BuildVariant) {
@@ -349,6 +366,27 @@ async function main() {
         module: mjs ? "./dist/index.mjs" : undefined,
       }
 
+      const emscriptenExports = {
+        types: variant.exports.browser
+          ? "./dist/emscripten-module.browser.d.ts"
+          : "./dist/emscripten-module.d.ts",
+        iife: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
+        workerd: variant.exports.workerd ? "./dist/emscripten-module.cloudflare.cjs" : undefined,
+        browser: variant.exports.browser ? "./dist/emscripten-module.browser.mjs" : undefined,
+        import: variant.exports.import
+          ? "./dist/emscripten-module.mjs"
+          : variant.exports.browser
+            ? "./dist/emscripten-module.browser.mjs"
+            : "./dist/emscripten-module.cjs",
+        require: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
+        default: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
+      }
+      emscriptenExports.default =
+        emscriptenExports.default ??
+        emscriptenExports.require ??
+        emscriptenExports.import ??
+        emscriptenExports.browser
+
       const packageJson: PackageJson = {
         name: `@jitl/${basename}`,
         license: rootPackageJson?.license,
@@ -394,23 +432,7 @@ async function main() {
             variant.emscriptenInclusion === EmscriptenInclusion.Separate
               ? "./dist/emscripten-module.wasm"
               : undefined,
-          "./emscripten-module": {
-            types: variant.exports.browser
-              ? "./dist/emscripten-module.browser.d.ts"
-              : "./dist/emscripten-module.d.ts",
-            iife: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
-            workerd: variant.exports.workerd
-              ? "./dist/emscripten-module.cloudflare.cjs"
-              : undefined,
-            browser: variant.exports.browser ? "./dist/emscripten-module.browser.mjs" : undefined,
-            import: variant.exports.import
-              ? "./dist/emscripten-module.mjs"
-              : variant.exports.browser
-                ? "./dist/emscripten-module.browser.mjs"
-                : "./dist/emscripten-module.cjs",
-            require: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
-            default: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
-          },
+          "./emscripten-module": emscriptenExports,
         },
         dependencies: {
           "@jitl/quickjs-ffi-types": "workspace:*",
@@ -470,6 +492,7 @@ async function main() {
 const describeInclusion = {
   [EmscriptenInclusion.SingleFile]: `The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.`,
   [EmscriptenInclusion.Separate]: `Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.`,
+  [EmscriptenInclusion.NoWASM]: `The C library code is compiled directly to JS. Sometimes called "asmjs". This is the slowest possible option, and is intended for constrained environments that do not support WebAssembly, like quickjs-in-quickjs.`,
 }
 
 const describeMode = {
@@ -728,6 +751,24 @@ function renderIndexTs(
     [SyncMode.Asyncify]: "QuickJSAsyncVariant",
   }[variant.syncMode]
 
+  if (variant.emscriptenInclusion === EmscriptenInclusion.NoWASM) {
+    // Eager loading please!
+    return `
+import type { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
+import { ${className} } from './ffi.js'
+import moduleLoader from '${packageJson.name}/emscripten-module'
+/**
+${docComment}
+ */
+const variant: ${variantTypeName} = {
+  type: '${modeName}',
+  importFFI: () => Promise.resolve(${className}),
+  importModuleLoader: () => Promise.resolve(moduleLoader),
+} as const
+export default variant
+`
+  }
+
   return `
 import type { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
 
@@ -769,16 +810,26 @@ function getTsupExtensions(variant: BuildVariant) {
 
 function renderTsupConfig(variant: BuildVariant, packageJson: PackageJson): string {
   const { js, mjs } = getTsupExtensions(variant)
+  const external: string[] = []
+  const needsExternal =
+    [variant.exports.browser, variant.exports.import, variant.exports.require].filter(Boolean)
+      .length > 1
+  if (needsExternal) {
+    external.push(`${packageJson.name}/emscripten-module`)
+  }
+
+  const entry = ["src/index.ts"]
+  if (variant.emscriptenInclusion !== EmscriptenInclusion.NoWASM) {
+    entry.push("src/ffi.ts")
+  }
+
   const formats = [mjs && "esm", js && "cjs"].filter(Boolean)
   return `
 import { extendConfig } from "@jitl/tsconfig/tsup.base.config.js"
-
 export default extendConfig({
-  entry: ["src/index.ts", "src/ffi.ts"],
-  external: [
-    "${packageJson.name}/emscripten-module",
-  ],
-  formats: ${JSON.stringify(formats)},
+  entry: ${JSON.stringify(entry)},
+  external: ${JSON.stringify(external)},
+  format: ${JSON.stringify(formats)},
   clean: false,
 })
 `
