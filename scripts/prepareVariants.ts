@@ -223,7 +223,7 @@ function getCflags(targetName: string, variant: BuildVariant) {
         flags.push("-g2")
         break
       case SyncMode.Asyncify:
-        flags.push("-s ASYNCIFY_ADVISE=1")
+        // flags.push("-s ASYNCIFY_ADVISE=1")
         flags.push(
           // # Need to use -O3 - otherwise ASYNCIFY leads to stack overflows (why?)
           "-O3",

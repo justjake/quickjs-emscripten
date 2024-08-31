@@ -91,7 +91,6 @@ CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-extension.js
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-sourceMapJson.js
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-wasmMemory.js
-CFLAGS_WASM+=-s ASYNCIFY_ADVISE=1
 CFLAGS_WASM+=-O3
 CFLAGS_CJS+=-s ENVIRONMENT=node
 CFLAGS_MJS+=-s ENVIRONMENT=node
