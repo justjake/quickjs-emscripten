@@ -8,7 +8,6 @@ import type {
 } from "@jitl/quickjs-ffi-types"
 import type { ContextResult } from "./context"
 import { QuickJSContext } from "./context"
-import { debugLog } from "./debug"
 import type { Lifetime } from "./lifetime"
 import type { QuickJSModuleCallbacks } from "./module"
 import type { QuickJSAsyncRuntime } from "./runtime-asyncify"
@@ -65,7 +64,7 @@ export class QuickJSAsyncContext extends QuickJSContext {
           ),
         )
     } catch (error) {
-      debugLog("QTS_Eval_MaybeAsync threw", error)
+      this.runtime.debugLog("QTS_Eval_MaybeAsync threw", error)
       throw error
     }
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)

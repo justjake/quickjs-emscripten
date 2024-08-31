@@ -1366,7 +1366,7 @@ export class QuickJSContext
           const result = yield* awaited(fn.apply(thisHandle, argHandles))
           if (result) {
             if ("error" in result && result.error) {
-              debugLog("throw error", result.error)
+              this.runtime.debugLog("throw error", result.error)
               throw result.error
             }
             const handle = scope.manage(result instanceof Lifetime ? result : result.value)

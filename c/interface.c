@@ -59,10 +59,18 @@
 #define LOG_LEN 500
 
 #ifdef QTS_DEBUG_MODE
-#define QTS_DEBUG(msg) qts_log(msg);
-#define QTS_DUMP(value) qts_dump(ctx, value);
+#define IF_DEBUG if (QTS_GetContextData(ctx)->debug_log)
+#define IF_DEBUG_RT if (QTS_GetRuntimeData(rt)->debug_log)
+
+#define QTS_DEBUG(msg) IF_DEBUG qts_log(msg);
+#define QTS_DEBUG_RT(msg) IF_DEBUG_RT qts_log(msg);
+#define QTS_DUMP(value) IF_DEBUG qts_dump(ctx, value);
+
 #else
+#define IF_DEBUG if (0)
+#define IF_DEBUG_RT if (0)
 #define QTS_DEBUG(msg) ;
+#define QTS_DEBUG_RT(msg) ;
 #define QTS_DUMP(value) ;
 #endif
 
@@ -92,6 +100,24 @@
 #define EvalFlags int
 #define IntrinsicsFlags enum QTS_Intrinsic
 #define EvalDetectModule int
+
+typedef struct QTS_RuntimeData {
+  bool debug_log;
+} QTS_RuntimeData;
+
+QTS_RuntimeData *QTS_GetRuntimeData(JSRuntime *rt) {
+  QTS_RuntimeData *data = JS_GetRuntimeOpaque(rt);
+  if (data == NULL) {
+    data = malloc(sizeof(QTS_RuntimeData));
+    data->debug_log = false;
+    JS_SetRuntimeOpaque(rt, data);
+  }
+  return data;
+}
+
+QTS_RuntimeData *QTS_GetContextData(JSContext *ctx) {
+  return QTS_GetRuntimeData(JS_GetRuntime(ctx));
+}
 
 void qts_log(char *msg) {
   fputs(PKG, stderr);
@@ -273,6 +299,10 @@ JSRuntime *QTS_NewRuntime() {
 }
 
 void QTS_FreeRuntime(JSRuntime *rt) {
+  void *data = JS_GetRuntimeOpaque(rt);
+  if (data) {
+    free(data);
+  }
   JS_FreeRuntime(rt);
 }
 
@@ -533,11 +563,11 @@ MaybeAsync(JSValue *) QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute,
       executed++;
     }
   }
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  snprintf(msg, 500, "QTS_ExecutePendingJob(executed: %d, pctx: %p, lastJobExecuted: %p)", executed, pctx, *lastJobContext);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG_RT {
+    char msg[LOG_LEN];
+    snprintf(msg, LOG_LEN, "QTS_ExecutePendingJob(executed: %d, pctx: %p, lastJobExecuted: %p)", executed, pctx, *lastJobContext);
+    qts_log(msg);
+  }
   return jsvalue_to_heap(JS_NewFloat64(pctx, executed));
 }
 
@@ -710,10 +740,10 @@ MaybeAsync(JSBorrowedChar *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
     }
   }
 
-#ifdef QTS_DEBUG_MODE
-  qts_log("Error dumping JSON:");
-  js_std_dump_error(ctx);
-#endif
+  IF_DEBUG {
+    qts_log("Error dumping JSON:");
+    js_std_dump_error(ctx);
+  }
 
   // Fallback: convert to string
   return QTS_GetString(ctx, obj);
@@ -731,7 +761,7 @@ JSValue qts_resolve_func_data(
 
 MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t js_code_length, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
 #ifdef QTS_DEBUG_MODE
-  char msg[500];
+  char msg[LOG_LEN];
 #endif
   if (detectModule) {
     if (JS_DetectModule((const char *)js_code, js_code_length)) {
@@ -778,10 +808,10 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
     QTS_DEBUG("QTS_Eval: JS_EVAL_TYPE_GLOBAL eval_result")
   }
 
-#ifdef QTS_DEBUG_MODE
-  snprintf(msg, 500, "QTS_Eval: eval_result = %d", eval_result);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG {
+    snprintf(msg, LOG_LEN, "QTS_Eval: eval_result = %d", eval_result);
+    qts_log(msg);
+  }
 
   if (
       // Error - nothing more to do.
@@ -795,10 +825,10 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
   // We eval'd a module.
   // Make our return type `ModuleExports | Promise<ModuleExports>>`
   JSPromiseStateEnum state = JS_PromiseState(ctx, eval_result);
-#ifdef QTS_DEBUG_MODE
-  snprintf(msg, 500, "QTS_Eval: eval_result JS_PromiseState = %i", state);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG {
+    snprintf(msg, LOG_LEN, "QTS_Eval: eval_result JS_PromiseState = %i", state);
+    qts_log(msg);
+  }
   if (
       // quickjs@2024-01-14 evaluating module
       // produced a promise
@@ -965,6 +995,19 @@ void QTS_TestStringArg(const char *string) {
   // pass
 }
 
+int QTS_GetDebugLogEnabled(JSRuntime *rt) {
+  IF_DEBUG_RT {
+    return 1;
+  }
+  return 0;
+}
+
+void QTS_SetDebugLogEnabled(JSRuntime *rt, int is_enabled) {
+#ifdef QTS_DEBUG_MODE
+  QTS_GetRuntimeData(rt)->debug_log = (bool)is_enabled;
+#endif
+}
+
 int QTS_BuildIsDebug() {
 #ifdef QTS_DEBUG_MODE
   return 1;
@@ -1016,11 +1059,11 @@ JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSVal
 
 // Function: Host -> QuickJS
 JSValue *QTS_NewFunction(JSContext *ctx, uint32_t func_id, const char *name) {
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  snprintf(msg, 500, "new_function(name: %s, magic: %d)", name, func_id);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG {
+    char msg[LOG_LEN];
+    snprintf(msg, LOG_LEN, "new_function(name: %s, magic: %d)", name, func_id);
+    qts_log(msg);
+  }
   JSValue func_obj = JS_NewCFunctionMagic(
       /* context */ ctx,
       /* JSCFunctionMagic* */ &qts_call_function,
@@ -1101,11 +1144,11 @@ loading, but (1) seems much easier to implement in the sort run.
 */
 
 JSModuleDef *qts_compile_module(JSContext *ctx, const char *module_name, BorrowedHeapChar *module_body) {
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  sprintf(msg, "QTS_CompileModule(ctx: %p, name: %s, bodyLength: %lu)", ctx, module_name, strlen(module_body));
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG {
+    char msg[LOG_LEN];
+    sprintf(msg, "QTS_CompileModule(ctx: %p, name: %s, bodyLength: %lu)", ctx, module_name, strlen(module_body));
+    qts_log(msg);
+  }
   JSValue func_val = JS_Eval(ctx, module_body, strlen(module_body), module_name, JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
   if (JS_IsException(func_val)) {
     return NULL;
@@ -1146,11 +1189,11 @@ EM_JS(MaybeAsync(char *), qts_host_normalize_module, (JSRuntime * rt, JSContext 
 // See js_module_loader in quickjs/quickjs-libc.c:567
 JSModuleDef *qts_load_module(JSContext *ctx, const char *module_name, void *_unused) {
   JSRuntime *rt = JS_GetRuntime(ctx);
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  sprintf(msg, "qts_load_module(rt: %p, ctx: %p, name: %s)", rt, ctx, module_name);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG_RT {
+    char msg[LOG_LEN];
+    sprintf(msg, "qts_load_module(rt: %p, ctx: %p, name: %s)", rt, ctx, module_name);
+    qts_log(msg);
+  }
   char *module_source = qts_host_load_module_source(rt, ctx, module_name);
   if (module_source == NULL) {
     return NULL;
@@ -1163,11 +1206,11 @@ JSModuleDef *qts_load_module(JSContext *ctx, const char *module_name, void *_unu
 
 char *qts_normalize_module(JSContext *ctx, const char *module_base_name, const char *module_name, void *_unused) {
   JSRuntime *rt = JS_GetRuntime(ctx);
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  sprintf(msg, "qts_normalize_module(rt: %p, ctx: %p, base_name: %s, name: %s)", rt, ctx, module_base_name, module_name);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG_RT {
+    char msg[LOG_LEN];
+    sprintf(msg, "qts_normalize_module(rt: %p, ctx: %p, base_name: %s, name: %s)", rt, ctx, module_base_name, module_name);
+    qts_log(msg);
+  }
   char *em_module_name = qts_host_normalize_module(rt, ctx, module_base_name, module_name);
   char *js_module_name = js_strdup(ctx, em_module_name);
   free(em_module_name);

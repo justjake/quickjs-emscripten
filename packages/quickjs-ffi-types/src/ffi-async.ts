@@ -53,6 +53,8 @@ export interface QuickJSAsyncFFI {
   QTS_NewRuntime: () => JSRuntimePointer
   QTS_FreeRuntime: (rt: JSRuntimePointer) => void
   QTS_NewContext: (rt: JSRuntimePointer, intrinsics: IntrinsicsFlags) => JSContextPointer
+  QTS_GetContextData: (ctx: JSContextPointer) => QTS_RuntimeDataPointer
+  QTS_GetRuntimeData: (rt: JSRuntimePointer) => QTS_RuntimeDataPointer
   QTS_FreeContext: (ctx: JSContextPointer) => void
   QTS_FreeValuePointer: (ctx: JSContextPointer, value: JSValuePointer) => void
   QTS_FreeValuePointerRuntime: (rt: JSRuntimePointer, value: JSValuePointer) => void
@@ -242,6 +244,8 @@ export interface QuickJSAsyncFFI {
     promise: JSValuePointer | JSValueConstPointer,
   ) => JSValuePointer
   QTS_TestStringArg: (string: string) => void
+  QTS_GetDebugLogEnabled: (rt: JSRuntimePointer) => number
+  QTS_SetDebugLogEnabled: (rt: JSRuntimePointer, is_enabled: number) => void
   QTS_BuildIsDebug: () => number
   QTS_BuildIsAsyncify: () => number
   QTS_NewFunction: (ctx: JSContextPointer, func_id: number, name: string) => JSValuePointer
