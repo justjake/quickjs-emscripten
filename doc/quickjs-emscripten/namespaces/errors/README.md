@@ -14,6 +14,7 @@ Collects the informative errors this library may throw.
 
 - [QuickJSAsyncifyError](classes/QuickJSAsyncifyError.md)
 - [QuickJSAsyncifySuspended](classes/QuickJSAsyncifySuspended.md)
+- [QuickJSEmptyGetOwnPropertyNames](classes/QuickJSEmptyGetOwnPropertyNames.md)
 - [QuickJSEmscriptenModuleError](classes/QuickJSEmscriptenModuleError.md)
 - [QuickJSMemoryLeakDetected](classes/QuickJSMemoryLeakDetected.md)
 - [QuickJSNotImplemented](classes/QuickJSNotImplemented.md)

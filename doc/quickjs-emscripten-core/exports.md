@@ -74,6 +74,7 @@
   - [newQuickJSAsyncWASMModuleFromVariant()](exports.md#newquickjsasyncwasmmodulefromvariant)
   - [newQuickJSWASMModuleFromVariant()](exports.md#newquickjswasmmodulefromvariant)
   - [newVariant()](exports.md#newvariant)
+  - [setDebugMode()](exports.md#setdebugmode)
   - [shouldInterruptAfterDeadline()](exports.md#shouldinterruptafterdeadline)
 
 ## Namespaces
@@ -146,7 +147,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context-asyncify.ts:19](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context-asyncify.ts#L19)
+[packages/quickjs-emscripten-core/src/context-asyncify.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context-asyncify.ts#L18)
 
 ***
 
@@ -337,7 +338,7 @@ Language features that can be enabled or disabled in a QuickJSContext.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:145](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L145)
+[packages/quickjs-emscripten-core/src/types.ts:146](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L146)
 
 ***
 
@@ -396,7 +397,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L68)
+[packages/quickjs-emscripten-core/src/types.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L69)
 
 ***
 
@@ -406,7 +407,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L69)
+[packages/quickjs-emscripten-core/src/types.ts:70](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L70)
 
 ***
 
@@ -416,7 +417,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L67)
+[packages/quickjs-emscripten-core/src/types.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L68)
 
 ***
 
@@ -426,7 +427,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L86)
+[packages/quickjs-emscripten-core/src/types.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L87)
 
 ***
 
@@ -436,7 +437,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L87)
+[packages/quickjs-emscripten-core/src/types.ts:88](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L88)
 
 ***
 
@@ -446,7 +447,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L85)
+[packages/quickjs-emscripten-core/src/types.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L86)
 
 ***
 
@@ -653,7 +654,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:332](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L332)
+[packages/quickjs-emscripten-core/src/types.ts:333](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L333)
 
 ***
 
@@ -719,7 +720,7 @@ You must dispose of any handles you create by calling the `.dispose()` method.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:52](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L52)
+[packages/quickjs-emscripten-core/src/types.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L53)
 
 ***
 
@@ -732,7 +733,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:64](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L64)
+[packages/quickjs-emscripten-core/src/context.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L69)
 
 ***
 
@@ -894,7 +895,7 @@ The default [Intrinsics](exports.md#intrinsics) language features enabled in a Q
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:172](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L172)
+[packages/quickjs-emscripten-core/src/types.ts:173](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L173)
 
 ***
 
@@ -1380,6 +1381,29 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 #### Source
 
 [packages/quickjs-emscripten-core/src/from-variant.ts:162](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L162)
+
+***
+
+### setDebugMode()
+
+> **setDebugMode**(`enabled`): `void`
+
+Enable (or disable) debug logging and object creation tracking globally.
+This setting is inherited by newly created QuickJSRuntime instances.
+To get debug logging in the WebAssembly module, you need to use a debug build variant.
+See [the quickjs-emscripten-core README](https://github.com/justjake/quickjs-emscripten/tree/main/doc/quickjs-emscripten-core) for more about build variants.
+
+#### Parameters
+
+• **enabled**: `boolean`= `true`
+
+#### Returns
+
+`void`
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/debug.ts:13](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/debug.ts#L13)
 
 ***
 

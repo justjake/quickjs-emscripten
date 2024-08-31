@@ -41,13 +41,16 @@ Configure ES module loading with [setModuleLoader](QuickJSAsyncRuntime.md#setmod
   - [`[dispose]`()](QuickJSAsyncRuntime.md#dispose)
   - [assertOwned()](QuickJSAsyncRuntime.md#assertowned)
   - [computeMemoryUsage()](QuickJSAsyncRuntime.md#computememoryusage)
+  - [debugLog()](QuickJSAsyncRuntime.md#debuglog)
   - [dispose()](QuickJSAsyncRuntime.md#dispose)
   - [dumpMemoryUsage()](QuickJSAsyncRuntime.md#dumpmemoryusage)
   - [executePendingJobs()](QuickJSAsyncRuntime.md#executependingjobs)
   - [hasPendingJob()](QuickJSAsyncRuntime.md#haspendingjob)
+  - [isDebugMode()](QuickJSAsyncRuntime.md#isdebugmode)
   - [newContext()](QuickJSAsyncRuntime.md#newcontext)
   - [removeInterruptHandler()](QuickJSAsyncRuntime.md#removeinterrupthandler)
   - [removeModuleLoader()](QuickJSAsyncRuntime.md#removemoduleloader)
+  - [setDebugMode()](QuickJSAsyncRuntime.md#setdebugmode)
   - [setInterruptHandler()](QuickJSAsyncRuntime.md#setinterrupthandler)
   - [setMaxStackSize()](QuickJSAsyncRuntime.md#setmaxstacksize)
   - [setMemoryLimit()](QuickJSAsyncRuntime.md#setmemorylimit)
@@ -93,7 +96,7 @@ false after the object has been [dispose](QuickJSAsyncRuntime.md#dispose-1)d
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:121](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L121)
+[packages/quickjs-emscripten-core/src/runtime.ts:125](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L125)
 
 ## Methods
 
@@ -141,7 +144,7 @@ QuickJSWrongOwner if owned by a different runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:323](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L323)
+[packages/quickjs-emscripten-core/src/runtime.ts:327](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L327)
 
 ***
 
@@ -165,7 +168,34 @@ For a human-digestible representation, see [dumpMemoryUsage](QuickJSAsyncRuntime
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:292](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L292)
+[packages/quickjs-emscripten-core/src/runtime.ts:296](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L296)
+
+***
+
+### debugLog()
+
+> **debugLog**(...`msg`): `void`
+
+In debug mode, log the result of calling `msg()`.
+
+We take a function instead of a log message to avoid expensive string
+manipulation if debug logging is disabled.
+
+#### Parameters
+
+• ...**msg**: `unknown`[]
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`quickjs-emscripten-core.QuickJSRuntime.debugLog`](QuickJSRuntime.md#debuglog)
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/runtime.ts:363](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L363)
 
 ***
 
@@ -185,7 +215,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:125](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L125)
+[packages/quickjs-emscripten-core/src/runtime.ts:129](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L129)
 
 ***
 
@@ -206,7 +236,7 @@ For programmatic access to this information, see [computeMemoryUsage](QuickJSAsy
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:303](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L303)
+[packages/quickjs-emscripten-core/src/runtime.ts:307](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L307)
 
 ***
 
@@ -244,7 +274,7 @@ functions or rejected promises. Those errors are available by calling
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:239](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L239)
+[packages/quickjs-emscripten-core/src/runtime.ts:243](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L243)
 
 ***
 
@@ -267,7 +297,27 @@ true if there is at least one pendingJob queued up.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:190](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L190)
+[packages/quickjs-emscripten-core/src/runtime.ts:194](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L194)
+
+***
+
+### isDebugMode()
+
+> **isDebugMode**(): `boolean`
+
+#### Returns
+
+`boolean`
+
+true if debug logging is enabled
+
+#### Inherited from
+
+[`quickjs-emscripten-core.QuickJSRuntime.isDebugMode`](QuickJSRuntime.md#isdebugmode)
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/runtime.ts:353](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L353)
 
 ***
 
@@ -316,7 +366,7 @@ See [setInterruptHandler](QuickJSAsyncRuntime.md#setinterrupthandler).
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:215](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L215)
+[packages/quickjs-emscripten-core/src/runtime.ts:219](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L219)
 
 ***
 
@@ -336,7 +386,34 @@ Remove the the loader set by [setModuleLoader](QuickJSAsyncRuntime.md#setmodulel
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:177](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L177)
+[packages/quickjs-emscripten-core/src/runtime.ts:181](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L181)
+
+***
+
+### setDebugMode()
+
+> **setDebugMode**(`enabled`): `void`
+
+Enable or disable debug logging.
+
+If this module is a DEBUG variant, more logs will be printed from the C
+code.
+
+#### Parameters
+
+• **enabled**: `boolean`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`quickjs-emscripten-core.QuickJSRuntime.setDebugMode`](QuickJSRuntime.md#setdebugmode)
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/runtime.ts:343](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L343)
 
 ***
 
@@ -364,7 +441,7 @@ The interrupt handler can be removed with [removeInterruptHandler](QuickJSAsyncR
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:203](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L203)
+[packages/quickjs-emscripten-core/src/runtime.ts:207](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L207)
 
 ***
 
@@ -417,7 +494,7 @@ To remove the limit, set to `-1`.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:277](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L277)
+[packages/quickjs-emscripten-core/src/runtime.ts:281](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L281)
 
 ***
 

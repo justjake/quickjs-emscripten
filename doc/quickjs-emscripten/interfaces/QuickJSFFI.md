@@ -33,6 +33,7 @@ library.
   - [QTS\_FreeVoidPointer](QuickJSFFI.md#qts-freevoidpointer)
   - [QTS\_GetArrayBuffer](QuickJSFFI.md#qts-getarraybuffer)
   - [QTS\_GetArrayBufferLength](QuickJSFFI.md#qts-getarraybufferlength)
+  - [QTS\_GetDebugLogEnabled](QuickJSFFI.md#qts-getdebuglogenabled)
   - [QTS\_GetFalse](QuickJSFFI.md#qts-getfalse)
   - [QTS\_GetFloat64](QuickJSFFI.md#qts-getfloat64)
   - [QTS\_GetGlobalObject](QuickJSFFI.md#qts-getglobalobject)
@@ -73,6 +74,7 @@ library.
   - [QTS\_RuntimeEnableModuleLoader](QuickJSFFI.md#qts-runtimeenablemoduleloader)
   - [QTS\_RuntimeSetMaxStackSize](QuickJSFFI.md#qts-runtimesetmaxstacksize)
   - [QTS\_RuntimeSetMemoryLimit](QuickJSFFI.md#qts-runtimesetmemorylimit)
+  - [QTS\_SetDebugLogEnabled](QuickJSFFI.md#qts-setdebuglogenabled)
   - [QTS\_SetProp](QuickJSFFI.md#qts-setprop)
   - [QTS\_TestStringArg](QuickJSFFI.md#qts-teststringarg)
   - [QTS\_Throw](QuickJSFFI.md#qts-throw)
@@ -114,7 +116,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:346
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:404
+packages/quickjs-ffi-types/dist/index.d.ts:406
 
 ***
 
@@ -128,7 +130,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:404
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:402
+packages/quickjs-ffi-types/dist/index.d.ts:404
 
 ***
 
@@ -142,7 +144,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:402
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:401
+packages/quickjs-ffi-types/dist/index.d.ts:403
 
 ***
 
@@ -463,6 +465,24 @@ packages/quickjs-ffi-types/dist/index.d.ts:376
 #### Source
 
 packages/quickjs-ffi-types/dist/index.d.ts:377
+
+***
+
+### QTS\_GetDebugLogEnabled
+
+> **QTS\_GetDebugLogEnabled**: (`rt`) => `number`
+
+#### Parameters
+
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+
+#### Returns
+
+`number`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:401
 
 ***
 
@@ -890,7 +910,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:372
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:403
+packages/quickjs-ffi-types/dist/index.d.ts:405
 
 ***
 
@@ -1116,7 +1136,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:350
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:406
+packages/quickjs-ffi-types/dist/index.d.ts:408
 
 ***
 
@@ -1134,7 +1154,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:406
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:408
+packages/quickjs-ffi-types/dist/index.d.ts:410
 
 ***
 
@@ -1170,7 +1190,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:351
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:405
+packages/quickjs-ffi-types/dist/index.d.ts:407
 
 ***
 
@@ -1190,7 +1210,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:405
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:407
+packages/quickjs-ffi-types/dist/index.d.ts:409
 
 ***
 
@@ -1231,6 +1251,26 @@ packages/quickjs-ffi-types/dist/index.d.ts:354
 #### Source
 
 packages/quickjs-ffi-types/dist/index.d.ts:349
+
+***
+
+### QTS\_SetDebugLogEnabled
+
+> **QTS\_SetDebugLogEnabled**: (`rt`, `is_enabled`) => `void`
+
+#### Parameters
+
+• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+
+• **is\_enabled**: `number`
+
+#### Returns
+
+`void`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:402
 
 ***
 
@@ -1332,7 +1372,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:393
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:410
+packages/quickjs-ffi-types/dist/index.d.ts:412
 
 ***
 
@@ -1352,7 +1392,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:410
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:409
+packages/quickjs-ffi-types/dist/index.d.ts:411
 
 ***
 

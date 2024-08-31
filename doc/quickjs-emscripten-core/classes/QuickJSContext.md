@@ -54,6 +54,7 @@ See [QuickJSRuntime](QuickJSRuntime.md) for more information.
 - [Methods](QuickJSContext.md#methods)
   - [`[dispose]`()](QuickJSContext.md#dispose)
   - [callFunction()](QuickJSContext.md#callfunction)
+  - [callMethod()](QuickJSContext.md#callmethod)
   - [decodeBinaryJSON()](QuickJSContext.md#decodebinaryjson)
   - [defineProp()](QuickJSContext.md#defineprop)
   - [dispose()](QuickJSContext.md#dispose)
@@ -67,9 +68,9 @@ See [QuickJSRuntime](QuickJSRuntime.md) for more information.
   - [getIterator()](QuickJSContext.md#getiterator)
   - [getLength()](QuickJSContext.md#getlength)
   - [getNumber()](QuickJSContext.md#getnumber)
+  - [getOwnPropertyNames()](QuickJSContext.md#getownpropertynames)
   - [getPromiseState()](QuickJSContext.md#getpromisestate)
   - [getProp()](QuickJSContext.md#getprop)
-  - [getPropNames()](QuickJSContext.md#getpropnames)
   - [getString()](QuickJSContext.md#getstring)
   - [getSymbol()](QuickJSContext.md#getsymbol)
   - [getWellKnownSymbol()](QuickJSContext.md#getwellknownsymbol)
@@ -139,7 +140,7 @@ to create a new QuickJSContext.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:220](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L220)
+[packages/quickjs-emscripten-core/src/context.ts:225](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L225)
 
 ## Properties
 
@@ -151,7 +152,7 @@ The runtime that created this context.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:182](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L182)
+[packages/quickjs-emscripten-core/src/context.ts:187](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L187)
 
 ## Accessors
 
@@ -169,7 +170,7 @@ false after the object has been [dispose](QuickJSContext.md#dispose-1)d
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:251](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L251)
+[packages/quickjs-emscripten-core/src/context.ts:256](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L256)
 
 ***
 
@@ -185,7 +186,7 @@ false after the object has been [dispose](QuickJSContext.md#dispose-1)d
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:309](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L309)
+[packages/quickjs-emscripten-core/src/context.ts:314](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L314)
 
 ***
 
@@ -203,7 +204,7 @@ You can set properties to create global variables.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:324](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L324)
+[packages/quickjs-emscripten-core/src/context.ts:329](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L329)
 
 ***
 
@@ -219,7 +220,7 @@ You can set properties to create global variables.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:283](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L283)
+[packages/quickjs-emscripten-core/src/context.ts:288](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L288)
 
 ***
 
@@ -235,7 +236,7 @@ You can set properties to create global variables.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:296](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L296)
+[packages/quickjs-emscripten-core/src/context.ts:301](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L301)
 
 ***
 
@@ -251,7 +252,7 @@ You can set properties to create global variables.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:270](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L270)
+[packages/quickjs-emscripten-core/src/context.ts:275](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L275)
 
 ## Methods
 
@@ -281,9 +282,12 @@ Just calls the standard .dispose() method of this class.
 
 ### callFunction()
 
-> **callFunction**(`func`, `thisVal`, ...`args`): `ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+#### callFunction(func, thisVal, args)
 
-[`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call).
+> **callFunction**(`func`, `thisVal`, `args`?): `ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+
+[`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call) or
+[`func.apply(thisVal, args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply).
 Call a JSValue as a function.
 
 See [unwrapResult](QuickJSContext.md#unwrapresult), which will throw if the function returned an error, or
@@ -291,13 +295,80 @@ return the result handle directly. If evaluation returned a handle containing
 a promise, use [resolvePromise](QuickJSContext.md#resolvepromise) to convert it to a native promise and
 [runtime](QuickJSContext.md#runtime).[QuickJSRuntime#executePendingJobs](QuickJSRuntime.md#executependingjobs) to finish evaluating the promise.
 
-#### Parameters
+##### Parameters
+
+• **func**: [`QuickJSHandle`](../exports.md#quickjshandle)
+
+• **thisVal**: [`QuickJSHandle`](../exports.md#quickjshandle)
+
+• **args?**: [`QuickJSHandle`](../exports.md#quickjshandle)[]
+
+##### Returns
+
+`ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+
+A result. If the function threw synchronously, `result.error` be a
+handle to the exception. Otherwise `result.value` will be a handle to the
+value.
+
+Example:
+
+```typescript
+using parseIntHandle = context.getProp(global, "parseInt")
+using stringHandle = context.newString("42")
+using resultHandle = context.callFunction(parseIntHandle, context.undefined, stringHandle).unwrap()
+console.log(context.dump(resultHandle)) // 42
+```
+
+##### Implementation of
+
+[`quickjs-emscripten-core.LowLevelJavascriptVm.callFunction`](../interfaces/LowLevelJavascriptVm.md#callfunction)
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/context.ts:1060](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1060)
+
+#### callFunction(func, thisVal, args)
+
+> **callFunction**(`func`, `thisVal`, ...`args`): `ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+
+##### Parameters
 
 • **func**: [`QuickJSHandle`](../exports.md#quickjshandle)
 
 • **thisVal**: [`QuickJSHandle`](../exports.md#quickjshandle)
 
 • ...**args**: [`QuickJSHandle`](../exports.md#quickjshandle)[]
+
+##### Returns
+
+`ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+
+##### Implementation of
+
+`LowLevelJavascriptVm.callFunction`
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/context.ts:1065](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1065)
+
+***
+
+### callMethod()
+
+> **callMethod**(`thisHandle`, `key`, `args`): `ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+
+`handle[key](...args)`
+
+Call a method on a JSValue. This is a convenience method that calls [getProp](QuickJSContext.md#getprop) and [callFunction](QuickJSContext.md#callfunction).
+
+#### Parameters
+
+• **thisHandle**: [`QuickJSHandle`](../exports.md#quickjshandle)
+
+• **key**: [`QuickJSPropertyKey`](../exports.md#quickjspropertykey)
+
+• **args**: [`QuickJSHandle`](../exports.md#quickjshandle)[]= `[]`
 
 #### Returns
 
@@ -307,13 +378,9 @@ A result. If the function threw synchronously, `result.error` be a
 handle to the exception. Otherwise `result.value` will be a handle to the
 value.
 
-#### Implementation of
-
-[`quickjs-emscripten-core.LowLevelJavascriptVm.callFunction`](../interfaces/LowLevelJavascriptVm.md#callfunction)
-
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1009](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1009)
+[packages/quickjs-emscripten-core/src/context.ts:1114](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1114)
 
 ***
 
@@ -342,7 +409,7 @@ socket.on("data", chunk => {
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1335](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1335)
+[packages/quickjs-emscripten-core/src/context.ts:1423](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1423)
 
 ***
 
@@ -373,7 +440,7 @@ Javascript string or number (which will be converted automatically to a JSValue)
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:960](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L960)
+[packages/quickjs-emscripten-core/src/context.ts:1001](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1001)
 
 ***
 
@@ -402,7 +469,7 @@ will result in an error.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:261](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L261)
+[packages/quickjs-emscripten-core/src/context.ts:266](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L266)
 
 ***
 
@@ -424,7 +491,7 @@ Returns `handle.toString()` if it cannot be serialized to JSON.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1147](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1147)
+[packages/quickjs-emscripten-core/src/context.ts:1235](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1235)
 
 ***
 
@@ -454,7 +521,7 @@ socket.write(dataLifetime?.value)
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1318](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1318)
+[packages/quickjs-emscripten-core/src/context.ts:1406](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1406)
 
 ***
 
@@ -477,7 +544,7 @@ See [Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:807](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L807)
+[packages/quickjs-emscripten-core/src/context.ts:812](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L812)
 
 ***
 
@@ -540,7 +607,7 @@ interrupted, the error will have name `InternalError` and message
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1069](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1069)
+[packages/quickjs-emscripten-core/src/context.ts:1157](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1157)
 
 ***
 
@@ -558,7 +625,7 @@ interrupted, the error will have name `InternalError` and message
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1344](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1344)
+[packages/quickjs-emscripten-core/src/context.ts:1432](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1432)
 
 ***
 
@@ -578,7 +645,7 @@ Coverts `handle` to a JavaScript ArrayBuffer
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:686](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L686)
+[packages/quickjs-emscripten-core/src/context.ts:691](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L691)
 
 ***
 
@@ -598,13 +665,13 @@ Converts `handle` to a Javascript bigint.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:677](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L677)
+[packages/quickjs-emscripten-core/src/context.ts:682](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L682)
 
 ***
 
 ### getIterator()
 
-> **getIterator**(`handle`): `ContextResult`\<`QuickJSIterator`\>
+> **getIterator**(`iterableHandle`): `ContextResult`\<`QuickJSIterator`\>
 
 `handle[Symbol.iterator]()`. See [QuickJSIterator]([object Object]).
 Returns a host iterator that wraps and proxies calls to a guest iterator handle.
@@ -613,14 +680,39 @@ Once the iterator is done, the handle is automatically disposed, and the iterato
 is considered done if the handle is disposed.
 
 ```typescript
-for (const nextResult of context.unwrapResult(context.getIterator(arrayHandle)) {
-  const nextHandle = context.unwrapResult(nextResult)
-  try {
-    // Do something with nextHandle
-    console.log(context.dump(nextHandle))
-  } finally {
-    nextHandle.dispose()
-  }
+for (using entriesHandle of context.getIterator(mapHandle).unwrap()) {
+  using keyHandle = context.getProp(entriesHandle, 0)
+  using valueHandle = context.getProp(entriesHandle, 1)
+  console.log(context.dump(keyHandle), '->', context.dump(valueHandle))
+}
+```
+
+#### Parameters
+
+• **iterableHandle**: [`QuickJSHandle`](../exports.md#quickjshandle)
+
+#### Returns
+
+`ContextResult`\<`QuickJSIterator`\>
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/context.ts:961](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L961)
+
+***
+
+### getLength()
+
+> **getLength**(`handle`): `undefined` \| `number`
+
+`handle.length` as a host number.
+
+Example use:
+```typescript
+const length = context.getLength(arrayHandle) ?? 0
+for (let i = 0; i < length; i++) {
+  using value = context.getProp(arrayHandle, i)
+  console.log(`array[${i}] =`, context.dump(value))
 }
 ```
 
@@ -630,31 +722,13 @@ for (const nextResult of context.unwrapResult(context.getIterator(arrayHandle)) 
 
 #### Returns
 
-`ContextResult`\<`QuickJSIterator`\>
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/context.ts:920](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L920)
-
-***
-
-### getLength()
-
-> **getLength**(`handle`): `undefined` \| `number`
-
-`handle.length`.
-
-#### Parameters
-
-• **handle**: [`QuickJSHandle`](../exports.md#quickjshandle)
-
-#### Returns
-
 `undefined` \| `number`
 
+a number if the handle has a numeric length property, otherwise `undefined`.
+
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:855](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L855)
+[packages/quickjs-emscripten-core/src/context.ts:871](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L871)
 
 ***
 
@@ -680,7 +754,57 @@ Converts `handle` into a Javascript number.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:648](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L648)
+[packages/quickjs-emscripten-core/src/context.ts:653](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L653)
+
+***
+
+### getOwnPropertyNames()
+
+> **getOwnPropertyNames**(`handle`, `options`): `ContextResult`\<[`DisposableArray`](../exports.md#disposablearrayt)\<[`QuickJSHandle`](../exports.md#quickjshandle)\>\>
+
+`Object.getOwnPropertyNames(handle)`.
+Similar to the [standard semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames),
+but with extra, non-standard options for:
+
+- fetching array indexes as numbers (`numbers: true`)
+- including symbols (`symbols: true`)
+- only iterating over enumerable properties (`onlyEnumerable: true`)
+
+The default behavior is to emulate the standard:
+```typescript
+context.getOwnPropertyNames(handle, { strings: true, numbersAsStrings: true })
+```
+
+Note when passing an explicit options object, you must set at least one
+option, and `strings` are not included unless specified.
+
+Example use:
+```typescript
+for (using prop of context.getOwnPropertyNames(objectHandle).unwrap()) {
+  using value = context.getProp(handle, prop)
+  console.log(context.dump(prop), '->', context.dump(value))
+}
+```
+
+#### Parameters
+
+• **handle**: [`QuickJSHandle`](../exports.md#quickjshandle)
+
+• **options**: `GetOwnPropertyNamesOptions`= `undefined`
+
+#### Returns
+
+`ContextResult`\<[`DisposableArray`](../exports.md#disposablearrayt)\<[`QuickJSHandle`](../exports.md#quickjshandle)\>\>
+
+an an array of handles of the property names. The array itself is disposable for your convenience.
+
+#### Throws
+
+QuickJSEmptyGetOwnPropertyNames if no options are set.
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/context.ts:908](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L908)
 
 ***
 
@@ -710,7 +834,7 @@ resultHandle.dispose();
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:711](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L711)
+[packages/quickjs-emscripten-core/src/context.ts:716](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L716)
 
 ***
 
@@ -740,30 +864,7 @@ Javascript string (which will be converted automatically).
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:836](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L836)
-
-***
-
-### getPropNames()
-
-> **getPropNames**(`handle`, `options`): `ContextResult`\<[`DisposableArray`](../exports.md#disposablearrayt)\<[`JSValue`](../exports.md#jsvalue)\>\>
-
-`Object.getOwnPropertyNames(handle)`.
-Similar to the [standard semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames).
-
-#### Parameters
-
-• **handle**: [`QuickJSHandle`](../exports.md#quickjshandle)
-
-• **options**: `GetOwnPropertyNamesOptions`
-
-#### Returns
-
-`ContextResult`\<[`DisposableArray`](../exports.md#disposablearrayt)\<[`JSValue`](../exports.md#jsvalue)\>\>
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/context.ts:868](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L868)
+[packages/quickjs-emscripten-core/src/context.ts:841](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L841)
 
 ***
 
@@ -787,7 +888,7 @@ Converts `handle` to a Javascript string.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:656](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L656)
+[packages/quickjs-emscripten-core/src/context.ts:661](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L661)
 
 ***
 
@@ -808,7 +909,7 @@ registry in the guest, it will be created with Symbol.for on the host.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:665](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L665)
+[packages/quickjs-emscripten-core/src/context.ts:670](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L670)
 
 ***
 
@@ -828,7 +929,7 @@ Access a well-known symbol that is a property of the global Symbol object, like 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:384](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L384)
+[packages/quickjs-emscripten-core/src/context.ts:389](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L389)
 
 ***
 
@@ -845,7 +946,7 @@ Create a new QuickJS [array](https://developer.mozilla.org/en-US/docs/Web/JavaSc
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:426](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L426)
+[packages/quickjs-emscripten-core/src/context.ts:431](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L431)
 
 ***
 
@@ -865,7 +966,7 @@ Create a new QuickJS [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:434](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L434)
+[packages/quickjs-emscripten-core/src/context.ts:439](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L439)
 
 ***
 
@@ -885,7 +986,7 @@ Create a QuickJS [bigint](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:392](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L392)
+[packages/quickjs-emscripten-core/src/context.ts:397](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L397)
 
 ***
 
@@ -909,7 +1010,7 @@ Create a QuickJS [bigint](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 
 ##### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:603](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L603)
+[packages/quickjs-emscripten-core/src/context.ts:608](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L608)
 
 #### newError(message)
 
@@ -925,7 +1026,7 @@ Create a QuickJS [bigint](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 
 ##### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:604](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L604)
+[packages/quickjs-emscripten-core/src/context.ts:609](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L609)
 
 #### newError(undefined)
 
@@ -937,7 +1038,7 @@ Create a QuickJS [bigint](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 
 ##### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:605](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L605)
+[packages/quickjs-emscripten-core/src/context.ts:610](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L610)
 
 ***
 
@@ -1054,7 +1155,7 @@ return deferred.handle
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:597](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L597)
+[packages/quickjs-emscripten-core/src/context.ts:602](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L602)
 
 ***
 
@@ -1078,7 +1179,7 @@ Converts a Javascript number into a QuickJS value.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:343](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L343)
+[packages/quickjs-emscripten-core/src/context.ts:348](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L348)
 
 ***
 
@@ -1105,7 +1206,7 @@ Like [`Object.create`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/R
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:412](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L412)
+[packages/quickjs-emscripten-core/src/context.ts:417](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L417)
 
 ***
 
@@ -1126,7 +1227,7 @@ resources; see the documentation on [QuickJSDeferredPromise](QuickJSDeferredProm
 
 ##### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:447](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L447)
+[packages/quickjs-emscripten-core/src/context.ts:452](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L452)
 
 #### newPromise(promise)
 
@@ -1148,7 +1249,7 @@ You can still resolve/reject the created promise "early" using its methods.
 
 ##### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:455](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L455)
+[packages/quickjs-emscripten-core/src/context.ts:460](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L460)
 
 #### newPromise(newPromiseFn)
 
@@ -1169,7 +1270,7 @@ You can still resolve/reject the created promise "early" using its methods.
 
 ##### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:462](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L462)
+[packages/quickjs-emscripten-core/src/context.ts:467](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L467)
 
 ***
 
@@ -1193,7 +1294,7 @@ Create a QuickJS [string](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:350](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L350)
+[packages/quickjs-emscripten-core/src/context.ts:355](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L355)
 
 ***
 
@@ -1214,7 +1315,7 @@ All symbols created with the same key will be the same value.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:373](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L373)
+[packages/quickjs-emscripten-core/src/context.ts:378](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L378)
 
 ***
 
@@ -1235,7 +1336,7 @@ No two symbols created with this function will be the same value.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:361](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L361)
+[packages/quickjs-emscripten-core/src/context.ts:366](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L366)
 
 ***
 
@@ -1263,7 +1364,7 @@ You may need to call [runtime](QuickJSContext.md#runtime).[QuickJSRuntime#execut
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:750](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L750)
+[packages/quickjs-emscripten-core/src/context.ts:755](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L755)
 
 ***
 
@@ -1286,7 +1387,7 @@ See [Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:815](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L815)
+[packages/quickjs-emscripten-core/src/context.ts:820](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L820)
 
 ***
 
@@ -1309,7 +1410,7 @@ See [Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:823](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L823)
+[packages/quickjs-emscripten-core/src/context.ts:828](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L828)
 
 ***
 
@@ -1346,7 +1447,7 @@ properties.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:945](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L945)
+[packages/quickjs-emscripten-core/src/context.ts:986](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L986)
 
 ***
 
@@ -1368,7 +1469,7 @@ properties.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1340](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1340)
+[packages/quickjs-emscripten-core/src/context.ts:1428](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1428)
 
 ***
 
@@ -1388,7 +1489,7 @@ Throw an error in the VM, interrupted whatever current execution is in progress 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1106](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1106)
+[packages/quickjs-emscripten-core/src/context.ts:1194](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1194)
 
 ***
 
@@ -1416,7 +1517,7 @@ Does not support BigInt values correctly.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:639](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L639)
+[packages/quickjs-emscripten-core/src/context.ts:644](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L644)
 
 ***
 
@@ -1443,7 +1544,7 @@ If the result is an error, converts the error to a native object and throws the 
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1190](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1190)
+[packages/quickjs-emscripten-core/src/context.ts:1278](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1278)
 
 ***
 
