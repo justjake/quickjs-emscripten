@@ -443,6 +443,7 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       vm.setProp(obj, "c", vm.undefined)
       const sym = vm.newUniqueSymbol("d")
       vm.setProp(obj, sym, vm.undefined)
+      sym.dispose()
 
       const props = manage(
         vm
