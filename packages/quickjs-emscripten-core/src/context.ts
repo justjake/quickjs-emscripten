@@ -1281,19 +1281,20 @@ export class QuickJSContext
       const cause = result.error.consume((error) => this.dump(error))
 
       if (cause && typeof cause === "object" && typeof cause.message === "string") {
-        const { message, name, stack } = cause
-        const exception = new QuickJSUnwrapError("")
-        const hostStack = exception.stack
+        const { message, name, stack, ...rest } = cause
+        const exception = new QuickJSUnwrapError(cause)
 
         if (typeof name === "string") {
           exception.name = cause.name
         }
 
+        exception.message = message
+        const hostStack = exception.stack
         if (typeof stack === "string") {
           exception.stack = `${name}: ${message}\n${cause.stack}Host: ${hostStack}`
         }
 
-        Object.assign(exception, { cause, context, message })
+        Object.assign(exception, rest)
         throw exception
       }
 
