@@ -12,11 +12,13 @@ const browsers: Extract<Options["target"], Array<any>> = [
 const configs = [
   extendConfig({
     entry: ["src/index.ts", "src/variants.ts"],
+    tsconfig: "./tsconfig.node.json",
     format: "esm",
     target: ["node16", ...browsers],
   }),
   extendConfig({
     entry: ["src/index.ts", "src/variants.ts"],
+    tsconfig: "./tsconfig.node.json",
     format: "cjs",
   }),
   extendConfig({
