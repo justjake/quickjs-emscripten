@@ -44,6 +44,7 @@ import {
   newVariant,
   shouldInterruptAfterDeadline,
   Scope,
+  setDebugMode,
 } from "."
 
 const TEST_SLOW = !process.env.TEST_FAST
@@ -51,13 +52,19 @@ const TEST_NG = TEST_SLOW && !process.env.TEST_NO_NG
 const TEST_DEBUG = TEST_SLOW && !process.env.TEST_NO_DEBUG
 const TEST_ASYNC = TEST_SLOW && !process.env.TEST_NO_ASYNC
 const TEST_RELEASE = !process.env.TEST_NO_RELEASE
+const DEBUG = Boolean(process.env.DEBUG)
 console.log("test sets:", {
   TEST_RELEASE,
   TEST_DEBUG,
   TEST_NG,
   TEST_ASYNC,
   TEST_SLOW,
+  DEBUG,
 })
+
+if (DEBUG) {
+  setDebugMode(true)
+}
 
 type GetTestContext = (options?: ContextOptions) => Promise<QuickJSContext>
 
