@@ -60,7 +60,7 @@ import type {
 } from "./vm-interface"
 import { QuickJSIterator } from "./QuickJSIterator"
 
-export type ContextResult<S> = DisposableResult<S, QuickJSHandle>
+export type QuickJSContextResult<S> = DisposableResult<S, QuickJSHandle>
 
 /**
  * Property key for getting or setting a property on a handle with
@@ -752,7 +752,7 @@ export class QuickJSContext
    *
    * @param promiseLikeHandle - A handle to a Promise-like value with a `.then(onSuccess, onError)` method.
    */
-  resolvePromise(promiseLikeHandle: QuickJSHandle): Promise<ContextResult<QuickJSHandle>> {
+  resolvePromise(promiseLikeHandle: QuickJSHandle): Promise<QuickJSContextResult<QuickJSHandle>> {
     this.runtime.assertOwned(promiseLikeHandle)
     const vmResolveResult = Scope.withScope((scope) => {
       const vmPromise = scope.manage(this.getProp(this.global, "Promise"))
@@ -763,7 +763,7 @@ export class QuickJSContext
       return Promise.resolve(vmResolveResult)
     }
 
-    return new Promise<ContextResult<QuickJSHandle>>((resolve) => {
+    return new Promise<QuickJSContextResult<QuickJSHandle>>((resolve) => {
       Scope.withScope((scope) => {
         const resolveHandle = scope.manage(
           this.newFunction("resolve", (value) => {
@@ -911,7 +911,7 @@ export class QuickJSContext
       strings: true,
       numbersAsStrings: true,
     },
-  ): ContextResult<DisposableArray<QuickJSHandle>> {
+  ): QuickJSContextResult<DisposableArray<QuickJSHandle>> {
     this.runtime.assertOwned(handle)
     handle.value // assert alive
     const flags = getOwnPropertyNamesOptionsToFlags(options)
@@ -958,7 +958,7 @@ export class QuickJSContext
    * }
    * ```
    */
-  getIterator(iterableHandle: QuickJSHandle): ContextResult<QuickJSIterator> {
+  getIterator(iterableHandle: QuickJSHandle): QuickJSContextResult<QuickJSIterator> {
     const SymbolIterator = (this._SymbolIterator ??= this.memory.manage(
       this.getWellKnownSymbol("iterator"),
     ))
@@ -1061,17 +1061,17 @@ export class QuickJSContext
     func: QuickJSHandle,
     thisVal: QuickJSHandle,
     args?: QuickJSHandle[],
-  ): ContextResult<QuickJSHandle>
+  ): QuickJSContextResult<QuickJSHandle>
   callFunction(
     func: QuickJSHandle,
     thisVal: QuickJSHandle,
     ...args: QuickJSHandle[]
-  ): ContextResult<QuickJSHandle>
+  ): QuickJSContextResult<QuickJSHandle>
   callFunction(
     func: QuickJSHandle,
     thisVal: QuickJSHandle,
     ...restArgs: Array<QuickJSHandle | QuickJSHandle[] | undefined>
-  ): ContextResult<QuickJSHandle> {
+  ): QuickJSContextResult<QuickJSHandle> {
     this.runtime.assertOwned(func)
     let args
     const firstArg = restArgs[0]
@@ -1115,7 +1115,7 @@ export class QuickJSContext
     thisHandle: QuickJSHandle,
     key: QuickJSPropertyKey,
     args: QuickJSHandle[] = [],
-  ): ContextResult<QuickJSHandle> {
+  ): QuickJSContextResult<QuickJSHandle> {
     return this.getProp(thisHandle, key).consume((func) =>
       this.callFunction(func, thisHandle, args),
     )
@@ -1164,7 +1164,7 @@ export class QuickJSContext
      * See {@link EvalFlags} for number semantics.
      */
     options?: number | ContextEvalOptions,
-  ): ContextResult<QuickJSHandle> {
+  ): QuickJSContextResult<QuickJSHandle> {
     const detectModule = (options === undefined ? 1 : 0) as EvalDetectModule
     const flags = evalOptionsToFlags(options) as EvalFlags
     const resultPtr = this.memory

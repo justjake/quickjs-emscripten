@@ -1,5 +1,33 @@
 # Changelog
 
+## v0.30.0
+
+- [#200](https://github.com/justjake/quickjs-emscripten/pull/200) Inspect and iterate handles, equality, changes to result types, changes to debug logging.
+- [#195](https://github.com/justjake/quickjs-emscripten/pull/195) Export `setDebugMode`
+
+### Collection & Iteration
+
+- For objects and arrays: add `context.getOwnPropertyNames(handle, options)` to iterate the key or array index handles.
+- For arrays: add `context.getLength(handle)` which reads `handle.length` and returns it as a number or undefined to make writing `for (i=0;i<length;i++)` loops easier.
+- For iterable collections like Map, Set, Array: add `context.getIterator(handle)` calls `handle[Symbol.iterator]()` and then exposes the result as an `IterableIterator` to host javascript.
+
+### Usability improvements
+
+- The `SuccessOrFail<T, QuickJSHandle>` return type is largely replaced with a new return type `DisposableSuccess<T> | DisposableFail<QuickJSHandle>`. The new type implements `result.unwrap()` as a replacement for `context.unwrapResult(result)`. It also implements `dispose()` directly, so you no longer need to distinguish between success and failure to clean up.
+- add `context.callMethod(handle, 'methodName')`, this makes it easier to call methods like `context.callMethod(handle, 'keys')` or `context.callMethod('values')` which can be used with the new iterator.
+
+### Equality
+
+- Added `context.eq(a, b)`, `context.sameValue(a, b)`, `context.sameValueZero(a, b)`
+
+### Debug logging changes
+
+Debug logging is now disabled by default, even when using a DEBUG variant. It can be enabled on a runtime-by-runtime basis with `runtime.setDebugMode(boolean)` or `context.runtime.setDebugMode(boolean)`, or globally using `setDebugMode(boolean)`. As with before, you should use a DEBUG variant to see logs from the WebAssembly C code.
+
+## v0.29.2
+
+- [#179](https://github.com/justjake/quickjs-emscripten/pull/161) Add a work-around for a bug in Webkit ARM to quickjs build variants. quickjs-ng is still affected by this bug.
+
 ## v0.29.1
 
 - [#161](https://github.com/justjake/quickjs-emscripten/pull/161) Fix a bug where `context.evalCode(..., { type: 'module' })` would return success when some kinds of error occurred when using `quickjs` variants.
