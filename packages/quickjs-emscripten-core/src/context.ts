@@ -14,7 +14,6 @@ import type {
   JSValuePointerPointerPointer,
   JSVoidPointer,
 } from "@jitl/quickjs-ffi-types"
-import { debugLog } from "./debug"
 import type { JSPromiseState } from "./deferred-promise"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

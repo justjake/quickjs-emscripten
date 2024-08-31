@@ -11,7 +11,6 @@ import {
 } from "."
 
 const TEST_LEAK = Boolean(process.env.TEST_LEAK)
-const TEST_SLOW = !process.env.TEST_FAST
 const testOptions = {
   timeout: Infinity,
 }

@@ -8,7 +8,7 @@ export default defineConfig({
   },
   plugins: [tsconfigPaths()],
   test: {
-    onStackTrace(error, frame) {
+    onStackTrace(_error, _frame) {
       return true
     },
   },
