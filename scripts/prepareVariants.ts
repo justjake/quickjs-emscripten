@@ -34,7 +34,7 @@ enum CLibrary {
 enum EmscriptenInclusion {
   SingleFile = "singlefile",
   Separate = "wasm",
-  NoWASM = "purejs",
+  AsmJs = "asmjs",
 }
 
 // https://github.com/emscripten-core/emscripten/blob/7bed0e2477000603c26766897e1f455c08bc3358/src/settings.js#L647
@@ -125,11 +125,12 @@ const targets = {
       browser: SEPARATE_FILE_INCLUSION.browser,
     },
   }),
-  "purejs-mjs": makeTarget({
-    description: `Compiled to pure JS, no WebAssembly required. Very slow.`,
-    emscriptenInclusion: EmscriptenInclusion.NoWASM,
+  "asmjs-mjs": makeTarget({
+    description: `Compiled to pure Javascript, no WebAssembly required.`,
+    emscriptenInclusion: EmscriptenInclusion.AsmJs,
     releaseMode: ReleaseMode.Release,
     syncMode: SyncMode.Sync,
+    library: CLibrary.QuickJS,
     exports: {
       import: {
         emscriptenEnvironment: [
@@ -221,7 +222,7 @@ const ReleaseModeFlags = {
 const EmscriptenInclusionFlags = {
   [EmscriptenInclusion.Separate]: [],
   [EmscriptenInclusion.SingleFile]: [`-s SINGLE_FILE=1`],
-  [EmscriptenInclusion.NoWASM]: [`-s WASM=0`, `-s SINGLE_FILE=1`],
+  [EmscriptenInclusion.AsmJs]: [`-s WASM=0`, `-s SINGLE_FILE=1`],
 }
 
 function getCflags(targetName: string, variant: BuildVariant) {
@@ -300,7 +301,6 @@ interface FinalVariant {
   dir: string
   packageJson: PackageJson
   variant: BuildVariant
-  indexJs: string
 }
 
 async function main() {
@@ -456,14 +456,19 @@ async function main() {
         targetName,
         dir: path.relative(repoRoot, dir),
         packageJson,
-        indexJs: path.relative(repoRoot, path.join(dist, "index.js")),
         variant,
       }
 
       if (finalVariant.dir in variantsJson) {
         throw new Error(`Duplicate variant dir ${finalVariant.dir}`)
       }
-      variantsJson[finalVariant.dir] = finalVariant
+      variantsJson[finalVariant.dir] = {
+        ...finalVariant,
+        packageJson: {
+          ...finalVariant.packageJson,
+          version: "(omitted)",
+        },
+      }
 
       await writePretty(path.join(dir, "package.json"), JSON.stringify(packageJson))
       await writePretty(path.join(dir, "LICENSE"), renderLicense(targetName, variant))
@@ -492,7 +497,7 @@ async function main() {
 const describeInclusion = {
   [EmscriptenInclusion.SingleFile]: `The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.`,
   [EmscriptenInclusion.Separate]: `Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.`,
-  [EmscriptenInclusion.NoWASM]: `The C library code is compiled directly to JS. Sometimes called "asmjs". This is the slowest possible option, and is intended for constrained environments that do not support WebAssembly, like quickjs-in-quickjs.`,
+  [EmscriptenInclusion.AsmJs]: `The C library code is compiled to Javascript, no WebAssembly used. Sometimes called "asmjs". This is the slowest possible option, and is intended for constrained environments that do not support WebAssembly, like quickjs-in-quickjs.`,
 }
 
 const describeMode = {
@@ -751,7 +756,7 @@ function renderIndexTs(
     [SyncMode.Asyncify]: "QuickJSAsyncVariant",
   }[variant.syncMode]
 
-  if (variant.emscriptenInclusion === EmscriptenInclusion.NoWASM) {
+  if (variant.emscriptenInclusion === EmscriptenInclusion.AsmJs) {
     // Eager loading please!
     return `
 import type { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
@@ -819,7 +824,7 @@ function renderTsupConfig(variant: BuildVariant, packageJson: PackageJson): stri
   }
 
   const entry = ["src/index.ts"]
-  if (variant.emscriptenInclusion !== EmscriptenInclusion.NoWASM) {
+  if (variant.emscriptenInclusion !== EmscriptenInclusion.AsmJs) {
     entry.push("src/ffi.ts")
   }
 
