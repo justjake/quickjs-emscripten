@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": ".output",
+    "rootDir": "src",
+    "paths": {
+      "#variants": ["./src/variants.ts", "./src/variants.js"]
+    }
+  }
+}
