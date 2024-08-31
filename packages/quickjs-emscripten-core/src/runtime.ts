@@ -8,7 +8,7 @@ import type {
 } from "@jitl/quickjs-ffi-types"
 import { maybeAsyncFn } from "./asyncify-helpers"
 import { QuickJSContext } from "./context"
-import { debugLog } from "./debug"
+import { QTS_DEBUG, debugLog } from "./debug"
 import { QuickJSWrongOwner } from "./errors"
 import type { Disposable } from "./lifetime"
 import { DisposableResult, Lifetime, Scope, UsingDisposable } from "./lifetime"
@@ -116,6 +116,10 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     this.callbacks.setRuntimeCallbacks(this.rt.value, this.cToHostCallbacks)
 
     this.executePendingJobs = this.executePendingJobs.bind(this)
+
+    if (QTS_DEBUG) {
+      this.setDebugMode(true)
+    }
   }
 
   get alive() {
