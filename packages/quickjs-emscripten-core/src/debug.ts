@@ -14,6 +14,7 @@ export function setDebugMode(enabled: boolean = true) {
   QTS_DEBUG = enabled
 }
 
+/** Get the global debug mode */
 export function isDebugMode() {
   return QTS_DEBUG
 }
