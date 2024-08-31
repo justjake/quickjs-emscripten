@@ -146,12 +146,12 @@ $(DIST)/emscripten-module%.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
 # Browser target needs intermediate build to avoid two copies of .wasm
 $(DIST)/emscripten-module.%.mjs: $(BUILD_WRAPPER)/%/emscripten-module.js
 	$(MKDIRP)
-	if [[ -e $(basename $<).wasm ]] ; then cp -v $(basename $<).wasm* $(dir $@); fi
+	if [ -e $(basename $<).wasm ] ; then cp -v $(basename $<).wasm* $(dir $@); fi
 	cp $< $@
 
 $(DIST)/emscripten-module.%.cjs: $(BUILD_WRAPPER)/%/emscripten-module.js
 	$(MKDIRP)
-	if [[ -e $(basename $<).wasm ]] ; then cp -v $(basename $<).wasm* $(dir $@); fi
+	if [ -e $(basename $<).wasm ] ; then cp -v $(basename $<).wasm* $(dir $@); fi
 	cp $< $@
 
 $(BUILD_WRAPPER)/browser/emscripten-module.js: CFLAGS_WASM+=$(CFLAGS_BROWSER)
