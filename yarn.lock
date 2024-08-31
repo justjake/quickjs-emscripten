@@ -613,6 +613,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jitl/quickjs-asmjs-mjs-release-sync@workspace:packages/variant-quickjs-asmjs-mjs-release-sync":
+  version: 0.0.0-use.local
+  resolution: "@jitl/quickjs-asmjs-mjs-release-sync@workspace:packages/variant-quickjs-asmjs-mjs-release-sync"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "@jitl/quickjs-ffi-types@workspace:*, @jitl/quickjs-ffi-types@workspace:packages/quickjs-ffi-types":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-ffi-types@workspace:packages/quickjs-ffi-types"
