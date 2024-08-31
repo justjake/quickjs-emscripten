@@ -39,18 +39,6 @@ export class QuickJSAsyncFFI {
   /** Set at compile time. */
   readonly DEBUG = false
 
-  QTS_GetRuntimeData: (rt: JSRuntimePointer) => QTS_RuntimeDataPointer = this.module.cwrap(
-    "QTS_GetRuntimeData",
-    "number",
-    ["number"],
-  )
-
-  QTS_GetContextData: (ctx: JSContextPointer) => QTS_RuntimeDataPointer = this.module.cwrap(
-    "QTS_GetContextData",
-    "number",
-    ["number"],
-  )
-
   QTS_Throw: (
     ctx: JSContextPointer,
     error: JSValuePointer | JSValueConstPointer,

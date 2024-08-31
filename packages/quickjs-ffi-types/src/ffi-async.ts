@@ -38,8 +38,6 @@ export interface QuickJSAsyncFFI {
   /** Set at compile time. */
   readonly DEBUG: boolean
 
-  QTS_GetRuntimeData: (rt: JSRuntimePointer) => QTS_RuntimeDataPointer
-  QTS_GetContextData: (ctx: JSContextPointer) => QTS_RuntimeDataPointer
   QTS_Throw: (ctx: JSContextPointer, error: JSValuePointer | JSValueConstPointer) => JSValuePointer
   QTS_NewError: (ctx: JSContextPointer) => JSValuePointer
   QTS_RuntimeSetMemoryLimit: (rt: JSRuntimePointer, limit: number) => void
