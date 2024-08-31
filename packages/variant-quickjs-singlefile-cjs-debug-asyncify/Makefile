@@ -38,7 +38,6 @@ EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.json
 EMCC_EXPORTED_FUNCS_ASYNCIFY+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.asyncify.json
 
 # Emscripten options
-CFLAGS_WASM+=-s WASM=1
 CFLAGS_WASM+=-s EXPORTED_RUNTIME_METHODS=@../../exportedRuntimeMethods.json
 CFLAGS_WASM+=-s MODULARIZE=1
 CFLAGS_WASM+=-s IMPORTED_MEMORY=1 # Allow passing WASM memory to Emscripten

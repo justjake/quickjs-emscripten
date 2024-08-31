@@ -45,7 +45,8 @@
     "./emscripten-module": {
       "types": "./dist/emscripten-module.browser.d.ts",
       "browser": "./dist/emscripten-module.browser.mjs",
-      "import": "./dist/emscripten-module.browser.mjs"
+      "import": "./dist/emscripten-module.browser.mjs",
+      "default": "./dist/emscripten-module.browser.mjs"
     }
   },
   "dependencies": {

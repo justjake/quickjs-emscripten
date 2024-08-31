@@ -1,8 +1,8 @@
 {
-  "name": "@jitl/quickjs-singlefile-mjs-release-asyncify",
+  "name": "@jitl/quickjs-asmjs-mjs-release-sync",
   "license": "MIT",
   "version": "0.30.0",
-  "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
+  "description": "Variant of quickjs library: Compiled to pure Javascript, no WebAssembly required.",
   "sideEffects": false,
   "repository": {
     "type": "git",

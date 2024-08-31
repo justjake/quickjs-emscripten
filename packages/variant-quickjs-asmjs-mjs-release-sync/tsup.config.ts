@@ -1,7 +1,7 @@
 import { extendConfig } from "@jitl/tsconfig/tsup.base.config.js"
 export default extendConfig({
-  entry: ["src/index.ts", "src/ffi.ts"],
+  entry: ["src/index.ts"],
   external: [],
-  format: ["cjs"],
+  format: ["esm"],
   clean: false,
 })

@@ -68,31 +68,25 @@ CFLAGS_MJS+=-s EXPORT_ES6=1
 CFLAGS_BROWSER+=-s EXPORT_ES6=1
 
 # VARIANT
-SYNC=ASYNCIFY
+SYNC=SYNC
 CFLAGS_WASM_BROWSER=$(CFLAGS_WASM)
 
 # Emscripten options - variant & target specific
-CFLAGS_WASM+=-s ASYNCIFY=1
-CFLAGS_WASM+=-DQTS_ASYNCIFY=1
-CFLAGS_WASM+=-DQTS_ASYNCIFY_DEFAULT_STACK_SIZE=81920
-CFLAGS_WASM+=-s ASYNCIFY_STACK_SIZE=81920
-CFLAGS_WASM+=-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json
-CFLAGS_WASM+=-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json
-CFLAGS_WASM+=-lasync.js
 CFLAGS_WASM+=-Oz
 CFLAGS_WASM+=-flto
 CFLAGS_WASM+=--closure 1
 CFLAGS_WASM+=-s FILESYSTEM=0
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-extension.js
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-wasmMemory.js
+CFLAGS_WASM+=-s WASM=0
 CFLAGS_WASM+=-s SINGLE_FILE=1
-CFLAGS_CJS+=-s ENVIRONMENT=web,worker,node
 
+CFLAGS_MJS+=-s ENVIRONMENT=web,worker,node
 
 
 
 # GENERATE_TS options - variant specific
-GENERATE_TS_ENV+=ASYNCIFY=true
+
 
 
 ifdef DEBUG_MAKE
@@ -111,7 +105,7 @@ clean:
 
 ###############################################################################
 # Emscripten output targets
-EXPORTS: CJS
+EXPORTS: MJS
 CJS: $(DIST)/emscripten-module.cjs $(DIST)/emscripten-module.d.ts
 MJS: $(DIST)/emscripten-module.mjs $(DIST)/emscripten-module.d.ts
 BROWSER: $(DIST)/emscripten-module.browser.mjs $(DIST)/emscripten-module.browser.d.ts

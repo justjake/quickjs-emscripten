@@ -43,7 +43,8 @@
     },
     "./emscripten-module": {
       "types": "./dist/emscripten-module.d.ts",
-      "import": "./dist/emscripten-module.mjs"
+      "import": "./dist/emscripten-module.mjs",
+      "default": "./dist/emscripten-module.mjs"
     }
   },
   "dependencies": {
