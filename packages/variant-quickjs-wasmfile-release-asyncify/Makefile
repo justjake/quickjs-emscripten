@@ -7,8 +7,6 @@ GENERATE_TS=$(GENERATE_TS_ENV) ../../scripts/generate.ts
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 REPO_ROOT := $(abspath $(THIS_DIR)/../..)
 
-DEBUG_MAKE=1
-
 QUICKJS_LIB=quickjs
 
 # Paths
@@ -101,6 +99,7 @@ ifdef DEBUG_MAKE
 	MKDIRP=@echo "\n=====[["" target: $@, deps: $<, variant: $(VARIANT) ""]]=====" ; mkdir -p $(dir $@)
 else
 	MKDIRP=@mkdir -p $(dir $@)
+	CFLAGS+=-Wunused-command-line-argument=0
 endif
 
 ###############################################################################
@@ -160,11 +159,11 @@ $(BUILD_WRAPPER)/%/emscripten-module.js: $(BUILD_WRAPPER)/interface.o $(VARIANT_
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 $(BUILD_WRAPPER)/%.o: $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS_WASM) $(CFLAGS_SORTED_FUNCS) $(WRAPPER_DEFINES) -c -o $@ $<
+	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) -c -o $@ $<
 
 $(BUILD_QUICKJS)/%.o: $(QUICKJS_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS_WASM) $(EMCC_EXPORTED_FUNCS) $(QUICKJS_DEFINES) -c -o $@ $<
+	$(EMCC) $(CFLAGS_WASM) $(QUICKJS_DEFINES) -c -o $@ $<
 
 $(BUILD_WRAPPER)/symbols.json:
 	$(MKDIRP)

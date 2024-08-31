@@ -10,5 +10,8 @@
     "stdbool.h": "c",
     "emscripten.h": "c",
     "quickjs-atom.h": "c"
+  },
+  "files.exclude": {
+    ".yarn/releases/*": true
   }
 }

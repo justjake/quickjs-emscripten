@@ -284,7 +284,7 @@ Just calls the standard .dispose() method of this class.
 
 #### callFunction(func, thisVal, args)
 
-> **callFunction**(`func`, `thisVal`, `args`?): `ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+> **callFunction**(`func`, `thisVal`, `args`?): `QuickJSContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
 
 [`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call) or
 [`func.apply(thisVal, args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply).
@@ -305,7 +305,7 @@ a promise, use [resolvePromise](QuickJSContext.md#resolvepromise) to convert it 
 
 ##### Returns
 
-`ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+`QuickJSContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
 
 A result. If the function threw synchronously, `result.error` be a
 handle to the exception. Otherwise `result.value` will be a handle to the
@@ -330,7 +330,7 @@ console.log(context.dump(resultHandle)) // 42
 
 #### callFunction(func, thisVal, args)
 
-> **callFunction**(`func`, `thisVal`, ...`args`): `ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+> **callFunction**(`func`, `thisVal`, ...`args`): `QuickJSContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
 
 ##### Parameters
 
@@ -342,7 +342,7 @@ console.log(context.dump(resultHandle)) // 42
 
 ##### Returns
 
-`ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+`QuickJSContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
 
 ##### Implementation of
 
@@ -356,7 +356,7 @@ console.log(context.dump(resultHandle)) // 42
 
 ### callMethod()
 
-> **callMethod**(`thisHandle`, `key`, `args`): `ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+> **callMethod**(`thisHandle`, `key`, `args`): `QuickJSContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
 
 `handle[key](...args)`
 
@@ -372,7 +372,7 @@ Call a method on a JSValue. This is a convenience method that calls [getProp](Qu
 
 #### Returns
 
-`ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+`QuickJSContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
 
 A result. If the function threw synchronously, `result.error` be a
 handle to the exception. Otherwise `result.value` will be a handle to the
@@ -550,7 +550,7 @@ See [Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs
 
 ### evalCode()
 
-> **evalCode**(`code`, `filename`, `options`?): `ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+> **evalCode**(`code`, `filename`, `options`?): `QuickJSContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
 
 Like [`eval(code)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Description).
 
@@ -594,7 +594,7 @@ See [EvalFlags](../exports.md#evalflags) for number semantics.
 
 #### Returns
 
-`ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
+`QuickJSContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>
 
 The last statement's value. If the code threw synchronously,
 `result.error` will be a handle to the exception. If execution was
@@ -671,7 +671,7 @@ Converts `handle` to a Javascript bigint.
 
 ### getIterator()
 
-> **getIterator**(`iterableHandle`): `ContextResult`\<`QuickJSIterator`\>
+> **getIterator**(`iterableHandle`): `QuickJSContextResult`\<`QuickJSIterator`\>
 
 `handle[Symbol.iterator]()`. See [QuickJSIterator]([object Object]).
 Returns a host iterator that wraps and proxies calls to a guest iterator handle.
@@ -693,7 +693,7 @@ for (using entriesHandle of context.getIterator(mapHandle).unwrap()) {
 
 #### Returns
 
-`ContextResult`\<`QuickJSIterator`\>
+`QuickJSContextResult`\<`QuickJSIterator`\>
 
 #### Source
 
@@ -760,7 +760,7 @@ Converts `handle` into a Javascript number.
 
 ### getOwnPropertyNames()
 
-> **getOwnPropertyNames**(`handle`, `options`): `ContextResult`\<[`DisposableArray`](../exports.md#disposablearrayt)\<[`QuickJSHandle`](../exports.md#quickjshandle)\>\>
+> **getOwnPropertyNames**(`handle`, `options`): `QuickJSContextResult`\<[`DisposableArray`](../exports.md#disposablearrayt)\<[`QuickJSHandle`](../exports.md#quickjshandle)\>\>
 
 `Object.getOwnPropertyNames(handle)`.
 Similar to the [standard semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames),
@@ -794,7 +794,7 @@ for (using prop of context.getOwnPropertyNames(objectHandle).unwrap()) {
 
 #### Returns
 
-`ContextResult`\<[`DisposableArray`](../exports.md#disposablearrayt)\<[`QuickJSHandle`](../exports.md#quickjshandle)\>\>
+`QuickJSContextResult`\<[`DisposableArray`](../exports.md#disposablearrayt)\<[`QuickJSHandle`](../exports.md#quickjshandle)\>\>
 
 an an array of handles of the property names. The array itself is disposable for your convenience.
 
@@ -1342,7 +1342,7 @@ No two symbols created with this function will be the same value.
 
 ### resolvePromise()
 
-> **resolvePromise**(`promiseLikeHandle`): `Promise`\<`ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>\>
+> **resolvePromise**(`promiseLikeHandle`): `Promise`\<`QuickJSContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>\>
 
 `Promise.resolve(value)`.
 Convert a handle containing a Promise-like value inside the VM into an
@@ -1356,7 +1356,7 @@ A handle to a Promise-like value with a `.then(onSuccess, onError)` method.
 
 #### Returns
 
-`Promise`\<`ContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>\>
+`Promise`\<`QuickJSContextResult`\<[`QuickJSHandle`](../exports.md#quickjshandle)\>\>
 
 #### Remarks
 

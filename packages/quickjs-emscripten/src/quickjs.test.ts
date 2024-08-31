@@ -1307,7 +1307,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       // The nesting levels of the test cannot be too high, otherwise the
       // node.js call stack will overflow when executing `yarn test`
       const buildName = isBuildDebug(vm) ? "debug" : "release"
-      const EXPECTED_NESTING_LEVEL = isBuildDebug(vm) ? 19 : 20
+      const EXPECTED_NESTING_LEVEL = isBuildDebug(vm) ? 18 : 20
 
       let asyncFunctionCalls = 0
       const asyncFn = async () => {
