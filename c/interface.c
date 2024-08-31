@@ -59,8 +59,8 @@
 #define LOG_LEN 500
 
 #ifdef QTS_DEBUG_MODE
-#define IF_DEBUG if (QTS_GetContextData(ctx)->debug_log)
-#define IF_DEBUG_RT if (QTS_GetRuntimeData(rt)->debug_log)
+#define IF_DEBUG if (qts_get_context_rt_data(ctx)->debug_log)
+#define IF_DEBUG_RT if (qts_get_runtime_data(rt)->debug_log)
 
 #define QTS_DEBUG(msg) IF_DEBUG qts_log(msg);
 #define QTS_DEBUG_RT(msg) IF_DEBUG_RT qts_log(msg);
@@ -101,22 +101,22 @@
 #define IntrinsicsFlags enum QTS_Intrinsic
 #define EvalDetectModule int
 
-typedef struct QTS_RuntimeData {
+typedef struct qts_RuntimeData {
   bool debug_log;
-} QTS_RuntimeData;
+} qts_RuntimeData;
 
-QTS_RuntimeData *QTS_GetRuntimeData(JSRuntime *rt) {
-  QTS_RuntimeData *data = JS_GetRuntimeOpaque(rt);
+qts_RuntimeData *qts_get_runtime_data(JSRuntime *rt) {
+  qts_RuntimeData *data = JS_GetRuntimeOpaque(rt);
   if (data == NULL) {
-    data = malloc(sizeof(QTS_RuntimeData));
+    data = malloc(sizeof(qts_RuntimeData));
     data->debug_log = false;
     JS_SetRuntimeOpaque(rt, data);
   }
   return data;
 }
 
-QTS_RuntimeData *QTS_GetContextData(JSContext *ctx) {
-  return QTS_GetRuntimeData(JS_GetRuntime(ctx));
+qts_RuntimeData *qts_get_context_rt_data(JSContext *ctx) {
+  return qts_get_runtime_data(JS_GetRuntime(ctx));
 }
 
 void qts_log(char *msg) {
@@ -1004,7 +1004,7 @@ int QTS_GetDebugLogEnabled(JSRuntime *rt) {
 
 void QTS_SetDebugLogEnabled(JSRuntime *rt, int is_enabled) {
 #ifdef QTS_DEBUG_MODE
-  QTS_GetRuntimeData(rt)->debug_log = (bool)is_enabled;
+  qts_get_runtime_data(rt)->debug_log = (bool)is_enabled;
 #endif
 }
 
