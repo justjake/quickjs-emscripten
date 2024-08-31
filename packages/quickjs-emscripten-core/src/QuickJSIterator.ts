@@ -1,4 +1,4 @@
-import type { ContextResult, QuickJSContext } from "./context"
+import type { QuickJSContextResult, QuickJSContext } from "./context"
 import { DisposableResult, Lifetime, UsingDisposable } from "./lifetime"
 import type { QuickJSRuntime } from "./runtime"
 import type { QuickJSHandle } from "./types"
@@ -28,7 +28,7 @@ import type { QuickJSHandle } from "./types"
  */
 export class QuickJSIterator
   extends UsingDisposable
-  implements Disposable, IterableIterator<ContextResult<QuickJSHandle>>
+  implements Disposable, IterableIterator<QuickJSContextResult<QuickJSHandle>>
 {
   public owner: QuickJSRuntime
   private _next: QuickJSHandle | undefined
@@ -46,7 +46,7 @@ export class QuickJSIterator
     return this
   }
 
-  next(value?: QuickJSHandle): IteratorResult<ContextResult<QuickJSHandle>, any> {
+  next(value?: QuickJSHandle): IteratorResult<QuickJSContextResult<QuickJSHandle>, any> {
     if (!this.alive || this._isDone) {
       return {
         done: true,
@@ -58,7 +58,7 @@ export class QuickJSIterator
     return this.callIteratorMethod(nextMethod, value)
   }
 
-  return(value?: QuickJSHandle): IteratorResult<ContextResult<QuickJSHandle>, any> {
+  return(value?: QuickJSHandle): IteratorResult<QuickJSContextResult<QuickJSHandle>, any> {
     if (!this.alive) {
       return {
         done: true,
@@ -84,7 +84,7 @@ export class QuickJSIterator
     return result
   }
 
-  throw(e?: any): IteratorResult<ContextResult<QuickJSHandle>, any> {
+  throw(e?: any): IteratorResult<QuickJSContextResult<QuickJSHandle>, any> {
     if (!this.alive) {
       return {
         done: true,
@@ -116,7 +116,7 @@ export class QuickJSIterator
   private callIteratorMethod(
     method: QuickJSHandle,
     input?: QuickJSHandle,
-  ): IteratorResult<ContextResult<QuickJSHandle>, any> {
+  ): IteratorResult<QuickJSContextResult<QuickJSHandle>, any> {
     const callResult = input
       ? this.context.callFunction(method, this.handle, input)
       : this.context.callFunction(method, this.handle)
