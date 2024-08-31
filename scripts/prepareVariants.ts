@@ -192,6 +192,7 @@ const ReleaseModeFlags = {
   [ReleaseMode.Debug]: [
     `-O0`,
     "-DQTS_DEBUG_MODE",
+    `-DDUMP_LEAKS=1`,
     `-gsource-map`,
     `-s ASSERTIONS=1`,
     `--pre-js $(TEMPLATES)/pre-extension.js`,
@@ -216,12 +217,13 @@ function getCflags(targetName: string, variant: BuildVariant) {
   if (variant.releaseMode === ReleaseMode.Debug) {
     switch (variant.syncMode) {
       case SyncMode.Sync:
+        flags.push()
         flags.push("-DQTS_SANITIZE_LEAK")
         flags.push("-fsanitize=leak")
         flags.push("-g2")
         break
       case SyncMode.Asyncify:
-        flags.push("-s ASYNCIFY_ADVISE=1")
+        // flags.push("-s ASYNCIFY_ADVISE=1")
         flags.push(
           // # Need to use -O3 - otherwise ASYNCIFY leads to stack overflows (why?)
           "-O3",

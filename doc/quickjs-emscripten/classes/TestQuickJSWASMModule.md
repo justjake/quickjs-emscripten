@@ -51,7 +51,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1660
+[packages/quickjs-emscripten-core/src/module-test.ts:21](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L21)
 
 ## Properties
 
@@ -61,7 +61,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1660
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1658
+[packages/quickjs-emscripten-core/src/module-test.ts:19](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L19)
 
 ***
 
@@ -71,7 +71,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1658
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1659
+[packages/quickjs-emscripten-core/src/module-test.ts:20](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L20)
 
 ## Methods
 
@@ -85,7 +85,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1659
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1665
+[packages/quickjs-emscripten-core/src/module-test.ts:62](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L62)
 
 ***
 
@@ -99,7 +99,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1665
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1664
+[packages/quickjs-emscripten-core/src/module-test.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L51)
 
 ***
 
@@ -123,7 +123,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1664
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1663
+[packages/quickjs-emscripten-core/src/module-test.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L47)
 
 ***
 
@@ -141,7 +141,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1663
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1666
+[packages/quickjs-emscripten-core/src/module-test.ts:79](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L79)
 
 ***
 
@@ -163,7 +163,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1666
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1662
+[packages/quickjs-emscripten-core/src/module-test.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L35)
 
 ***
 
@@ -185,7 +185,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:1662
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1661
+[packages/quickjs-emscripten-core/src/module-test.ts:23](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L23)
 
 ***
 

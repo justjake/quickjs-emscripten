@@ -1,13 +1,11 @@
 # Tools
-EMSDK_VERSION=3.1.59
-EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.59
+EMSDK_VERSION=3.1.64
+EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.64
 EMCC_SRC=../../scripts/emcc.sh
 EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_PROJECT_ROOT=$(REPO_ROOT) EMSDK_DOCKER_CACHE=$(REPO_ROOT)/emsdk-cache/$(EMSDK_VERSION) $(EMCC_SRC)
 GENERATE_TS=$(GENERATE_TS_ENV) ../../scripts/generate.ts
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 REPO_ROOT := $(abspath $(THIS_DIR)/../..)
-
-DEBUG_MAKE=1
 
 QUICKJS_LIB=quickjs
 
@@ -95,6 +93,7 @@ ifdef DEBUG_MAKE
 	MKDIRP=@echo "\n=====[["" target: $@, deps: $<, variant: $(VARIANT) ""]]=====" ; mkdir -p $(dir $@)
 else
 	MKDIRP=@mkdir -p $(dir $@)
+	CFLAGS+=-Wunused-command-line-argument=0
 endif
 
 ###############################################################################
@@ -135,12 +134,12 @@ $(DIST)/emscripten-module%.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
 # Browser target needs intermediate build to avoid two copies of .wasm
 $(DIST)/emscripten-module.%.mjs: $(BUILD_WRAPPER)/%/emscripten-module.js
 	$(MKDIRP)
-	if [[ -e $(basename $<).wasm ]] ; then cp -v $(basename $<).wasm* $(dir $@); fi
+	if [ -e $(basename $<).wasm ] ; then cp -v $(basename $<).wasm* $(dir $@); fi
 	cp $< $@
 
 $(DIST)/emscripten-module.%.cjs: $(BUILD_WRAPPER)/%/emscripten-module.js
 	$(MKDIRP)
-	if [[ -e $(basename $<).wasm ]] ; then cp -v $(basename $<).wasm* $(dir $@); fi
+	if [ -e $(basename $<).wasm ] ; then cp -v $(basename $<).wasm* $(dir $@); fi
 	cp $< $@
 
 $(BUILD_WRAPPER)/browser/emscripten-module.js: CFLAGS_WASM+=$(CFLAGS_BROWSER)
@@ -154,11 +153,11 @@ $(BUILD_WRAPPER)/%/emscripten-module.js: $(BUILD_WRAPPER)/interface.o $(VARIANT_
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
 $(BUILD_WRAPPER)/%.o: $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS_WASM) $(CFLAGS_SORTED_FUNCS) $(WRAPPER_DEFINES) -c -o $@ $<
+	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) -c -o $@ $<
 
 $(BUILD_QUICKJS)/%.o: $(QUICKJS_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS_WASM) $(EMCC_EXPORTED_FUNCS) $(QUICKJS_DEFINES) -c -o $@ $<
+	$(EMCC) $(CFLAGS_WASM) $(QUICKJS_DEFINES) -c -o $@ $<
 
 $(BUILD_WRAPPER)/symbols.json:
 	$(MKDIRP)

@@ -144,7 +144,8 @@ function checkModuleForLeaks(getModule: () => Promise<QuickJSWASMModule>) {
 
   for (const checkName of checkNames) {
     const fn = checks[checkName as keyof typeof checks]
-    it(
+    const test = TEST_LEAK ? it : it.skip
+    test(
       `should not leak: ${checkName}`,
       () => {
         console.log(`Running ${checkName}...`)

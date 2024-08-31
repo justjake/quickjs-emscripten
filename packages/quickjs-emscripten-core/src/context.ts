@@ -1,4 +1,4 @@
-import { JSPromiseStateEnum } from "@jitl/quickjs-ffi-types"
+import { IsEqualOp, JSPromiseStateEnum } from "@jitl/quickjs-ffi-types"
 import type {
   EvalFlags,
   EitherModule,
@@ -10,15 +10,31 @@ import type {
   JSValuePointer,
   JSValuePointerPointer,
   EitherFFI,
+  UInt32Pointer,
+  JSValuePointerPointerPointer,
+  JSVoidPointer,
 } from "@jitl/quickjs-ffi-types"
-import { debugLog } from "./debug"
 import type { JSPromiseState } from "./deferred-promise"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
-import { QuickJSPromisePending, QuickJSUnwrapError } from "./errors"
-import type { Disposable } from "./lifetime"
-import { Lifetime, Scope, StaticLifetime, UsingDisposable, WeakLifetime } from "./lifetime"
+import {
+  QuickJSEmptyGetOwnPropertyNames,
+  QuickJSNotImplemented,
+  QuickJSPromisePending,
+  QuickJSUnwrapError,
+} from "./errors"
+import type { Disposable, DisposableArray, DisposableFail, DisposableSuccess } from "./lifetime"
+import {
+  DisposableResult,
+  Lifetime,
+  Scope,
+  StaticLifetime,
+  UsingDisposable,
+  WeakLifetime,
+  createDisposableArray,
+} from "./lifetime"
+import type { HeapTypedArray } from "./memory"
 import { ModuleMemory } from "./memory"
 import type { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
 import type {
@@ -26,15 +42,24 @@ import type {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ExecutePendingJobsResult,
 } from "./runtime"
-import type { ContextEvalOptions, JSValue, PromiseExecutor, QuickJSHandle } from "./types"
-import { evalOptionsToFlags } from "./types"
+import type {
+  ContextEvalOptions,
+  GetOwnPropertyNamesOptions,
+  JSValue,
+  PromiseExecutor,
+  QuickJSHandle,
+  StaticJSValue,
+} from "./types"
+import { evalOptionsToFlags, getOwnPropertyNamesOptionsToFlags } from "./types"
 import type {
   LowLevelJavascriptVm,
   SuccessOrFail,
-  VmCallResult,
   VmFunctionImplementation,
   VmPropertyDescriptor,
 } from "./vm-interface"
+import { QuickJSIterator } from "./QuickJSIterator"
+
+export type QuickJSContextResult<S> = DisposableResult<S, QuickJSHandle>
 
 /**
  * Property key for getting or setting a property on a handle with
@@ -107,6 +132,15 @@ class ContextMemory extends ModuleMemory implements Disposable {
   heapValueHandle(ptr: JSValuePointer): JSValue {
     return new Lifetime(ptr, this.copyJSValue, this.freeJSValue, this.owner)
   }
+
+  /** Manage a heap pointer with the lifetime of the context */
+  staticHeapValueHandle(ptr: JSValuePointer | JSValueConstPointer): StaticJSValue {
+    this.manage(this.heapValueHandle(ptr as JSValuePointer))
+    // This isn't technically a static lifetime, but since it has the same
+    // lifetime as the VM, it's okay to fake one since when the VM is
+    // disposed, no other functions will accept the value.
+    return new StaticLifetime(ptr as JSValueConstPointer, this.owner) as StaticJSValue
+  }
 }
 
 /**
@@ -174,6 +208,14 @@ export class QuickJSContext
   protected _global: QuickJSHandle | undefined = undefined
   /** @private */
   protected _BigInt: QuickJSHandle | undefined = undefined
+  /** @private  */
+  protected uint32Out: HeapTypedArray<Uint32Array, UInt32Pointer>
+  /** @private */
+  protected _Symbol: QuickJSHandle | undefined = undefined
+  /** @private */
+  protected _SymbolIterator: QuickJSHandle | undefined = undefined
+  /** @private */
+  protected _SymbolAsyncIterator: QuickJSHandle | undefined = undefined
 
   /**
    * Use {@link QuickJSRuntime#newContext} or {@link QuickJSWASMModule#newContext}
@@ -203,6 +245,9 @@ export class QuickJSContext
     this.getString = this.getString.bind(this)
     this.getNumber = this.getNumber.bind(this)
     this.resolvePromise = this.resolvePromise.bind(this)
+    this.uint32Out = this.memory.manage(
+      this.memory.newTypedArray<Uint32Array, UInt32Pointer>(Uint32Array, 1),
+    )
   }
 
   // @implement Disposable ----------------------------------------------------
@@ -290,12 +335,7 @@ export class QuickJSContext
     const ptr = this.ffi.QTS_GetGlobalObject(this.ctx.value)
 
     // Automatically clean up this reference when we dispose
-    this.memory.manage(this.memory.heapValueHandle(ptr))
-
-    // This isn't technically a static lifetime, but since it has the same
-    // lifetime as the VM, it's okay to fake one since when the VM is
-    // disposed, no other functions will accept the value.
-    this._global = new StaticLifetime(ptr, this.runtime)
+    this._global = this.memory.staticHeapValueHandle(ptr)
     return this._global
   }
 
@@ -340,6 +380,14 @@ export class QuickJSContext
       .newHeapCharPointer(description)
       .consume((charHandle) => this.ffi.QTS_NewSymbol(this.ctx.value, charHandle.value.ptr, 1))
     return this.memory.heapValueHandle(ptr)
+  }
+
+  /**
+   * Access a well-known symbol that is a property of the global Symbol object, like `Symbol.iterator`.
+   */
+  getWellKnownSymbol(name: string): QuickJSHandle {
+    this._Symbol ??= this.memory.manage(this.getProp(this.global, "Symbol"))
+    return this.getProp(this._Symbol, name)
   }
 
   /**
@@ -703,7 +751,7 @@ export class QuickJSContext
    *
    * @param promiseLikeHandle - A handle to a Promise-like value with a `.then(onSuccess, onError)` method.
    */
-  resolvePromise(promiseLikeHandle: QuickJSHandle): Promise<VmCallResult<QuickJSHandle>> {
+  resolvePromise(promiseLikeHandle: QuickJSHandle): Promise<QuickJSContextResult<QuickJSHandle>> {
     this.runtime.assertOwned(promiseLikeHandle)
     const vmResolveResult = Scope.withScope((scope) => {
       const vmPromise = scope.manage(this.getProp(this.global, "Promise"))
@@ -714,27 +762,70 @@ export class QuickJSContext
       return Promise.resolve(vmResolveResult)
     }
 
-    return new Promise<VmCallResult<QuickJSHandle>>((resolve) => {
+    return new Promise<QuickJSContextResult<QuickJSHandle>>((resolve) => {
       Scope.withScope((scope) => {
         const resolveHandle = scope.manage(
           this.newFunction("resolve", (value) => {
-            resolve({ value: value && value.dup() })
+            resolve(this.success(value && value.dup()))
           }),
         )
 
         const rejectHandle = scope.manage(
           this.newFunction("reject", (error) => {
-            resolve({ error: error && error.dup() })
+            resolve(this.fail(error && error.dup()))
           }),
         )
 
         const promiseHandle = scope.manage(vmResolveResult.value)
         const promiseThenHandle = scope.manage(this.getProp(promiseHandle, "then"))
-        this.unwrapResult(
-          this.callFunction(promiseThenHandle, promiseHandle, resolveHandle, rejectHandle),
-        ).dispose()
+        this.callFunction(promiseThenHandle, promiseHandle, resolveHandle, rejectHandle)
+          .unwrap()
+          .dispose()
       })
     })
+  }
+
+  // Compare -----------------------------------------------------------
+
+  private isEqual(
+    a: QuickJSHandle,
+    b: QuickJSHandle,
+    equalityType: IsEqualOp = IsEqualOp.IsStrictlyEqual,
+  ): boolean {
+    if (a === b) {
+      return true
+    }
+    this.runtime.assertOwned(a)
+    this.runtime.assertOwned(b)
+    const result = this.ffi.QTS_IsEqual(this.ctx.value, a.value, b.value, equalityType)
+    if (result === -1) {
+      throw new QuickJSNotImplemented("WASM variant does not expose equality")
+    }
+    return Boolean(result)
+  }
+
+  /**
+   * `handle === other` - IsStrictlyEqual.
+   * See [Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness).
+   */
+  eq(handle: QuickJSHandle, other: QuickJSHandle): boolean {
+    return this.isEqual(handle, other, IsEqualOp.IsStrictlyEqual)
+  }
+
+  /**
+   * `Object.is(a, b)`
+   * See [Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness).
+   */
+  sameValue(handle: QuickJSHandle, other: QuickJSHandle): boolean {
+    return this.isEqual(handle, other, IsEqualOp.IsSameValue)
+  }
+
+  /**
+   * SameValueZero comparison.
+   * See [Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness).
+   */
+  sameValueZero(handle: QuickJSHandle, other: QuickJSHandle): boolean {
+    return this.isEqual(handle, other, IsEqualOp.IsSameValueZero)
   }
 
   // Properties ---------------------------------------------------------------
@@ -748,12 +839,136 @@ export class QuickJSContext
    */
   getProp(handle: QuickJSHandle, key: QuickJSPropertyKey): QuickJSHandle {
     this.runtime.assertOwned(handle)
-    const ptr = this.borrowPropertyKey(key).consume((quickJSKey) =>
-      this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value),
-    )
+    let ptr: JSValuePointer
+    if (typeof key === "number" && key >= 0) {
+      // Index access fast path
+      ptr = this.ffi.QTS_GetPropNumber(this.ctx.value, handle.value, key)
+    } else {
+      ptr = this.borrowPropertyKey(key).consume((quickJSKey) =>
+        this.ffi.QTS_GetProp(this.ctx.value, handle.value, quickJSKey.value),
+      )
+    }
     const result = this.memory.heapValueHandle(ptr)
 
     return result
+  }
+
+  /**
+   * `handle.length` as a host number.
+   *
+   * Example use:
+   * ```typescript
+   * const length = context.getLength(arrayHandle) ?? 0
+   * for (let i = 0; i < length; i++) {
+   *   using value = context.getProp(arrayHandle, i)
+   *   console.log(`array[${i}] =`, context.dump(value))
+   * }
+   * ```
+   *
+   * @returns a number if the handle has a numeric length property, otherwise `undefined`.
+   */
+  getLength(handle: QuickJSHandle): number | undefined {
+    this.runtime.assertOwned(handle)
+    const status = this.ffi.QTS_GetLength(this.ctx.value, this.uint32Out.value.ptr, handle.value)
+    if (status < 0) {
+      return undefined
+    }
+    return this.uint32Out.value.typedArray[0]
+  }
+
+  /**
+   * `Object.getOwnPropertyNames(handle)`.
+   * Similar to the [standard semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames),
+   * but with extra, non-standard options for:
+   *
+   * - fetching array indexes as numbers (`numbers: true`)
+   * - including symbols (`symbols: true`)
+   * - only iterating over enumerable properties (`onlyEnumerable: true`)
+   *
+   * The default behavior is to emulate the standard:
+   * ```typescript
+   * context.getOwnPropertyNames(handle, { strings: true, numbersAsStrings: true })
+   * ```
+   *
+   * Note when passing an explicit options object, you must set at least one
+   * option, and `strings` are not included unless specified.
+   *
+   * Example use:
+   * ```typescript
+   * for (using prop of context.getOwnPropertyNames(objectHandle).unwrap()) {
+   *   using value = context.getProp(handle, prop)
+   *   console.log(context.dump(prop), '->', context.dump(value))
+   * }
+   * ```
+   *
+   * @returns an an array of handles of the property names. The array itself is disposable for your convenience.
+   * @throws QuickJSEmptyGetOwnPropertyNames if no options are set.
+   */
+  getOwnPropertyNames(
+    handle: QuickJSHandle,
+    options: GetOwnPropertyNamesOptions = {
+      strings: true,
+      numbersAsStrings: true,
+    },
+  ): QuickJSContextResult<DisposableArray<QuickJSHandle>> {
+    this.runtime.assertOwned(handle)
+    handle.value // assert alive
+    const flags = getOwnPropertyNamesOptionsToFlags(options)
+    if (flags === 0) {
+      throw new QuickJSEmptyGetOwnPropertyNames("No options set, will return an empty array")
+    }
+    return Scope.withScope((scope) => {
+      const outPtr = scope.manage(
+        this.memory.newMutablePointerArray<JSValuePointerPointerPointer>(1),
+      )
+      const errorPtr = this.ffi.QTS_GetOwnPropertyNames(
+        this.ctx.value,
+        outPtr.value.ptr,
+        this.uint32Out.value.ptr,
+        handle.value,
+        flags,
+      )
+      if (errorPtr) {
+        return this.fail(this.memory.heapValueHandle(errorPtr))
+      }
+      const len = this.uint32Out.value.typedArray[0]
+      const ptr = outPtr.value.typedArray[0]
+      const pointerArray = new Uint32Array(this.module.HEAP8.buffer, ptr, len)
+      const handles = Array.from(pointerArray).map((ptr) =>
+        this.memory.heapValueHandle(ptr as JSValuePointer),
+      )
+      this.ffi.QTS_FreeVoidPointer(this.ctx.value, ptr as JSVoidPointer)
+      return this.success(createDisposableArray(handles))
+    })
+  }
+
+  /**
+   * `handle[Symbol.iterator]()`. See {@link QuickJSIterator}.
+   * Returns a host iterator that wraps and proxies calls to a guest iterator handle.
+   * Each step of the iteration returns a result, either an error or a handle to the next value.
+   * Once the iterator is done, the handle is automatically disposed, and the iterator
+   * is considered done if the handle is disposed.
+   *
+   * ```typescript
+   * for (using entriesHandle of context.getIterator(mapHandle).unwrap()) {
+   *   using keyHandle = context.getProp(entriesHandle, 0)
+   *   using valueHandle = context.getProp(entriesHandle, 1)
+   *   console.log(context.dump(keyHandle), '->', context.dump(valueHandle))
+   * }
+   * ```
+   */
+  getIterator(iterableHandle: QuickJSHandle): QuickJSContextResult<QuickJSIterator> {
+    const SymbolIterator = (this._SymbolIterator ??= this.memory.manage(
+      this.getWellKnownSymbol("iterator"),
+    ))
+    return Scope.withScope((scope) => {
+      const methodHandle = scope.manage(this.getProp(iterableHandle, SymbolIterator))
+      const iteratorCallResult = this.callFunction(methodHandle, iterableHandle)
+      if (iteratorCallResult.error) {
+        return iteratorCallResult
+      }
+      return this.success(new QuickJSIterator(iteratorCallResult.value, this))
+    })
   }
 
   /**
@@ -819,7 +1034,8 @@ export class QuickJSContext
   // Evaluation ---------------------------------------------------------------
 
   /**
-   * [`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call).
+   * [`func.call(thisVal, ...args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call) or
+   * [`func.apply(thisVal, args)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply).
    * Call a JSValue as a function.
    *
    * See {@link unwrapResult}, which will throw if the function returned an error, or
@@ -830,13 +1046,40 @@ export class QuickJSContext
    * @returns A result. If the function threw synchronously, `result.error` be a
    * handle to the exception. Otherwise `result.value` will be a handle to the
    * value.
+   *
+   * Example:
+   *
+   * ```typescript
+   * using parseIntHandle = context.getProp(global, "parseInt")
+   * using stringHandle = context.newString("42")
+   * using resultHandle = context.callFunction(parseIntHandle, context.undefined, stringHandle).unwrap()
+   * console.log(context.dump(resultHandle)) // 42
+   * ```
    */
   callFunction(
     func: QuickJSHandle,
     thisVal: QuickJSHandle,
+    args?: QuickJSHandle[],
+  ): QuickJSContextResult<QuickJSHandle>
+  callFunction(
+    func: QuickJSHandle,
+    thisVal: QuickJSHandle,
     ...args: QuickJSHandle[]
-  ): VmCallResult<QuickJSHandle> {
+  ): QuickJSContextResult<QuickJSHandle>
+  callFunction(
+    func: QuickJSHandle,
+    thisVal: QuickJSHandle,
+    ...restArgs: Array<QuickJSHandle | QuickJSHandle[] | undefined>
+  ): QuickJSContextResult<QuickJSHandle> {
     this.runtime.assertOwned(func)
+    let args
+    const firstArg = restArgs[0]
+    if (firstArg === undefined || Array.isArray(firstArg)) {
+      args = firstArg ?? []
+    } else {
+      args = restArgs as QuickJSHandle[]
+    }
+
     const resultPtr = this.memory
       .toPointerArray(args)
       .consume((argsArrayPtr) =>
@@ -852,10 +1095,29 @@ export class QuickJSContext
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
-      return { error: this.memory.heapValueHandle(errorPtr) }
+      return this.fail(this.memory.heapValueHandle(errorPtr))
     }
 
-    return { value: this.memory.heapValueHandle(resultPtr) }
+    return this.success(this.memory.heapValueHandle(resultPtr))
+  }
+
+  /**
+   * `handle[key](...args)`
+   *
+   * Call a method on a JSValue. This is a convenience method that calls {@link getProp} and {@link callFunction}.
+   *
+   * @returns A result. If the function threw synchronously, `result.error` be a
+   * handle to the exception. Otherwise `result.value` will be a handle to the
+   * value.
+   */
+  callMethod(
+    thisHandle: QuickJSHandle,
+    key: QuickJSPropertyKey,
+    args: QuickJSHandle[] = [],
+  ): QuickJSContextResult<QuickJSHandle> {
+    return this.getProp(thisHandle, key).consume((func) =>
+      this.callFunction(func, thisHandle, args),
+    )
   }
 
   /**
@@ -901,7 +1163,7 @@ export class QuickJSContext
      * See {@link EvalFlags} for number semantics.
      */
     options?: number | ContextEvalOptions,
-  ): VmCallResult<QuickJSHandle> {
+  ): QuickJSContextResult<QuickJSHandle> {
     const detectModule = (options === undefined ? 1 : 0) as EvalDetectModule
     const flags = evalOptionsToFlags(options) as EvalFlags
     const resultPtr = this.memory
@@ -919,9 +1181,9 @@ export class QuickJSContext
     const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, resultPtr)
     if (errorPtr) {
       this.ffi.QTS_FreeValuePointer(this.ctx.value, resultPtr)
-      return { error: this.memory.heapValueHandle(errorPtr) }
+      return this.fail(this.memory.heapValueHandle(errorPtr))
     }
-    return { value: this.memory.heapValueHandle(resultPtr) }
+    return this.success(this.memory.heapValueHandle(resultPtr))
   }
 
   /**
@@ -1103,7 +1365,7 @@ export class QuickJSContext
           const result = yield* awaited(fn.apply(thisHandle, argHandles))
           if (result) {
             if ("error" in result && result.error) {
-              debugLog("throw error", result.error)
+              this.runtime.debugLog("throw error", result.error)
               throw result.error
             }
             const handle = scope.manage(result instanceof Lifetime ? result : result.value)
@@ -1160,5 +1422,13 @@ export class QuickJSContext
   decodeBinaryJSON(handle: QuickJSHandle): QuickJSHandle {
     const ptr = this.ffi.QTS_bjson_decode(this.ctx.value, handle.value)
     return this.memory.heapValueHandle(ptr)
+  }
+
+  protected success<S>(value: S): DisposableSuccess<S> {
+    return DisposableResult.success(value)
+  }
+
+  protected fail(error: QuickJSHandle): DisposableFail<QuickJSHandle> {
+    return DisposableResult.fail(error, (error) => this.unwrapResult(error))
   }
 }

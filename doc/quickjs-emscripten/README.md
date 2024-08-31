@@ -585,8 +585,9 @@ build variant of quickjs-emscripten, and also the [DEBUG_SYNC] build variant.
 The debug sync build variant has extra instrumentation code for detecting memory
 leaks.
 
-The class [TestQuickJSWASMModule] exposes the memory leak detection API, although
-this API is only accurate when using `DEBUG_SYNC` variant.
+The class [TestQuickJSWASMModule] exposes the memory leak detection API,
+although this API is only accurate when using `DEBUG_SYNC` variant. You can also
+enable [debug logging](#debugging) to help diagnose failures.
 
 ```typescript
 // Define your test suite in a function, so that you can test against
@@ -768,40 +769,51 @@ You can use quickjs-emscripten directly from an HTML file in two ways:
 
 ### Debugging
 
-- Switch to a DEBUG build variant of the WebAssembly module to see debug log messages from the C part of this library:
+Debug logging can be enabled globally, or for specific runtimes. You need to use a DEBUG build variant of the WebAssembly module to see debug log messages from the C part of this library.
 
-  ```typescript
-  import { newQuickJSWASMModule, DEBUG_SYNC } from "quickjs-emscripten"
+```typescript
+import { newQuickJSWASMModule, DEBUG_SYNC } from "quickjs-emscripten"
 
-  const QuickJS = await newQuickJSWASMModule(DEBUG_SYNC)
-  ```
+const QuickJS = await newQuickJSWASMModule(DEBUG_SYNC)
+```
 
-  With quickjs-emscripten-core:
+With quickjs-emscripten-core:
 
-  ```typescript
-  import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
-  import DEBUG_SYNC from "@jitl/quickjs-wasmfile-debug-sync"
+```typescript
+import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core"
+import DEBUG_SYNC from "@jitl/quickjs-wasmfile-debug-sync"
 
-  const QuickJS = await newQuickJSWASMModuleFromVariant(DEBUG_SYNC)
-  ```
+const QuickJS = await newQuickJSWASMModuleFromVariant(DEBUG_SYNC)
+```
 
-- Enable debug log messages from the Javascript part of this library with [setDebugMode][setDebugMode]:
+To enable debug logging globally, call [setDebugMode][setDebugMode]. This affects global Javascript parts of the library, like the module loader and asyncify internals, and is inherited by runtimes created after the call.
 
-  ```typescript
-  import { setDebugMode } from "quickjs-emscripten"
+```typescript
+import { setDebugMode } from "quickjs-emscripten"
 
-  setDebugMode(true)
-  ```
+setDebugMode(true)
+```
 
-  With quickjs-emscripten-core:
+With quickjs-emscripten-core:
 
-  ```typescript
-  import { setDebugMode } from "quickjs-emscripten-core"
+```typescript
+import { setDebugMode } from "quickjs-emscripten-core"
 
-  setDebugMode(true)
-  ```
+setDebugMode(true)
+```
+
+To enable debug logging for a specific runtime, call [setDebugModeRt][setDebugModeRt]. This affects only the runtime and its associated contexts.
+
+```typescript
+const runtime = QuickJS.newRuntime()
+runtime.setDebugMode(true)
+
+const context = QuickJS.newContext()
+context.runtime.setDebugMode(true)
+```
 
 [setDebugMode]: doc/quickjs-emscripten/exports.md#setdebugmode
+[setDebugModeRt]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten-core/classes/QuickJSRuntime.md#setdebugmode
 
 ### Supported Platforms
 

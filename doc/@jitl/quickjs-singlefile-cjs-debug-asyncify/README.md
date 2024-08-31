@@ -82,6 +82,7 @@ Variant-specific Emscripten build flags:
   "-lasync.js",
   "-O0",
   "-DQTS_DEBUG_MODE",
+  "-DDUMP_LEAKS=1",
   "-gsource-map",
   "-s ASSERTIONS=1",
   "--pre-js $(TEMPLATES)/pre-extension.js",
@@ -89,7 +90,6 @@ Variant-specific Emscripten build flags:
   "--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js",
   "--pre-js $(TEMPLATES)/pre-wasmMemory.js",
   "-s SINGLE_FILE=1",
-  "-s ASYNCIFY_ADVISE=1",
   "-O3"
 ]
 ```

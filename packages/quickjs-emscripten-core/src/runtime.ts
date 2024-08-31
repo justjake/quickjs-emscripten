@@ -8,15 +8,14 @@ import type {
 } from "@jitl/quickjs-ffi-types"
 import { maybeAsyncFn } from "./asyncify-helpers"
 import { QuickJSContext } from "./context"
-import { debugLog } from "./debug"
+import { QTS_DEBUG } from "./debug"
 import { QuickJSWrongOwner } from "./errors"
 import type { Disposable } from "./lifetime"
-import { Lifetime, Scope, UsingDisposable } from "./lifetime"
+import { DisposableResult, Lifetime, Scope, UsingDisposable } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import type { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
 import type { ContextOptions, JSModuleLoader, JSModuleNormalizer, QuickJSHandle } from "./types"
 import { intrinsicsToFlags } from "./types"
-import type { SuccessOrFail } from "./vm-interface"
 
 /**
  * Callback called regularly while the VM executes code.
@@ -33,7 +32,7 @@ export type InterruptHandler = (runtime: QuickJSRuntime) => boolean | undefined
  * by the runtime.
  * @source
  */
-export type ExecutePendingJobsResult = SuccessOrFail<
+export type ExecutePendingJobsResult = DisposableResult<
   /** Number of jobs successfully executed. */
   number,
   /** The error that occurred. */
@@ -117,6 +116,10 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     this.callbacks.setRuntimeCallbacks(this.rt.value, this.cToHostCallbacks)
 
     this.executePendingJobs = this.executePendingJobs.bind(this)
+
+    if (QTS_DEBUG) {
+      this.setDebugMode(true)
+    }
   }
 
   get alive() {
@@ -250,7 +253,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     if (ctxPtr === 0) {
       // No jobs executed.
       this.ffi.QTS_FreeValuePointerRuntime(this.rt.value, valuePtr)
-      return { value: 0 }
+      return DisposableResult.success(0)
     }
 
     const context =
@@ -264,12 +267,10 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     if (typeOfRet === "number") {
       const executedJobs = context.getNumber(resultValue)
       resultValue.dispose()
-      return { value: executedJobs }
+      return DisposableResult.success(executedJobs)
     } else {
-      const error = Object.assign(resultValue, { context })
-      return {
-        error,
-      }
+      const error = Object.assign(resultValue as QuickJSHandle, { context })
+      return DisposableResult.fail(error, (error) => context.unwrapResult(error))
     }
   }
 
@@ -331,6 +332,40 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     }
   }
 
+  private _debugMode = false
+
+  /**
+   * Enable or disable debug logging.
+   *
+   * If this module is a DEBUG variant, more logs will be printed from the C
+   * code.
+   */
+  setDebugMode(enabled: boolean) {
+    this._debugMode = enabled
+    if (this.ffi.DEBUG && this.rt.alive) {
+      this.ffi.QTS_SetDebugLogEnabled(this.rt.value, enabled ? 1 : 0)
+    }
+  }
+
+  /**
+   * @returns true if debug logging is enabled
+   */
+  isDebugMode(): boolean {
+    return this._debugMode
+  }
+
+  /**
+   * In debug mode, log the result of calling `msg()`.
+   *
+   * We take a function instead of a log message to avoid expensive string
+   * manipulation if debug logging is disabled.
+   */
+  debugLog(...msg: unknown[]) {
+    if (this._debugMode) {
+      console.log("quickjs-emscripten:", ...msg)
+    }
+  }
+
   private getSystemContext() {
     if (!this.context) {
       // We own this context and should dispose of it.
@@ -373,7 +408,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
         const result = yield* awaited(moduleLoader(moduleName, context))
 
         if (typeof result === "object" && "error" in result && result.error) {
-          debugLog("cToHostLoadModule: loader returned error", result.error)
+          this.debugLog("cToHostLoadModule: loader returned error", result.error)
           throw result.error
         }
 
@@ -382,7 +417,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
 
         return this.memory.newHeapCharPointer(moduleSource).value.ptr
       } catch (error) {
-        debugLog("cToHostLoadModule: caught error", error)
+        this.debugLog("cToHostLoadModule: caught error", error)
         context.throw(error as any)
         return 0 as BorrowedHeapCharPointer
       }
@@ -413,14 +448,14 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
           )
 
           if (typeof result === "object" && "error" in result && result.error) {
-            debugLog("cToHostNormalizeModule: normalizer returned error", result.error)
+            this.debugLog("cToHostNormalizeModule: normalizer returned error", result.error)
             throw result.error
           }
 
           const name = typeof result === "string" ? result : result.value
           return context.getMemory(this.rt.value).newHeapCharPointer(name).value.ptr
         } catch (error) {
-          debugLog("normalizeModule: caught error", error)
+          this.debugLog("normalizeModule: caught error", error)
           context.throw(error as any)
           return 0 as BorrowedHeapCharPointer
         }

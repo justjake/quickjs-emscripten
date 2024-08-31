@@ -5,7 +5,15 @@
 import assert from "assert"
 import fs from "fs"
 import { inspect as baseInspect } from "node:util"
-import { describe, beforeEach, afterEach, afterAll as after, it, expect } from "vitest"
+import {
+  describe,
+  beforeEach,
+  afterEach,
+  afterAll as after,
+  it,
+  expect,
+  onTestFailed,
+} from "vitest"
 import type {
   QuickJSHandle,
   InterruptHandler,
@@ -35,35 +43,69 @@ import {
   RELEASE_ASYNC,
   newVariant,
   shouldInterruptAfterDeadline,
+  Scope,
+  setDebugMode,
 } from "."
 
-const TEST_NG = !process.env.TEST_NO_NG
-const TEST_DEBUG = !process.env.TEST_NO_DEBUG
-const TEST_ASYNC = !process.env.TEST_NO_ASYNC
+const TEST_SLOW = !process.env.TEST_FAST
+const TEST_NG = TEST_SLOW && !process.env.TEST_NO_NG
+const TEST_DEBUG = TEST_SLOW && !process.env.TEST_NO_DEBUG
+const TEST_ASYNC = TEST_SLOW && !process.env.TEST_NO_ASYNC
 const TEST_RELEASE = !process.env.TEST_NO_RELEASE
+const DEBUG = Boolean(process.env.DEBUG)
 console.log("test sets:", {
   TEST_RELEASE,
   TEST_DEBUG,
   TEST_NG,
   TEST_ASYNC,
+  TEST_SLOW,
+  DEBUG,
 })
+
+if (DEBUG) {
+  setDebugMode(true)
+}
 
 type GetTestContext = (options?: ContextOptions) => Promise<QuickJSContext>
 
+const baseIt = it
 function contextTests(getContext: GetTestContext, isDebug = false) {
   let vm: QuickJSContext = undefined as any
   let ffi: QuickJSFFI | QuickJSAsyncFFI = undefined as any
   let testId = 0
+  let anyTestFailed = false
+  let thisTestFailed = false
+
+  const it = (name: string, fn: (scope: Scope) => unknown) =>
+    baseIt(name, async () => {
+      onTestFailed(() => {
+        anyTestFailed = true
+      })
+
+      try {
+        await Scope.withScopeAsync(async (scope) => {
+          await fn(scope)
+        })
+      } catch (error) {
+        thisTestFailed = true
+        throw error
+      }
+    })
 
   beforeEach(async () => {
     testId++
+    thisTestFailed = false
     vm = await getContext()
     ffi = (vm as any).ffi
     assertBuildIsConsistent(vm)
   })
 
   afterEach(() => {
-    vm.dispose()
+    if (!thisTestFailed) {
+      // this will assert we disposed everything in the test
+      // however, if we failed we may not have disposed
+      vm.dispose()
+    }
     vm = undefined as any
   })
 
@@ -76,9 +118,13 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       // Asyncify explodes during leak checking.
       return
     }
+    if (anyTestFailed) {
+      // we probably threw an error before disposing
+      return
+    }
     // https://web.dev/webassembly-memory-debugging/
     assert.strictEqual(ffi.QTS_RecoverableLeakCheck(), 0, "No lsan errors")
-    console.log("Leaks checked (OK)")
+    debugLog("Leaks checked (OK)")
   })
 
   const getTestId = () => `test-${getContext.name}-${testId}`
@@ -232,7 +278,7 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
         fnHandle.dispose()
       })
 
-      const itForMaxFuns = isDebug ? it : it.skip
+      const itForMaxFuns = isDebug && TEST_SLOW ? it : baseIt.skip
       itForMaxFuns(
         "can handle more than signed int max functions being registered",
         () =>
@@ -358,6 +404,99 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       length.dispose()
       array.dispose()
       vals.forEach((val) => val.dispose())
+    })
+
+    it("can access .length as a number", () => {
+      const array = vm.newArray()
+      assert.strictEqual(vm.getLength(array), 0)
+      vm.newNumber(100).consume((n) => vm.setProp(array, 5, n))
+      assert.strictEqual(vm.getLength(array), 6)
+      array.dispose()
+    })
+  })
+
+  describe("getOwnPropertyNames", () => {
+    it("gets array indexes as *numbers*", ({ manage }) => {
+      const array = manage(vm.newArray())
+      vm.setProp(array, 0, vm.undefined)
+      vm.setProp(array, 1, vm.undefined)
+      vm.setProp(array, 2, vm.undefined)
+
+      const props = manage(
+        vm
+          .getOwnPropertyNames(array, {
+            numbers: true,
+          })
+          .unwrap(),
+      )
+
+      assert.strictEqual(props.length, 3)
+      assert.strictEqual(vm.dump(props[0]), 0)
+      assert.strictEqual(vm.dump(props[1]), 1)
+      assert.strictEqual(vm.dump(props[2]), 2)
+    })
+
+    it("gets object keys as *strings*, but does not include symbols", ({ manage }) => {
+      const obj = manage(vm.newObject())
+      vm.setProp(obj, "a", vm.true)
+      vm.setProp(obj, "b", vm.undefined)
+      vm.setProp(obj, "c", vm.undefined)
+      const sym = vm.newUniqueSymbol("d")
+      vm.setProp(obj, sym, vm.undefined)
+      sym.dispose()
+
+      const props = manage(
+        vm
+          .getOwnPropertyNames(obj, {
+            onlyEnumerable: true,
+            strings: true,
+          })
+          .unwrap(),
+      )
+
+      assert.strictEqual(props.length, 3)
+      assert.strictEqual(vm.dump(props[0]), "a")
+      assert.strictEqual(vm.dump(props[1]), "b")
+      assert.strictEqual(vm.dump(props[2]), "c")
+    })
+
+    it('gets object keys that are symbols only when "includeSymbols" is true', ({ manage }) => {
+      const obj = manage(vm.newObject())
+      const symA = manage(vm.newUniqueSymbol("a"))
+      vm.setProp(obj, symA, vm.undefined)
+      vm.setProp(obj, "b", vm.undefined)
+      vm.setProp(obj, "c", vm.undefined)
+
+      const props = manage(
+        vm.unwrapResult(
+          vm.getOwnPropertyNames(obj, {
+            onlyEnumerable: true,
+            symbols: true,
+          }),
+        ),
+      )
+
+      assert.strictEqual(props.length, 1)
+      assert.strictEqual(vm.typeof(props[0]), "symbol")
+    })
+
+    it("gets number keys as strings when in standard compliant mode", ({ manage }) => {
+      const array = manage(vm.newArray())
+      vm.setProp(array, 0, vm.undefined)
+      vm.setProp(array, 1, vm.undefined)
+      vm.setProp(array, 2, vm.undefined)
+      vm.setProp(array, "dog", vm.undefined)
+      const props = manage(
+        vm.getOwnPropertyNames(array, {
+          strings: true,
+          numbersAsStrings: true,
+          onlyEnumerable: true,
+        }),
+      )
+        .unwrap()
+        .map((p) => vm.dump(p))
+
+      assert.deepStrictEqual(["0", "1", "2", "dog"], props)
     })
   })
 
@@ -1168,7 +1307,7 @@ function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
       // The nesting levels of the test cannot be too high, otherwise the
       // node.js call stack will overflow when executing `yarn test`
       const buildName = isBuildDebug(vm) ? "debug" : "release"
-      const EXPECTED_NESTING_LEVEL = isBuildDebug(vm) ? 19 : 20
+      const EXPECTED_NESTING_LEVEL = isBuildDebug(vm) ? 18 : 20
 
       let asyncFunctionCalls = 0
       const asyncFn = async () => {

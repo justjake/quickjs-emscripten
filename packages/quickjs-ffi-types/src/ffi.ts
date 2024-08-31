@@ -8,6 +8,7 @@ import {
   JSValuePointer,
   JSValueConstPointer,
   JSValuePointerPointer,
+  JSValuePointerPointerPointer,
   JSValueConstPointerPointer,
   QTS_C_To_HostCallbackFuncPointer,
   QTS_C_To_HostInterruptFuncPointer,
@@ -16,9 +17,12 @@ import {
   OwnedHeapCharPointer,
   JSBorrowedCharPointer,
   JSVoidPointer,
+  UInt32Pointer,
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
+  GetOwnPropertyNamesFlags,
+  IsEqualOp,
   JSPromiseStateEnum,
 } from "."
 
@@ -104,6 +108,11 @@ export interface QuickJSFFI {
     this_val: JSValuePointer | JSValueConstPointer,
     prop_name: JSValuePointer | JSValueConstPointer,
   ) => JSValuePointer
+  QTS_GetPropNumber: (
+    ctx: JSContextPointer,
+    this_val: JSValuePointer | JSValueConstPointer,
+    prop_name: number,
+  ) => JSValuePointer
   QTS_SetProp: (
     ctx: JSContextPointer,
     this_val: JSValuePointer | JSValueConstPointer,
@@ -121,6 +130,13 @@ export interface QuickJSFFI {
     enumerable: boolean,
     has_value: boolean,
   ) => void
+  QTS_GetOwnPropertyNames: (
+    ctx: JSContextPointer,
+    out_ptrs: JSValuePointerPointerPointer,
+    out_len: UInt32Pointer,
+    obj: JSValuePointer | JSValueConstPointer,
+    flags: number,
+  ) => JSValuePointer
   QTS_Call: (
     ctx: JSContextPointer,
     func_obj: JSValuePointer | JSValueConstPointer,
@@ -149,6 +165,17 @@ export interface QuickJSFFI {
     ctx: JSContextPointer,
     value: JSValuePointer | JSValueConstPointer,
   ) => OwnedHeapCharPointer
+  QTS_GetLength: (
+    ctx: JSContextPointer,
+    out_len: UInt32Pointer,
+    value: JSValuePointer | JSValueConstPointer,
+  ) => number
+  QTS_IsEqual: (
+    ctx: JSContextPointer,
+    a: JSValuePointer | JSValueConstPointer,
+    b: JSValuePointer | JSValueConstPointer,
+    op: IsEqualOp,
+  ) => number
   QTS_GetGlobalObject: (ctx: JSContextPointer) => JSValuePointer
   QTS_NewPromiseCapability: (
     ctx: JSContextPointer,
@@ -163,6 +190,8 @@ export interface QuickJSFFI {
     promise: JSValuePointer | JSValueConstPointer,
   ) => JSValuePointer
   QTS_TestStringArg: (string: string) => void
+  QTS_GetDebugLogEnabled: (rt: JSRuntimePointer) => number
+  QTS_SetDebugLogEnabled: (rt: JSRuntimePointer, is_enabled: number) => void
   QTS_BuildIsDebug: () => number
   QTS_BuildIsAsyncify: () => number
   QTS_NewFunction: (ctx: JSContextPointer, func_id: number, name: string) => JSValuePointer

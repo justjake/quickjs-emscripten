@@ -5,11 +5,18 @@
 export let QTS_DEBUG = false
 
 /**
- * Enable (or disable) debug logging and object creation tracking in the Javascript API.
+ * Enable (or disable) debug logging and object creation tracking globally.
+ * This setting is inherited by newly created QuickJSRuntime instances.
  * To get debug logging in the WebAssembly module, you need to use a debug build variant.
+ * See [the quickjs-emscripten-core README](https://github.com/justjake/quickjs-emscripten/tree/main/doc/quickjs-emscripten-core) for more about build variants.
  */
 export function setDebugMode(enabled: boolean = true) {
   QTS_DEBUG = enabled
+}
+
+/** Get the global debug mode */
+export function isDebugMode() {
+  return QTS_DEBUG
 }
 
 /**
@@ -17,6 +24,6 @@ export function setDebugMode(enabled: boolean = true) {
  */
 export function debugLog(...args: any[]) {
   if (QTS_DEBUG) {
-    console.log(...args)
+    console.log("quickjs-emscripten:", ...args)
   }
 }

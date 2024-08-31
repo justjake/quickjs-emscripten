@@ -59,10 +59,18 @@
 #define LOG_LEN 500
 
 #ifdef QTS_DEBUG_MODE
-#define QTS_DEBUG(msg) qts_log(msg);
-#define QTS_DUMP(value) qts_dump(ctx, value);
+#define IF_DEBUG if (qts_get_context_rt_data(ctx)->debug_log)
+#define IF_DEBUG_RT if (qts_get_runtime_data(rt)->debug_log)
+
+#define QTS_DEBUG(msg) IF_DEBUG qts_log(msg);
+#define QTS_DEBUG_RT(msg) IF_DEBUG_RT qts_log(msg);
+#define QTS_DUMP(value) IF_DEBUG qts_dump(ctx, value);
+
 #else
+#define IF_DEBUG if (0)
+#define IF_DEBUG_RT if (0)
 #define QTS_DEBUG(msg) ;
+#define QTS_DEBUG_RT(msg) ;
 #define QTS_DUMP(value) ;
 #endif
 
@@ -92,6 +100,24 @@
 #define EvalFlags int
 #define IntrinsicsFlags enum QTS_Intrinsic
 #define EvalDetectModule int
+
+typedef struct qts_RuntimeData {
+  bool debug_log;
+} qts_RuntimeData;
+
+qts_RuntimeData *qts_get_runtime_data(JSRuntime *rt) {
+  qts_RuntimeData *data = JS_GetRuntimeOpaque(rt);
+  if (data == NULL) {
+    data = malloc(sizeof(qts_RuntimeData));
+    data->debug_log = false;
+    JS_SetRuntimeOpaque(rt, data);
+  }
+  return data;
+}
+
+qts_RuntimeData *qts_get_context_rt_data(JSContext *ctx) {
+  return qts_get_runtime_data(JS_GetRuntime(ctx));
+}
 
 void qts_log(char *msg) {
   fputs(PKG, stderr);
@@ -273,6 +299,10 @@ JSRuntime *QTS_NewRuntime() {
 }
 
 void QTS_FreeRuntime(JSRuntime *rt) {
+  void *data = JS_GetRuntimeOpaque(rt);
+  if (data) {
+    free(data);
+  }
   JS_FreeRuntime(rt);
 }
 
@@ -533,11 +563,11 @@ MaybeAsync(JSValue *) QTS_ExecutePendingJob(JSRuntime *rt, int maxJobsToExecute,
       executed++;
     }
   }
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  snprintf(msg, 500, "QTS_ExecutePendingJob(executed: %d, pctx: %p, lastJobExecuted: %p)", executed, pctx, *lastJobContext);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG_RT {
+    char msg[LOG_LEN];
+    snprintf(msg, LOG_LEN, "QTS_ExecutePendingJob(executed: %d, pctx: %p, lastJobExecuted: %p)", executed, pctx, *lastJobContext);
+    qts_log(msg);
+  }
   return jsvalue_to_heap(JS_NewFloat64(pctx, executed));
 }
 
@@ -545,6 +575,11 @@ MaybeAsync(JSValue *) QTS_GetProp(JSContext *ctx, JSValueConst *this_val, JSValu
   JSAtom prop_atom = JS_ValueToAtom(ctx, *prop_name);
   JSValue prop_val = JS_GetProperty(ctx, *this_val, prop_atom);
   JS_FreeAtom(ctx, prop_atom);
+  return jsvalue_to_heap(prop_val);
+}
+
+MaybeAsync(JSValue *) QTS_GetPropNumber(JSContext *ctx, JSValueConst *this_val, int prop_name) {
+  JSValue prop_val = JS_GetPropertyUint32(ctx, *this_val, (uint32_t)prop_name);
   return jsvalue_to_heap(prop_val);
 }
 
@@ -584,6 +619,76 @@ void QTS_DefineProp(JSContext *ctx, JSValueConst *this_val, JSValueConst *prop_n
 
   JS_DefineProperty(ctx, *this_val, prop_atom, *prop_value, *get, *set, flags);
   JS_FreeAtom(ctx, prop_atom);
+}
+
+#define JS_ATOM_TAG_INT (1U << 31)
+static inline BOOL __JS_AtomIsTaggedInt(JSAtom v) {
+  return (v & JS_ATOM_TAG_INT) != 0;
+}
+
+static inline uint32_t __JS_AtomToUInt32(JSAtom atom) {
+  return atom & ~JS_ATOM_TAG_INT;
+}
+
+/* include numbers. when only this is set, we filter out strings */
+#define QTS_GPN_NUMBER_MASK (1 << 6)
+/* Treat numbers as strings */
+#define QTS_STANDARD_COMPLIANT_NUMBER (1 << 7)
+
+MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue ***out_ptrs, uint32_t *out_len, JSValueConst *obj, int flags) {
+  JSPropertyEnum *tab = NULL;
+  uint32_t total_props = 0;
+  uint32_t out_props = 0;
+
+  BOOL qts_standard_compliant_number = (flags & QTS_STANDARD_COMPLIANT_NUMBER) != 0;
+  BOOL qts_include_string = (flags & JS_GPN_STRING_MASK) != 0;
+  BOOL qts_include_number = qts_standard_compliant_number ? 0 : (flags & QTS_GPN_NUMBER_MASK) != 0;
+  if (qts_include_number) {
+    // if we want numbers, we must include strings in call down
+    flags = flags | JS_GPN_STRING_MASK;
+  }
+
+  int status = 0;
+  status = JS_GetOwnPropertyNames(ctx, &tab, &total_props, *obj, flags);
+  if (status < 0) {
+    if (tab != NULL) {
+      js_free(ctx, tab);
+    }
+    return jsvalue_to_heap(JS_GetException(ctx));
+  }
+  *out_ptrs = malloc(sizeof(JSValue) * *out_len);
+  for (int i = 0; i < total_props; i++) {
+    JSAtom atom = tab[i].atom;
+
+    if (__JS_AtomIsTaggedInt(atom)) {
+      if (qts_include_number) {
+        uint32_t v = __JS_AtomToUInt32(atom);
+        (*out_ptrs)[out_props++] = jsvalue_to_heap(JS_NewUint32(ctx, v));
+      } else if (qts_include_string && qts_standard_compliant_number) {
+        (*out_ptrs)[out_props++] = jsvalue_to_heap(JS_AtomToValue(ctx, tab[i].atom));
+      }
+      JS_FreeAtom(ctx, atom);
+      continue;
+    }
+
+    JSValue atom_value = JS_AtomToValue(ctx, atom);
+    JS_FreeAtom(ctx, atom);
+
+    if (JS_IsString(atom_value)) {
+      if (qts_include_string) {
+        (*out_ptrs)[out_props++] = jsvalue_to_heap(atom_value);
+      } else {
+        JS_FreeValue(ctx, atom_value);
+      }
+    } else {  // Symbol
+      // We must have set the includeSymbol or includePrivate flags
+      // if it's present
+      (*out_ptrs)[out_props++] = jsvalue_to_heap(atom_value);
+    }
+  }
+  js_free(ctx, tab);
+  *out_len = out_props;
+  return NULL;
 }
 
 MaybeAsync(JSValue *) QTS_Call(JSContext *ctx, JSValueConst *func_obj, JSValueConst *this_obj, int argc, JSValueConst **argv_ptrs) {
@@ -635,10 +740,10 @@ MaybeAsync(JSBorrowedChar *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
     }
   }
 
-#ifdef QTS_DEBUG_MODE
-  qts_log("Error dumping JSON:");
-  js_std_dump_error(ctx);
-#endif
+  IF_DEBUG {
+    qts_log("Error dumping JSON:");
+    js_std_dump_error(ctx);
+  }
 
   // Fallback: convert to string
   return QTS_GetString(ctx, obj);
@@ -655,9 +760,7 @@ JSValue qts_resolve_func_data(
 }
 
 MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t js_code_length, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-#endif
+  char msg[LOG_LEN];
   if (detectModule) {
     if (JS_DetectModule((const char *)js_code, js_code_length)) {
       QTS_DEBUG("QTS_Eval: Detected module = true");
@@ -703,10 +806,10 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
     QTS_DEBUG("QTS_Eval: JS_EVAL_TYPE_GLOBAL eval_result")
   }
 
-#ifdef QTS_DEBUG_MODE
-  snprintf(msg, 500, "QTS_Eval: eval_result = %d", eval_result);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG {
+    snprintf(msg, LOG_LEN, "QTS_Eval: eval_result = %d", eval_result);
+    qts_log(msg);
+  }
 
   if (
       // Error - nothing more to do.
@@ -720,10 +823,10 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
   // We eval'd a module.
   // Make our return type `ModuleExports | Promise<ModuleExports>>`
   JSPromiseStateEnum state = JS_PromiseState(ctx, eval_result);
-#ifdef QTS_DEBUG_MODE
-  snprintf(msg, 500, "QTS_Eval: eval_result JS_PromiseState = %i", state);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG {
+    snprintf(msg, LOG_LEN, "QTS_Eval: eval_result JS_PromiseState = %i", state);
+    qts_log(msg);
+  }
   if (
       // quickjs@2024-01-14 evaluating module
       // produced a promise
@@ -819,6 +922,53 @@ OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
   return out;
 }
 
+JSAtom QTS_AtomLength = 0;
+int QTS_GetLength(JSContext *ctx, uint32_t *out_len, JSValueConst *value) {
+  JSValue len_val;
+  int result;
+
+  if (!JS_IsObject(*value)) {
+    return -1;
+  }
+
+  if (QTS_AtomLength == 0) {
+    // This should result in a constant static atom we don't actually need to
+    // free, since it's interned within quickjs.c
+    QTS_AtomLength = JS_NewAtom(ctx, "length");
+  }
+
+  len_val = JS_GetProperty(ctx, *value, QTS_AtomLength);
+  if (JS_IsException(len_val)) {
+    return -1;
+  }
+
+  result = JS_ToUint32(ctx, out_len, len_val);
+  JS_FreeValue(ctx, len_val);
+  return result;
+}
+
+typedef enum IsEqualOp {
+  QTS_EqualOp_StrictEq = 0,
+  QTS_EqualOp_SameValue = 1,
+  QTS_EqualOp_SameValueZero = 2,
+} IsEqualOp;
+
+int QTS_IsEqual(JSContext *ctx, JSValueConst *a, JSValueConst *b, IsEqualOp op) {
+#ifdef QTS_USE_QUICKJS_NG
+  return -1;
+#else
+  switch (op) {
+    case QTS_EqualOp_SameValue:
+      return JS_SameValue(ctx, *a, *b);
+    case QTS_EqualOp_SameValueZero:
+      return JS_SameValueZero(ctx, *a, *b);
+    default:
+    case QTS_EqualOp_StrictEq:
+      return JS_StrictEq(ctx, *a, *b);
+  }
+#endif
+}
+
 JSValue *QTS_GetGlobalObject(JSContext *ctx) {
   return jsvalue_to_heap(JS_GetGlobalObject(ctx));
 }
@@ -841,6 +991,19 @@ JSValue *QTS_PromiseResult(JSContext *ctx, JSValueConst *promise) {
 
 void QTS_TestStringArg(const char *string) {
   // pass
+}
+
+int QTS_GetDebugLogEnabled(JSRuntime *rt) {
+  IF_DEBUG_RT {
+    return 1;
+  }
+  return 0;
+}
+
+void QTS_SetDebugLogEnabled(JSRuntime *rt, int is_enabled) {
+#ifdef QTS_DEBUG_MODE
+  qts_get_runtime_data(rt)->debug_log = (bool)is_enabled;
+#endif
 }
 
 int QTS_BuildIsDebug() {
@@ -894,11 +1057,11 @@ JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSVal
 
 // Function: Host -> QuickJS
 JSValue *QTS_NewFunction(JSContext *ctx, uint32_t func_id, const char *name) {
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  snprintf(msg, 500, "new_function(name: %s, magic: %d)", name, func_id);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG {
+    char msg[LOG_LEN];
+    snprintf(msg, LOG_LEN, "new_function(name: %s, magic: %d)", name, func_id);
+    qts_log(msg);
+  }
   JSValue func_obj = JS_NewCFunctionMagic(
       /* context */ ctx,
       /* JSCFunctionMagic* */ &qts_call_function,
@@ -979,11 +1142,11 @@ loading, but (1) seems much easier to implement in the sort run.
 */
 
 JSModuleDef *qts_compile_module(JSContext *ctx, const char *module_name, BorrowedHeapChar *module_body) {
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  sprintf(msg, "QTS_CompileModule(ctx: %p, name: %s, bodyLength: %lu)", ctx, module_name, strlen(module_body));
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG {
+    char msg[LOG_LEN];
+    sprintf(msg, "QTS_CompileModule(ctx: %p, name: %s, bodyLength: %lu)", ctx, module_name, strlen(module_body));
+    qts_log(msg);
+  }
   JSValue func_val = JS_Eval(ctx, module_body, strlen(module_body), module_name, JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
   if (JS_IsException(func_val)) {
     return NULL;
@@ -1024,11 +1187,11 @@ EM_JS(MaybeAsync(char *), qts_host_normalize_module, (JSRuntime * rt, JSContext 
 // See js_module_loader in quickjs/quickjs-libc.c:567
 JSModuleDef *qts_load_module(JSContext *ctx, const char *module_name, void *_unused) {
   JSRuntime *rt = JS_GetRuntime(ctx);
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  sprintf(msg, "qts_load_module(rt: %p, ctx: %p, name: %s)", rt, ctx, module_name);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG_RT {
+    char msg[LOG_LEN];
+    sprintf(msg, "qts_load_module(rt: %p, ctx: %p, name: %s)", rt, ctx, module_name);
+    qts_log(msg);
+  }
   char *module_source = qts_host_load_module_source(rt, ctx, module_name);
   if (module_source == NULL) {
     return NULL;
@@ -1041,11 +1204,11 @@ JSModuleDef *qts_load_module(JSContext *ctx, const char *module_name, void *_unu
 
 char *qts_normalize_module(JSContext *ctx, const char *module_base_name, const char *module_name, void *_unused) {
   JSRuntime *rt = JS_GetRuntime(ctx);
-#ifdef QTS_DEBUG_MODE
-  char msg[500];
-  sprintf(msg, "qts_normalize_module(rt: %p, ctx: %p, base_name: %s, name: %s)", rt, ctx, module_base_name, module_name);
-  QTS_DEBUG(msg)
-#endif
+  IF_DEBUG_RT {
+    char msg[LOG_LEN];
+    sprintf(msg, "qts_normalize_module(rt: %p, ctx: %p, base_name: %s, name: %s)", rt, ctx, module_base_name, module_name);
+    qts_log(msg);
+  }
   char *em_module_name = qts_host_normalize_module(rt, ctx, module_base_name, module_name);
   char *js_module_name = js_strdup(ctx, em_module_name);
   free(em_module_name);

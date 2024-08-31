@@ -26,7 +26,7 @@
 
 ## Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:411
+[packages/quickjs-emscripten-core/src/types.ts:100](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L100)
 
 > **JSModuleNormalizer**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult)\>
 
@@ -44,7 +44,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:411
 
 ## Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:408
+[packages/quickjs-emscripten-core/src/types.ts:93](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L93)
 
 ***
 

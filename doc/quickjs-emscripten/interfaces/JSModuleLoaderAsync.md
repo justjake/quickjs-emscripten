@@ -22,7 +22,7 @@ Load module (async)
 
 ## Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:398
+[packages/quickjs-emscripten-core/src/types.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L76)
 
 ***
 

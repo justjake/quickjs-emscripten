@@ -29,7 +29,7 @@ The enumerable properties of this object will be passed verbatim, although they 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1567
+[packages/quickjs-emscripten-core/src/from-variant.ts:153](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L153)
 
 ***
 
@@ -69,7 +69,7 @@ Often `''` (empty string)
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1565
+[packages/quickjs-emscripten-core/src/from-variant.ts:151](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L151)
 
 ***
 
@@ -101,7 +101,7 @@ Debug logger
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1569
+[packages/quickjs-emscripten-core/src/from-variant.ts:155](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L155)
 
 ***
 
@@ -113,7 +113,7 @@ If given, Emscripten will compile the WebAssembly.Module from these bytes.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1537
+[packages/quickjs-emscripten-core/src/from-variant.ts:123](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L123)
 
 ***
 
@@ -125,7 +125,7 @@ If given, Emscripten will try to load the WebAssembly module data from this loca
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1535
+[packages/quickjs-emscripten-core/src/from-variant.ts:121](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L121)
 
 ***
 
@@ -137,7 +137,7 @@ If given, use the Memory when instantiating the WebAssembly.Instance.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1541
+[packages/quickjs-emscripten-core/src/from-variant.ts:127](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L127)
 
 ***
 
@@ -149,7 +149,7 @@ If given, Emscripten will instantiate the WebAssembly.Instance from this existin
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1539
+[packages/quickjs-emscripten-core/src/from-variant.ts:125](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L125)
 
 ***
 
@@ -161,7 +161,7 @@ If given, we will provide the source map to Emscripten directly. This may only b
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1545
+[packages/quickjs-emscripten-core/src/from-variant.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L131)
 
 ***
 
@@ -173,7 +173,7 @@ If given, Emscripten will try to load the source map for the WebAssembly module 
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1543
+[packages/quickjs-emscripten-core/src/from-variant.ts:129](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L129)
 
 ***
 

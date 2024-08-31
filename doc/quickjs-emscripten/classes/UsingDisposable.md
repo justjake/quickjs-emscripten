@@ -22,11 +22,11 @@ Base abstract class that helps implement [Disposable](../interfaces/Disposable.m
 
 ## Extended By
 
-- [`Lifetime`](Lifetime.md)
 - [`QuickJSContext`](QuickJSContext.md)
-- [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
 - [`QuickJSRuntime`](QuickJSRuntime.md)
+- [`Lifetime`](Lifetime.md)
 - [`Scope`](Scope.md)
+- [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
 
 ## Implements
 
@@ -54,7 +54,7 @@ Base abstract class that helps implement [Disposable](../interfaces/Disposable.m
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:561
+[packages/quickjs-emscripten-core/src/lifetime.ts:39](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L39)
 
 ## Methods
 
@@ -74,7 +74,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:569
+[packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
 ***
 
@@ -94,7 +94,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:565
+[packages/quickjs-emscripten-core/src/lifetime.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L43)
 
 ***
 

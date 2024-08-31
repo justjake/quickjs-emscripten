@@ -8,6 +8,7 @@ import {
   JSValuePointer,
   JSValueConstPointer,
   JSValuePointerPointer,
+  JSValuePointerPointerPointer,
   JSValueConstPointerPointer,
   QTS_C_To_HostCallbackFuncPointer,
   QTS_C_To_HostInterruptFuncPointer,
@@ -16,9 +17,12 @@ import {
   OwnedHeapCharPointer,
   JSBorrowedCharPointer,
   JSVoidPointer,
+  UInt32Pointer,
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
+  GetOwnPropertyNamesFlags,
+  IsEqualOp,
   JSPromiseStateEnum,
 } from "@jitl/quickjs-ffi-types"
 
@@ -213,6 +217,16 @@ export class QuickJSFFI {
     prop_name: JSValuePointer | JSValueConstPointer,
   ) => JSValuePointer = this.module.cwrap("QTS_GetProp", "number", ["number", "number", "number"])
 
+  QTS_GetPropNumber: (
+    ctx: JSContextPointer,
+    this_val: JSValuePointer | JSValueConstPointer,
+    prop_name: number,
+  ) => JSValuePointer = this.module.cwrap("QTS_GetPropNumber", "number", [
+    "number",
+    "number",
+    "number",
+  ])
+
   QTS_SetProp: (
     ctx: JSContextPointer,
     this_val: JSValuePointer | JSValueConstPointer,
@@ -240,6 +254,20 @@ export class QuickJSFFI {
     "boolean",
     "boolean",
     "boolean",
+  ])
+
+  QTS_GetOwnPropertyNames: (
+    ctx: JSContextPointer,
+    out_ptrs: JSValuePointerPointerPointer,
+    out_len: UInt32Pointer,
+    obj: JSValuePointer | JSValueConstPointer,
+    flags: number,
+  ) => JSValuePointer = this.module.cwrap("QTS_GetOwnPropertyNames", "number", [
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
   ])
 
   QTS_Call: (
@@ -290,6 +318,19 @@ export class QuickJSFFI {
     value: JSValuePointer | JSValueConstPointer,
   ) => OwnedHeapCharPointer = this.module.cwrap("QTS_Typeof", "number", ["number", "number"])
 
+  QTS_GetLength: (
+    ctx: JSContextPointer,
+    out_len: UInt32Pointer,
+    value: JSValuePointer | JSValueConstPointer,
+  ) => number = this.module.cwrap("QTS_GetLength", "number", ["number", "number", "number"])
+
+  QTS_IsEqual: (
+    ctx: JSContextPointer,
+    a: JSValuePointer | JSValueConstPointer,
+    b: JSValuePointer | JSValueConstPointer,
+    op: IsEqualOp,
+  ) => number = this.module.cwrap("QTS_IsEqual", "number", ["number", "number", "number", "number"])
+
   QTS_GetGlobalObject: (ctx: JSContextPointer) => JSValuePointer = this.module.cwrap(
     "QTS_GetGlobalObject",
     "number",
@@ -317,6 +358,18 @@ export class QuickJSFFI {
   QTS_TestStringArg: (string: string) => void = this.module.cwrap("QTS_TestStringArg", null, [
     "string",
   ])
+
+  QTS_GetDebugLogEnabled: (rt: JSRuntimePointer) => number = this.module.cwrap(
+    "QTS_GetDebugLogEnabled",
+    "number",
+    ["number"],
+  )
+
+  QTS_SetDebugLogEnabled: (rt: JSRuntimePointer, is_enabled: number) => void = this.module.cwrap(
+    "QTS_SetDebugLogEnabled",
+    null,
+    ["number", "number"],
+  )
 
   QTS_BuildIsDebug: () => number = this.module.cwrap("QTS_BuildIsDebug", "number", [])
 

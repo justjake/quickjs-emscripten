@@ -1,9 +1,7 @@
 import type {
   EitherModule,
   OwnedHeapCharPointer,
-  JSContextPointerPointer,
   JSValueConstPointerPointer,
-  JSValuePointerPointer,
   JSVoidPointer,
 } from "@jitl/quickjs-ffi-types"
 import { Lifetime } from "./lifetime"
@@ -12,10 +10,30 @@ import type { QuickJSHandle } from "./types"
 /**
  * @private
  */
-type HeapUint8Array = {
+export type HeapUint8Array = {
   pointer: JSVoidPointer
   numBytes: number
 }
+
+/**
+ * Add more types as needed.
+ * @private
+ */
+export type TypedArray = Int32Array | Uint32Array
+
+/** @private */
+export interface TypedArrayConstructor<T> {
+  new (length: number): T
+  new (array: ArrayLike<number> | ArrayBufferLike): T
+  new (buffer: ArrayBufferLike, byteOffset?: number, length?: number): T
+  BYTES_PER_ELEMENT: number
+}
+
+/** @private */
+export type HeapTypedArray<JS extends TypedArray, C extends number> = Lifetime<{
+  typedArray: JS
+  ptr: C
+}>
 
 /**
  * @private
@@ -32,15 +50,23 @@ export class ModuleMemory {
     return new Lifetime(ptr, undefined, (ptr) => this.module._free(ptr))
   }
 
-  newMutablePointerArray<T extends JSContextPointerPointer | JSValuePointerPointer>(
+  newTypedArray<JS extends TypedArray, C extends number>(
+    kind: TypedArrayConstructor<JS>,
     length: number,
-  ): Lifetime<{ typedArray: Int32Array; ptr: T }> {
-    const zeros = new Int32Array(new Array(length).fill(0))
+  ): HeapTypedArray<JS, C> {
+    const zeros = new kind(new Array(length).fill(0))
     const numBytes = zeros.length * zeros.BYTES_PER_ELEMENT
-    const ptr = this.module._malloc(numBytes) as T
-    const typedArray = new Int32Array(this.module.HEAPU8.buffer, ptr, length)
+    const ptr = this.module._malloc(numBytes) as C
+    const typedArray = new kind(this.module.HEAPU8.buffer, ptr, length)
     typedArray.set(zeros)
     return new Lifetime({ typedArray, ptr }, undefined, (value) => this.module._free(value.ptr))
+  }
+
+  // TODO: shouldn't this be Uint32 instead of Int32?
+  newMutablePointerArray<T extends number>(
+    length: number,
+  ): Lifetime<{ typedArray: Int32Array; ptr: T }> {
+    return this.newTypedArray(Int32Array, length)
   }
 
   newHeapCharPointer(string: string): Lifetime<{ ptr: OwnedHeapCharPointer; strlen: number }> {

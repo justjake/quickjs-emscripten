@@ -1,5 +1,5 @@
 import type { JSContextPointer, JSValueConstPointer, JSValuePointer } from "@jitl/quickjs-ffi-types"
-import { EvalFlags, IntrinsicsFlags } from "@jitl/quickjs-ffi-types"
+import { EvalFlags, GetOwnPropertyNamesFlags, IntrinsicsFlags } from "@jitl/quickjs-ffi-types"
 import type { QuickJSContext } from "./context"
 import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
 import type { Disposable, Lifetime } from "./lifetime"
@@ -41,6 +41,7 @@ export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJS
  * You can do so from Javascript by calling the .dispose() method.
  */
 export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSRuntime>
+// | Lifetime<JSValueUInt8Array, JSValueUInt8Array, QuickJSRuntime>
 
 /**
  * Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
@@ -281,6 +282,52 @@ export function evalOptionsToFlags(evalOptions: ContextEvalOptions | number | un
   if (compileOnly) flags |= EvalFlags.JS_EVAL_FLAG_COMPILE_ONLY
   if (backtraceBarrier) flags |= EvalFlags.JS_EVAL_FLAG_BACKTRACE_BARRIER
   return flags
+}
+
+export interface GetOwnPropertyNamesOptions {
+  /** Include number properties like array indexes *as numbers* in the result. This is not standards-compliant */
+  numbers?: boolean
+  /** Enable standards-compliant number properties. When set, `includeNumbers` is ignored. */
+  numbersAsStrings?: boolean
+  /** Include strings in the result */
+  strings?: boolean
+  /** Include symbols in the result */
+  symbols?: boolean
+  /** Include implementation-specific private properties in the result */
+  quickjsPrivate?: boolean
+  /** Only include the enumerable properties */
+  onlyEnumerable?: boolean
+}
+
+/** Convert {@link GetOwnPropertyNamesOptions} to bitfield flags */
+export function getOwnPropertyNamesOptionsToFlags(
+  options: GetOwnPropertyNamesOptions | GetOwnPropertyNamesFlags | undefined,
+): GetOwnPropertyNamesFlags {
+  if (typeof options === "number") {
+    return options
+  }
+
+  if (options === undefined) {
+    return 0 as GetOwnPropertyNamesFlags
+  }
+
+  const {
+    strings: includeStrings,
+    symbols: includeSymbols,
+    quickjsPrivate: includePrivate,
+    onlyEnumerable,
+    numbers: includeNumbers,
+    numbersAsStrings,
+  } = options
+  let flags = 0
+  if (includeStrings) flags |= GetOwnPropertyNamesFlags.JS_GPN_STRING_MASK
+  if (includeSymbols) flags |= GetOwnPropertyNamesFlags.JS_GPN_SYMBOL_MASK
+  if (includePrivate) flags |= GetOwnPropertyNamesFlags.JS_GPN_PRIVATE_MASK
+  if (onlyEnumerable) flags |= GetOwnPropertyNamesFlags.JS_GPN_ENUM_ONLY
+  if (includeNumbers) flags |= GetOwnPropertyNamesFlags.QTS_GPN_NUMBER_MASK
+  if (numbersAsStrings) flags |= GetOwnPropertyNamesFlags.QTS_STANDARD_COMPLIANT_NUMBER
+
+  return flags as GetOwnPropertyNamesFlags
 }
 
 export type PromiseExecutor<ResolveT, RejectT> = (

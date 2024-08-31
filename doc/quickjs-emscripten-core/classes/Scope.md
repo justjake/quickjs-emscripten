@@ -63,7 +63,7 @@ false after the object has been [dispose](Scope.md#dispose-1)d
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:307](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L307)
+[packages/quickjs-emscripten-core/src/lifetime.ts:308](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L308)
 
 ## Methods
 
@@ -87,7 +87,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L46)
+[packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
 ***
 
@@ -111,7 +111,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:311](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L311)
+[packages/quickjs-emscripten-core/src/lifetime.ts:312](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L312)
 
 ***
 
@@ -135,7 +135,7 @@ Track `lifetime` so that it is disposed when this scope is disposed.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:302](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L302)
+[packages/quickjs-emscripten-core/src/lifetime.ts:303](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L303)
 
 ***
 
@@ -165,7 +165,7 @@ Do not use with async functions. Instead, use [withScopeAsync](Scope.md#withscop
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:247](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L247)
+[packages/quickjs-emscripten-core/src/lifetime.ts:248](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L248)
 
 ***
 
@@ -192,7 +192,7 @@ block returns.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:284](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L284)
+[packages/quickjs-emscripten-core/src/lifetime.ts:285](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L285)
 
 ***
 
@@ -220,7 +220,7 @@ block returns.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:260](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L260)
+[packages/quickjs-emscripten-core/src/lifetime.ts:261](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L261)
 
 ***
 

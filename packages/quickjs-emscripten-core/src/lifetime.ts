@@ -1,3 +1,4 @@
+import type { SuccessOrFail } from "./vm-interface"
 import type { MaybeAsyncBlock } from "./asyncify-helpers"
 import { maybeAsync } from "./asyncify-helpers"
 import { QTS_DEBUG } from "./debug"
@@ -299,7 +300,7 @@ export class Scope extends UsingDisposable implements Disposable {
   /**
    * Track `lifetime` so that it is disposed when this scope is disposed.
    */
-  manage<T extends Disposable>(lifetime: T): T {
+  manage = <T extends Disposable>(lifetime: T): T => {
     this._disposables.value.add(lifetime)
     return lifetime
   }
@@ -318,3 +319,136 @@ export class Scope extends UsingDisposable implements Disposable {
     this._disposables.dispose()
   }
 }
+
+/**
+ * An `Array` that also implements {@link Disposable}:
+ *
+ * - Considered {@link Disposable#alive} if any of its elements are `alive`.
+ * - When {@link Disposable#dispose}d, it will dispose of all its elements that are `alive`.
+ */
+export type DisposableArray<T> = T[] & Disposable
+
+/**
+ * Create an array that also implements {@link Disposable}.
+ */
+export function createDisposableArray<T extends Disposable>(
+  items?: Iterable<T>,
+): DisposableArray<T> {
+  const array = items ? Array.from(items) : []
+
+  function disposeAlive() {
+    return array.forEach((disposable) => (disposable.alive ? disposable.dispose() : undefined))
+  }
+
+  function someIsAlive() {
+    return array.some((disposable) => disposable.alive)
+  }
+
+  Object.defineProperty(array, SymbolDispose, {
+    configurable: true,
+    enumerable: false,
+    value: disposeAlive,
+  })
+
+  Object.defineProperty(array, "dispose", {
+    configurable: true,
+    enumerable: false,
+    value: disposeAlive,
+  })
+
+  Object.defineProperty(array, "alive", {
+    configurable: true,
+    enumerable: false,
+    get: someIsAlive,
+  })
+
+  return array as T[] & Disposable
+}
+
+function isDisposable(value: unknown): value is { alive: boolean; dispose(): unknown } {
+  return Boolean(
+    value &&
+      (typeof value === "object" || typeof value === "function") &&
+      "alive" in value &&
+      typeof value.alive === "boolean" &&
+      "dispose" in value &&
+      typeof value.dispose === "function",
+  )
+}
+
+abstract class AbstractDisposableResult extends UsingDisposable implements Disposable {
+  static success<S, F>(value: S): DisposableSuccess<S> {
+    return new DisposableSuccess(value) satisfies SuccessOrFail<S, F>
+  }
+
+  static fail<S, F>(error: F, onUnwrap: (status: SuccessOrFail<S, F>) => void): DisposableFail<F> {
+    return new DisposableFail(
+      error,
+      onUnwrap as (status: SuccessOrFail<never, F>) => void,
+    ) satisfies SuccessOrFail<S, F>
+  }
+
+  static is<S, F>(result: SuccessOrFail<S, F>): result is DisposableResult<S, F> {
+    return result instanceof AbstractDisposableResult
+  }
+
+  abstract get alive(): boolean
+  abstract dispose(): void
+}
+
+export class DisposableSuccess<S> extends AbstractDisposableResult {
+  declare error?: undefined
+
+  constructor(readonly value: S) {
+    super()
+  }
+
+  override get alive() {
+    return isDisposable(this.value) ? this.value.alive : true
+  }
+
+  override dispose(): void {
+    if (isDisposable(this.value)) {
+      this.value.dispose()
+    }
+  }
+
+  unwrap(): S {
+    return this.value
+  }
+
+  unwrapOr<T>(_fallback: T): S | T {
+    return this.value
+  }
+}
+
+export class DisposableFail<F> extends AbstractDisposableResult {
+  constructor(
+    readonly error: F,
+    private readonly onUnwrap: (status: SuccessOrFail<never, F>) => void,
+  ) {
+    super()
+  }
+
+  override get alive(): boolean {
+    return isDisposable(this.error) ? this.error.alive : true
+  }
+
+  override dispose(): void {
+    if (isDisposable(this.error)) {
+      this.error.dispose()
+    }
+  }
+
+  unwrap(): never {
+    this.onUnwrap(this)
+    throw this.error
+  }
+
+  unwrapOr<T>(fallback: T): T {
+    return fallback
+  }
+}
+
+export type DisposableResult<S, F> = DisposableSuccess<S> | DisposableFail<F>
+export const DisposableResult = AbstractDisposableResult

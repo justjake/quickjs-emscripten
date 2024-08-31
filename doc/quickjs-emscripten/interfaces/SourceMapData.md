@@ -22,7 +22,7 @@
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:177
+packages/quickjs-ffi-types/dist/index.d.ts:205
 
 ***
 
@@ -32,7 +32,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:177
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:176
+packages/quickjs-ffi-types/dist/index.d.ts:204
 
 ***
 
@@ -42,7 +42,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:176
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:175
+packages/quickjs-ffi-types/dist/index.d.ts:203
 
 ***
 
@@ -52,7 +52,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:175
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:174
+packages/quickjs-ffi-types/dist/index.d.ts:202
 
 ***
 

@@ -14,6 +14,8 @@
 - [Type Aliases](exports.md#type-aliases)
   - [AsyncFunctionImplementation](exports.md#asyncfunctionimplementation)
   - [BorrowedHeapCharPointer](exports.md#borrowedheapcharpointer)
+  - [DisposableArray\<T\>](exports.md#disposablearrayt)
+  - [DisposableResult\<S, F\>](exports.md#disposableresults-f)
   - [EitherFFI](exports.md#eitherffi)
   - [EitherModule](exports.md#eithermodule)
   - [ExecutePendingJobsResult](exports.md#executependingjobsresult)
@@ -38,6 +40,7 @@
   - [JSValueConstPointerPointer](exports.md#jsvalueconstpointerpointer)
   - [JSValuePointer](exports.md#jsvaluepointer)
   - [JSValuePointerPointer](exports.md#jsvaluepointerpointer)
+  - [JSValuePointerPointerPointer](exports.md#jsvaluepointerpointerpointer)
   - [JSVoidPointer](exports.md#jsvoidpointer)
   - [OrLoader\<T\>](exports.md#orloadert)
   - [OwnedHeapCharPointer](exports.md#ownedheapcharpointer)
@@ -51,6 +54,7 @@
   - [QuickJSVariant](exports.md#quickjsvariant)
   - [StaticJSValue](exports.md#staticjsvalue)
   - [SuccessOrFail\<S, F\>](exports.md#successorfails-f)
+  - [UInt32Pointer](exports.md#uint32pointer)
   - [VmCallResult\<VmHandle\>](exports.md#vmcallresultvmhandle)
   - [VmFunctionImplementation\<VmHandle\>](exports.md#vmfunctionimplementationvmhandle)
 - [Variables](exports.md#variables)
@@ -59,8 +63,11 @@
   - [DEBUG\_SYNC](exports.md#debug-sync)
   - [@jitl/quickjs-wasmfile-debug-sync](exports.md#jitlquickjs-wasmfile-debug-sync)
   - [DefaultIntrinsics](exports.md#defaultintrinsics)
+  - [DisposableResult](exports.md#disposableresult)
   - [EvalFlags](exports.md#evalflags)
+  - [GetOwnPropertyNamesFlags](exports.md#getownpropertynamesflags)
   - [IntrinsicsFlags](exports.md#intrinsicsflags)
+  - [IsEqualOp](exports.md#isequalop)
   - [JSPromiseStateEnum](exports.md#jspromisestateenum-1)
   - [RELEASE\_ASYNC](exports.md#release-async)
   - [@jitl/quickjs-wasmfile-release-asyncify](exports.md#jitlquickjs-wasmfile-release-asyncify)
@@ -68,6 +75,7 @@
   - [@jitl/quickjs-wasmfile-release-sync](exports.md#jitlquickjs-wasmfile-release-sync)
 - [Functions](exports.md#functions)
   - [assertSync()](exports.md#assertsync)
+  - [createDisposableArray()](exports.md#createdisposablearray)
   - [getQuickJS()](exports.md#getquickjs)
   - [getQuickJSSync()](exports.md#getquickjssync)
   - [isFail()](exports.md#isfail)
@@ -80,6 +88,7 @@
   - [newQuickJSWASMModule()](exports.md#newquickjswasmmodule)
   - [newQuickJSWASMModuleFromVariant()](exports.md#newquickjswasmmodulefromvariant)
   - [newVariant()](exports.md#newvariant)
+  - [setDebugMode()](exports.md#setdebugmode)
   - [shouldInterruptAfterDeadline()](exports.md#shouldinterruptafterdeadline)
 
 ## Namespaces
@@ -88,6 +97,8 @@
 
 ## Classes
 
+- [DisposableFail](classes/DisposableFail.md)
+- [DisposableSuccess](classes/DisposableSuccess.md)
 - [Lifetime](classes/Lifetime.md)
 - [QuickJSAsyncContext](classes/QuickJSAsyncContext.md)
 - [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md)
@@ -150,7 +161,7 @@
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:313
+[packages/quickjs-emscripten-core/src/context-asyncify.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context-asyncify.ts#L18)
 
 ***
 
@@ -163,7 +174,42 @@ for the Emscripten stack.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:66
+packages/quickjs-ffi-types/dist/index.d.ts:70
+
+***
+
+### DisposableArray\<T\>
+
+> **DisposableArray**\<`T`\>: `T`[] & [`Disposable`](interfaces/Disposable.md)
+
+An `Array` that also implements [Disposable](interfaces/Disposable.md):
+
+- Considered [Disposable#alive](interfaces/Disposable.md#alive) if any of its elements are `alive`.
+- When [Disposable#dispose](interfaces/Disposable.md#dispose-1)d, it will dispose of all its elements that are `alive`.
+
+#### Type parameters
+
+• **T**
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:329](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L329)
+
+***
+
+### DisposableResult\<S, F\>
+
+> **DisposableResult**\<`S`, `F`\>: [`DisposableSuccess`](classes/DisposableSuccess.md)\<`S`\> \| [`DisposableFail`](classes/DisposableFail.md)\<`F`\>
+
+#### Type parameters
+
+• **S**
+
+• **F**
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:453](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L453)
 
 ***
 
@@ -173,7 +219,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:66
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:496
+packages/quickjs-ffi-types/dist/index.d.ts:538
 
 ***
 
@@ -183,13 +229,13 @@ packages/quickjs-ffi-types/dist/index.d.ts:496
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:304
+packages/quickjs-ffi-types/dist/index.d.ts:332
 
 ***
 
 ### ExecutePendingJobsResult
 
-> **ExecutePendingJobsResult**: [`SuccessOrFail`](exports.md#successorfails-f)\<`number`, [`QuickJSHandle`](exports.md#quickjshandle) & `Object`\>
+> **ExecutePendingJobsResult**: [`DisposableResult`](exports.md#disposableresult)\<`number`, [`QuickJSHandle`](exports.md#quickjshandle) & `Object`\>
 
 Used as an optional for the results of executing pendingJobs.
 On success, `value` contains the number of async jobs executed
@@ -199,7 +245,7 @@ by the runtime.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:122
+[packages/quickjs-emscripten-core/src/runtime.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L35)
 
 ***
 
@@ -224,7 +270,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:115
+[packages/quickjs-emscripten-core/src/runtime.ts:27](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L27)
 
 ***
 
@@ -306,7 +352,7 @@ Language features that can be enabled or disabled in a QuickJSContext.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:443
+[packages/quickjs-emscripten-core/src/types.ts:146](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L146)
 
 ***
 
@@ -319,7 +365,7 @@ for the Emscripten stack.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:76
+packages/quickjs-ffi-types/dist/index.d.ts:80
 
 ***
 
@@ -365,7 +411,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:28
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:394
+[packages/quickjs-emscripten-core/src/types.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L69)
 
 ***
 
@@ -375,7 +421,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:394
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:395
+[packages/quickjs-emscripten-core/src/types.ts:70](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L70)
 
 ***
 
@@ -385,7 +431,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:395
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:393
+[packages/quickjs-emscripten-core/src/types.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L68)
 
 ***
 
@@ -395,7 +441,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:393
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:405
+[packages/quickjs-emscripten-core/src/types.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L87)
 
 ***
 
@@ -405,7 +451,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:405
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:406
+[packages/quickjs-emscripten-core/src/types.ts:88](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L88)
 
 ***
 
@@ -415,7 +461,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:406
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:404
+[packages/quickjs-emscripten-core/src/types.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L86)
 
 ***
 
@@ -428,7 +474,7 @@ You can unwrap a JSPromiseState with [QuickJSContext#unwrapResult](classes/Quick
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:673
+[packages/quickjs-emscripten-core/src/deferred-promise.ts:11](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L11)
 
 ***
 
@@ -440,7 +486,7 @@ State of a promise.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:140
+packages/quickjs-ffi-types/dist/index.d.ts:145
 
 ***
 
@@ -476,7 +522,7 @@ You can do so from Javascript by calling the .dispose() method.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:384
+[packages/quickjs-emscripten-core/src/types.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L43)
 
 ***
 
@@ -495,7 +541,7 @@ quickjs-emscripten takes care of disposing JSValueConst references.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:368
+[packages/quickjs-emscripten-core/src/types.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L26)
 
 ***
 
@@ -520,7 +566,7 @@ Used internally for Javascript-to-C function calls.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:46
+packages/quickjs-ffi-types/dist/index.d.ts:50
 
 ***
 
@@ -549,6 +595,18 @@ packages/quickjs-ffi-types/dist/index.d.ts:42
 
 ***
 
+### JSValuePointerPointerPointer
+
+> **JSValuePointerPointerPointer**: `Pointer`\<`"*JSValue[]"`\>
+
+Used internally for Javascript-to-C function calls.
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:46
+
+***
+
 ### JSVoidPointer
 
 > **JSVoidPointer**: `Pointer`\<`any`\>
@@ -557,7 +615,7 @@ Opaque pointer that was allocated by js_malloc.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:80
+packages/quickjs-ffi-types/dist/index.d.ts:84
 
 ***
 
@@ -571,7 +629,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:80
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1532
+[packages/quickjs-emscripten-core/src/from-variant.ts:117](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L117)
 
 ***
 
@@ -584,7 +642,7 @@ for the Emscripten stack.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:71
+packages/quickjs-ffi-types/dist/index.d.ts:75
 
 ***
 
@@ -610,7 +668,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:71
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:531
+[packages/quickjs-emscripten-core/src/types.ts:333](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L333)
 
 ***
 
@@ -624,7 +682,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:531
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1473
+[packages/quickjs-emscripten-core/src/from-variant.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L17)
 
 ***
 
@@ -636,7 +694,7 @@ Used internally for C-to-Javascript function calls.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:53
+packages/quickjs-ffi-types/dist/index.d.ts:57
 
 ***
 
@@ -648,7 +706,7 @@ Used internally for C-to-Javascript interrupt handlers.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:57
+packages/quickjs-ffi-types/dist/index.d.ts:61
 
 ***
 
@@ -660,7 +718,7 @@ Used internally for C-to-Javascript module loading.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:61
+packages/quickjs-ffi-types/dist/index.d.ts:65
 
 ***
 
@@ -676,7 +734,7 @@ You must dispose of any handles you create by calling the `.dispose()` method.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:392
+[packages/quickjs-emscripten-core/src/types.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L53)
 
 ***
 
@@ -689,7 +747,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:779
+[packages/quickjs-emscripten-core/src/context.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L69)
 
 ***
 
@@ -699,7 +757,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:779
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:495
+packages/quickjs-ffi-types/dist/index.d.ts:537
 
 ***
 
@@ -712,7 +770,7 @@ be disposed.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:357
+[packages/quickjs-emscripten-core/src/types.ts:14](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L14)
 
 ***
 
@@ -731,7 +789,17 @@ Used as an optional.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:17
+[packages/quickjs-emscripten-core/src/vm-interface.ts:5](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L5)
+
+***
+
+### UInt32Pointer
+
+> **UInt32Pointer**: `Pointer`\<`"uint32_t"`\>
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:85
 
 ***
 
@@ -748,7 +816,7 @@ Used as an optional for results of a Vm call.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:33
+[packages/quickjs-emscripten-core/src/vm-interface.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L26)
 
 ***
 
@@ -783,7 +851,7 @@ It should not retain a reference to its return value or thrown error.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:46
+[packages/quickjs-emscripten-core/src/vm-interface.ts:40](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L40)
 
 ## Variables
 
@@ -847,47 +915,57 @@ The default [Intrinsics](exports.md#intrinsics) language features enabled in a Q
 
 ##### BaseObjects
 
-> **`readonly`** **BaseObjects**: `true`
+> **`readonly`** **BaseObjects**: `true` = `true`
 
 ##### Date
 
-> **`readonly`** **Date**: `true`
+> **`readonly`** **Date**: `true` = `true`
 
 ##### Eval
 
-> **`readonly`** **Eval**: `true`
+> **`readonly`** **Eval**: `true` = `true`
 
 ##### JSON
 
-> **`readonly`** **JSON**: `true`
+> **`readonly`** **JSON**: `true` = `true`
 
 ##### MapSet
 
-> **`readonly`** **MapSet**: `true`
+> **`readonly`** **MapSet**: `true` = `true`
 
 ##### Promise
 
-> **`readonly`** **Promise**: `true`
+> **`readonly`** **Promise**: `true` = `true`
 
 ##### Proxy
 
-> **`readonly`** **Proxy**: `true`
+> **`readonly`** **Proxy**: `true` = `true`
 
 ##### RegExp
 
-> **`readonly`** **RegExp**: `true`
+> **`readonly`** **RegExp**: `true` = `true`
 
 ##### StringNormalize
 
-> **`readonly`** **StringNormalize**: `true`
+> **`readonly`** **StringNormalize**: `true` = `true`
 
 ##### TypedArrays
 
-> **`readonly`** **TypedArrays**: `true`
+> **`readonly`** **TypedArrays**: `true` = `true`
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:465
+[packages/quickjs-emscripten-core/src/types.ts:173](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L173)
+
+***
+
+### DisposableResult
+
+> **DisposableResult**: *typeof* `AbstractDisposableResult`
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:453](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L453)
 
 ***
 
@@ -955,7 +1033,49 @@ module code
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:89
+packages/quickjs-ffi-types/dist/index.d.ts:94
+
+***
+
+### GetOwnPropertyNamesFlags
+
+> **GetOwnPropertyNamesFlags**: `Object`
+
+Bitfield options for QTS_GetOwnPropertyNames
+
+#### Type declaration
+
+##### JS\_GPN\_ENUM\_ONLY
+
+> **JS\_GPN\_ENUM\_ONLY**: `number`
+
+##### JS\_GPN\_PRIVATE\_MASK
+
+> **JS\_GPN\_PRIVATE\_MASK**: `number`
+
+##### JS\_GPN\_SET\_ENUM
+
+> **JS\_GPN\_SET\_ENUM**: `number`
+
+##### JS\_GPN\_STRING\_MASK
+
+> **JS\_GPN\_STRING\_MASK**: `number`
+
+##### JS\_GPN\_SYMBOL\_MASK
+
+> **JS\_GPN\_SYMBOL\_MASK**: `number`
+
+##### QTS\_GPN\_NUMBER\_MASK
+
+> **QTS\_GPN\_NUMBER\_MASK**: `number`
+
+##### QTS\_STANDARD\_COMPLIANT\_NUMBER
+
+> **QTS\_STANDARD\_COMPLIANT\_NUMBER**: `number`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:154
 
 ***
 
@@ -963,7 +1083,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:89
 
 > **IntrinsicsFlags**: `Object`
 
-Bitfield options for QTS_NewContext intrinsices
+Bitfield options for QTS_NewContext intrinsics
 
 #### Type declaration
 
@@ -1033,7 +1153,31 @@ Bitfield options for QTS_NewContext intrinsices
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:117
+packages/quickjs-ffi-types/dist/index.d.ts:122
+
+***
+
+### IsEqualOp
+
+> **IsEqualOp**: `Object`
+
+#### Type declaration
+
+##### IsSameValue
+
+> **IsSameValue**: [`IsEqualOp`](exports.md#isequalop)
+
+##### IsSameValueZero
+
+> **IsSameValueZero**: [`IsEqualOp`](exports.md#isequalop)
+
+##### IsStrictlyEqual
+
+> **IsStrictlyEqual**: [`IsEqualOp`](exports.md#isequalop)
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:168
 
 ***
 
@@ -1057,7 +1201,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:117
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:140
+packages/quickjs-ffi-types/dist/index.d.ts:145
 
 ***
 
@@ -1136,7 +1280,31 @@ packages/variant-quickjs-wasmfile-release-sync/dist/index.d.ts:18
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:85
+packages/quickjs-ffi-types/dist/index.d.ts:90
+
+***
+
+### createDisposableArray()
+
+> **createDisposableArray**\<`T`\>(`items`?): [`DisposableArray`](exports.md#disposablearrayt)\<`T`\>
+
+Create an array that also implements [Disposable](interfaces/Disposable.md).
+
+#### Type parameters
+
+• **T** extends [`Disposable`](interfaces/Disposable.md)
+
+#### Parameters
+
+• **items?**: `Iterable`\<`T`\>
+
+#### Returns
+
+[`DisposableArray`](exports.md#disposablearrayt)\<`T`\>
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:334](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L334)
 
 ***
 
@@ -1209,7 +1377,7 @@ If called before `getQuickJS` resolves.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:26
+[packages/quickjs-emscripten-core/src/vm-interface.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L18)
 
 ***
 
@@ -1233,7 +1401,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:26
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:23
+[packages/quickjs-emscripten-core/src/vm-interface.ts:14](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L14)
 
 ***
 
@@ -1265,7 +1433,7 @@ const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SY
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1531
+[packages/quickjs-emscripten-core/src/from-variant.ts:100](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L100)
 
 ***
 
@@ -1394,7 +1562,7 @@ const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1520
+[packages/quickjs-emscripten-core/src/from-variant.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L76)
 
 ***
 
@@ -1456,7 +1624,7 @@ const quickjs = new newQuickJSWASMModuleFromVariant(
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1495
+[packages/quickjs-emscripten-core/src/from-variant.ts:38](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L38)
 
 ***
 
@@ -1483,7 +1651,30 @@ This may be necessary in Cloudflare Workers, which can't compile WebAssembly mod
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1575
+[packages/quickjs-emscripten-core/src/from-variant.ts:162](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L162)
+
+***
+
+### setDebugMode()
+
+> **setDebugMode**(`enabled`): `void`
+
+Enable (or disable) debug logging and object creation tracking globally.
+This setting is inherited by newly created QuickJSRuntime instances.
+To get debug logging in the WebAssembly module, you need to use a debug build variant.
+See [the quickjs-emscripten-core README](https://github.com/justjake/quickjs-emscripten/tree/main/doc/quickjs-emscripten-core) for more about build variants.
+
+#### Parameters
+
+• **enabled**: `boolean`= `true`
+
+#### Returns
+
+`void`
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/debug.ts:13](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/debug.ts#L13)
 
 ***
 
@@ -1506,7 +1697,7 @@ Interrupt execution if it's still running after this time.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:1583
+[packages/quickjs-emscripten-core/src/interrupt-helpers.ts:9](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/interrupt-helpers.ts#L9)
 
 ***
 

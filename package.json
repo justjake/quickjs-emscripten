@@ -28,7 +28,7 @@
     "smoketest-vite": "yarn tarball && ./scripts/smoketest-vite.ts",
     "check": "yarn build && yarn check:packages && yarn check:format && yarn check:types && yarn test && yarn lint",
     "test": "yarn for-each-package test",
-    "test:fast": "TEST_NO_ASYNC=true yarn test",
+    "test:fast": "TEST_FAST=true TEST_NO_ASYNC=true yarn test",
     "test:slow": "TEST_LEAK=1 yarn test",
     "check:types": "yarn for-each-package tsc",
     "check:format": "prettier --check .",
@@ -44,7 +44,7 @@
     "all:publish:stable": "yarn run check:packages && yarn for-each-publishable-package npm publish --access public",
     "all:publish:next": "yarn run check:packages && yarn for-each-publishable-package npm publish --access public --tag next",
     "all:version": "./scripts/set-version.ts",
-    "for-each-package-cmd": "yarn workspaces foreach --from 'packages/*' -Rpt",
+    "for-each-package-cmd": "yarn workspaces foreach --from 'packages/*' -Rpti",
     "for-each-publishable-package": "yarn for-each-package-cmd --exclude 'packages/internal-*'",
     "for-each-package": "yarn for-each-package-cmd run"
   },
@@ -73,7 +73,7 @@
     "typedoc-plugin-markdown": "4.0.0-next.38",
     "typescript": "^5.3.3",
     "vite-tsconfig-paths": "^4.2.2",
-    "vitest": "^1.1.0"
+    "vitest": "2.0.5"
   },
   "packageManager": "yarn@4.0.2"
 }

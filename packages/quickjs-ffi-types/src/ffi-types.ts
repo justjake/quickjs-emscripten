@@ -48,6 +48,11 @@ export type JSValuePointerPointer = Pointer<"JSValue[]">
 /**
  * Used internally for Javascript-to-C function calls.
  */
+export type JSValuePointerPointerPointer = Pointer<"*JSValue[]">
+
+/**
+ * Used internally for Javascript-to-C function calls.
+ */
 export type JSValueConstPointerPointer = Pointer<"JSValueConst[]">
 
 /**
@@ -93,6 +98,8 @@ export type JSBorrowedCharPointer = Pointer<"js const char">
  */
 export type JSVoidPointer = Pointer<any>
 
+export type UInt32Pointer = Pointer<"uint32_t">
+
 /**
  * @private
  */
@@ -107,6 +114,16 @@ export type IntrinsicsFlags = Brand<number, "IntrinsicsFlags">
  * @private
  */
 export type EvalDetectModule = Brand<number, "EvalDetectModule">
+
+/**
+ * @private
+ */
+export type GetOwnPropertyNamesFlags = Brand<number, "GetOwnPropertyNamesFlags">
+
+/**
+ * @private
+ */
+export type IsEqualOp = Brand<number, "IsEqualOp">
 
 /**
  * State of a promise.
@@ -151,7 +168,7 @@ export const EvalFlags = {
   JS_EVAL_FLAG_BACKTRACE_BARRIER: 1 << 6,
 } as const
 
-/** Bitfield options for QTS_NewContext intrinsices */
+/** Bitfield options for QTS_NewContext intrinsics */
 export const IntrinsicsFlags = {
   BaseObjects: 1 << 0,
   Date: 1 << 1,
@@ -176,3 +193,24 @@ export const JSPromiseStateEnum = {
   Fulfilled: 1,
   Rejected: 2,
 } as const
+
+/** Bitfield options for QTS_GetOwnPropertyNames */
+export const GetOwnPropertyNamesFlags = {
+  JS_GPN_STRING_MASK: 1 << 0,
+  JS_GPN_SYMBOL_MASK: 1 << 1,
+  JS_GPN_PRIVATE_MASK: 1 << 2,
+  /* only include the enumerable properties */
+  JS_GPN_ENUM_ONLY: 1 << 4,
+  /* set theJSPropertyEnum.is_enumerable field */
+  JS_GPN_SET_ENUM: 1 << 5,
+  /* include numbers. when only this is set, we filter out strings */
+  QTS_GPN_NUMBER_MASK: 1 << 6,
+  /* Treat numbers as strings */
+  QTS_STANDARD_COMPLIANT_NUMBER: 1 << 7,
+}
+
+export const IsEqualOp = {
+  IsStrictlyEqual: 0 as IsEqualOp,
+  IsSameValue: 1 as IsEqualOp,
+  IsSameValueZero: 2 as IsEqualOp,
+}

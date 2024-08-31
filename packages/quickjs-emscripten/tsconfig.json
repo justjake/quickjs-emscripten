@@ -2,10 +2,10 @@
   "extends": "@jitl/tsconfig/tsconfig.json",
   "include": ["src/*.*ts"],
   "compilerOptions": {
-    "outDir": ".output",
-    "rootDir": "src",
     "paths": {
-      "#variants": ["./src/variants.ts", "./src/variants.js"]
+      "#variants": ["./src/variants.ts", "./src/variants.js"],
+      "quickjs-emscripten-core": ["../quickjs-emscripten-core/src"],
+      "quickjs-emscripten-core/*": ["../quickjs-emscripten-core/src/*"]
     }
   }
 }

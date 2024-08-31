@@ -64,13 +64,13 @@ A Lifetime that lives forever. Used for constants.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:623
+[packages/quickjs-emscripten-core/src/lifetime.ts:173](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L173)
 
 ## Properties
 
 ### \_alive
 
-> **`protected`** **\_alive**: `boolean`
+> **`protected`** **\_alive**: `boolean` = `true`
 
 #### Inherited from
 
@@ -78,7 +78,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:623
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:582
+[packages/quickjs-emscripten-core/src/lifetime.ts:72](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L72)
 
 ***
 
@@ -92,7 +92,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:582
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:583
+[packages/quickjs-emscripten-core/src/lifetime.ts:73](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L73)
 
 ***
 
@@ -106,7 +106,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:583
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:581
+[packages/quickjs-emscripten-core/src/lifetime.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L87)
 
 ***
 
@@ -120,7 +120,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:581
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:578
+[packages/quickjs-emscripten-core/src/lifetime.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L84)
 
 ***
 
@@ -142,7 +142,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:578
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:579
+[packages/quickjs-emscripten-core/src/lifetime.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L85)
 
 ***
 
@@ -164,7 +164,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:579
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:580
+[packages/quickjs-emscripten-core/src/lifetime.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L86)
 
 ## Accessors
 
@@ -182,7 +182,7 @@ false after the object has been [dispose](StaticLifetime.md#dispose-1)d
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:593
+[packages/quickjs-emscripten-core/src/lifetime.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L92)
 
 ***
 
@@ -196,7 +196,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:593
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:624
+[packages/quickjs-emscripten-core/src/lifetime.ts:178](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L178)
 
 ***
 
@@ -210,7 +210,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:624
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:601
+[packages/quickjs-emscripten-core/src/lifetime.ts:107](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L107)
 
 ***
 
@@ -231,7 +231,7 @@ If the lifetime has been [dispose](StaticLifetime.md#dispose-1)d already.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:600
+[packages/quickjs-emscripten-core/src/lifetime.ts:102](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L102)
 
 ## Methods
 
@@ -251,7 +251,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:569
+[packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
 ***
 
@@ -283,7 +283,7 @@ the result of `map(this)`.
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:611
+[packages/quickjs-emscripten-core/src/lifetime.ts:135](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L135)
 
 #### consume(map)
 
@@ -307,7 +307,7 @@ packages/quickjs-emscripten-core/dist/index.d.ts:611
 
 ##### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:612
+[packages/quickjs-emscripten-core/src/lifetime.ts:138](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L138)
 
 ***
 
@@ -327,7 +327,7 @@ Dispose of [value](StaticLifetime.md#value-1) and perform cleanup.
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:626
+[packages/quickjs-emscripten-core/src/lifetime.ts:188](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L188)
 
 ***
 
@@ -347,7 +347,7 @@ Create a new handle pointing to the same [value](StaticLifetime.md#value-1).
 
 #### Source
 
-packages/quickjs-emscripten-core/dist/index.d.ts:625
+[packages/quickjs-emscripten-core/src/lifetime.ts:183](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L183)
 
 ***
 

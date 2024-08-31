@@ -48,3 +48,7 @@ export class QuickJSUnknownIntrinsic extends TypeError {
 export class QuickJSPromisePending extends Error {
   name = "QuickJSPromisePending"
 }
+
+export class QuickJSEmptyGetOwnPropertyNames extends Error {
+  name = "QuickJSEmptyGetOwnPropertyNames"
+}
