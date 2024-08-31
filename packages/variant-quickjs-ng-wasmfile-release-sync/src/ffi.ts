@@ -38,6 +38,18 @@ export class QuickJSFFI {
   /** Set at compile time. */
   readonly DEBUG = false
 
+  QTS_GetRuntimeData: (rt: JSRuntimePointer) => QTS_RuntimeDataPointer = this.module.cwrap(
+    "QTS_GetRuntimeData",
+    "number",
+    ["number"],
+  )
+
+  QTS_GetContextData: (ctx: JSContextPointer) => QTS_RuntimeDataPointer = this.module.cwrap(
+    "QTS_GetContextData",
+    "number",
+    ["number"],
+  )
+
   QTS_Throw: (
     ctx: JSContextPointer,
     error: JSValuePointer | JSValueConstPointer,
@@ -358,6 +370,18 @@ export class QuickJSFFI {
   QTS_TestStringArg: (string: string) => void = this.module.cwrap("QTS_TestStringArg", null, [
     "string",
   ])
+
+  QTS_GetDebugLogEnabled: (rt: JSRuntimePointer) => number = this.module.cwrap(
+    "QTS_GetDebugLogEnabled",
+    "number",
+    ["number"],
+  )
+
+  QTS_SetDebugLogEnabled: (rt: JSRuntimePointer, is_enabled: number) => void = this.module.cwrap(
+    "QTS_SetDebugLogEnabled",
+    null,
+    ["number", "number"],
+  )
 
   QTS_BuildIsDebug: () => number = this.module.cwrap("QTS_BuildIsDebug", "number", [])
 
