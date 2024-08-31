@@ -10,21 +10,26 @@ import type { QuickJSHandle } from "./types"
 /**
  * @private
  */
-type HeapUint8Array = {
+export type HeapUint8Array = {
   pointer: JSVoidPointer
   numBytes: number
 }
 
-// Add more types as needed.
-type TypedArray = Int32Array | Uint32Array
+/**
+ * Add more types as needed.
+ * @private
+ */
+export type TypedArray = Int32Array | Uint32Array
 
-interface TypedArrayConstructor<T> {
+/** @private */
+export interface TypedArrayConstructor<T> {
   new (length: number): T
   new (array: ArrayLike<number> | ArrayBufferLike): T
   new (buffer: ArrayBufferLike, byteOffset?: number, length?: number): T
   BYTES_PER_ELEMENT: number
 }
 
+/** @private */
 export type HeapTypedArray<JS extends TypedArray, C extends number> = Lifetime<{
   typedArray: JS
   ptr: C

@@ -43,8 +43,8 @@ import {
   RELEASE_ASYNC,
   newVariant,
   shouldInterruptAfterDeadline,
+  Scope,
 } from "."
-import { Scope } from "quickjs-emscripten-core"
 
 const TEST_SLOW = !process.env.TEST_FAST
 const TEST_NG = TEST_SLOW && !process.env.TEST_NO_NG
@@ -117,7 +117,7 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
     }
     // https://web.dev/webassembly-memory-debugging/
     assert.strictEqual(ffi.QTS_RecoverableLeakCheck(), 0, "No lsan errors")
-    console.log("Leaks checked (OK)")
+    debugLog("Leaks checked (OK)")
   })
 
   const getTestId = () => `test-${getContext.name}-${testId}`
@@ -422,8 +422,6 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
           })
           .unwrap(),
       )
-
-      console.log(props.map((p) => vm.dump(p)))
 
       assert.strictEqual(props.length, 3)
       assert.strictEqual(vm.dump(props[0]), 0)

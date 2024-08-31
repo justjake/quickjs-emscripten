@@ -760,9 +760,7 @@ JSValue qts_resolve_func_data(
 }
 
 MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t js_code_length, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
-#ifdef QTS_DEBUG_MODE
   char msg[LOG_LEN];
-#endif
   if (detectModule) {
     if (JS_DetectModule((const char *)js_code, js_code_length)) {
       QTS_DEBUG("QTS_Eval: Detected module = true");
