@@ -1,10 +1,17 @@
-import * as fs from "node:fs"
+import fs from "node:fs"
+import util from "node:util"
+import module from "node:module"
 import { test } from "node:test"
-import { fileURLToPath } from "node:url"
-import path, { resolve } from "node:path"
+import path from "node:path"
 import assert from "node:assert"
-import { debugLog, getQuickJS } from "./index.js"
+import { getQuickJS } from "./index.js"
 import type { JSModuleLoader, JSModuleNormalizer, QuickJSHandle, QuickJSContext } from "./index.js"
+
+const ttyLog = (...args: unknown[]) => {
+  const fd = fs.openSync("/dev/tty", "w")
+  fs.writeSync(fd, util.format(...args) + "\n")
+  fs.closeSync(fd)
+}
 
 const QuickJS = await getQuickJS()
 
@@ -13,7 +20,7 @@ function addConsoleGlobal(context: QuickJSContext, logOfLogs: any[]) {
   const log = context.newFunction("log", (...args: QuickJSHandle[]) => {
     const logged = args.map((arg) => context.dump(arg))
     logOfLogs.push(logged)
-    console.log(...logged)
+    ttyLog(...logged)
   })
   context.setProp(consoleHandle, "log", log)
   context.setProp(consoleHandle, "error", log)
@@ -22,60 +29,128 @@ function addConsoleGlobal(context: QuickJSContext, logOfLogs: any[]) {
   consoleHandle.dispose()
 }
 
-test("quickjs-in-quickjs", () => {
-  const loader: JSModuleLoader = (moduleName, _context) => {
-    const resolved = resolver(moduleName)
-    const [first, rest] = resolved.split("/GUEST")
-    debugLog("loader", { moduleName, resolved, first, rest })
-    const data = fs.readFileSync(rest || first, "utf8")
-    return data
+function* pathAncestors(filepath: string) {
+  yield filepath
+  while (filepath !== "/") {
+    filepath = path.dirname(filepath)
+    yield filepath
+  }
+}
+
+class QuickJSNodeModuleLoader {
+  static convertPath(filepath: string, mountPoints: Map<string, string>) {
+    filepath = path.normalize(filepath)
+    for (const dirname of pathAncestors(filepath)) {
+      const mappedDirname = mountPoints.get(dirname)
+      if (!mappedDirname) {
+        continue
+      }
+      return mappedDirname + filepath.slice(dirname.length)
+    }
+    return undefined
   }
 
-  const normalizer: JSModuleNormalizer = (baseModuleName, requestedName, _context) => {
-    const resolvedRequestedName = resolver(requestedName)
-    debugLog("normalizer", { baseModuleName, requestedName, resolvedRequestedName })
-    const baseUrl = resolver(baseModuleName)
-    const resolved = resolve(baseUrl, "..", resolvedRequestedName)
-    debugLog("normalizer resolved", resolved)
-    return resolved
+  require = module.createRequire(import.meta.url)
+  hostToGuest = new Map<string, string>()
+  guestToHost = new Map<string, string>()
+
+  mount(args: { hostPath: string; guestPath: string }) {
+    const guestPath = path.normalize(args.guestPath)
+    if (!path.isAbsolute(guestPath)) {
+      throw new Error("guestPath must be absolute")
+    }
+
+    const hostPath = fs.realpathSync(args.hostPath)
+    this.hostToGuest.set(hostPath, guestPath)
+    this.guestToHost.set(guestPath, hostPath)
+
+    ttyLog("mount", { hostPath, guestPath })
   }
 
-  function resolver(moduleName: string) {
-    if (moduleName.startsWith(".")) {
-      return moduleName
+  mountImport(args: { hostImport: string; guestImport: string; direct?: true }) {
+    const hostFile = this.require.resolve(args.hostImport).replace(".js", ".mjs")
+    this.mount({
+      hostPath: args.direct ? hostFile : path.dirname(hostFile),
+      guestPath: "/node_modules/" + args.guestImport,
+    })
+  }
+
+  toGuestPath(hostPath: string) {
+    return QuickJSNodeModuleLoader.convertPath(hostPath, this.hostToGuest)
+  }
+
+  toHostPath(guestPath: string) {
+    return QuickJSNodeModuleLoader.convertPath(guestPath, this.guestToHost)
+  }
+
+  jsModuleNormalizer: JSModuleNormalizer = (baseModuleName, requestedName, _context) => {
+    if (path.isAbsolute(requestedName)) {
+      ttyLog("absolute", requestedName)
+      return path.normalize(requestedName)
     }
 
-    if (path.isAbsolute(moduleName)) {
-      return moduleName
+    if (requestedName.startsWith(".")) {
+      const resolved = path.resolve(path.dirname(baseModuleName), requestedName)
+      ttyLog("relative", { resolved, baseModuleName, requestedName })
+      return path.normalize(resolved)
     }
 
+    const resolved = path.resolve("/node_modules/", requestedName)
+    ttyLog("node_modules", { resolved, baseModuleName, requestedName })
+    return path.normalize(resolved)
+  }
+
+  jsModuleLoader: JSModuleLoader = (moduleName, _context) => {
     try {
-      return "/GUEST" + fileURLToPath(import.meta.resolve(moduleName))
-    } catch (e) {
-      debugLog("import.meta.resolve failed", { moduleName, e })
-      return moduleName
+      const hostPath = this.toHostPath(moduleName)
+      if (hostPath) {
+        return fs.readFileSync(hostPath, "utf8")
+      }
+      throw new Error("Not found")
+    } catch (error) {
+      ttyLog("QuickJSNodeModuleLoader.loader error:", { moduleName, error })
+      return {
+        error: Error(`Not found: ${moduleName}`),
+      }
     }
   }
+}
+
+test("quickjs-in-quickjs", () => {
+  const moduleLoader = new QuickJSNodeModuleLoader()
+  moduleLoader.mountImport({
+    hostImport: "quickjs-emscripten-core",
+    guestImport: "quickjs-emscripten-core",
+  })
+  moduleLoader.mountImport({
+    hostImport: "@jitl/quickjs-asmjs-mjs-release-sync",
+    guestImport: "@jitl/quickjs-asmjs-mjs-release-sync",
+  })
+  moduleLoader.mountImport({
+    hostImport: "@jitl/quickjs-ffi-types",
+    guestImport: "@jitl/quickjs-ffi-types",
+    direct: true,
+  })
 
   const runtime = QuickJS.newRuntime()
-  runtime.setModuleLoader(loader, normalizer)
+  runtime.setModuleLoader(moduleLoader.jsModuleLoader, moduleLoader.jsModuleNormalizer)
 
   const context = runtime.newContext()
   const logs: any[] = []
   addConsoleGlobal(context, logs)
 
-  const filename = "/GUEST" + fileURLToPath(import.meta.url)
+  ttyLog("hi")
+
   const result = context.evalCode(
     `
-import { newQuickJSWASMModuleFromVariant } from 'quickjs-emscripten-core'
-import variant from '@jitl/quickjs-asmjs-mjs-release-sync'
-throw new Error('oops')
+import { newQuickJSWASMModuleFromVariant } from 'quickjs-emscripten-core/index.mjs'
+import variant from '@jitl/quickjs-asmjs-mjs-release-sync/index.mjs'
 globalThis.done = newQuickJSWASMModuleFromVariant(variant).then(QuickJS => {
   const result = QuickJS.evalCode('1+2')
   console.log('inner result', result)
 })
 `,
-    filename,
+    "/script.mjs",
   )
   context.unwrapResult(result).dispose()
   runtime.executePendingJobs()
