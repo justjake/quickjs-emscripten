@@ -760,8 +760,8 @@ function renderIndexTs(
     // Eager loading please!
     return `
 import type { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
-import { ${className} } from './ffi.js'
 import moduleLoader from '${packageJson.name}/emscripten-module'
+import { ${className} } from './ffi.js'
 /**
 ${docComment}
  */

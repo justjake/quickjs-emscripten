@@ -1,6 +1,6 @@
 import type { QuickJSSyncVariant } from "@jitl/quickjs-ffi-types"
-import { QuickJSFFI } from "./ffi.js"
 import moduleLoader from "@jitl/quickjs-asmjs-mjs-release-sync/emscripten-module"
+import { QuickJSFFI } from "./ffi.js"
 /**
  * ### @jitl/quickjs-asmjs-mjs-release-sync
  *
