@@ -90,7 +90,8 @@ Variant-specific Emscripten build flags:
   "--closure 1",
   "-s FILESYSTEM=0",
   "--pre-js $(TEMPLATES)/pre-extension.js",
-  "--pre-js $(TEMPLATES)/pre-wasmMemory.js"
+  "--pre-js $(TEMPLATES)/pre-wasmMemory.js",
+  "-s 5MB"
 ]
 ```
 

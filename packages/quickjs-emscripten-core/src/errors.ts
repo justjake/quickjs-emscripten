@@ -7,7 +7,7 @@ export class QuickJSUnwrapError extends Error {
   name = "QuickJSUnwrapError"
   constructor(
     public cause: unknown,
-    public context?: QuickJSContext,
+    // public context?: QuickJSContext,
   ) {
     super(String(cause))
   }

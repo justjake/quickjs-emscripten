@@ -193,7 +193,7 @@ An `Array` that also implements [Disposable](interfaces/Disposable.md):
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:329](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L329)
+[packages/quickjs-emscripten-core/src/lifetime.ts:354](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L354)
 
 ***
 
@@ -209,7 +209,7 @@ An `Array` that also implements [Disposable](interfaces/Disposable.md):
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:453](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L453)
+[packages/quickjs-emscripten-core/src/lifetime.ts:478](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L478)
 
 ***
 
@@ -965,7 +965,7 @@ The default [Intrinsics](exports.md#intrinsics) language features enabled in a Q
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:453](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L453)
+[packages/quickjs-emscripten-core/src/lifetime.ts:478](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L478)
 
 ***
 
@@ -1304,7 +1304,7 @@ Create an array that also implements [Disposable](interfaces/Disposable.md).
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:334](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L334)
+[packages/quickjs-emscripten-core/src/lifetime.ts:359](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L359)
 
 ***
 

@@ -3,12 +3,14 @@ export * from "@jitl/quickjs-ffi-types"
 // Sync classes
 export { QuickJSWASMModule } from "./module"
 export { QuickJSContext } from "./context"
-export { QuickJSRuntime, InterruptHandler, ExecutePendingJobsResult } from "./runtime"
+export { QuickJSRuntime } from "./runtime"
+export type { InterruptHandler, ExecutePendingJobsResult } from "./runtime"
 
 // Async classes
 export { QuickJSAsyncWASMModule } from "./module-asyncify"
 export { QuickJSAsyncRuntime } from "./runtime-asyncify"
-export { QuickJSAsyncContext, AsyncFunctionImplementation } from "./context-asyncify"
+export { QuickJSAsyncContext } from "./context-asyncify"
+export type { AsyncFunctionImplementation } from "./context-asyncify"
 
 // Build variants
 export * from "./from-variant"
@@ -45,5 +47,5 @@ export type {
 } from "./types"
 export { DefaultIntrinsics } from "./types"
 export type { ModuleEvalOptions } from "./module"
-export { QuickJSPropertyKey } from "./context"
+export type { QuickJSPropertyKey } from "./context"
 export { debugLog, setDebugMode } from "./debug"

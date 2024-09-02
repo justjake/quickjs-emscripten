@@ -1276,8 +1276,8 @@ export class QuickJSContext
    */
   unwrapResult<T>(result: SuccessOrFail<T, QuickJSHandle>): T {
     if (result.error) {
-      const context: QuickJSContext =
-        "context" in result.error ? (result.error as { context: QuickJSContext }).context : this
+      // const context: QuickJSContext =
+      //   "context" in result.error ? (result.error as { context: QuickJSContext }).context : this
       const cause = result.error.consume((error) => this.dump(error))
 
       if (cause && typeof cause === "object" && typeof cause.message === "string") {
@@ -1298,10 +1298,18 @@ export class QuickJSContext
         throw exception
       }
 
-      throw new QuickJSUnwrapError(cause, context)
+      throw new QuickJSUnwrapError(cause)
     }
 
     return result.value
+  }
+
+  /** @private */
+  [Symbol.for("nodejs.util.inspect.custom")]() {
+    if (!this.alive) {
+      return `${this.constructor.name} { disposed }`
+    }
+    return `${this.constructor.name} { ctx: ${this.ctx.value} rt: ${this.rt.value} }`
   }
 
   /** @private */

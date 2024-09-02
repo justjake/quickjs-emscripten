@@ -17,7 +17,7 @@
   },
   "files": [
     "LICENSE",
-    "example/**",
+    "example/**/*",
     "dist/**/*"
   ],
   "types": "dist/index.d.mts",
@@ -32,8 +32,8 @@
     }
   },
   "devDependencies": {
-    "quickjs-emscripten-core": "workspace:*",
     "@jitl/quickjs-asmjs-mjs-release-sync": "workspace:*",
-    "@jitl/tsconfig": "workspace:*"
+    "@jitl/tsconfig": "workspace:*",
+    "quickjs-emscripten-core": "workspace:*"
   }
 }

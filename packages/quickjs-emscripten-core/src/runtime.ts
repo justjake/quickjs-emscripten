@@ -24,7 +24,7 @@ import { intrinsicsToFlags } from "./types"
  * @returns `true` to interrupt JS execution inside the VM.
  * @returns `false` or `undefined` to continue JS execution inside the VM.
  */
-export type InterruptHandler = (runtime: QuickJSRuntime) => boolean | undefined
+export type InterruptHandler = (runtime: QuickJSRuntime) => boolean | undefined | void
 
 /**
  * Used as an optional for the results of executing pendingJobs.
@@ -364,6 +364,14 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     if (this._debugMode) {
       console.log("quickjs-emscripten:", ...msg)
     }
+  }
+
+  /** @private */
+  [Symbol.for("nodejs.util.inspect.custom")]() {
+    if (!this.alive) {
+      return `${this.constructor.name} { disposed }`
+    }
+    return `${this.constructor.name} { rt: ${this.rt.value} }`
   }
 
   private getSystemContext() {

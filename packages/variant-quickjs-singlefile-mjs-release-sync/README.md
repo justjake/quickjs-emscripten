@@ -66,6 +66,7 @@ Variant-specific Emscripten build flags:
   "-s FILESYSTEM=0",
   "--pre-js $(TEMPLATES)/pre-extension.js",
   "--pre-js $(TEMPLATES)/pre-wasmMemory.js",
-  "-s SINGLE_FILE=1"
+  "-s SINGLE_FILE=1",
+  "-s STACK_SIZE=5MB"
 ]
 ```

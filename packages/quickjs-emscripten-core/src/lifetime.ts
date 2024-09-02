@@ -144,6 +144,31 @@ export class Lifetime<T, TCopy = never, Owner = never>
   }
 
   /**
+   * Call `map` with this lifetime, returning the result.
+   * Does not dispose the lifetime.
+   * @return the result of `map(this)`.
+   */
+  map<O>(map: (lifetime: this) => O): O
+  map<O>(map: (lifetime: QuickJSHandle) => O): O
+  map<O>(map: (lifetime: any) => O): O {
+    this.assertAlive()
+    return map(this)
+  }
+
+  /**
+   * Call `fn` with this lifetime, then return `this`. Does not dispose the
+   * lifetime. Useful for imperative operations within an expression, like when
+   * you're building up objects, or to add logging in the middle of a call chain.
+   * @returns this
+   */
+  tap(fn: (lifetime: this) => void): this
+  tap(fn: (lifetime: QuickJSHandle) => void): QuickJSHandle
+  tap(fn: (lifetime: any) => void): any {
+    fn(this)
+    return this
+  }
+
+  /**
    * Dispose of {@link value} and perform cleanup.
    */
   dispose() {

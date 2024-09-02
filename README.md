@@ -7,7 +7,7 @@ compiled to WebAssembly.
 - Create and manipulate values inside the QuickJS runtime ([more][values]).
 - Expose host functions to the QuickJS runtime ([more][functions]).
 - Execute synchronous code that uses asynchronous functions, with [asyncify][asyncify].
-- Supports browsers, NodeJS, Deno, Bun, Cloudflare Workers, QuickJS (QuickJS in QuickJS).
+- Supports browsers, NodeJS, Deno, Bun, Cloudflare Workers, QuickJS (via [quickjs-for-quickjs][]).
 
 [Github] | [NPM] | [API Documentation][api] | [Variants][core] | [Examples][tests]
 
@@ -44,6 +44,7 @@ main()
 [values]: #interfacing-with-the-interpreter
 [asyncify]: #asyncify
 [functions]: #exposing-apis
+[quickjs-for-quickjs]:  https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-for-quickjs
 
 - [quickjs-emscripten](#quickjs-emscripten)
   - [Usage](#usage)

@@ -70,6 +70,7 @@ Variant-specific Emscripten build flags:
   "--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js",
   "--pre-js $(TEMPLATES)/pre-wasmMemory.js",
   "-s SINGLE_FILE=1",
+  "-s STACK_SIZE=5MB",
   "-DQTS_SANITIZE_LEAK",
   "-fsanitize=leak",
   "-g2"

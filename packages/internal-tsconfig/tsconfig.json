@@ -35,7 +35,7 @@
     "noEmitOnError": true,
     // "importHelpers": true,                 /* Import emit helpers from 'tslib'. */
     // "downlevelIteration": true,            /* Provide full support for iterables in 'for-of', spread, and destructuring when targeting 'ES5' or 'ES3'. */
-    // "isolatedModules": true,               /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */
+    "isolatedModules": true /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */,
     // "emitDeclarationOnly": true,
 
     /* Strict Type-Checking Options */
