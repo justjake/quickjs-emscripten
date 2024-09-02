@@ -409,7 +409,7 @@ socket.on("data", chunk => {
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1423](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1423)
+[packages/quickjs-emscripten-core/src/context.ts:1431](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1431)
 
 ***
 
@@ -521,7 +521,7 @@ socket.write(dataLifetime?.value)
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1406](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1406)
+[packages/quickjs-emscripten-core/src/context.ts:1414](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1414)
 
 ***
 
@@ -625,7 +625,7 @@ interrupted, the error will have name `InternalError` and message
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1432](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1432)
+[packages/quickjs-emscripten-core/src/context.ts:1440](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1440)
 
 ***
 
@@ -1469,7 +1469,7 @@ properties.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1428](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1428)
+[packages/quickjs-emscripten-core/src/context.ts:1436](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1436)
 
 ***
 

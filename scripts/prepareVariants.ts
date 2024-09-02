@@ -365,7 +365,12 @@ async function main() {
         main: js ? "./dist/index.js" : "./dist/index.mjs",
         module: mjs ? "./dist/index.mjs" : undefined,
       }
-
+      const ffiExports = {
+        types: "./dist/ffi.d.ts",
+        import: mjs ? "./dist/ffi.mjs" : "./dist/ffi.js",
+        require: js ? "./dist/ffi.js" : undefined,
+        default: js ? "./dist/ffi.js" : "./dist/ffi.mjs",
+      }
       const emscriptenExports = {
         types: variant.exports.browser
           ? "./dist/emscripten-module.browser.d.ts"
@@ -422,12 +427,8 @@ async function main() {
             default: indexExports.main,
           },
           "./package.json": "./package.json",
-          "./ffi": {
-            types: "./dist/ffi.d.ts",
-            import: mjs ? "./dist/ffi.mjs" : "./dist/ffi.js",
-            require: js ? "./dist/ffi.js" : undefined,
-            default: js ? "./dist/ffi.js" : "./dist/ffi.mjs",
-          },
+          "./ffi":
+            variant.emscriptenInclusion !== EmscriptenInclusion.AsmJs ? ffiExports : undefined,
           "./wasm":
             variant.emscriptenInclusion === EmscriptenInclusion.Separate
               ? "./dist/emscripten-module.wasm"

@@ -251,7 +251,7 @@ by the runtime.
 
 ### InterruptHandler
 
-> **InterruptHandler**: (`runtime`) => `boolean` \| `undefined`
+> **InterruptHandler**: (`runtime`) => `boolean` \| `undefined` \| `void`
 
 Callback called regularly while the VM executes code.
 Determines if a VM's execution should be interrupted.
@@ -262,7 +262,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Returns
 
-`boolean` \| `undefined`
+`boolean` \| `undefined` \| `void`
 
 `true` to interrupt JS execution inside the VM.
 

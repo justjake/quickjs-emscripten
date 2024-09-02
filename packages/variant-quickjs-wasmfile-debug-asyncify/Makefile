@@ -87,7 +87,6 @@ CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-extension.js
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-sourceMapJson.js
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js
 CFLAGS_WASM+=--pre-js $(TEMPLATES)/pre-wasmMemory.js
-CFLAGS_WASM+=-s STACK_SIZE=5MB
 CFLAGS_WASM+=-O3
 CFLAGS_CJS+=-s ENVIRONMENT=node
 CFLAGS_MJS+=-s ENVIRONMENT=node

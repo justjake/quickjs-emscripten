@@ -1214,11 +1214,6 @@
           "default": "./dist/index.mjs"
         },
         "./package.json": "./package.json",
-        "./ffi": {
-          "types": "./dist/ffi.d.ts",
-          "import": "./dist/ffi.mjs",
-          "default": "./dist/ffi.mjs"
-        },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.d.ts",
           "import": "./dist/emscripten-module.mjs",
