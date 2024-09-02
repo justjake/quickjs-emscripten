@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.30.1
+
+- [#137](https://github.com/justjake/quickjs-emscripten/pull/137)
+  - Add `quickjs-for-quickjs`, a package that can run inside quickjs, so you can put quickjs inside your quickjs.
+  - Fix a build system bug that made commonjs or esm variants include both types, thus being larger than they needed to be.
+
 ## v0.30.0
 
 - [#200](https://github.com/justjake/quickjs-emscripten/pull/200) Inspect and iterate handles, equality, changes to result types, changes to debug logging.

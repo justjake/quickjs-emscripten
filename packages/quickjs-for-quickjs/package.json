@@ -17,6 +17,7 @@
   },
   "files": [
     "LICENSE",
+    "yodawg.jpg",
     "example/**/*",
     "dist/**/*"
   ],
