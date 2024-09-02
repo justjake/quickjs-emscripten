@@ -116,7 +116,7 @@ class QuickJSNodeModuleLoader {
   }
 }
 
-test("quickjs-in-quickjs", () => {
+test("quickjs-for-quickjs", () => {
   const moduleLoader = new QuickJSNodeModuleLoader()
   moduleLoader.mountImport({
     hostImport: "quickjs-emscripten-core",

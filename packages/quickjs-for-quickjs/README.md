@@ -1,12 +1,20 @@
 # quickjs-for-quickjs
 
+![yo dawg i herd u like quickjs so i put quickjs in ur quickjs so u can eval while u eval](./yodawg.jpg)
+
 This package is a build of [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten) that can run inside QuickJS or any other JavaScript runtime without WebAssembly support. The QuickJS C library is compiled to Asm.js, and then bundled together with the quickjs-emscripten JavaScript wrapper into a single standalone file with no external dependencies.
 
-`quickjs-in-quickjs` has been tested in the following configurations:
+`quickjs-for-quickjs` has been tested in the following configurations:
 
 - ✅ NodeJS -> quickjs-for-quickjs
 - ✅ NodeJS -> quickjs-emscripten RELEASE_SYNC -> quickjs-for-quickjs
 - ❌ NodeJS -> quickjs-emscripten RELEASE_SYNC -> quickjs-for-quickjs -> quickjs-for-quickjs (This hits stack overflow in QuickJS. It could work with a larger stack size for the outer QuickJS instance)
+
+## Why?
+
+For fun!
+
+This could have practical applications, like if you're a user writing a plugin for a 3rd-party system using quickjs-emscripten for scripting, and you as a plugin author also want your plugin to have its own plugin ecosystem.
 
 ## Usage
 

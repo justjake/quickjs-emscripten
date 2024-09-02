@@ -48,7 +48,7 @@ The default, normal build. Note that both variants support regular async functio
 
 ## Single-file, or separate .wasm file? asmjs
 
-The C library code is compiled to Javascript, no WebAssembly used. Sometimes called "asmjs". This is the slowest possible option, and is intended for constrained environments that do not support WebAssembly, like quickjs-in-quickjs.
+The C library code is compiled to Javascript, no WebAssembly used. Sometimes called "asmjs". This is the slowest possible option, and is intended for constrained environments that do not support WebAssembly, like quickjs-for-quickjs.
 
 ## More details
 
