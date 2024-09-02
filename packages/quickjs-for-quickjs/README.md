@@ -40,7 +40,7 @@ const context = QuickJS.createContext()
 setUpContext(context)
 
 // allow the host QuickJS to import quickjs-for-quickjs module
-context.runtime.setModuleLoader(name => {
+context.runtime.setModuleLoader((name) => {
   if (name === "quickjs-for-quickjs") {
     return quickjsSource
   }
@@ -60,9 +60,7 @@ export const result = innerResult.consume(context.dump)
 `
 
 // eval the quickjs host
-const handle = context
-  .evalCode(quickjsHost, "quickjs-host.mjs")
-  .unwrap()
+const handle = context.evalCode(quickjsHost, "quickjs-host.mjs").unwrap()
 
 // get the result
 context.runtime.executePendingJob()

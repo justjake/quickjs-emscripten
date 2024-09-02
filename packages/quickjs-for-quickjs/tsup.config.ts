@@ -1,4 +1,4 @@
-import {extendConfig} from "@jitl/tsconfig/tsup.base.config.js"
+import { extendConfig } from "@jitl/tsconfig/tsup.base.config.js"
 
 export default extendConfig({
   entry: ["src/index.mts"],
