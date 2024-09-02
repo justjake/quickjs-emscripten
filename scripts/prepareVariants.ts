@@ -366,7 +366,7 @@ async function main() {
         module: mjs ? "./dist/index.mjs" : undefined,
       }
       const ffiExports = {
-        types: "./dist/ffi.d.ts",
+        types: js ? "./dist/ffi.d.ts" : "./dist/ffi.d.mts",
         import: mjs ? "./dist/ffi.mjs" : "./dist/ffi.js",
         require: js ? "./dist/ffi.js" : undefined,
         default: js ? "./dist/ffi.js" : "./dist/ffi.mjs",

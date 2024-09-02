@@ -783,7 +783,7 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
@@ -836,7 +836,7 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
@@ -889,7 +889,7 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
@@ -942,7 +942,7 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
@@ -996,7 +996,7 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
@@ -1051,7 +1051,7 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
@@ -1106,7 +1106,7 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
@@ -1161,7 +1161,7 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
