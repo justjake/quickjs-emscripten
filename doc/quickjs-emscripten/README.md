@@ -48,7 +48,7 @@ main()
 [values]: #interfacing-with-the-interpreter
 [asyncify]: #asyncify
 [functions]: #exposing-apis
-[quickjs-for-quickjs]:  https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-for-quickjs
+[quickjs-for-quickjs]: https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-for-quickjs
 
 - [quickjs-emscripten](#quickjs-emscripten)
   - [Usage](#usage)

@@ -1276,13 +1276,13 @@ export class QuickJSContext
    */
   unwrapResult<T>(result: SuccessOrFail<T, QuickJSHandle>): T {
     if (result.error) {
-      // const context: QuickJSContext =
-      //   "context" in result.error ? (result.error as { context: QuickJSContext }).context : this
+      const context: QuickJSContext =
+        "context" in result.error ? (result.error as { context: QuickJSContext }).context : this
       const cause = result.error.consume((error) => this.dump(error))
 
       if (cause && typeof cause === "object" && typeof cause.message === "string") {
         const { message, name, stack, ...rest } = cause
-        const exception = new QuickJSUnwrapError(cause)
+        const exception = new QuickJSUnwrapError(cause, context)
 
         if (typeof name === "string") {
           exception.name = cause.name
