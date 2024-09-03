@@ -7,10 +7,14 @@ import assert from "node:assert"
 import { getQuickJS } from "./index.js"
 import type { JSModuleLoader, JSModuleNormalizer, QuickJSHandle, QuickJSContext } from "./index.js"
 
+const DEBUG = false
+
 const ttyLog = (...args: unknown[]) => {
-  const fd = fs.openSync("/dev/tty", "w")
-  fs.writeSync(fd, util.format(...args) + "\n")
-  fs.closeSync(fd)
+  if (DEBUG) {
+    const fd = fs.openSync("/dev/tty", "w")
+    fs.writeSync(fd, util.format(...args) + "\n")
+    fs.closeSync(fd)
+  }
 }
 
 const QuickJS = await getQuickJS()
