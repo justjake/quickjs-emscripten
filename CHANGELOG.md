@@ -1,10 +1,10 @@
 # Changelog
 
-## v0.30.1
+## v0.31.0
 
 - [#137](https://github.com/justjake/quickjs-emscripten/pull/137)
   - Add `quickjs-for-quickjs`, a package that can run inside quickjs, so you can put quickjs inside your quickjs.
-  - Fix a build system bug that made commonjs or esm variants include both types, thus being larger than they needed to be.
+  - **Possibly breaking**: Fix a build system bug that made commonjs or esm variants include both types, thus being larger than they needed to be. After upgrading a variant to this release, you should verify that it can be imported/required as expected. You may need to add additional variants if you were using an "esm" variant from both cjs and esm.
 
 ## v0.30.0
 
