@@ -1,7 +1,7 @@
 import type { Options } from "tsup"
 import { defineConfig } from "tsup"
 
-const baseConfig = defineConfig((options) => ({
+const baseConfig = defineConfig((_options) => ({
   entry: ["src/index.ts"],
   sourcemap: true,
   dts: true,
