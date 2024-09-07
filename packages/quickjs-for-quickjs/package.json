@@ -1,0 +1,40 @@
+{
+  "name": "quickjs-for-quickjs",
+  "version": "0.31.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justjake/quickjs-emscripten"
+  },
+  "author": {
+    "name": "Jake Teton-Landis",
+    "url": "https://jake.tl"
+  },
+  "scripts": {
+    "check": "npx tsc --project . --noEmit",
+    "build": "npx tsup",
+    "clean": "git clean -fx dist"
+  },
+  "files": [
+    "LICENSE",
+    "yodawg.jpg",
+    "example/**/*",
+    "dist/**/*"
+  ],
+  "types": "dist/index.d.mts",
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "devDependencies": {
+    "@jitl/quickjs-asmjs-mjs-release-sync": "workspace:*",
+    "@jitl/tsconfig": "workspace:*",
+    "quickjs-emscripten-core": "workspace:*"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "name": "@jitl/quickjs-asmjs-mjs-release-sync",
+  "license": "MIT",
+  "version": "0.31.0",
+  "description": "Variant of quickjs library: Compiled to pure Javascript, no WebAssembly required.",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justjake/quickjs-emscripten"
+  },
+  "author": {
+    "name": "Jake Teton-Landis",
+    "url": "https://jake.tl"
+  },
+  "scripts": {
+    "build": "yarn build:c && yarn build:ts",
+    "build:c": "make -j2",
+    "build:ts": "npx tsup",
+    "check:types": "npx tsc --project . --noEmit",
+    "clean": "make clean",
+    "prepare": "yarn clean && yarn build"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist/**/*",
+    "!dist/*.tsbuildinfo"
+  ],
+  "types": "./dist/index.d.mts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json",
+    "./emscripten-module": {
+      "types": "./dist/emscripten-module.d.ts",
+      "import": "./dist/emscripten-module.mjs",
+      "default": "./dist/emscripten-module.mjs"
+    }
+  },
+  "dependencies": {
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  }
+}

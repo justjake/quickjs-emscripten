@@ -613,6 +613,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jitl/quickjs-asmjs-mjs-release-sync@workspace:*, @jitl/quickjs-asmjs-mjs-release-sync@workspace:packages/variant-quickjs-asmjs-mjs-release-sync":
+  version: 0.0.0-use.local
+  resolution: "@jitl/quickjs-asmjs-mjs-release-sync@workspace:packages/variant-quickjs-asmjs-mjs-release-sync"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "@jitl/quickjs-ffi-types@workspace:*, @jitl/quickjs-ffi-types@workspace:packages/quickjs-ffi-types":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-ffi-types@workspace:packages/quickjs-ffi-types"
@@ -5561,6 +5569,16 @@ __metadata:
     "@jitl/quickjs-wasmfile-debug-sync": "workspace:*"
     "@jitl/quickjs-wasmfile-release-asyncify": "workspace:*"
     "@jitl/quickjs-wasmfile-release-sync": "workspace:*"
+    quickjs-emscripten-core: "workspace:*"
+  languageName: unknown
+  linkType: soft
+
+"quickjs-for-quickjs@workspace:packages/quickjs-for-quickjs":
+  version: 0.0.0-use.local
+  resolution: "quickjs-for-quickjs@workspace:packages/quickjs-for-quickjs"
+  dependencies:
+    "@jitl/quickjs-asmjs-mjs-release-sync": "workspace:*"
+    "@jitl/tsconfig": "workspace:*"
     quickjs-emscripten-core: "workspace:*"
   languageName: unknown
   linkType: soft

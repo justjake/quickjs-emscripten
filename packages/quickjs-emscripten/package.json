@@ -1,6 +1,6 @@
 {
   "name": "quickjs-emscripten",
-  "version": "0.30.0",
+  "version": "0.31.0",
   "sideEffects": false,
   "license": "MIT",
   "type": "commonjs",
@@ -33,7 +33,7 @@
     "clean": "git clean -fx dist .output",
     "tsc": "npx tsc -p . --noEmit",
     "test:vi": "VITEST=1 npx vitest run",
-    "test:node": "npx tsc -p tsconfig.build.json && ./makeTestPackageJson.ts && node -r source-map-support/register --test ./.output/*node-test*.*js",
+    "test:node": "npx tsc -p tsconfig.build.json && ./makeTestPackageJson.ts && node --experimental-import-meta-resolve -r source-map-support/register --test ./.output/*node-test*.*js",
     "test": "npm run test:vi && npm run test:node"
   },
   "types": "./dist/index.d.ts",

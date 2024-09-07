@@ -34,6 +34,7 @@ enum CLibrary {
 enum EmscriptenInclusion {
   SingleFile = "singlefile",
   Separate = "wasm",
+  AsmJs = "asmjs",
 }
 
 // https://github.com/emscripten-core/emscripten/blob/7bed0e2477000603c26766897e1f455c08bc3358/src/settings.js#L647
@@ -124,6 +125,22 @@ const targets = {
       browser: SEPARATE_FILE_INCLUSION.browser,
     },
   }),
+  "asmjs-mjs": makeTarget({
+    description: `Compiled to pure Javascript, no WebAssembly required.`,
+    emscriptenInclusion: EmscriptenInclusion.AsmJs,
+    releaseMode: ReleaseMode.Release,
+    syncMode: SyncMode.Sync,
+    library: CLibrary.QuickJS,
+    exports: {
+      import: {
+        emscriptenEnvironment: [
+          EmscriptenEnvironment.web,
+          EmscriptenEnvironment.worker,
+          EmscriptenEnvironment.node,
+        ],
+      },
+    },
+  }),
 }
 
 type TargetSpec = Partial<BuildVariant> &
@@ -205,6 +222,7 @@ const ReleaseModeFlags = {
 const EmscriptenInclusionFlags = {
   [EmscriptenInclusion.Separate]: [],
   [EmscriptenInclusion.SingleFile]: [`-s SINGLE_FILE=1`],
+  [EmscriptenInclusion.AsmJs]: [`-s WASM=0`, `-s SINGLE_FILE=1`],
 }
 
 function getCflags(targetName: string, variant: BuildVariant) {
@@ -283,7 +301,6 @@ interface FinalVariant {
   dir: string
   packageJson: PackageJson
   variant: BuildVariant
-  indexJs: string
 }
 
 async function main() {
@@ -348,6 +365,32 @@ async function main() {
         main: js ? "./dist/index.js" : "./dist/index.mjs",
         module: mjs ? "./dist/index.mjs" : undefined,
       }
+      const ffiExports = {
+        types: js ? "./dist/ffi.d.ts" : "./dist/ffi.d.mts",
+        import: mjs ? "./dist/ffi.mjs" : "./dist/ffi.js",
+        require: js ? "./dist/ffi.js" : undefined,
+        default: js ? "./dist/ffi.js" : "./dist/ffi.mjs",
+      }
+      const emscriptenExports = {
+        types: variant.exports.browser
+          ? "./dist/emscripten-module.browser.d.ts"
+          : "./dist/emscripten-module.d.ts",
+        iife: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
+        workerd: variant.exports.workerd ? "./dist/emscripten-module.cloudflare.cjs" : undefined,
+        browser: variant.exports.browser ? "./dist/emscripten-module.browser.mjs" : undefined,
+        import: variant.exports.import
+          ? "./dist/emscripten-module.mjs"
+          : variant.exports.browser
+            ? "./dist/emscripten-module.browser.mjs"
+            : "./dist/emscripten-module.cjs",
+        require: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
+        default: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
+      }
+      emscriptenExports.default =
+        emscriptenExports.default ??
+        emscriptenExports.require ??
+        emscriptenExports.import ??
+        emscriptenExports.browser
 
       const packageJson: PackageJson = {
         name: `@jitl/${basename}`,
@@ -384,33 +427,13 @@ async function main() {
             default: indexExports.main,
           },
           "./package.json": "./package.json",
-          "./ffi": {
-            types: "./dist/ffi.d.ts",
-            import: mjs ? "./dist/ffi.mjs" : "./dist/ffi.js",
-            require: js ? "./dist/ffi.js" : undefined,
-            default: js ? "./dist/ffi.js" : "./dist/ffi.mjs",
-          },
+          "./ffi":
+            variant.emscriptenInclusion !== EmscriptenInclusion.AsmJs ? ffiExports : undefined,
           "./wasm":
             variant.emscriptenInclusion === EmscriptenInclusion.Separate
               ? "./dist/emscripten-module.wasm"
               : undefined,
-          "./emscripten-module": {
-            types: variant.exports.browser
-              ? "./dist/emscripten-module.browser.d.ts"
-              : "./dist/emscripten-module.d.ts",
-            iife: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
-            workerd: variant.exports.workerd
-              ? "./dist/emscripten-module.cloudflare.cjs"
-              : undefined,
-            browser: variant.exports.browser ? "./dist/emscripten-module.browser.mjs" : undefined,
-            import: variant.exports.import
-              ? "./dist/emscripten-module.mjs"
-              : variant.exports.browser
-                ? "./dist/emscripten-module.browser.mjs"
-                : "./dist/emscripten-module.cjs",
-            require: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
-            default: variant.exports.require ? "./dist/emscripten-module.cjs" : undefined,
-          },
+          "./emscripten-module": emscriptenExports,
         },
         dependencies: {
           "@jitl/quickjs-ffi-types": "workspace:*",
@@ -434,14 +457,19 @@ async function main() {
         targetName,
         dir: path.relative(repoRoot, dir),
         packageJson,
-        indexJs: path.relative(repoRoot, path.join(dist, "index.js")),
         variant,
       }
 
       if (finalVariant.dir in variantsJson) {
         throw new Error(`Duplicate variant dir ${finalVariant.dir}`)
       }
-      variantsJson[finalVariant.dir] = finalVariant
+      variantsJson[finalVariant.dir] = {
+        ...finalVariant,
+        packageJson: {
+          ...finalVariant.packageJson,
+          version: "(omitted)",
+        },
+      }
 
       await writePretty(path.join(dir, "package.json"), JSON.stringify(packageJson))
       await writePretty(path.join(dir, "LICENSE"), renderLicense(targetName, variant))
@@ -470,6 +498,7 @@ async function main() {
 const describeInclusion = {
   [EmscriptenInclusion.SingleFile]: `The WASM runtime is included directly in the JS file. Use if you run into issues with missing .wasm files when building or deploying your app.`,
   [EmscriptenInclusion.Separate]: `Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant.`,
+  [EmscriptenInclusion.AsmJs]: `The C library code is compiled to Javascript, no WebAssembly used. Sometimes called "asmjs". This is the slowest possible option, and is intended for constrained environments that do not support WebAssembly, like quickjs-for-quickjs.`,
 }
 
 const describeMode = {
@@ -728,6 +757,24 @@ function renderIndexTs(
     [SyncMode.Asyncify]: "QuickJSAsyncVariant",
   }[variant.syncMode]
 
+  if (variant.emscriptenInclusion === EmscriptenInclusion.AsmJs) {
+    // Eager loading please!
+    return `
+import type { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
+import moduleLoader from '${packageJson.name}/emscripten-module'
+import { ${className} } from './ffi.js'
+/**
+${docComment}
+ */
+const variant: ${variantTypeName} = {
+  type: '${modeName}',
+  importFFI: () => Promise.resolve(${className}),
+  importModuleLoader: () => Promise.resolve(moduleLoader),
+} as const
+export default variant
+`
+  }
+
   return `
 import type { ${variantTypeName} } from '@jitl/quickjs-ffi-types'
 
@@ -769,16 +816,26 @@ function getTsupExtensions(variant: BuildVariant) {
 
 function renderTsupConfig(variant: BuildVariant, packageJson: PackageJson): string {
   const { js, mjs } = getTsupExtensions(variant)
+  const external: string[] = []
+  const needsExternal =
+    [variant.exports.browser, variant.exports.import, variant.exports.require].filter(Boolean)
+      .length > 1
+  if (needsExternal) {
+    external.push(`${packageJson.name}/emscripten-module`)
+  }
+
+  const entry = ["src/index.ts"]
+  if (variant.emscriptenInclusion !== EmscriptenInclusion.AsmJs) {
+    entry.push("src/ffi.ts")
+  }
+
   const formats = [mjs && "esm", js && "cjs"].filter(Boolean)
   return `
 import { extendConfig } from "@jitl/tsconfig/tsup.base.config.js"
-
 export default extendConfig({
-  entry: ["src/index.ts", "src/ffi.ts"],
-  external: [
-    "${packageJson.name}/emscripten-module",
-  ],
-  formats: ${JSON.stringify(formats)},
+  entry: ${JSON.stringify(entry)},
+  external: ${JSON.stringify(external)},
+  format: ${JSON.stringify(formats)},
   clean: false,
 })
 `

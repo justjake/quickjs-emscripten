@@ -179,7 +179,7 @@ An `Array` that also implements [Disposable](interfaces/Disposable.md):
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:329](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L329)
+[packages/quickjs-emscripten-core/src/lifetime.ts:354](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L354)
 
 ***
 
@@ -195,7 +195,7 @@ An `Array` that also implements [Disposable](interfaces/Disposable.md):
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:453](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L453)
+[packages/quickjs-emscripten-core/src/lifetime.ts:478](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L478)
 
 ***
 
@@ -237,7 +237,7 @@ by the runtime.
 
 ### InterruptHandler
 
-> **InterruptHandler**: (`runtime`) => `boolean` \| `undefined`
+> **InterruptHandler**: (`runtime`) => `boolean` \| `undefined` \| `void`
 
 Callback called regularly while the VM executes code.
 Determines if a VM's execution should be interrupted.
@@ -248,7 +248,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Returns
 
-`boolean` \| `undefined`
+`boolean` \| `undefined` \| `void`
 
 `true` to interrupt JS execution inside the VM.
 
@@ -905,7 +905,7 @@ The default [Intrinsics](exports.md#intrinsics) language features enabled in a Q
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:453](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L453)
+[packages/quickjs-emscripten-core/src/lifetime.ts:478](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L478)
 
 ***
 
@@ -1198,7 +1198,7 @@ Create an array that also implements [Disposable](interfaces/Disposable.md).
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:334](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L334)
+[packages/quickjs-emscripten-core/src/lifetime.ts:359](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L359)
 
 ***
 

@@ -728,6 +728,8 @@ MaybeAsync(JSBorrowedChar *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
         copy_prop_if_needed(ctx, enumerable_props, *obj, "name");
         copy_prop_if_needed(ctx, enumerable_props, *obj, "message");
         copy_prop_if_needed(ctx, enumerable_props, *obj, "stack");
+        copy_prop_if_needed(ctx, enumerable_props, *obj, "fileName");
+        copy_prop_if_needed(ctx, enumerable_props, *obj, "lineNumber");
 
         // Serialize again.
         JSValue enumerable_json = JS_JSONStringify(ctx, enumerable_props, JS_UNDEFINED, JS_UNDEFINED);

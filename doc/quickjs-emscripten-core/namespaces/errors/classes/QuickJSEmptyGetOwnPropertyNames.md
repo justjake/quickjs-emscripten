@@ -52,7 +52,7 @@ node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/errors.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L53)
+[packages/quickjs-emscripten-core/src/errors.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L57)
 
 ***
 

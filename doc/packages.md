@@ -29,6 +29,7 @@
 - [@jitl/quickjs-singlefile-browser-debug-asyncify](@jitl/quickjs-singlefile-browser-debug-asyncify/README.md)
 - [@jitl/quickjs-singlefile-browser-release-sync](@jitl/quickjs-singlefile-browser-release-sync/README.md)
 - [@jitl/quickjs-singlefile-browser-release-asyncify](@jitl/quickjs-singlefile-browser-release-asyncify/README.md)
+- [@jitl/quickjs-asmjs-mjs-release-sync](@jitl/quickjs-asmjs-mjs-release-sync/README.md)
 
 ***
 

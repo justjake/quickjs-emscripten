@@ -389,7 +389,7 @@ socket.on("data", chunk => {
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1422](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1422)
+[packages/quickjs-emscripten-core/src/context.ts:1431](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1431)
 
 ***
 
@@ -505,7 +505,7 @@ socket.write(dataLifetime?.value)
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1405](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1405)
+[packages/quickjs-emscripten-core/src/context.ts:1414](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1414)
 
 ***
 
@@ -643,7 +643,7 @@ See [EvalFlags](../exports.md#evalflags) for number semantics
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1431](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1431)
+[packages/quickjs-emscripten-core/src/context.ts:1440](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1440)
 
 ***
 
@@ -1611,7 +1611,7 @@ properties.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:1427](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1427)
+[packages/quickjs-emscripten-core/src/context.ts:1436](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L1436)
 
 ***
 

@@ -31,6 +31,8 @@ A Lifetime that lives forever. Used for constants.
   - [consume()](StaticLifetime.md#consume)
   - [dispose()](StaticLifetime.md#dispose)
   - [dup()](StaticLifetime.md#dup)
+  - [map()](StaticLifetime.md#map)
+  - [tap()](StaticLifetime.md#tap)
 
 ## Extends
 
@@ -64,7 +66,7 @@ A Lifetime that lives forever. Used for constants.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:173](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L173)
+[packages/quickjs-emscripten-core/src/lifetime.ts:198](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L198)
 
 ## Properties
 
@@ -196,7 +198,7 @@ false after the object has been [dispose](StaticLifetime.md#dispose-1)d
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:178](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L178)
+[packages/quickjs-emscripten-core/src/lifetime.ts:203](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L203)
 
 ***
 
@@ -327,7 +329,7 @@ Dispose of [value](StaticLifetime.md#value-1) and perform cleanup.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:188](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L188)
+[packages/quickjs-emscripten-core/src/lifetime.ts:213](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L213)
 
 ***
 
@@ -347,7 +349,114 @@ Create a new handle pointing to the same [value](StaticLifetime.md#value-1).
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:183](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L183)
+[packages/quickjs-emscripten-core/src/lifetime.ts:208](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L208)
+
+***
+
+### map()
+
+#### map(map)
+
+> **map**\<`O`\>(`map`): `O`
+
+Call `map` with this lifetime, returning the result.
+Does not dispose the lifetime.
+
+##### Type parameters
+
+• **O**
+
+##### Parameters
+
+• **map**: (`lifetime`) => `O`
+
+##### Returns
+
+`O`
+
+the result of `map(this)`.
+
+##### Inherited from
+
+[`quickjs-emscripten.Lifetime.map`](Lifetime.md#map)
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:151](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L151)
+
+#### map(map)
+
+> **map**\<`O`\>(`map`): `O`
+
+##### Type parameters
+
+• **O**
+
+##### Parameters
+
+• **map**: (`lifetime`) => `O`
+
+##### Returns
+
+`O`
+
+##### Inherited from
+
+[`quickjs-emscripten.Lifetime.map`](Lifetime.md#map)
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:152](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L152)
+
+***
+
+### tap()
+
+#### tap(fn)
+
+> **tap**(`fn`): [`StaticLifetime`](StaticLifetime.md)\<`T`, `Owner`\>
+
+Call `fn` with this lifetime, then return `this`. Does not dispose the
+lifetime. Useful for imperative operations within an expression, like when
+you're building up objects, or to add logging in the middle of a call chain.
+
+##### Parameters
+
+• **fn**: (`lifetime`) => `void`
+
+##### Returns
+
+[`StaticLifetime`](StaticLifetime.md)\<`T`, `Owner`\>
+
+this
+
+##### Inherited from
+
+[`quickjs-emscripten.Lifetime.tap`](Lifetime.md#tap)
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:164](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L164)
+
+#### tap(fn)
+
+> **tap**(`fn`): [`QuickJSHandle`](../exports.md#quickjshandle)
+
+##### Parameters
+
+• **fn**: (`lifetime`) => `void`
+
+##### Returns
+
+[`QuickJSHandle`](../exports.md#quickjshandle)
+
+##### Inherited from
+
+[`quickjs-emscripten.Lifetime.tap`](Lifetime.md#tap)
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:165](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L165)
 
 ***
 

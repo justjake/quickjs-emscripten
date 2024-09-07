@@ -35,6 +35,8 @@ Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
   - [consume()](Lifetime.md#consume)
   - [dispose()](Lifetime.md#dispose)
   - [dup()](Lifetime.md#dup)
+  - [map()](Lifetime.md#map)
+  - [tap()](Lifetime.md#tap)
 
 ## Extends
 
@@ -324,7 +326,7 @@ Dispose of [value](Lifetime.md#value-1) and perform cleanup.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:149](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L149)
+[packages/quickjs-emscripten-core/src/lifetime.ts:174](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L174)
 
 ***
 
@@ -341,6 +343,97 @@ Create a new handle pointing to the same [value](Lifetime.md#value-1).
 #### Source
 
 [packages/quickjs-emscripten-core/src/lifetime.ts:118](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L118)
+
+***
+
+### map()
+
+#### map(map)
+
+> **map**\<`O`\>(`map`): `O`
+
+Call `map` with this lifetime, returning the result.
+Does not dispose the lifetime.
+
+##### Type parameters
+
+• **O**
+
+##### Parameters
+
+• **map**: (`lifetime`) => `O`
+
+##### Returns
+
+`O`
+
+the result of `map(this)`.
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:151](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L151)
+
+#### map(map)
+
+> **map**\<`O`\>(`map`): `O`
+
+##### Type parameters
+
+• **O**
+
+##### Parameters
+
+• **map**: (`lifetime`) => `O`
+
+##### Returns
+
+`O`
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:152](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L152)
+
+***
+
+### tap()
+
+#### tap(fn)
+
+> **tap**(`fn`): [`Lifetime`](Lifetime.md)\<`T`, `TCopy`, `Owner`\>
+
+Call `fn` with this lifetime, then return `this`. Does not dispose the
+lifetime. Useful for imperative operations within an expression, like when
+you're building up objects, or to add logging in the middle of a call chain.
+
+##### Parameters
+
+• **fn**: (`lifetime`) => `void`
+
+##### Returns
+
+[`Lifetime`](Lifetime.md)\<`T`, `TCopy`, `Owner`\>
+
+this
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:164](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L164)
+
+#### tap(fn)
+
+> **tap**(`fn`): [`QuickJSHandle`](../exports.md#quickjshandle)
+
+##### Parameters
+
+• **fn**: (`lifetime`) => `void`
+
+##### Returns
+
+[`QuickJSHandle`](../exports.md#quickjshandle)
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:165](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L165)
 
 ***
 

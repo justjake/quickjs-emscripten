@@ -1,13 +1,14 @@
 import type { Options } from "tsup"
 import { defineConfig } from "tsup"
 
-const baseConfig = defineConfig((options) => ({
+const baseConfig = defineConfig((_options) => ({
   entry: ["src/index.ts"],
-  minify: !options.watch,
   sourcemap: true,
   dts: true,
   clean: true,
   format: ["cjs", "esm"],
+  minifySyntax: true,
+  minifyWhitespace: true,
 })) as (options: Options) => Options
 
 export function extendConfig(options: Options = {}) {

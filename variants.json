@@ -6,7 +6,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-debug-sync",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -51,7 +51,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-wasmfile-debug-sync/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "debug",
@@ -73,7 +72,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-debug-asyncify",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -118,7 +117,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-wasmfile-debug-asyncify/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "debug",
@@ -140,7 +138,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-release-sync",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -185,7 +183,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-wasmfile-release-sync/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "release",
@@ -207,7 +204,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-wasmfile-release-asyncify",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -252,7 +249,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-wasmfile-release-asyncify/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "release",
@@ -274,7 +270,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-ng-wasmfile-debug-sync",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -319,7 +315,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-ng-wasmfile-debug-sync/dist/index.js",
     "variant": {
       "library": "quickjs-ng",
       "releaseMode": "debug",
@@ -341,7 +336,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-ng-wasmfile-debug-asyncify",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -386,7 +381,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-ng-wasmfile-debug-asyncify/dist/index.js",
     "variant": {
       "library": "quickjs-ng",
       "releaseMode": "debug",
@@ -408,7 +402,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-ng-wasmfile-release-sync",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -453,7 +447,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-ng-wasmfile-release-sync/dist/index.js",
     "variant": {
       "library": "quickjs-ng",
       "releaseMode": "release",
@@ -475,7 +468,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-ng-wasmfile-release-asyncify",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -520,7 +513,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-ng-wasmfile-release-asyncify/dist/index.js",
     "variant": {
       "library": "quickjs-ng",
       "releaseMode": "release",
@@ -542,7 +534,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-debug-sync",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -582,7 +574,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-cjs-debug-sync/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "debug",
@@ -599,7 +590,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-debug-asyncify",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -639,7 +630,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-cjs-debug-asyncify/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "debug",
@@ -656,7 +646,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-release-sync",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -696,7 +686,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-cjs-release-sync/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "release",
@@ -713,7 +702,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-cjs-release-asyncify",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -753,7 +742,6 @@
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-cjs-release-asyncify/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "release",
@@ -770,7 +758,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-debug-sync",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -795,18 +783,18 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.d.ts",
-          "import": "./dist/emscripten-module.mjs"
+          "import": "./dist/emscripten-module.mjs",
+          "default": "./dist/emscripten-module.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-mjs-debug-sync/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "debug",
@@ -823,7 +811,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-debug-asyncify",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -848,18 +836,18 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.d.ts",
-          "import": "./dist/emscripten-module.mjs"
+          "import": "./dist/emscripten-module.mjs",
+          "default": "./dist/emscripten-module.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-mjs-debug-asyncify/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "debug",
@@ -876,7 +864,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-release-sync",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -901,18 +889,18 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.d.ts",
-          "import": "./dist/emscripten-module.mjs"
+          "import": "./dist/emscripten-module.mjs",
+          "default": "./dist/emscripten-module.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-mjs-release-sync/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "release",
@@ -929,7 +917,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-mjs-release-asyncify",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -954,18 +942,18 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.d.ts",
-          "import": "./dist/emscripten-module.mjs"
+          "import": "./dist/emscripten-module.mjs",
+          "default": "./dist/emscripten-module.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-mjs-release-asyncify/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "release",
@@ -982,7 +970,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-debug-sync",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -1008,19 +996,19 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.browser.d.ts",
           "browser": "./dist/emscripten-module.browser.mjs",
-          "import": "./dist/emscripten-module.browser.mjs"
+          "import": "./dist/emscripten-module.browser.mjs",
+          "default": "./dist/emscripten-module.browser.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-browser-debug-sync/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "debug",
@@ -1037,7 +1025,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-debug-asyncify",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -1063,19 +1051,19 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.browser.d.ts",
           "browser": "./dist/emscripten-module.browser.mjs",
-          "import": "./dist/emscripten-module.browser.mjs"
+          "import": "./dist/emscripten-module.browser.mjs",
+          "default": "./dist/emscripten-module.browser.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-browser-debug-asyncify/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "debug",
@@ -1092,7 +1080,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-release-sync",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -1118,19 +1106,19 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.browser.d.ts",
           "browser": "./dist/emscripten-module.browser.mjs",
-          "import": "./dist/emscripten-module.browser.mjs"
+          "import": "./dist/emscripten-module.browser.mjs",
+          "default": "./dist/emscripten-module.browser.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-browser-release-sync/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "release",
@@ -1147,7 +1135,7 @@
     "packageJson": {
       "name": "@jitl/quickjs-singlefile-browser-release-asyncify",
       "license": "MIT",
-      "version": "0.30.0",
+      "version": "(omitted)",
       "description": "Variant of quickjs library: Variant with the WASM data embedded into a browser ESModule.",
       "sideEffects": false,
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
@@ -1173,19 +1161,19 @@
         },
         "./package.json": "./package.json",
         "./ffi": {
-          "types": "./dist/ffi.d.ts",
+          "types": "./dist/ffi.d.mts",
           "import": "./dist/ffi.mjs",
           "default": "./dist/ffi.mjs"
         },
         "./emscripten-module": {
           "types": "./dist/emscripten-module.browser.d.ts",
           "browser": "./dist/emscripten-module.browser.mjs",
-          "import": "./dist/emscripten-module.browser.mjs"
+          "import": "./dist/emscripten-module.browser.mjs",
+          "default": "./dist/emscripten-module.browser.mjs"
         }
       },
       "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
     },
-    "indexJs": "packages/variant-quickjs-singlefile-browser-release-asyncify/dist/index.js",
     "variant": {
       "library": "quickjs",
       "releaseMode": "release",
@@ -1193,6 +1181,54 @@
       "description": "Variant with the WASM data embedded into a browser ESModule.",
       "emscriptenInclusion": "singlefile",
       "exports": { "browser": { "emscriptenEnvironment": ["web", "worker"] } }
+    }
+  },
+  "packages/variant-quickjs-asmjs-mjs-release-sync": {
+    "basename": "quickjs-asmjs-mjs-release-sync",
+    "targetName": "asmjs-mjs",
+    "dir": "packages/variant-quickjs-asmjs-mjs-release-sync",
+    "packageJson": {
+      "name": "@jitl/quickjs-asmjs-mjs-release-sync",
+      "license": "MIT",
+      "version": "(omitted)",
+      "description": "Variant of quickjs library: Compiled to pure Javascript, no WebAssembly required.",
+      "sideEffects": false,
+      "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
+      "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
+      "scripts": {
+        "build": "yarn build:c && yarn build:ts",
+        "build:c": "make -j2",
+        "build:ts": "npx tsup",
+        "check:types": "npx tsc --project . --noEmit",
+        "clean": "make clean",
+        "prepare": "yarn clean && yarn build"
+      },
+      "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
+      "types": "./dist/index.d.mts",
+      "main": "./dist/index.mjs",
+      "module": "./dist/index.mjs",
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.mts",
+          "import": "./dist/index.mjs",
+          "default": "./dist/index.mjs"
+        },
+        "./package.json": "./package.json",
+        "./emscripten-module": {
+          "types": "./dist/emscripten-module.d.ts",
+          "import": "./dist/emscripten-module.mjs",
+          "default": "./dist/emscripten-module.mjs"
+        }
+      },
+      "dependencies": { "@jitl/quickjs-ffi-types": "workspace:*" }
+    },
+    "variant": {
+      "library": "quickjs",
+      "releaseMode": "release",
+      "syncMode": "sync",
+      "description": "Compiled to pure Javascript, no WebAssembly required.",
+      "emscriptenInclusion": "asmjs",
+      "exports": { "import": { "emscriptenEnvironment": ["web", "worker", "node"] } }
     }
   }
 }

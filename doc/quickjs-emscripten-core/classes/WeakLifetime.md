@@ -35,6 +35,8 @@ Used for function arguments.
   - [consume()](WeakLifetime.md#consume)
   - [dispose()](WeakLifetime.md#dispose)
   - [dup()](WeakLifetime.md#dup)
+  - [map()](WeakLifetime.md#map)
+  - [tap()](WeakLifetime.md#tap)
 
 ## Extends
 
@@ -74,7 +76,7 @@ Used for function arguments.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:199](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L199)
+[packages/quickjs-emscripten-core/src/lifetime.ts:224](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L224)
 
 ## Properties
 
@@ -337,7 +339,7 @@ Dispose of [value](WeakLifetime.md#value-1) and perform cleanup.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/lifetime.ts:209](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L209)
+[packages/quickjs-emscripten-core/src/lifetime.ts:234](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L234)
 
 ***
 
@@ -358,6 +360,113 @@ Create a new handle pointing to the same [value](WeakLifetime.md#value-1).
 #### Source
 
 [packages/quickjs-emscripten-core/src/lifetime.ts:118](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L118)
+
+***
+
+### map()
+
+#### map(map)
+
+> **map**\<`O`\>(`map`): `O`
+
+Call `map` with this lifetime, returning the result.
+Does not dispose the lifetime.
+
+##### Type parameters
+
+• **O**
+
+##### Parameters
+
+• **map**: (`lifetime`) => `O`
+
+##### Returns
+
+`O`
+
+the result of `map(this)`.
+
+##### Inherited from
+
+[`quickjs-emscripten-core.Lifetime.map`](Lifetime.md#map)
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:151](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L151)
+
+#### map(map)
+
+> **map**\<`O`\>(`map`): `O`
+
+##### Type parameters
+
+• **O**
+
+##### Parameters
+
+• **map**: (`lifetime`) => `O`
+
+##### Returns
+
+`O`
+
+##### Inherited from
+
+[`quickjs-emscripten-core.Lifetime.map`](Lifetime.md#map)
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:152](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L152)
+
+***
+
+### tap()
+
+#### tap(fn)
+
+> **tap**(`fn`): [`WeakLifetime`](WeakLifetime.md)\<`T`, `TCopy`, `Owner`\>
+
+Call `fn` with this lifetime, then return `this`. Does not dispose the
+lifetime. Useful for imperative operations within an expression, like when
+you're building up objects, or to add logging in the middle of a call chain.
+
+##### Parameters
+
+• **fn**: (`lifetime`) => `void`
+
+##### Returns
+
+[`WeakLifetime`](WeakLifetime.md)\<`T`, `TCopy`, `Owner`\>
+
+this
+
+##### Inherited from
+
+[`quickjs-emscripten-core.Lifetime.tap`](Lifetime.md#tap)
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:164](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L164)
+
+#### tap(fn)
+
+> **tap**(`fn`): [`QuickJSHandle`](../exports.md#quickjshandle)
+
+##### Parameters
+
+• **fn**: (`lifetime`) => `void`
+
+##### Returns
+
+[`QuickJSHandle`](../exports.md#quickjshandle)
+
+##### Inherited from
+
+[`quickjs-emscripten-core.Lifetime.tap`](Lifetime.md#tap)
+
+##### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:165](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L165)
 
 ***
 
