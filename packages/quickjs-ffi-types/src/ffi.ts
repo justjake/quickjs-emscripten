@@ -18,6 +18,7 @@ import {
   JSBorrowedCharPointer,
   JSVoidPointer,
   UInt32Pointer,
+  JSMemoryUsagePointer,
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
@@ -40,7 +41,7 @@ export interface QuickJSFFI {
   QTS_Throw: (ctx: JSContextPointer, error: JSValuePointer | JSValueConstPointer) => JSValuePointer
   QTS_NewError: (ctx: JSContextPointer) => JSValuePointer
   QTS_RuntimeSetMemoryLimit: (rt: JSRuntimePointer, limit: number) => void
-  QTS_RuntimeComputeMemoryUsage: (rt: JSRuntimePointer, ctx: JSContextPointer) => JSValuePointer
+  QTS_RuntimeComputeMemoryUsage: (rt: JSRuntimePointer) => JSMemoryUsagePointer
   QTS_RuntimeDumpMemoryUsage: (rt: JSRuntimePointer) => OwnedHeapCharPointer
   QTS_RecoverableLeakCheck: () => number
   QTS_BuildIsSanitizeLeak: () => number

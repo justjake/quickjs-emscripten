@@ -18,6 +18,7 @@ import {
   JSBorrowedCharPointer,
   JSVoidPointer,
   UInt32Pointer,
+  JSMemoryUsagePointer,
   EvalFlags,
   IntrinsicsFlags,
   EvalDetectModule,
@@ -56,8 +57,11 @@ export class QuickJSAsyncFFI {
     ["number", "number"],
   )
 
-  QTS_RuntimeComputeMemoryUsage: (rt: JSRuntimePointer, ctx: JSContextPointer) => JSValuePointer =
-    this.module.cwrap("QTS_RuntimeComputeMemoryUsage", "number", ["number", "number"])
+  QTS_RuntimeComputeMemoryUsage: (rt: JSRuntimePointer) => JSMemoryUsagePointer = this.module.cwrap(
+    "QTS_RuntimeComputeMemoryUsage",
+    "number",
+    ["number"],
+  )
 
   QTS_RuntimeDumpMemoryUsage: (rt: JSRuntimePointer) => OwnedHeapCharPointer = this.module.cwrap(
     "QTS_RuntimeDumpMemoryUsage",
