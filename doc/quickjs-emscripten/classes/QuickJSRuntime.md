@@ -79,7 +79,7 @@ A context here may be allocated if one is needed by the runtime, eg for [compute
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:78](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L78)
+[packages/quickjs-emscripten-core/src/runtime.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L84)
 
 ## Accessors
 
@@ -97,7 +97,7 @@ false after the object has been [dispose](QuickJSRuntime.md#dispose-1)d
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:125](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L125)
+[packages/quickjs-emscripten-core/src/runtime.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L131)
 
 ## Methods
 
@@ -145,27 +145,25 @@ QuickJSWrongOwner if owned by a different runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:327](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L327)
+[packages/quickjs-emscripten-core/src/runtime.ts:369](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L369)
 
 ***
 
 ### computeMemoryUsage()
 
-> **computeMemoryUsage**(): [`QuickJSHandle`](../exports.md#quickjshandle)
+> **computeMemoryUsage**(): `JSMemoryUsage`
 
-Compute memory usage for this runtime. Returns the result as a handle to a
-JSValue object. Use [QuickJSContext#dump](QuickJSContext.md#dump) to convert to a native object.
-Calling this method will allocate more memory inside the runtime. The information
-is accurate as of just before the call to `computeMemoryUsage`.
-For a human-digestible representation, see [dumpMemoryUsage](QuickJSRuntime.md#dumpmemoryusage).
+Compute memory usage for this runtime. The information is accurate as of
+just before the call to `computeMemoryUsage`. For a human-digestible
+representation, see [dumpMemoryUsage](QuickJSRuntime.md#dumpmemoryusage).
 
 #### Returns
 
-[`QuickJSHandle`](../exports.md#quickjshandle)
+`JSMemoryUsage`
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:296](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L296)
+[packages/quickjs-emscripten-core/src/runtime.ts:300](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L300)
 
 ***
 
@@ -188,7 +186,7 @@ manipulation if debug logging is disabled.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:363](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L363)
+[packages/quickjs-emscripten-core/src/runtime.ts:405](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L405)
 
 ***
 
@@ -212,7 +210,7 @@ Dispose of the underlying resources used by this object.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:129](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L129)
+[packages/quickjs-emscripten-core/src/runtime.ts:135](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L135)
 
 ***
 
@@ -229,7 +227,7 @@ For programmatic access to this information, see [computeMemoryUsage](QuickJSRun
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:307](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L307)
+[packages/quickjs-emscripten-core/src/runtime.ts:349](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L349)
 
 ***
 
@@ -263,7 +261,7 @@ functions or rejected promises. Those errors are available by calling
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:243](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L243)
+[packages/quickjs-emscripten-core/src/runtime.ts:249](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L249)
 
 ***
 
@@ -282,7 +280,7 @@ true if there is at least one pendingJob queued up.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:194](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L194)
+[packages/quickjs-emscripten-core/src/runtime.ts:200](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L200)
 
 ***
 
@@ -298,7 +296,7 @@ true if debug logging is enabled
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:353](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L353)
+[packages/quickjs-emscripten-core/src/runtime.ts:395](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L395)
 
 ***
 
@@ -322,7 +320,7 @@ You should dispose a created context before disposing this runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:140](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L140)
+[packages/quickjs-emscripten-core/src/runtime.ts:146](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L146)
 
 ***
 
@@ -339,7 +337,7 @@ See [setInterruptHandler](QuickJSRuntime.md#setinterrupthandler).
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:219](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L219)
+[packages/quickjs-emscripten-core/src/runtime.ts:225](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L225)
 
 ***
 
@@ -355,7 +353,7 @@ Remove the the loader set by [setModuleLoader](QuickJSRuntime.md#setmoduleloader
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:181](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L181)
+[packages/quickjs-emscripten-core/src/runtime.ts:187](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L187)
 
 ***
 
@@ -378,7 +376,7 @@ code.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:343](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L343)
+[packages/quickjs-emscripten-core/src/runtime.ts:385](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L385)
 
 ***
 
@@ -402,7 +400,7 @@ The interrupt handler can be removed with [removeInterruptHandler](QuickJSRuntim
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:207](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L207)
+[packages/quickjs-emscripten-core/src/runtime.ts:213](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L213)
 
 ***
 
@@ -423,7 +421,7 @@ To remove the limit, set to `0`.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:315](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L315)
+[packages/quickjs-emscripten-core/src/runtime.ts:357](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L357)
 
 ***
 
@@ -444,7 +442,7 @@ To remove the limit, set to `-1`.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:281](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L281)
+[packages/quickjs-emscripten-core/src/runtime.ts:287](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L287)
 
 ***
 
@@ -469,7 +467,7 @@ The loader can be removed with [removeModuleLoader](QuickJSRuntime.md#removemodu
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:172](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L172)
+[packages/quickjs-emscripten-core/src/runtime.ts:178](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L178)
 
 ***
 

@@ -84,7 +84,7 @@ for the Emscripten stack.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:246](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L246)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:248](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L248)
 
 ***
 
@@ -145,7 +145,7 @@ State of a promise.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L131)
+[packages/quickjs-ffi-types/src/ffi-types.ts:136](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L136)
 
 ***
 
@@ -368,7 +368,7 @@ module code
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:106](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L106)
+[packages/quickjs-ffi-types/src/ffi-types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L111)
 
 ***
 
@@ -410,7 +410,7 @@ Bitfield options for QTS_GetOwnPropertyNames
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:121](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L121)
+[packages/quickjs-ffi-types/src/ffi-types.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L126)
 
 ***
 
@@ -488,7 +488,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L111)
+[packages/quickjs-ffi-types/src/ffi-types.ts:116](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L116)
 
 ***
 
@@ -512,7 +512,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L126)
+[packages/quickjs-ffi-types/src/ffi-types.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L131)
 
 ***
 
@@ -536,7 +536,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L131)
+[packages/quickjs-ffi-types/src/ffi-types.ts:136](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L136)
 
 ## Functions
 
@@ -569,7 +569,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:136](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L136)
+[packages/quickjs-ffi-types/src/ffi-types.ts:141](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L141)
 
 ***
 

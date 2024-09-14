@@ -304,10 +304,10 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     }
 
     let offset = 0
-    const getNextInt64 = () => {
+    const getNextInt64 = (): number => {
       const value = this.module.getValue(ptr + offset, "i64")
       offset += 8
-      return value
+      return Number(value)
     }
     const usage: JSMemoryUsage = {
       malloc_size: getNextInt64(),

@@ -1,4 +1,5 @@
 [
+  "HEAPU8",
   "cwrap",
   "stringToUTF8",
   "lengthBytesUTF8",

@@ -152,21 +152,22 @@ export interface EmscriptenModule extends EmscriptenModuleLoaderOptions {
     argTypes: Emscripten.ValueType[],
     opts?: Emscripten.CCallOpts,
   ): (...args: any[]) => any
-  getValue(ptr: number, type: "i8" | "i16" | "i32" | "i64" | "float" | "double"): number
+  getValue(ptr: number, type: "i8" | "i16" | "i32" | "float" | "double"): number
+  getValue(ptr: number, type: "i64"): bigint
 
   // USE_TYPED_ARRAYS == 2
-  HEAP8: Int8Array
-  HEAP16: Int16Array
-  HEAP32: Int32Array
+  // HEAP8: Int8Array
+  // HEAP16: Int16Array
+  // HEAP32: Int32Array
   HEAPU8: Uint8Array
-  HEAPU16: Uint16Array
-  HEAPU32: Uint32Array
-  HEAPF32: Float32Array
-  HEAPF64: Float64Array
+  // HEAPU16: Uint16Array
+  // HEAPU32: Uint32Array
+  // HEAPF32: Float32Array
+  // HEAPF64: Float64Array
 
-  TOTAL_STACK: number
-  TOTAL_MEMORY: number
-  FAST_MEMORY: number
+  // TOTAL_STACK: number
+  // TOTAL_MEMORY: number
+  // FAST_MEMORY: number
 }
 
 // This isn't the real return type of handleAsync, but it's better to treat it this way.

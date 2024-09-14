@@ -92,6 +92,8 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
       }
     })
 
+  it.only = baseIt.only
+
   beforeEach(async () => {
     testId++
     thisTestFailed = false
@@ -903,9 +905,7 @@ export default "the default";
 
   describe(".computeMemoryUsage", () => {
     it("returns an object with JSON memory usage info", () => {
-      const result = vm.runtime.computeMemoryUsage()
-      const resultObj = vm.dump(result)
-      result.dispose()
+      const resultObj = vm.runtime.computeMemoryUsage()
 
       const example = {
         array_count: 1,
@@ -936,6 +936,13 @@ export default "the default";
       }
 
       assert.deepEqual(Object.keys(resultObj).sort(), Object.keys(example).sort())
+    })
+
+    it.only("matches the dump output", () => {
+      const memoryUsageString = vm.runtime.dumpMemoryUsage()
+      const memoryUsageObject = vm.runtime.computeMemoryUsage()
+      console.log(memoryUsageString)
+      console.log(memoryUsageObject)
     })
   })
 

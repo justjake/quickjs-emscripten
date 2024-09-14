@@ -215,7 +215,7 @@ An `Array` that also implements [Disposable](interfaces/Disposable.md):
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:246](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L246)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:248](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L248)
 
 ***
 
@@ -231,7 +231,7 @@ by the runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L35)
+[packages/quickjs-emscripten-core/src/runtime.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L41)
 
 ***
 
@@ -256,7 +256,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:27](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L27)
+[packages/quickjs-emscripten-core/src/runtime.ts:33](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L33)
 
 ***
 
@@ -472,7 +472,7 @@ State of a promise.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L131)
+[packages/quickjs-ffi-types/src/ffi-types.ts:136](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L136)
 
 ***
 
@@ -973,7 +973,7 @@ module code
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:106](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L106)
+[packages/quickjs-ffi-types/src/ffi-types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L111)
 
 ***
 
@@ -1015,7 +1015,7 @@ Bitfield options for QTS_GetOwnPropertyNames
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:121](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L121)
+[packages/quickjs-ffi-types/src/ffi-types.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L126)
 
 ***
 
@@ -1093,7 +1093,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L111)
+[packages/quickjs-ffi-types/src/ffi-types.ts:116](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L116)
 
 ***
 
@@ -1117,7 +1117,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L126)
+[packages/quickjs-ffi-types/src/ffi-types.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L131)
 
 ***
 
@@ -1141,7 +1141,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L131)
+[packages/quickjs-ffi-types/src/ffi-types.ts:136](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L136)
 
 ## Functions
 
@@ -1174,7 +1174,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi-types.ts:136](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L136)
+[packages/quickjs-ffi-types/src/ffi-types.ts:141](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L141)
 
 ***
 

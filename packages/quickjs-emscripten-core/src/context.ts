@@ -933,7 +933,7 @@ export class QuickJSContext
       }
       const len = this.uint32Out.value.typedArray[0]
       const ptr = outPtr.value.typedArray[0]
-      const pointerArray = new Uint32Array(this.module.HEAP8.buffer, ptr, len)
+      const pointerArray = new Uint32Array(this.module.HEAPU8.buffer, ptr, len)
       const handles = Array.from(pointerArray).map((ptr) =>
         this.memory.heapValueHandle(ptr as JSValuePointer),
       )
