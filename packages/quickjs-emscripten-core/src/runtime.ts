@@ -79,7 +79,6 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
    * associated with the runtime.
    *
    * If this runtime was created stand-alone, this may or may not contain a context.
-   * A context here may be allocated if one is needed by the runtime, eg for {@link computeMemoryUsage}.
    */
   public context: QuickJSContext | undefined
 
@@ -414,14 +413,6 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
       return `${this.constructor.name} { disposed }`
     }
     return `${this.constructor.name} { rt: ${this.rt.value} }`
-  }
-
-  private getSystemContext() {
-    if (!this.context) {
-      // We own this context and should dispose of it.
-      this.context = this.scope.manage(this.newContext())
-    }
-    return this.context
   }
 
   private cToHostCallbacks: RuntimeCallbacks = {
