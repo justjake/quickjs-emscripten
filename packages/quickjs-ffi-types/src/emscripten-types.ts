@@ -152,6 +152,7 @@ export interface EmscriptenModule extends EmscriptenModuleLoaderOptions {
     argTypes: Emscripten.ValueType[],
     opts?: Emscripten.CCallOpts,
   ): (...args: any[]) => any
+  getValue(ptr: number, type: "i8" | "i16" | "i32" | "i64" | "float" | "double"): number
 
   // USE_TYPED_ARRAYS == 2
   HEAP8: Int8Array

@@ -344,3 +344,35 @@ export function concat<T>(...values: Array<T[] | T | undefined>): T[] {
   }
   return result
 }
+
+/**
+ * Result of computing memory usage of a runtime with {@link QuickJSRuntime#computeMemoryUsage}.
+ */
+export interface JSMemoryUsage {
+  malloc_size: number
+  malloc_limit: number
+  memory_used_size: number
+  malloc_count: number
+  memory_used_count: number
+  atom_count: number
+  atom_size: number
+  str_count: number
+  str_size: number
+  obj_count: number
+  obj_size: number
+  prop_count: number
+  prop_size: number
+  shape_count: number
+  shape_size: number
+  js_func_count: number
+  js_func_size: number
+  js_func_code_size: number
+  js_func_pc2line_count: number
+  js_func_pc2line_size: number
+  c_func_count: number
+  array_count: number
+  fast_array_count: number
+  fast_array_elements: number
+  binary_object_count: number
+  binary_object_size: number
+}

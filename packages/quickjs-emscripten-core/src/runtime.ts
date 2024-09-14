@@ -14,7 +14,13 @@ import type { Disposable } from "./lifetime"
 import { DisposableResult, Lifetime, Scope, UsingDisposable } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import type { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
-import type { ContextOptions, JSModuleLoader, JSModuleNormalizer, QuickJSHandle } from "./types"
+import type {
+  ContextOptions,
+  JSMemoryUsage,
+  JSModuleLoader,
+  JSModuleNormalizer,
+  QuickJSHandle,
+} from "./types"
 import { intrinsicsToFlags } from "./types"
 
 /**
@@ -287,17 +293,53 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
   }
 
   /**
-   * Compute memory usage for this runtime. Returns the result as a handle to a
-   * JSValue object. Use {@link QuickJSContext#dump} to convert to a native object.
-   * Calling this method will allocate more memory inside the runtime. The information
-   * is accurate as of just before the call to `computeMemoryUsage`.
-   * For a human-digestible representation, see {@link dumpMemoryUsage}.
+   * Compute memory usage for this runtime. The information is accurate as of
+   * just before the call to `computeMemoryUsage`. For a human-digestible
+   * representation, see {@link dumpMemoryUsage}.
    */
-  computeMemoryUsage(): QuickJSHandle {
-    const serviceContextMemory = this.getSystemContext().getMemory(this.rt.value)
-    return serviceContextMemory.heapValueHandle(
-      this.ffi.QTS_RuntimeComputeMemoryUsage(this.rt.value, serviceContextMemory.ctx.value),
-    )
+  computeMemoryUsage(): JSMemoryUsage {
+    const ptr = this.ffi.QTS_RuntimeComputeMemoryUsage(this.rt.value)
+    if (ptr === 0) {
+      throw new Error("Failed to compute memory usage")
+    }
+
+    let offset = 0
+    const getNextInt64 = () => {
+      const value = this.module.getValue(ptr + offset, "i64")
+      offset += 8
+      return value
+    }
+    const usage: JSMemoryUsage = {
+      malloc_size: getNextInt64(),
+      malloc_limit: getNextInt64(),
+      memory_used_size: getNextInt64(),
+      malloc_count: getNextInt64(),
+      memory_used_count: getNextInt64(),
+      atom_count: getNextInt64(),
+      atom_size: getNextInt64(),
+      str_count: getNextInt64(),
+      str_size: getNextInt64(),
+      obj_count: getNextInt64(),
+      obj_size: getNextInt64(),
+      prop_count: getNextInt64(),
+      prop_size: getNextInt64(),
+      shape_count: getNextInt64(),
+      shape_size: getNextInt64(),
+      js_func_count: getNextInt64(),
+      js_func_size: getNextInt64(),
+      js_func_code_size: getNextInt64(),
+      js_func_pc2line_count: getNextInt64(),
+      js_func_pc2line_size: getNextInt64(),
+      c_func_count: getNextInt64(),
+      array_count: getNextInt64(),
+      fast_array_count: getNextInt64(),
+      fast_array_elements: getNextInt64(),
+      binary_object_count: getNextInt64(),
+      binary_object_size: getNextInt64(),
+    }
+
+    this.module._free(ptr)
+    return usage
   }
 
   /**
