@@ -9,7 +9,8 @@
     "math.h": "c",
     "stdbool.h": "c",
     "emscripten.h": "c",
-    "quickjs-atom.h": "c"
+    "quickjs-atom.h": "c",
+    "malloc.h": "c"
   },
   "files.exclude": {
     ".yarn/releases/*": true

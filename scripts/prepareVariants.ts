@@ -219,9 +219,10 @@ const ReleaseModeFlags = {
   ],
 }
 
+const WASM_ONLY_FLAGS = [`-s WASM_BIGINT=1`]
 const EmscriptenInclusionFlags = {
-  [EmscriptenInclusion.Separate]: [],
-  [EmscriptenInclusion.SingleFile]: [`-s SINGLE_FILE=1`],
+  [EmscriptenInclusion.Separate]: WASM_ONLY_FLAGS,
+  [EmscriptenInclusion.SingleFile]: [`-s SINGLE_FILE=1`, ...WASM_ONLY_FLAGS],
   [EmscriptenInclusion.AsmJs]: [`-s WASM=0`, `-s SINGLE_FILE=1`],
 }
 

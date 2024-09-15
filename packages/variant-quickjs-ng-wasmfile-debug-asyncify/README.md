@@ -88,6 +88,7 @@ Variant-specific Emscripten build flags:
   "--pre-js $(TEMPLATES)/pre-sourceMapJson.js",
   "--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js",
   "--pre-js $(TEMPLATES)/pre-wasmMemory.js",
+  "-s WASM_BIGINT=1",
   "-O3"
 ]
 ```

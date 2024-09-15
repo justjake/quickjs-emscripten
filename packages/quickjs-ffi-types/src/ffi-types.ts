@@ -103,6 +103,11 @@ export type UInt32Pointer = Pointer<"uint32_t">
 /**
  * @private
  */
+export type JSMemoryUsagePointer = Pointer<"JSMemoryUsage">
+
+/**
+ * @private
+ */
 export type EvalFlags = Brand<number, "EvalFlags">
 
 /**

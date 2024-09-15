@@ -13,17 +13,7 @@ QuickJS.
 
 - [Extends](EmscriptenModule.md#extends)
 - [Properties](EmscriptenModule.md#properties)
-  - [FAST\_MEMORY](EmscriptenModule.md#fast-memory)
-  - [HEAP16](EmscriptenModule.md#heap16)
-  - [HEAP32](EmscriptenModule.md#heap32)
-  - [HEAP8](EmscriptenModule.md#heap8)
-  - [HEAPF32](EmscriptenModule.md#heapf32)
-  - [HEAPF64](EmscriptenModule.md#heapf64)
-  - [HEAPU16](EmscriptenModule.md#heapu16)
-  - [HEAPU32](EmscriptenModule.md#heapu32)
   - [HEAPU8](EmscriptenModule.md#heapu8)
-  - [TOTAL\_MEMORY](EmscriptenModule.md#total-memory)
-  - [TOTAL\_STACK](EmscriptenModule.md#total-stack)
   - [wasmBinary?](EmscriptenModule.md#wasmbinary)
   - [wasmMemory?](EmscriptenModule.md#wasmmemory)
 - [Methods](EmscriptenModule.md#methods)
@@ -31,6 +21,7 @@ QuickJS.
   - [\_free()](EmscriptenModule.md#free)
   - [\_malloc()](EmscriptenModule.md#malloc)
   - [cwrap()](EmscriptenModule.md#cwrap)
+  - [getValue()](EmscriptenModule.md#getvalue)
   - [instantiateWasm()?](EmscriptenModule.md#instantiatewasm)
   - [lengthBytesUTF8()](EmscriptenModule.md#lengthbytesutf8)
   - [locateFile()?](EmscriptenModule.md#locatefile)
@@ -43,113 +34,13 @@ QuickJS.
 
 ## Properties
 
-### FAST\_MEMORY
-
-> **FAST\_MEMORY**: `number`
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:289
-
-***
-
-### HEAP16
-
-> **HEAP16**: `Int16Array`
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:280
-
-***
-
-### HEAP32
-
-> **HEAP32**: `Int32Array`
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:281
-
-***
-
-### HEAP8
-
-> **HEAP8**: `Int8Array`
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:279
-
-***
-
-### HEAPF32
-
-> **HEAPF32**: `Float32Array`
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:285
-
-***
-
-### HEAPF64
-
-> **HEAPF64**: `Float64Array`
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:286
-
-***
-
-### HEAPU16
-
-> **HEAPU16**: `Uint16Array`
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:283
-
-***
-
-### HEAPU32
-
-> **HEAPU32**: `Uint32Array`
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:284
-
-***
-
 ### HEAPU8
 
 > **HEAPU8**: `Uint8Array`
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:282
-
-***
-
-### TOTAL\_MEMORY
-
-> **TOTAL\_MEMORY**: `number`
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:288
-
-***
-
-### TOTAL\_STACK
-
-> **TOTAL\_STACK**: `number`
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:287
+packages/quickjs-ffi-types/dist/index.d.ts:285
 
 ***
 
@@ -165,7 +56,7 @@ Compile this to WebAssembly.Module
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:246
+packages/quickjs-ffi-types/dist/index.d.ts:250
 
 ***
 
@@ -181,7 +72,7 @@ If provided, use this WebAssembly.Memory instead of an automatically created one
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:248
+packages/quickjs-ffi-types/dist/index.d.ts:252
 
 ## Methods
 
@@ -204,7 +95,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:274
+packages/quickjs-ffi-types/dist/index.d.ts:278
 
 ***
 
@@ -222,7 +113,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:274
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:277
+packages/quickjs-ffi-types/dist/index.d.ts:281
 
 ***
 
@@ -240,7 +131,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:277
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:276
+packages/quickjs-ffi-types/dist/index.d.ts:280
 
 ***
 
@@ -273,7 +164,47 @@ packages/quickjs-ffi-types/dist/index.d.ts:276
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:278
+packages/quickjs-ffi-types/dist/index.d.ts:282
+
+***
+
+### getValue()
+
+#### getValue(ptr, type)
+
+> **getValue**(`ptr`, `type`): `number`
+
+##### Parameters
+
+• **ptr**: `number`
+
+• **type**: `"i8"` \| `"i16"` \| `"i32"` \| `"float"` \| `"double"`
+
+##### Returns
+
+`number`
+
+##### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:283
+
+#### getValue(ptr, type)
+
+> **getValue**(`ptr`, `type`): `bigint`
+
+##### Parameters
+
+• **ptr**: `number`
+
+• **type**: `"i64"`
+
+##### Returns
+
+`bigint`
+
+##### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:284
 
 ***
 
@@ -299,7 +230,7 @@ Create an instance of the WASM module, call onSuccess(instance), then return ins
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:250
+packages/quickjs-ffi-types/dist/index.d.ts:254
 
 ***
 
@@ -317,7 +248,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:250
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:275
+packages/quickjs-ffi-types/dist/index.d.ts:279
 
 ***
 
@@ -361,7 +292,7 @@ Often `''` (empty string)
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:242
+packages/quickjs-ffi-types/dist/index.d.ts:246
 
 ***
 
@@ -385,7 +316,7 @@ Called by emscripten as dependencies blocking initialization are added or fulfil
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:252
+packages/quickjs-ffi-types/dist/index.d.ts:256
 
 ***
 
@@ -410,7 +341,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#stringToUTF8
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:269
+packages/quickjs-ffi-types/dist/index.d.ts:273
 
 ***
 
