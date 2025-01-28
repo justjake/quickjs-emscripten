@@ -1069,7 +1069,7 @@ JSValue *QTS_NewFunction(JSContext *ctx, uint32_t func_id, const char *name) {
       /* JSCFunctionMagic* */ &qts_call_function,
       /* name */ name,
       /* min argc */ 0,
-      /* function type */ JS_CFUNC_generic_magic,
+      /* function type */ JS_CFUNC_constructor_or_func_magic,
       /* magic: fn id */ func_id);
   return jsvalue_to_heap(func_obj);
 }
