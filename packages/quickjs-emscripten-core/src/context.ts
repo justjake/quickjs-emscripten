@@ -129,8 +129,14 @@ class ContextMemory extends ModuleMemory implements Disposable {
     return str
   }
 
-  heapValueHandle(ptr: JSValuePointer): JSValue {
-    return new Lifetime(ptr, this.copyJSValue, this.freeJSValue, this.owner)
+  heapValueHandle(ptr: JSValuePointer, extraDispose?: () => void): JSValue {
+    const dispose: typeof this.freeJSValue = extraDispose
+      ? (val) => {
+          extraDispose()
+          this.freeJSValue(val)
+        }
+      : this.freeJSValue
+    return new Lifetime(ptr, this.copyJSValue, dispose, this.owner)
   }
 
   /** Manage a heap pointer with the lifetime of the context */
@@ -599,9 +605,15 @@ export class QuickJSContext
    * ```
    */
   newFunction(name: string, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
-    const fnId = ++this.fnNextId
+    const fnId = this.fnIdFreelist.pop() ?? ++this.fnNextId
     this.setFunction(fnId, fn)
-    return this.memory.heapValueHandle(this.ffi.QTS_NewFunction(this.ctx.value, fnId, name))
+    const dispose = () => {
+      this.freeFunction(fnId)
+    }
+    return this.memory.heapValueHandle(
+      this.ffi.QTS_NewFunction(this.ctx.value, fnId, name),
+      dispose,
+    )
   }
 
   newError(error: { name: string; message: string }): QuickJSHandle
@@ -1316,6 +1328,7 @@ export class QuickJSContext
   protected fnNextId = -32768 // min value of signed 16bit int used by Quickjs
   /** @private */
   protected fnMaps = new Map<number, Map<number, VmFunctionImplementation<QuickJSHandle>>>()
+  protected fnIdFreelist: number[] = []
 
   /** @private */
   protected getFunction(fn_id: number): VmFunctionImplementation<QuickJSHandle> | undefined {
@@ -1336,6 +1349,17 @@ export class QuickJSContext
       this.fnMaps.set(map_id, fnMap)
     }
     return fnMap.set(fn_id, handle)
+  }
+
+  protected freeFunction(fn_id: number) {
+    const map_id = fn_id >> 8
+    const fnMap = this.fnMaps.get(map_id)
+    if (!fnMap) {
+      return
+    }
+    if (fnMap.delete(fn_id)) {
+      this.fnIdFreelist.push(fn_id)
+    }
   }
 
   /**
