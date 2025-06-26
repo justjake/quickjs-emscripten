@@ -128,9 +128,6 @@ const targets = {
   "asmjs-mjs": makeTarget({
     description: `Compiled to pure Javascript, no WebAssembly required.`,
     emscriptenInclusion: EmscriptenInclusion.AsmJs,
-    releaseMode: ReleaseMode.Release,
-    syncMode: SyncMode.Sync,
-    library: CLibrary.QuickJS,
     exports: {
       import: {
         emscriptenEnvironment: [
