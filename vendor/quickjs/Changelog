@@ -1,3 +1,48 @@
+- micro optimizations (30% faster on bench-v8)
+- added resizable array buffers
+- added ArrayBuffer.prototype.transfer
+- added the Iterator object and methods
+- added set methods
+- added Atomics.pause
+- added added Map and WeakMap upsert methods
+- added Math.sumPrecise()
+- added regexp duplicate named groups
+- misc bug fixes
+
+2025-09-13:
+
+- added JSON modules and import attributes
+- added JS_PrintValue() API
+- qjs: pretty print objects in print() and console.log()
+- qjs: better promise rejection tracker heuristics
+- added RegExp v flag
+- added RegExp modifiers
+- added RegExp.escape
+- added Float16Array
+- added Promise.try
+- improved JSON parser spec conformance
+- qjs: improved compatibility of std.parseExtJSON() with JSON5 and
+  accept JSON5 modules
+- added JS_FreePropertyEnum() and JS_AtomToCStringLen() API
+- added Error.isError()
+- misc bug fixes
+
+2025-04-26:
+
+- removed the bignum extensions and qjscalc
+- new BigInt implementation optimized for small numbers
+- added WeakRef, FinalizationRegistry and symbols as weakrefs
+- added builtin float64 printing and parsing functions for more correctness
+- faster repeated string concatenation
+- qjs: promise unhandled rejections are fatal errors by default
+- added column number in debug information
+- removed the "use strip" extension
+- qjs: added -s and --strip-source options
+- qjsc: added -s and --keep-source options
+- added JS_GetAnyOpaque()
+- added more callbacks for exotic objects in JSClassExoticMethods
+- misc bug fixes
+
 2024-01-13:
 
 - top-level-await support in modules

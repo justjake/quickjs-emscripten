@@ -499,6 +499,9 @@ int cr_op(CharRange *cr, const uint32_t *a_pt, int a_len,
         case CR_OP_XOR:
             is_in = (a_idx & 1) ^ (b_idx & 1);
             break;
+        case CR_OP_SUB:
+            is_in = (a_idx & 1) & ((b_idx & 1) ^ 1);
+            break;
         default:
             abort();
         }
@@ -511,14 +514,14 @@ int cr_op(CharRange *cr, const uint32_t *a_pt, int a_len,
     return 0;
 }
 
-int cr_union1(CharRange *cr, const uint32_t *b_pt, int b_len)
+int cr_op1(CharRange *cr, const uint32_t *b_pt, int b_len, int op)
 {
     CharRange a = *cr;
     int ret;
     cr->len = 0;
     cr->size = 0;
     cr->points = NULL;
-    ret = cr_op(cr, a.points, a.len, b_pt, b_len, CR_OP_UNION);
+    ret = cr_op(cr, a.points, a.len, b_pt, b_len, op);
     cr_free(&a);
     return ret;
 }
@@ -535,6 +538,207 @@ int cr_invert(CharRange *cr)
     cr->len = len + 2;
     cr_compress(cr);
     return 0;
+}
+
+#define CASE_U (1 << 0)
+#define CASE_L (1 << 1)
+#define CASE_F (1 << 2)
+
+/* use the case conversion table to generate range of characters.
+   CASE_U: set char if modified by uppercasing,
+   CASE_L: set char if modified by lowercasing,
+   CASE_F: set char if modified by case folding,
+ */
+static int unicode_case1(CharRange *cr, int case_mask)
+{
+#define MR(x) (1 << RUN_TYPE_ ## x)
+    const uint32_t tab_run_mask[3] = {
+        MR(U) | MR(UF) | MR(UL) | MR(LSU) | MR(U2L_399_EXT2) | MR(UF_D20) |
+        MR(UF_D1_EXT) | MR(U_EXT) | MR(UF_EXT2) | MR(UF_EXT3),
+
+        MR(L) | MR(LF) | MR(UL) | MR(LSU) | MR(U2L_399_EXT2) | MR(LF_EXT) | MR(LF_EXT2),
+
+        MR(UF) | MR(LF) | MR(UL) | MR(LSU) | MR(U2L_399_EXT2) | MR(LF_EXT) | MR(LF_EXT2) | MR(UF_D20) | MR(UF_D1_EXT) | MR(LF_EXT) | MR(UF_EXT2) | MR(UF_EXT3),
+    };
+#undef MR
+    uint32_t mask, v, code, type, len, i, idx;
+
+    if (case_mask == 0)
+        return 0;
+    mask = 0;
+    for(i = 0; i < 3; i++) {
+        if ((case_mask >> i) & 1)
+            mask |= tab_run_mask[i];
+    }
+    for(idx = 0; idx < countof(case_conv_table1); idx++) {
+        v = case_conv_table1[idx];
+        type = (v >> (32 - 17 - 7 - 4)) & 0xf;
+        code = v >> (32 - 17);
+        len = (v >> (32 - 17 - 7)) & 0x7f;
+        if ((mask >> type) & 1) {
+            //            printf("%d: type=%d %04x %04x\n", idx, type, code, code + len - 1);
+            switch(type) {
+            case RUN_TYPE_UL:
+                if ((case_mask & CASE_U) && (case_mask & (CASE_L | CASE_F)))
+                    goto def_case;
+                code += ((case_mask & CASE_U) != 0);
+                for(i = 0; i < len; i += 2) {
+                    if (cr_add_interval(cr, code + i, code + i + 1))
+                        return -1;
+                }
+                break;
+            case RUN_TYPE_LSU:
+                if ((case_mask & CASE_U) && (case_mask & (CASE_L | CASE_F)))
+                    goto def_case;
+                if (!(case_mask & CASE_U)) {
+                    if (cr_add_interval(cr, code, code + 1))
+                        return -1;
+                }
+                if (cr_add_interval(cr, code + 1, code + 2))
+                    return -1;
+                if (case_mask & CASE_U) {
+                    if (cr_add_interval(cr, code + 2, code + 3))
+                        return -1;
+                }
+                break;
+            default:
+            def_case:
+                if (cr_add_interval(cr, code, code + len))
+                    return -1;
+                break;
+            }
+        }
+    }
+    return 0;
+}
+
+static int point_cmp(const void *p1, const void *p2, void *arg)
+{
+    uint32_t v1 = *(uint32_t *)p1;
+    uint32_t v2 = *(uint32_t *)p2;
+    return (v1 > v2) - (v1 < v2);
+}
+
+static void cr_sort_and_remove_overlap(CharRange *cr)
+{
+    uint32_t start, end, start1, end1, i, j;
+
+    /* the resulting ranges are not necessarily sorted and may overlap */
+    rqsort(cr->points, cr->len / 2, sizeof(cr->points[0]) * 2, point_cmp, NULL);
+    j = 0;
+    for(i = 0; i < cr->len; ) {
+        start = cr->points[i];
+        end = cr->points[i + 1];
+        i += 2;
+        while (i < cr->len) {
+            start1 = cr->points[i];
+            end1 = cr->points[i + 1];
+            if (start1 > end) {
+                /* |------|
+                 *           |-------| */
+                break;
+            } else if (end1 <= end) {
+                /* |------|
+                 *    |--| */
+                i += 2;
+            } else {
+                /* |------|
+                 *     |-------| */
+                end = end1;
+                i += 2;
+            }
+        }
+        cr->points[j] = start;
+        cr->points[j + 1] = end;
+        j += 2;
+    }
+    cr->len = j;
+}
+
+/* canonicalize a character set using the JS regex case folding rules
+   (see lre_canonicalize()) */
+int cr_regexp_canonicalize(CharRange *cr, BOOL is_unicode)
+{
+    CharRange cr_inter, cr_mask, cr_result, cr_sub;
+    uint32_t v, code, len, i, idx, start, end, c, d_start, d_end, d;
+
+    cr_init(&cr_mask, cr->mem_opaque, cr->realloc_func);
+    cr_init(&cr_inter, cr->mem_opaque, cr->realloc_func);
+    cr_init(&cr_result, cr->mem_opaque, cr->realloc_func);
+    cr_init(&cr_sub, cr->mem_opaque, cr->realloc_func);
+
+    if (unicode_case1(&cr_mask, is_unicode ? CASE_F : CASE_U))
+        goto fail;
+    if (cr_op(&cr_inter, cr_mask.points, cr_mask.len, cr->points, cr->len, CR_OP_INTER))
+        goto fail;
+
+    if (cr_invert(&cr_mask))
+        goto fail;
+    if (cr_op(&cr_sub, cr_mask.points, cr_mask.len, cr->points, cr->len, CR_OP_INTER))
+        goto fail;
+
+    /* cr_inter = cr & cr_mask */
+    /* cr_sub = cr & ~cr_mask */
+
+    /* use the case conversion table to compute the result */
+    d_start = -1;
+    d_end = -1;
+    idx = 0;
+    v = case_conv_table1[idx];
+    code = v >> (32 - 17);
+    len = (v >> (32 - 17 - 7)) & 0x7f;
+    for(i = 0; i < cr_inter.len; i += 2) {
+        start = cr_inter.points[i];
+        end = cr_inter.points[i + 1];
+
+        for(c = start; c < end; c++) {
+            for(;;) {
+                if (c >= code && c < code + len)
+                    break;
+                idx++;
+                assert(idx < countof(case_conv_table1));
+                v = case_conv_table1[idx];
+                code = v >> (32 - 17);
+                len = (v >> (32 - 17 - 7)) & 0x7f;
+            }
+            d = lre_case_folding_entry(c, idx, v, is_unicode);
+            /* try to merge with the current interval */
+            if (d_start == -1) {
+                d_start = d;
+                d_end = d + 1;
+            } else if (d_end == d) {
+                d_end++;
+            } else {
+                cr_add_interval(&cr_result, d_start, d_end);
+                d_start = d;
+                d_end = d + 1;
+            }
+        }
+    }
+    if (d_start != -1) {
+        if (cr_add_interval(&cr_result, d_start, d_end))
+            goto fail;
+    }
+
+    /* the resulting ranges are not necessarily sorted and may overlap */
+    cr_sort_and_remove_overlap(&cr_result);
+
+    /* or with the character not affected by the case folding */
+    cr->len = 0;
+    if (cr_op(cr, cr_result.points, cr_result.len, cr_sub.points, cr_sub.len, CR_OP_UNION))
+        goto fail;
+
+    cr_free(&cr_inter);
+    cr_free(&cr_mask);
+    cr_free(&cr_result);
+    cr_free(&cr_sub);
+    return 0;
+ fail:
+    cr_free(&cr_inter);
+    cr_free(&cr_mask);
+    cr_free(&cr_result);
+    cr_free(&cr_sub);
+    return -1;
 }
 
 #ifdef CONFIG_ALL_UNICODE
@@ -975,7 +1179,7 @@ int unicode_normalize(uint32_t **pdst, const uint32_t *src, int src_len,
     is_compat = n_type >> 1;
 
     dbuf_init2(dbuf, opaque, realloc_func);
-    if (dbuf_realloc(dbuf, sizeof(int) * src_len))
+    if (dbuf_claim(dbuf, sizeof(int) * src_len))
         goto fail;
 
     /* common case: latin1 is unaffected by NFC */
@@ -1081,8 +1285,6 @@ int unicode_script(CharRange *cr,
     script_idx = unicode_find_name(unicode_script_name_table, script_name);
     if (script_idx < 0)
         return -2;
-    /* Note: we remove the "Unknown" Script */
-    script_idx += UNICODE_SCRIPT_Unknown + 1;
 
     is_common = (script_idx == UNICODE_SCRIPT_Common ||
                  script_idx == UNICODE_SCRIPT_Inherited);
@@ -1112,16 +1314,20 @@ int unicode_script(CharRange *cr,
             n |= *p++;
             n += 96 + (1 << 12);
         }
-        if (type == 0)
-            v = 0;
-        else
-            v = *p++;
         c1 = c + n + 1;
-        if (v == script_idx) {
-            if (cr_add_interval(cr1, c, c1))
-                goto fail;
+        if (type != 0) {
+            v = *p++;
+            if (v == script_idx || script_idx == UNICODE_SCRIPT_Unknown) {
+                if (cr_add_interval(cr1, c, c1))
+                    goto fail;
+            }
         }
         c = c1;
+    }
+    if (script_idx == UNICODE_SCRIPT_Unknown) {
+        /* Unknown is all the characters outside scripts */
+        if (cr_invert(cr1))
+            goto fail;
     }
 
     if (is_ext) {
@@ -1296,207 +1502,6 @@ static int unicode_prop1(CharRange *cr, int prop_idx)
     return 0;
 }
 
-#define CASE_U (1 << 0)
-#define CASE_L (1 << 1)
-#define CASE_F (1 << 2)
-
-/* use the case conversion table to generate range of characters.
-   CASE_U: set char if modified by uppercasing,
-   CASE_L: set char if modified by lowercasing,
-   CASE_F: set char if modified by case folding,
- */
-static int unicode_case1(CharRange *cr, int case_mask)
-{
-#define MR(x) (1 << RUN_TYPE_ ## x)
-    const uint32_t tab_run_mask[3] = {
-        MR(U) | MR(UF) | MR(UL) | MR(LSU) | MR(U2L_399_EXT2) | MR(UF_D20) |
-        MR(UF_D1_EXT) | MR(U_EXT) | MR(UF_EXT2) | MR(UF_EXT3),
-
-        MR(L) | MR(LF) | MR(UL) | MR(LSU) | MR(U2L_399_EXT2) | MR(LF_EXT) | MR(LF_EXT2),
-
-        MR(UF) | MR(LF) | MR(UL) | MR(LSU) | MR(U2L_399_EXT2) | MR(LF_EXT) | MR(LF_EXT2) | MR(UF_D20) | MR(UF_D1_EXT) | MR(LF_EXT) | MR(UF_EXT2) | MR(UF_EXT3),
-    };
-#undef MR
-    uint32_t mask, v, code, type, len, i, idx;
-
-    if (case_mask == 0)
-        return 0;
-    mask = 0;
-    for(i = 0; i < 3; i++) {
-        if ((case_mask >> i) & 1)
-            mask |= tab_run_mask[i];
-    }
-    for(idx = 0; idx < countof(case_conv_table1); idx++) {
-        v = case_conv_table1[idx];
-        type = (v >> (32 - 17 - 7 - 4)) & 0xf;
-        code = v >> (32 - 17);
-        len = (v >> (32 - 17 - 7)) & 0x7f;
-        if ((mask >> type) & 1) {
-            //            printf("%d: type=%d %04x %04x\n", idx, type, code, code + len - 1);
-            switch(type) {
-            case RUN_TYPE_UL:
-                if ((case_mask & CASE_U) && (case_mask & (CASE_L | CASE_F)))
-                    goto def_case;
-                code += ((case_mask & CASE_U) != 0);
-                for(i = 0; i < len; i += 2) {
-                    if (cr_add_interval(cr, code + i, code + i + 1))
-                        return -1;
-                }
-                break;
-            case RUN_TYPE_LSU:
-                if ((case_mask & CASE_U) && (case_mask & (CASE_L | CASE_F)))
-                    goto def_case;
-                if (!(case_mask & CASE_U)) {
-                    if (cr_add_interval(cr, code, code + 1))
-                        return -1;
-                }
-                if (cr_add_interval(cr, code + 1, code + 2))
-                    return -1;
-                if (case_mask & CASE_U) {
-                    if (cr_add_interval(cr, code + 2, code + 3))
-                        return -1;
-                }
-                break;
-            default:
-            def_case:
-                if (cr_add_interval(cr, code, code + len))
-                    return -1;
-                break;
-            }
-        }
-    }
-    return 0;
-}
-
-static int point_cmp(const void *p1, const void *p2, void *arg)
-{
-    uint32_t v1 = *(uint32_t *)p1;
-    uint32_t v2 = *(uint32_t *)p2;
-    return (v1 > v2) - (v1 < v2);
-}
-
-static void cr_sort_and_remove_overlap(CharRange *cr)
-{
-    uint32_t start, end, start1, end1, i, j;
-
-    /* the resulting ranges are not necessarily sorted and may overlap */
-    rqsort(cr->points, cr->len / 2, sizeof(cr->points[0]) * 2, point_cmp, NULL);
-    j = 0;
-    for(i = 0; i < cr->len; ) {
-        start = cr->points[i];
-        end = cr->points[i + 1];
-        i += 2;
-        while (i < cr->len) {
-            start1 = cr->points[i];
-            end1 = cr->points[i + 1];
-            if (start1 > end) {
-                /* |------|
-                 *           |-------| */
-                break;
-            } else if (end1 <= end) {
-                /* |------|
-                 *    |--| */
-                i += 2;
-            } else {
-                /* |------|
-                 *     |-------| */
-                end = end1;
-                i += 2;
-            }
-        }
-        cr->points[j] = start;
-        cr->points[j + 1] = end;
-        j += 2;
-    }
-    cr->len = j;
-}
-
-/* canonicalize a character set using the JS regex case folding rules
-   (see lre_canonicalize()) */
-int cr_regexp_canonicalize(CharRange *cr, BOOL is_unicode)
-{
-    CharRange cr_inter, cr_mask, cr_result, cr_sub;
-    uint32_t v, code, len, i, idx, start, end, c, d_start, d_end, d;
-
-    cr_init(&cr_mask, cr->mem_opaque, cr->realloc_func);
-    cr_init(&cr_inter, cr->mem_opaque, cr->realloc_func);
-    cr_init(&cr_result, cr->mem_opaque, cr->realloc_func);
-    cr_init(&cr_sub, cr->mem_opaque, cr->realloc_func);
-
-    if (unicode_case1(&cr_mask, is_unicode ? CASE_F : CASE_U))
-        goto fail;
-    if (cr_op(&cr_inter, cr_mask.points, cr_mask.len, cr->points, cr->len, CR_OP_INTER))
-        goto fail;
-
-    if (cr_invert(&cr_mask))
-        goto fail;
-    if (cr_op(&cr_sub, cr_mask.points, cr_mask.len, cr->points, cr->len, CR_OP_INTER))
-        goto fail;
-
-    /* cr_inter = cr & cr_mask */
-    /* cr_sub = cr & ~cr_mask */
-
-    /* use the case conversion table to compute the result */
-    d_start = -1;
-    d_end = -1;
-    idx = 0;
-    v = case_conv_table1[idx];
-    code = v >> (32 - 17);
-    len = (v >> (32 - 17 - 7)) & 0x7f;
-    for(i = 0; i < cr_inter.len; i += 2) {
-        start = cr_inter.points[i];
-        end = cr_inter.points[i + 1];
-
-        for(c = start; c < end; c++) {
-            for(;;) {
-                if (c >= code && c < code + len)
-                    break;
-                idx++;
-                assert(idx < countof(case_conv_table1));
-                v = case_conv_table1[idx];
-                code = v >> (32 - 17);
-                len = (v >> (32 - 17 - 7)) & 0x7f;
-            }
-            d = lre_case_folding_entry(c, idx, v, is_unicode);
-            /* try to merge with the current interval */
-            if (d_start == -1) {
-                d_start = d;
-                d_end = d + 1;
-            } else if (d_end == d) {
-                d_end++;
-            } else {
-                cr_add_interval(&cr_result, d_start, d_end);
-                d_start = d;
-                d_end = d + 1;
-            }
-        }
-    }
-    if (d_start != -1) {
-        if (cr_add_interval(&cr_result, d_start, d_end))
-            goto fail;
-    }
-
-    /* the resulting ranges are not necessarily sorted and may overlap */
-    cr_sort_and_remove_overlap(&cr_result);
-
-    /* or with the character not affected by the case folding */
-    cr->len = 0;
-    if (cr_op(cr, cr_result.points, cr_result.len, cr_sub.points, cr_sub.len, CR_OP_UNION))
-        goto fail;
-
-    cr_free(&cr_inter);
-    cr_free(&cr_mask);
-    cr_free(&cr_result);
-    cr_free(&cr_sub);
-    return 0;
- fail:
-    cr_free(&cr_inter);
-    cr_free(&cr_mask);
-    cr_free(&cr_result);
-    cr_free(&cr_sub);
-    return -1;
-}
-
 typedef enum {
     POP_GC,
     POP_PROP,
@@ -1554,6 +1559,7 @@ static int unicode_prop_ops(CharRange *cr, ...)
                 cr2 = &stack[stack_len - 1];
                 cr3 = &stack[stack_len++];
                 cr_init(cr3, cr->mem_opaque, cr->realloc_func);
+                /* CR_OP_XOR may be used here */
                 if (cr_op(cr3, cr1->points, cr1->len,
                           cr2->points, cr2->len, op - POP_UNION + CR_OP_UNION))
                     goto fail;
@@ -1907,4 +1913,211 @@ BOOL lre_is_space_non_ascii(uint32_t c)
             return TRUE;
     }
     return FALSE;
+}
+
+#define SEQ_MAX_LEN 16
+
+static int unicode_sequence_prop1(int seq_prop_idx, UnicodeSequencePropCB *cb, void *opaque,
+                                  CharRange *cr)
+{
+    int i, c, j;
+    uint32_t seq[SEQ_MAX_LEN];
+    
+    switch(seq_prop_idx) {
+    case UNICODE_SEQUENCE_PROP_Basic_Emoji:
+        if (unicode_prop1(cr, UNICODE_PROP_Basic_Emoji1) < 0)
+            return -1;
+        for(i = 0; i < cr->len; i += 2) {
+            for(c = cr->points[i]; c < cr->points[i + 1]; c++) {
+                seq[0] = c;
+                cb(opaque, seq, 1);
+            }
+        }
+
+        cr->len = 0;
+
+        if (unicode_prop1(cr, UNICODE_PROP_Basic_Emoji2) < 0)
+            return -1;
+        for(i = 0; i < cr->len; i += 2) {
+            for(c = cr->points[i]; c < cr->points[i + 1]; c++) {
+                seq[0] = c;
+                seq[1] = 0xfe0f;
+                cb(opaque, seq, 2);
+            }
+        }
+
+        break;
+    case UNICODE_SEQUENCE_PROP_RGI_Emoji_Modifier_Sequence:
+        if (unicode_prop1(cr, UNICODE_PROP_Emoji_Modifier_Base) < 0)
+            return -1;
+        for(i = 0; i < cr->len; i += 2) {
+            for(c = cr->points[i]; c < cr->points[i + 1]; c++) {
+                for(j = 0; j < 5; j++) {
+                    seq[0] = c;
+                    seq[1] = 0x1f3fb + j;
+                    cb(opaque, seq, 2);
+                }
+            }
+        }
+        break;
+    case UNICODE_SEQUENCE_PROP_RGI_Emoji_Flag_Sequence:
+        if (unicode_prop1(cr, UNICODE_PROP_RGI_Emoji_Flag_Sequence) < 0)
+            return -1;
+        for(i = 0; i < cr->len; i += 2) {
+            for(c = cr->points[i]; c < cr->points[i + 1]; c++) {
+                int c0, c1;
+                c0 = c / 26;
+                c1 = c % 26;
+                seq[0] = 0x1F1E6 + c0;
+                seq[1] = 0x1F1E6 + c1;
+                cb(opaque, seq, 2);
+            }
+        }
+        break;
+    case UNICODE_SEQUENCE_PROP_RGI_Emoji_ZWJ_Sequence:
+        {
+            int len, code, pres, k, mod, mod_count, mod_pos[2], hc_pos, n_mod, n_hc, mod1;
+            int mod_idx, hc_idx, i0, i1;
+            const uint8_t *tab = unicode_rgi_emoji_zwj_sequence;
+            
+            for(i = 0; i < countof(unicode_rgi_emoji_zwj_sequence);) {
+                len = tab[i++];
+                k = 0;
+                mod = 0;
+                mod_count = 0;
+                hc_pos = -1;
+                for(j = 0; j < len; j++) {
+                    code = tab[i++];
+                    code |= tab[i++] << 8;
+                    pres = code >> 15;
+                    mod1 = (code >> 13) & 3;
+                    code &= 0x1fff;
+                    if (code < 0x1000) {
+                        c = code + 0x2000;
+                    } else {
+                        c = 0x1f000 + (code - 0x1000);
+                    }
+                    if (c == 0x1f9b0)
+                        hc_pos = k;
+                    seq[k++] = c;
+                    if (mod1 != 0) {
+                        assert(mod_count < 2);
+                        mod = mod1;
+                        mod_pos[mod_count++] = k;
+                        seq[k++] = 0; /* will be filled later */
+                    }
+                    if (pres) {
+                        seq[k++] = 0xfe0f;
+                    }
+                    if (j < len - 1) {
+                        seq[k++] = 0x200d;
+                    }
+                }
+
+                /* genrate all the variants */
+                switch(mod) {
+                case 1:
+                    n_mod = 5;
+                    break;
+                case 2:
+                    n_mod = 25;
+                    break;
+                case 3:
+                    n_mod = 20;
+                    break;
+                default:
+                    n_mod = 1;
+                    break;
+                }
+                if (hc_pos >= 0)
+                    n_hc = 4;
+                else
+                    n_hc = 1;
+                for(hc_idx = 0; hc_idx < n_hc; hc_idx++) {
+                    for(mod_idx = 0; mod_idx < n_mod; mod_idx++) {
+                        if (hc_pos >= 0)
+                            seq[hc_pos] = 0x1f9b0 + hc_idx;
+                        
+                        switch(mod) {
+                        case 1:
+                            seq[mod_pos[0]] = 0x1f3fb + mod_idx;
+                            break;
+                        case 2:
+                        case 3:
+                            i0 = mod_idx / 5;
+                            i1 = mod_idx % 5;
+                            /* avoid identical values */
+                            if (mod == 3 && i0 >= i1)
+                                i0++;
+                            seq[mod_pos[0]] = 0x1f3fb + i0;
+                            seq[mod_pos[1]] = 0x1f3fb + i1;
+                            break;
+                        default:
+                            break;
+                        }
+#if 0
+                        for(j = 0; j < k; j++)
+                            printf(" %04x", seq[j]);
+                        printf("\n");
+#endif                
+                        cb(opaque, seq, k);
+                    }
+                }
+            }
+        }
+        break;
+    case UNICODE_SEQUENCE_PROP_RGI_Emoji_Tag_Sequence:
+        {
+            for(i = 0; i < countof(unicode_rgi_emoji_tag_sequence);) {
+                j = 0;
+                seq[j++] = 0x1F3F4;
+                for(;;) {
+                    c = unicode_rgi_emoji_tag_sequence[i++];
+                    if (c == 0x00)
+                        break;
+                    seq[j++] = 0xe0000 + c;
+                }
+                seq[j++] = 0xe007f;
+                cb(opaque, seq, j);
+            }
+        }
+        break;
+    case UNICODE_SEQUENCE_PROP_Emoji_Keycap_Sequence:
+        if (unicode_prop1(cr, UNICODE_PROP_Emoji_Keycap_Sequence) < 0)
+            return -1;
+        for(i = 0; i < cr->len; i += 2) {
+            for(c = cr->points[i]; c < cr->points[i + 1]; c++) {
+                seq[0] = c;
+                seq[1] = 0xfe0f;
+                seq[2] = 0x20e3;
+                cb(opaque, seq, 3);
+            }
+        }
+        break;
+    case UNICODE_SEQUENCE_PROP_RGI_Emoji:
+        /* all prevous sequences */
+        for(i = UNICODE_SEQUENCE_PROP_Basic_Emoji; i <= UNICODE_SEQUENCE_PROP_RGI_Emoji_ZWJ_Sequence; i++) {
+            int ret;
+            ret = unicode_sequence_prop1(i, cb, opaque, cr);
+            if (ret < 0)
+                return ret;
+            cr->len = 0;
+        }
+        break;
+    default:
+        return -2;
+    }
+    return 0;
+}
+
+/* build a unicode sequence property */
+/* return -2 if not found, -1 if other error. 'cr' is used as temporary memory. */
+int unicode_sequence_prop(const char *prop_name, UnicodeSequencePropCB *cb, void *opaque,
+                          CharRange *cr)
+{
+    int seq_prop_idx;
+    seq_prop_idx = unicode_find_name(unicode_sequence_prop_name_table, prop_name);
+    if (seq_prop_idx < 0)
+        return -2;
+    return unicode_sequence_prop1(seq_prop_idx, cb, opaque, cr);
 }
