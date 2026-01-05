@@ -42,6 +42,7 @@ function isArrayLike(a)
         (a instanceof Int8Array) ||
         (a instanceof Int16Array) ||
         (a instanceof Int32Array) ||
+        (a instanceof Float16Array) ||
         (a instanceof Float32Array) ||
         (a instanceof Float64Array);
 }
@@ -85,9 +86,8 @@ function toStr(a)
     case "undefined":
         return "undefined";
     case "string":
-        return a.__quote();
+        return JSON.stringify(a);
     case "number":
-    case "bigfloat":
         if (a == 0 && 1 / a < 0)
             return "-0";
         else
@@ -113,6 +113,41 @@ function bjson_test(a)
         print(r_str);
         assert(false);
     }
+}
+
+function bjson_test_arraybuffer()
+{
+    var buf, array_buffer;
+
+    array_buffer = new ArrayBuffer(4);
+    assert(array_buffer.byteLength, 4);
+    assert(array_buffer.maxByteLength, 4);
+    assert(array_buffer.resizable, false);
+    buf = bjson.write(array_buffer);
+    array_buffer = bjson.read(buf, 0, buf.byteLength);
+    assert(array_buffer.byteLength, 4);
+    assert(array_buffer.maxByteLength, 4);
+    assert(array_buffer.resizable, false);
+
+    array_buffer = new ArrayBuffer(4, {maxByteLength: 4});
+    assert(array_buffer.byteLength, 4);
+    assert(array_buffer.maxByteLength, 4);
+    assert(array_buffer.resizable, true);
+    buf = bjson.write(array_buffer);
+    array_buffer = bjson.read(buf, 0, buf.byteLength);
+    assert(array_buffer.byteLength, 4);
+    assert(array_buffer.maxByteLength, 4);
+    assert(array_buffer.resizable, true);
+
+    array_buffer = new ArrayBuffer(4, {maxByteLength: 8});
+    assert(array_buffer.byteLength, 4);
+    assert(array_buffer.maxByteLength, 8);
+    assert(array_buffer.resizable, true);
+    buf = bjson.write(array_buffer);
+    array_buffer = bjson.read(buf, 0, buf.byteLength);
+    assert(array_buffer.byteLength, 4);
+    assert(array_buffer.maxByteLength, 8);
+    assert(array_buffer.resizable, true);
 }
 
 /* test multiple references to an object including circular
@@ -149,30 +184,27 @@ function bjson_test_all()
     var obj;
 
     bjson_test({x:1, y:2, if:3});
+
     bjson_test([1, 2, 3]);
+
+    /* array with holes */
+    bjson_test([1, , 2, , 3]); 
+
+    /* fast array with hole */
+    obj = new Array(5);
+    obj[0] = 1;
+    obj[1] = 2;
+    bjson_test(obj);
+
     bjson_test([1.0, "aa", true, false, undefined, null, NaN, -Infinity, -0.0]);
     if (typeof BigInt !== "undefined") {
         bjson_test([BigInt("1"), -BigInt("0x123456789"),
                BigInt("0x123456789abcdef123456789abcdef")]);
     }
-    if (typeof BigFloat !== "undefined") {
-        BigFloatEnv.setPrec(function () {
-            bjson_test([BigFloat("0.1"), BigFloat("-1e30"), BigFloat("0"),
-                   BigFloat("-0"), BigFloat("Infinity"), BigFloat("-Infinity"),
-                   0.0 / BigFloat("0"), BigFloat.MAX_VALUE,
-                   BigFloat.MIN_VALUE]);
-        }, 113, 15);
-    }
-    if (typeof BigDecimal !== "undefined") {
-        bjson_test([BigDecimal("0"),
-                    BigDecimal("0.8"), BigDecimal("123321312321321e100"),
-                    BigDecimal("-1233213123213214332333223332e100"),
-                    BigDecimal("1.233e-1000")]);
-    }
-
     bjson_test([new Date(1234), new String("abc"), new Number(-12.1), new Boolean(true)]);
 
     bjson_test(new Int32Array([123123, 222111, -32222]));
+    bjson_test(new Float16Array([1024, 1024.5]));
     bjson_test(new Float64Array([123123, 222111.5]));
 
     /* tested with a circular reference */
@@ -185,6 +217,7 @@ function bjson_test_all()
         assert(e instanceof TypeError);
     }
 
+    bjson_test_arraybuffer();
     bjson_test_reference();
 }
 
