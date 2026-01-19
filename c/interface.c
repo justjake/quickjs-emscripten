@@ -809,7 +809,7 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
   }
 
   IF_DEBUG {
-    snprintf(msg, LOG_LEN, "QTS_Eval: eval_result = %d", eval_result);
+    snprintf(msg, LOG_LEN, "QTS_Eval: eval_result = %d", JS_VALUE_GET_TAG(eval_result));
     qts_log(msg);
   }
 
