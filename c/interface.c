@@ -319,10 +319,6 @@ enum QTS_Intrinsic {
   QTS_Intrinsic_TypedArrays = 1 << 9,
   QTS_Intrinsic_Promise = 1 << 10,
   QTS_Intrinsic_BigInt = 1 << 11,
-  QTS_Intrinsic_BigFloat = 1 << 12,
-  QTS_Intrinsic_BigDecimal = 1 << 13,
-  QTS_Intrinsic_OperatorOverloading = 1 << 14,
-  QTS_Intrinsic_BignumExt = 1 << 15,
 };
 
 JSContext *QTS_NewContext(JSRuntime *rt, IntrinsicsFlags intrinsics) {
@@ -373,21 +369,6 @@ JSContext *QTS_NewContext(JSRuntime *rt, IntrinsicsFlags intrinsics) {
   if (intrinsics & QTS_Intrinsic_BigInt) {
     JS_AddIntrinsicBigInt(ctx);
   }
-#ifdef CONFIG_BIGNUM
-  if (intrinsics & QTS_Intrinsic_BigFloat) {
-    JS_AddIntrinsicBigFloat(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_BigDecimal) {
-    JS_AddIntrinsicBigDecimal(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_BignumExt) {
-    JS_EnableBignumExt(ctx, TRUE);
-  }
-  if (intrinsics & QTS_Intrinsic_OperatorOverloading) {
-    JS_AddIntrinsicOperators(ctx);
-  }
-#endif
-
   return ctx;
 }
 
@@ -896,12 +877,6 @@ OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
     result = "number";
   } else if (JS_IsBigInt(ctx, *value)) {
     result = "bigint";
-#ifdef CONFIG_BIGNUM
-  } else if (JS_IsBigFloat(*value)) {
-    result = "bigfloat";
-  } else if (JS_IsBigDecimal(*value)) {
-    result = "bigdecimal";
-#endif
   } else if (JS_IsFunction(ctx, *value)) {
     result = "function";
   } else if (JS_IsBool(*value)) {
