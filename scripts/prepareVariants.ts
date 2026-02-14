@@ -29,6 +29,7 @@ enum SyncMode {
 enum CLibrary {
   QuickJS = "quickjs",
   NG = "quickjs-ng",
+  MQuickJS = "mquickjs",
 }
 
 enum EmscriptenInclusion {
@@ -91,7 +92,7 @@ const SEPARATE_FILE_INCLUSION: BuildVariant["exports"] = {
 }
 
 const buildMatrix = {
-  library: [CLibrary.QuickJS, CLibrary.NG],
+  library: [CLibrary.QuickJS, CLibrary.NG, CLibrary.MQuickJS],
   releaseMode: [ReleaseMode.Debug, ReleaseMode.Release],
   syncMode: [SyncMode.Sync, SyncMode.Asyncify],
 } as const
@@ -163,11 +164,16 @@ function makeTarget(partialVariant: TargetSpec): BuildVariant[] {
           ...partialVariant,
         }
 
-        // Eliminate singlefile builds for quickjs-ng
+        // Eliminate singlefile builds for quickjs-ng and mquickjs
         if (
-          variant.library === CLibrary.NG &&
+          (variant.library === CLibrary.NG || variant.library === CLibrary.MQuickJS) &&
           variant.emscriptenInclusion === EmscriptenInclusion.SingleFile
         ) {
+          return []
+        }
+
+        // Eliminate asyncify builds for mquickjs (not supported yet)
+        if (variant.library === CLibrary.MQuickJS && variant.syncMode === SyncMode.Asyncify) {
           return []
         }
 
@@ -535,6 +541,7 @@ and [QuickJSAsyncContext](${DOC_ROOT_URL}/quickjs-emscripten/classes/QuickJSAsyn
 const describeLibrary = {
   [CLibrary.QuickJS]: `The original [bellard/quickjs](https://github.com/bellard/quickjs) library.`,
   [CLibrary.NG]: `[quickjs-ng](https://github.com/quickjs-ng/quickjs) is a fork of quickjs that tends to add features more quickly.`,
+  [CLibrary.MQuickJS]: `[mquickjs](https://github.com/bellard/mquickjs) is a minimal/micro version of QuickJS by Fabrice Bellard, optimized for small size.`,
 }
 
 const describeModuleFactory = {
@@ -872,11 +879,13 @@ function getTargetPackageSuffix(targetName: string, variant: BuildVariant): stri
 const CLibrarySubtree: Record<CLibrary, string> = {
   quickjs: "vendor/quickjs",
   "quickjs-ng": "vendor/quickjs-ng",
+  mquickjs: "vendor/mquickjs",
 }
 
 const CLibraryGithubRepo: Record<CLibrary, string> = {
   quickjs: "bellard/quickjs",
   "quickjs-ng": "quickjs-ng/quickjs",
+  mquickjs: "bellard/mquickjs",
 }
 
 // Libraries that use release tags (from VERSION file) instead of git subtree SHA

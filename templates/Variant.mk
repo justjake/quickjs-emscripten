@@ -21,12 +21,15 @@ BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
 DIST=dist
 
 # QuickJS
-ifeq ($(QUICKJS_LIB),quickjs-ng)
-	# quickjs-ng uses amalgamated build (single source file)
-	# QJS_BUILD_LIBC is needed to include libc functions (js_std_*)
-	QUICKJS_OBJS=quickjs-amalgam.o
-	QUICKJS_CONFIG_VERSION=$(shell cat $(QUICKJS_ROOT)/VERSION)
-	QUICKJS_DEFINES:=-D_GNU_SOURCE -DQJS_BUILD_LIBC -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\"
+ifeq ($(QUICKJS_LIB),mquickjs)
+	# mquickjs is a minimal QuickJS fork without modules, promises, symbols, bigint
+	QUICKJS_OBJS=mquickjs.o dtoa.o libm.o cutils.o
+	QUICKJS_DEFINES:=-D_GNU_SOURCE
+	CFLAGS_WASM+=-DQTS_USE_MQUICKJS
+else ifeq ($(QUICKJS_LIB),quickjs-ng)
+	# quickjs-ng uses different source files than bellard/quickjs
+	QUICKJS_OBJS=quickjs.o libbf.o libregexp.o libunicode.o cutils.o quickjs-libc.o
+	QUICKJS_DEFINES:=-D_GNU_SOURCE
 	CFLAGS_WASM+=-DQTS_USE_QUICKJS_NG
 else
 	# bellard/quickjs uses separate source files
