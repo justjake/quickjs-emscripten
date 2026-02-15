@@ -6,7 +6,7 @@ import { UsingDisposable } from "./lifetime";
 
 const INT32_MIN = -2147483648
 const INT32_MAX = 2147483647
-export const INVALID_HOST_REF_ID = 0
+export const INVALID_HOST_REF_ID = 0 as HostRefId
 
 function getGroupId(id: HostRefId): number {
   return id >> 8
