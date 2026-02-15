@@ -46,13 +46,25 @@
 #endif
 
 #ifdef QTS_USE_QUICKJS_NG
-#include "../vendor/quickjs-ng/cutils.h"
+// quickjs-ng amalgam only provides quickjs.h and quickjs-libc.h
 #include "../vendor/quickjs-ng/quickjs-libc.h"
 #include "../vendor/quickjs-ng/quickjs.h"
+// Compatibility: quickjs-ng uses C99 bool instead of custom BOOL type
+#ifndef BOOL
+#define BOOL bool
+#define TRUE true
+#define FALSE false
+#endif
+// Compatibility: quickjs-ng JS_IsBigInt takes only 1 argument
+#define QTS_JS_IsBigInt(ctx, v) JS_IsBigInt(v)
+// Forward declaration for js_std_dump_error (defined in amalgam with QJS_BUILD_LIBC)
+void js_std_dump_error(JSContext *ctx);
 #else
 #include "../vendor/quickjs/cutils.h"
 #include "../vendor/quickjs/quickjs-libc.h"
 #include "../vendor/quickjs/quickjs.h"
+// bellard/quickjs JS_IsBigInt takes 2 arguments
+#define QTS_JS_IsBigInt(ctx, v) JS_IsBigInt(ctx, v)
 #endif
 
 #define PKG "quickjs-emscripten: "
@@ -749,8 +761,31 @@ JSValue qts_resolve_func_data(
   return JS_DupValue(ctx, func_data[0]);
 }
 
+// QTS_DetectModule - bellard/quickjs style module detection heuristic.
+// For quickjs-ng, this is patched into the amalgam (see vendor/quickjs-ng-patches/).
+// It uses bellard's approach: skip whitespace/comments, check for 'import' or 'export'.
+#ifdef QTS_USE_QUICKJS_NG
+extern bool QTS_DetectModule(const char *input, size_t input_len);
+#endif
+
 MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t js_code_length, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
   char msg[LOG_LEN];
+#ifdef QTS_USE_QUICKJS_NG
+  // quickjs-ng's JS_DetectModule has different behavior - it parses the code
+  // as a module and returns true if parsing succeeds. Since any valid JS
+  // expression is valid module syntax, this incorrectly detects non-modules.
+  // Use bellard/quickjs heuristic: check for import/export keywords at start.
+  if (detectModule) {
+    if (QTS_DetectModule((const char *)js_code, js_code_length)) {
+      QTS_DEBUG("QTS_Eval: quickjs-ng heuristic detected module = true");
+      evalFlags |= JS_EVAL_TYPE_MODULE;
+    } else {
+      QTS_DEBUG("QTS_Eval: quickjs-ng heuristic detected module = false");
+    }
+  } else {
+    QTS_DEBUG("QTS_Eval: do not detect module");
+  }
+#else
   if (detectModule) {
     if (JS_DetectModule((const char *)js_code, js_code_length)) {
       QTS_DEBUG("QTS_Eval: Detected module = true");
@@ -761,6 +796,7 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
   } else {
     QTS_DEBUG("QTS_Eval: do not detect module");
   }
+#endif
 
   JSModuleDef *module;
   JSValue eval_result;
@@ -882,7 +918,7 @@ OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
 
   if (JS_IsNumber(*value)) {
     result = "number";
-  } else if (JS_IsBigInt(ctx, *value)) {
+  } else if (QTS_JS_IsBigInt(ctx, *value)) {
     result = "bigint";
   } else if (JS_IsFunction(ctx, *value)) {
     result = "function";

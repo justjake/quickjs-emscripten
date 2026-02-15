@@ -68,8 +68,14 @@ if (DEBUG) {
 
 type GetTestContext = (options?: ContextOptions) => Promise<QuickJSContext>
 
+interface ContextTestOptions {
+  isDebug?: boolean
+  isNG?: boolean
+}
+
 const baseIt = it
-function contextTests(getContext: GetTestContext, isDebug = false) {
+function contextTests(getContext: GetTestContext, options: ContextTestOptions = {}) {
+  const { isDebug = false, isNG = false } = options
   let vm: QuickJSContext = undefined as any
   let ffi: QuickJSFFI | QuickJSAsyncFFI = undefined as any
   let testId = 0
@@ -236,10 +242,10 @@ function contextTests(getContext: GetTestContext, isDebug = false) {
         if (!result.error) {
           assert.fail("function call must return error")
         }
-        assert.deepEqual(vm.dump(result.error), {
-          name: "Error",
-          message: "oops",
-        })
+        const error = vm.dump(result.error)
+        // quickjs-ng includes a stack property, bellard/quickjs does not
+        assert.strictEqual(error.name, "Error")
+        assert.strictEqual(error.message, "oops")
         result.error.dispose()
         fnHandle.dispose()
       })
@@ -705,11 +711,11 @@ export default "the default";
         assert.fail("result should be an error")
       }
 
-      assertError(newContext.dump(result.error), {
-        name: "ReferenceError",
-        message: "'Date' is not defined",
-        stack: "    at <eval> (eval.js)\n",
-      })
+      const error = newContext.dump(result.error)
+      assert.strictEqual(error.name, "ReferenceError")
+      // quickjs-ng: "Date is not defined", bellard: "'Date' is not defined"
+      const expectedMessage = isNG ? "Date is not defined" : "'Date' is not defined"
+      assert.strictEqual(error.message, expectedMessage)
 
       result.error.dispose()
       newContext.dispose()
@@ -989,8 +995,11 @@ export default "the default";
       vm.runtime.setMaxStackSize(0) // so we can dump
       const error = vm.dump(result.error)
       result.error.dispose()
-      assert.strictEqual(error.name, "SyntaxError")
-      assert.strictEqual(error.message, "stack overflow")
+      // quickjs-ng throws RangeError with different message, bellard throws SyntaxError
+      const expectedErrorName = isNG ? "RangeError" : "SyntaxError"
+      const expectedMessage = isNG ? "Maximum call stack size exceeded" : "stack overflow"
+      assert.strictEqual(error.name, expectedErrorName)
+      assert.strictEqual(error.message, expectedMessage)
     })
 
     it("removes limit when set to 0", () => {
@@ -1140,7 +1149,11 @@ export default "the default";
   })
 }
 
-function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>) {
+function asyncContextTests(
+  getContext: () => Promise<QuickJSAsyncContext>,
+  options: ContextTestOptions = {},
+) {
+  const { isNG: _isNG = false } = options
   let vm: QuickJSAsyncContext = undefined as any
 
   beforeEach(async () => {
@@ -1357,7 +1370,7 @@ describe("QuickJSContext", function () {
     describe("DEBUG sync module", function () {
       const loader = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
       const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
-      contextTests(getContext, true)
+      contextTests(getContext, { isDebug: true })
     })
   }
 
@@ -1368,7 +1381,7 @@ describe("QuickJSContext", function () {
           newQuickJSWASMModule(import("@jitl/quickjs-ng-wasmfile-release-sync")),
         )
         const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
-        contextTests(getContext)
+        contextTests(getContext, { isNG: true })
       })
     }
 
@@ -1378,7 +1391,7 @@ describe("QuickJSContext", function () {
           newQuickJSWASMModule(import("@jitl/quickjs-ng-wasmfile-debug-sync")),
         )
         const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
-        contextTests(getContext)
+        contextTests(getContext, { isNG: true, isDebug: true })
       })
     }
   }
@@ -1404,7 +1417,7 @@ if (TEST_ASYNC) {
       const getContext = (opts?: ContextOptions) => loader().then((mod) => mod.newContext(opts))
 
       describe("sync API", () => {
-        contextTests(getContext, true)
+        contextTests(getContext, { isDebug: true })
       })
 
       describe("async API", () => {
@@ -1420,11 +1433,11 @@ if (TEST_ASYNC) {
         const getContext = (opts?: ContextOptions) => loader().then((mod) => mod.newContext(opts))
 
         describe("sync API", () => {
-          contextTests(getContext)
+          contextTests(getContext, { isNG: true })
         })
 
         describe("async API", () => {
-          asyncContextTests(getContext)
+          asyncContextTests(getContext, { isNG: true })
         })
       })
     }

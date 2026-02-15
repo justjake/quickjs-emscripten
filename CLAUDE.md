@@ -26,6 +26,31 @@ corepack yarn build:ts  # builds the TypeScript wrapper
 - The asmjs variant uses an older emscripten version (`ASMJS_EMSCRIPTEN_VERSION`) to avoid newer browser APIs
 - Emscripten runs via Docker when the local version doesn't match; see `scripts/emcc.sh`
 
+## Testing
+
+Run all tests:
+
+```bash
+corepack yarn test
+```
+
+Run tests for a specific variant (e.g., quickjs-ng only):
+
+```bash
+cd packages/quickjs-emscripten
+npx vitest run -t "quickjs-ng"
+```
+
+Other test filters:
+
+- `-t "RELEASE_SYNC"` - only release sync variants
+- `-t "DEBUG"` - only debug variants
+- `-t "QuickJSContext"` - only sync context tests
+
+## Git
+
+- Never use `git commit --amend` - always create new commits
+
 ## Key Files
 
 - `scripts/prepareVariants.ts` - Generates all variant packages from templates
