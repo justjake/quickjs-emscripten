@@ -1,4 +1,4 @@
-import type { HostRefId } from "@jitl/quickjs-ffi-types/ffi-types";
+import type { HostRefId } from "@jitl/quickjs-ffi-types"
 import { QuickJSHostRefInvalid, QuickJSHostRefRangeExceeded } from "./errors";
 import type { QuickJSHandle } from "./types";
 import type { QuickJSRuntime } from "./runtime";
