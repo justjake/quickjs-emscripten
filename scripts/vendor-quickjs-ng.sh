@@ -79,6 +79,16 @@ fi
 # Clean up
 rm -rf "$TEMP_DIR"
 
+# Apply patches
+PATCHES_DIR="$REPO_ROOT/vendor/quickjs-ng-patches"
+if [[ -d "$PATCHES_DIR" ]] && ls "$PATCHES_DIR"/*.patch >/dev/null 2>&1; then
+    echo "Applying patches..."
+    for patch in "$PATCHES_DIR"/*.patch; do
+        echo "  Applying $(basename "$patch")..."
+        patch -d "$VENDOR_DIR" -p1 < "$patch"
+    done
+fi
+
 # Stage the changes
 echo "Staging changes..."
 git -C "$REPO_ROOT" add "$VENDOR_DIR"
