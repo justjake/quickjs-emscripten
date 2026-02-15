@@ -1,5 +1,5 @@
 diff --git a/harness/atomicsHelper.js b/harness/atomicsHelper.js
-index 9828b15..4a5919d 100644
+index 9828b15..9e24d64 100644
 --- a/harness/atomicsHelper.js
 +++ b/harness/atomicsHelper.js
 @@ -272,10 +272,14 @@ $262.agent.waitUntil = function(typedArray, index, expected) {
@@ -14,15 +14,15 @@ index 9828b15..4a5919d 100644
 +//  small: 200,
 +//  long: 1000,
 +//  huge: 10000,
-+  yield: 20,
-+  small: 20,
-+  long: 100,
++  yield: 40,
++  small: 40,
++  long: 200,
 +  huge: 1000,
  };
  
  /**
 diff --git a/harness/regExpUtils.js b/harness/regExpUtils.js
-index b55f3c6..396bad4 100644
+index b397be0..c197ddc 100644
 --- a/harness/regExpUtils.js
 +++ b/harness/regExpUtils.js
 @@ -6,27 +6,30 @@ description: |
@@ -51,21 +51,20 @@ index b55f3c6..396bad4 100644
    const loneCodePoints = args.loneCodePoints;
    const ranges = args.ranges;
 -  const CHUNK_SIZE = 10000;
--  let result = Reflect.apply(String.fromCodePoint, null, loneCodePoints);
+   let result = String.fromCodePoint.apply(null, loneCodePoints);
 -  for (let i = 0; i < ranges.length; i++) {
--    const range = ranges[i];
--    const start = range[0];
--    const end = range[1];
--    const codePoints = [];
+-    let range = ranges[i];
+-    let start = range[0];
+-    let end = range[1];
+-    let codePoints = [];
 -    for (let length = 0, codePoint = start; codePoint <= end; codePoint++) {
 -      codePoints[length++] = codePoint;
 -      if (length === CHUNK_SIZE) {
--        result += Reflect.apply(String.fromCodePoint, null, codePoints);
+-        result += String.fromCodePoint.apply(null, codePoints);
 -        codePoints.length = length = 0;
 -      }
 -    }
--    result += Reflect.apply(String.fromCodePoint, null, codePoints);
-+  let result = String.fromCodePoint.apply(null, loneCodePoints);
+-    result += String.fromCodePoint.apply(null, codePoints);
 +  for (const [start, end] of ranges) {
 +    result += codePointRange(start, end + 1);
    }
