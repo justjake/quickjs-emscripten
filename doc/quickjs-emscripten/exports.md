@@ -219,7 +219,7 @@ An `Array` that also implements [Disposable](interfaces/Disposable.md):
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:538
+packages/quickjs-ffi-types/dist/index.d.ts:547
 
 ***
 
@@ -229,7 +229,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:538
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:332
+packages/quickjs-ffi-types/dist/index.d.ts:337
 
 ***
 
@@ -245,7 +245,7 @@ by the runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L35)
+[packages/quickjs-emscripten-core/src/runtime.ts:36](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L36)
 
 ***
 
@@ -270,7 +270,7 @@ Determines if a VM's execution should be interrupted.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/runtime.ts:27](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L27)
+[packages/quickjs-emscripten-core/src/runtime.ts:28](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L28)
 
 ***
 
@@ -486,7 +486,7 @@ State of a promise.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:145
+packages/quickjs-ffi-types/dist/index.d.ts:149
 
 ***
 
@@ -747,7 +747,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/context.ts:72](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L72)
+[packages/quickjs-emscripten-core/src/context.ts:71](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L71)
 
 ***
 
@@ -757,7 +757,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:537
+packages/quickjs-ffi-types/dist/index.d.ts:546
 
 ***
 
@@ -1033,7 +1033,7 @@ module code
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:94
+packages/quickjs-ffi-types/dist/index.d.ts:98
 
 ***
 
@@ -1075,7 +1075,7 @@ Bitfield options for QTS_GetOwnPropertyNames
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:154
+packages/quickjs-ffi-types/dist/index.d.ts:158
 
 ***
 
@@ -1153,7 +1153,7 @@ Bitfield options for QTS_NewContext intrinsics
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:122
+packages/quickjs-ffi-types/dist/index.d.ts:126
 
 ***
 
@@ -1177,7 +1177,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:122
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:168
+packages/quickjs-ffi-types/dist/index.d.ts:172
 
 ***
 
@@ -1201,7 +1201,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:168
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:145
+packages/quickjs-ffi-types/dist/index.d.ts:149
 
 ***
 
@@ -1280,7 +1280,7 @@ packages/variant-quickjs-wasmfile-release-sync/dist/index.d.ts:18
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:90
+packages/quickjs-ffi-types/dist/index.d.ts:94
 
 ***
 
