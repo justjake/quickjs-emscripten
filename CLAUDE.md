@@ -44,6 +44,10 @@ Other test filters:
 - `-t "DEBUG"` - only debug variants
 - `-t "QuickJSContext"` - only sync context tests
 
+## Git
+
+- Never use `git commit --amend` - always create new commits
+
 ## Key Files
 
 - `scripts/prepareVariants.ts` - Generates all variant packages from templates
