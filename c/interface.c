@@ -101,6 +101,15 @@
 #define IntrinsicsFlags enum QTS_Intrinsic
 #define EvalDetectModule int
 
+// Forward declarations for EM_JS callback functions
+// These are implemented via EM_JS macro but need forward declarations for C99 compliance
+#ifdef __EMSCRIPTEN__
+JSValue *qts_host_call_function(JSContext *ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint32_t magic_func_id);
+int qts_host_interrupt_handler(JSRuntime *rt);
+char *qts_host_load_module_source(JSRuntime *rt, JSContext *ctx, const char *module_name);
+char *qts_host_normalize_module(JSRuntime *rt, JSContext *ctx, const char *module_base_name, const char *module_name);
+#endif
+
 typedef struct qts_RuntimeData {
   bool debug_log;
 } qts_RuntimeData;
@@ -319,10 +328,6 @@ enum QTS_Intrinsic {
   QTS_Intrinsic_TypedArrays = 1 << 9,
   QTS_Intrinsic_Promise = 1 << 10,
   QTS_Intrinsic_BigInt = 1 << 11,
-  QTS_Intrinsic_BigFloat = 1 << 12,
-  QTS_Intrinsic_BigDecimal = 1 << 13,
-  QTS_Intrinsic_OperatorOverloading = 1 << 14,
-  QTS_Intrinsic_BignumExt = 1 << 15,
 };
 
 JSContext *QTS_NewContext(JSRuntime *rt, IntrinsicsFlags intrinsics) {
@@ -370,24 +375,7 @@ JSContext *QTS_NewContext(JSRuntime *rt, IntrinsicsFlags intrinsics) {
   if (intrinsics & QTS_Intrinsic_Promise) {
     JS_AddIntrinsicPromise(ctx);
   }
-  if (intrinsics & QTS_Intrinsic_BigInt) {
-    JS_AddIntrinsicBigInt(ctx);
-  }
-#ifdef CONFIG_BIGNUM
-  if (intrinsics & QTS_Intrinsic_BigFloat) {
-    JS_AddIntrinsicBigFloat(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_BigDecimal) {
-    JS_AddIntrinsicBigDecimal(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_BignumExt) {
-    JS_EnableBignumExt(ctx, TRUE);
-  }
-  if (intrinsics & QTS_Intrinsic_OperatorOverloading) {
-    JS_AddIntrinsicOperators(ctx);
-  }
-#endif
-
+  // Note: BigInt is now always part of QuickJS core, no need for separate intrinsic
   return ctx;
 }
 
@@ -809,7 +797,7 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
   }
 
   IF_DEBUG {
-    snprintf(msg, LOG_LEN, "QTS_Eval: eval_result = %d", eval_result);
+    snprintf(msg, LOG_LEN, "QTS_Eval: eval_result = %d", JS_VALUE_GET_TAG(eval_result));
     qts_log(msg);
   }
 
@@ -896,12 +884,6 @@ OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
     result = "number";
   } else if (JS_IsBigInt(ctx, *value)) {
     result = "bigint";
-#ifdef CONFIG_BIGNUM
-  } else if (JS_IsBigFloat(*value)) {
-    result = "bigfloat";
-  } else if (JS_IsBigDecimal(*value)) {
-    result = "bigdecimal";
-#endif
   } else if (JS_IsFunction(ctx, *value)) {
     result = "function";
   } else if (JS_IsBool(*value)) {

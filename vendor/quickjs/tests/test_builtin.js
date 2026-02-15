@@ -357,6 +357,7 @@ function test_math()
     assert(Math.hypot(-2), 2);
     assert(Math.hypot(3, 4), 5);
     assert(Math.abs(Math.hypot(3, 4, 5) - 7.0710678118654755) <= 1e-15);
+    assert(Math.sumPrecise([1,Number.EPSILON/2,Number.MIN_VALUE]), 1.0000000000000002);
 }
 
 function test_number()
@@ -381,17 +382,22 @@ function test_number()
     assert(Number.isNaN(Number("-")));
     assert(Number.isNaN(Number("\x00a")));
 
-    // TODO: Fix rounding errors on Windows/Cygwin.
-    if (typeof os !== 'undefined' && ['win32', 'cygwin'].includes(os.platform)) {
-        return;
-    }
-
+    assert((1-2**-53).toString(12), "0.bbbbbbbbbbbbbba");
+    assert((1000000000000000128).toString(), "1000000000000000100");
+    assert((1000000000000000128).toFixed(0), "1000000000000000128");
     assert((25).toExponential(0), "3e+1");
     assert((-25).toExponential(0), "-3e+1");
     assert((2.5).toPrecision(1), "3");
     assert((-2.5).toPrecision(1), "-3");
+    assert((25).toPrecision(1) === "3e+1");
     assert((1.125).toFixed(2), "1.13");
     assert((-1.125).toFixed(2), "-1.13");
+    assert((0.5).toFixed(0), "1");
+    assert((-0.5).toFixed(0), "-1");
+    assert((-1e-10).toFixed(0), "-0");
+
+    assert((1.3).toString(7), "1.2046204620462046205");
+    assert((1.3).toString(35), "1.ahhhhhhhhhm");
 }
 
 function test_eval2()
@@ -484,6 +490,9 @@ function test_typed_array()
     a = new Uint16Array(buffer, 2);
     a[0] = -1;
 
+    a = new Float16Array(buffer, 8, 1);
+    a[0] = 1;
+
     a = new Float32Array(buffer, 8, 1);
     a[0] = 1;
 
@@ -502,6 +511,74 @@ function test_typed_array()
     assert(a.toString(), "1,2,3,4");
     a.set([10, 11], 2);
     assert(a.toString(), "1,2,10,11");
+
+    // https://github.com/quickjs-ng/quickjs/issues/1208
+    buffer = new ArrayBuffer(16);
+    a = new Uint8Array(buffer);
+    a.fill(42);
+    assert(a[0], 42);
+    buffer.transfer();
+    assert(a[0], undefined);
+}
+
+/* return [s, line_num, col_num] where line_num and col_num are the
+   position of the '@' character in 'str'. 's' is str without the '@'
+   character */
+function get_string_pos(str)
+{
+    var p, line_num, col_num, s, q, r;
+    p = str.indexOf('@');
+    assert(p >= 0, true);
+    q = 0;
+    line_num = 1;
+    for(;;) {
+        r = str.indexOf('\n', q);
+        if (r < 0 || r >= p)
+            break;
+        q = r + 1;
+        line_num++;
+    }
+    col_num = p - q + 1;
+    s = str.slice(0, p) + str.slice(p + 1);
+    return [s, line_num, col_num];
+}
+
+function check_error_pos(e, expected_error, line_num, col_num, level)
+{
+    var expected_pos, tab, line;
+    level |= 0;
+    expected_pos = ":" + line_num + ":" + col_num;
+    tab = e.stack.split("\n");
+    line = tab[level];
+    if (line.slice(-1) == ')')
+        line = line.slice(0, -1);
+    if (line.indexOf(expected_pos) < 0) {
+        throw_error("unexpected line or column number. error=" + e.message +
+                    ".got |" + line + "|, expected |" + expected_pos + "|");
+    }
+}
+
+function assert_json_error(str, line_num, col_num)
+{
+    var err = false;
+    var expected_pos, tab;
+
+    tab = get_string_pos(str);
+    
+    try {
+        JSON.parse(tab[0]);
+    } catch(e) {
+        err = true;
+        if (!(e instanceof SyntaxError)) {
+            throw_error("unexpected exception type");
+            return;
+        }
+        /* XXX: the way quickjs returns JSON errors is not similar to Node or spiderMonkey */
+        check_error_pos(e, SyntaxError, tab[1], tab[2]);
+    }
+    if (!err) {
+        throw_error("expected exception");
+    }
 }
 
 function test_json()
@@ -527,6 +604,9 @@ function test_json()
   3
  ]
 ]`);
+
+    assert_json_error('\n"  \\@x"');
+    assert_json_error('\n{ "a": @x }"');
 }
 
 function test_date()
@@ -680,6 +760,51 @@ function test_regexp()
     assert(a, ["123a23", "3"]);
     a = /()*?a/.exec(",");
     assert(a, null);
+
+    /* test \b escape */
+    assert(/[\q{a\b}]/.test("a\b"), true);
+    assert(/[\b]/.test("\b"), true);
+    
+    /* test case insensitive matching (test262 hardly tests it) */
+    assert("aAbBcC#4".replace(/\p{Lower}/gu,"X"), "XAXBXC#4");
+
+    assert("aAbBcC#4".replace(/\p{Lower}/gui,"X"), "XXXXXX#4");
+    assert("aAbBcC#4".replace(/\p{Upper}/gui,"X"), "XXXXXX#4");
+    assert("aAbBcC#4".replace(/\P{Lower}/gui,"X"), "XXXXXXXX");
+    assert("aAbBcC#4".replace(/\P{Upper}/gui,"X"), "XXXXXXXX");
+    assert("aAbBcC".replace(/[^b]/gui, "X"), "XXbBXX");
+    assert("aAbBcC".replace(/[^A-B]/gui, "X"), "aAbBXX");
+
+    assert("aAbBcC#4".replace(/\p{Lower}/gvi,"X"), "XXXXXX#4");
+    assert("aAbBcC#4".replace(/\P{Lower}/gvi,"X"), "aAbBcCXX");
+    assert("aAbBcC#4".replace(/[^\P{Lower}]/gvi,"X"), "XXXXXX#4");
+    assert("aAbBcC#4".replace(/\P{Upper}/gvi,"X"), "aAbBcCXX");
+    assert("aAbBcC".replace(/[^b]/gvi, "X"), "XXbBXX");
+    assert("aAbBcC".replace(/[^A-B]/gvi, "X"), "aAbBXX");
+    assert("aAbBcC".replace(/[[a-c]&&B]/gvi, "X"), "aAXXcC");
+    assert("aAbBcC".replace(/[[a-c]--B]/gvi, "X"), "XXbBXX");
+    
+    assert("abcAbC".replace(/[\q{AbC}]/gvi,"X"), "XX");
+    /* Note: SpiderMonkey and v8 may not be correct */
+    assert("abcAbC".replace(/[\q{BC|A}]/gvi,"X"), "XXXX");
+    assert("abcAbC".replace(/[\q{BC|A}--a]/gvi,"X"), "aXAX");
+
+    /* case where lastIndex points to the second element of a
+       surrogate pair */
+    a = /(?:)/gu;
+    a.lastIndex = 1;
+    a.exec("🐱");
+    assert(a.lastIndex, 0);
+
+    a.lastIndex = 1;
+    a.exec("a\udc00");
+    assert(a.lastIndex, 1);
+
+    a = /\u{10000}/vgd;
+    a.lastIndex = 1;
+    a = a.exec("\u{10000}_\u{10000}");
+    assert(a.indices[0][0], 0);
+    assert(a.indices[0][1], 2);
 }
 
 function test_symbol()
@@ -714,29 +839,26 @@ function test_symbol()
     assert(b.toString(), "Symbol(aaa)");
 }
 
-function test_map()
+function test_map1(key_type, n)
 {
-    var a, i, n, tab, o, v;
-    n = 1000;
-
-    a = new Map();
-    for (var i = 0; i < n; i++) {
-        a.set(i, i);
-    }
-    a.set(-2147483648, 1);
-    assert(a.get(-2147483648), 1);
-    assert(a.get(-2147483647 - 1), 1);
-    assert(a.get(-2147483647.5 - 0.5), 1);
-
-    a.set(1n, 1n);
-    assert(a.get(1n), 1n);
-    assert(a.get(2n**1000n - (2n**1000n - 1n)), 1n);
-
+    var a, i, tab, o, v;
     a = new Map();
     tab = [];
     for(i = 0; i < n; i++) {
         v = { };
-        o = { id: i };
+        switch(key_type) {
+        case "small_bigint":
+            o = BigInt(i);
+            break;
+        case "bigint":
+            o = BigInt(i) + (1n << 128n);
+            break;
+        case "object":
+            o = { id: i };
+            break;
+        default:
+            assert(false);
+        }
         tab[i] = [o, v];
         a.set(o, v);
     }
@@ -757,6 +879,29 @@ function test_map()
     assert(a.size, 0);
 }
 
+function test_map()
+{
+    var a, i, n, tab, o, v;
+    n = 1000;
+
+    a = new Map();
+    for (var i = 0; i < n; i++) {
+        a.set(i, i);
+    }
+    a.set(-2147483648, 1);
+    assert(a.get(-2147483648), 1);
+    assert(a.get(-2147483647 - 1), 1);
+    assert(a.get(-2147483647.5 - 0.5), 1);
+
+    a.set(1n, 1n);
+    assert(a.get(1n), 1n);
+    assert(a.get(2n**1000n - (2n**1000n - 1n)), 1n);
+
+    test_map1("object", n);
+    test_map1("small_bigint", n);
+    test_map1("bigint", n);
+}
+
 function test_weak_map()
 {
     var a, i, n, tab, o, v, n2;
@@ -765,20 +910,95 @@ function test_weak_map()
     tab = [];
     for(i = 0; i < n; i++) {
         v = { };
-        o = { id: i };
+        if (i & 1)
+            o = Symbol("x" + i);
+        else
+            o = { id: i };
         tab[i] = [o, v];
         a.set(o, v);
     }
     o = null;
 
-    n2 = n >> 1;
+    n2 = 5;
     for(i = 0; i < n2; i++) {
         a.delete(tab[i][0]);
     }
     for(i = n2; i < n; i++) {
         tab[i][0] = null; /* should remove the object from the WeakMap too */
     }
+    std.gc();
     /* the WeakMap should be empty here */
+}
+
+function test_weak_map_cycles()
+{
+    const weak1 = new WeakMap();
+    const weak2 = new WeakMap();
+    function createCyclicKey() {
+        const parent = {};
+        const child = {parent};
+        parent.child = child;
+        return child;
+    }
+    function testWeakMap() {
+        const cyclicKey = createCyclicKey();
+        const valueOfCyclicKey = {};
+        weak1.set(cyclicKey, valueOfCyclicKey);
+        weak2.set(valueOfCyclicKey, 1);
+    }
+    testWeakMap();
+    // Force to free cyclicKey.
+    std.gc();
+    // Here will cause sigsegv because [cyclicKey] and [valueOfCyclicKey] in [weak1] was free,
+    // but weak2's map record was not removed, and it's key refers [valueOfCyclicKey] which is free.
+    weak2.get({});
+    std.gc();
+}
+
+function test_weak_ref()
+{
+    var w1, w2, o, i;
+
+    for(i = 0; i < 2; i++) {
+        if (i == 0)
+            o = { };
+        else
+            o = Symbol("x");
+        w1 = new WeakRef(o);
+        assert(w1.deref(), o);
+        w2 = new WeakRef(o);
+        assert(w2.deref(), o);
+        
+        o = null;
+        assert(w1.deref(), undefined);
+        assert(w2.deref(), undefined);
+        std.gc();
+        assert(w1.deref(), undefined);
+        assert(w2.deref(), undefined);
+    }
+}
+
+function test_finalization_registry()
+{
+    {
+        let expected = {};
+        let actual;
+        let finrec = new FinalizationRegistry(v => { actual = v });
+        finrec.register({}, expected);
+        os.setTimeout(() => {
+            assert(actual, expected);
+        }, 0);
+    }
+    {
+        let expected = 42;
+        let actual;
+        let finrec = new FinalizationRegistry(v => { actual = v });
+        finrec.register({}, expected);
+        os.setTimeout(() => {
+            assert(actual, expected);
+        }, 0);
+    }
+    std.gc();
 }
 
 function test_generator()
@@ -840,6 +1060,116 @@ function test_generator()
     assert(v.value === 6 && v.done === true);
 }
 
+function rope_concat(n, dir)
+{
+    var i, s;
+    s = "";
+    if (dir > 0) {
+        for(i = 0; i < n; i++)
+            s += String.fromCharCode(i & 0xffff);
+    } else {
+        for(i = n - 1; i >= 0; i--)
+            s = String.fromCharCode(i & 0xffff) + s;
+    }
+    
+    for(i = 0; i < n; i++) {
+        /* test before the assert to go faster */
+        if (s.charCodeAt(i) != (i & 0xffff)) {
+            assert(s.charCodeAt(i), i & 0xffff);
+        }
+    }
+}
+
+function test_rope()
+{
+    rope_concat(100000, 1);
+    rope_concat(100000, -1);
+}
+
+function eval_error(eval_str, expected_error, level)
+{
+    var err = false;
+    var expected_pos, tab;
+
+    tab = get_string_pos(eval_str);
+    
+    try {
+        eval(tab[0]);
+    } catch(e) {
+        err = true;
+        if (!(e instanceof expected_error)) {
+            throw_error("unexpected exception type");
+            return;
+        }
+        check_error_pos(e, expected_error, tab[1], tab[2], level);
+    }
+    if (!err) {
+        throw_error("expected exception");
+    }
+}
+
+var poisoned_number = {
+    valueOf: function() { throw Error("poisoned number") },
+};
+
+function test_line_column_numbers()
+{
+    var f, e, tab;
+
+    /* The '@' character provides the expected position of the
+       error. It is removed before evaluating the string. */
+    
+    /* parsing */
+    eval_error("\n 123 @a ", SyntaxError);
+    eval_error("\n  @/*  ", SyntaxError);
+    eval_error("function f  @a", SyntaxError);
+    /* currently regexp syntax errors point to the start of the regexp */
+    eval_error("\n  @/aaa]/u", SyntaxError); 
+
+    /* function definitions */
+    
+    tab = get_string_pos("\n   @function f() { }; f;");
+    e = eval(tab[0]);
+    assert(e.lineNumber, tab[1]);
+    assert(e.columnNumber, tab[2]);
+
+    /* errors */
+    tab = get_string_pos('\n  Error@("hello");');
+    e = eval(tab[0]);
+    check_error_pos(e, Error, tab[1], tab[2]);
+    
+    eval_error('\n  throw Error@("hello");', Error);
+
+    /* operators */
+    eval_error('\n  1 + 2 @* poisoned_number;', Error, 1);
+    eval_error('\n  1 + "café" @* poisoned_number;', Error, 1);
+    eval_error('\n  1 + 2 @** poisoned_number;', Error, 1);
+    eval_error('\n  2 * @+ poisoned_number;', Error, 1);
+    eval_error('\n  2 * @- poisoned_number;', Error, 1);
+    eval_error('\n  2 * @~ poisoned_number;', Error, 1);
+    eval_error('\n  2 * @++ poisoned_number;', Error, 1);
+    eval_error('\n  2 * @-- poisoned_number;', Error, 1);
+    eval_error('\n  2 * poisoned_number @++;', Error, 1);
+    eval_error('\n  2 * poisoned_number @--;', Error, 1);
+
+    /* accessors */
+    eval_error('\n 1 + null@[0];', TypeError); 
+    eval_error('\n 1 + null @. abcd;', TypeError); 
+    eval_error('\n 1 + null @( 1234 );', TypeError);
+    eval_error('var obj = { get a() { throw Error("test"); } }\n 1 + obj @. a;',
+               Error, 1);
+    eval_error('var obj = { set a(b) { throw Error("test"); } }\n obj @. a = 1;',
+               Error, 1);
+
+    /* variables reference */
+    eval_error('\n  1 + @not_def', ReferenceError, 0);
+
+    /* assignments */
+    eval_error('1 + (@not_def = 1)', ReferenceError, 0);
+    eval_error('1 + (@not_def += 2)', ReferenceError, 0);
+    eval_error('var a;\n 1 + (a @+= poisoned_number);', Error, 1);
+}
+
 test();
 test_function();
 test_enum();
@@ -855,4 +1185,9 @@ test_regexp();
 test_symbol();
 test_map();
 test_weak_map();
+test_weak_map_cycles();
+test_weak_ref();
+test_finalization_registry();
 test_generator();
+test_rope();
+test_line_column_numbers();

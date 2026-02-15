@@ -52,18 +52,6 @@ function pad_center(str, n) {
     return str;
 }
 
-function toPrec(n, prec) {
-    var i, s;
-    for (i = 0; i < prec; i++)
-        n *= 10;
-    s = "" + Math.round(n);
-    for (i = s.length - prec; i <= 0; i++)
-        s = "0" + s;
-    if (prec > 0)
-        s = s.substring(0, i) + "." + s.substring(i);
-    return s;
-}
-
 var ref_data;
 var log_data;
 
@@ -83,7 +71,7 @@ function log_line() {
         a = arguments[i];
         if (typeof a === "number") {
             total[i] += a;
-            a = toPrec(a, precs[i]);
+            a = a.toFixed(precs[i]);
             s += pad_left(a, widths[i]);
         } else {
             s += pad_left(a, widths[i]);
@@ -387,6 +375,28 @@ function array_write(n)
     return len * n;
 }
 
+function array_update(n)
+{
+    var tab, len, i, j;
+    tab = [];
+    len = 10;
+    for(i = 0; i < len; i++)
+        tab[i] = i;
+    for(j = 0; j < n; j++) {
+        tab[0] += j;
+        tab[1] += j;
+        tab[2] += j;
+        tab[3] += j;
+        tab[4] += j;
+        tab[5] += j;
+        tab[6] += j;
+        tab[7] += j;
+        tab[8] += j;
+        tab[9] += j;
+    }
+    return len * n;
+}
+
 function array_prop_create(n)
 {
     var tab, i, j, len;
@@ -413,6 +423,21 @@ function array_slice(n)
         global_res = a;
     }
     return len * n;
+}
+
+function array_length_read(n)
+{
+    var tab, sum, j;
+    tab = [1, 2, 3];
+    sum = 0;
+    for(j = 0; j < n; j++) {
+        sum += tab.length;
+        sum += tab.length;
+        sum += tab.length;
+        sum += tab.length;
+    }
+    global_res = sum;
+    return n * 4;
 }
 
 function array_length_decr(n)
@@ -522,6 +547,43 @@ function typed_array_write(n)
     return len * n;
 }
 
+function arguments_test()
+{
+    return arguments[0] + arguments[1] + arguments[2];
+}
+
+function arguments_read(n)
+{
+    sum = 0;
+    for(j = 0; j < n; j++) {
+        sum += arguments_test(j, j, j);
+        sum += arguments_test(j, j, j);
+        sum += arguments_test(j, j, j);
+        sum += arguments_test(j, j, j);
+    }
+    global_res = sum;
+    return n * 4;
+}
+
+function arguments_strict_test()
+{
+    "use strict";
+    return arguments[0] + arguments[1] + arguments[2];
+}
+
+function arguments_strict_read(n)
+{
+    sum = 0;
+    for(j = 0; j < n; j++) {
+        sum += arguments_strict_test(j, j, j);
+        sum += arguments_strict_test(j, j, j);
+        sum += arguments_strict_test(j, j, j);
+        sum += arguments_strict_test(j, j, j);
+    }
+    global_res = sum;
+    return n * 4;
+}
+
 var global_var0;
 
 function global_read(n)
@@ -539,22 +601,21 @@ function global_read(n)
     return n * 4;
 }
 
-// non strict version
-var global_write =
-    (1, eval)(`(function global_write(n)
-           {
-               var j;
-               for(j = 0; j < n; j++) {
-                   global_var0 = j;
-                   global_var0 = j;
-                   global_var0 = j;
-                   global_var0 = j;
-               }
-               return n * 4;
-           })`);
+function global_write(n)
+{
+    var j;
+    for(j = 0; j < n; j++) {
+        global_var0 = j;
+        global_var0 = j;
+        global_var0 = j;
+        global_var0 = j;
+    }
+    return n * 4;
+}
 
 function global_write_strict(n)
 {
+    "use strict";
     var j;
     for(j = 0; j < n; j++) {
         global_var0 = j;
@@ -582,23 +643,22 @@ function local_destruct(n)
 var global_v1, global_v2, global_v3, global_v4;
 var global_a, global_b, global_c, global_d;
 
-// non strict version
-var global_destruct =
-    (1, eval)(`(function global_destruct(n)
-           {
-               var j, v1, v2, v3, v4;
-               var array = [ 1, 2, 3, 4, 5 ];
-               var o = { a:1, b:2, c:3, d:4 };
-               var a, b, c, d;
-               for(j = 0; j < n; j++) {
-                   [ global_v1, global_v2,, global_v3, ...global_v4] = array;
-                   ({ a: global_a, b: global_b, c: global_c, d: global_d } = o);
-               }
-               return n * 8;
-          })`);
+function global_destruct(n)
+{
+    var j, v1, v2, v3, v4;
+    var array = [ 1, 2, 3, 4, 5 ];
+    var o = { a:1, b:2, c:3, d:4 };
+    var a, b, c, d;
+    for(j = 0; j < n; j++) {
+        [ global_v1, global_v2,, global_v3, ...global_v4] = array;
+        ({ a: global_a, b: global_b, c: global_c, d: global_d } = o);
+    }
+    return n * 8;
+}
 
 function global_destruct_strict(n)
 {
+    "use strict";
     var j, v1, v2, v3, v4;
     var array = [ 1, 2, 3, 4, 5 ];
     var o = { a:1, b:2, c:3, d:4 };
@@ -699,29 +759,6 @@ function float_arith(n)
     return n * 1000;
 }
 
-function bigfloat_arith(n)
-{
-    var i, j, sum, a, incr, a0;
-    global_res = 0;
-    a0 = BigFloat("0.1");
-    incr = BigFloat("1.1");
-    for(j = 0; j < n; j++) {
-        sum = 0;
-        a = a0;
-        for(i = 0; i < 1000; i++) {
-            sum += a * a;
-            a += incr;
-        }
-        global_res += sum;
-    }
-    return n * 1000;
-}
-
-function float256_arith(n)
-{
-    return BigFloatEnv.setPrec(bigfloat_arith.bind(null, n), 237, 19);
-}
-
 function bigint_arith(n, bits)
 {
     var i, j, sum, a, incr, a0, sum0;
@@ -740,6 +777,11 @@ function bigint_arith(n, bits)
     return n * 1000;
 }
 
+function bigint32_arith(n)
+{
+    return bigint_arith(n, 32);
+}
+
 function bigint64_arith(n)
 {
     return bigint_arith(n, 64);
@@ -750,21 +792,110 @@ function bigint256_arith(n)
     return bigint_arith(n, 256);
 }
 
-function set_collection_add(n)
+function map_set_string(n)
 {
-    var s, i, j, len = 100;
+    var s, i, j, len = 1000;
     for(j = 0; j < n; j++) {
-        s = new Set();
+        s = new Map();
         for(i = 0; i < len; i++) {
-            s.add(String(i), i);
+            s.set(String(i), i);
         }
         for(i = 0; i < len; i++) {
             if (!s.has(String(i)))
-                throw Error("bug in Set");
+                throw Error("bug in Map");
         }
     }
     return n * len;
 }
+
+function map_set_int(n)
+{
+    var s, i, j, len = 1000;
+    for(j = 0; j < n; j++) {
+        s = new Map();
+        for(i = 0; i < len; i++) {
+            s.set(i, i);
+        }
+        for(i = 0; i < len; i++) {
+            if (!s.has(i))
+                throw Error("bug in Map");
+        }
+    }
+    return n * len;
+}
+
+function map_set_bigint(n)
+{
+    var s, i, j, len = 1000;
+    for(j = 0; j < n; j++) {
+        s = new Map();
+        for(i = 0; i < len; i++) {
+            s.set(BigInt(i), i);
+        }
+        for(i = 0; i < len; i++) {
+            if (!s.has(BigInt(i)))
+                throw Error("bug in Map");
+        }
+    }
+    return n * len;
+}
+
+function map_delete(n)
+{
+    var a, i, j;
+
+    len = 1000;
+    for(j = 0; j < n; j++) {
+        a = new Map();
+        for(i = 0; i < len; i++) {
+            a.set(String(i), i);
+        }
+        for(i = 0; i < len; i++) {
+            a.delete(String(i));
+        }
+    }
+    return len * n;
+}
+
+function weak_map_set(n)
+{
+    var a, i, j, tab;
+
+    len = 1000;
+    tab = [];
+    for(i = 0; i < len; i++) {
+        tab.push({ key: i });
+    }
+    for(j = 0; j < n; j++) {
+        a = new WeakMap();
+        for(i = 0; i < len; i++) {
+            a.set(tab[i], i);
+        }
+    }
+    return len * n;
+}
+
+function weak_map_delete(n)
+{
+    var a, i, j, tab;
+
+    len = 1000;
+    for(j = 0; j < n; j++) {
+        tab = [];
+        for(i = 0; i < len; i++) {
+            tab.push({ key: i });
+        }
+        a = new WeakMap();
+        for(i = 0; i < len; i++) {
+            a.set(tab[i], i);
+        }
+        for(i = 0; i < len; i++) {
+            tab[i] = null;
+        }
+    }
+    return len * n;
+}
+
 
 function array_for(n)
 {
@@ -850,6 +981,33 @@ function regexp_utf16(n)
     return n * 1000;
 }
 
+function regexp_replace(n)
+{
+    var i, j, r, s;
+    s = "the quick abc brown fox jumped abc over the lazy dog"
+    for(j = 0; j < n; j++) {
+        for(i = 0; i < 1000; i++)
+            r = s.replace(/abc /g, "-");
+        global_res = r;
+    }
+    return n * 1000;
+}
+
+function string_length(n)
+{
+    var str, sum, j;
+    str = "abcde";
+    sum = 0;
+    for(j = 0; j < n; j++) {
+        sum += str.length;
+        sum += str.length;
+        sum += str.length;
+        sum += str.length;
+    }
+    global_res = sum;
+    return n * 4;
+}
+
 /* incremental string contruction as local var */
 function string_build1(n)
 {
@@ -928,6 +1086,32 @@ function string_build4(n)
         global_res = r;
     }
     return n * 1000;
+}
+
+/* append */
+function string_build_large1(n)
+{
+    var i, j, r, len = 20000;
+    for(j = 0; j < n; j++) {
+        r = "";
+        for(i = 0; i < len; i++)
+            r += "abcdef";
+        global_res = r;
+    }
+    return n * len;
+}
+
+/* prepend */
+function string_build_large2(n)
+{
+    var i, j, r, len = 20000;
+    for(j = 0; j < n; j++) {
+        r = "";
+        for(i = 0; i < len; i++)
+            r = "abcdef" + r;
+        global_res = r;
+    }
+    return n * len;
 }
 
 /* sort bench */
@@ -1071,23 +1255,86 @@ sort_bench.verbose = false;
 
 function int_to_string(n)
 {
-    var s, j;
+    var s, r, j;
+    r = 0;
     for(j = 0; j < n; j++) {
-        s = (j % 1000).toString();
-        s = (1234000 + j % 1000).toString();
+        s = (j % 10) + '';
+        s = (j % 100) + '';
+        s = (j) + '';
     }
-    global_res = s;
-    return n * 2;
+    return n * 3;
+}
+
+function int_toString(n)
+{
+    var s, r, j;
+    r = 0;
+    for(j = 0; j < n; j++) {
+        s = (j % 10).toString();
+        s = (j % 100).toString();
+        s = (j).toString();
+    }
+    return n * 3;
 }
 
 function float_to_string(n)
 {
-    var s, j;
+    var s, r, j;
+    r = 0;
     for(j = 0; j < n; j++) {
-        s = (j + 0.1).toString();
+        s = (j % 10 + 0.1) + '';
+        s = (j + 0.1) + '';
+        s = (j * 12345678 + 0.1) + '';
     }
-    global_res = s;
-    return n;
+    return n * 3;
+}
+
+function float_toString(n)
+{
+    var s, r, j;
+    r = 0;
+    for(j = 0; j < n; j++) {
+        s = (j % 10 + 0.1).toString();
+        s = (j + 0.1).toString();
+        s = (j * 12345678 + 0.1).toString();
+    }
+    return n * 3;
+}
+
+function float_toFixed(n)
+{
+    var s, r, j;
+    r = 0;
+    for(j = 0; j < n; j++) {
+        s = (j % 10 + 0.1).toFixed(j % 16);
+        s = (j + 0.1).toFixed(j % 16);
+        s = (j * 12345678 + 0.1).toFixed(j % 16);
+    }
+    return n * 3;
+}
+
+function float_toPrecision(n)
+{
+    var s, r, j;
+    r = 0;
+    for(j = 0; j < n; j++) {
+        s = (j % 10 + 0.1).toPrecision(j % 16 + 1);
+        s = (j + 0.1).toPrecision(j % 16 + 1);
+        s = (j * 12345678 + 0.1).toPrecision(j % 16 + 1);
+    }
+    return n * 3;
+}
+
+function float_toExponential(n)
+{
+    var s, r, j;
+    r = 0;
+    for(j = 0; j < n; j++) {
+        s = (j % 10 + 0.1).toExponential(j % 16);
+        s = (j + 0.1).toExponential(j % 16);
+        s = (j * 12345678 + 0.1).toExponential(j % 16);
+    }
+    return n * 3;
 }
 
 function string_to_int(n)
@@ -1200,14 +1447,18 @@ function main(argc, argv, g)
         prop_delete,
         array_read,
         array_write,
+        array_update,
         array_prop_create,
         array_slice,
+        array_length_read,
         array_length_decr,
         array_hole_length_decr,
         array_push,
         array_pop,
         typed_array_read,
         typed_array_write,
+        arguments_read,
+        arguments_strict_read,
         global_read,
         global_write,
         global_write_strict,
@@ -1219,21 +1470,35 @@ function main(argc, argv, g)
         func_closure_call,
         int_arith,
         float_arith,
-        set_collection_add,
+        map_set_string,
+        map_set_int,
+        map_set_bigint,
+        map_delete,
+        weak_map_set,
+        weak_map_delete,
         array_for,
         array_for_in,
         array_for_of,
         math_min,
         regexp_ascii,
         regexp_utf16,
+        regexp_replace,
+        string_length,
         string_build1,
         string_build1x,
         string_build2c,
         string_build2,
         string_build3,
         string_build4,
+        string_build_large1,
+        string_build_large2,
         int_to_string,
+        int_toString,
         float_to_string,
+        float_toString,
+        float_toFixed,
+        float_toPrecision,
+        float_toExponential,
         string_to_int,
         string_to_float,
     ];
@@ -1243,12 +1508,9 @@ function main(argc, argv, g)
 
     if (typeof BigInt === "function") {
         /* BigInt test */
+        test_list.push(bigint32_arith);
         test_list.push(bigint64_arith);
         test_list.push(bigint256_arith);
-    }
-    if (typeof BigFloat === "function") {
-        /* BigFloat test */
-        test_list.push(float256_arith);
     }
     test_list.push(sort_bench);
 
