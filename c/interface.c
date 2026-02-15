@@ -46,13 +46,23 @@
 #endif
 
 #ifdef QTS_USE_QUICKJS_NG
-#include "../vendor/quickjs-ng/cutils.h"
+// quickjs-ng amalgam only provides quickjs.h and quickjs-libc.h
 #include "../vendor/quickjs-ng/quickjs-libc.h"
 #include "../vendor/quickjs-ng/quickjs.h"
+// Compatibility: quickjs-ng uses C99 bool instead of custom BOOL type
+#ifndef BOOL
+#define BOOL bool
+#define TRUE true
+#define FALSE false
+#endif
+// Compatibility: quickjs-ng JS_IsBigInt takes only 1 argument
+#define QTS_JS_IsBigInt(ctx, v) JS_IsBigInt(v)
 #else
 #include "../vendor/quickjs/cutils.h"
 #include "../vendor/quickjs/quickjs-libc.h"
 #include "../vendor/quickjs/quickjs.h"
+// bellard/quickjs JS_IsBigInt takes 2 arguments
+#define QTS_JS_IsBigInt(ctx, v) JS_IsBigInt(ctx, v)
 #endif
 
 #define PKG "quickjs-emscripten: "
@@ -882,7 +892,7 @@ OwnedHeapChar *QTS_Typeof(JSContext *ctx, JSValueConst *value) {
 
   if (JS_IsNumber(*value)) {
     result = "number";
-  } else if (JS_IsBigInt(ctx, *value)) {
+  } else if (QTS_JS_IsBigInt(ctx, *value)) {
     result = "bigint";
   } else if (JS_IsFunction(ctx, *value)) {
     result = "function";
