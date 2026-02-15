@@ -29,17 +29,20 @@ corepack yarn build:ts  # builds the TypeScript wrapper
 ## Testing
 
 Run all tests:
+
 ```bash
 corepack yarn test
 ```
 
 Run tests for a specific variant (e.g., quickjs-ng only):
+
 ```bash
 cd packages/quickjs-emscripten
 npx vitest run -t "quickjs-ng"
 ```
 
 Other test filters:
+
 - `-t "RELEASE_SYNC"` - only release sync variants
 - `-t "DEBUG"` - only debug variants
 - `-t "QuickJSContext"` - only sync context tests

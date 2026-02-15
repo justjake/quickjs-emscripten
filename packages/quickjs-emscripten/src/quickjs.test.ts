@@ -1149,7 +1149,10 @@ export default "the default";
   })
 }
 
-function asyncContextTests(getContext: () => Promise<QuickJSAsyncContext>, options: ContextTestOptions = {}) {
+function asyncContextTests(
+  getContext: () => Promise<QuickJSAsyncContext>,
+  options: ContextTestOptions = {},
+) {
   const { isNG: _isNG = false } = options
   let vm: QuickJSAsyncContext = undefined as any
 

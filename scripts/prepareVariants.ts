@@ -913,7 +913,10 @@ function getLibraryVersionLink(library: CLibrary): string {
   } else {
     // Use git subtree SHA for commit link
     const { sha, date } = getGitSubtreeSha(subtreePath)
-    result = `[${version}+${sha.slice(0, 8)}](https://github.com/${githubRepo}/commit/${sha}) vendored to quickjs-emscripten on ${date}.`
+    result = `[${version}+${sha.slice(
+      0,
+      8,
+    )}](https://github.com/${githubRepo}/commit/${sha}) vendored to quickjs-emscripten on ${date}.`
   }
 
   getLibraryVersionMemo.set(library, result)
