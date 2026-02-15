@@ -57,6 +57,8 @@
 #endif
 // Compatibility: quickjs-ng JS_IsBigInt takes only 1 argument
 #define QTS_JS_IsBigInt(ctx, v) JS_IsBigInt(v)
+// Forward declaration for js_std_dump_error (defined in amalgam with QJS_BUILD_LIBC)
+void js_std_dump_error(JSContext *ctx);
 #else
 #include "../vendor/quickjs/cutils.h"
 #include "../vendor/quickjs/quickjs-libc.h"
@@ -761,6 +763,14 @@ JSValue qts_resolve_func_data(
 
 MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t js_code_length, const char *filename, EvalDetectModule detectModule, EvalFlags evalFlags) {
   char msg[LOG_LEN];
+#ifdef QTS_USE_QUICKJS_NG
+  // quickjs-ng's JS_DetectModule has different behavior - it parses the code
+  // as a module and returns true if parsing succeeds. Since any valid JS
+  // expression is valid module syntax, this incorrectly detects non-modules.
+  // Disable auto-detection for quickjs-ng; users must explicitly set module type.
+  (void)detectModule;
+  QTS_DEBUG("QTS_Eval: quickjs-ng - module detection disabled");
+#else
   if (detectModule) {
     if (JS_DetectModule((const char *)js_code, js_code_length)) {
       QTS_DEBUG("QTS_Eval: Detected module = true");
@@ -771,6 +781,7 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
   } else {
     QTS_DEBUG("QTS_Eval: do not detect module");
   }
+#endif
 
   JSModuleDef *module;
   JSValue eval_result;
