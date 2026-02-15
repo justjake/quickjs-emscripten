@@ -1,6 +1,6 @@
 # Tools
-EMSDK_VERSION=3.1.65
-EMSDK_DOCKER_IMAGE=emscripten/emsdk:3.1.65
+EMSDK_VERSION=5.0.1
+EMSDK_DOCKER_IMAGE=emscripten/emsdk:5.0.1
 EMCC_SRC=../../scripts/emcc.sh
 EMCC=EMSDK_VERSION=$(EMSDK_VERSION) EMSDK_DOCKER_IMAGE=$(EMSDK_DOCKER_IMAGE) EMSDK_PROJECT_ROOT=$(REPO_ROOT) EMSDK_DOCKER_CACHE=$(REPO_ROOT)/emsdk-cache/$(EMSDK_VERSION) $(EMCC_SRC)
 GENERATE_TS=$(GENERATE_TS_ENV) ../../scripts/generate.ts
@@ -38,7 +38,7 @@ EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.json
 EMCC_EXPORTED_FUNCS_ASYNCIFY+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.asyncify.json
 
 # Emscripten options
-CFLAGS_WASM+=-s EXPORTED_RUNTIME_METHODS=@../../exportedRuntimeMethods.json
+# EXPORTED_RUNTIME_METHODS set below after SYNC is defined
 CFLAGS_WASM+=-s MODULARIZE=1
 CFLAGS_WASM+=-s IMPORTED_MEMORY=1 # Allow passing WASM memory to Emscripten
 CFLAGS_WASM+=-s EXPORT_NAME=QuickJSRaw
@@ -69,6 +69,14 @@ CFLAGS_BROWSER+=-s EXPORT_ES6=1
 
 # VARIANT
 SYNC=REPLACE_THIS
+
+# Set EXPORTED_RUNTIME_METHODS based on sync mode (Asyncify only available in asyncify builds)
+ifeq ($(SYNC),ASYNCIFY)
+CFLAGS_WASM+=-s EXPORTED_RUNTIME_METHODS=@../../exportedRuntimeMethods.asyncify.json
+else
+CFLAGS_WASM+=-s EXPORTED_RUNTIME_METHODS=@../../exportedRuntimeMethods.json
+endif
+
 CFLAGS_WASM_BROWSER=$(CFLAGS_WASM)
 
 # Emscripten options - variant & target specific

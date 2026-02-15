@@ -282,7 +282,8 @@ function buildSymbols(context: Context, matches: RegExpMatchArray[]) {
 function buildSyncSymbols(context: Context, matches: RegExpMatchArray[]) {
   const parsed = getAvailableDefinitions(context, matches)
   const filtered = parsed.filter((fn) => !fn.returnType.attributes.has("MaybeAsync"))
-  return filtered.map((fn) => "_" + fn.functionName)
+  // Note: emscripten 5.0.1+ uses function names without underscore prefix in ASYNCIFY_REMOVE
+  return filtered.map((fn) => fn.functionName)
 }
 
 // Input: EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint32_t magic_func_id), {
