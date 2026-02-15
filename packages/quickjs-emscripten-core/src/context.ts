@@ -13,6 +13,7 @@ import type {
   UInt32Pointer,
   JSValuePointerPointerPointer,
   JSVoidPointer,
+  HostRefId,
 } from "@jitl/quickjs-ffi-types"
 import type { JSPromiseState } from "./deferred-promise"
 import { QuickJSDeferredPromise } from "./deferred-promise"
@@ -20,6 +21,7 @@ import { QuickJSDeferredPromise } from "./deferred-promise"
 import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import {
   QuickJSEmptyGetOwnPropertyNames,
+  QuickJSHostRefInvalid,
   QuickJSNotImplemented,
   QuickJSPromisePending,
   QuickJSUnwrapError,
@@ -58,10 +60,7 @@ import type {
   VmPropertyDescriptor,
 } from "./vm-interface"
 import { QuickJSIterator } from "./QuickJSIterator"
-
-// Function ID constants for int16 range used by QuickJS
-const FN_ID_MIN = -32768
-const FN_ID_MAX = 32767
+import { HostRef } from "./host-ref"
 
 export type QuickJSContextResult<S> = DisposableResult<S, QuickJSHandle>
 
@@ -521,6 +520,8 @@ export class QuickJSContext
    * A {@link VmFunctionImplementation} should not free its arguments or its return
    * value. A VmFunctionImplementation should also not retain any references to
    * its return value.
+   * 
+   * For constructors (functions that will be called with `new ...`), use {@link newConstructorFunction}.
    *
    * The function argument handles are automatically disposed when the function
    * returns. If you want to retain a handle beyond the end of the function, you
@@ -608,16 +609,62 @@ export class QuickJSContext
    * return deferred.handle
    * ```
    */
-  newFunction(name: string, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
-    const fnId = this.allocateFnId()
-    this.setFunction(fnId, fn)
-    const dispose = () => {
-      this.freeFunction(fnId)
+  newFunction(fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle
+  newFunction(name: string | undefined, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle 
+  newFunction(nameOrFn: string | undefined | VmFunctionImplementation<QuickJSHandle>, maybeFn?: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
+    const fn = typeof nameOrFn === "function" ? nameOrFn : maybeFn
+    if (!fn) {
+      throw new TypeError("Expected a function")
     }
-    return this.memory.heapValueHandle(
-      this.ffi.QTS_NewFunction(this.ctx.value, fnId, name),
-      dispose,
-    )
+
+    return this.newFunctionWithOptions({
+      name: typeof nameOrFn === "string" ? nameOrFn : undefined,
+      length: fn.length,
+      isConstructor: false,
+      fn,
+    })
+  }
+
+  /**
+   * Convert a Javascript function into a QuickJS constructor function.
+   * See {@link newFunction} for more details.
+   */
+  newConstructorFunction(fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle
+  newConstructorFunction(name: string | undefined, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle 
+  newConstructorFunction(nameOrFn: string | undefined | VmFunctionImplementation<QuickJSHandle>, maybeFn?: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
+    const fn = typeof nameOrFn === "function" ? nameOrFn : maybeFn
+    if (!fn) {
+      throw new TypeError("Expected a function")
+    }
+
+    return this.newFunctionWithOptions({
+      name: typeof nameOrFn === "string" ? nameOrFn : undefined,
+      length: fn.length,
+      isConstructor: true,
+      fn,
+    })
+  }
+
+  /**
+   * Lower-level API for creating functions.
+   * See {@link newFunction} for more details on how to use functions.
+   */
+  newFunctionWithOptions(args: {
+    name: string | undefined
+    length: number
+    isConstructor: boolean
+    fn: VmFunctionImplementation<QuickJSHandle>
+  }): QuickJSHandle {
+    const { name, length, isConstructor, fn } = args
+    const refId = this.runtime.hostRefs.put(fn)
+    try {
+      return this.memory.heapValueHandle(
+        this.ffi.QTS_NewFunction(this.ctx.value, name ?? "", length, isConstructor, refId),
+      )
+    } catch (error) {
+      this.runtime.hostRefs.delete(refId)
+      throw error
+    }
   }
 
   newError(error: { name: string; message: string }): QuickJSHandle
@@ -646,6 +693,55 @@ export class QuickJSContext
     }
 
     return errorHandle
+  }
+
+  /**
+   * Create an opaque handle object that stores a reference to a host JavaScript object.
+   * 
+   * The guest cannot access the host object directly, but you may use
+   * {@link getHostRef} to convert a HostRef handle back into a HostRef<T> from
+   * inside a function implementation.
+   * 
+   * You must call {@link HostRef#dispose} or otherwise consume the {@link HostRef#handle} to ensure the handle is not leaked.
+   */
+  newHostRef<T extends object>(value: T): HostRef<T> {
+    const id = this.runtime.hostRefs.put(value)
+    try {
+      const handle = this.memory.heapValueHandle(this.ffi.QTS_NewHostRef(this.ctx.value, id))
+      return new HostRef(this.runtime, handle, id)
+    } catch (error) {
+      this.runtime.hostRefs.delete(id)
+      throw error
+    }
+  }
+
+  /**
+   * If `handle` is a `HostRef<T>.handle`, return a new `HostRef<T>` instance wrapping the handle.
+   * 
+   * You must call {@link HostRef#dispose} or otherwise consume the {@link HostRef#handle} to ensure the handle is not leaked.
+   */
+  toHostRef<T extends object>(handle: QuickJSHandle): HostRef<T> | undefined {
+    const id = this.ffi.QTS_GetHostRefId(handle.value)
+    if (id === 0) {
+      return undefined
+    }
+
+    // Assert id is valid
+    this.runtime.hostRefs.get(id) as T
+    return new HostRef(this.runtime, handle.dup(), id)
+  }
+
+  /**
+   * If `handle` is a `HostRef<T>.handle`, return the host value `T`.
+   * @throws {@link QuickJSHostRefInvalid} if `handle` is not a `HostRef<T>.handle`
+   */
+  unwrapHostRef<T extends object>(handle: QuickJSHandle): T {
+    const id = this.ffi.QTS_GetHostRefId(handle.value)
+    if (id === 0) {
+      throw new QuickJSHostRefInvalid("handle is not a HostRef")
+    }
+
+    return this.runtime.hostRefs.get(id) as T
   }
 
   // Read values --------------------------------------------------------------
@@ -1329,60 +1425,12 @@ export class QuickJSContext
   }
 
   /** @private */
-  protected fnNextId = FN_ID_MIN
-  /** @private */
-  protected fnMaps = new Map<number, Map<number, VmFunctionImplementation<QuickJSHandle>>>()
-  /** @private */
-  protected fnIdFreelist: number[] = []
-
-  /** @private */
-  protected allocateFnId(): number {
-    // First try to reuse a freed ID (FIFO order)
-    const freedId = this.fnIdFreelist.shift()
-    if (freedId !== undefined) {
-      return freedId
+  protected getFunction(fn_id: HostRefId): VmFunctionImplementation<QuickJSHandle> {
+    const fn = this.runtime.hostRefs.get(fn_id)
+    if (typeof fn !== "function") {
+      throw new Error(`Host reference ${fn_id} is not a function`)
     }
-
-    // Allocate a new ID
-    if (this.fnNextId > FN_ID_MAX) {
-      throw new Error(
-        "QuickJSContext: too many functions created without disposing. " +
-          "Max simultaneous functions: 65536",
-      )
-    }
-    return this.fnNextId++
-  }
-
-  /** @private */
-  protected getFunction(fn_id: number): VmFunctionImplementation<QuickJSHandle> | undefined {
-    const map_id = fn_id >> 8
-    const fnMap = this.fnMaps.get(map_id)
-    if (!fnMap) {
-      return undefined
-    }
-    return fnMap.get(fn_id)
-  }
-
-  /** @private */
-  protected setFunction(fn_id: number, handle: VmFunctionImplementation<QuickJSHandle>) {
-    const map_id = fn_id >> 8
-    let fnMap = this.fnMaps.get(map_id)
-    if (!fnMap) {
-      fnMap = new Map<number, VmFunctionImplementation<QuickJSHandle>>()
-      this.fnMaps.set(map_id, fnMap)
-    }
-    return fnMap.set(fn_id, handle)
-  }
-
-  protected freeFunction(fn_id: number) {
-    const map_id = fn_id >> 8
-    const fnMap = this.fnMaps.get(map_id)
-    if (!fnMap) {
-      return
-    }
-    if (fnMap.delete(fn_id)) {
-      this.fnIdFreelist.push(fn_id)
-    }
+    return fn as VmFunctionImplementation<QuickJSHandle>
   }
 
   /**
@@ -1395,11 +1443,6 @@ export class QuickJSContext
       }
 
       const fn = this.getFunction(fn_id)
-      if (!fn) {
-        // this "throw" is not catch-able from the TS side. could we somehow handle this higher up?
-        throw new Error(`QuickJSContext had no callback with id ${fn_id}`)
-      }
-
       return Scope.withScopeMaybeAsync(this, function* (awaited, scope) {
         const thisHandle = scope.manage(
           new WeakLifetime(

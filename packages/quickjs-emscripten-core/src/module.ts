@@ -42,17 +42,20 @@ export interface ContextCallbacks {
  * @private
  */
 export interface RuntimeCallbacks {
+  freeHostRef: MaybeAsyncEmscriptenCallbacks["freeHostRef"]
   shouldInterrupt: MaybeAsyncEmscriptenCallbacks["shouldInterrupt"]
   loadModuleSource: MaybeAsyncEmscriptenCallbacks["loadModuleSource"]
   normalizeModule: MaybeAsyncEmscriptenCallbacks["normalizeModule"]
 }
 
 class QuickJSEmscriptenModuleCallbacks implements EmscriptenModuleCallbacks {
+  public freeHostRef: EmscriptenModuleCallbacks["freeHostRef"]
   public callFunction: EmscriptenModuleCallbacks["callFunction"]
   public shouldInterrupt: EmscriptenModuleCallbacks["shouldInterrupt"]
   public loadModuleSource: EmscriptenModuleCallbacks["loadModuleSource"]
   public normalizeModule: EmscriptenModuleCallbacks["normalizeModule"]
   constructor(args: EmscriptenModuleCallbacks) {
+    this.freeHostRef = args.freeHostRef
     this.callFunction = args.callFunction
     this.shouldInterrupt = args.shouldInterrupt
     this.loadModuleSource = args.loadModuleSource
@@ -179,6 +182,14 @@ export class QuickJSModuleCallbacks {
   }
 
   private cToHostCallbacks = new QuickJSEmscriptenModuleCallbacks({
+    freeHostRef: (_asyncify, rt, host_ref_id) => {
+      const runtimeCallbacks = this.runtimeCallbacks.get(rt)
+      if (!runtimeCallbacks) {
+        throw new Error(`QuickJSRuntime(rt = ${rt}) not found when trying to free HostRef(id = ${host_ref_id})`)
+      }
+      runtimeCallbacks.freeHostRef(rt, host_ref_id)
+    },
+
     callFunction: (asyncify, ctx, this_ptr, argc, argv, fn_id) =>
       this.handleAsyncify(asyncify, () => {
         try {

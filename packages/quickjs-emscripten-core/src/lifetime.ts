@@ -179,7 +179,7 @@ export class Lifetime<T, TCopy = never, Owner = never>
     this._alive = false
   }
 
-  private assertAlive() {
+  protected assertAlive() {
     if (!this.alive) {
       if (this._constructorStack) {
         throw new QuickJSUseAfterFree(

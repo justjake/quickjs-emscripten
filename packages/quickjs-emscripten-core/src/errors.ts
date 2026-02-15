@@ -56,3 +56,11 @@ export class QuickJSPromisePending extends Error {
 export class QuickJSEmptyGetOwnPropertyNames extends Error {
   name = "QuickJSEmptyGetOwnPropertyNames"
 }
+
+export class QuickJSHostRefRangeExceeded extends Error {
+  name = "QuickJSHostRefRangeExceeded"
+}
+
+export class QuickJSHostRefInvalid extends Error {
+  name = "QuickJSHostRefInvalid"
+}
