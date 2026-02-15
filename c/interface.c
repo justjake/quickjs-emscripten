@@ -360,6 +360,7 @@ static JSValue new_host_ref(JSContext *ctx, HostRefId id) {
 
   hv = js_mallocz(ctx, sizeof(*hv));
   if (!hv) {
+    // js_mallocz returns NULL on failure and sets rt.exception to OutOfMemory
     JS_FreeValue(ctx, obj);
     return JS_EXCEPTION;
   }
