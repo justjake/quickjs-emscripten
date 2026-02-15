@@ -128,20 +128,17 @@ export class QuickJSIterator
     }
 
     const done = this.context.getProp(callResult.value, "done").consume((v) => this.context.dump(v))
+    const value = this.context.getProp(callResult.value, "value")
+
+    callResult.value.dispose()
+
     if (done) {
-      callResult.value.dispose()
       this.dispose()
-      return {
-        done,
-        value: undefined,
-      }
     }
 
-    const value = this.context.getProp(callResult.value, "value")
-    callResult.value.dispose()
     return {
       value: DisposableResult.success(value),
-      done: done as false,
+      done: done as boolean,
     }
   }
 }
