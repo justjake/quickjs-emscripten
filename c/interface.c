@@ -341,7 +341,7 @@ static void host_ref_finalizer(JSRuntime *rt, JSValue val) {
 }
 
 static JSClassDef host_ref_class = {
-  .class_name = "QTSHostRef",
+  .class_name = "HostRef",
   .finalizer = host_ref_finalizer,
 };
 
