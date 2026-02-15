@@ -1228,6 +1228,7 @@
       "syncMode": "sync",
       "description": "Compiled to pure Javascript, no WebAssembly required.",
       "emscriptenInclusion": "asmjs",
+      "emscriptenVersion": "3.1.43",
       "exports": { "import": { "emscriptenEnvironment": ["web", "worker", "node"] } }
     }
   }

@@ -45,12 +45,18 @@ enum EmscriptenEnvironment {
   node = "node",
 }
 
+const DEFAULT_EMSCRIPTEN_VERSION = "5.0.1"
+// Use older emscripten for asmjs to avoid relying on newer browser APIs
+const ASMJS_EMSCRIPTEN_VERSION = "3.1.43"
+
 interface BuildVariant {
   description: string
   releaseMode: ReleaseMode
   syncMode: SyncMode
   library: CLibrary
   emscriptenInclusion: EmscriptenInclusion
+  /** Emscripten SDK version. Defaults to DEFAULT_EMSCRIPTEN_VERSION. */
+  emscriptenVersion?: string
   exports: {
     browser?: {
       emscriptenEnvironment: EmscriptenEnvironment[]
@@ -128,6 +134,7 @@ const targets = {
   "asmjs-mjs": makeTarget({
     description: `Compiled to pure Javascript, no WebAssembly required.`,
     emscriptenInclusion: EmscriptenInclusion.AsmJs,
+    emscriptenVersion: ASMJS_EMSCRIPTEN_VERSION,
     releaseMode: ReleaseMode.Release,
     syncMode: SyncMode.Sync,
     library: CLibrary.QuickJS,
@@ -222,7 +229,7 @@ const ReleaseModeFlags = {
 const EmscriptenInclusionFlags = {
   [EmscriptenInclusion.Separate]: [],
   [EmscriptenInclusion.SingleFile]: [`-s SINGLE_FILE=1`],
-  [EmscriptenInclusion.AsmJs]: [`-s WASM=0`, `-s SINGLE_FILE=1`],
+  [EmscriptenInclusion.AsmJs]: [`-s WASM=0`, `-s SINGLE_FILE=1`, `-s WASM_ASYNC_COMPILATION=0`],
 }
 
 function getCflags(targetName: string, variant: BuildVariant) {
@@ -669,6 +676,9 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
 
   const appendEnvVars = (varname: string, flags: string[]) =>
     flags.map((flag) => `${varname}+=${flag}`).join("\n")
+
+  const emscriptenVersion = variant.emscriptenVersion ?? DEFAULT_EMSCRIPTEN_VERSION
+  template.replace("REPLACE_EMSDK_VERSION", emscriptenVersion)
 
   template.replace("QUICKJS_LIB=REPLACE_THIS", `QUICKJS_LIB=${variant.library}`)
 
