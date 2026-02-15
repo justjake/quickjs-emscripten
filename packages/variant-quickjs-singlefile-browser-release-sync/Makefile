@@ -21,7 +21,7 @@ BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
 DIST=dist
 
 # QuickJS
-QUICKJS_OBJS=quickjs.o libregexp.o libunicode.o cutils.o quickjs-libc.o libbf.o
+QUICKJS_OBJS=quickjs.o dtoa.o libregexp.o libunicode.o cutils.o quickjs-libc.o
 ifeq ($(QUICKJS_LIB),quickjs-ng)
 	QUICKJS_DEFINES:=-D_GNU_SOURCE
 	CFLAGS_WASM+=-DQTS_USE_QUICKJS_NG

@@ -101,6 +101,15 @@
 #define IntrinsicsFlags enum QTS_Intrinsic
 #define EvalDetectModule int
 
+// Forward declarations for EM_JS callback functions
+// These are implemented via EM_JS macro but need forward declarations for C99 compliance
+#ifdef __EMSCRIPTEN__
+JSValue *qts_host_call_function(JSContext *ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint32_t magic_func_id);
+int qts_host_interrupt_handler(JSRuntime *rt);
+char *qts_host_load_module_source(JSRuntime *rt, JSContext *ctx, const char *module_name);
+char *qts_host_normalize_module(JSRuntime *rt, JSContext *ctx, const char *module_base_name, const char *module_name);
+#endif
+
 typedef struct qts_RuntimeData {
   bool debug_log;
 } qts_RuntimeData;
@@ -366,9 +375,7 @@ JSContext *QTS_NewContext(JSRuntime *rt, IntrinsicsFlags intrinsics) {
   if (intrinsics & QTS_Intrinsic_Promise) {
     JS_AddIntrinsicPromise(ctx);
   }
-  if (intrinsics & QTS_Intrinsic_BigInt) {
-    JS_AddIntrinsicBigInt(ctx);
-  }
+  // Note: BigInt is now always part of QuickJS core, no need for separate intrinsic
   return ctx;
 }
 
