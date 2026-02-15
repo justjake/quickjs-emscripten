@@ -48,6 +48,7 @@ Full variant JSON description:
   "syncMode": "sync",
   "description": "Compiled to pure Javascript, no WebAssembly required.",
   "emscriptenInclusion": "asmjs",
+  "emscriptenVersion": "3.1.43",
   "exports": {
     "import": {
       "emscriptenEnvironment": ["web", "worker", "node"]
@@ -67,6 +68,7 @@ Variant-specific Emscripten build flags:
   "--pre-js $(TEMPLATES)/pre-extension.js",
   "--pre-js $(TEMPLATES)/pre-wasmMemory.js",
   "-s WASM=0",
-  "-s SINGLE_FILE=1"
+  "-s SINGLE_FILE=1",
+  "-s WASM_ASYNC_COMPILATION=0"
 ]
 ```
