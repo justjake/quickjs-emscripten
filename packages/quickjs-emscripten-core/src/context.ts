@@ -59,6 +59,10 @@ import type {
 } from "./vm-interface"
 import { QuickJSIterator } from "./QuickJSIterator"
 
+// Function ID constants for int16 range used by QuickJS
+const FN_ID_MIN = -32768
+const FN_ID_MAX = 32767
+
 export type QuickJSContextResult<S> = DisposableResult<S, QuickJSHandle>
 
 /**
@@ -605,7 +609,7 @@ export class QuickJSContext
    * ```
    */
   newFunction(name: string, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
-    const fnId = this.fnIdFreelist.pop() ?? ++this.fnNextId
+    const fnId = this.allocateFnId()
     this.setFunction(fnId, fn)
     const dispose = () => {
       this.freeFunction(fnId)
@@ -1325,10 +1329,29 @@ export class QuickJSContext
   }
 
   /** @private */
-  protected fnNextId = -32768 // min value of signed 16bit int used by Quickjs
+  protected fnNextId = FN_ID_MIN
   /** @private */
   protected fnMaps = new Map<number, Map<number, VmFunctionImplementation<QuickJSHandle>>>()
+  /** @private */
   protected fnIdFreelist: number[] = []
+
+  /** @private */
+  protected allocateFnId(): number {
+    // First try to reuse a freed ID (FIFO order)
+    const freedId = this.fnIdFreelist.shift()
+    if (freedId !== undefined) {
+      return freedId
+    }
+
+    // Allocate a new ID
+    if (this.fnNextId > FN_ID_MAX) {
+      throw new Error(
+        "QuickJSContext: too many functions created without disposing. " +
+          "Max simultaneous functions: 65536",
+      )
+    }
+    return this.fnNextId++
+  }
 
   /** @private */
   protected getFunction(fn_id: number): VmFunctionImplementation<QuickJSHandle> | undefined {
