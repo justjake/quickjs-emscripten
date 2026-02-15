@@ -1206,8 +1206,9 @@ JSValue *QTS_NewFunction(JSContext *ctx, const char *name, int arg_length, bool 
       /* data length */ 1,
       /* data */ &host_ref
   );
+  JS_FreeValue(ctx, host_ref);
+
   if (JS_IsException(func_obj)) {
-    JS_FreeValue(ctx, host_ref);
     return jsvalue_to_heap(func_obj);
   }
 
