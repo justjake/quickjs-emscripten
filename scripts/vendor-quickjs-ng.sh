@@ -2,19 +2,24 @@
 set -euo pipefail
 
 # Vendor a specific version of quickjs-ng from the release amalgam
-# Usage: ./scripts/vendor-quickjs-ng.sh v0.12.1
+# Usage: ./scripts/vendor-quickjs-ng.sh [version]
+# If no version is provided, fetches the latest release
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 VENDOR_DIR="$REPO_ROOT/vendor/quickjs-ng"
 
 if [[ $# -lt 1 ]]; then
-    echo "Usage: $0 <version>"
-    echo "Example: $0 v0.12.1"
-    exit 1
+    echo "No version specified, fetching latest release..."
+    VERSION=$(curl -fsSL https://api.github.com/repos/quickjs-ng/quickjs/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    if [[ -z "$VERSION" ]]; then
+        echo "Error: Failed to fetch latest release version"
+        exit 1
+    fi
+    echo "Latest version: ${VERSION}"
+else
+    VERSION="$1"
 fi
-
-VERSION="$1"
 
 # Validate version format (should start with 'v')
 if [[ ! "$VERSION" =~ ^v[0-9] ]]; then
