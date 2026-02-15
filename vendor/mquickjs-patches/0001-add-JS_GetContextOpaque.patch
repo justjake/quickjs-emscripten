@@ -1,0 +1,28 @@
+Add JS_GetContextOpaque function to mquickjs
+
+mquickjs has JS_SetContextOpaque but was missing JS_GetContextOpaque.
+This is needed by quickjs-emscripten to store runtime data in the context.
+
+diff --git a/mquickjs.c b/mquickjs.c
+--- a/mquickjs.c
++++ b/mquickjs.c
+@@ -3674,6 +3674,11 @@ void JS_SetContextOpaque(JSContext *ctx, void *opaque)
+     ctx->opaque = opaque;
+ }
+
++void *JS_GetContextOpaque(JSContext *ctx)
++{
++    return ctx->opaque;
++}
++
+ void JS_SetInterruptHandler(JSContext *ctx, JSInterruptHandler *interrupt_handler)
+ {
+     ctx->interrupt_handler = interrupt_handler;
+diff --git a/mquickjs.h b/mquickjs.h
+--- a/mquickjs.h
++++ b/mquickjs.h
+@@ -266,6 +266,7 @@ JSContext *JS_NewContext2(void *mem_start, size_t mem_size, const JSSTDLibraryDe
+ void JS_FreeContext(JSContext *ctx);
+ void JS_SetContextOpaque(JSContext *ctx, void *opaque);
++void *JS_GetContextOpaque(JSContext *ctx);
+ void JS_SetInterruptHandler(JSContext *ctx, JSInterruptHandler *interrupt_handler);

@@ -25,7 +25,7 @@ don't include the stack frames before this eval in the Error() backtraces
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:263](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L263)
+[packages/quickjs-emscripten-core/src/types.ts:276](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L276)
 
 ***
 
@@ -39,7 +39,7 @@ with JS_EvalFunction().
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:261](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L261)
+[packages/quickjs-emscripten-core/src/types.ts:274](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L274)
 
 ***
 
@@ -51,7 +51,7 @@ Force "strict" mode
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:253](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L253)
+[packages/quickjs-emscripten-core/src/types.ts:266](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L266)
 
 ***
 
@@ -63,7 +63,7 @@ Force "strip" mode
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:255](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L255)
+[packages/quickjs-emscripten-core/src/types.ts:268](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L268)
 
 ***
 
@@ -78,7 +78,7 @@ Global code (default), or "module" code?
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:251](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L251)
+[packages/quickjs-emscripten-core/src/types.ts:264](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L264)
 
 ***
 

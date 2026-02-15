@@ -613,6 +613,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jitl/mquickjs-wasmfile-debug-sync@workspace:packages/variant-mquickjs-wasmfile-debug-sync":
+  version: 0.0.0-use.local
+  resolution: "@jitl/mquickjs-wasmfile-debug-sync@workspace:packages/variant-mquickjs-wasmfile-debug-sync"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
+"@jitl/mquickjs-wasmfile-release-sync@workspace:packages/variant-mquickjs-wasmfile-release-sync":
+  version: 0.0.0-use.local
+  resolution: "@jitl/mquickjs-wasmfile-release-sync@workspace:packages/variant-mquickjs-wasmfile-release-sync"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "@jitl/quickjs-asmjs-mjs-release-sync@workspace:*, @jitl/quickjs-asmjs-mjs-release-sync@workspace:packages/variant-quickjs-asmjs-mjs-release-sync":
   version: 0.0.0-use.local
   resolution: "@jitl/quickjs-asmjs-mjs-release-sync@workspace:packages/variant-quickjs-asmjs-mjs-release-sync"
