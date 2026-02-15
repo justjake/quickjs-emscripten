@@ -1,0 +1,61 @@
+{
+  "name": "@jitl/mquickjs-wasmfile-debug-sync",
+  "license": "MIT",
+  "version": "0.31.0",
+  "description": "Variant of quickjs library: Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justjake/quickjs-emscripten"
+  },
+  "author": {
+    "name": "Jake Teton-Landis",
+    "url": "https://jake.tl"
+  },
+  "scripts": {
+    "build": "yarn build:c && yarn build:ts",
+    "build:c": "make",
+    "build:ts": "npx tsup",
+    "check:types": "npx tsc --project . --noEmit",
+    "clean": "make clean",
+    "prepare": "yarn clean && yarn build"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist/**/*",
+    "!dist/*.tsbuildinfo"
+  ],
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "browser": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json",
+    "./ffi": {
+      "types": "./dist/ffi.d.ts",
+      "import": "./dist/ffi.mjs",
+      "require": "./dist/ffi.js",
+      "default": "./dist/ffi.js"
+    },
+    "./wasm": "./dist/emscripten-module.wasm",
+    "./emscripten-module": {
+      "types": "./dist/emscripten-module.browser.d.ts",
+      "iife": "./dist/emscripten-module.cjs",
+      "workerd": "./dist/emscripten-module.cloudflare.cjs",
+      "browser": "./dist/emscripten-module.browser.mjs",
+      "import": "./dist/emscripten-module.mjs",
+      "require": "./dist/emscripten-module.cjs",
+      "default": "./dist/emscripten-module.cjs"
+    }
+  },
+  "dependencies": {
+    "@jitl/quickjs-ffi-types": "workspace:*"
+  }
+}
