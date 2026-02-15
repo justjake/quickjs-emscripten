@@ -335,7 +335,9 @@ EM_JS(void, qts_host_ref_free, (JSRuntime *rt, int32_t id), {
 static void host_ref_finalizer(JSRuntime *rt, JSValue val) {
   HostRef *hv = JS_GetOpaque(val, host_ref_class_id);
   if (hv) {
+#ifdef __EMSCRIPTEN__
     qts_host_ref_free(rt, hv->id);
+#endif
     js_free_rt(rt, hv);
   }
 }
@@ -345,9 +347,21 @@ static JSClassDef host_ref_class = {
   .finalizer = host_ref_finalizer,
 };
 
-static int host_ref_class_init(JSContext *ctx) {
-  JS_NewClassID(&host_ref_class_id);
-  return JS_NewClass(JS_GetRuntime(ctx), host_ref_class_id, &host_ref_class);
+static int host_ref_class_init(JSRuntime *rt) {
+  // Only allocate class ID once globally
+  if (host_ref_class_id == 0) {
+#ifdef QTS_USE_QUICKJS_NG
+    JS_NewClassID(rt, &host_ref_class_id);
+#else
+    JS_NewClassID(&host_ref_class_id);
+#endif
+  }
+  // Register class with this runtime if not already registered
+  // JS_NewClass returns 0 on success, -1 if already registered (which is fine)
+  if (!JS_IsRegisteredClass(rt, host_ref_class_id)) {
+    return JS_NewClass(rt, host_ref_class_id, &host_ref_class);
+  }
+  return 0;
 }
 
 static JSValue new_host_ref(JSContext *ctx, HostRefId id) {
@@ -469,7 +483,7 @@ JSContext *QTS_NewContext(JSRuntime *rt, IntrinsicsFlags intrinsics) {
     // Note: BigInt is now always part of QuickJS core, no need for separate intrinsic
   }
 
-  if (host_ref_class_init(ctx) != 0) {
+  if (host_ref_class_init(JS_GetRuntime(ctx)) != 0) {
     JS_FreeContext(ctx);
     return NULL;
   }
@@ -1193,6 +1207,7 @@ JSValue *QTS_NewFunction(JSContext *ctx, const char *name, int arg_length, bool 
       /* data */ &host_ref
   );
   if (JS_IsException(func_obj)) {
+    JS_FreeValue(ctx, host_ref);
     return jsvalue_to_heap(func_obj);
   }
 

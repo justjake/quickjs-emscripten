@@ -343,8 +343,10 @@ export class QuickJSWASMModule {
    */
   newRuntime(options: RuntimeOptions = {}): QuickJSRuntime {
     const rt = new Lifetime(this.ffi.QTS_NewRuntime(), undefined, (rt_ptr) => {
-      this.callbacks.deleteRuntime(rt_ptr)
+      // Free runtime first - this runs GC finalizers that may call back into JS
       this.ffi.QTS_FreeRuntime(rt_ptr)
+      // Then delete callbacks after finalizers have run
+      this.callbacks.deleteRuntime(rt_ptr)
     })
 
     const runtime = new QuickJSRuntime({
