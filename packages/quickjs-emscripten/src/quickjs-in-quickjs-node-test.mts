@@ -233,13 +233,13 @@ console.log('done promise created:', typeof globalThis.done)
     const doneState = context.getPromiseState(doneHandle)
     ttyLog(`done Promise state at iteration ${i}:`, doneState)
 
-    if (doneState.type !== 'pending') {
+    if (doneState.type !== "pending") {
       ttyLog("Promise resolved/rejected, stopping loop")
-      if (doneState.type === 'fulfilled') {
+      if (doneState.type === "fulfilled") {
         const value = context.dump(doneState.value)
         ttyLog("Fulfilled with:", value)
         doneState.value.dispose()
-      } else if (doneState.type === 'rejected') {
+      } else if (doneState.type === "rejected") {
         const error = context.dump(doneState.error)
         ttyLog("Rejected with:", error)
         doneState.error.dispose()
@@ -250,7 +250,7 @@ console.log('done promise created:', typeof globalThis.done)
     doneHandle.dispose()
 
     // Small delay to let any host promises settle
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await new Promise((resolve) => setTimeout(resolve, 10))
   }
 
   ttyLog("=== Final logs ===")
