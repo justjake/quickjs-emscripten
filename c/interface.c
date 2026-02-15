@@ -1218,8 +1218,8 @@ JSValue *QTS_NewFunction(JSContext *ctx, const char *name, int arg_length, bool 
       JS_FreeValue(ctx, func_obj);
       return jsvalue_to_heap(name_val);
     }
+    // JS_DefinePropertyValueStr takes ownership of name_val and frees it
     JS_DefinePropertyValueStr(ctx, func_obj, "name", name_val, JS_PROP_CONFIGURABLE);
-    JS_FreeValue(ctx, name_val);
   }
 
   if (is_constructor) {
