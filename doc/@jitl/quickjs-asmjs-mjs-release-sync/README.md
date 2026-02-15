@@ -30,7 +30,7 @@ This variant was built with the following settings:
 
 The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
 
-Version [2024-02-14+36911f0d](https://github.com/bellard/quickjs/commit/36911f0d3ab1a4c190a4d5cbe7c2db225a455389) vendored to quickjs-emscripten on 2024-06-15.
+Version [2025-09-13+f1139494](https://github.com/bellard/quickjs/commit/f1139494d18a2053630c5ed3384a42bb70db3c53) vendored to quickjs-emscripten on 2026-02-15.
 
 ## Release mode: release
 
@@ -61,6 +61,7 @@ Full variant JSON description:
   "syncMode": "sync",
   "description": "Compiled to pure Javascript, no WebAssembly required.",
   "emscriptenInclusion": "asmjs",
+  "emscriptenVersion": "3.1.43",
   "exports": {
     "import": {
       "emscriptenEnvironment": ["web", "worker", "node"]
@@ -80,7 +81,8 @@ Variant-specific Emscripten build flags:
   "--pre-js $(TEMPLATES)/pre-extension.js",
   "--pre-js $(TEMPLATES)/pre-wasmMemory.js",
   "-s WASM=0",
-  "-s SINGLE_FILE=1"
+  "-s SINGLE_FILE=1",
+  "-s WASM_ASYNC_COMPILATION=0"
 ]
 ```
 
