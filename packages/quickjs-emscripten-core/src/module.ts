@@ -11,14 +11,18 @@ import type {
 } from "@jitl/quickjs-ffi-types"
 import type { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
-import { QuickJSAsyncifyError, QuickJSAsyncifySuspended } from "./errors"
+import { QuickJSAsyncifyError, QuickJSAsyncifySuspended, QuickJSUnsupported } from "./errors"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { CustomizeVariantOptions } from "./from-variant"
 import { Lifetime, Scope } from "./lifetime"
 import type { InterruptHandler } from "./runtime"
 import { QuickJSRuntime } from "./runtime"
-import type { ContextOptions, JSModuleLoader, RuntimeOptions, RuntimeOptionsBase } from "./types"
+import type { ContextOptions, JSModuleLoader, QuickJSFeature, RuntimeOptions, RuntimeOptionsBase } from "./types"
 import { concat } from "./types"
+
+function unreachable(x: never): never {
+  throw new Error(`Unreachable: ${x}`)
+}
 
 type EmscriptenCallback<BaseArgs extends any[], Result> = (
   ...args: [Asyncify | undefined, ...BaseArgs]
@@ -330,12 +334,73 @@ export class QuickJSWASMModule {
   protected callbacks: QuickJSModuleCallbacks
   /** @private */
   protected module: EitherModule
+  /** @private */
+  private featureCache = new Map<QuickJSFeature, boolean>()
 
   /** @private */
   constructor(module: EitherModule, ffi: EitherFFI) {
     this.module = module
     this.ffi = ffi
     this.callbacks = new QuickJSModuleCallbacks(module)
+  }
+
+  /**
+   * Check if this QuickJS variant supports a specific feature.
+   *
+   * Different QuickJS builds may have different feature sets. For example,
+   * mquickjs is a minimal build that doesn't support modules, promises,
+   * symbols, or BigInt.
+   *
+   * @param feature - The feature to check support for
+   * @returns `true` if the feature is supported, `false` otherwise
+   */
+  hasSupport(feature: QuickJSFeature): boolean {
+    const cached = this.featureCache.get(feature)
+    if (cached !== undefined) {
+      return cached
+    }
+
+    let result: number
+    switch (feature) {
+      case "modules":
+        result = this.ffi.QTS_HasModuleSupport()
+        break
+      case "promises":
+        result = this.ffi.QTS_HasPromiseSupport()
+        break
+      case "symbols":
+        result = this.ffi.QTS_HasSymbolSupport()
+        break
+      case "bigint":
+        result = this.ffi.QTS_HasBigIntSupport()
+        break
+      case "intrinsics":
+        result = this.ffi.QTS_HasIntrinsicsSupport()
+        break
+      case "eval":
+        result = this.ffi.QTS_HasEvalSupport()
+        break
+      default:
+        return unreachable(feature)
+    }
+
+    const supported = result === 1
+    this.featureCache.set(feature, supported)
+    return supported
+  }
+
+  /**
+   * Assert that this QuickJS variant supports a specific feature.
+   * Throws {@link QuickJSUnsupported} if the feature is not available.
+   *
+   * @param feature - The feature to check support for
+   * @param operation - Optional description of the operation being attempted
+   * @throws {QuickJSUnsupported} If the feature is not supported
+   */
+  assertHasSupport(feature: QuickJSFeature, operation?: string): void {
+    if (!this.hasSupport(feature)) {
+      throw new QuickJSUnsupported(feature, operation, undefined)
+    }
   }
 
   /**

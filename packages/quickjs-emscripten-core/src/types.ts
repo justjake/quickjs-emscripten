@@ -8,6 +8,19 @@ import type { InterruptHandler, QuickJSRuntime } from "./runtime"
 import { QuickJSUnknownIntrinsic } from "./errors"
 
 /**
+ * Features that may or may not be supported by a QuickJS variant.
+ * Use {@link QuickJSWASMModule#hasSupport} to check if a feature is available.
+ *
+ * - `modules`: ES module support (import/export)
+ * - `promises`: Promise and async/await support
+ * - `symbols`: Symbol type support
+ * - `bigint`: BigInt type support
+ * - `intrinsics`: Intrinsics configuration support
+ * - `eval`: eval() function support
+ */
+export type QuickJSFeature = "modules" | "promises" | "symbols" | "bigint" | "intrinsics" | "eval"
+
+/**
  * A QuickJSHandle to a constant that will never change, and does not need to
  * be disposed.
  */

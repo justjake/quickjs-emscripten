@@ -45,7 +45,10 @@
 #include <sanitizer/lsan_interface.h>
 #endif
 
-#ifdef QTS_USE_QUICKJS_NG
+#ifdef QTS_USE_MQUICKJS
+#include "../vendor/mquickjs/mquickjs.h"
+#include "../vendor/mquickjs/cutils.h"
+#elif defined(QTS_USE_QUICKJS_NG)
 // quickjs-ng amalgam only provides quickjs.h and quickjs-libc.h
 #include "../vendor/quickjs-ng/quickjs-libc.h"
 #include "../vendor/quickjs-ng/quickjs.h"
@@ -1140,6 +1143,33 @@ int QTS_BuildIsAsyncify() {
 #else
   return 0;
 #endif
+}
+
+// ----------------------------------------------------------------------------
+// Feature detection - QuickJS and QuickJS-ng support all features
+
+int QTS_HasModuleSupport() {
+  return 1;
+}
+
+int QTS_HasPromiseSupport() {
+  return 1;
+}
+
+int QTS_HasSymbolSupport() {
+  return 1;
+}
+
+int QTS_HasBigIntSupport() {
+  return 1;
+}
+
+int QTS_HasIntrinsicsSupport() {
+  return 1;
+}
+
+int QTS_HasEvalSupport() {
+  return 1;
 }
 
 // ----------------------------------------------------------------------------
