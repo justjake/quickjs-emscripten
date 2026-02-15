@@ -10,6 +10,7 @@ import { maybeAsyncFn } from "./asyncify-helpers"
 import { QuickJSContext } from "./context"
 import { QTS_DEBUG } from "./debug"
 import { QuickJSWrongOwner } from "./errors"
+import type { QuickJSFeatures } from "./features"
 import type { Disposable } from "./lifetime"
 import { DisposableResult, Lifetime, Scope, UsingDisposable } from "./lifetime"
 import { ModuleMemory } from "./memory"
@@ -78,6 +79,12 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
    */
   public context: QuickJSContext | undefined
 
+  /**
+   * Feature detection for this QuickJS variant.
+   * Different builds may have different feature sets (e.g., mquickjs lacks modules, promises).
+   */
+  public readonly features: QuickJSFeatures
+
   /** @private */
   protected module: EitherModule
   /** @private */
@@ -106,6 +113,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     ffi: EitherFFI
     rt: Lifetime<JSRuntimePointer>
     callbacks: QuickJSModuleCallbacks
+    features: QuickJSFeatures
     ownedLifetimes?: Disposable[]
   }) {
     super()
@@ -115,6 +123,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     this.ffi = args.ffi
     this.rt = args.rt
     this.callbacks = args.callbacks
+    this.features = args.features
     this.scope.manage(this.rt)
     this.callbacks.setRuntimeCallbacks(this.rt.value, this.cToHostCallbacks)
 
@@ -173,6 +182,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
    * The loader can be removed with {@link removeModuleLoader}.
    */
   setModuleLoader(moduleLoader: JSModuleLoader, moduleNormalizer?: JSModuleNormalizer): void {
+    this.features.assertHas("modules", "setModuleLoader")
     this.moduleLoader = moduleLoader
     this.moduleNormalizer = moduleNormalizer
     this.ffi.QTS_RuntimeEnableModuleLoader(this.rt.value, this.moduleNormalizer ? 1 : 0)

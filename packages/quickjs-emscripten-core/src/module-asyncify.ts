@@ -48,6 +48,7 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
       ffi: this.ffi,
       rt,
       callbacks: this.callbacks,
+      features: this.features,
     })
 
     applyBaseRuntimeOptions(runtime, options)

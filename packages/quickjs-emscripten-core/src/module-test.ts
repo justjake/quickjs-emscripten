@@ -1,7 +1,8 @@
 import type { QuickJSContext } from "./context"
+import type { QuickJSFeatures } from "./features"
 import type { ModuleEvalOptions, QuickJSWASMModule } from "./module"
 import type { QuickJSRuntime } from "./runtime"
-import type { ContextOptions, QuickJSFeature, RuntimeOptions } from "./types"
+import type { ContextOptions, RuntimeOptions } from "./types"
 import { QuickJSMemoryLeakDetected } from "./errors"
 import { Lifetime } from "./lifetime"
 
@@ -85,11 +86,7 @@ export class TestQuickJSWASMModule implements Pick<QuickJSWASMModule, keyof Quic
     return this.parent.getFFI()
   }
 
-  hasSupport(feature: QuickJSFeature): boolean {
-    return this.parent.hasSupport(feature)
-  }
-
-  assertHasSupport(feature: QuickJSFeature, operation?: string): void {
-    return this.parent.assertHasSupport(feature, operation)
+  get features(): QuickJSFeatures {
+    return this.parent.features
   }
 }
