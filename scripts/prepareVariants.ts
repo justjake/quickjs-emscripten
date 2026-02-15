@@ -879,15 +879,24 @@ const CLibraryGithubRepo: Record<CLibrary, string> = {
   "quickjs-ng": "quickjs-ng/quickjs",
 }
 
+// Libraries that use release tags (from VERSION file) instead of git subtree SHA
+const CLibraryUsesTagVersion: Record<CLibrary, boolean> = {
+  quickjs: false,
+  "quickjs-ng": true,
+}
+
 function getLibraryVersionLink(library: CLibrary): string {
   if (getLibraryVersionMemo.has(library)) {
     return getLibraryVersionMemo.get(library)!
   }
 
-  const { sha, date } = getGitSubtreeSha(CLibrarySubtree[library])
+  const subtreePath = CLibrarySubtree[library]
+  const githubRepo = CLibraryGithubRepo[library]
+  const usesTagVersion = CLibraryUsesTagVersion[library]
+
   let version = "git"
   try {
-    version = fs.readFileSync(path.join(CLibrarySubtree[library], "VERSION"), "utf-8").trim()
+    version = fs.readFileSync(path.join(subtreePath, "VERSION"), "utf-8").trim()
   } catch (err) {
     const error = err as NodeJS.ErrnoException
     if (error.code === "ENOENT") {
@@ -897,9 +906,16 @@ function getLibraryVersionLink(library: CLibrary): string {
     }
   }
 
-  const result = `[${version}+${sha.slice(0, 8)}](https://github.com/${
-    CLibraryGithubRepo[library]
-  }/commit/${sha}) vendored to quickjs-emscripten on ${date}.`
+  let result: string
+  if (usesTagVersion && version !== "git") {
+    // Link to the release tag instead of a commit SHA
+    result = `[${version}](https://github.com/${githubRepo}/releases/tag/${version}) vendored to quickjs-emscripten.`
+  } else {
+    // Use git subtree SHA for commit link
+    const { sha, date } = getGitSubtreeSha(subtreePath)
+    result = `[${version}+${sha.slice(0, 8)}](https://github.com/${githubRepo}/commit/${sha}) vendored to quickjs-emscripten on ${date}.`
+  }
+
   getLibraryVersionMemo.set(library, result)
   return result
 }
