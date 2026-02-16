@@ -65,7 +65,7 @@ export class ModuleMemory {
   // TODO: shouldn't this be Uint32 instead of Int32?
   newMutablePointerArray<T extends number>(
     length: number,
-  ): Lifetime<{ typedArray: Int32Array; ptr: T }> {
+  ): Lifetime<{ typedArray: Int32Array<ArrayBuffer>; ptr: T }> {
     return this.newTypedArray(Int32Array, length)
   }
 

@@ -1,29 +1,37 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / EmscriptenModuleLoader
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / EmscriptenModuleLoader
 
-# Interface: EmscriptenModuleLoader()\<T\>
+# Interface: EmscriptenModuleLoader()\<T>
 
-## Type parameters
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:338
 
-• **T** extends [`EmscriptenModule`](EmscriptenModule.md)
+## Contents
 
-> **EmscriptenModuleLoader**(`options`?): `Promise`\<`T`\>
+* [Type Parameters](#type-parameters)
+  * [T](#t)
+* [Parameters](#parameters)
+  * [options?](#options)
+* [Returns](#returns)
+
+## Type Parameters
+
+### T
+
+`T` *extends* [`EmscriptenModule`](EmscriptenModule.md)
+
+> **EmscriptenModuleLoader**(`options?`): `Promise`<`T`>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:339
 
 ## Parameters
 
-• **options?**: [`EmscriptenModuleLoaderOptions`](EmscriptenModuleLoaderOptions.md)
+### options?
+
+[`EmscriptenModuleLoaderOptions`](EmscriptenModuleLoaderOptions.md)
 
 ## Returns
 
-`Promise`\<`T`\>
-
-## Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:339
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+`Promise`<`T`>

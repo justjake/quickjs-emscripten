@@ -1,95 +1,92 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten-core** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../exports.md) / VmPropertyDescriptor
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../README.md) / VmPropertyDescriptor
 
-# Interface: VmPropertyDescriptor\<VmHandle\>
+# Interface: VmPropertyDescriptor\<VmHandle>
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L83)
 
 From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 ## Contents
 
-- [Type parameters](VmPropertyDescriptor.md#type-parameters)
-- [Properties](VmPropertyDescriptor.md#properties)
-  - [configurable?](VmPropertyDescriptor.md#configurable)
-  - [enumerable?](VmPropertyDescriptor.md#enumerable)
-  - [get?](VmPropertyDescriptor.md#get)
-  - [set?](VmPropertyDescriptor.md#set)
-  - [value?](VmPropertyDescriptor.md#value)
+* [Type Parameters](#type-parameters)
+  * [VmHandle](#vmhandle)
+* [Properties](#properties)
+  * [configurable?](#configurable)
+  * [enumerable?](#enumerable)
+  * [get()?](#get)
+  * [set()?](#set)
+  * [value?](#value-1)
 
-## Type parameters
+## Type Parameters
 
-• **VmHandle**
+### VmHandle
+
+`VmHandle`
 
 ## Properties
 
 ### configurable?
 
-> **configurable**?: `boolean`
+> `optional` **configurable**: `boolean`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L85)
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L85)
 
 ***
 
 ### enumerable?
 
-> **enumerable**?: `boolean`
+> `optional` **enumerable**: `boolean`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L86)
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L86)
 
 ***
 
-### get?
+### get()?
 
-> **get**?: (`this`) => `VmHandle`
+> `optional` **get**: (`this`) => `VmHandle`
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L87)
 
 #### Parameters
 
-• **this**: `VmHandle`
+##### this
+
+`VmHandle`
 
 #### Returns
 
 `VmHandle`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L87)
-
 ***
 
-### set?
+### set()?
 
-> **set**?: (`this`, `value`) => `void`
+> `optional` **set**: (`this`, `value`) => `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:88](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L88)
 
 #### Parameters
 
-• **this**: `VmHandle`
+##### this
 
-• **value**: `VmHandle`
+`VmHandle`
+
+##### value
+
+`VmHandle`
 
 #### Returns
 
 `void`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:88](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L88)
-
 ***
 
 ### value?
 
-> **value**?: `VmHandle`
+> `optional` **value**: `VmHandle`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L84)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:84](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L84)

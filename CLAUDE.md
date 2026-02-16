@@ -2,11 +2,11 @@
 
 ## Package Manager
 
-Use `corepack yarn` to run yarn commands, e.g.:
+Use `corepack pnpm` to run pnpm commands, e.g.:
 
-- `corepack yarn install`
-- `corepack yarn build`
-- `corepack yarn build:ts`
+- `corepack pnpm install`
+- `corepack pnpm build`
+- `corepack pnpm build:ts`
 
 ## Building Variants
 
@@ -17,7 +17,7 @@ To build a variant:
 ```bash
 cd packages/variant-quickjs-<name>
 make           # builds the C code with emscripten
-corepack yarn build:ts  # builds the TypeScript wrapper
+corepack pnpm build:ts  # builds the TypeScript wrapper
 ```
 
 ## Emscripten
@@ -31,7 +31,7 @@ corepack yarn build:ts  # builds the TypeScript wrapper
 Run all tests:
 
 ```bash
-corepack yarn test
+corepack pnpm test
 ```
 
 Run tests for a specific variant (e.g., quickjs-ng only):
@@ -49,7 +49,31 @@ Other test filters:
 
 ## Git
 
-- Never use `git commit --amend` - always create new commits
+- Never use `git commit --amend` - always create new commits. It's better to have a history of what was actually done since branches get rebased/squashed anyway when merged.
+- Before pushing, run `pnpm run prettier` and `pnpm run lint` to fix formatting and lint issues. No need to check after every commit - just before pushing.
+
+## CI Workflow
+
+After pushing a PR, monitor CI using the `gh` CLI:
+
+```bash
+# Check CI status for a PR
+gh pr checks <PR_NUMBER>
+
+# View a specific job's progress
+gh run view --job=<JOB_ID>
+
+# Get logs for failed steps
+gh run view <RUN_ID> --log-failed
+```
+
+When CI fails:
+1. Get the failed logs with `gh run view <RUN_ID> --log-failed | tail -100`
+2. Fix the issue locally
+3. Commit the fix (new commit, don't amend)
+4. Push and repeat until CI passes
+
+The full CI build takes ~20 minutes due to emscripten compilation.
 
 ## Key Files
 

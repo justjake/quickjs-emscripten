@@ -11,7 +11,5 @@
     "emscripten.h": "c",
     "quickjs-atom.h": "c"
   },
-  "files.exclude": {
-    ".yarn/releases/*": true
-  }
+  "files.exclude": {}
 }

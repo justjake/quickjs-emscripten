@@ -1,10 +1,12 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / LowLevelJavascriptVm
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / LowLevelJavascriptVm
 
-# Interface: LowLevelJavascriptVm\<VmHandle\>
+# Interface: LowLevelJavascriptVm\<VmHandle>
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L53)
 
 A minimal interface to a Javascript execution environment.
 
@@ -15,27 +17,30 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 ## Contents
 
-- [Type parameters](LowLevelJavascriptVm.md#type-parameters)
-- [Properties](LowLevelJavascriptVm.md#properties)
-  - [global](LowLevelJavascriptVm.md#global)
-  - [undefined](LowLevelJavascriptVm.md#undefined)
-- [Methods](LowLevelJavascriptVm.md#methods)
-  - [callFunction()](LowLevelJavascriptVm.md#callfunction)
-  - [defineProp()](LowLevelJavascriptVm.md#defineprop)
-  - [evalCode()](LowLevelJavascriptVm.md#evalcode)
-  - [getNumber()](LowLevelJavascriptVm.md#getnumber)
-  - [getProp()](LowLevelJavascriptVm.md#getprop)
-  - [getString()](LowLevelJavascriptVm.md#getstring)
-  - [newFunction()](LowLevelJavascriptVm.md#newfunction)
-  - [newNumber()](LowLevelJavascriptVm.md#newnumber)
-  - [newObject()](LowLevelJavascriptVm.md#newobject)
-  - [newString()](LowLevelJavascriptVm.md#newstring)
-  - [setProp()](LowLevelJavascriptVm.md#setprop)
-  - [typeof()](LowLevelJavascriptVm.md#typeof)
+* [Type Parameters](#type-parameters)
+  * [VmHandle](#vmhandle)
+* [Properties](#properties)
+  * [global](#global)
+  * [undefined](#undefined)
+* [Methods](#methods)
+  * [callFunction()](#callfunction)
+  * [defineProp()](#defineprop)
+  * [evalCode()](#evalcode)
+  * [getNumber()](#getnumber)
+  * [getProp()](#getprop)
+  * [getString()](#getstring)
+  * [newFunction()](#newfunction)
+  * [newNumber()](#newnumber)
+  * [newObject()](#newobject)
+  * [newString()](#newstring)
+  * [setProp()](#setprop)
+  * [typeof()](#typeof)
 
-## Type parameters
+## Type Parameters
 
-• **VmHandle**
+### VmHandle
+
+`VmHandle`
 
 ## Properties
 
@@ -43,9 +48,7 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 > **global**: `VmHandle`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:54](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L54)
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:54](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L54)
 
 ***
 
@@ -53,31 +56,33 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 > **undefined**: `VmHandle`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:55](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L55)
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:55](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L55)
 
 ## Methods
 
 ### callFunction()
 
-> **callFunction**(`func`, `thisVal`, ...`args`): [`VmCallResult`](../exports.md#vmcallresultvmhandle)\<`VmHandle`\>
+> **callFunction**(`func`, `thisVal`, ...`args`): [`VmCallResult`](../type-aliases/VmCallResult.md)<`VmHandle`>
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L76)
 
 #### Parameters
 
-• **func**: `VmHandle`
+##### func
 
-• **thisVal**: `VmHandle`
+`VmHandle`
 
-• ...**args**: `VmHandle`[]
+##### thisVal
+
+`VmHandle`
+
+##### args
+
+...`VmHandle`\[]
 
 #### Returns
 
-[`VmCallResult`](../exports.md#vmcallresultvmhandle)\<`VmHandle`\>
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L76)
+[`VmCallResult`](../type-aliases/VmCallResult.md)<`VmHandle`>
 
 ***
 
@@ -85,41 +90,47 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 > **defineProp**(`handle`, `key`, `descriptor`): `void`
 
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:70](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L70)
+
 #### Parameters
 
-• **handle**: `VmHandle`
+##### handle
 
-• **key**: `string` \| `VmHandle`
+`VmHandle`
 
-• **descriptor**: [`VmPropertyDescriptor`](VmPropertyDescriptor.md)\<`VmHandle`\>
+##### key
+
+`string` | `VmHandle`
+
+##### descriptor
+
+[`VmPropertyDescriptor`](VmPropertyDescriptor.md)<`VmHandle`>
 
 #### Returns
 
 `void`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:70](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L70)
-
 ***
 
 ### evalCode()
 
-> **evalCode**(`code`, `filename`?): [`VmCallResult`](../exports.md#vmcallresultvmhandle)\<`VmHandle`\>
+> **evalCode**(`code`, `filename?`): [`VmCallResult`](../type-aliases/VmCallResult.md)<`VmHandle`>
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L77)
 
 #### Parameters
 
-• **code**: `string`
+##### code
 
-• **filename?**: `string`
+`string`
+
+##### filename?
+
+`string`
 
 #### Returns
 
-[`VmCallResult`](../exports.md#vmcallresultvmhandle)\<`VmHandle`\>
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L77)
+[`VmCallResult`](../type-aliases/VmCallResult.md)<`VmHandle`>
 
 ***
 
@@ -127,17 +138,17 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 > **getNumber**(`handle`): `number`
 
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:59](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L59)
+
 #### Parameters
 
-• **handle**: `VmHandle`
+##### handle
+
+`VmHandle`
 
 #### Returns
 
 `number`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:59](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L59)
 
 ***
 
@@ -145,19 +156,21 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 > **getProp**(`handle`, `key`): `VmHandle`
 
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L68)
+
 #### Parameters
 
-• **handle**: `VmHandle`
+##### handle
 
-• **key**: `string` \| `VmHandle`
+`VmHandle`
+
+##### key
+
+`string` | `VmHandle`
 
 #### Returns
 
 `VmHandle`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L68)
 
 ***
 
@@ -165,17 +178,17 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 > **getString**(`handle`): `string`
 
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:60](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L60)
+
 #### Parameters
 
-• **handle**: `VmHandle`
+##### handle
+
+`VmHandle`
 
 #### Returns
 
 `string`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:60](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L60)
 
 ***
 
@@ -183,19 +196,21 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 > **newFunction**(`name`, `value`): `VmHandle`
 
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:65](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L65)
+
 #### Parameters
 
-• **name**: `string`
+##### name
 
-• **value**: [`VmFunctionImplementation`](../exports.md#vmfunctionimplementationvmhandle)\<`VmHandle`\>
+`string`
+
+##### value
+
+[`VmFunctionImplementation`](../type-aliases/VmFunctionImplementation.md)<`VmHandle`>
 
 #### Returns
 
 `VmHandle`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:65](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L65)
 
 ***
 
@@ -203,35 +218,35 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 > **newNumber**(`value`): `VmHandle`
 
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:62](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L62)
+
 #### Parameters
 
-• **value**: `number`
+##### value
+
+`number`
 
 #### Returns
 
 `VmHandle`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:62](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L62)
 
 ***
 
 ### newObject()
 
-> **newObject**(`prototype`?): `VmHandle`
+> **newObject**(`prototype?`): `VmHandle`
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:64](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L64)
 
 #### Parameters
 
-• **prototype?**: `VmHandle`
+##### prototype?
+
+`VmHandle`
 
 #### Returns
 
 `VmHandle`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:64](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L64)
 
 ***
 
@@ -239,17 +254,17 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 > **newString**(`value`): `VmHandle`
 
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:63](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L63)
+
 #### Parameters
 
-• **value**: `string`
+##### value
+
+`string`
 
 #### Returns
 
 `VmHandle`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:63](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L63)
 
 ***
 
@@ -257,21 +272,25 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 > **setProp**(`handle`, `key`, `value`): `void`
 
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L69)
+
 #### Parameters
 
-• **handle**: `VmHandle`
+##### handle
 
-• **key**: `string` \| `VmHandle`
+`VmHandle`
 
-• **value**: `VmHandle`
+##### key
+
+`string` | `VmHandle`
+
+##### value
+
+`VmHandle`
 
 #### Returns
 
 `void`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L69)
 
 ***
 
@@ -279,18 +298,14 @@ From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
 > **typeof**(`handle`): `string`
 
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L57)
+
 #### Parameters
 
-• **handle**: `VmHandle`
+##### handle
+
+`VmHandle`
 
 #### Returns
 
 `string`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/vm-interface.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L57)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

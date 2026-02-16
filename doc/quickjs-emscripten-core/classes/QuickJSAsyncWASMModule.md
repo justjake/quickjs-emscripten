@@ -1,10 +1,12 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten-core** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../exports.md) / QuickJSAsyncWASMModule
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../README.md) / QuickJSAsyncWASMModule
 
 # Class: QuickJSAsyncWASMModule
+
+Defined in: [packages/quickjs-emscripten-core/src/module-asyncify.ts:23](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L23)
 
 Asyncified version of [QuickJSWASMModule](QuickJSWASMModule.md).
 
@@ -20,23 +22,25 @@ modules.
 
 ## Contents
 
-- [Extends](QuickJSAsyncWASMModule.md#extends)
-- [Methods](QuickJSAsyncWASMModule.md#methods)
-  - [evalCode()](QuickJSAsyncWASMModule.md#evalcode)
-  - [evalCodeAsync()](QuickJSAsyncWASMModule.md#evalcodeasync)
-  - [getWasmMemory()](QuickJSAsyncWASMModule.md#getwasmmemory)
-  - [newContext()](QuickJSAsyncWASMModule.md#newcontext)
-  - [newRuntime()](QuickJSAsyncWASMModule.md#newruntime)
+* [Extends](#extends)
+* [Methods](#methods)
+  * [evalCode()](#evalcode)
+  * [evalCodeAsync()](#evalcodeasync)
+  * [getWasmMemory()](#getwasmmemory)
+  * [newContext()](#newcontext)
+  * [newRuntime()](#newruntime)
 
 ## Extends
 
-- [`QuickJSWASMModule`](QuickJSWASMModule.md)
+* [`QuickJSWASMModule`](QuickJSWASMModule.md)
 
 ## Methods
 
 ### evalCode()
 
 > **evalCode**(): `never`
+
+Defined in: [packages/quickjs-emscripten-core/src/module-asyncify.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L76)
 
 Synchronous evalCode is not supported.
 
@@ -46,17 +50,15 @@ Synchronous evalCode is not supported.
 
 #### Overrides
 
-[`quickjs-emscripten-core.QuickJSWASMModule.evalCode`](QuickJSWASMModule.md#evalcode)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/module-asyncify.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L76)
+[`QuickJSWASMModule`](QuickJSWASMModule.md).[`evalCode`](QuickJSWASMModule.md#evalcode)
 
 ***
 
 ### evalCodeAsync()
 
-> **evalCodeAsync**(`code`, `options`): `Promise`\<`unknown`\>
+> **evalCodeAsync**(`code`, `options`): `Promise`<`unknown`>
+
+Defined in: [packages/quickjs-emscripten-core/src/module-asyncify.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L91)
 
 One-off evaluate code without needing to create a [QuickJSAsyncRuntime](QuickJSAsyncRuntime.md) or
 [QuickJSAsyncContext](QuickJSAsyncContext.md) explicitly.
@@ -70,23 +72,27 @@ See the documentation for [QuickJSWASMModule#evalCode](QuickJSWASMModule.md#eval
 
 #### Parameters
 
-• **code**: `string`
+##### code
 
-• **options**: [`ModuleEvalOptions`](../interfaces/ModuleEvalOptions.md)
+`string`
+
+##### options
+
+[`ModuleEvalOptions`](../interfaces/ModuleEvalOptions.md)
 
 #### Returns
 
-`Promise`\<`unknown`\>
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/module-asyncify.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L91)
+`Promise`<`unknown`>
 
 ***
 
 ### getWasmMemory()
 
 > **getWasmMemory**(): `Memory`
+
+Defined in: [packages/quickjs-emscripten-core/src/module.ts:441](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L441)
+
+**`Experimental`**
 
 Retrieve the WebAssembly memory used by this QuickJS module.
 Use this access very carefully - you are responsible for safe interaction with the memory.
@@ -100,17 +106,15 @@ and provide the [CustomizeVariantOptions#wasmMemory](../interfaces/CustomizeVari
 
 #### Inherited from
 
-[`quickjs-emscripten-core.QuickJSWASMModule.getWasmMemory`](QuickJSWASMModule.md#getwasmmemory)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/module.ts:441](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L441)
+[`QuickJSWASMModule`](QuickJSWASMModule.md).[`getWasmMemory`](QuickJSWASMModule.md#getwasmmemory)
 
 ***
 
 ### newContext()
 
-> **newContext**(`options`): [`QuickJSAsyncContext`](QuickJSAsyncContext.md)
+> **newContext**(`options?`): [`QuickJSAsyncContext`](QuickJSAsyncContext.md)
+
+Defined in: [packages/quickjs-emscripten-core/src/module-asyncify.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L67)
 
 A simplified API to create a new [QuickJSAsyncRuntime](QuickJSAsyncRuntime.md) and a
 [QuickJSAsyncContext](QuickJSAsyncContext.md) inside that runtime at the same time. The runtime will
@@ -118,7 +122,9 @@ be disposed when the context is disposed.
 
 #### Parameters
 
-• **options**: [`ContextOptions`](../interfaces/ContextOptions.md)= `{}`
+##### options?
+
+[`ContextOptions`](../interfaces/ContextOptions.md) = `{}`
 
 #### Returns
 
@@ -126,17 +132,15 @@ be disposed when the context is disposed.
 
 #### Overrides
 
-[`quickjs-emscripten-core.QuickJSWASMModule.newContext`](QuickJSWASMModule.md#newcontext)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/module-asyncify.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L67)
+[`QuickJSWASMModule`](QuickJSWASMModule.md).[`newContext`](QuickJSWASMModule.md#newcontext)
 
 ***
 
 ### newRuntime()
 
-> **newRuntime**(`options`): [`QuickJSAsyncRuntime`](QuickJSAsyncRuntime.md)
+> **newRuntime**(`options?`): [`QuickJSAsyncRuntime`](QuickJSAsyncRuntime.md)
+
+Defined in: [packages/quickjs-emscripten-core/src/module-asyncify.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L41)
 
 Create a new async runtime inside this WebAssembly module. All runtimes inside a
 module are limited to a single async call at a time. For multiple
@@ -144,7 +148,9 @@ concurrent async actions, create multiple WebAssembly modules.
 
 #### Parameters
 
-• **options**: [`AsyncRuntimeOptions`](../interfaces/AsyncRuntimeOptions.md)= `{}`
+##### options?
+
+[`AsyncRuntimeOptions`](../interfaces/AsyncRuntimeOptions.md) = `{}`
 
 #### Returns
 
@@ -152,12 +158,4 @@ concurrent async actions, create multiple WebAssembly modules.
 
 #### Overrides
 
-[`quickjs-emscripten-core.QuickJSWASMModule.newRuntime`](QuickJSWASMModule.md#newruntime)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/module-asyncify.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L41)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+[`QuickJSWASMModule`](QuickJSWASMModule.md).[`newRuntime`](QuickJSWASMModule.md#newruntime)

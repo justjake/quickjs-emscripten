@@ -1,29 +1,29 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / JSPromiseStateRejected
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / JSPromiseStateRejected
 
 # Interface: JSPromiseStateRejected
 
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:45](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L45)
+
 Rejected promise state.
-See [JSPromiseState](../exports.md#jspromisestate).
+See [JSPromiseState](../type-aliases/JSPromiseState.md).
 
 ## Contents
 
-- [Properties](JSPromiseStateRejected.md#properties)
-  - [error](JSPromiseStateRejected.md#error)
-  - [type](JSPromiseStateRejected.md#type)
+* [Properties](#properties)
+  * [error](#error)
+  * [type](#type)
 
 ## Properties
 
 ### error
 
-> **error**: [`QuickJSHandle`](../exports.md#quickjshandle)
+> **error**: [`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L47)
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L47)
 
 ***
 
@@ -31,10 +31,4 @@ See [JSPromiseState](../exports.md#jspromisestate).
 
 > **type**: `"rejected"`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L46)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L46)

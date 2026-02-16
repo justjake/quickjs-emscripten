@@ -12,6 +12,6 @@
     "@jitl/quickjs-wasmfile-release-sync": "file:../../build/tar/@jitl-quickjs-wasmfile-release-sync.tgz",
     "quickjs-emscripten": "file:../../build/tar/quickjs-emscripten.tgz",
     "quickjs-emscripten-core": "file:../../build/tar/quickjs-emscripten-core.tgz",
-    "typescript": "5"
+    "typescript": "^5.9.0"
   }
 }

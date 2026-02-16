@@ -1,0 +1,31 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "packages/quickjs-emscripten",
+    "packages/quickjs-emscripten-core",
+    "packages/quickjs-ffi-types",
+    "packages/variant-*"
+  ],
+  "entryPointStrategy": "packages",
+  "out": "doc",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-inline-sources", "typedoc-plugin-remark"],
+  "readme": "README.md",
+  "name": "quickjs-emscripten",
+  "navigationLinks": {
+    "Readme": "README.md",
+    "Packages": "packages.md"
+  },
+  "hideGenerator": false,
+  "remarkPlugins": [
+    {
+      "applyTo": ["Class", "Interface", "Enum", "TypeAlias", "Function"],
+      "plugins": [
+        [
+          "remark-insert-headings",
+          { "text": "Contents", "position": "start", "minHeadingCount": 1 }
+        ],
+        ["remark-toc", { "maxDepth": 3, "tight": true }]
+      ]
+    }
+  ]
+}

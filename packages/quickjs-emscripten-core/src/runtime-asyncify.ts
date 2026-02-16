@@ -23,18 +23,18 @@ import { intrinsicsToFlags } from "./types"
 import { Lifetime } from "./lifetime"
 
 export class QuickJSAsyncRuntime extends QuickJSRuntime {
-  public declare context: QuickJSAsyncContext | undefined
+  declare public context: QuickJSAsyncContext | undefined
 
   /** @private */
-  protected declare module: QuickJSAsyncEmscriptenModule
+  declare protected module: QuickJSAsyncEmscriptenModule
   /** @private */
-  protected declare ffi: QuickJSAsyncFFI
+  declare protected ffi: QuickJSAsyncFFI
   /** @private */
-  protected declare rt: Lifetime<JSRuntimePointer>
+  declare protected rt: Lifetime<JSRuntimePointer>
   /** @private */
-  protected declare callbacks: QuickJSModuleCallbacks
+  declare protected callbacks: QuickJSModuleCallbacks
   /** @private */
-  protected declare contextMap: Map<JSContextPointer, QuickJSAsyncContext>
+  declare protected contextMap: Map<JSContextPointer, QuickJSAsyncContext>
 
   /** @private */
   constructor(args: {

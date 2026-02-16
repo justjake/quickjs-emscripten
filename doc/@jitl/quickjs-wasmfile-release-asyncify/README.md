@@ -1,6 +1,8 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-wasmfile-release-asyncify** • [Readme](README.md) \| [Exports](exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
+
+[quickjs-emscripten](../../packages.md) / @jitl/quickjs-wasmfile-release-asyncify
 
 # @jitl/quickjs-wasmfile-release-asyncify
 
@@ -17,15 +19,6 @@ const QuickJS = await newQuickJSAsyncWASMModuleFromVariant(variant)
 
 This variant was built with the following settings:
 
-## Contents
-
-- [Library: quickjs](README.md#library-quickjs)
-- [Release mode: release](README.md#release-mode-release)
-- [Exports: require import browser workerd](README.md#exports-require-import-browser-workerd)
-- [Extra async magic? Yes](README.md#extra-async-magic-yes)
-- [Single-file, or separate .wasm file? wasm](README.md#single-file-or-separate-wasm-file-wasm)
-- [More details](README.md#more-details)
-
 ## Library: quickjs
 
 The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
@@ -40,10 +33,10 @@ Optimized for performance; use when building/deploying your application.
 
 Exports the following in package.json for the package entrypoint:
 
-- Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.
-- Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
-- Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.
-- Targets Cloudflare Workers.
+* Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.
+* Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
+* Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.
+* Targets Cloudflare Workers.
 
 ## Extra async magic? Yes
 
@@ -101,6 +94,6 @@ Variant-specific Emscripten build flags:
 ]
 ```
 
-***
+## Variables
 
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+* [default](variables/default.md)

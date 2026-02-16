@@ -1,51 +1,71 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / JSModuleNormalizer
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / JSModuleNormalizer
 
 # Interface: JSModuleNormalizer()
 
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:99](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L99)
+
+## Contents
+
+* [Extends](#extends)
+* [Call Signature](#call-signature)
+  * [Parameters](#parameters)
+  * [Returns](#returns)
+* [Call Signature](#call-signature-1)
+  * [Parameters](#parameters-1)
+  * [Returns](#returns-1)
+
 ## Extends
 
-- [`JSModuleNormalizerAsync`](JSModuleNormalizerAsync.md)
+* [`JSModuleNormalizerAsync`](JSModuleNormalizerAsync.md)
 
-> **JSModuleNormalizer**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult)
+## Call Signature
 
-## Parameters
+> **JSModuleNormalizer**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md)
 
-• **baseModuleName**: `string`
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:100](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L100)
 
-• **requestedName**: `string`
+### Parameters
 
-• **vm**: [`QuickJSContext`](../classes/QuickJSContext.md)
+#### baseModuleName
 
-## Returns
+`string`
 
-[`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult)
+#### requestedName
 
-## Source
+`string`
 
-[packages/quickjs-emscripten-core/src/types.ts:100](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L100)
+#### vm
 
-> **JSModuleNormalizer**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult)\>
+[`QuickJSContext`](../classes/QuickJSContext.md)
 
-## Parameters
+### Returns
 
-• **baseModuleName**: `string`
+[`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md)
 
-• **requestedName**: `string`
+## Call Signature
 
-• **vm**: [`QuickJSAsyncContext`](../classes/QuickJSAsyncContext.md)
+> **JSModuleNormalizer**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md) | `Promise`<[`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md)>
 
-## Returns
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:99](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L99)
 
-[`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult)\>
+### Parameters
 
-## Source
+#### baseModuleName
 
-[packages/quickjs-emscripten-core/src/types.ts:93](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L93)
+`string`
 
-***
+#### requestedName
 
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+`string`
+
+#### vm
+
+[`QuickJSAsyncContext`](../classes/QuickJSAsyncContext.md)
+
+### Returns
+
+[`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md) | `Promise`<[`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md)>

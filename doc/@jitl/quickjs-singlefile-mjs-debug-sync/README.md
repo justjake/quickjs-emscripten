@@ -1,6 +1,8 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-singlefile-mjs-debug-sync** • [Readme](README.md) \| [Exports](exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
+
+[quickjs-emscripten](../../packages.md) / @jitl/quickjs-singlefile-mjs-debug-sync
 
 # @jitl/quickjs-singlefile-mjs-debug-sync
 
@@ -17,15 +19,6 @@ const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
 
 This variant was built with the following settings:
 
-## Contents
-
-- [Library: quickjs](README.md#library-quickjs)
-- [Release mode: debug](README.md#release-mode-debug)
-- [Exports: import](README.md#exports-import)
-- [Extra async magic? No](README.md#extra-async-magic-no)
-- [Single-file, or separate .wasm file? singlefile](README.md#single-file-or-separate-wasm-file-singlefile)
-- [More details](README.md#more-details)
-
 ## Library: quickjs
 
 The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
@@ -40,7 +33,7 @@ Enables assertions and memory sanitizers. Try to run your tests against debug va
 
 Exports the following in package.json for the package entrypoint:
 
-- Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
+* Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
 
 ## Extra async magic? No
 
@@ -89,6 +82,6 @@ Variant-specific Emscripten build flags:
 ]
 ```
 
-***
+## Variables
 
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+* [default](variables/default.md)

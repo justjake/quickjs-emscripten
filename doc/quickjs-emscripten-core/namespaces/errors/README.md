@@ -1,31 +1,25 @@
-[quickjs-emscripten](../../../packages.md) • **quickjs-emscripten-core** • [Readme](../../README.md) \| [Exports](../../exports.md)
+[**quickjs-emscripten**](../../../README.md)
 
 ***
 
-[quickjs-emscripten](../../../packages.md) / [quickjs-emscripten-core](../../exports.md) / errors
+[quickjs-emscripten](../../../packages.md) / [quickjs-emscripten-core](../../README.md) / errors
 
-# Namespace: errors
+# errors
 
 Collects the informative errors this library may throw.
 
-## Index
+## Classes
 
-### Classes
-
-- [QuickJSAsyncifyError](classes/QuickJSAsyncifyError.md)
-- [QuickJSAsyncifySuspended](classes/QuickJSAsyncifySuspended.md)
-- [QuickJSEmptyGetOwnPropertyNames](classes/QuickJSEmptyGetOwnPropertyNames.md)
-- [QuickJSEmscriptenModuleError](classes/QuickJSEmscriptenModuleError.md)
-- [QuickJSHostRefInvalid](classes/QuickJSHostRefInvalid.md)
-- [QuickJSHostRefRangeExceeded](classes/QuickJSHostRefRangeExceeded.md)
-- [QuickJSMemoryLeakDetected](classes/QuickJSMemoryLeakDetected.md)
-- [QuickJSNotImplemented](classes/QuickJSNotImplemented.md)
-- [QuickJSPromisePending](classes/QuickJSPromisePending.md)
-- [QuickJSUnknownIntrinsic](classes/QuickJSUnknownIntrinsic.md)
-- [QuickJSUnwrapError](classes/QuickJSUnwrapError.md)
-- [QuickJSUseAfterFree](classes/QuickJSUseAfterFree.md)
-- [QuickJSWrongOwner](classes/QuickJSWrongOwner.md)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+* [QuickJSAsyncifyError](classes/QuickJSAsyncifyError.md)
+* [QuickJSAsyncifySuspended](classes/QuickJSAsyncifySuspended.md)
+* [QuickJSEmptyGetOwnPropertyNames](classes/QuickJSEmptyGetOwnPropertyNames.md)
+* [QuickJSEmscriptenModuleError](classes/QuickJSEmscriptenModuleError.md)
+* [QuickJSHostRefInvalid](classes/QuickJSHostRefInvalid.md)
+* [QuickJSHostRefRangeExceeded](classes/QuickJSHostRefRangeExceeded.md)
+* [QuickJSMemoryLeakDetected](classes/QuickJSMemoryLeakDetected.md)
+* [QuickJSNotImplemented](classes/QuickJSNotImplemented.md)
+* [QuickJSPromisePending](classes/QuickJSPromisePending.md)
+* [QuickJSUnknownIntrinsic](classes/QuickJSUnknownIntrinsic.md)
+* [QuickJSUnwrapError](classes/QuickJSUnwrapError.md)
+* [QuickJSUseAfterFree](classes/QuickJSUseAfterFree.md)
+* [QuickJSWrongOwner](classes/QuickJSWrongOwner.md)

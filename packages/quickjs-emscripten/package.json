@@ -60,8 +60,20 @@
     "quickjs-emscripten-core": "workspace:*"
   },
   "devDependencies": {
+    "@jitl/quickjs-asmjs-mjs-release-sync": "workspace:*",
+    "@jitl/quickjs-ffi-types": "workspace:*",
+    "@jitl/quickjs-ng-wasmfile-debug-asyncify": "workspace:*",
+    "@jitl/quickjs-ng-wasmfile-debug-sync": "workspace:*",
+    "@jitl/quickjs-ng-wasmfile-release-asyncify": "workspace:*",
+    "@jitl/quickjs-ng-wasmfile-release-sync": "workspace:*",
+    "@jitl/quickjs-singlefile-cjs-debug-asyncify": "workspace:*",
+    "@jitl/quickjs-singlefile-cjs-debug-sync": "workspace:*",
     "@jitl/quickjs-singlefile-cjs-release-asyncify": "workspace:*",
-    "@jitl/quickjs-singlefile-cjs-release-sync": "workspace:*"
+    "@jitl/quickjs-singlefile-cjs-release-sync": "workspace:*",
+    "@jitl/quickjs-singlefile-mjs-debug-asyncify": "workspace:*",
+    "@jitl/quickjs-singlefile-mjs-debug-sync": "workspace:*",
+    "@jitl/quickjs-singlefile-mjs-release-asyncify": "workspace:*",
+    "@jitl/quickjs-singlefile-mjs-release-sync": "workspace:*"
   },
   "engines": {
     "node": ">=16.0.0"

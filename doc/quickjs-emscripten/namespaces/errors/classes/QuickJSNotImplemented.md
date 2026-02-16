@@ -1,44 +1,46 @@
-[quickjs-emscripten](../../../../packages.md) • **quickjs-emscripten** • [Readme](../../../README.md) \| [Exports](../../../exports.md)
+[**quickjs-emscripten**](../../../../README.md)
 
 ***
 
-[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten](../../../exports.md) / [errors](../README.md) / QuickJSNotImplemented
+[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten](../../../README.md) / [errors](../README.md) / QuickJSNotImplemented
 
 # Class: QuickJSNotImplemented
 
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:28](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L28)
+
 ## Contents
 
-- [Extends](QuickJSNotImplemented.md#extends)
-- [Constructors](QuickJSNotImplemented.md#constructors)
-  - [new QuickJSNotImplemented(message)](QuickJSNotImplemented.md#new-quickjsnotimplementedmessage)
-- [Properties](QuickJSNotImplemented.md#properties)
-  - [name](QuickJSNotImplemented.md#name)
+* [Extends](#extends)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Properties](#properties)
+  * [name](#name)
 
 ## Extends
 
-- `Error`
+* `Error`
 
 ## Constructors
 
-### new QuickJSNotImplemented(message)
+### Constructor
 
-> **new QuickJSNotImplemented**(`message`?): [`QuickJSNotImplemented`](QuickJSNotImplemented.md)
+> **new QuickJSNotImplemented**(`message?`): `QuickJSNotImplemented`
+
+Defined in: node\_modules/typescript/lib/lib.es5.d.ts:1082
 
 #### Parameters
 
-• **message?**: `string`
+##### message?
+
+`string`
 
 #### Returns
 
-[`QuickJSNotImplemented`](QuickJSNotImplemented.md)
+`QuickJSNotImplemented`
 
 #### Inherited from
 
 `Error.constructor`
-
-#### Source
-
-node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 ## Properties
 
@@ -46,14 +48,8 @@ node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 > **name**: `string` = `"QuickJSNotImplemented"`
 
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:29](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L29)
+
 #### Overrides
 
 `Error.name`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/errors.ts:29](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L29)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

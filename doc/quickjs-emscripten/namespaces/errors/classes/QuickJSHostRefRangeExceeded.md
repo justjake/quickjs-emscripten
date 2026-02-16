@@ -1,44 +1,46 @@
-[quickjs-emscripten](../../../../packages.md) • **quickjs-emscripten** • [Readme](../../../README.md) \| [Exports](../../../exports.md)
+[**quickjs-emscripten**](../../../../README.md)
 
 ***
 
-[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten](../../../exports.md) / [errors](../README.md) / QuickJSHostRefRangeExceeded
+[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten](../../../README.md) / [errors](../README.md) / QuickJSHostRefRangeExceeded
 
 # Class: QuickJSHostRefRangeExceeded
 
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:60](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L60)
+
 ## Contents
 
-- [Extends](QuickJSHostRefRangeExceeded.md#extends)
-- [Constructors](QuickJSHostRefRangeExceeded.md#constructors)
-  - [new QuickJSHostRefRangeExceeded(message)](QuickJSHostRefRangeExceeded.md#new-quickjshostrefrangeexceededmessage)
-- [Properties](QuickJSHostRefRangeExceeded.md#properties)
-  - [name](QuickJSHostRefRangeExceeded.md#name)
+* [Extends](#extends)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Properties](#properties)
+  * [name](#name)
 
 ## Extends
 
-- `Error`
+* `Error`
 
 ## Constructors
 
-### new QuickJSHostRefRangeExceeded(message)
+### Constructor
 
-> **new QuickJSHostRefRangeExceeded**(`message`?): [`QuickJSHostRefRangeExceeded`](QuickJSHostRefRangeExceeded.md)
+> **new QuickJSHostRefRangeExceeded**(`message?`): `QuickJSHostRefRangeExceeded`
+
+Defined in: node\_modules/typescript/lib/lib.es5.d.ts:1082
 
 #### Parameters
 
-• **message?**: `string`
+##### message?
+
+`string`
 
 #### Returns
 
-[`QuickJSHostRefRangeExceeded`](QuickJSHostRefRangeExceeded.md)
+`QuickJSHostRefRangeExceeded`
 
 #### Inherited from
 
 `Error.constructor`
-
-#### Source
-
-node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 ## Properties
 
@@ -46,14 +48,8 @@ node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 > **name**: `string` = `"QuickJSHostRefRangeExceeded"`
 
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:61](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L61)
+
 #### Overrides
 
 `Error.name`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/errors.ts:61](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L61)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

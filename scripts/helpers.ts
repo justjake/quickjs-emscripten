@@ -31,7 +31,12 @@ function getPackageJson(packageName: string) {
 }
 
 function getTarFile(packageName: string) {
-  return path.join(tarDir, packageName.replace("/", "-") + ".tgz")
+  // pnpm pack generates: scope-name-version.tgz (without @ prefix)
+  // e.g., @jitl/quickjs-ffi-types@0.32.0 -> jitl-quickjs-ffi-types-0.32.0.tgz
+  const packageJson = getPackageJson(packageName)
+  const tarName =
+    packageName.replace("@", "").replace("/", "-") + "-" + packageJson.version + ".tgz"
+  return path.join(tarDir, tarName)
 }
 
 export function exec(command: string) {
@@ -141,12 +146,13 @@ export interface WorkspaceJson {
   name: string
 }
 
-export function getYarnWorkspaces(): WorkspaceJson[] {
-  return p
-    .execSync("yarn workspaces list --json", { encoding: "utf-8" })
-    .split("\n")
-    .filter(Boolean)
-    .map((line) => JSON.parse(line) as WorkspaceJson)
+export function getWorkspaces(): WorkspaceJson[] {
+  const result = JSON.parse(p.execSync("pnpm ls -r --json --depth=-1", { encoding: "utf-8" }))
+  // pnpm returns single JSON array with { name, path, ... } objects
+  return result.map((pkg: { name: string; path: string }) => ({
+    name: pkg.name,
+    location: pkg.path,
+  }))
 }
 
 export function readJson<T>(filepath: string): T {

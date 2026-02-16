@@ -1,17 +1,19 @@
-[quickjs-emscripten](../packages.md) • **quickjs-emscripten** • [Readme](README.md) \| [Exports](exports.md)
+[**quickjs-emscripten**](../README.md)
 
 ***
+
+[quickjs-emscripten](../packages.md) / quickjs-emscripten
 
 # quickjs-emscripten
 
 Javascript/Typescript bindings for QuickJS, a modern Javascript interpreter,
 compiled to WebAssembly.
 
-- Safely evaluate untrusted Javascript (supports [most of ES2023](https://test262.fyi/#|qjs,qjs_ng)).
-- Create and manipulate values inside the QuickJS runtime ([more][values]).
-- Expose host functions to the QuickJS runtime ([more][functions]).
-- Execute synchronous code that uses asynchronous functions, with [asyncify][asyncify].
-- Supports browsers, NodeJS, Deno, Bun, Cloudflare Workers, QuickJS (via [quickjs-for-quickjs][]).
+* Safely evaluate untrusted Javascript (supports [most of ES2023](https://test262.fyi/#|qjs,qjs_ng)).
+* Create and manipulate values inside the QuickJS runtime ([more][values]).
+* Expose host functions to the QuickJS runtime ([more][functions]).
+* Execute synchronous code that uses asynchronous functions, with [asyncify][asyncify].
+* Supports browsers, NodeJS, Deno, Bun, Cloudflare Workers, QuickJS (via [quickjs-for-quickjs][]).
 
 [Github] | [NPM] | [API Documentation][api] | [Variants][core] | [Examples][tests]
 
@@ -42,67 +44,54 @@ main()
 ```
 
 [github]: https://github.com/justjake/quickjs-emscripten
+
 [npm]: https://www.npmjs.com/package/quickjs-emscripten
+
 [api]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/packages.md
+
 [tests]: https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/quickjs.test.ts
+
 [values]: #interfacing-with-the-interpreter
+
 [asyncify]: #asyncify
+
 [functions]: #exposing-apis
+
 [quickjs-for-quickjs]: https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-for-quickjs
 
-- [quickjs-emscripten](#quickjs-emscripten)
-  - [Usage](#usage)
-    - [Safely evaluate Javascript code](#safely-evaluate-javascript-code)
-    - [Interfacing with the interpreter](#interfacing-with-the-interpreter)
-      - [Runtime](#runtime)
-      - [EcmaScript Module Exports](#ecmascript-module-exports)
-    - [Memory Management](#memory-management)
-      - [`using` statement](#using-statement)
-      - [Scope](#scope)
-      - [`Lifetime.consume(fn)`](#lifetimeconsumefn)
-    - [Exposing APIs](#exposing-apis)
-      - [Promises](#promises)
-        - [context.getPromiseState(handle)](#contextgetpromisestatehandle)
-        - [context.resolvePromise(handle)](#contextresolvepromisehandle)
-      - [Asyncify](#asyncify)
-        - [Async module loader](#async-module-loader)
-        - [Async on host, sync in QuickJS](#async-on-host-sync-in-quickjs)
-    - [Testing your code](#testing-your-code)
-    - [Packaging](#packaging)
-      - [Reducing package size](#reducing-package-size)
-      - [WebAssembly loading](#webassembly-loading)
-      - [quickjs-ng](#quickjs-ng)
-      - [Using in the browser without a build step](#using-in-the-browser-without-a-build-step)
-    - [Debugging](#debugging)
-    - [Supported Platforms](#supported-platforms)
-    - [More Documentation](#more-documentation)
-  - [Background](#background)
-  - [Status \& Roadmap](#status--roadmap)
-  - [Related](#related)
-  - [Developing](#developing)
-    - [The C parts](#the-c-parts)
-    - [The Typescript parts](#the-typescript-parts)
-    - [Yarn updates](#yarn-updates)
-
-## Contents
-
-- [Usage](README.md#usage)
-  - [Safely evaluate Javascript code](README.md#safely-evaluate-javascript-code)
-  - [Interfacing with the interpreter](README.md#interfacing-with-the-interpreter)
-  - [Memory Management](README.md#memory-management)
-  - [Exposing APIs](README.md#exposing-apis)
-  - [Testing your code](README.md#testing-your-code)
-  - [Packaging](README.md#packaging)
-  - [Debugging](README.md#debugging)
-  - [Supported Platforms](README.md#supported-platforms)
-  - [More Documentation](README.md#more-documentation)
-- [Background](README.md#background)
-- [Status & Roadmap](README.md#status-roadmap)
-- [Related](README.md#related)
-- [Developing](README.md#developing)
-  - [The C parts](README.md#the-c-parts)
-  - [The Typescript parts](README.md#the-typescript-parts)
-  - [Yarn updates](README.md#yarn-updates)
+* [quickjs-emscripten](#quickjs-emscripten)
+  * [Usage](#usage)
+    * [Safely evaluate Javascript code](#safely-evaluate-javascript-code)
+    * [Interfacing with the interpreter](#interfacing-with-the-interpreter)
+      * [Runtime](#runtime)
+      * [EcmaScript Module Exports](#ecmascript-module-exports)
+    * [Memory Management](#memory-management)
+      * [`using` statement](#using-statement)
+      * [Scope](#scope)
+      * [`Lifetime.consume(fn)`](#lifetimeconsumefn)
+    * [Exposing APIs](#exposing-apis)
+      * [Promises](#promises)
+        * [context.getPromiseState(handle)](#contextgetpromisestatehandle)
+        * [context.resolvePromise(handle)](#contextresolvepromisehandle)
+      * [Asyncify](#asyncify)
+        * [Async module loader](#async-module-loader)
+        * [Async on host, sync in QuickJS](#async-on-host-sync-in-quickjs)
+    * [Testing your code](#testing-your-code)
+    * [Packaging](#packaging)
+      * [Reducing package size](#reducing-package-size)
+      * [WebAssembly loading](#webassembly-loading)
+      * [quickjs-ng](#quickjs-ng)
+      * [Using in the browser without a build step](#using-in-the-browser-without-a-build-step)
+    * [Debugging](#debugging)
+    * [Supported Platforms](#supported-platforms)
+    * [More Documentation](#more-documentation)
+  * [Background](#background)
+  * [Status & Roadmap](#status--roadmap)
+  * [Related](#related)
+  * [Developing](#developing)
+    * [The C parts](#the-c-parts)
+    * [The Typescript parts](#the-typescript-parts)
+    * [Yarn updates](#yarn-updates)
 
 ## Usage
 
@@ -360,12 +349,14 @@ vm.unwrapResult(vm.evalCode(`console.log("Hello from QuickJS!")`)).dispose()
 ```
 
 [newObject]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSContext.md#newobject
+
 [newFunction]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSContext.md#newfunction
+
 [setProp]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSContext.md#setprop
 
 #### Promises
 
-To expose an asynchronous function that _returns a promise_ to callers within
+To expose an asynchronous function that *returns a promise* to callers within
 QuickJS, your function can return the handle of a `QuickJSDeferredPromise`
 created via `context.newPromise()`.
 
@@ -373,7 +364,7 @@ When you resolve a `QuickJSDeferredPromise` -- and generally whenever async
 behavior completes for the VM -- pending listeners inside QuickJS may not
 execute immediately. Your code needs to explicitly call
 `runtime.executePendingJobs()` to resume execution inside QuickJS. This API
-gives your code maximum control to _schedule_ when QuickJS will block the host's
+gives your code maximum control to *schedule* when QuickJS will block the host's
 event loop by resuming execution.
 
 To work with QuickJS handles that contain a promise inside the environment,
@@ -452,7 +443,7 @@ resolvedHandle.dispose()
 #### Asyncify
 
 Sometimes, we want to create a function that's synchronous from the perspective
-of QuickJS, but prefer to implement that function _asynchronously_ in your host
+of QuickJS, but prefer to implement that function *asynchronously* in your host
 code. The most obvious use-case is for EcmaScript module loading. The underlying
 QuickJS C library expects the module loader function to return synchronously,
 but loading data synchronously in the browser or server is somewhere between "a
@@ -466,25 +457,25 @@ compiler transform. Here's how Emscripten's documentation describes Asyncify:
 
 > Asyncify lets synchronous C or C++ code interact with asynchronous \[host] JavaScript. This allows things like:
 >
-> - A synchronous call in C that yields to the event loop, which allows browser events to be handled.
-> - A synchronous call in C that waits for an asynchronous operation in \[host] JS to complete.
+> * A synchronous call in C that yields to the event loop, which allows browser events to be handled.
+> * A synchronous call in C that waits for an asynchronous operation in \[host] JS to complete.
 >
 > Asyncify automatically transforms ... code into a form that can be paused and
 > resumed ..., so that it is asynchronous (hence the name “Asyncify”) even though
 > \[it is written] in a normal synchronous way.
 
-This means we can suspend an _entire WebAssembly module_ (which could contain
+This means we can suspend an *entire WebAssembly module* (which could contain
 multiple runtimes and contexts) while our host Javascript loads data
 asynchronously, and then resume execution once the data load completes. This is
 a very handy superpower, but it comes with a couple of major limitations:
 
-1. _An asyncified WebAssembly module can only suspend to wait for a single
-   asynchronous call at a time_. You may call back into a suspended WebAssembly
+1. *An asyncified WebAssembly module can only suspend to wait for a single
+   asynchronous call at a time*. You may call back into a suspended WebAssembly
    module eg. to create a QuickJS value to return a result, but the system will
    crash if this call tries to suspend again. Take a look at Emscripten's documentation
    on [reentrancy](https://emscripten.org/docs/porting/asyncify.html#reentrancy).
 
-2. _Asyncified code is bigger and runs slower_. The asyncified build of
+2. *Asyncified code is bigger and runs slower*. The asyncified build of
    Quickjs-emscripten library is 1M, 2x larger than the 500K of the default
    version. There may be room for further
    [optimization](https://emscripten.org/docs/porting/asyncify.html#optimizing)
@@ -492,13 +483,15 @@ a very handy superpower, but it comes with a couple of major limitations:
 
 To use asyncify features, use the following functions:
 
-- [newAsyncRuntime][]: create a runtime inside a new WebAssembly module.
-- [newAsyncContext][]: create runtime and context together inside a new
+* [newAsyncRuntime][]: create a runtime inside a new WebAssembly module.
+* [newAsyncContext][]: create runtime and context together inside a new
   WebAssembly module.
-- [newQuickJSAsyncWASMModule][]: create an empty WebAssembly module.
+* [newQuickJSAsyncWASMModule][]: create an empty WebAssembly module.
 
 [newasyncruntime]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#newasyncruntime
+
 [newasynccontext]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#newasynccontext
+
 [newquickjsasyncwasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#newquickjsasyncwasmmodule
 
 These functions are asynchronous because they always create a new underlying
@@ -583,7 +576,7 @@ console.log(upperCaseData) // 'VERY USEFUL DATA'
 
 This library is complicated to use, so please consider automated testing your
 implementation. We highly writing your test suite to run with both the "release"
-build variant of quickjs-emscripten, and also the [DEBUG_SYNC] build variant.
+build variant of quickjs-emscripten, and also the [DEBUG\_SYNC][DEBUG_SYNC] build variant.
 The debug sync build variant has extra instrumentation code for detecting memory
 leaks.
 
@@ -629,19 +622,21 @@ describe("Realistic test with QuickJS RELEASE build", () => {
 For more testing examples, please explore the typescript source of [quickjs-emscripten][ts] repository.
 
 [ts]: https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/
+
 [debug_sync]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/exports.md#debug_sync
+
 [testquickjswasmmodule]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/TestQuickJSWASMModule.md
 
 ### Packaging
 
 The main `quickjs-emscripten` package includes several build variants of the WebAssembly module:
 
-- `RELEASE...` build variants should be used in production. They offer better performance and smaller file size compared to `DEBUG...` build variants.
-  - `RELEASE_SYNC`: This is the default variant used when you don't explicitly provide one. It offers the fastest performance and smallest file size.
-  - `RELEASE_ASYNC`: The default variant if you need [asyncify][] magic, which comes at a performance cost. See the asyncify docs for details.
-- `DEBUG...` build variants can be helpful during development and testing. They include source maps and assertions for catching bugs in your code. We recommend running your tests with _both_ a debug build variant and the release build variant you'll use in production.
-  - `DEBUG_SYNC`: Instrumented to detect memory leaks, in addition to assertions and source maps.
-  - `DEBUG_ASYNC`: An [asyncify][] variant with source maps.
+* `RELEASE...` build variants should be used in production. They offer better performance and smaller file size compared to `DEBUG...` build variants.
+  * `RELEASE_SYNC`: This is the default variant used when you don't explicitly provide one. It offers the fastest performance and smallest file size.
+  * `RELEASE_ASYNC`: The default variant if you need [asyncify][] magic, which comes at a performance cost. See the asyncify docs for details.
+* `DEBUG...` build variants can be helpful during development and testing. They include source maps and assertions for catching bugs in your code. We recommend running your tests with *both* a debug build variant and the release build variant you'll use in production.
+  * `DEBUG_SYNC`: Instrumented to detect memory leaks, in addition to assertions and source maps.
+  * `DEBUG_ASYNC`: An [asyncify][] variant with source maps.
 
 To use a variant, call `newQuickJSWASMModule` or `newQuickJSAsyncWASMModule` with the variant object. These functions return a promise that resolves to a [QuickJSWASMModule](./doc/quickjs-emscripten/classes/QuickJSWASMModule.md), the same as `getQuickJS`.
 
@@ -752,7 +747,7 @@ You can use quickjs-emscripten directly from an HTML file in two ways:
    </script>
    ```
 
-1. In edge cases, you might want to use the IIFE build which provides QuickJS as the global `QJS`. You should probably use the ES module though, any recent browser supports it.
+2. In edge cases, you might want to use the IIFE build which provides QuickJS as the global `QJS`. You should probably use the ES module though, any recent browser supports it.
 
    ```html
    <!doctype html>
@@ -815,32 +810,40 @@ context.runtime.setDebugMode(true)
 ```
 
 [setDebugMode]: doc/quickjs-emscripten/exports.md#setdebugmode
+
 [setDebugModeRt]: https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten-core/classes/QuickJSRuntime.md#setdebugmode
 
 ### Supported Platforms
 
 `quickjs-emscripten` and related packages should work in any environment that supports ES2020.
 
-- Browsers: we estimate support for the following browser versions. See the [global-iife][iife] and [esmodule][esm-html] HTML examples.
-  - Chrome 63+
-  - Edge 79+
-  - Safari 11.1+
-  - Firefox 58+
-- NodeJS: requires v16.0.0 or later for WebAssembly compatibility. Tested with node@18. See the [node-typescript][tsx-example] and [node-minimal][minimal] examples.
-- Typescript: tested with typescript@4.5.5 and typescript@5.3.3. See the [node-typescript example][tsx-example].
-- Vite: tested with vite@5.0.10. See the [Vite/Vue example][vite].
-- Create react app: tested with react-scripts@5.0.1. See the [create-react-app example][cra].
-- Webpack: tested with webpack@5.89.0 via create-react-app.
-- Cloudflare Workers: tested with wrangler@3.22.1. See the [Cloudflare Workers example][cloudflare].
-- Deno: tested with deno 1.39.1. See the [Deno example][deno].
+* Browsers: we estimate support for the following browser versions. See the [global-iife][iife] and [esmodule][esm-html] HTML examples.
+  * Chrome 63+
+  * Edge 79+
+  * Safari 11.1+
+  * Firefox 58+
+* NodeJS: requires v16.0.0 or later for WebAssembly compatibility. Tested with node@18. See the [node-typescript][tsx-example] and [node-minimal][minimal] examples.
+* Typescript: tested with typescript@4.5.5 and typescript@5.3.3. See the [node-typescript example][tsx-example].
+* Vite: tested with vite@5.0.10. See the [Vite/Vue example][vite].
+* Create react app: tested with react-scripts@5.0.1. See the [create-react-app example][cra].
+* Webpack: tested with webpack@5.89.0 via create-react-app.
+* Cloudflare Workers: tested with wrangler@3.22.1. See the [Cloudflare Workers example][cloudflare].
+* Deno: tested with deno 1.39.1. See the [Deno example][deno].
 
 [iife]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/global-iife.html
+
 [esm-html]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/esmodule.html
+
 [deno]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/deno
+
 [vite]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/vite-vue
+
 [cra]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/create-react-app
+
 [cloudflare]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/cloudflare-workers
+
 [tsx-example]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/node-typescript
+
 [minimal]: https://github.com/justjake/quickjs-emscripten/blob/main/examples/node-minimal
 
 ### More Documentation
@@ -853,8 +856,8 @@ This was inspired by seeing https://github.com/maple3142/duktape-eval
 [on Hacker News](https://news.ycombinator.com/item?id=21946565) and Figma's
 blogposts about using building a Javascript plugin runtime:
 
-- [How Figma built the Figma plugin system](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/): Describes the LowLevelJavascriptVm interface.
-- [An update on plugin security](https://www.figma.com/blog/an-update-on-plugin-security/): Figma switches to QuickJS.
+* [How Figma built the Figma plugin system](https://www.figma.com/blog/how-we-built-the-figma-plugin-system/): Describes the LowLevelJavascriptVm interface.
+* [An update on plugin security](https://www.figma.com/blog/an-update-on-plugin-security/): Figma switches to QuickJS.
 
 ## Status & Roadmap
 
@@ -868,32 +871,29 @@ audited. Please use with care in production settings.
 thinking comes next. Last updated 2022-03-18.
 
 1. Further work on module loading APIs:
-
-   - Create modules via Javascript, instead of source text.
-   - Scan source text for imports, for ahead of time or concurrent loading.
+   * Create modules via Javascript, instead of source text.
+   * Scan source text for imports, for ahead of time or concurrent loading.
      (This is possible with third-party tools, so lower priority.)
 
 2. Higher-level tools for reading QuickJS values:
-
-   - Type guard functions: `context.isArray(handle)`, `context.isPromise(handle)`, etc.
-   - Iteration utilities: `context.getIterable(handle)`, `context.iterateObjectEntries(handle)`.
+   * Type guard functions: `context.isArray(handle)`, `context.isPromise(handle)`, etc.
+   * Iteration utilities: `context.getIterable(handle)`, `context.iterateObjectEntries(handle)`.
      This better supports user-level code to deserialize complex handle objects.
 
 3. Higher-level tools for creating QuickJS values:
-
-   - Devise a way to avoid needing to mess around with handles when setting up
+   * Devise a way to avoid needing to mess around with handles when setting up
      the environment.
-   - Consider integrating
+   * Consider integrating
      [quickjs-emscripten-sync](https://github.com/reearth/quickjs-emscripten-sync)
      for automatic translation.
-   - Consider class-based or interface-type-based marshalling.
+   * Consider class-based or interface-type-based marshalling.
 
 4. SQLite integration.
 
 ## Related
 
-- Duktape wrapped in Wasm: https://github.com/maple3142/duktape-eval/blob/main/src/Makefile
-- QuickJS wrapped in C++: https://github.com/ftk/quickjspp
+* Duktape wrapped in Wasm: https://github.com/maple3142/duktape-eval/blob/main/src/Makefile
+* QuickJS wrapped in C++: https://github.com/ftk/quickjspp
 
 ## Developing
 
@@ -912,8 +912,8 @@ Typescript (via a generated FFI class). See ./generate.ts for how this works.
 The C code builds with `emscripten` (using `emcc`), to produce WebAssembly.
 The version of Emscripten used by the project is defined in templates/Variant.mk.
 
-- On ARM64, you should install `emscripten` on your machine. For example on macOS, `brew install emscripten`.
-- If _the correct version of emcc_ is not in your PATH, compilation falls back to using Docker.
+* On ARM64, you should install `emscripten` on your machine. For example on macOS, `brew install emscripten`.
+* If *the correct version of emcc* is not in your PATH, compilation falls back to using Docker.
   On ARM64, this is 10-50x slower than native compilation, but it's just fine on x64.
 
 We produce multiple build variants of the C code compiled to WebAssembly using a
@@ -922,35 +922,164 @@ to build the C code. The Makefile is generated from a template in ./templates/Va
 
 Related NPM scripts:
 
-- `yarn vendor:update` updates vendor/quickjs and vendor/quickjs-ng to the latest versions on Github.
-- `yarn build:codegen` updates the ./packages from the template script `./prepareVariants.ts` and Variant.mk.
-- `yarn build:packages` builds the variant packages in parallel.
+* `yarn vendor:update` updates vendor/quickjs and vendor/quickjs-ng to the latest versions on Github.
+* `yarn build:codegen` updates the ./packages from the template script `./prepareVariants.ts` and Variant.mk.
+* `yarn build:packages` builds the variant packages in parallel.
 
 ### The Typescript parts
 
 The Javascript/Typescript code is also organized into several NPM packages in ./packages:
 
-- ./packages/quickjs-ffi-types: Low-level types that define the FFI interface to the C code.
+* ./packages/quickjs-ffi-types: Low-level types that define the FFI interface to the C code.
   Each variant exposes an API conforming to these types that's consumed by the higher-level library.
-- ./packages/quickjs-emscripten-core: The higher-level Typescript that implements the user-facing abstractions of the library.
+* ./packages/quickjs-emscripten-core: The higher-level Typescript that implements the user-facing abstractions of the library.
   This package doesn't link directly to the WebAssembly/C code; callers must provide a build variant.
-- ./packages/quicks-emscripten: The main entrypoint of the library, which provides the `getQuickJS` function.
+* ./packages/quicks-emscripten: The main entrypoint of the library, which provides the `getQuickJS` function.
   This package combines quickjs-emscripten-core with platform-appropriate WebAssembly/C code.
 
 Related NPM scripts:
 
-- `yarn check` runs all available checks (build, format, tests, etc).
-- `yarn build` builds all the packages and generates the docs.
-- `yarn test` runs the tests for all packages.
-  - `yarn test:fast` runs the tests using only fast build variants.
-- `yarn doc` generates the docs into `./doc`.
-  - `yarn doc:serve` previews the current `./doc` in a browser.
-- `yarn prettier` formats the repo.
+* `yarn check` runs all available checks (build, format, tests, etc).
+* `yarn build` builds all the packages and generates the docs.
+* `yarn test` runs the tests for all packages.
+  * `yarn test:fast` runs the tests using only fast build variants.
+* `yarn doc` generates the docs into `./doc`.
+  * `yarn doc:serve` previews the current `./doc` in a browser.
+* `yarn prettier` formats the repo.
 
 ### Yarn updates
 
 Just run `yarn set version from sources` to upgrade the Yarn release.
 
-***
+## Namespaces
 
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+* [errors](namespaces/errors/README.md)
+
+## Classes
+
+* [DisposableFail](classes/DisposableFail.md)
+* [DisposableSuccess](classes/DisposableSuccess.md)
+* [Lifetime](classes/Lifetime.md)
+* [QuickJSAsyncContext](classes/QuickJSAsyncContext.md)
+* [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md)
+* [QuickJSAsyncWASMModule](classes/QuickJSAsyncWASMModule.md)
+* [QuickJSContext](classes/QuickJSContext.md)
+* [QuickJSDeferredPromise](classes/QuickJSDeferredPromise.md)
+* [QuickJSRuntime](classes/QuickJSRuntime.md)
+* [QuickJSWASMModule](classes/QuickJSWASMModule.md)
+* [Scope](classes/Scope.md)
+* [StaticLifetime](classes/StaticLifetime.md)
+* [TestQuickJSWASMModule](classes/TestQuickJSWASMModule.md)
+* [UsingDisposable](classes/UsingDisposable.md)
+* [WeakLifetime](classes/WeakLifetime.md)
+
+## Interfaces
+
+* [AsyncRuntimeOptions](interfaces/AsyncRuntimeOptions.md)
+* [ContextEvalOptions](interfaces/ContextEvalOptions.md)
+* [ContextOptions](interfaces/ContextOptions.md)
+* [CustomizeVariantOptions](interfaces/CustomizeVariantOptions.md)
+* [Disposable](interfaces/Disposable.md)
+* [EmscriptenModule](interfaces/EmscriptenModule.md)
+* [EmscriptenModuleLoader](interfaces/EmscriptenModuleLoader.md)
+* [EmscriptenModuleLoaderOptions](interfaces/EmscriptenModuleLoaderOptions.md)
+* [JSModuleLoader](interfaces/JSModuleLoader.md)
+* [JSModuleLoaderAsync](interfaces/JSModuleLoaderAsync.md)
+* [JSModuleNormalizer](interfaces/JSModuleNormalizer.md)
+* [JSModuleNormalizerAsync](interfaces/JSModuleNormalizerAsync.md)
+* [JSPromiseStateFulfilled](interfaces/JSPromiseStateFulfilled.md)
+* [JSPromiseStatePending](interfaces/JSPromiseStatePending.md)
+* [JSPromiseStateRejected](interfaces/JSPromiseStateRejected.md)
+* [LowLevelJavascriptVm](interfaces/LowLevelJavascriptVm.md)
+* [ModuleEvalOptions](interfaces/ModuleEvalOptions.md)
+* [QuickJSAsyncEmscriptenModule](interfaces/QuickJSAsyncEmscriptenModule.md)
+* [QuickJSAsyncFFI](interfaces/QuickJSAsyncFFI.md)
+* [QuickJSAsyncVariant](interfaces/QuickJSAsyncVariant.md)
+* [QuickJSEmscriptenModule](interfaces/QuickJSEmscriptenModule.md)
+* [QuickJSFFI](interfaces/QuickJSFFI.md)
+* [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md)
+* [RuntimeOptions](interfaces/RuntimeOptions.md)
+* [RuntimeOptionsBase](interfaces/RuntimeOptionsBase.md)
+* [SourceMapData](interfaces/SourceMapData.md)
+* [VmPropertyDescriptor](interfaces/VmPropertyDescriptor.md)
+
+## Type Aliases
+
+* [AsyncFunctionImplementation](type-aliases/AsyncFunctionImplementation.md)
+* [BorrowedHeapCharPointer](type-aliases/BorrowedHeapCharPointer.md)
+* [DisposableArray](type-aliases/DisposableArray.md)
+* [DisposableResult](type-aliases/DisposableResult.md)
+* [EitherFFI](type-aliases/EitherFFI.md)
+* [EitherModule](type-aliases/EitherModule.md)
+* [ExecutePendingJobsResult](type-aliases/ExecutePendingJobsResult.md)
+* [InterruptHandler](type-aliases/InterruptHandler.md)
+* [Intrinsics](type-aliases/Intrinsics.md)
+* [JSBorrowedCharPointer](type-aliases/JSBorrowedCharPointer.md)
+* [JSContextPointer](type-aliases/JSContextPointer.md)
+* [JSContextPointerPointer](type-aliases/JSContextPointerPointer.md)
+* [JSModuleDefPointer](type-aliases/JSModuleDefPointer.md)
+* [JSModuleLoadFailure](type-aliases/JSModuleLoadFailure.md)
+* [JSModuleLoadResult](type-aliases/JSModuleLoadResult.md)
+* [JSModuleLoadSuccess](type-aliases/JSModuleLoadSuccess.md)
+* [JSModuleNormalizeFailure](type-aliases/JSModuleNormalizeFailure.md)
+* [JSModuleNormalizeResult](type-aliases/JSModuleNormalizeResult.md)
+* [JSModuleNormalizeSuccess](type-aliases/JSModuleNormalizeSuccess.md)
+* [JSPromiseState](type-aliases/JSPromiseState.md)
+* [JSPromiseStateEnum](type-aliases/JSPromiseStateEnum.md)
+* [JSRuntimePointer](type-aliases/JSRuntimePointer.md)
+* [JSValue](type-aliases/JSValue.md)
+* [JSValueConst](type-aliases/JSValueConst.md)
+* [JSValueConstPointer](type-aliases/JSValueConstPointer.md)
+* [JSValueConstPointerPointer](type-aliases/JSValueConstPointerPointer.md)
+* [JSValuePointer](type-aliases/JSValuePointer.md)
+* [JSValuePointerPointer](type-aliases/JSValuePointerPointer.md)
+* [JSValuePointerPointerPointer](type-aliases/JSValuePointerPointerPointer.md)
+* [JSVoidPointer](type-aliases/JSVoidPointer.md)
+* [OrLoader](type-aliases/OrLoader.md)
+* [OwnedHeapCharPointer](type-aliases/OwnedHeapCharPointer.md)
+* [PromisedDefault](type-aliases/PromisedDefault.md)
+* [PromiseExecutor](type-aliases/PromiseExecutor.md)
+* [QTS\_C\_To\_HostCallbackFuncPointer](type-aliases/QTS_C_To_HostCallbackFuncPointer.md)
+* [QTS\_C\_To\_HostInterruptFuncPointer](type-aliases/QTS_C_To_HostInterruptFuncPointer.md)
+* [QTS\_C\_To\_HostLoadModuleFuncPointer](type-aliases/QTS_C_To_HostLoadModuleFuncPointer.md)
+* [QuickJSHandle](type-aliases/QuickJSHandle.md)
+* [QuickJSPropertyKey](type-aliases/QuickJSPropertyKey.md)
+* [QuickJSVariant](type-aliases/QuickJSVariant.md)
+* [StaticJSValue](type-aliases/StaticJSValue.md)
+* [SuccessOrFail](type-aliases/SuccessOrFail.md)
+* [UInt32Pointer](type-aliases/UInt32Pointer.md)
+* [VmCallResult](type-aliases/VmCallResult.md)
+* [VmFunctionImplementation](type-aliases/VmFunctionImplementation.md)
+
+## Variables
+
+* [DEBUG\_ASYNC](variables/DEBUG_ASYNC.md)
+* [DEBUG\_SYNC](variables/DEBUG_SYNC.md)
+* [DefaultIntrinsics](variables/DefaultIntrinsics.md)
+* [DisposableResult](variables/DisposableResult.md)
+* [EvalFlags](variables/EvalFlags.md)
+* [GetOwnPropertyNamesFlags](variables/GetOwnPropertyNamesFlags.md)
+* [IntrinsicsFlags](variables/IntrinsicsFlags.md)
+* [IsEqualOp](variables/IsEqualOp.md)
+* [JSPromiseStateEnum](variables/JSPromiseStateEnum.md)
+* [RELEASE\_ASYNC](variables/RELEASE_ASYNC.md)
+* [RELEASE\_SYNC](variables/RELEASE_SYNC.md)
+
+## Functions
+
+* [assertSync](functions/assertSync.md)
+* [createDisposableArray](functions/createDisposableArray.md)
+* [getQuickJS](functions/getQuickJS.md)
+* [getQuickJSSync](functions/getQuickJSSync.md)
+* [isFail](functions/isFail.md)
+* [isSuccess](functions/isSuccess.md)
+* [memoizePromiseFactory](functions/memoizePromiseFactory.md)
+* [newAsyncContext](functions/newAsyncContext.md)
+* [newAsyncRuntime](functions/newAsyncRuntime.md)
+* [newQuickJSAsyncWASMModule](functions/newQuickJSAsyncWASMModule.md)
+* [newQuickJSAsyncWASMModuleFromVariant](functions/newQuickJSAsyncWASMModuleFromVariant.md)
+* [newQuickJSWASMModule](functions/newQuickJSWASMModule.md)
+* [newQuickJSWASMModuleFromVariant](functions/newQuickJSWASMModuleFromVariant.md)
+* [newVariant](functions/newVariant.md)
+* [setDebugMode](functions/setDebugMode.md)
+* [shouldInterruptAfterDeadline](functions/shouldInterruptAfterDeadline.md)

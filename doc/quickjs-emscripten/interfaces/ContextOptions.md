@@ -1,31 +1,36 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / ContextOptions
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / ContextOptions
 
 # Interface: ContextOptions
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:212](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L212)
 
 Options for creating a [QuickJSContext](../classes/QuickJSContext.md) or [QuickJSAsyncContext](../classes/QuickJSAsyncContext.md)
 Pass to [QuickJSRuntime#newContext](../classes/QuickJSRuntime.md#newcontext).
 
 ## Contents
 
-- [Properties](ContextOptions.md#properties)
-  - [intrinsics?](ContextOptions.md#intrinsics)
+* [Properties](#properties)
+  * [intrinsics?](#intrinsics)
 
 ## Properties
 
 ### intrinsics?
 
-> **intrinsics**?: [`Intrinsics`](../exports.md#intrinsics)
+> `optional` **intrinsics**: [`Intrinsics`](../type-aliases/Intrinsics.md)
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:229](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L229)
 
 What built-in objects and language features to enable?
 If unset, the default intrinsics will be used.
 To omit all intrinsics, pass an empty array.
 
 To remove a specific intrinsic, but retain the other defaults,
-override it from [DefaultIntrinsics](../exports.md#defaultintrinsics)
+override it from [DefaultIntrinsics](../variables/DefaultIntrinsics.md)
+
 ```ts
 const contextWithoutDateOrEval = runtime.newContext({
   intrinsics: {
@@ -34,11 +39,3 @@ const contextWithoutDateOrEval = runtime.newContext({
   }
 })
 ```
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/types.ts:229](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L229)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

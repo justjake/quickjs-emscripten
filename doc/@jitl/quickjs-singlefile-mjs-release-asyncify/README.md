@@ -1,6 +1,8 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-singlefile-mjs-release-asyncify** • [Readme](README.md) \| [Exports](exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
+
+[quickjs-emscripten](../../packages.md) / @jitl/quickjs-singlefile-mjs-release-asyncify
 
 # @jitl/quickjs-singlefile-mjs-release-asyncify
 
@@ -17,15 +19,6 @@ const QuickJS = await newQuickJSAsyncWASMModuleFromVariant(variant)
 
 This variant was built with the following settings:
 
-## Contents
-
-- [Library: quickjs](README.md#library-quickjs)
-- [Release mode: release](README.md#release-mode-release)
-- [Exports: import](README.md#exports-import)
-- [Extra async magic? Yes](README.md#extra-async-magic-yes)
-- [Single-file, or separate .wasm file? singlefile](README.md#single-file-or-separate-wasm-file-singlefile)
-- [More details](README.md#more-details)
-
 ## Library: quickjs
 
 The original [bellard/quickjs](https://github.com/bellard/quickjs) library.
@@ -40,7 +33,7 @@ Optimized for performance; use when building/deploying your application.
 
 Exports the following in package.json for the package entrypoint:
 
-- Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
+* Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
 
 ## Extra async magic? Yes
 
@@ -90,6 +83,6 @@ Variant-specific Emscripten build flags:
 ]
 ```
 
-***
+## Variables
 
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+* [default](variables/default.md)

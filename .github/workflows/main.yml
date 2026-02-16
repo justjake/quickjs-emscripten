@@ -29,27 +29,23 @@ jobs:
         uses: docker-practice/actions-setup-docker@1.0.8
         if: matrix.platform == 'macos-latest'
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
         with:
           # We need `git log` to find git-subtree versions
           fetch-depth: 0
 
-      - name: Yarn cache
-        uses: actions/cache@v3
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
         with:
-          path: "**/.yarn/cache"
-          key: ${{ hashFiles('**/yarn.lock') }}
+          node-version: 22
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: yarn install --immutable
-        env:
-          YARN_ENABLE_SCRIPTS: 0
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: EMSDK cache
         uses: actions/cache@v3
@@ -60,26 +56,26 @@ jobs:
       - name: Environment info
         run: |
           echo $(which node) v$(node --version)
-          echo $(which yarn) v$(yarn --version)
+          echo $(which pnpm) v$(pnpm --version)
           echo $(which npx) v$(npx --version)
           echo $(npx which tsc) $(npx tsc --version)
           echo $(npx which tsup) $(npx tsup --version)
           echo $(npx which esbuild) v$(npx esbuild --version)
 
       - name: Build
-        run: yarn build
+        run: pnpm run build
 
       - name: Check types
-        run: yarn check:types
+        run: pnpm run check:types
 
       - name: Check package.jsons
-        run: yarn check:packages
+        run: pnpm run check:packages
 
       - name: Test
-        run: yarn test:slow
+        run: pnpm run test:slow
 
       - name: Build tarballs
-        run: yarn tarball && du -h build/tar/*
+        run: pnpm run tarball && du -h build/tar/*
 
       - name: Test release with NodeJS minimal ESModule example
         run: ./scripts/smoketest-node-minimal.ts
@@ -94,7 +90,7 @@ jobs:
         run: ./scripts/smoketest-vite.ts
 
       - name: Check lint
-        run: yarn lint
+        run: pnpm run lint
 
       - name: Check format
-        run: yarn check:format
+        run: pnpm run check:format

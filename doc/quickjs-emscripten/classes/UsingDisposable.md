@@ -1,66 +1,76 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / UsingDisposable
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / UsingDisposable
 
-# Class: `abstract` UsingDisposable
+# Abstract Class: UsingDisposable
 
-Base abstract class that helps implement [Disposable](../interfaces/Disposable.md) by providing a default implementation of [Symbol.dispose]([object Object]).
+Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:34](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L34)
+
+Base abstract class that helps implement [Disposable](../interfaces/Disposable.md) by providing a default implementation of Symbol.dispose.
 
 ## Contents
 
-- [Extended By](UsingDisposable.md#extended-by)
-- [Implements](UsingDisposable.md#implements)
-- [Constructors](UsingDisposable.md#constructors)
-  - [new UsingDisposable(undefined)](UsingDisposable.md#new-usingdisposableundefined)
-- [Properties](UsingDisposable.md#properties)
-  - [`abstract` alive](UsingDisposable.md#abstract-alive)
-- [Methods](UsingDisposable.md#methods)
-  - [`[dispose]`()](UsingDisposable.md#dispose)
-  - [`abstract` dispose()](UsingDisposable.md#abstract-dispose)
+* [Extended by](#extended-by)
+* [Implements](#implements)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Properties](#properties)
+  * [alive](#alive)
+* [Methods](#methods)
+  * [\[dispose\]()](#dispose)
+  * [dispose()](#dispose-1)
 
-## Extended By
+## Extended by
 
-- [`QuickJSContext`](QuickJSContext.md)
-- [`QuickJSRuntime`](QuickJSRuntime.md)
-- [`Lifetime`](Lifetime.md)
-- [`Scope`](Scope.md)
-- [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
+* [`Lifetime`](Lifetime.md)
+* [`Scope`](Scope.md)
+* [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
+* [`QuickJSContext`](QuickJSContext.md)
+* [`QuickJSRuntime`](QuickJSRuntime.md)
 
 ## Implements
 
-- [`Disposable`](../interfaces/Disposable.md)
+* [`Disposable`](../interfaces/Disposable.md)
 
 ## Constructors
 
-### new UsingDisposable(undefined)
+### Constructor
 
-> **new UsingDisposable**(): [`UsingDisposable`](UsingDisposable.md)
+> **new UsingDisposable**(): `UsingDisposable`
 
 #### Returns
 
-[`UsingDisposable`](UsingDisposable.md)
+`UsingDisposable`
 
 ## Properties
 
-### `abstract` alive
+### alive
 
-> **`abstract`** **`readonly`** **alive**: `boolean`
+> `abstract` `readonly` **alive**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:39](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L39)
+
+#### Returns
+
+true if the object is alive
+
+#### Returns
+
+false after the object has been [dispose](../interfaces/Disposable.md#dispose-1)d
 
 #### Implementation of
 
-[`quickjs-emscripten.Disposable.alive`](../interfaces/Disposable.md#alive)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/lifetime.ts:39](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L39)
+[`Disposable`](../interfaces/Disposable.md).[`alive`](../interfaces/Disposable.md#alive)
 
 ## Methods
 
-### `[dispose]`()
+### \[dispose]\()
 
-> **[dispose]**(): `void`
+> **\[dispose]**(): `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
 Just calls the standard .dispose() method of this class.
 
@@ -70,17 +80,15 @@ Just calls the standard .dispose() method of this class.
 
 #### Implementation of
 
-[`quickjs-emscripten.Disposable.[dispose]`](../interfaces/Disposable.md#dispose)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
+[`Disposable`](../interfaces/Disposable.md).[`[dispose]`](../interfaces/Disposable.md#dispose)
 
 ***
 
-### `abstract` dispose()
+### dispose()
 
-> **`abstract`** **dispose**(): `void`
+> `abstract` **dispose**(): `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L43)
 
 Dispose of the underlying resources used by this object.
 
@@ -90,12 +98,4 @@ Dispose of the underlying resources used by this object.
 
 #### Implementation of
 
-[`quickjs-emscripten.Disposable.dispose`](../interfaces/Disposable.md#dispose-1)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/lifetime.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L43)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+[`Disposable`](../interfaces/Disposable.md).[`dispose`](../interfaces/Disposable.md#dispose-1)

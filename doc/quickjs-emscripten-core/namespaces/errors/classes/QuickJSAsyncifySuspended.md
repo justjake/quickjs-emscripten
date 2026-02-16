@@ -1,44 +1,46 @@
-[quickjs-emscripten](../../../../packages.md) • **quickjs-emscripten-core** • [Readme](../../../README.md) \| [Exports](../../../exports.md)
+[**quickjs-emscripten**](../../../../README.md)
 
 ***
 
-[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten-core](../../../exports.md) / [errors](../README.md) / QuickJSAsyncifySuspended
+[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten-core](../../../README.md) / [errors](../README.md) / QuickJSAsyncifySuspended
 
 # Class: QuickJSAsyncifySuspended
 
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:36](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L36)
+
 ## Contents
 
-- [Extends](QuickJSAsyncifySuspended.md#extends)
-- [Constructors](QuickJSAsyncifySuspended.md#constructors)
-  - [new QuickJSAsyncifySuspended(message)](QuickJSAsyncifySuspended.md#new-quickjsasyncifysuspendedmessage)
-- [Properties](QuickJSAsyncifySuspended.md#properties)
-  - [name](QuickJSAsyncifySuspended.md#name)
+* [Extends](#extends)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Properties](#properties)
+  * [name](#name)
 
 ## Extends
 
-- `Error`
+* `Error`
 
 ## Constructors
 
-### new QuickJSAsyncifySuspended(message)
+### Constructor
 
-> **new QuickJSAsyncifySuspended**(`message`?): [`QuickJSAsyncifySuspended`](QuickJSAsyncifySuspended.md)
+> **new QuickJSAsyncifySuspended**(`message?`): `QuickJSAsyncifySuspended`
+
+Defined in: node\_modules/typescript/lib/lib.es5.d.ts:1082
 
 #### Parameters
 
-• **message?**: `string`
+##### message?
+
+`string`
 
 #### Returns
 
-[`QuickJSAsyncifySuspended`](QuickJSAsyncifySuspended.md)
+`QuickJSAsyncifySuspended`
 
 #### Inherited from
 
 `Error.constructor`
-
-#### Source
-
-node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 ## Properties
 
@@ -46,14 +48,8 @@ node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 > **name**: `string` = `"QuickJSAsyncifySuspended"`
 
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:37](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L37)
+
 #### Overrides
 
 `Error.name`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/errors.ts:37](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L37)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

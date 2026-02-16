@@ -1,6 +1,8 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-ng-wasmfile-debug-asyncify** • [Readme](README.md) \| [Exports](exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
+
+[quickjs-emscripten](../../packages.md) / @jitl/quickjs-ng-wasmfile-debug-asyncify
 
 # @jitl/quickjs-ng-wasmfile-debug-asyncify
 
@@ -17,15 +19,6 @@ const QuickJS = await newQuickJSAsyncWASMModuleFromVariant(variant)
 
 This variant was built with the following settings:
 
-## Contents
-
-- [Library: quickjs-ng](README.md#library-quickjs-ng)
-- [Release mode: debug](README.md#release-mode-debug)
-- [Exports: require import browser workerd](README.md#exports-require-import-browser-workerd)
-- [Extra async magic? Yes](README.md#extra-async-magic-yes)
-- [Single-file, or separate .wasm file? wasm](README.md#single-file-or-separate-wasm-file-wasm)
-- [More details](README.md#more-details)
-
 ## Library: quickjs-ng
 
 [quickjs-ng](https://github.com/quickjs-ng/quickjs) is a fork of quickjs that tends to add features more quickly.
@@ -40,10 +33,10 @@ Enables assertions and memory sanitizers. Try to run your tests against debug va
 
 Exports the following in package.json for the package entrypoint:
 
-- Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.
-- Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
-- Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.
-- Targets Cloudflare Workers.
+* Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.
+* Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
+* Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.
+* Targets Cloudflare Workers.
 
 ## Extra async magic? Yes
 
@@ -105,6 +98,6 @@ Variant-specific Emscripten build flags:
 ]
 ```
 
-***
+## Variables
 
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+* [default](variables/default.md)

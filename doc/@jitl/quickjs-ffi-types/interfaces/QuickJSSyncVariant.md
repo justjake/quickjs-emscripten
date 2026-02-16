@@ -1,10 +1,12 @@
-[quickjs-emscripten](../../../packages.md) • **@jitl/quickjs-ffi-types** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../../README.md)
 
 ***
 
-[quickjs-emscripten](../../../packages.md) / [@jitl/quickjs-ffi-types](../exports.md) / QuickJSSyncVariant
+[quickjs-emscripten](../../../packages.md) / [@jitl/quickjs-ffi-types](../README.md) / QuickJSSyncVariant
 
 # Interface: QuickJSSyncVariant
+
+Defined in: [variant-types.ts:28](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L28)
 
 A standard (sync) build variant.
 
@@ -16,52 +18,39 @@ build variant to newQuickJSWASMModule or newQuickJSAsyncWASMModule.
 
 ## Contents
 
-- [Properties](QuickJSSyncVariant.md#properties)
-  - [importFFI](QuickJSSyncVariant.md#importffi)
-  - [importModuleLoader](QuickJSSyncVariant.md#importmoduleloader)
-  - [type](QuickJSSyncVariant.md#type)
+* [Properties](#properties)
+  * [importFFI()](#importffi)
+  * [importModuleLoader()](#importmoduleloader)
+  * [type](#type)
 
 ## Properties
 
-### importFFI
+### importFFI()
 
-> **`readonly`** **importFFI**: () => `Promise`\<(`module`) => [`QuickJSFFI`](QuickJSFFI.md)\>
+> `readonly` **importFFI**: () => `Promise`<(`module`) => [`QuickJSFFI`](QuickJSFFI.md)>
+
+Defined in: [variant-types.ts:30](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L30)
 
 #### Returns
 
-`Promise`\<(`module`) => [`QuickJSFFI`](QuickJSFFI.md)\>
-
->
->
-
-#### Source
-
-[packages/quickjs-ffi-types/src/variant-types.ts:30](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L30)
+`Promise`<(`module`) => [`QuickJSFFI`](QuickJSFFI.md)>
 
 ***
 
-### importModuleLoader
+### importModuleLoader()
 
-> **`readonly`** **importModuleLoader**: () => `Promise`\<`EmscriptenImport`\<[`QuickJSEmscriptenModule`](QuickJSEmscriptenModule.md)\>\>
+> `readonly` **importModuleLoader**: () => `Promise`<`EmscriptenImport`<[`QuickJSEmscriptenModule`](QuickJSEmscriptenModule.md)>>
+
+Defined in: [variant-types.ts:31](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L31)
 
 #### Returns
 
-`Promise`\<`EmscriptenImport`\<[`QuickJSEmscriptenModule`](QuickJSEmscriptenModule.md)\>\>
-
-#### Source
-
-[packages/quickjs-ffi-types/src/variant-types.ts:31](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L31)
+`Promise`<`EmscriptenImport`<[`QuickJSEmscriptenModule`](QuickJSEmscriptenModule.md)>>
 
 ***
 
 ### type
 
-> **`readonly`** **type**: `"sync"`
+> `readonly` **type**: `"sync"`
 
-#### Source
-
-[packages/quickjs-ffi-types/src/variant-types.ts:29](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L29)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+Defined in: [variant-types.ts:29](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L29)

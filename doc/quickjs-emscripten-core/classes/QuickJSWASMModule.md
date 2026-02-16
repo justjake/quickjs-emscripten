@@ -1,10 +1,12 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten-core** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../exports.md) / QuickJSWASMModule
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../README.md) / QuickJSWASMModule
 
 # Class: QuickJSWASMModule
+
+Defined in: [packages/quickjs-emscripten-core/src/module.ts:326](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L326)
 
 This class presents a Javascript interface to QuickJS, a Javascript interpreter
 that supports EcmaScript 2020 (ES2020).
@@ -14,42 +16,44 @@ associated helper C code. WebAssembly modules are completely isolated from
 each other by the host's WebAssembly runtime. Separate WebAssembly modules
 have the most isolation guarantees possible with this library.
 
-The simplest way to start running code is [evalCode](QuickJSWASMModule.md#evalcode). This shortcut
+The simplest way to start running code is [evalCode](#evalcode). This shortcut
 method will evaluate Javascript safely and return the result as a native
 Javascript value.
 
 For more control over the execution environment, or to interact with values
-inside QuickJS, create a context with [newContext](QuickJSWASMModule.md#newcontext) or a runtime with
-[newRuntime](QuickJSWASMModule.md#newruntime).
+inside QuickJS, create a context with [newContext](#newcontext) or a runtime with
+[newRuntime](#newruntime).
 
 ## Contents
 
-- [Extended By](QuickJSWASMModule.md#extended-by)
-- [Methods](QuickJSWASMModule.md#methods)
-  - [evalCode()](QuickJSWASMModule.md#evalcode)
-  - [getWasmMemory()](QuickJSWASMModule.md#getwasmmemory)
-  - [newContext()](QuickJSWASMModule.md#newcontext)
-  - [newRuntime()](QuickJSWASMModule.md#newruntime)
+* [Extended by](#extended-by)
+* [Methods](#methods)
+  * [evalCode()](#evalcode)
+  * [getWasmMemory()](#getwasmmemory)
+  * [newContext()](#newcontext)
+  * [newRuntime()](#newruntime)
 
-## Extended By
+## Extended by
 
-- [`QuickJSAsyncWASMModule`](QuickJSAsyncWASMModule.md)
+* [`QuickJSAsyncWASMModule`](QuickJSAsyncWASMModule.md)
 
 ## Methods
 
 ### evalCode()
 
-> **evalCode**(`code`, `options`): `unknown`
+> **evalCode**(`code`, `options?`): `unknown`
+
+Defined in: [packages/quickjs-emscripten-core/src/module.ts:410](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L410)
 
 One-off evaluate code without needing to create a [QuickJSRuntime](QuickJSRuntime.md) or
 [QuickJSContext](QuickJSContext.md) explicitly.
 
 To protect against infinite loops, use the `shouldInterrupt` option. The
-[shouldInterruptAfterDeadline](../exports.md#shouldinterruptafterdeadline) function will create a time-based deadline.
+[shouldInterruptAfterDeadline](../functions/shouldInterruptAfterDeadline.md) function will create a time-based deadline.
 
 If you need more control over how the code executes, create a
-[QuickJSRuntime](QuickJSRuntime.md) (with [newRuntime](QuickJSWASMModule.md#newruntime)) or a [QuickJSContext](QuickJSContext.md) (with
-[newContext](QuickJSWASMModule.md#newcontext) or [QuickJSRuntime#newContext](QuickJSRuntime.md#newcontext)), and use its
+[QuickJSRuntime](QuickJSRuntime.md) (with [newRuntime](#newruntime)) or a [QuickJSContext](QuickJSContext.md) (with
+[newContext](#newcontext) or [QuickJSRuntime#newContext](QuickJSRuntime.md#newcontext)), and use its
 [QuickJSContext#evalCode](QuickJSContext.md#evalcode) method.
 
 Asynchronous callbacks may not run during the first call to `evalCode`. If
@@ -58,9 +62,13 @@ you need to work with async code inside QuickJS, create a runtime and use
 
 #### Parameters
 
-• **code**: `string`
+##### code
 
-• **options**: [`ModuleEvalOptions`](../interfaces/ModuleEvalOptions.md)= `{}`
+`string`
+
+##### options?
+
+[`ModuleEvalOptions`](../interfaces/ModuleEvalOptions.md) = `{}`
 
 #### Returns
 
@@ -79,15 +87,15 @@ converted into a native Javascript value and thrown.
 if `options.shouldInterrupt` interrupted execution, will throw a Error
 with name `"InternalError"` and  message `"interrupted"`.
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/module.ts:410](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L410)
-
 ***
 
 ### getWasmMemory()
 
 > **getWasmMemory**(): `Memory`
+
+Defined in: [packages/quickjs-emscripten-core/src/module.ts:441](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L441)
+
+**`Experimental`**
 
 Retrieve the WebAssembly memory used by this QuickJS module.
 Use this access very carefully - you are responsible for safe interaction with the memory.
@@ -99,15 +107,13 @@ and provide the [CustomizeVariantOptions#wasmMemory](../interfaces/CustomizeVari
 
 `Memory`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/module.ts:441](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L441)
-
 ***
 
 ### newContext()
 
-> **newContext**(`options`): [`QuickJSContext`](QuickJSContext.md)
+> **newContext**(`options?`): [`QuickJSContext`](QuickJSContext.md)
+
+Defined in: [packages/quickjs-emscripten-core/src/module.ts:375](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L375)
 
 A simplified API to create a new [QuickJSRuntime](QuickJSRuntime.md) and a
 [QuickJSContext](QuickJSContext.md) inside that runtime at the same time. The runtime will
@@ -115,21 +121,21 @@ be disposed when the context is disposed.
 
 #### Parameters
 
-• **options**: [`ContextOptions`](../interfaces/ContextOptions.md)= `{}`
+##### options?
+
+[`ContextOptions`](../interfaces/ContextOptions.md) = `{}`
 
 #### Returns
 
 [`QuickJSContext`](QuickJSContext.md)
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/module.ts:375](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L375)
-
 ***
 
 ### newRuntime()
 
-> **newRuntime**(`options`): [`QuickJSRuntime`](QuickJSRuntime.md)
+> **newRuntime**(`options?`): [`QuickJSRuntime`](QuickJSRuntime.md)
+
+Defined in: [packages/quickjs-emscripten-core/src/module.ts:346](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L346)
 
 Create a runtime.
 Use the runtime to set limits on CPU and memory usage and configure module
@@ -137,16 +143,10 @@ loading for one or more [QuickJSContext](QuickJSContext.md)s inside the runtime.
 
 #### Parameters
 
-• **options**: [`RuntimeOptions`](../interfaces/RuntimeOptions.md)= `{}`
+##### options?
+
+[`RuntimeOptions`](../interfaces/RuntimeOptions.md) = `{}`
 
 #### Returns
 
 [`QuickJSRuntime`](QuickJSRuntime.md)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/module.ts:346](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L346)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

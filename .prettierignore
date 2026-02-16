@@ -1,6 +1,6 @@
 ts/generated
 quickjs
-.yarn
+.pnpm
 .*
 doc
 json-generator-dot-com-1024-rows.json
@@ -14,3 +14,4 @@ packages/internal-tsconfig/*.d.*ts
 packages/internal-tsconfig/*.*js
 vendor
 CLAUDE.md
+pnpm-lock.yaml

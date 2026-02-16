@@ -1,18 +1,20 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / SourceMapData
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / SourceMapData
 
 # Interface: SourceMapData
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:205
+
 ## Contents
 
-- [Properties](SourceMapData.md#properties)
-  - [mappings](SourceMapData.md#mappings)
-  - [names](SourceMapData.md#names)
-  - [sources](SourceMapData.md#sources)
-  - [version](SourceMapData.md#version)
+* [Properties](#properties)
+  * [mappings](#mappings)
+  * [names](#names)
+  * [sources](#sources)
+  * [version](#version)
 
 ## Properties
 
@@ -20,29 +22,23 @@
 
 > **mappings**: `string`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:209
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:209
 
 ***
 
 ### names
 
-> **names**: `string`[]
+> **names**: `string`\[]
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:208
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:208
 
 ***
 
 ### sources
 
-> **sources**: `string`[]
+> **sources**: `string`\[]
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:207
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:207
 
 ***
 
@@ -50,10 +46,4 @@ packages/quickjs-ffi-types/dist/index.d.ts:207
 
 > **version**: `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:206
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:206
