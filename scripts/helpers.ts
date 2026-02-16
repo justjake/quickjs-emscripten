@@ -31,7 +31,11 @@ function getPackageJson(packageName: string) {
 }
 
 function getTarFile(packageName: string) {
-  return path.join(tarDir, packageName.replace("/", "-") + ".tgz")
+  // pnpm pack generates: scope-name-version.tgz (without @ prefix)
+  // e.g., @jitl/quickjs-ffi-types@0.32.0 -> jitl-quickjs-ffi-types-0.32.0.tgz
+  const packageJson = getPackageJson(packageName)
+  const tarName = packageName.replace("@", "").replace("/", "-") + "-" + packageJson.version + ".tgz"
+  return path.join(tarDir, tarName)
 }
 
 export function exec(command: string) {
