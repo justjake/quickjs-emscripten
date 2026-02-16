@@ -251,7 +251,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
       ctxPtrOut.value.ptr,
     )
 
-    const ctxPtr = ctxPtrOut.value.typedArray[0] as JSContextPointer
+    const ctxPtr = ctxPtrOut.value.typedArray.value[0] as JSContextPointer
     ctxPtrOut.dispose()
     if (ctxPtr === 0) {
       // No jobs executed.
