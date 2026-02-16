@@ -798,6 +798,63 @@ export default "the default";
     dumpTestExample(null)
     dumpTestExample({ cow: true })
     dumpTestExample([1, 2, 3])
+
+    it("includes Error name, message, and stack", () => {
+      const handle = vm.unwrapResult(vm.evalCode(`new Error("test message")`))
+      const dumped = vm.dump(handle)
+      handle.dispose()
+
+      assert.strictEqual(dumped.name, "Error")
+      assert.strictEqual(dumped.message, "test message")
+      assert(typeof dumped.stack === "string", "stack should be a string")
+      // QuickJS stack format is "    at <function> (file:line:col)\n" - doesn't include message
+      assert(dumped.stack.includes("at"), "stack should include 'at'")
+    })
+
+    it("includes non-enumerable special properties", () => {
+      const handle = vm.unwrapResult(
+        vm.evalCode(`
+        const obj = { foo: "bar" };
+        Object.defineProperty(obj, "name", { value: "CustomName", enumerable: false });
+        Object.defineProperty(obj, "message", { value: "CustomMessage", enumerable: false });
+        obj;
+      `),
+      )
+      const dumped = vm.dump(handle)
+      handle.dispose()
+
+      assert.strictEqual(dumped.foo, "bar")
+      assert.strictEqual(dumped.name, "CustomName")
+      assert.strictEqual(dumped.message, "CustomMessage")
+    })
+
+    it("returns informative fallback when serialization fails due to memory limit", () => {
+      // Use a memory limit that allows object creation but fails during JSON serialization
+      vm.runtime.setMemoryLimit(1024 * 200) // 200KB
+
+      // Create an object that's too large to serialize
+      const result = vm.evalCode(`
+        const big = {};
+        for (let i = 0; i < 5000; i++) big['key' + i] = 'value' + i;
+        big;
+      `)
+
+      if (result.error) {
+        // OOM during eval is acceptable - remove limit and clean up
+        vm.runtime.setMemoryLimit(-1)
+        result.error.dispose()
+        return
+      }
+
+      const dumped = vm.dump(result.value)
+      result.value.dispose()
+      vm.runtime.setMemoryLimit(-1) // Remove limit for cleanup
+
+      // Format: JS_PrintValue output + "\n---\nnot JSON serializable: ${error}"
+      assert(typeof dumped === "string", "fallback should be a string")
+      assert(dumped.includes("---"), "should include separator")
+      assert(dumped.includes("not JSON serializable"), "should include error context")
+    })
   })
 
   describe(".typeof", () => {
