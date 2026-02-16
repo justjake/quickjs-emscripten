@@ -279,9 +279,22 @@ function buildSymbols(context: Context, matches: RegExpMatchArray[]) {
   return names.concat("_malloc", "_free")
 }
 
+// Functions that are trivial (return constants or are empty) and get optimized
+// away by LTO, causing Asyncify warnings about non-existing functions.
+// These don't need to be in the removelist since they can't call async code anyway.
+const TRIVIAL_FUNCTIONS_EXCLUDED_FROM_ASYNCIFY_REMOVE = new Set([
+  "QTS_BuildIsSanitizeLeak",
+  "QTS_BuildIsDebug",
+  "QTS_TestStringArg",
+])
+
 function buildSyncSymbols(context: Context, matches: RegExpMatchArray[]) {
   const parsed = getAvailableDefinitions(context, matches)
-  const filtered = parsed.filter((fn) => !fn.returnType.attributes.has("MaybeAsync"))
+  const filtered = parsed.filter(
+    (fn) =>
+      !fn.returnType.attributes.has("MaybeAsync") &&
+      !TRIVIAL_FUNCTIONS_EXCLUDED_FROM_ASYNCIFY_REMOVE.has(fn.functionName),
+  )
   // Note: emscripten 5.0.1+ uses function names without underscore prefix in ASYNCIFY_REMOVE
   return filtered.map((fn) => fn.functionName)
 }
