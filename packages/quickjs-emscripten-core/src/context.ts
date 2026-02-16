@@ -487,9 +487,9 @@ export class QuickJSContext
         mutablePointerArray.value.ptr,
       )
       const promiseHandle = this.memory.heapValueHandle(promisePtr)
-      const [resolveHandle, rejectHandle] = Array.from(mutablePointerArray.value.typedArray.value).map(
-        (jsvaluePtr) => this.memory.heapValueHandle(jsvaluePtr as any),
-      )
+      const [resolveHandle, rejectHandle] = Array.from(
+        mutablePointerArray.value.typedArray.value,
+      ).map((jsvaluePtr) => this.memory.heapValueHandle(jsvaluePtr as any))
       return new QuickJSDeferredPromise({
         context: this,
         promiseHandle,
