@@ -50,6 +50,7 @@ Other test filters:
 ## Git
 
 - Never use `git commit --amend` - always create new commits. It's better to have a history of what was actually done since branches get rebased/squashed anyway when merged.
+- Before pushing, run `pnpm run prettier` and `pnpm run lint` to fix formatting and lint issues. No need to check after every commit - just before pushing.
 
 ## Key Files
 
