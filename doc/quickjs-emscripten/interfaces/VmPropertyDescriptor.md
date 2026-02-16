@@ -10,11 +10,12 @@ Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:83](https://gi
 
 From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
-## Contents
-
 * [Type Parameters](#type-parameters)
+
   * [VmHandle](#vmhandle)
+
 * [Properties](#properties)
+
   * [configurable?](#configurable)
   * [enumerable?](#enumerable)
   * [get()?](#get)

@@ -28,20 +28,27 @@ itself, (2) the `resolve` callback, and (3) the `reject` callback.
   QuickJS handles that back [resolve](#resolve) and [reject](#reject). For this object,
   [dispose](#dispose-1) is idempotent.
 
-## Contents
+- [Extends](#extends)
 
-* [Extends](#extends)
-* [Implements](#implements)
-* [Constructors](#constructors)
+- [Implements](#implements)
+
+- [Constructors](#constructors)
+
   * [Constructor](#constructor)
-* [Properties](#properties)
+
+- [Properties](#properties)
+
   * [context](#context-1)
   * [handle](#handle)
   * [owner](#owner)
   * [settled](#settled)
-* [Accessors](#accessors)
+
+- [Accessors](#accessors)
+
   * [alive](#alive)
-* [Methods](#methods)
+
+- [Methods](#methods)
+
   * [\[dispose\]()](#dispose)
   * [dispose()](#dispose-1)
   * [reject()](#reject)

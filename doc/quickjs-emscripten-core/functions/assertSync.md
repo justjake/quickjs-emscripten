@@ -10,14 +10,17 @@
 
 Defined in: [packages/quickjs-ffi-types/src/ffi-types.ts:141](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi-types.ts#L141)
 
-## Contents
-
 * [Type Parameters](#type-parameters)
+
   * [Args](#args)
   * [R](#r)
+
 * [Parameters](#parameters)
+
   * [fn](#fn)
+
 * [Returns](#returns)
+
   * [Parameters](#parameters-1)
   * [Returns](#returns-1)
 

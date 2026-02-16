@@ -13,30 +13,40 @@ A lifetime prevents access to a value after the lifetime has been
 
 Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
 
-## Contents
-
 * [Extends](#extends)
+
 * [Extended by](#extended-by)
+
 * [Type Parameters](#type-parameters)
+
   * [T](#t)
   * [TCopy](#tcopy)
   * [Owner](#owner)
+
 * [Implements](#implements)
+
 * [Constructors](#constructors)
+
   * [Constructor](#constructor)
+
 * [Properties](#properties)
+
   * [\_alive](#_alive)
   * [\_constructorStack](#_constructorstack)
   * [\_owner?](#_owner-1)
   * [\_value](#_value-1)
   * [copier()?](#copier-1)
   * [disposer()?](#disposer-1)
+
 * [Accessors](#accessors)
+
   * [alive](#alive)
   * [dupable](#dupable)
   * [owner](#owner-1)
   * [value](#value-2)
+
 * [Methods](#methods)
+
   * [\[dispose\]()](#dispose)
   * [assertAlive()](#assertalive)
   * [consume()](#consume)

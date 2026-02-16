@@ -21,13 +21,15 @@ a VmCallResult's `{ error: handle }` error variant.
 VmFunctionImplementation should not free its arguments or its return value.
 It should not retain a reference to its return value or thrown error.
 
-## Contents
-
 * [Type Parameters](#type-parameters)
+
   * [VmHandle](#vmhandle)
+
 * [Parameters](#parameters)
+
   * [this](#this)
   * [args](#args)
+
 * [Returns](#returns)
 
 ## Type Parameters

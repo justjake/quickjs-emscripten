@@ -12,10 +12,10 @@ Low-level FFI bindings to QuickJS's Emscripten module.
 See instead QuickJSContext, the public Javascript interface exposed by this
 library.
 
-## Contents
-
 * [Unstable](#unstable)
+
 * [Properties](#properties)
+
   * [DEBUG](#debug)
   * [QTS\_ArgvGetJSValueConstPointer()](#qts_argvgetjsvalueconstpointer)
   * [QTS\_bjson\_decode()](#qts_bjson_decode)

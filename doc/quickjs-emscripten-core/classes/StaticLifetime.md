@@ -10,27 +10,35 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:197](https://githu
 
 A Lifetime that lives forever. Used for constants.
 
-## Contents
-
 * [Extends](#extends)
+
 * [Type Parameters](#type-parameters)
+
   * [T](#t)
   * [Owner](#owner)
+
 * [Constructors](#constructors)
+
   * [Constructor](#constructor)
+
 * [Properties](#properties)
+
   * [\_alive](#_alive)
   * [\_constructorStack](#_constructorstack)
   * [\_owner?](#_owner)
   * [\_value](#_value)
   * [copier()?](#copier)
   * [disposer()?](#disposer)
+
 * [Accessors](#accessors)
+
   * [alive](#alive)
   * [dupable](#dupable)
   * [owner](#owner-2)
   * [value](#value-3)
+
 * [Methods](#methods)
+
   * [\[dispose\]()](#dispose)
   * [assertAlive()](#assertalive)
   * [consume()](#consume)

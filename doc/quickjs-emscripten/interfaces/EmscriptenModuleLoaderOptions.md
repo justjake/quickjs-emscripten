@@ -12,13 +12,15 @@ This structure is defined by Emscripten.
 It's possible to provide these parameters to an emscripten module loader.
 See [the Emscripten Module API reference](https://emscripten.org/docs/api_reference/module.html).
 
-## Contents
-
 * [Extended by](#extended-by)
+
 * [Properties](#properties)
+
   * [wasmBinary?](#wasmbinary)
   * [wasmMemory?](#wasmmemory)
+
 * [Methods](#methods)
+
   * [instantiateWasm()?](#instantiatewasm)
   * [locateFile()?](#locatefile)
   * [monitorRunDependencies()?](#monitorrundependencies)

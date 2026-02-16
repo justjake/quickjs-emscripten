@@ -15,10 +15,10 @@ This setting is inherited by newly created QuickJSRuntime instances.
 To get debug logging in the WebAssembly module, you need to use a debug build variant.
 See [the quickjs-emscripten-core README](https://github.com/justjake/quickjs-emscripten/tree/main/doc/quickjs-emscripten-core) for more about build variants.
 
-## Contents
-
 * [Parameters](#parameters)
+
   * [enabled?](#enabled)
+
 * [Returns](#returns)
 
 ## Parameters

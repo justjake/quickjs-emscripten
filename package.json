@@ -62,6 +62,7 @@
     "fs-extra": "^10.0.1",
     "glob": "^10.3.10",
     "hads": "^3.0.3",
+    "mdast-util-toc": "^7.1.0",
     "node-fetch-commonjs": "^3.1.1",
     "prettier": "^3.1.1",
     "remark-insert-headings": "^0.0.0",

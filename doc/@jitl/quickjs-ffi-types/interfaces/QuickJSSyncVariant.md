@@ -16,9 +16,8 @@ module. These variants are each intended for a different use case.
 To create an instance of the library using a specific build variant, pass the
 build variant to newQuickJSWASMModule or newQuickJSAsyncWASMModule.
 
-## Contents
-
 * [Properties](#properties)
+
   * [importFFI()](#importffi)
   * [importModuleLoader()](#importmoduleloader)
   * [type](#type)

@@ -21,10 +21,10 @@ Note that there is a hard limit on the number of WebAssembly modules in older
 versions of v8:
 https://bugs.chromium.org/p/v8/issues/detail?id=12076
 
-## Contents
-
 * [Parameters](#parameters)
+
   * [options?](#options)
+
 * [Returns](#returns)
 
 ## Parameters

@@ -12,12 +12,14 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:359](https://githu
 
 Create an array that also implements [Disposable](../interfaces/Disposable.md).
 
-## Contents
-
 * [Type Parameters](#type-parameters)
+
   * [T](#t)
+
 * [Parameters](#parameters)
+
   * [items?](#items)
+
 * [Returns](#returns)
 
 ## Type Parameters

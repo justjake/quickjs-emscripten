@@ -24,10 +24,10 @@ For more control over the execution environment, or to interact with values
 inside QuickJS, create a context with [newContext](#newcontext) or a runtime with
 [newRuntime](#newruntime).
 
-## Contents
-
 * [Extended by](#extended-by)
+
 * [Methods](#methods)
+
   * [evalCode()](#evalcode)
   * [getWasmMemory()](#getwasmmemory)
   * [newContext()](#newcontext)

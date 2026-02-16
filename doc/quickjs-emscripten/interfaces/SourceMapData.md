@@ -8,9 +8,8 @@
 
 Defined in: packages/quickjs-ffi-types/dist/index.d.ts:205
 
-## Contents
-
 * [Properties](#properties)
+
   * [mappings](#mappings)
   * [names](#names)
   * [sources](#sources)

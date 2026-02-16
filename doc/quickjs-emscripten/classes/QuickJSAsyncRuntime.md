@@ -32,14 +32,18 @@ tuning.
 
 Configure ES module loading with [setModuleLoader](QuickJSRuntime.md#setmoduleloader).
 
-## Contents
-
 * [Extends](#extends)
+
 * [Properties](#properties)
+
   * [context](#context)
+
 * [Accessors](#accessors)
+
   * [alive](#alive)
+
 * [Methods](#methods)
+
   * [\[dispose\]()](#dispose)
   * [assertOwned()](#assertowned)
   * [computeMemoryUsage()](#computememoryusage)

@@ -8,10 +8,10 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/types.ts:136](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L136)
 
-## Contents
-
 * [Extends](#extends)
+
 * [Properties](#properties)
+
   * [gcThreshold?](#gcthreshold)
   * [interruptHandler?](#interrupthandler)
   * [maxStackSizeBytes?](#maxstacksizebytes)

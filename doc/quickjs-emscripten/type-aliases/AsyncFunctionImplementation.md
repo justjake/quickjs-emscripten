@@ -10,11 +10,11 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/context-asyncify.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context-asyncify.ts#L18)
 
-## Contents
-
 * [Parameters](#parameters)
+
   * [this](#this)
   * [args](#args)
+
 * [Returns](#returns)
 
 ## Parameters

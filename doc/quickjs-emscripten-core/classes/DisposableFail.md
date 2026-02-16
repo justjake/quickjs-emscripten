@@ -8,18 +8,26 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:450](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L450)
 
-## Contents
-
 * [Extends](#extends)
+
 * [Type Parameters](#type-parameters)
+
   * [F](#f)
+
 * [Constructors](#constructors)
+
   * [Constructor](#constructor)
+
 * [Properties](#properties)
+
   * [error](#error-1)
+
 * [Accessors](#accessors)
+
   * [alive](#alive)
+
 * [Methods](#methods)
+
   * [\[dispose\]()](#dispose)
   * [dispose()](#dispose-1)
   * [unwrap()](#unwrap)

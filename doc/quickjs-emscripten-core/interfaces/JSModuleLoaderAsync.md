@@ -14,11 +14,11 @@ Defined in: [packages/quickjs-emscripten-core/src/types.ts:76](https://github.co
 
 Load module (async)
 
-## Contents
-
 * [Parameters](#parameters)
+
   * [moduleName](#modulename)
   * [context](#context)
+
 * [Returns](#returns)
 
 ## Parameters

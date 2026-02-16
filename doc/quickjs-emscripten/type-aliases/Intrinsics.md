@@ -12,10 +12,10 @@ Defined in: [packages/quickjs-emscripten-core/src/types.ts:146](https://github.c
 
 Language features that can be enabled or disabled in a QuickJSContext.
 
-## Contents
-
 * [See](#see)
+
 * [Properties](#properties)
+
   * [BaseObjects?](#baseobjects)
   * [BigDecimal?](#bigdecimal)
   * [BigFloat?](#bigfloat)
