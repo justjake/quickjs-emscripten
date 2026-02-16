@@ -29,9 +29,39 @@ export interface TypedArrayConstructor<T> {
   BYTES_PER_ELEMENT: number
 }
 
+/**
+ * A TypedArray view into WASM memory that automatically refreshes when memory grows.
+ *
+ * When Emscripten's WASM memory grows (due to -sALLOW_MEMORY_GROWTH), all existing
+ * TypedArray views become detached because the underlying ArrayBuffer is replaced.
+ * This class lazily recreates the view when the buffer changes.
+ *
+ * @private
+ */
+export class RefreshableTypedArray<T extends TypedArray> {
+  private cachedArray: T | undefined
+  private lastBuffer: ArrayBufferLike | undefined
+
+  constructor(
+    private readonly module: EitherModule,
+    private readonly kind: TypedArrayConstructor<T>,
+    private readonly ptr: number,
+    private readonly length: number,
+  ) {}
+
+  get value(): T {
+    const currentBuffer = this.module.HEAPU8.buffer
+    if (this.cachedArray === undefined || this.lastBuffer !== currentBuffer) {
+      this.cachedArray = new this.kind(currentBuffer, this.ptr, this.length)
+      this.lastBuffer = currentBuffer
+    }
+    return this.cachedArray
+  }
+}
+
 /** @private */
 export type HeapTypedArray<JS extends TypedArray, C extends number> = Lifetime<{
-  typedArray: JS
+  typedArray: RefreshableTypedArray<JS>
   ptr: C
 }>
 
@@ -54,18 +84,17 @@ export class ModuleMemory {
     kind: TypedArrayConstructor<JS>,
     length: number,
   ): HeapTypedArray<JS, C> {
-    const zeros = new kind(new Array(length).fill(0))
-    const numBytes = zeros.length * zeros.BYTES_PER_ELEMENT
+    const numBytes = length * kind.BYTES_PER_ELEMENT
     const ptr = this.module._malloc(numBytes) as C
-    const typedArray = new kind(this.module.HEAPU8.buffer, ptr, length)
-    typedArray.set(zeros)
+    const typedArray = new RefreshableTypedArray(this.module, kind, ptr, length)
+    typedArray.value.fill(0)
     return new Lifetime({ typedArray, ptr }, undefined, (value) => this.module._free(value.ptr))
   }
 
   // TODO: shouldn't this be Uint32 instead of Int32?
   newMutablePointerArray<T extends number>(
     length: number,
-  ): Lifetime<{ typedArray: Int32Array; ptr: T }> {
+  ): Lifetime<{ typedArray: RefreshableTypedArray<Int32Array>; ptr: T }> {
     return this.newTypedArray(Int32Array, length)
   }
 

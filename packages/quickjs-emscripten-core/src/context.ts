@@ -487,7 +487,7 @@ export class QuickJSContext
         mutablePointerArray.value.ptr,
       )
       const promiseHandle = this.memory.heapValueHandle(promisePtr)
-      const [resolveHandle, rejectHandle] = Array.from(mutablePointerArray.value.typedArray).map(
+      const [resolveHandle, rejectHandle] = Array.from(mutablePointerArray.value.typedArray.value).map(
         (jsvaluePtr) => this.memory.heapValueHandle(jsvaluePtr as any),
       )
       return new QuickJSDeferredPromise({
@@ -994,7 +994,7 @@ export class QuickJSContext
     if (status < 0) {
       return undefined
     }
-    return this.uint32Out.value.typedArray[0]
+    return this.uint32Out.value.typedArray.value[0]
   }
 
   /**
@@ -1052,9 +1052,9 @@ export class QuickJSContext
       if (errorPtr) {
         return this.fail(this.memory.heapValueHandle(errorPtr))
       }
-      const len = this.uint32Out.value.typedArray[0]
-      const ptr = outPtr.value.typedArray[0]
-      const pointerArray = new Uint32Array(this.module.HEAP8.buffer, ptr, len)
+      const len = this.uint32Out.value.typedArray.value[0]
+      const ptr = outPtr.value.typedArray.value[0]
+      const pointerArray = new Uint32Array(this.module.HEAPU8.buffer, ptr, len)
       const handles = Array.from(pointerArray).map((ptr) =>
         this.memory.heapValueHandle(ptr as JSValuePointer),
       )
