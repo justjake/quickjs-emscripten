@@ -648,37 +648,6 @@ int QTS_BuildIsAsyncify() {
 }
 
 // ----------------------------------------------------------------------------
-// Feature detection - mquickjs has limited feature support
-
-int QTS_HasModuleSupport() {
-  return 0;  // No module support
-}
-
-int QTS_HasPromiseSupport() {
-  return 0;  // No promise support
-}
-
-int QTS_HasSymbolSupport() {
-  return 0;  // No symbol support
-}
-
-int QTS_HasBigIntSupport() {
-  return 0;  // No BigInt support
-}
-
-int QTS_HasIntrinsicsSupport() {
-  return 0;  // No intrinsics configuration support
-}
-
-int QTS_HasEvalSupport() {
-  return 1;  // Basic eval is supported
-}
-
-int QTS_HasFunctionsSupport() {
-  return 1;  // Host function callbacks supported via trampoline
-}
-
-// ----------------------------------------------------------------------------
 // C -> Host Callbacks
 
 #ifdef __EMSCRIPTEN__

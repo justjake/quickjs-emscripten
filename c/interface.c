@@ -1146,37 +1146,6 @@ int QTS_BuildIsAsyncify() {
 }
 
 // ----------------------------------------------------------------------------
-// Feature detection - QuickJS and QuickJS-ng support all features
-
-int QTS_HasModuleSupport() {
-  return 1;
-}
-
-int QTS_HasPromiseSupport() {
-  return 1;
-}
-
-int QTS_HasSymbolSupport() {
-  return 1;
-}
-
-int QTS_HasBigIntSupport() {
-  return 1;
-}
-
-int QTS_HasIntrinsicsSupport() {
-  return 1;
-}
-
-int QTS_HasEvalSupport() {
-  return 1;
-}
-
-int QTS_HasFunctionsSupport() {
-  return 1;
-}
-
-// ----------------------------------------------------------------------------
 // C -> Host Callbacks
 // Note: inside EM_JS, we need to use ['...'] subscript syntax for accessing JS
 // objects, because in optimized builds, Closure compiler will mangle all the

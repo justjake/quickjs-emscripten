@@ -46,6 +46,58 @@ enum EmscriptenEnvironment {
   node = "node",
 }
 
+/**
+ * Features that may or may not be supported by a QuickJS variant.
+ * This is the single source of truth for feature availability.
+ */
+type QuickJSFeature = "modules" | "promises" | "symbols" | "bigint" | "intrinsics" | "eval" | "functions"
+
+const FEATURE_DESCRIPTIONS: Record<QuickJSFeature, string> = {
+  modules: "ES Modules",
+  promises: "Promises",
+  symbols: "Symbols",
+  bigint: "BigInt",
+  intrinsics: "Intrinsics",
+  eval: "eval()",
+  functions: "vm.newFunction()",
+}
+
+/**
+ * Feature support matrix for each C library.
+ * This is the single source of truth - it generates:
+ * - TypeScript feature exports in each variant
+ * - Feature tables in variant READMEs
+ */
+const LIBRARY_FEATURES: Record<CLibrary, Record<QuickJSFeature, boolean>> = {
+  [CLibrary.QuickJS]: {
+    modules: true,
+    promises: true,
+    symbols: true,
+    bigint: true,
+    intrinsics: true,
+    eval: true,
+    functions: true,
+  },
+  [CLibrary.NG]: {
+    modules: true,
+    promises: true,
+    symbols: true,
+    bigint: true,
+    intrinsics: true,
+    eval: true,
+    functions: true,
+  },
+  [CLibrary.MQuickJS]: {
+    modules: false,
+    promises: false,
+    symbols: false,
+    bigint: false,
+    intrinsics: false,
+    eval: true,
+    functions: true,
+  },
+}
+
 const DEFAULT_EMSCRIPTEN_VERSION = "5.0.1"
 // Use older emscripten for asmjs to avoid relying on newer browser APIs
 const ASMJS_EMSCRIPTEN_VERSION = "3.1.43"
@@ -774,6 +826,9 @@ function renderIndexTs(
     [SyncMode.Asyncify]: "QuickJSAsyncVariant",
   }[variant.syncMode]
 
+  const features = LIBRARY_FEATURES[variant.library]
+  const featuresJson = JSON.stringify(features, null, 2).replace(/\n/g, "\n  ")
+
   if (variant.emscriptenInclusion === EmscriptenInclusion.AsmJs) {
     // Eager loading please!
     return `
@@ -787,6 +842,7 @@ const variant: ${variantTypeName} = {
   type: '${modeName}',
   importFFI: () => Promise.resolve(${className}),
   importModuleLoader: () => Promise.resolve(moduleLoader),
+  features: ${featuresJson},
 } as const
 export default variant
 `
@@ -802,6 +858,7 @@ const variant: ${variantTypeName} = {
   type: '${modeName}',
   importFFI: () => import('./ffi.js').then(mod => mod.${className}),
   importModuleLoader: () => import('${packageJson.name}/emscripten-module').then(mod => mod.default),
+  features: ${featuresJson},
 } as const
 
 export default variant

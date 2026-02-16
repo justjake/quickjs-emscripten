@@ -1,6 +1,8 @@
-import type { EitherFFI } from "@jitl/quickjs-ffi-types"
+import type { QuickJSFeature, QuickJSFeatureRecord } from "@jitl/quickjs-ffi-types"
 import { QuickJSUnsupported } from "./errors"
-import type { QuickJSFeature } from "./types"
+
+// Re-export types for convenience
+export type { QuickJSFeature, QuickJSFeatureRecord }
 
 /**
  * Provides feature detection for a QuickJS variant.
@@ -12,10 +14,8 @@ import type { QuickJSFeature } from "./types"
  * or {@link QuickJSContext#features}.
  */
 export class QuickJSFeatures {
-  private cache = new Map<QuickJSFeature, boolean>()
-
   /** @private */
-  constructor(private ffi: EitherFFI) {}
+  constructor(private readonly featureRecord: QuickJSFeatureRecord) {}
 
   /**
    * Check if this QuickJS variant supports a specific feature.
@@ -23,41 +23,7 @@ export class QuickJSFeatures {
    * @returns `true` if the feature is supported, `false` otherwise
    */
   has(feature: QuickJSFeature): boolean {
-    const cached = this.cache.get(feature)
-    if (cached !== undefined) {
-      return cached
-    }
-
-    let result: number
-    switch (feature) {
-      case "modules":
-        result = this.ffi.QTS_HasModuleSupport()
-        break
-      case "promises":
-        result = this.ffi.QTS_HasPromiseSupport()
-        break
-      case "symbols":
-        result = this.ffi.QTS_HasSymbolSupport()
-        break
-      case "bigint":
-        result = this.ffi.QTS_HasBigIntSupport()
-        break
-      case "intrinsics":
-        result = this.ffi.QTS_HasIntrinsicsSupport()
-        break
-      case "eval":
-        result = this.ffi.QTS_HasEvalSupport()
-        break
-      case "functions":
-        result = this.ffi.QTS_HasFunctionsSupport()
-        break
-      default:
-        return unreachable(feature)
-    }
-
-    const supported = result === 1
-    this.cache.set(feature, supported)
-    return supported
+    return this.featureRecord[feature]
   }
 
   /**
@@ -71,8 +37,4 @@ export class QuickJSFeatures {
       throw new QuickJSUnsupported(feature, operation, undefined)
     }
   }
-}
-
-function unreachable(x: never): never {
-  throw new Error(`Unreachable: ${x}`)
 }

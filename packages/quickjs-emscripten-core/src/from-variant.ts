@@ -50,7 +50,7 @@ export async function newQuickJSWASMModuleFromVariant(
   const wasmModule = await wasmModuleLoader()
   wasmModule.type = "sync"
   const ffi = new QuickJSFFI(wasmModule)
-  return new QuickJSWASMModule(wasmModule, ffi)
+  return new QuickJSWASMModule(wasmModule, ffi, variant.features)
 }
 
 /**
@@ -88,7 +88,7 @@ export async function newQuickJSAsyncWASMModuleFromVariant(
   const wasmModule = await wasmModuleLoader()
   wasmModule.type = "async"
   const ffi = new QuickJSAsyncFFI(wasmModule)
-  return new QuickJSAsyncWASMModule(wasmModule, ffi)
+  return new QuickJSAsyncWASMModule(wasmModule, ffi, variant.features)
 }
 
 /**

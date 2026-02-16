@@ -17,6 +17,25 @@ type EmscriptenImport<T extends EmscriptenModule> =
     }
 
 /**
+ * Features that may or may not be supported by a QuickJS variant.
+ * Use {@link QuickJSWASMModule.features} to check support at runtime.
+ *
+ * - `modules`: ES module support (import/export)
+ * - `promises`: Promise and async/await support
+ * - `symbols`: Symbol type support
+ * - `bigint`: BigInt type support
+ * - `intrinsics`: Intrinsics configuration support
+ * - `eval`: eval() function support
+ * - `functions`: Host function callbacks (vm.newFunction)
+ */
+export type QuickJSFeature = "modules" | "promises" | "symbols" | "bigint" | "intrinsics" | "eval" | "functions"
+
+/**
+ * Feature support record for a QuickJS variant.
+ */
+export type QuickJSFeatureRecord = Record<QuickJSFeature, boolean>
+
+/**
  * A standard (sync) build variant.
  *
  * quickjs-emscripten provides multiple build variants of the core WebAssembly
@@ -29,6 +48,7 @@ export interface QuickJSSyncVariant {
   readonly type: "sync"
   readonly importFFI: () => Promise<new (module: QuickJSEmscriptenModule) => QuickJSFFI>
   readonly importModuleLoader: () => Promise<EmscriptenImport<QuickJSEmscriptenModule>>
+  readonly features: QuickJSFeatureRecord
 }
 
 /**
@@ -44,6 +64,7 @@ export interface QuickJSAsyncVariant {
   readonly type: "async"
   readonly importFFI: () => Promise<new (module: QuickJSAsyncEmscriptenModule) => QuickJSAsyncFFI>
   readonly importModuleLoader: () => Promise<EmscriptenImport<QuickJSAsyncEmscriptenModule>>
+  readonly features: QuickJSFeatureRecord
 }
 
 export type QuickJSVariant = QuickJSSyncVariant | QuickJSAsyncVariant

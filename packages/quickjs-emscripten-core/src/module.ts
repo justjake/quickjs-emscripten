@@ -8,6 +8,7 @@ import type {
   JSRuntimePointer,
   JSValuePointer,
   EitherFFI,
+  QuickJSFeatureRecord,
 } from "@jitl/quickjs-ffi-types"
 import type { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
@@ -339,11 +340,11 @@ export class QuickJSWASMModule {
   public readonly features: QuickJSFeatures
 
   /** @private */
-  constructor(module: EitherModule, ffi: EitherFFI) {
+  constructor(module: EitherModule, ffi: EitherFFI, features: QuickJSFeatureRecord) {
     this.module = module
     this.ffi = ffi
     this.callbacks = new QuickJSModuleCallbacks(module)
-    this.features = new QuickJSFeatures(ffi)
+    this.features = new QuickJSFeatures(features)
   }
 
   /**

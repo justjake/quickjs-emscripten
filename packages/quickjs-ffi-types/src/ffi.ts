@@ -197,13 +197,6 @@ export interface QuickJSFFI {
   QTS_SetDebugLogEnabled: (rt: JSRuntimePointer, is_enabled: number) => void
   QTS_BuildIsDebug: () => number
   QTS_BuildIsAsyncify: () => number
-  QTS_HasModuleSupport: () => number
-  QTS_HasPromiseSupport: () => number
-  QTS_HasSymbolSupport: () => number
-  QTS_HasBigIntSupport: () => number
-  QTS_HasIntrinsicsSupport: () => number
-  QTS_HasEvalSupport: () => number
-  QTS_HasFunctionsSupport: () => number
   QTS_NewFunction: (
     ctx: JSContextPointer,
     name: string,

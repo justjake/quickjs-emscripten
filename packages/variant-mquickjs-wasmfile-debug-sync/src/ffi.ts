@@ -388,24 +388,6 @@ export class QuickJSFFI {
 
   QTS_BuildIsAsyncify: () => number = this.module.cwrap("QTS_BuildIsAsyncify", "number", [])
 
-  QTS_HasModuleSupport: () => number = this.module.cwrap("QTS_HasModuleSupport", "number", [])
-
-  QTS_HasPromiseSupport: () => number = this.module.cwrap("QTS_HasPromiseSupport", "number", [])
-
-  QTS_HasSymbolSupport: () => number = this.module.cwrap("QTS_HasSymbolSupport", "number", [])
-
-  QTS_HasBigIntSupport: () => number = this.module.cwrap("QTS_HasBigIntSupport", "number", [])
-
-  QTS_HasIntrinsicsSupport: () => number = this.module.cwrap(
-    "QTS_HasIntrinsicsSupport",
-    "number",
-    [],
-  )
-
-  QTS_HasEvalSupport: () => number = this.module.cwrap("QTS_HasEvalSupport", "number", [])
-
-  QTS_HasFunctionsSupport: () => number = this.module.cwrap("QTS_HasFunctionsSupport", "number", [])
-
   QTS_NewFunction: (
     ctx: JSContextPointer,
     name: string,

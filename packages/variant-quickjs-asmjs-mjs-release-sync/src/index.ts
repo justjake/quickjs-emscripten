@@ -20,5 +20,14 @@ const variant: QuickJSSyncVariant = {
   type: "sync",
   importFFI: () => Promise.resolve(QuickJSFFI),
   importModuleLoader: () => Promise.resolve(moduleLoader),
+  features: {
+    modules: true,
+    promises: true,
+    symbols: true,
+    bigint: true,
+    intrinsics: true,
+    eval: true,
+    functions: true,
+  },
 } as const
 export default variant

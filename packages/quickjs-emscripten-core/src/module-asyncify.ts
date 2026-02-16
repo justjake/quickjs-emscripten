@@ -1,4 +1,8 @@
-import type { QuickJSAsyncEmscriptenModule, QuickJSAsyncFFI } from "@jitl/quickjs-ffi-types"
+import type {
+  QuickJSAsyncEmscriptenModule,
+  QuickJSAsyncFFI,
+  QuickJSFeatureRecord,
+} from "@jitl/quickjs-ffi-types"
 import type { QuickJSAsyncContext } from "./context-asyncify"
 import { QuickJSNotImplemented } from "./errors"
 import { Lifetime, Scope } from "./lifetime"
@@ -27,8 +31,8 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
   protected module: QuickJSAsyncEmscriptenModule
 
   /** @private */
-  constructor(module: QuickJSAsyncEmscriptenModule, ffi: QuickJSAsyncFFI) {
-    super(module, ffi)
+  constructor(module: QuickJSAsyncEmscriptenModule, ffi: QuickJSAsyncFFI, features: QuickJSFeatureRecord) {
+    super(module, ffi, features)
     this.ffi = ffi
     this.module = module
   }
