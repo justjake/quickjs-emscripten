@@ -31,7 +31,11 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
   protected module: QuickJSAsyncEmscriptenModule
 
   /** @private */
-  constructor(module: QuickJSAsyncEmscriptenModule, ffi: QuickJSAsyncFFI, features: QuickJSFeatureRecord) {
+  constructor(
+    module: QuickJSAsyncEmscriptenModule,
+    ffi: QuickJSAsyncFFI,
+    features: QuickJSFeatureRecord,
+  ) {
     super(module, ffi, features)
     this.ffi = ffi
     this.module = module

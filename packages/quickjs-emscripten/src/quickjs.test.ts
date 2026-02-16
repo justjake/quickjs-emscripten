@@ -719,7 +719,9 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
     it("returns the module exports", () => {
       requiresFeature("modules", () => {
         const modExports = vm.unwrapResult(
-          vm.evalCode(`export const s = "hello"; export const n = 42; export default "the default";`),
+          vm.evalCode(
+            `export const s = "hello"; export const n = 42; export default "the default";`,
+          ),
         )
 
         const s = vm.getProp(modExports, "s").consume(vm.dump)
@@ -833,7 +835,9 @@ export default "the default";
         fnHandle.dispose()
 
         const result = vm.unwrapResult(
-          vm.evalCode(`(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`),
+          vm.evalCode(
+            `(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`,
+          ),
         )
         assert.equal(i, 0)
         vm.runtime.executePendingJobs()
@@ -854,7 +858,9 @@ export default "the default";
         vm.setProp(vm.global, "nextId", fnHandle)
         fnHandle.dispose()
 
-        vm.unwrapResult(vm.evalCode(`(new Promise(resolve => resolve(5)).then(nextId));1`)).dispose()
+        vm.unwrapResult(
+          vm.evalCode(`(new Promise(resolve => resolve(5)).then(nextId));1`),
+        ).dispose()
         assert.strictEqual(
           vm.runtime.hasPendingJob(),
           true,
@@ -1570,7 +1576,10 @@ describe("QuickJSWASMModule", () => {
     { name: "RELEASE_ASYNC", loader: () => newQuickJSAsyncWASMModule(RELEASE_ASYNC) },
     ...(TEST_MQUICKJS
       ? [
-          { name: "MQUICKJS_RELEASE_SYNC", loader: () => newQuickJSWASMModule(MQUICKJS_RELEASE_SYNC) },
+          {
+            name: "MQUICKJS_RELEASE_SYNC",
+            loader: () => newQuickJSWASMModule(MQUICKJS_RELEASE_SYNC),
+          },
           { name: "MQUICKJS_DEBUG_SYNC", loader: () => newQuickJSWASMModule(MQUICKJS_DEBUG_SYNC) },
         ]
       : []),

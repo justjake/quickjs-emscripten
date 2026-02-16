@@ -50,7 +50,14 @@ enum EmscriptenEnvironment {
  * Features that may or may not be supported by a QuickJS variant.
  * This is the single source of truth for feature availability.
  */
-type QuickJSFeature = "modules" | "promises" | "symbols" | "bigint" | "intrinsics" | "eval" | "functions"
+type QuickJSFeature =
+  | "modules"
+  | "promises"
+  | "symbols"
+  | "bigint"
+  | "intrinsics"
+  | "eval"
+  | "functions"
 
 const FEATURE_DESCRIPTIONS: Record<QuickJSFeature, string> = {
   modules: "ES Modules",

@@ -28,7 +28,14 @@ type EmscriptenImport<T extends EmscriptenModule> =
  * - `eval`: eval() function support
  * - `functions`: Host function callbacks (vm.newFunction)
  */
-export type QuickJSFeature = "modules" | "promises" | "symbols" | "bigint" | "intrinsics" | "eval" | "functions"
+export type QuickJSFeature =
+  | "modules"
+  | "promises"
+  | "symbols"
+  | "bigint"
+  | "intrinsics"
+  | "eval"
+  | "functions"
 
 /**
  * Feature support record for a QuickJS variant.
