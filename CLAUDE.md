@@ -141,3 +141,51 @@ If you see assertions like:
 - `Assertion failed: p->gc_obj_type == JS_GC_OBJ_TYPE_JS_OBJECT` - memory corruption
 
 These usually indicate memory management bugs: double-frees, use-after-free, or missing frees.
+
+## C Code Style in interface.c
+
+### Naming Conventions
+
+- `QTS_` prefix for exported FFI functions (defined in interface.h, called from JavaScript)
+- `qts_` prefix for internal C helper functions
+- `static` keyword for file-local functions and variables
+- Use `bool` from `<stdbool.h>` for boolean values (already included)
+
+### Code Organization
+
+- Section comments with `// ----` separators for logical grouping
+- Forward declarations at the top of sections when needed
+- Constants defined near related functions
+
+### Error Handling Patterns
+
+- Check `JS_IsException(value)` for error conditions
+- Use `JS_GetException(ctx)` to retrieve the exception value
+- Clean up resources in reverse order of allocation
+- Return `JS_EXCEPTION` or `NULL` to signal errors to callers
+
+### Example
+
+```c
+// ----------------------------------------------------------------------------
+// Section Name
+
+// Forward declaration
+static JSValue qts_helper_function(JSContext *ctx, JSValueConst obj);
+
+// Internal helper - not exported
+static bool qts_check_something(JSContext *ctx, JSValueConst obj) {
+  if (!JS_IsObject(obj)) return false;
+  // ... implementation
+  return true;
+}
+
+// Exported FFI function
+JSValue *QTS_DoSomething(JSContext *ctx, JSValueConst *obj) {
+  JSValue result = qts_helper_function(ctx, *obj);
+  if (JS_IsException(result)) {
+    return jsvalue_to_heap(JS_EXCEPTION);
+  }
+  return jsvalue_to_heap(result);
+}
+```

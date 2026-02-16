@@ -158,18 +158,188 @@ void qts_dump(JSContext *ctx, JSValueConst value) {
   putchar('\n');
 }
 
-void copy_prop_if_needed(JSContext *ctx, JSValueConst dest, JSValueConst src, const char *prop_name) {
+// ----------------------------------------------------------------------------
+// QTS_Dump helpers
+
+// Forward declaration
+JSBorrowedChar *QTS_GetString(JSContext *ctx, JSValueConst *value);
+
+// Special non-enumerable properties to include when dumping objects (e.g., Error properties)
+static const char *QTS_DUMP_SPECIAL_PROPS[] = {
+  "name", "message", "stack", "fileName", "lineNumber"
+};
+#define QTS_DUMP_SPECIAL_PROPS_COUNT (sizeof(QTS_DUMP_SPECIAL_PROPS) / sizeof(QTS_DUMP_SPECIAL_PROPS[0]))
+
+// Returns true if prop should be added to the clone:
+// - Property exists (own or inherited) and has a non-undefined value
+// - Property is NOT already an own enumerable property (which JSON.stringify would include)
+static bool qts_should_copy_special_prop(JSContext *ctx, JSValueConst obj, const char *prop_name) {
   JSAtom prop_atom = JS_NewAtom(ctx, prop_name);
-  JSValue dest_prop = JS_GetProperty(ctx, dest, prop_atom);
-  if (JS_IsUndefined(dest_prop)) {
-    JSValue src_prop = JS_GetProperty(ctx, src, prop_atom);
-    if (!JS_IsUndefined(src_prop) && !JS_IsException(src_prop)) {
-      JS_SetProperty(ctx, dest, prop_atom, src_prop);
-    }
-  } else {
-    JS_FreeValue(ctx, dest_prop);
+
+  // First check if property exists at all (including inherited)
+  JSValue val = JS_GetProperty(ctx, obj, prop_atom);
+  if (JS_IsException(val) || JS_IsUndefined(val)) {
+    JS_FreeAtom(ctx, prop_atom);
+    JS_FreeValue(ctx, val);
+    return false;  // Property doesn't exist or is undefined
   }
+  JS_FreeValue(ctx, val);
+
+  // Property exists - check if it's an own enumerable property
+  JSPropertyDescriptor desc;
+  int ret = JS_GetOwnProperty(ctx, &desc, obj, prop_atom);
   JS_FreeAtom(ctx, prop_atom);
+
+  if (ret != 1) {
+    // Not an own property - but it exists (inherited), so we should copy it
+    return true;
+  }
+
+  // It's an own property - check if enumerable
+  bool is_enumerable = (desc.flags & JS_PROP_ENUMERABLE);
+
+  // Free descriptor values
+  JS_FreeValue(ctx, desc.value);
+  if (desc.flags & JS_PROP_GETSET) {
+    JS_FreeValue(ctx, desc.getter);
+    JS_FreeValue(ctx, desc.setter);
+  }
+
+  // Copy if NOT enumerable (enumerable props are already included via JSON.stringify)
+  return !is_enumerable;
+}
+
+// Creates clone with special props made enumerable, or JS_UNDEFINED if not needed
+static JSValue qts_dump_create_clone(JSContext *ctx, JSValueConst obj) {
+  if (!JS_IsObject(obj)) return JS_UNDEFINED;
+
+  // Check if any special props need copying
+  bool needs_clone = false;
+  for (size_t i = 0; i < QTS_DUMP_SPECIAL_PROPS_COUNT; i++) {
+    if (qts_should_copy_special_prop(ctx, obj, QTS_DUMP_SPECIAL_PROPS[i])) {
+      needs_clone = true;
+      break;
+    }
+  }
+  if (!needs_clone) return JS_UNDEFINED;
+
+  // Create clone with all enumerable props
+  JSValue clone = JS_NewObject(ctx);
+  if (JS_IsException(clone)) return clone;
+
+  JSPropertyEnum *tab;
+  uint32_t len;
+  if (JS_GetOwnPropertyNames(ctx, &tab, &len, obj, JS_GPN_STRING_MASK | JS_GPN_ENUM_ONLY) < 0) {
+    JS_FreeValue(ctx, clone);
+    return JS_EXCEPTION;
+  }
+
+  for (uint32_t i = 0; i < len; i++) {
+    JSValue val = JS_GetProperty(ctx, obj, tab[i].atom);
+    if (!JS_IsException(val)) {
+      JS_DefinePropertyValue(ctx, clone, tab[i].atom, val, JS_PROP_C_W_E);
+    }
+  }
+  JS_FreePropertyEnum(ctx, tab, len);
+
+  // Add special props (inherited or non-enumerable) as enumerable
+  for (size_t i = 0; i < QTS_DUMP_SPECIAL_PROPS_COUNT; i++) {
+    if (qts_should_copy_special_prop(ctx, obj, QTS_DUMP_SPECIAL_PROPS[i])) {
+      JSAtom atom = JS_NewAtom(ctx, QTS_DUMP_SPECIAL_PROPS[i]);
+      JSValue val = JS_GetProperty(ctx, obj, atom);
+      if (!JS_IsException(val) && !JS_IsUndefined(val)) {
+        JS_DefinePropertyValue(ctx, clone, atom, val, JS_PROP_C_W_E);
+      } else {
+        JS_FreeValue(ctx, val);
+      }
+      JS_FreeAtom(ctx, atom);
+    }
+  }
+
+  return clone;
+}
+
+#define QTS_DUMP_FALLBACK_SIZE 2048
+
+#ifndef QTS_USE_QUICKJS_NG
+// Simple fixed buffer for JS_PrintValue output (bellard/quickjs only).
+typedef struct qts_debugbuf {
+  char *buf;
+  size_t size;
+  size_t pos;
+} qts_debugbuf;
+
+static void qts_debugbuf_write(void *opaque, const char *data, size_t len) {
+  qts_debugbuf *s = opaque;
+  size_t remaining = s->size - s->pos - 1; // -1 for null terminator
+  if (len > remaining) len = remaining;
+  if (len > 0) {
+    memcpy(s->buf + s->pos, data, len);
+    s->pos += len;
+    s->buf[s->pos] = '\0';
+  }
+}
+#endif
+
+// Returns a fallback string when JSON serialization fails
+static JSBorrowedChar *qts_dump_get_fallback(JSContext *ctx, JSValueConst obj, JSValue exception) {
+  char buf[QTS_DUMP_FALLBACK_SIZE];
+  size_t pos = 0;
+  buf[0] = '\0';
+
+#ifndef QTS_USE_QUICKJS_NG
+  // bellard/quickjs: Use JS_PrintValue with show_hidden for rich debug output
+  qts_debugbuf dbuf = { buf, sizeof(buf), 0 };
+
+  JSPrintValueOptions options;
+  JS_PrintValueSetDefaultOptions(&options);
+  options.show_hidden = true;
+  options.max_depth = 3;
+  options.max_string_length = 200;
+  options.max_item_count = 20;
+
+  JS_PrintValue(ctx, qts_debugbuf_write, &dbuf, obj, &options);
+  pos = dbuf.pos;
+#else
+  // quickjs-ng: JS_PrintValue not available, use toString() instead
+  JSValue to_string_val = JS_ToString(ctx, obj);
+  if (JS_IsException(to_string_val)) {
+    JS_FreeValue(ctx, JS_GetException(ctx));
+    pos = snprintf(buf, sizeof(buf), "(toString failed)");
+  } else {
+    const char *str = JS_ToCString(ctx, to_string_val);
+    if (str) {
+      size_t len = strlen(str);
+      if (len > sizeof(buf) - 100) len = sizeof(buf) - 100; // Reserve space for error info
+      memcpy(buf, str, len);
+      buf[len] = '\0';
+      pos = len;
+      JS_FreeCString(ctx, str);
+    }
+    JS_FreeValue(ctx, to_string_val);
+  }
+#endif
+
+  // Add separator and error info
+  const char *err_msg = NULL;
+  if (!JS_IsUndefined(exception) && !JS_IsNull(exception)) {
+    JSValue msg = JS_GetPropertyStr(ctx, exception, "message");
+    if (!JS_IsException(msg) && JS_IsString(msg)) {
+      err_msg = JS_ToCString(ctx, msg);
+    }
+    JS_FreeValue(ctx, msg);
+  }
+
+  size_t remaining = sizeof(buf) - pos - 1;
+  snprintf(buf + pos, remaining, "\n---\nnot JSON serializable: %s",
+           err_msg ? err_msg : "(unknown error)");
+
+  if (err_msg) JS_FreeCString(ctx, err_msg);
+
+  JSValue result_str = JS_NewString(ctx, buf);
+  JSBorrowedChar *result = QTS_GetString(ctx, &result_str);
+  JS_FreeValue(ctx, result_str);
+  return result;
 }
 
 JSValue *jsvalue_to_heap(JSValueConst value) {
@@ -815,40 +985,27 @@ JSValue *QTS_ResolveException(JSContext *ctx, JSValue *maybe_exception) {
 }
 
 MaybeAsync(JSBorrowedChar *) QTS_Dump(JSContext *ctx, JSValueConst *obj) {
-  JSValue obj_json_value = JS_JSONStringify(ctx, *obj, JS_UNDEFINED, JS_UNDEFINED);
-  if (!JS_IsException(obj_json_value)) {
-    const char *obj_json_chars = JS_ToCString(ctx, obj_json_value);
-    JS_FreeValue(ctx, obj_json_value);
-    if (obj_json_chars != NULL) {
-      JSValue enumerable_props = JS_ParseJSON(ctx, obj_json_chars, strlen(obj_json_chars), "<dump>");
-      JS_FreeCString(ctx, obj_json_chars);
-      if (!JS_IsException(enumerable_props)) {
-        // Copy common non-enumerable props for different object types.
-        // Errors:
-        copy_prop_if_needed(ctx, enumerable_props, *obj, "name");
-        copy_prop_if_needed(ctx, enumerable_props, *obj, "message");
-        copy_prop_if_needed(ctx, enumerable_props, *obj, "stack");
-        copy_prop_if_needed(ctx, enumerable_props, *obj, "fileName");
-        copy_prop_if_needed(ctx, enumerable_props, *obj, "lineNumber");
+  // Try to create clone with special props; returns JS_UNDEFINED if not needed
+  JSValue clone = qts_dump_create_clone(ctx, *obj);
+  JSValue to_serialize = JS_IsUndefined(clone) ? *obj : clone;
 
-        // Serialize again.
-        JSValue enumerable_json = JS_JSONStringify(ctx, enumerable_props, JS_UNDEFINED, JS_UNDEFINED);
-        JS_FreeValue(ctx, enumerable_props);
+  // Serialize exactly once
+  JSValue json = JS_JSONStringify(ctx, to_serialize, JS_UNDEFINED, JS_UNDEFINED);
 
-        JSBorrowedChar *result = QTS_GetString(ctx, &enumerable_json);
-        JS_FreeValue(ctx, enumerable_json);
-        return result;
-      }
-    }
+  if (!JS_IsUndefined(clone)) {
+    JS_FreeValue(ctx, clone);
   }
 
-  IF_DEBUG {
-    qts_log("Error dumping JSON:");
-    js_std_dump_error(ctx);
+  if (JS_IsException(json)) {
+    JSValue exception = JS_GetException(ctx);
+    JSBorrowedChar *result = qts_dump_get_fallback(ctx, *obj, exception);
+    JS_FreeValue(ctx, exception);
+    return result;
   }
 
-  // Fallback: convert to string
-  return QTS_GetString(ctx, obj);
+  JSBorrowedChar *result = QTS_GetString(ctx, &json);
+  JS_FreeValue(ctx, json);
+  return result;
 }
 
 JSValue qts_resolve_func_data(
