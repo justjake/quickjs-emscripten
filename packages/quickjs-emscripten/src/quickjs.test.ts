@@ -22,7 +22,9 @@ import type {
   QuickJSFFI,
   QuickJSAsyncFFI,
   ContextOptions,
+  QuickJSFeature,
 } from "."
+import type { QuickJSFeatures } from "."
 import {
   QuickJSContext,
   QuickJSAsyncContext,
@@ -98,6 +100,51 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
       }
     })
 
+  /**
+   * Helper for tests that require a specific feature.
+   * - If feature is supported: runs the test function normally
+   * - If feature is NOT supported: test passes if it either succeeds OR throws QuickJSUnsupported
+   *
+   * @param feature - The feature required by this test
+   * @param featuresOrFn - Either a QuickJSFeatures object, or the test function (uses vm.features)
+   * @param maybeFn - The test function if featuresOrFn is a QuickJSFeatures object
+   */
+  function requiresFeature(
+    feature: QuickJSFeature,
+    featuresOrFn: QuickJSFeatures | (() => unknown),
+    maybeFn?: () => unknown,
+  ): void {
+    let features: QuickJSFeatures
+    let fn: () => unknown
+
+    if (typeof featuresOrFn === "function") {
+      // requiresFeature('bigint', () => ...)
+      features = vm.features
+      fn = featuresOrFn
+    } else {
+      // requiresFeature('bigint', someFeatures, () => ...)
+      features = featuresOrFn
+      fn = maybeFn!
+    }
+
+    if (features.has(feature)) {
+      // Feature supported - run normally
+      fn()
+    } else {
+      // Feature not supported - allow success OR QuickJSUnsupported error
+      try {
+        fn()
+        // Test succeeded despite feature not being supported - that's fine
+      } catch (error) {
+        if (!(error instanceof errors.QuickJSUnsupported)) {
+          // Unexpected error type - rethrow
+          throw error
+        }
+        // QuickJSUnsupported is expected when feature not supported
+      }
+    }
+  }
+
   beforeEach(async () => {
     testId++
     thisTestFailed = false
@@ -144,10 +191,12 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
     })
 
     it("can round-trip a bigint", () => {
-      const int = 2n ** 64n
-      const numHandle = vm.newBigInt(int)
-      assert.equal(vm.getBigInt(numHandle), int)
-      numHandle.dispose()
+      requiresFeature("bigint", () => {
+        const int = 2n ** 64n
+        const numHandle = vm.newBigInt(int)
+        assert.equal(vm.getBigInt(numHandle), int)
+        numHandle.dispose()
+      })
     })
 
     it("can dump a bigint", () => {
@@ -165,20 +214,24 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
     })
 
     it("can round-trip a global symbol", () => {
-      const handle = vm.newSymbolFor("potatoes")
-      const dumped = vm.getSymbol(handle)
-      assert.equal(dumped, Symbol.for("potatoes"))
-      handle.dispose()
+      requiresFeature("symbols", () => {
+        const handle = vm.newSymbolFor("potatoes")
+        const dumped = vm.getSymbol(handle)
+        assert.equal(dumped, Symbol.for("potatoes"))
+        handle.dispose()
+      })
     })
 
     it("can round trip a unique symbol's description", () => {
-      const symbol = Symbol("cats")
-      const handle = vm.newUniqueSymbol(symbol)
-      const dumped = vm.getSymbol(handle)
-      assert.notStrictEqual(dumped, symbol)
-      assert.notStrictEqual(dumped, Symbol.for("cats"))
-      assert.equal(dumped.description, symbol.description)
-      handle.dispose()
+      requiresFeature("symbols", () => {
+        const symbol = Symbol("cats")
+        const handle = vm.newUniqueSymbol(symbol)
+        const dumped = vm.getSymbol(handle)
+        assert.notStrictEqual(dumped, symbol)
+        assert.notStrictEqual(dumped, Symbol.for("cats"))
+        assert.equal(dumped.description, symbol.description)
+        handle.dispose()
+      })
     })
 
     it("can dump a symbol", () => {
