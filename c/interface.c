@@ -1193,13 +1193,6 @@ JSValue *QTS_NewFunction(JSContext *ctx, const char *name, int arg_length, bool 
 
   JSValue func_obj = JS_NewCFunctionData(
       /* context */ ctx,
-<<<<<<< HEAD
-      /* JSCFunctionMagic* */ &qts_call_function,
-      /* name */ name,
-      /* min argc */ 0,
-      /* function type */ JS_CFUNC_constructor_or_func_magic,
-      /* magic: fn id */ func_id);
-=======
       /* JSCFunctionData* */ &qts_call_function,
       /* fn.length */ 0,
       /* magic */ 0,
@@ -1226,7 +1219,6 @@ JSValue *QTS_NewFunction(JSContext *ctx, const char *name, int arg_length, bool 
     JS_SetConstructorBit(ctx, func_obj, is_constructor);
   }
 
->>>>>>> 10aa5e7 (new HostRef system for handling functions & generic host references)
   return jsvalue_to_heap(func_obj);
 }
 
