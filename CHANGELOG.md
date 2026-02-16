@@ -3,7 +3,6 @@
 ## v0.32.0
 
 - [#227](https://github.com/justjake/quickjs-emscripten/pull/227)
-
   - Re-works function binding in `newFunction` to use a different proxying strategy based on a new abstraction, `HostRef`. HostRef allows tracking references of host values from guest handles. Once all references to the HostRef object are disposed (either in the host, or GC'd in the guest), the host value will be dereferenced and become garbage collectable.
   - Functions passed to `newFunction` are interned in the runtime's `HostRefMap` until dereferenced.
   - `HostRef` is also exposed directly for use from `QuickJSContext`, see `newHostRef`, `toHostRef`, `unwrapHostRef` in the docs.
@@ -140,7 +139,6 @@ In edge cases, you might want to use the IIFE build which provides QuickJS as th
 - We now differentiate between runtime environments at build time using Node.JS package.json [export conditions in subpath exports][conditions], instead of including support for all environments in a single build. While this resolves open issues with relatively modern bundlers like webpack@5 and vite, it may cause regressions if you use an older bundler that doesn't understand the "browser" condition.
 - The release variants - RELEASE_SYNC (the default), and RELEASE_ASYNC - no longer embed the WebAssembly code inside a JS file. Instead, they attempt to load the WebAssembly code from a separate file. Very old bundlers may not understand this syntax, or your web server may not serve the .wasm files correctly. Please test in a staging environment to verify your production build works as expected.
 - quickjs-emscripten now uses [subpath exports in package.json][conditions]. Imports of specific files must be removed. The only valid import paths for quickjs-emscripten are:
-
   - `import * from 'quickjs-emscripten'` (the library)
   - `import packageJson from 'quickjs-emscripten/package.json'`
   - `import { DEBUG_SYNC, DEBUG_ASYNC, RELEASE_SYNC, RELEASE_ASYNC } from 'quickjs-emscripten/variants'` (these are exported from the main import, but are also available as their own files)
@@ -154,14 +152,12 @@ In edge cases, you might want to use the IIFE build which provides QuickJS as th
 ## v0.24.0
 
 - [#127](https://github.com/justjake/quickjs-emscripten/pull/127) Upgrade to quickjs 2023-12-09:
-
   - added Object.hasOwn, {String|Array|TypedArray}.prototype.at, {Array|TypedArray}.prototype.findLast{Index}
   - BigInt support is enabled even if CONFIG_BIGNUM disabled
   - updated to Unicode 15.0.0
   - misc bug fixes
 
 - [#125](https://github.com/justjake/quickjs-emscripten/pull/125) (thanks to @tbrockman):
-
   - Synchronizes quickjs to include the recent commit to address CVE-2023-31922.
 
 - [#111](https://github.com/justjake/quickjs-emscripten/pull/111) (thanks to @yourWaifu) ArrayBuffer and binary json encoding:
@@ -182,7 +178,6 @@ In edge cases, you might want to use the IIFE build which provides QuickJS as th
 - [#104](https://github.com/justjake/quickjs-emscripten/pull/104) BigInt support.
 - [#100](https://github.com/justjake/quickjs-emscripten/pull/100) **Breaking change** upgrade Emscripten version and switch to `async import(...)` for loading variants.
   We also drop support for older browsers and Node versions:
-
   - Node >= 16 is required
   - Safari >= 14.1 is required
   - Typescript >= 4.7 is recommended, but not required.

@@ -393,11 +393,11 @@ export function createDisposableArray<T extends Disposable>(
 function isDisposable(value: unknown): value is { alive: boolean; dispose(): unknown } {
   return Boolean(
     value &&
-      (typeof value === "object" || typeof value === "function") &&
-      "alive" in value &&
-      typeof value.alive === "boolean" &&
-      "dispose" in value &&
-      typeof value.dispose === "function",
+    (typeof value === "object" || typeof value === "function") &&
+    "alive" in value &&
+    typeof value.alive === "boolean" &&
+    "dispose" in value &&
+    typeof value.dispose === "function",
   )
 }
 
