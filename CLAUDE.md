@@ -52,6 +52,29 @@ Other test filters:
 - Never use `git commit --amend` - always create new commits. It's better to have a history of what was actually done since branches get rebased/squashed anyway when merged.
 - Before pushing, run `pnpm run prettier` and `pnpm run lint` to fix formatting and lint issues. No need to check after every commit - just before pushing.
 
+## CI Workflow
+
+After pushing a PR, monitor CI using the `gh` CLI:
+
+```bash
+# Check CI status for a PR
+gh pr checks <PR_NUMBER>
+
+# View a specific job's progress
+gh run view --job=<JOB_ID>
+
+# Get logs for failed steps
+gh run view <RUN_ID> --log-failed
+```
+
+When CI fails:
+1. Get the failed logs with `gh run view <RUN_ID> --log-failed | tail -100`
+2. Fix the issue locally
+3. Commit the fix (new commit, don't amend)
+4. Push and repeat until CI passes
+
+The full CI build takes ~20 minutes due to emscripten compilation.
+
 ## Key Files
 
 - `scripts/prepareVariants.ts` - Generates all variant packages from templates
