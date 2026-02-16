@@ -203,7 +203,11 @@ export interface Asyncify {
  * @private
  */
 export interface EmscriptenModuleCallbacks {
-  freeHostRef: (asyncify: Asyncify | undefined, rt: JSRuntimePointer, host_ref_id: HostRefId) => void
+  freeHostRef: (
+    asyncify: Asyncify | undefined,
+    rt: JSRuntimePointer,
+    host_ref_id: HostRefId,
+  ) => void
 
   callFunction: (
     asyncify: Asyncify | undefined,

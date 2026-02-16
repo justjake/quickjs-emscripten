@@ -49,7 +49,9 @@ describe("HostRefMap", () => {
       const map = new HostRefMap()
       assert.throws(
         () => map.get(INVALID_HOST_REF_ID),
-        (err) => err instanceof QuickJSHostRefInvalid && err.message.includes("no host reference id defined"),
+        (err) =>
+          err instanceof QuickJSHostRefInvalid &&
+          err.message.includes("no host reference id defined"),
       )
     })
 
@@ -85,7 +87,9 @@ describe("HostRefMap", () => {
       const map = new HostRefMap()
       assert.throws(
         () => map.delete(INVALID_HOST_REF_ID),
-        (err) => err instanceof QuickJSHostRefInvalid && err.message.includes("no host reference id defined"),
+        (err) =>
+          err instanceof QuickJSHostRefInvalid &&
+          err.message.includes("no host reference id defined"),
       )
     })
 

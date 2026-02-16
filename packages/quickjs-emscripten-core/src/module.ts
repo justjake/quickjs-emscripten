@@ -185,7 +185,9 @@ export class QuickJSModuleCallbacks {
     freeHostRef: (_asyncify, rt, host_ref_id) => {
       const runtimeCallbacks = this.runtimeCallbacks.get(rt)
       if (!runtimeCallbacks) {
-        throw new Error(`QuickJSRuntime(rt = ${rt}) not found when trying to free HostRef(id = ${host_ref_id})`)
+        throw new Error(
+          `QuickJSRuntime(rt = ${rt}) not found when trying to free HostRef(id = ${host_ref_id})`,
+        )
       }
       runtimeCallbacks.freeHostRef(rt, host_ref_id)
     },

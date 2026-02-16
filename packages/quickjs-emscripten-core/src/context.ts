@@ -520,7 +520,7 @@ export class QuickJSContext
    * A {@link VmFunctionImplementation} should not free its arguments or its return
    * value. A VmFunctionImplementation should also not retain any references to
    * its return value.
-   * 
+   *
    * For constructors (functions that will be called with `new ...`), use {@link newConstructorFunction}.
    *
    * The function argument handles are automatically disposed when the function
@@ -610,8 +610,11 @@ export class QuickJSContext
    * ```
    */
   newFunction(fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle
-  newFunction(name: string | undefined, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle 
-  newFunction(nameOrFn: string | undefined | VmFunctionImplementation<QuickJSHandle>, maybeFn?: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
+  newFunction(name: string | undefined, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle
+  newFunction(
+    nameOrFn: string | undefined | VmFunctionImplementation<QuickJSHandle>,
+    maybeFn?: VmFunctionImplementation<QuickJSHandle>,
+  ): QuickJSHandle {
     const fn = typeof nameOrFn === "function" ? nameOrFn : maybeFn
     if (!fn) {
       throw new TypeError("Expected a function")
@@ -630,8 +633,14 @@ export class QuickJSContext
    * See {@link newFunction} for more details.
    */
   newConstructorFunction(fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle
-  newConstructorFunction(name: string | undefined, fn: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle 
-  newConstructorFunction(nameOrFn: string | undefined | VmFunctionImplementation<QuickJSHandle>, maybeFn?: VmFunctionImplementation<QuickJSHandle>): QuickJSHandle {
+  newConstructorFunction(
+    name: string | undefined,
+    fn: VmFunctionImplementation<QuickJSHandle>,
+  ): QuickJSHandle
+  newConstructorFunction(
+    nameOrFn: string | undefined | VmFunctionImplementation<QuickJSHandle>,
+    maybeFn?: VmFunctionImplementation<QuickJSHandle>,
+  ): QuickJSHandle {
     const fn = typeof nameOrFn === "function" ? nameOrFn : maybeFn
     if (!fn) {
       throw new TypeError("Expected a function")
@@ -697,11 +706,11 @@ export class QuickJSContext
 
   /**
    * Create an opaque handle object that stores a reference to a host JavaScript object.
-   * 
+   *
    * The guest cannot access the host object directly, but you may use
    * {@link getHostRef} to convert a HostRef handle back into a HostRef<T> from
    * inside a function implementation.
-   * 
+   *
    * You must call {@link HostRef#dispose} or otherwise consume the {@link HostRef#handle} to ensure the handle is not leaked.
    */
   newHostRef<T extends object>(value: T): HostRef<T> {
@@ -717,7 +726,7 @@ export class QuickJSContext
 
   /**
    * If `handle` is a `HostRef<T>.handle`, return a new `HostRef<T>` instance wrapping the handle.
-   * 
+   *
    * You must call {@link HostRef#dispose} or otherwise consume the {@link HostRef#handle} to ensure the handle is not leaked.
    */
   toHostRef<T extends object>(handle: QuickJSHandle): HostRef<T> | undefined {

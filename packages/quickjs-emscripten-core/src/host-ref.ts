@@ -1,8 +1,8 @@
 import type { HostRefId } from "@jitl/quickjs-ffi-types"
-import { QuickJSHostRefInvalid, QuickJSHostRefRangeExceeded } from "./errors";
-import type { QuickJSHandle } from "./types";
-import type { QuickJSRuntime } from "./runtime";
-import { UsingDisposable } from "./lifetime";
+import { QuickJSHostRefInvalid, QuickJSHostRefRangeExceeded } from "./errors"
+import type { QuickJSHandle } from "./types"
+import type { QuickJSRuntime } from "./runtime"
+import { UsingDisposable } from "./lifetime"
 
 const INT32_MIN = -2147483648
 const INT32_MAX = 2147483647
@@ -80,7 +80,11 @@ export class HostRefMap {
     }
 
     if (this.nextId > INT32_MAX) {
-      throw new QuickJSHostRefRangeExceeded(`HostRefMap: too many host refs created without disposing. Max simultaneous host refs: ${INT32_MAX - INT32_MIN}`)
+      throw new QuickJSHostRefRangeExceeded(
+        `HostRefMap: too many host refs created without disposing. Max simultaneous host refs: ${
+          INT32_MAX - INT32_MIN
+        }`,
+      )
     }
 
     return this.nextId++ as HostRefId
@@ -89,14 +93,14 @@ export class HostRefMap {
 
 /**
  * HostRef represents a reference to a host value from a QuickJS guest.
- * 
+ *
  * The host value is stored with a strong reference in a map within the runtime.
  * Once all references to the HostRef's handle are disposed and there are no
  * more references from the guest, the host value will be removed from the map.
- * 
+ *
  * This abstraction allows passing values to the guest that need to keep a host
  * value alive for their method callbacks.
- * 
+ *
  * Note that there may be multiple HostRef instances pointing to the same host
  * value slot in the runtime.
  */
