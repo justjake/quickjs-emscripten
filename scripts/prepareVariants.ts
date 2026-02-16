@@ -189,14 +189,24 @@ function makeTarget(partialVariant: TargetSpec): BuildVariant[] {
 }
 
 // Build settings for variables
+// Split into compiler flags (used during .c -> .o) and linker flags (used during .o -> .js)
 
 const ASYNCIFY_STACK_SIZE = 81920
-const SyncModeFlags = {
+
+// Compiler flags: optimization, defines, debug info, sanitizers
+const SyncModeCompileFlags = {
+  [SyncMode.Sync]: [],
+  [SyncMode.Asyncify]: [
+    `-DQTS_ASYNCIFY=1`,
+    `-DQTS_ASYNCIFY_DEFAULT_STACK_SIZE=${ASYNCIFY_STACK_SIZE}`,
+  ],
+}
+
+// Linker flags: emscripten settings, library flags
+const SyncModeLinkFlags = {
   [SyncMode.Sync]: [],
   [SyncMode.Asyncify]: [
     `-s ASYNCIFY=1`,
-    `-DQTS_ASYNCIFY=1`,
-    `-DQTS_ASYNCIFY_DEFAULT_STACK_SIZE=${ASYNCIFY_STACK_SIZE}`,
     `-s ASYNCIFY_STACK_SIZE=${ASYNCIFY_STACK_SIZE}`,
     `-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json`,
     `-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json`,
@@ -204,20 +214,21 @@ const SyncModeFlags = {
   ],
 }
 
-const ReleaseModeFlags = {
+// Compiler flags for release mode
+const ReleaseModeCompileFlags = {
+  [ReleaseMode.Release]: [`-Oz`, `-flto`],
+  [ReleaseMode.Debug]: [`-O0`, "-DQTS_DEBUG_MODE", `-DDUMP_LEAKS=1`, `-gsource-map`],
+}
+
+// Linker flags for release mode
+const ReleaseModeLinkFlags = {
   [ReleaseMode.Release]: [
-    `-Oz`,
-    `-flto`,
     `--closure 1`,
     `-s FILESYSTEM=0`,
     `--pre-js $(TEMPLATES)/pre-extension.js`,
     `--pre-js $(TEMPLATES)/pre-wasmMemory.js`,
   ],
   [ReleaseMode.Debug]: [
-    `-O0`,
-    "-DQTS_DEBUG_MODE",
-    `-DDUMP_LEAKS=1`,
-    `-gsource-map`,
     `-s ASSERTIONS=1`,
     `--pre-js $(TEMPLATES)/pre-extension.js`,
     `--pre-js $(TEMPLATES)/pre-sourceMapJson.js`,
@@ -226,41 +237,54 @@ const ReleaseModeFlags = {
   ],
 }
 
-const EmscriptenInclusionFlags = {
+// All emscripten inclusion flags are linker-only
+const EmscriptenInclusionLinkFlags = {
   [EmscriptenInclusion.Separate]: [],
   [EmscriptenInclusion.SingleFile]: [`-s SINGLE_FILE=1`],
   [EmscriptenInclusion.AsmJs]: [`-s WASM=0`, `-s SINGLE_FILE=1`, `-s WASM_ASYNC_COMPILATION=0`],
 }
 
-function getCflags(targetName: string, variant: BuildVariant) {
-  const flags: string[] = []
+interface SplitFlags {
+  compile: string[]
+  link: string[]
+}
 
-  flags.push(...SyncModeFlags[variant.syncMode])
-  flags.push(...ReleaseModeFlags[variant.releaseMode])
-  flags.push(...EmscriptenInclusionFlags[variant.emscriptenInclusion])
+function getFlags(targetName: string, variant: BuildVariant): SplitFlags {
+  const compile: string[] = []
+  const link: string[] = []
+
+  compile.push(...SyncModeCompileFlags[variant.syncMode])
+  link.push(...SyncModeLinkFlags[variant.syncMode])
+
+  compile.push(...ReleaseModeCompileFlags[variant.releaseMode])
+  link.push(...ReleaseModeLinkFlags[variant.releaseMode])
+
+  link.push(...EmscriptenInclusionLinkFlags[variant.emscriptenInclusion])
 
   if (variant.releaseMode === ReleaseMode.Debug) {
     switch (variant.syncMode) {
       case SyncMode.Sync:
-        flags.push()
-        flags.push("-DQTS_SANITIZE_LEAK")
-        flags.push("-fsanitize=leak")
-        flags.push("-g2")
+        compile.push("-DQTS_SANITIZE_LEAK")
+        compile.push("-fsanitize=leak")
+        compile.push("-g2")
         break
       case SyncMode.Asyncify:
-        // flags.push("-s ASYNCIFY_ADVISE=1")
-        flags.push(
-          // # Need to use -O3 - otherwise ASYNCIFY leads to stack overflows (why?)
-          "-O3",
-        )
+        // Need to use -O3 - otherwise ASYNCIFY leads to stack overflows (why?)
+        compile.push("-O3")
         break
     }
   }
 
-  return flags
+  return { compile, link }
 }
 
-function getExportCflags(variant: BuildVariant, exportName: keyof BuildVariant["exports"]) {
+// Legacy function for backward compatibility (used in README generation)
+function getCflags(targetName: string, variant: BuildVariant) {
+  const { compile, link } = getFlags(targetName, variant)
+  return [...compile, ...link]
+}
+
+function getExportLdflags(variant: BuildVariant, exportName: keyof BuildVariant["exports"]) {
   const exportVariant = variant.exports[exportName]
   if (!exportVariant) {
     return []
@@ -268,6 +292,13 @@ function getExportCflags(variant: BuildVariant, exportName: keyof BuildVariant["
 
   const emscriptenEnvironment = exportVariant.emscriptenEnvironment.join(",")
   const flags = [`-s ENVIRONMENT=${emscriptenEnvironment}`]
+
+  // Add node-specific flags only when node environment is included
+  const includesNode = exportVariant.emscriptenEnvironment.includes(EmscriptenEnvironment.node)
+  if (includesNode) {
+    flags.push(`-s MIN_NODE_VERSION=160000`)
+    flags.push(`-s NODEJS_CATCH_EXIT=0`)
+  }
 
   return flags
 }
@@ -682,29 +713,34 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
 
   template.replace("QUICKJS_LIB=REPLACE_THIS", `QUICKJS_LIB=${variant.library}`)
 
+  // Get split flags for variant
+  const { compile, link } = getFlags(targetName, variant)
+
   template.replace(
-    "CFLAGS_ALL=REPLACE_THIS",
-    appendEnvVars("CFLAGS_WASM", getCflags(targetName, variant)),
+    "CFLAGS_COMPILE_VARIANT=REPLACE_THIS",
+    appendEnvVars("CFLAGS_COMPILE", compile),
+  )
+
+  template.replace("LDFLAGS_VARIANT=REPLACE_THIS", appendEnvVars("LDFLAGS_WASM", link))
+
+  template.replace(
+    "LDFLAGS_CJS=REPLACE_THIS",
+    appendEnvVars("LDFLAGS_CJS", getExportLdflags(variant, "require")),
   )
 
   template.replace(
-    "CFLAGS_CJS=REPLACE_THIS",
-    appendEnvVars("CFLAGS_CJS", getExportCflags(variant, "require")),
+    "LDFLAGS_MJS=REPLACE_THIS",
+    appendEnvVars("LDFLAGS_MJS", getExportLdflags(variant, "import")),
   )
 
   template.replace(
-    "CFLAGS_MJS=REPLACE_THIS",
-    appendEnvVars("CFLAGS_MJS", getExportCflags(variant, "import")),
+    "LDFLAGS_BROWSER=REPLACE_THIS",
+    appendEnvVars("LDFLAGS_BROWSER", getExportLdflags(variant, "browser")),
   )
 
   template.replace(
-    "CFLAGS_BROWSER=REPLACE_THIS",
-    appendEnvVars("CFLAGS_BROWSER", getExportCflags(variant, "browser")),
-  )
-
-  template.replace(
-    "CFLAGS_CLOUDFLARE=REPLACE_THIS",
-    appendEnvVars("CFLAGS_CLOUDFLARE", getExportCflags(variant, "workerd")),
+    "LDFLAGS_CLOUDFLARE=REPLACE_THIS",
+    appendEnvVars("LDFLAGS_CLOUDFLARE", getExportLdflags(variant, "workerd")),
   )
 
   template.replace(
