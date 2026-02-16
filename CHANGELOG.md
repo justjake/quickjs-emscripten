@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.32.0
+
+- [#227](https://github.com/justjake/quickjs-emscripten/pull/227)
+
+  - Re-works function binding in `newFunction` to use a different proxying strategy based on a new abstraction, `HostRef`. HostRef allows tracking references of host values from guest handles. Once all references to the HostRef object are disposed (either in the host, or GC'd in the guest), the host value will be dereferenced and become garbage collectable.
+  - Functions passed to `newFunction` are interned in the runtime's `HostRefMap` until dereferenced.
+  - `HostRef` is also exposed directly for use from `QuickJSContext`, see `newHostRef`, `toHostRef`, `unwrapHostRef` in the docs.
+  - Added `QuickJSContext.newConstructorFunction`, such functions will have their `this` set to the newly constructed object, although they may also return a new object.
+
+- [#244](https://github.com/justjake/quickjs-emscripten/pull/244) Upgrade [quickjs-ng](https://github.com/quickjs-ng/quickjs) to [v0.12.1](https://github.com/quickjs-ng/quickjs/releases/tag/v0.12.1).
+- [#243](https://github.com/justjake/quickjs-emscripten/pull/243) (thanks to @josh-) Upgrade [bellard/quickjs](https://github.com/bellard/quickjs) to [2025-09-13+f1139494](https://github.com/bellard/quickjs/commit/f1139494d18a2053630c5ed3384a42bb70db3c53). Review the [QuickJS changelog](https://github.com/bellard/quickjs/blob/f1139494d18a2053630c5ed3384a42bb70db3c53/Changelog) for details.
+  - Some intrinsics like `BigInt` are now always enabled.
+  - BigNum extension removed.
+- [#242](https://github.com/justjake/quickjs-emscripten/pull/242) Upgrade to Emscripten 5.0.1.
+- [#221](https://github.com/justjake/quickjs-emscripten/pull/221) (thanks to @melbourne2991) Support generator return values in QuickJSIterator.
+
 ## v0.31.0
 
 - [#137](https://github.com/justjake/quickjs-emscripten/pull/137)

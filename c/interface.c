@@ -94,6 +94,7 @@ void js_std_dump_error(JSContext *ctx);
 #define BorrowedHeapChar const char
 #define OwnedHeapChar char
 #define JSBorrowedChar const char
+#define HostRefId int32_t
 
 /**
  * Signal to our FFI code generator that this function should be called
@@ -116,7 +117,7 @@ void js_std_dump_error(JSContext *ctx);
 // Forward declarations for EM_JS callback functions
 // These are implemented via EM_JS macro but need forward declarations for C99 compliance
 #ifdef __EMSCRIPTEN__
-JSValue *qts_host_call_function(JSContext *ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint32_t magic_func_id);
+JSValue *qts_host_call_function(JSContext *ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, int32_t host_ref_id);
 int qts_host_interrupt_handler(JSRuntime *rt);
 char *qts_host_load_module_source(JSRuntime *rt, JSContext *ctx, const char *module_name);
 char *qts_host_normalize_module(JSRuntime *rt, JSContext *ctx, const char *module_base_name, const char *module_name);
@@ -279,6 +280,7 @@ EM_JS(void, set_asyncify_stack_size, (size_t size, size_t default_size), {
 /**
  * Set the stack size limit, in bytes. Set to 0 to disable.
  */
+
 void QTS_RuntimeSetMaxStackSize(JSRuntime *rt, size_t stack_size) {
 #ifdef QTS_ASYNCIFY
   set_asyncify_stack_size(stack_size, QTS_ASYNCIFY_DEFAULT_STACK_SIZE);
@@ -310,6 +312,92 @@ JSValueConst QTS_True = JS_TRUE;
 JSValueConst *QTS_GetTrue() {
   return &QTS_True;
 }
+
+// ----------------------------------------------------------------------------
+// HostRef - De-reference host value based on JSValue GC.
+// Used for functions
+
+static JSClassID host_ref_class_id;
+// todo: variant with mark callback
+
+typedef struct HostRef {
+  int32_t id;
+} HostRef;
+
+#ifdef __EMSCRIPTEN__
+EM_JS(void, qts_host_ref_free, (JSRuntime *rt, int32_t id), {
+  // For now we don't allow for async freeHostRef.
+  const asyncify = undefined;
+  Module['callbacks']['freeHostRef'](asyncify, rt, id);
+});
+#endif
+
+static void host_ref_finalizer(JSRuntime *rt, JSValue val) {
+  HostRef *hv = JS_GetOpaque(val, host_ref_class_id);
+  if (hv) {
+#ifdef __EMSCRIPTEN__
+    qts_host_ref_free(rt, hv->id);
+#endif
+    js_free_rt(rt, hv);
+  }
+}
+
+static JSClassDef host_ref_class = {
+  .class_name = "HostRef",
+  .finalizer = host_ref_finalizer,
+};
+
+static int host_ref_class_init(JSRuntime *rt) {
+  // Only allocate class ID once globally
+  if (host_ref_class_id == 0) {
+#ifdef QTS_USE_QUICKJS_NG
+    JS_NewClassID(rt, &host_ref_class_id);
+#else
+    JS_NewClassID(&host_ref_class_id);
+#endif
+  }
+  // Register class with this runtime if not already registered
+  // JS_NewClass returns 0 on success, -1 if already registered (which is fine)
+  if (!JS_IsRegisteredClass(rt, host_ref_class_id)) {
+    return JS_NewClass(rt, host_ref_class_id, &host_ref_class);
+  }
+  return 0;
+}
+
+static JSValue new_host_ref(JSContext *ctx, HostRefId id) {
+  HostRef *hv;
+  JSValue obj;
+  obj = JS_NewObjectClass(ctx, host_ref_class_id);
+  if (JS_IsException(obj)) {
+    return obj;
+  }
+
+  hv = js_mallocz(ctx, sizeof(*hv));
+  if (!hv) {
+    // js_mallocz returns NULL on failure and sets rt.exception to OutOfMemory
+    JS_FreeValue(ctx, obj);
+    return JS_EXCEPTION;
+  }
+
+  hv->id = id;
+  JS_SetOpaque(obj, hv);
+  return obj;
+}
+
+JSValue *QTS_NewHostRef(JSContext *ctx, HostRefId id) {
+  return jsvalue_to_heap(new_host_ref(ctx, id));
+}
+
+HostRefId QTS_GetHostRefId(JSValueConst *value) {
+  HostRef *hv = JS_GetOpaque(*value, host_ref_class_id);
+  if (hv) {
+    return hv->id;
+  }
+  return 0;
+}
+
+// ----------------------------------------------------------------------------
+// Context & Runtime
 
 /**
  * Standard FFI functions
@@ -343,51 +431,63 @@ enum QTS_Intrinsic {
 };
 
 JSContext *QTS_NewContext(JSRuntime *rt, IntrinsicsFlags intrinsics) {
+  JSContext *ctx;
+
   if (intrinsics == 0) {
-    return JS_NewContext(rt);
+    ctx = JS_NewContext(rt);
+    if (ctx == NULL) {
+      return NULL;
+    }
+  } else {
+    ctx = JS_NewContextRaw(rt);
+    if (ctx == NULL) {
+      return NULL;
+    }
+
+    if (intrinsics & QTS_Intrinsic_BaseObjects) {
+      JS_AddIntrinsicBaseObjects(ctx);
+    }
+    if (intrinsics & QTS_Intrinsic_Date) {
+      JS_AddIntrinsicDate(ctx);
+    }
+    if (intrinsics & QTS_Intrinsic_Eval) {
+      JS_AddIntrinsicEval(ctx);
+    }
+  #ifndef QTS_USE_QUICKJS_NG
+    if (intrinsics & QTS_Intrinsic_StringNormalize) {
+      JS_AddIntrinsicStringNormalize(ctx);
+    }
+  #endif
+    if (intrinsics & QTS_Intrinsic_RegExp) {
+      JS_AddIntrinsicRegExp(ctx);
+    }
+    if (intrinsics & QTS_Intrinsic_RegExpCompiler) {
+      JS_AddIntrinsicRegExpCompiler(ctx);
+    }
+    if (intrinsics & QTS_Intrinsic_JSON) {
+      JS_AddIntrinsicJSON(ctx);
+    }
+    if (intrinsics & QTS_Intrinsic_Proxy) {
+      JS_AddIntrinsicProxy(ctx);
+    }
+    if (intrinsics & QTS_Intrinsic_MapSet) {
+      JS_AddIntrinsicMapSet(ctx);
+    }
+    if (intrinsics & QTS_Intrinsic_TypedArrays) {
+      JS_AddIntrinsicTypedArrays(ctx);
+    }
+    if (intrinsics & QTS_Intrinsic_Promise) {
+      JS_AddIntrinsicPromise(ctx);
+    }
+
+    // Note: BigInt is now always part of QuickJS core, no need for separate intrinsic
   }
 
-  JSContext *ctx = JS_NewContextRaw(rt);
-  if (ctx == NULL) {
+  if (host_ref_class_init(JS_GetRuntime(ctx)) != 0) {
+    JS_FreeContext(ctx);
     return NULL;
   }
 
-  if (intrinsics & QTS_Intrinsic_BaseObjects) {
-    JS_AddIntrinsicBaseObjects(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_Date) {
-    JS_AddIntrinsicDate(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_Eval) {
-    JS_AddIntrinsicEval(ctx);
-  }
-#ifndef QTS_USE_QUICKJS_NG
-  if (intrinsics & QTS_Intrinsic_StringNormalize) {
-    JS_AddIntrinsicStringNormalize(ctx);
-  }
-#endif
-  if (intrinsics & QTS_Intrinsic_RegExp) {
-    JS_AddIntrinsicRegExp(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_RegExpCompiler) {
-    JS_AddIntrinsicRegExpCompiler(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_JSON) {
-    JS_AddIntrinsicJSON(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_Proxy) {
-    JS_AddIntrinsicProxy(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_MapSet) {
-    JS_AddIntrinsicMapSet(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_TypedArrays) {
-    JS_AddIntrinsicTypedArrays(ctx);
-  }
-  if (intrinsics & QTS_Intrinsic_Promise) {
-    JS_AddIntrinsicPromise(ctx);
-  }
-  // Note: BigInt is now always part of QuickJS core, no need for separate intrinsic
   return ctx;
 }
 
@@ -1043,9 +1143,6 @@ int QTS_BuildIsAsyncify() {
 }
 
 // ----------------------------------------------------------------------------
-// Module loading helpers
-
-// ----------------------------------------------------------------------------
 // C -> Host Callbacks
 // Note: inside EM_JS, we need to use ['...'] subscript syntax for accessing JS
 // objects, because in optimized builds, Closure compiler will mangle all the
@@ -1054,19 +1151,25 @@ int QTS_BuildIsAsyncify() {
 // -------------------
 // function: C -> Host
 #ifdef __EMSCRIPTEN__
-EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint32_t magic_func_id), {
+EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, HostRefId host_ref_id), {
 #ifdef QTS_ASYNCIFY
   const asyncify = {['handleSleep'] : Asyncify.handleSleep};
 #else
   const asyncify = undefined;
 #endif
-  return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id);
+  return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, host_ref_id);
 });
 #endif
 
 // Function: QuickJS -> C
-JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic) {
-  JSValue *result_ptr = qts_host_call_function(ctx, &this_val, argc, argv, magic);
+JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic, JSValue *func_data) {
+  int32_t host_ref_id = 0;
+  HostRef *host_ref = JS_GetOpaque(*func_data, host_ref_class_id);
+  if (host_ref) {
+    host_ref_id = host_ref->id;
+  }
+
+  JSValue *result_ptr = qts_host_call_function(ctx, &this_val, argc, argv, host_ref_id);
   if (result_ptr == NULL) {
     return JS_UNDEFINED;
   }
@@ -1076,19 +1179,46 @@ JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSVal
 }
 
 // Function: Host -> QuickJS
-JSValue *QTS_NewFunction(JSContext *ctx, uint32_t func_id, const char *name) {
+JSValue *QTS_NewFunction(JSContext *ctx, const char *name, int arg_length, bool is_constructor, HostRefId host_ref_id) {
   IF_DEBUG {
     char msg[LOG_LEN];
-    snprintf(msg, LOG_LEN, "new_function(name: %s, magic: %d)", name, func_id);
+    snprintf(msg, LOG_LEN, "new_function(name: %s, length: %d, is_constructor: %d, host_ref_id: %d)", name, arg_length, is_constructor, host_ref_id);
     qts_log(msg);
   }
-  JSValue func_obj = JS_NewCFunctionMagic(
+
+  JSValue host_ref = new_host_ref(ctx, host_ref_id);
+  if (JS_IsException(host_ref)) {
+    return jsvalue_to_heap(host_ref);
+  }
+
+  JSValue func_obj = JS_NewCFunctionData(
       /* context */ ctx,
-      /* JSCFunctionMagic* */ &qts_call_function,
-      /* name */ name,
-      /* min argc */ 0,
-      /* function type */ JS_CFUNC_constructor_or_func_magic,
-      /* magic: fn id */ func_id);
+      /* JSCFunctionData* */ &qts_call_function,
+      /* fn.length */ 0,
+      /* magic */ 0,
+      /* data length */ 1,
+      /* data */ &host_ref
+  );
+  JS_FreeValue(ctx, host_ref);
+
+  if (JS_IsException(func_obj)) {
+    return jsvalue_to_heap(func_obj);
+  }
+
+  if (name && strlen(name) > 0) {
+    JSValue name_val = JS_NewString(ctx, name);
+    if (JS_IsException(name_val)) {
+      JS_FreeValue(ctx, func_obj);
+      return jsvalue_to_heap(name_val);
+    }
+    // JS_DefinePropertyValueStr takes ownership of name_val and frees it
+    JS_DefinePropertyValueStr(ctx, func_obj, "name", name_val, JS_PROP_CONFIGURABLE);
+  }
+
+  if (is_constructor) {
+    JS_SetConstructorBit(ctx, func_obj, is_constructor);
+  }
+
   return jsvalue_to_heap(func_obj);
 }
 
@@ -1124,6 +1254,8 @@ void QTS_RuntimeDisableInterruptHandler(JSRuntime *rt) {
   JS_SetInterruptHandler(rt, NULL, NULL);
 }
 
+// ----------------------------------------------------------------------------
+// Module loading helpers
 // --------------------
 // load module: C -> Host
 // TODO: a future version can support host returning JSModuleDef* directly;

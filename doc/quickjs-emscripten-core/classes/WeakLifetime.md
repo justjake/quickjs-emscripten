@@ -32,6 +32,7 @@ Used for function arguments.
   - [value](WeakLifetime.md#value)
 - [Methods](WeakLifetime.md#methods)
   - [`[dispose]`()](WeakLifetime.md#dispose)
+  - [assertAlive()](WeakLifetime.md#assertalive)
   - [consume()](WeakLifetime.md#consume)
   - [dispose()](WeakLifetime.md#dispose)
   - [dup()](WeakLifetime.md#dup)
@@ -264,6 +265,24 @@ Just calls the standard .dispose() method of this class.
 #### Source
 
 [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
+
+***
+
+### assertAlive()
+
+> **`protected`** **assertAlive**(): `void`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`quickjs-emscripten-core.Lifetime.assertAlive`](Lifetime.md#assertalive)
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:182](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L182)
 
 ***
 

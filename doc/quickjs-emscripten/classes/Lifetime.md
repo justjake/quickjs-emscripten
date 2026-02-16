@@ -32,6 +32,7 @@ Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
   - [value](Lifetime.md#value)
 - [Methods](Lifetime.md#methods)
   - [`[dispose]`()](Lifetime.md#dispose)
+  - [assertAlive()](Lifetime.md#assertalive)
   - [consume()](Lifetime.md#consume)
   - [dispose()](Lifetime.md#dispose)
   - [dup()](Lifetime.md#dup)
@@ -255,6 +256,20 @@ Just calls the standard .dispose() method of this class.
 #### Source
 
 [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
+
+***
+
+### assertAlive()
+
+> **`protected`** **assertAlive**(): `void`
+
+#### Returns
+
+`void`
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:182](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L182)
 
 ***
 

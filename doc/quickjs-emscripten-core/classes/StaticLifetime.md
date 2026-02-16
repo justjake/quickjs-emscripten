@@ -28,6 +28,7 @@ A Lifetime that lives forever. Used for constants.
   - [value](StaticLifetime.md#value)
 - [Methods](StaticLifetime.md#methods)
   - [`[dispose]`()](StaticLifetime.md#dispose)
+  - [assertAlive()](StaticLifetime.md#assertalive)
   - [consume()](StaticLifetime.md#consume)
   - [dispose()](StaticLifetime.md#dispose)
   - [dup()](StaticLifetime.md#dup)
@@ -254,6 +255,24 @@ Just calls the standard .dispose() method of this class.
 #### Source
 
 [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
+
+***
+
+### assertAlive()
+
+> **`protected`** **assertAlive**(): `void`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`quickjs-emscripten-core.Lifetime.assertAlive`](Lifetime.md#assertalive)
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/lifetime.ts:182](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L182)
 
 ***
 

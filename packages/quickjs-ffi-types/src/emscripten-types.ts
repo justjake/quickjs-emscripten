@@ -18,6 +18,7 @@ import type {
   JSValueConstPointer,
   JSValuePointer,
   OwnedHeapCharPointer,
+  HostRefId,
 } from "./ffi-types"
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -202,13 +203,19 @@ export interface Asyncify {
  * @private
  */
 export interface EmscriptenModuleCallbacks {
+  freeHostRef: (
+    asyncify: Asyncify | undefined,
+    rt: JSRuntimePointer,
+    host_ref_id: HostRefId,
+  ) => void
+
   callFunction: (
     asyncify: Asyncify | undefined,
     ctx: JSContextPointer,
     this_ptr: JSValueConstPointer,
     argc: number,
     argv: JSValueConstPointer,
-    fn_id: number,
+    host_ref_id: HostRefId,
   ) => JSValuePointer | AsyncifySleepResult<JSValuePointer>
 
   loadModuleSource: (

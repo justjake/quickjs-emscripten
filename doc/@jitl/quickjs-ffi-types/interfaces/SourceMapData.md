@@ -22,7 +22,7 @@
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:58](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L58)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:59](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L59)
 
 ***
 
@@ -32,7 +32,7 @@
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L57)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:58](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L58)
 
 ***
 
@@ -42,7 +42,7 @@
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:56](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L56)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L57)
 
 ***
 
@@ -52,7 +52,7 @@
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:55](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L55)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:56](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L56)
 
 ***
 

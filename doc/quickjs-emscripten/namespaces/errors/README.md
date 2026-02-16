@@ -16,6 +16,8 @@ Collects the informative errors this library may throw.
 - [QuickJSAsyncifySuspended](classes/QuickJSAsyncifySuspended.md)
 - [QuickJSEmptyGetOwnPropertyNames](classes/QuickJSEmptyGetOwnPropertyNames.md)
 - [QuickJSEmscriptenModuleError](classes/QuickJSEmscriptenModuleError.md)
+- [QuickJSHostRefInvalid](classes/QuickJSHostRefInvalid.md)
+- [QuickJSHostRefRangeExceeded](classes/QuickJSHostRefRangeExceeded.md)
 - [QuickJSMemoryLeakDetected](classes/QuickJSMemoryLeakDetected.md)
 - [QuickJSNotImplemented](classes/QuickJSNotImplemented.md)
 - [QuickJSPromisePending](classes/QuickJSPromisePending.md)

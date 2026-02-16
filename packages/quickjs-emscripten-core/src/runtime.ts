@@ -16,6 +16,7 @@ import { ModuleMemory } from "./memory"
 import type { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
 import type { ContextOptions, JSModuleLoader, JSModuleNormalizer, QuickJSHandle } from "./types"
 import { intrinsicsToFlags } from "./types"
+import { HostRefMap } from "./host-ref"
 
 /**
  * Callback called regularly while the VM executes code.
@@ -96,6 +97,8 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
   protected moduleLoader: JSModuleLoader | undefined
   /** @private */
   protected moduleNormalizer: JSModuleNormalizer | undefined
+  /** @private */
+  hostRefs = new HostRefMap()
 
   /** @private */
   constructor(args: {
@@ -383,6 +386,14 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
   }
 
   private cToHostCallbacks: RuntimeCallbacks = {
+    freeHostRef: (rt, host_ref_id) => {
+      if (rt !== this.rt.value) {
+        throw new Error("Runtime pointer mismatch")
+      }
+
+      this.hostRefs.delete(host_ref_id)
+    },
+
     shouldInterrupt: (rt) => {
       if (rt !== this.rt.value) {
         throw new Error("QuickJSContext instance received C -> JS interrupt with mismatched rt")

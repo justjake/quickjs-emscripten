@@ -23,6 +23,7 @@ import {
   EvalDetectModule,
   GetOwnPropertyNamesFlags,
   IsEqualOp,
+  HostRefId,
   JSPromiseStateEnum,
 } from "."
 
@@ -49,6 +50,8 @@ export interface QuickJSFFI {
   QTS_GetNull: () => JSValueConstPointer
   QTS_GetFalse: () => JSValueConstPointer
   QTS_GetTrue: () => JSValueConstPointer
+  QTS_NewHostRef: (ctx: JSContextPointer, id: HostRefId) => JSValuePointer
+  QTS_GetHostRefId: (value: JSValuePointer | JSValueConstPointer) => HostRefId
   QTS_NewRuntime: () => JSRuntimePointer
   QTS_FreeRuntime: (rt: JSRuntimePointer) => void
   QTS_NewContext: (rt: JSRuntimePointer, intrinsics: IntrinsicsFlags) => JSContextPointer
@@ -194,7 +197,13 @@ export interface QuickJSFFI {
   QTS_SetDebugLogEnabled: (rt: JSRuntimePointer, is_enabled: number) => void
   QTS_BuildIsDebug: () => number
   QTS_BuildIsAsyncify: () => number
-  QTS_NewFunction: (ctx: JSContextPointer, func_id: number, name: string) => JSValuePointer
+  QTS_NewFunction: (
+    ctx: JSContextPointer,
+    name: string,
+    arg_length: number,
+    is_constructor: boolean,
+    host_ref_id: HostRefId,
+  ) => JSValuePointer
   QTS_ArgvGetJSValueConstPointer: (
     argv: JSValuePointer | JSValueConstPointer,
     index: number,

@@ -126,6 +126,11 @@ export type GetOwnPropertyNamesFlags = Brand<number, "GetOwnPropertyNamesFlags">
 export type IsEqualOp = Brand<number, "IsEqualOp">
 
 /**
+ * @private
+ */
+export type HostRefId = Brand<number, "HostRefId">
+
+/**
  * State of a promise.
  */
 export type JSPromiseStateEnum = Brand<

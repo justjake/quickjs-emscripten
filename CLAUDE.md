@@ -57,3 +57,87 @@ Other test filters:
 - `scripts/generate.ts` - Generates FFI bindings and symbols
 - `templates/Variant.mk` - Makefile template for variants
 - `c/interface.c` - C interface to QuickJS exposed to JavaScript
+
+## QuickJS C API Tips
+
+### Value Ownership
+
+QuickJS has strict ownership semantics. Functions either "consume" (take ownership of) or "borrow" values:
+
+**Functions that CONSUME values (caller must NOT free afterward):**
+
+- `JS_DefinePropertyValue` - consumes `val`
+- `JS_DefinePropertyValueStr` - consumes `val`
+- `JS_DefinePropertyValueUint32` - consumes `val`
+- `JS_SetPropertyValue` - consumes `val`
+- `JS_SetPropertyStr` - consumes `val`
+- `JS_Throw` - consumes the error value
+
+**Functions that DUP values internally (caller SHOULD free afterward):**
+
+- `JS_NewCFunctionData` - calls `JS_DupValue` on data values, so free your reference after
+- `JS_SetProperty` - dups the value
+
+**Common double-free bug pattern:**
+
+```c
+// WRONG - double free!
+JSValue val = JS_NewString(ctx, "hello");
+JS_DefinePropertyValueStr(ctx, obj, "name", val, JS_PROP_CONFIGURABLE);
+JS_FreeValue(ctx, val);  // BUG: val was already consumed!
+
+// CORRECT
+JSValue val = JS_NewString(ctx, "hello");
+JS_DefinePropertyValueStr(ctx, obj, "name", val, JS_PROP_CONFIGURABLE);
+// No JS_FreeValue needed - value is consumed
+```
+
+### quickjs vs quickjs-ng Differences
+
+Some functions have different signatures between bellard/quickjs and quickjs-ng:
+
+```c
+// bellard/quickjs - class ID is global
+JS_NewClassID(&class_id);
+
+// quickjs-ng - class ID is per-runtime
+JS_NewClassID(rt, &class_id);
+```
+
+Use `#ifdef QTS_USE_QUICKJS_NG` for compatibility:
+
+```c
+#ifdef QTS_USE_QUICKJS_NG
+  JS_NewClassID(rt, &class_id);
+#else
+  JS_NewClassID(&class_id);
+#endif
+```
+
+### Class Registration
+
+- `JS_NewClassID` allocates a new class ID (only call once globally or per-runtime for ng)
+- `JS_NewClass` registers the class definition with a runtime
+- `JS_IsRegisteredClass` checks if a class is already registered with a runtime
+- Class prototypes default to `JS_NULL` for new classes - set with `JS_SetClassProto` if needed
+
+### Disposal Order
+
+When disposing resources, order matters for finalizers:
+
+```typescript
+// CORRECT: Free runtime first so GC finalizers can call back to JS
+const rt = new Lifetime(ffi.QTS_NewRuntime(), undefined, (rt_ptr) => {
+  ffi.QTS_FreeRuntime(rt_ptr);        // 1. Free runtime - runs GC finalizers
+  callbacks.deleteRuntime(rt_ptr);     // 2. Then delete callbacks
+});
+```
+
+### GC and Prevent Corruption Assertions
+
+If you see assertions like:
+- `Assertion failed: i != 0, at: quickjs.c, JS_FreeAtomStruct` - atom hash corruption (often double-free)
+- `Assertion failed: list_empty(&rt->gc_obj_list)` - objects leaked
+- `Assertion failed: p->gc_obj_type == JS_GC_OBJ_TYPE_JS_OBJECT` - memory corruption
+
+These usually indicate memory management bugs: double-frees, use-after-free, or missing frees.

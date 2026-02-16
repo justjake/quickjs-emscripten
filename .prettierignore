@@ -13,3 +13,4 @@ emsdk-cache
 packages/internal-tsconfig/*.d.*ts
 packages/internal-tsconfig/*.*js
 vendor
+CLAUDE.md
