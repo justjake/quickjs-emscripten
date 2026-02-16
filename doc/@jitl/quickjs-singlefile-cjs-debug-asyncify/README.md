@@ -73,24 +73,23 @@ Variant-specific Emscripten build flags:
 
 ```json
 [
-  "-s ASYNCIFY=1",
   "-DQTS_ASYNCIFY=1",
   "-DQTS_ASYNCIFY_DEFAULT_STACK_SIZE=81920",
+  "-O0",
+  "-DQTS_DEBUG_MODE",
+  "-DDUMP_LEAKS=1",
+  "-O3",
+  "-s ASYNCIFY=1",
   "-s ASYNCIFY_STACK_SIZE=81920",
   "-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json",
   "-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json",
   "-lasync.js",
-  "-O0",
-  "-DQTS_DEBUG_MODE",
-  "-DDUMP_LEAKS=1",
-  "-gsource-map",
   "-s ASSERTIONS=1",
   "--pre-js $(TEMPLATES)/pre-extension.js",
   "--pre-js $(TEMPLATES)/pre-sourceMapJson.js",
   "--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js",
   "--pre-js $(TEMPLATES)/pre-wasmMemory.js",
-  "-s SINGLE_FILE=1",
-  "-O3"
+  "-s SINGLE_FILE=1"
 ]
 ```
 

@@ -215,7 +215,7 @@ An `Array` that also implements [Disposable](interfaces/Disposable.md):
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:253](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L253)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:245](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L245)
 
 ***
 

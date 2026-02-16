@@ -60,15 +60,15 @@ Variant-specific Emscripten build flags:
 
 ```json
 [
-  "-s ASYNCIFY=1",
   "-DQTS_ASYNCIFY=1",
   "-DQTS_ASYNCIFY_DEFAULT_STACK_SIZE=81920",
+  "-Oz",
+  "-flto",
+  "-s ASYNCIFY=1",
   "-s ASYNCIFY_STACK_SIZE=81920",
   "-s ASYNCIFY_REMOVE=@$(BUILD_WRAPPER)/asyncify-remove.json",
   "-s ASYNCIFY_IMPORTS=@$(BUILD_WRAPPER)/asyncify-imports.json",
   "-lasync.js",
-  "-Oz",
-  "-flto",
   "--closure 1",
   "-s FILESYSTEM=0",
   "--pre-js $(TEMPLATES)/pre-extension.js",

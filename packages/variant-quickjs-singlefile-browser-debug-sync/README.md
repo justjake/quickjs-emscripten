@@ -63,15 +63,14 @@ Variant-specific Emscripten build flags:
   "-O0",
   "-DQTS_DEBUG_MODE",
   "-DDUMP_LEAKS=1",
-  "-gsource-map",
+  "-DQTS_SANITIZE_LEAK",
+  "-fsanitize=leak",
+  "-g2",
   "-s ASSERTIONS=1",
   "--pre-js $(TEMPLATES)/pre-extension.js",
   "--pre-js $(TEMPLATES)/pre-sourceMapJson.js",
   "--pre-js $(TEMPLATES)/pre-wasmOffsetConverter.js",
   "--pre-js $(TEMPLATES)/pre-wasmMemory.js",
-  "-s SINGLE_FILE=1",
-  "-DQTS_SANITIZE_LEAK",
-  "-fsanitize=leak",
-  "-g2"
+  "-s SINGLE_FILE=1"
 ]
 ```

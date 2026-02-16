@@ -14,13 +14,6 @@ QuickJS.
 - [Extends](QuickJSAsyncEmscriptenModule.md#extends)
 - [Properties](QuickJSAsyncEmscriptenModule.md#properties)
   - [FAST\_MEMORY](QuickJSAsyncEmscriptenModule.md#fast-memory)
-  - [HEAP16](QuickJSAsyncEmscriptenModule.md#heap16)
-  - [HEAP32](QuickJSAsyncEmscriptenModule.md#heap32)
-  - [HEAP8](QuickJSAsyncEmscriptenModule.md#heap8)
-  - [HEAPF32](QuickJSAsyncEmscriptenModule.md#heapf32)
-  - [HEAPF64](QuickJSAsyncEmscriptenModule.md#heapf64)
-  - [HEAPU16](QuickJSAsyncEmscriptenModule.md#heapu16)
-  - [HEAPU32](QuickJSAsyncEmscriptenModule.md#heapu32)
   - [HEAPU8](QuickJSAsyncEmscriptenModule.md#heapu8)
   - [TOTAL\_MEMORY](QuickJSAsyncEmscriptenModule.md#total-memory)
   - [TOTAL\_STACK](QuickJSAsyncEmscriptenModule.md#total-stack)
@@ -55,105 +48,7 @@ QuickJS.
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:293
-
-***
-
-### HEAP16
-
-> **HEAP16**: `Int16Array`
-
-#### Inherited from
-
-[`quickjs-emscripten.EmscriptenModule.HEAP16`](EmscriptenModule.md#heap16)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:284
-
-***
-
-### HEAP32
-
-> **HEAP32**: `Int32Array`
-
-#### Inherited from
-
-[`quickjs-emscripten.EmscriptenModule.HEAP32`](EmscriptenModule.md#heap32)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:285
-
-***
-
-### HEAP8
-
-> **HEAP8**: `Int8Array`
-
-#### Inherited from
-
-[`quickjs-emscripten.EmscriptenModule.HEAP8`](EmscriptenModule.md#heap8)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:283
-
-***
-
-### HEAPF32
-
-> **HEAPF32**: `Float32Array`
-
-#### Inherited from
-
-[`quickjs-emscripten.EmscriptenModule.HEAPF32`](EmscriptenModule.md#heapf32)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:289
-
-***
-
-### HEAPF64
-
-> **HEAPF64**: `Float64Array`
-
-#### Inherited from
-
-[`quickjs-emscripten.EmscriptenModule.HEAPF64`](EmscriptenModule.md#heapf64)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:290
-
-***
-
-### HEAPU16
-
-> **HEAPU16**: `Uint16Array`
-
-#### Inherited from
-
-[`quickjs-emscripten.EmscriptenModule.HEAPU16`](EmscriptenModule.md#heapu16)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:287
-
-***
-
-### HEAPU32
-
-> **HEAPU32**: `Uint32Array`
-
-#### Inherited from
-
-[`quickjs-emscripten.EmscriptenModule.HEAPU32`](EmscriptenModule.md#heapu32)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:288
+packages/quickjs-ffi-types/dist/index.d.ts:286
 
 ***
 
@@ -167,7 +62,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:288
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:286
+packages/quickjs-ffi-types/dist/index.d.ts:283
 
 ***
 
@@ -181,7 +76,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:286
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:292
+packages/quickjs-ffi-types/dist/index.d.ts:285
 
 ***
 
@@ -195,7 +90,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:292
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:291
+packages/quickjs-ffi-types/dist/index.d.ts:284
 
 ***
 
@@ -205,7 +100,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:291
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:335
+packages/quickjs-ffi-types/dist/index.d.ts:328
 
 ***
 
@@ -219,7 +114,7 @@ Implement this field
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:334
+packages/quickjs-ffi-types/dist/index.d.ts:327
 
 ***
 
