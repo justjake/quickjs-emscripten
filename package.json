@@ -24,7 +24,7 @@
     "vendor:mquickjs:pull": "ACTION=pull yarn vendor:mquickjs:subtree && yarn vendor:mquickjs:patch",
     "vendor:mquickjs:add": "ACTION=add yarn vendor:mquickjs:subtree",
     "vendor:mquickjs:patch": "git apply vendor/mquickjs-patches/*",
-    "vendor:update": "yarn vendor:quickjs:pull && yarn vendor:ng:pull && yarn vendor:mquickjs:pull"
+    "vendor:update": "yarn vendor:quickjs:pull && yarn vendor:ng:pull && yarn vendor:mquickjs:pull",
     "smoketest-node": "yarn tarball && ./scripts/smoketest-node-minimal.ts && ./scripts/smoketest-node.ts",
     "smoketest-cra": "yarn tarball && ./scripts/smoketest-create-react-app.ts",
     "smoketest-vite": "yarn tarball && ./scripts/smoketest-vite.ts",
