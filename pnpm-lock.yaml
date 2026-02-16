@@ -43,6 +43,9 @@ importers:
       hads:
         specifier: ^3.0.3
         version: 3.0.3
+      mdast-util-toc:
+        specifier: ^7.1.0
+        version: 7.1.0
       node-fetch-commonjs:
         specifier: ^3.1.1
         version: 3.3.2
