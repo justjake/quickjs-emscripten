@@ -25,7 +25,7 @@ Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS C
 
 | Variable            |    Setting                     |    Description    |
 | --                  | --                             | --                |
-| library             | mquickjs             | [mquickjs](https://github.com/bellard/mquickjs) is a minimal/micro version of QuickJS by Fabrice Bellard, optimized for small size. Version [git+ee50431e](https://github.com/bellard/mquickjs/commit/ee50431eac9b14b99f722b537ec4cac0c8dd75ab) vendored to quickjs-emscripten on 2026-02-15. |
+| library             | mquickjs             | [mquickjs](https://github.com/bellard/mquickjs) is a minimal/micro version of QuickJS by Fabrice Bellard, optimized for small size. Version [git+ee50431e](https://github.com/bellard/mquickjs/commit/ee50431eac9b14b99f722b537ec4cac0c8dd75ab) vendored to quickjs-emscripten on 2026-02-16. |
 | releaseMode         | debug         | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
 | syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
 | emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |

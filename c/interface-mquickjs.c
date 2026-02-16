@@ -195,6 +195,30 @@ JSValueConst *QTS_GetTrue() {
 }
 
 /**
+ * Host references - mquickjs doesn't support custom classes, so we use a simple
+ * integer-based approach storing the ID directly in an object property.
+ */
+typedef int32_t HostRefId;
+
+JSValue *QTS_NewHostRef(JSContext *ctx, HostRefId id) {
+  // mquickjs doesn't have the full class system, so we store the ID in an object property
+  JSValue obj = JS_NewObject(ctx);
+  if (JS_IsException(obj)) {
+    return jsvalue_to_heap(obj);
+  }
+  JSValue id_val = JS_NewFloat64(ctx, (double)id);
+  JS_SetPropertyStr(ctx, obj, "$$hostRefId$$", id_val);
+  return jsvalue_to_heap(obj);
+}
+
+HostRefId QTS_GetHostRefId(JSValueConst *value) {
+  // Since we can't use JS_GetOpaque without a class, check if it's our host ref object
+  // For mquickjs, we just return 0 (invalid) since we can't reliably detect host refs
+  // This effectively disables host ref functionality in mquickjs
+  return 0;
+}
+
+/**
  * Standard FFI functions
  */
 

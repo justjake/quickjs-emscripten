@@ -23,6 +23,7 @@ import {
   EvalDetectModule,
   GetOwnPropertyNamesFlags,
   IsEqualOp,
+  HostRefId,
   JSPromiseStateEnum,
 } from "@jitl/quickjs-ffi-types"
 
@@ -82,6 +83,18 @@ export class QuickJSFFI {
   QTS_GetFalse: () => JSValueConstPointer = this.module.cwrap("QTS_GetFalse", "number", [])
 
   QTS_GetTrue: () => JSValueConstPointer = this.module.cwrap("QTS_GetTrue", "number", [])
+
+  QTS_NewHostRef: (ctx: JSContextPointer, id: HostRefId) => JSValuePointer = this.module.cwrap(
+    "QTS_NewHostRef",
+    "number",
+    ["number", "number"],
+  )
+
+  QTS_GetHostRefId: (value: JSValuePointer | JSValueConstPointer) => HostRefId = this.module.cwrap(
+    "QTS_GetHostRefId",
+    "number",
+    ["number"],
+  )
 
   QTS_NewRuntime: () => JSRuntimePointer = this.module.cwrap("QTS_NewRuntime", "number", [])
 
@@ -391,8 +404,19 @@ export class QuickJSFFI {
 
   QTS_HasEvalSupport: () => number = this.module.cwrap("QTS_HasEvalSupport", "number", [])
 
-  QTS_NewFunction: (ctx: JSContextPointer, func_id: number, name: string) => JSValuePointer =
-    this.module.cwrap("QTS_NewFunction", "number", ["number", "number", "string"])
+  QTS_NewFunction: (
+    ctx: JSContextPointer,
+    name: string,
+    arg_length: number,
+    is_constructor: boolean,
+    host_ref_id: HostRefId,
+  ) => JSValuePointer = this.module.cwrap("QTS_NewFunction", "number", [
+    "number",
+    "string",
+    "number",
+    "boolean",
+    "number",
+  ])
 
   QTS_ArgvGetJSValueConstPointer: (
     argv: JSValuePointer | JSValueConstPointer,

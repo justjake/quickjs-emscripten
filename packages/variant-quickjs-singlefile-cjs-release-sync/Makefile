@@ -21,18 +21,26 @@ BUILD_QUICKJS=$(BUILD_ROOT)/quickjs
 DIST=dist
 
 # QuickJS
-ifeq ($(QUICKJS_LIB),quickjs-ng)
+ifeq ($(QUICKJS_LIB),mquickjs)
+	# mquickjs is a minimal QuickJS fork without modules, promises, symbols, bigint
+	QUICKJS_OBJS=mquickjs.o dtoa.o libm.o cutils.o
+	QUICKJS_DEFINES:=-D_GNU_SOURCE
+	CFLAGS_WASM+=-DQTS_USE_MQUICKJS
+	INTERFACE_SOURCE=interface-mquickjs.c
+else ifeq ($(QUICKJS_LIB),quickjs-ng)
 	# quickjs-ng uses amalgamated build (single source file)
 	# QJS_BUILD_LIBC is needed to include libc functions (js_std_*)
 	QUICKJS_OBJS=quickjs-amalgam.o
 	QUICKJS_CONFIG_VERSION=$(shell cat $(QUICKJS_ROOT)/VERSION)
 	QUICKJS_DEFINES:=-D_GNU_SOURCE -DQJS_BUILD_LIBC -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\"
 	CFLAGS_WASM+=-DQTS_USE_QUICKJS_NG
+	INTERFACE_SOURCE=interface.c
 else
 	# bellard/quickjs uses separate source files
 	QUICKJS_OBJS=quickjs.o dtoa.o libregexp.o libunicode.o cutils.o quickjs-libc.o
 	QUICKJS_CONFIG_VERSION=$(shell cat $(QUICKJS_ROOT)/VERSION)
 	QUICKJS_DEFINES:=-D_GNU_SOURCE -DCONFIG_VERSION=\"$(QUICKJS_CONFIG_VERSION)\" -DCONFIG_STACK_CHECK
+	INTERFACE_SOURCE=interface.c
 endif
 VARIANT_QUICKJS_OBJS=$(patsubst %.o, $(BUILD_QUICKJS)/%.o, $(QUICKJS_OBJS))
 
@@ -162,6 +170,13 @@ $(BUILD_WRAPPER)/%/emscripten-module.js: $(BUILD_WRAPPER)/interface.o $(VARIANT_
 ###############################################################################
 # Emscripten intermediate files
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
+
+# Interface file - may be different per variant (e.g., interface-mquickjs.c for mquickjs)
+$(BUILD_WRAPPER)/interface.o: $(WRAPPER_ROOT)/$(INTERFACE_SOURCE) $(WASM_SYMBOLS) | $(EMCC_SRC)
+	$(MKDIRP)
+	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) -c -o $@ $<
+
+# Generic rule for other wrapper files
 $(BUILD_WRAPPER)/%.o: $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
 	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) -c -o $@ $<

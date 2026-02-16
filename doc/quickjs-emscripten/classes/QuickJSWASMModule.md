@@ -25,6 +25,8 @@ inside QuickJS, create a context with [newContext](QuickJSWASMModule.md#newconte
 ## Contents
 
 - [Extended By](QuickJSWASMModule.md#extended-by)
+- [Properties](QuickJSWASMModule.md#properties)
+  - [features](QuickJSWASMModule.md#features)
 - [Methods](QuickJSWASMModule.md#methods)
   - [evalCode()](QuickJSWASMModule.md#evalcode)
   - [getWasmMemory()](QuickJSWASMModule.md#getwasmmemory)
@@ -34,6 +36,19 @@ inside QuickJS, create a context with [newContext](QuickJSWASMModule.md#newconte
 ## Extended By
 
 - [`QuickJSAsyncWASMModule`](QuickJSAsyncWASMModule.md)
+
+## Properties
+
+### features
+
+> **`readonly`** **features**: [`QuickJSFeatures`](QuickJSFeatures.md)
+
+Feature detection for this QuickJS variant.
+Different builds may have different feature sets (e.g., mquickjs lacks modules, promises).
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/module.ts:339](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L339)
 
 ## Methods
 
@@ -81,7 +96,7 @@ with name `"InternalError"` and  message `"interrupted"`.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:410](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L410)
+[packages/quickjs-emscripten-core/src/module.ts:419](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L419)
 
 ***
 
@@ -101,7 +116,7 @@ and provide the [CustomizeVariantOptions#wasmMemory](../interfaces/CustomizeVari
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:441](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L441)
+[packages/quickjs-emscripten-core/src/module.ts:450](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L450)
 
 ***
 
@@ -123,7 +138,7 @@ be disposed when the context is disposed.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:375](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L375)
+[packages/quickjs-emscripten-core/src/module.ts:384](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L384)
 
 ***
 
@@ -145,7 +160,7 @@ loading for one or more [QuickJSContext](QuickJSContext.md)s inside the runtime.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:346](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L346)
+[packages/quickjs-emscripten-core/src/module.ts:354](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L354)
 
 ***
 

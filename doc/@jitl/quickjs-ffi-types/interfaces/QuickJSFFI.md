@@ -48,6 +48,12 @@ library.
   - [QTS\_GetSymbolDescriptionOrKey](QuickJSFFI.md#qts-getsymboldescriptionorkey)
   - [QTS\_GetTrue](QuickJSFFI.md#qts-gettrue)
   - [QTS\_GetUndefined](QuickJSFFI.md#qts-getundefined)
+  - [QTS\_HasBigIntSupport](QuickJSFFI.md#qts-hasbigintsupport)
+  - [QTS\_HasEvalSupport](QuickJSFFI.md#qts-hasevalsupport)
+  - [QTS\_HasIntrinsicsSupport](QuickJSFFI.md#qts-hasintrinsicssupport)
+  - [QTS\_HasModuleSupport](QuickJSFFI.md#qts-hasmodulesupport)
+  - [QTS\_HasPromiseSupport](QuickJSFFI.md#qts-haspromisesupport)
+  - [QTS\_HasSymbolSupport](QuickJSFFI.md#qts-hassymbolsupport)
   - [QTS\_IsEqual](QuickJSFFI.md#qts-isequal)
   - [QTS\_IsGlobalSymbol](QuickJSFFI.md#qts-isglobalsymbol)
   - [QTS\_IsJobPending](QuickJSFFI.md#qts-isjobpending)
@@ -118,7 +124,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi.ts:207](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L207)
+[packages/quickjs-ffi-types/src/ffi.ts:213](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L213)
 
 ***
 
@@ -752,6 +758,90 @@ Set at compile time.
 
 ***
 
+### QTS\_HasBigIntSupport
+
+> **QTS\_HasBigIntSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi.ts:203](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L203)
+
+***
+
+### QTS\_HasEvalSupport
+
+> **QTS\_HasEvalSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi.ts:205](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L205)
+
+***
+
+### QTS\_HasIntrinsicsSupport
+
+> **QTS\_HasIntrinsicsSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi.ts:204](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L204)
+
+***
+
+### QTS\_HasModuleSupport
+
+> **QTS\_HasModuleSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi.ts:200](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L200)
+
+***
+
+### QTS\_HasPromiseSupport
+
+> **QTS\_HasPromiseSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi.ts:201](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L201)
+
+***
+
+### QTS\_HasSymbolSupport
+
+> **QTS\_HasSymbolSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+[packages/quickjs-ffi-types/src/ffi.ts:202](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L202)
+
+***
+
 ### QTS\_IsEqual
 
 > **QTS\_IsEqual**: (`ctx`, `a`, `b`, `op`) => `number`
@@ -934,7 +1024,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi.ts:200](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L200)
+[packages/quickjs-ffi-types/src/ffi.ts:206](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L206)
 
 ***
 
@@ -1180,7 +1270,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi.ts:212](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L212)
+[packages/quickjs-ffi-types/src/ffi.ts:218](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L218)
 
 ***
 
@@ -1198,7 +1288,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi.ts:214](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L214)
+[packages/quickjs-ffi-types/src/ffi.ts:220](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L220)
 
 ***
 
@@ -1234,7 +1324,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi.ts:211](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L211)
+[packages/quickjs-ffi-types/src/ffi.ts:217](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L217)
 
 ***
 
@@ -1254,7 +1344,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi.ts:213](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L213)
+[packages/quickjs-ffi-types/src/ffi.ts:219](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L219)
 
 ***
 
@@ -1416,7 +1506,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi.ts:219](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L219)
+[packages/quickjs-ffi-types/src/ffi.ts:225](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L225)
 
 ***
 
@@ -1436,7 +1526,7 @@ Set at compile time.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/ffi.ts:215](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L215)
+[packages/quickjs-ffi-types/src/ffi.ts:221](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L221)
 
 ***
 

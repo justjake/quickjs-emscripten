@@ -54,7 +54,7 @@ The name of the variant that doesn't support this feature
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/errors.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L67)
+[packages/quickjs-emscripten-core/src/errors.ts:75](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L75)
 
 ## Properties
 
@@ -66,7 +66,7 @@ The feature that is not supported
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/errors.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L69)
+[packages/quickjs-emscripten-core/src/errors.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L77)
 
 ***
 
@@ -80,7 +80,7 @@ The feature that is not supported
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/errors.ts:65](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L65)
+[packages/quickjs-emscripten-core/src/errors.ts:73](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L73)
 
 ***
 
@@ -92,7 +92,7 @@ The operation that was attempted, if specified
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/errors.ts:71](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L71)
+[packages/quickjs-emscripten-core/src/errors.ts:79](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L79)
 
 ***
 
@@ -104,7 +104,7 @@ The name of the variant that doesn't support this feature
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/errors.ts:73](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L73)
+[packages/quickjs-emscripten-core/src/errors.ts:81](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L81)
 
 ***
 
