@@ -205,7 +205,7 @@ QuickJS.
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:246](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L246)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:250](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L250)
 
 ***
 
@@ -219,7 +219,7 @@ Implement this field
 
 #### Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:245](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L245)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:249](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L249)
 
 ***
 

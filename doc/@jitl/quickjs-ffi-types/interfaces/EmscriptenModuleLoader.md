@@ -22,7 +22,7 @@
 
 ## Source
 
-[packages/quickjs-ffi-types/src/emscripten-types.ts:252](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L252)
+[packages/quickjs-ffi-types/src/emscripten-types.ts:256](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L256)
 
 ***
 
