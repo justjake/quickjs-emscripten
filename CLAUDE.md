@@ -49,7 +49,7 @@ Other test filters:
 
 ## Git
 
-- Never use `git commit --amend` - always create new commits
+- Never use `git commit --amend` - always create new commits. It's better to have a history of what was actually done since branches get rebased/squashed anyway when merged.
 
 ## Key Files
 
