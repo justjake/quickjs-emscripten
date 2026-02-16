@@ -17,6 +17,8 @@
 - [@jitl/quickjs-ng-wasmfile-debug-asyncify](@jitl/quickjs-ng-wasmfile-debug-asyncify/README.md)
 - [@jitl/quickjs-ng-wasmfile-release-sync](@jitl/quickjs-ng-wasmfile-release-sync/README.md)
 - [@jitl/quickjs-ng-wasmfile-release-asyncify](@jitl/quickjs-ng-wasmfile-release-asyncify/README.md)
+- [@jitl/mquickjs-wasmfile-debug-sync](@jitl/mquickjs-wasmfile-debug-sync/README.md)
+- [@jitl/mquickjs-wasmfile-release-sync](@jitl/mquickjs-wasmfile-release-sync/README.md)
 - [@jitl/quickjs-singlefile-cjs-debug-sync](@jitl/quickjs-singlefile-cjs-debug-sync/README.md)
 - [@jitl/quickjs-singlefile-cjs-debug-asyncify](@jitl/quickjs-singlefile-cjs-debug-asyncify/README.md)
 - [@jitl/quickjs-singlefile-cjs-release-sync](@jitl/quickjs-singlefile-cjs-release-sync/README.md)

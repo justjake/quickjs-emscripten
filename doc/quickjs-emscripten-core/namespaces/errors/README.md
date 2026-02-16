@@ -22,6 +22,7 @@ Collects the informative errors this library may throw.
 - [QuickJSNotImplemented](classes/QuickJSNotImplemented.md)
 - [QuickJSPromisePending](classes/QuickJSPromisePending.md)
 - [QuickJSUnknownIntrinsic](classes/QuickJSUnknownIntrinsic.md)
+- [QuickJSUnsupported](classes/QuickJSUnsupported.md)
 - [QuickJSUnwrapError](classes/QuickJSUnwrapError.md)
 - [QuickJSUseAfterFree](classes/QuickJSUseAfterFree.md)
 - [QuickJSWrongOwner](classes/QuickJSWrongOwner.md)

@@ -8,10 +8,12 @@ import type {
   JSRuntimePointer,
   JSValuePointer,
   EitherFFI,
+  QuickJSFeatureRecord,
 } from "@jitl/quickjs-ffi-types"
 import type { QuickJSContext } from "./context"
 import { debugLog } from "./debug"
 import { QuickJSAsyncifyError, QuickJSAsyncifySuspended } from "./errors"
+import { QuickJSFeatures } from "./features"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { CustomizeVariantOptions } from "./from-variant"
 import { Lifetime, Scope } from "./lifetime"
@@ -331,11 +333,18 @@ export class QuickJSWASMModule {
   /** @private */
   protected module: EitherModule
 
+  /**
+   * Feature detection for this QuickJS variant.
+   * Different builds may have different feature sets (e.g., mquickjs lacks modules, promises).
+   */
+  public readonly features: QuickJSFeatures
+
   /** @private */
-  constructor(module: EitherModule, ffi: EitherFFI) {
+  constructor(module: EitherModule, ffi: EitherFFI, features: QuickJSFeatureRecord) {
     this.module = module
     this.ffi = ffi
     this.callbacks = new QuickJSModuleCallbacks(module)
+    this.features = new QuickJSFeatures(features)
   }
 
   /**
@@ -356,6 +365,7 @@ export class QuickJSWASMModule {
       callbacks: this.callbacks,
       ffi: this.ffi,
       rt,
+      features: this.features,
     })
 
     applyBaseRuntimeOptions(runtime, options)

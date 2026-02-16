@@ -48,6 +48,12 @@ library.
   - [QTS\_GetSymbolDescriptionOrKey](QuickJSFFI.md#qts-getsymboldescriptionorkey)
   - [QTS\_GetTrue](QuickJSFFI.md#qts-gettrue)
   - [QTS\_GetUndefined](QuickJSFFI.md#qts-getundefined)
+  - [QTS\_HasBigIntSupport](QuickJSFFI.md#qts-hasbigintsupport)
+  - [QTS\_HasEvalSupport](QuickJSFFI.md#qts-hasevalsupport)
+  - [QTS\_HasIntrinsicsSupport](QuickJSFFI.md#qts-hasintrinsicssupport)
+  - [QTS\_HasModuleSupport](QuickJSFFI.md#qts-hasmodulesupport)
+  - [QTS\_HasPromiseSupport](QuickJSFFI.md#qts-haspromisesupport)
+  - [QTS\_HasSymbolSupport](QuickJSFFI.md#qts-hassymbolsupport)
   - [QTS\_IsEqual](QuickJSFFI.md#qts-isequal)
   - [QTS\_IsGlobalSymbol](QuickJSFFI.md#qts-isglobalsymbol)
   - [QTS\_IsJobPending](QuickJSFFI.md#qts-isjobpending)
@@ -118,7 +124,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:351
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:413
+packages/quickjs-ffi-types/dist/index.d.ts:419
 
 ***
 
@@ -752,6 +758,90 @@ packages/quickjs-ffi-types/dist/index.d.ts:360
 
 ***
 
+### QTS\_HasBigIntSupport
+
+> **QTS\_HasBigIntSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:415
+
+***
+
+### QTS\_HasEvalSupport
+
+> **QTS\_HasEvalSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:417
+
+***
+
+### QTS\_HasIntrinsicsSupport
+
+> **QTS\_HasIntrinsicsSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:416
+
+***
+
+### QTS\_HasModuleSupport
+
+> **QTS\_HasModuleSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:412
+
+***
+
+### QTS\_HasPromiseSupport
+
+> **QTS\_HasPromiseSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:413
+
+***
+
+### QTS\_HasSymbolSupport
+
+> **QTS\_HasSymbolSupport**: () => `number`
+
+#### Returns
+
+`number`
+
+#### Source
+
+packages/quickjs-ffi-types/dist/index.d.ts:414
+
+***
+
 ### QTS\_IsEqual
 
 > **QTS\_IsEqual**: (`ctx`, `a`, `b`, `op`) => `number`
@@ -934,7 +1024,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:379
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:412
+packages/quickjs-ffi-types/dist/index.d.ts:418
 
 ***
 
@@ -1180,7 +1270,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:355
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:415
+packages/quickjs-ffi-types/dist/index.d.ts:421
 
 ***
 
@@ -1198,7 +1288,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:415
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:417
+packages/quickjs-ffi-types/dist/index.d.ts:423
 
 ***
 
@@ -1234,7 +1324,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:356
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:414
+packages/quickjs-ffi-types/dist/index.d.ts:420
 
 ***
 
@@ -1254,7 +1344,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:414
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:416
+packages/quickjs-ffi-types/dist/index.d.ts:422
 
 ***
 
@@ -1416,7 +1506,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:400
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:419
+packages/quickjs-ffi-types/dist/index.d.ts:425
 
 ***
 
@@ -1436,7 +1526,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:419
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:418
+packages/quickjs-ffi-types/dist/index.d.ts:424
 
 ***
 

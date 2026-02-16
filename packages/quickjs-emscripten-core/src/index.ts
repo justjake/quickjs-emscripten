@@ -4,6 +4,7 @@ export * from "@jitl/quickjs-ffi-types"
 export { QuickJSWASMModule } from "./module"
 export { QuickJSContext } from "./context"
 export { QuickJSRuntime } from "./runtime"
+export { QuickJSFeatures } from "./features"
 export type { InterruptHandler, ExecutePendingJobsResult } from "./runtime"
 
 // Async classes
@@ -44,6 +45,7 @@ export type {
   JSModuleNormalizeFailure,
   JSModuleNormalizeSuccess,
   Intrinsics,
+  QuickJSFeature,
 } from "./types"
 export { DefaultIntrinsics } from "./types"
 export type { ModuleEvalOptions } from "./module"

@@ -31,7 +31,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:119](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L119)
+[packages/quickjs-emscripten-core/src/types.ts:132](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L132)
 
 ***
 
@@ -41,7 +41,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:113](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L113)
+[packages/quickjs-emscripten-core/src/types.ts:126](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L126)
 
 ***
 
@@ -51,7 +51,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L114)
+[packages/quickjs-emscripten-core/src/types.ts:127](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L127)
 
 ***
 
@@ -61,7 +61,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:115](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L115)
+[packages/quickjs-emscripten-core/src/types.ts:128](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L128)
 
 ***
 
@@ -71,7 +71,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:117](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L117)
+[packages/quickjs-emscripten-core/src/types.ts:130](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L130)
 
 ***
 
@@ -81,7 +81,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:118](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L118)
+[packages/quickjs-emscripten-core/src/types.ts:131](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L131)
 
 ***
 
@@ -91,7 +91,7 @@
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/types.ts:120](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L120)
+[packages/quickjs-emscripten-core/src/types.ts:133](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L133)
 
 ***
 

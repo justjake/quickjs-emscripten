@@ -1,4 +1,5 @@
 import type { QuickJSContext } from "./context"
+import type { QuickJSFeatures } from "./features"
 import type { ModuleEvalOptions, QuickJSWASMModule } from "./module"
 import type { QuickJSRuntime } from "./runtime"
 import type { ContextOptions, RuntimeOptions } from "./types"
@@ -83,5 +84,9 @@ export class TestQuickJSWASMModule implements Pick<QuickJSWASMModule, keyof Quic
   /** @private */
   getFFI() {
     return this.parent.getFFI()
+  }
+
+  get features(): QuickJSFeatures {
+    return this.parent.features
   }
 }

@@ -21,6 +21,8 @@ modules.
 ## Contents
 
 - [Extends](QuickJSAsyncWASMModule.md#extends)
+- [Properties](QuickJSAsyncWASMModule.md#properties)
+  - [features](QuickJSAsyncWASMModule.md#features)
 - [Methods](QuickJSAsyncWASMModule.md#methods)
   - [evalCode()](QuickJSAsyncWASMModule.md#evalcode)
   - [evalCodeAsync()](QuickJSAsyncWASMModule.md#evalcodeasync)
@@ -31,6 +33,23 @@ modules.
 ## Extends
 
 - [`QuickJSWASMModule`](QuickJSWASMModule.md)
+
+## Properties
+
+### features
+
+> **`readonly`** **features**: [`QuickJSFeatures`](QuickJSFeatures.md)
+
+Feature detection for this QuickJS variant.
+Different builds may have different feature sets (e.g., mquickjs lacks modules, promises).
+
+#### Inherited from
+
+[`quickjs-emscripten-core.QuickJSWASMModule.features`](QuickJSWASMModule.md#features)
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/module.ts:339](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L339)
 
 ## Methods
 
@@ -50,7 +69,7 @@ Synchronous evalCode is not supported.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-asyncify.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L76)
+[packages/quickjs-emscripten-core/src/module-asyncify.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L77)
 
 ***
 
@@ -80,7 +99,7 @@ See the documentation for [QuickJSWASMModule#evalCode](QuickJSWASMModule.md#eval
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-asyncify.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L91)
+[packages/quickjs-emscripten-core/src/module-asyncify.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L92)
 
 ***
 
@@ -104,7 +123,7 @@ and provide the [CustomizeVariantOptions#wasmMemory](../interfaces/CustomizeVari
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module.ts:441](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L441)
+[packages/quickjs-emscripten-core/src/module.ts:450](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L450)
 
 ***
 
@@ -130,7 +149,7 @@ be disposed when the context is disposed.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-asyncify.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L67)
+[packages/quickjs-emscripten-core/src/module-asyncify.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L68)
 
 ***
 

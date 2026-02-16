@@ -20,6 +20,15 @@ const variant: QuickJSAsyncVariant = {
   importFFI: () => import("./ffi.js").then((mod) => mod.QuickJSAsyncFFI),
   importModuleLoader: () =>
     import("@jitl/quickjs-ng-wasmfile-debug-asyncify/emscripten-module").then((mod) => mod.default),
+  features: {
+    modules: true,
+    promises: true,
+    symbols: true,
+    bigint: true,
+    intrinsics: true,
+    eval: true,
+    functions: true,
+  },
 } as const
 
 export default variant

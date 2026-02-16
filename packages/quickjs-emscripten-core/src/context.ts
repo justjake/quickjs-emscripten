@@ -26,6 +26,7 @@ import {
   QuickJSPromisePending,
   QuickJSUnwrapError,
 } from "./errors"
+import type { QuickJSFeatures } from "./features"
 import type { Disposable, DisposableArray, DisposableFail, DisposableSuccess } from "./lifetime"
 import {
   DisposableResult,
@@ -193,6 +194,14 @@ export class QuickJSContext
    * The runtime that created this context.
    */
   public readonly runtime: QuickJSRuntime
+
+  /**
+   * Feature detection for this QuickJS variant.
+   * Different builds may have different feature sets (e.g., mquickjs lacks modules, promises).
+   */
+  get features(): QuickJSFeatures {
+    return this.runtime.features
+  }
 
   /** @private */
   protected readonly ctx: Lifetime<JSContextPointer>
@@ -372,6 +381,7 @@ export class QuickJSContext
    * No two symbols created with this function will be the same value.
    */
   newUniqueSymbol(description: string | symbol): QuickJSHandle {
+    this.features.assertHas("symbols", "newUniqueSymbol")
     const key = (typeof description === "symbol" ? description.description : description) ?? ""
     const ptr = this.memory
       .newHeapCharPointer(key)
@@ -384,6 +394,7 @@ export class QuickJSContext
    * All symbols created with the same key will be the same value.
    */
   newSymbolFor(key: string | symbol): QuickJSHandle {
+    this.features.assertHas("symbols", "newSymbolFor")
     const description = (typeof key === "symbol" ? key.description : key) ?? ""
     const ptr = this.memory
       .newHeapCharPointer(description)
@@ -403,6 +414,7 @@ export class QuickJSContext
    * Create a QuickJS [bigint](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) value.
    */
   newBigInt(num: bigint): QuickJSHandle {
+    this.features.assertHas("bigint", "newBigInt")
     if (!this._BigInt) {
       const bigIntHandle = this.getProp(this.global, "BigInt")
       this.memory.manage(bigIntHandle)
@@ -478,6 +490,7 @@ export class QuickJSContext
   newPromise(
     value?: PromiseExecutor<QuickJSHandle, Error | QuickJSHandle> | Promise<QuickJSHandle>,
   ): QuickJSDeferredPromise {
+    this.features.assertHas("promises", "newPromise")
     const deferredPromise = Scope.withScope((scope) => {
       const mutablePointerArray = scope.manage(
         this.memory.newMutablePointerArray<JSValuePointerPointer>(2),
@@ -788,6 +801,7 @@ export class QuickJSContext
    * registry in the guest, it will be created with Symbol.for on the host.
    */
   getSymbol(handle: QuickJSHandle): symbol {
+    this.features.assertHas("symbols", "getSymbol")
     this.runtime.assertOwned(handle)
     const key = this.memory.consumeJSCharPointer(
       this.ffi.QTS_GetSymbolDescriptionOrKey(this.ctx.value, handle.value),
@@ -800,6 +814,7 @@ export class QuickJSContext
    * Converts `handle` to a Javascript bigint.
    */
   getBigInt(handle: QuickJSHandle): bigint {
+    this.features.assertHas("bigint", "getBigInt")
     this.runtime.assertOwned(handle)
     const asString = this.getString(handle)
     return BigInt(asString)

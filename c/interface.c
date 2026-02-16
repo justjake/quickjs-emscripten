@@ -45,7 +45,10 @@
 #include <sanitizer/lsan_interface.h>
 #endif
 
-#ifdef QTS_USE_QUICKJS_NG
+#ifdef QTS_USE_MQUICKJS
+#include "../vendor/mquickjs/mquickjs.h"
+#include "../vendor/mquickjs/cutils.h"
+#elif defined(QTS_USE_QUICKJS_NG)
 // quickjs-ng amalgam only provides quickjs.h and quickjs-libc.h
 #include "../vendor/quickjs-ng/quickjs-libc.h"
 #include "../vendor/quickjs-ng/quickjs.h"

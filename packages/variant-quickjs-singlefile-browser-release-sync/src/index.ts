@@ -22,6 +22,15 @@ const variant: QuickJSSyncVariant = {
     import("@jitl/quickjs-singlefile-browser-release-sync/emscripten-module").then(
       (mod) => mod.default,
     ),
+  features: {
+    modules: true,
+    promises: true,
+    symbols: true,
+    bigint: true,
+    intrinsics: true,
+    eval: true,
+    functions: true,
+  },
 } as const
 
 export default variant

@@ -22,6 +22,15 @@ const variant: QuickJSAsyncVariant = {
     import("@jitl/quickjs-singlefile-mjs-debug-asyncify/emscripten-module").then(
       (mod) => mod.default,
     ),
+  features: {
+    modules: true,
+    promises: true,
+    symbols: true,
+    bigint: true,
+    intrinsics: true,
+    eval: true,
+    functions: true,
+  },
 } as const
 
 export default variant

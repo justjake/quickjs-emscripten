@@ -22,7 +22,9 @@ import type {
   QuickJSFFI,
   QuickJSAsyncFFI,
   ContextOptions,
+  QuickJSFeature,
 } from "."
+import type { QuickJSFeatures } from "."
 import {
   QuickJSContext,
   QuickJSAsyncContext,
@@ -35,6 +37,8 @@ import {
   isFail,
   DEBUG_ASYNC,
   DEBUG_SYNC,
+  MQUICKJS_DEBUG_SYNC,
+  MQUICKJS_RELEASE_SYNC,
   memoizePromiseFactory,
   debugLog,
   errors,
@@ -51,6 +55,7 @@ const TEST_SLOW = !process.env.TEST_FAST
 const TEST_NG = TEST_SLOW && !process.env.TEST_NO_NG
 const TEST_DEBUG = TEST_SLOW && !process.env.TEST_NO_DEBUG
 const TEST_ASYNC = TEST_SLOW && !process.env.TEST_NO_ASYNC
+const TEST_MQUICKJS = TEST_SLOW && !process.env.TEST_NO_MQUICKJS
 const TEST_RELEASE = !process.env.TEST_NO_RELEASE
 const DEBUG = Boolean(process.env.DEBUG)
 console.log("test sets:", {
@@ -58,6 +63,7 @@ console.log("test sets:", {
   TEST_DEBUG,
   TEST_NG,
   TEST_ASYNC,
+  TEST_MQUICKJS,
   TEST_SLOW,
   DEBUG,
 })
@@ -97,6 +103,65 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
         throw error
       }
     })
+
+  /**
+   * Helper for tests that require a specific feature.
+   * - If feature is supported: runs the test function normally
+   * - If feature is NOT supported: test passes if it either succeeds OR throws QuickJSUnsupported
+   *
+   * @param feature - The feature required by this test
+   * @param featuresOrFn - Either a QuickJSFeatures object, or the test function (uses vm.features)
+   * @param maybeFn - The test function if featuresOrFn is a QuickJSFeatures object
+   * @returns Promise if the test function is async, void otherwise
+   */
+  function requiresFeature(
+    feature: QuickJSFeature,
+    featuresOrFn: QuickJSFeatures | (() => unknown),
+    maybeFn?: () => unknown,
+  ): unknown {
+    let features: QuickJSFeatures
+    let fn: () => unknown
+
+    if (typeof featuresOrFn === "function") {
+      // requiresFeature('bigint', () => ...)
+      features = vm.features
+      fn = featuresOrFn
+    } else {
+      // requiresFeature('bigint', someFeatures, () => ...)
+      features = featuresOrFn
+      fn = maybeFn!
+    }
+
+    const handleResult = (result: unknown): unknown => {
+      // If the result is a promise, we need to handle rejections
+      if (result && typeof result === "object" && "then" in result) {
+        return (result as Promise<unknown>).catch((error) => {
+          if (features.has(feature) || !(error instanceof errors.QuickJSUnsupported)) {
+            throw error
+          }
+          // QuickJSUnsupported is expected when feature not supported
+        })
+      }
+      return result
+    }
+
+    if (features.has(feature)) {
+      // Feature supported - run normally
+      return handleResult(fn())
+    } else {
+      // Feature not supported - allow success OR QuickJSUnsupported error
+      try {
+        return handleResult(fn())
+      } catch (error) {
+        if (!(error instanceof errors.QuickJSUnsupported)) {
+          // Unexpected error type - rethrow
+          throw error
+        }
+        // QuickJSUnsupported is expected when feature not supported
+        return undefined
+      }
+    }
+  }
 
   beforeEach(async () => {
     testId++
@@ -144,10 +209,12 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
     })
 
     it("can round-trip a bigint", () => {
-      const int = 2n ** 64n
-      const numHandle = vm.newBigInt(int)
-      assert.equal(vm.getBigInt(numHandle), int)
-      numHandle.dispose()
+      requiresFeature("bigint", () => {
+        const int = 2n ** 64n
+        const numHandle = vm.newBigInt(int)
+        assert.equal(vm.getBigInt(numHandle), int)
+        numHandle.dispose()
+      })
     })
 
     it("can dump a bigint", () => {
@@ -165,20 +232,24 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
     })
 
     it("can round-trip a global symbol", () => {
-      const handle = vm.newSymbolFor("potatoes")
-      const dumped = vm.getSymbol(handle)
-      assert.equal(dumped, Symbol.for("potatoes"))
-      handle.dispose()
+      requiresFeature("symbols", () => {
+        const handle = vm.newSymbolFor("potatoes")
+        const dumped = vm.getSymbol(handle)
+        assert.equal(dumped, Symbol.for("potatoes"))
+        handle.dispose()
+      })
     })
 
     it("can round trip a unique symbol's description", () => {
-      const symbol = Symbol("cats")
-      const handle = vm.newUniqueSymbol(symbol)
-      const dumped = vm.getSymbol(handle)
-      assert.notStrictEqual(dumped, symbol)
-      assert.notStrictEqual(dumped, Symbol.for("cats"))
-      assert.equal(dumped.description, symbol.description)
-      handle.dispose()
+      requiresFeature("symbols", () => {
+        const symbol = Symbol("cats")
+        const handle = vm.newUniqueSymbol(symbol)
+        const dumped = vm.getSymbol(handle)
+        assert.notStrictEqual(dumped, symbol)
+        assert.notStrictEqual(dumped, Symbol.for("cats"))
+        assert.equal(dumped.description, symbol.description)
+        handle.dispose()
+      })
     })
 
     it("can dump a symbol", () => {
@@ -560,31 +631,35 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
     })
 
     it("module: on syntax error: returns { error: exception }", () => {
-      const result = vm.evalCode(`["this", "should", "fail].join(' ')`, "mod.js", {
-        type: "module",
+      requiresFeature("modules", () => {
+        const result = vm.evalCode(`["this", "should", "fail].join(' ')`, "mod.js", {
+          type: "module",
+        })
+        if (!result.error) {
+          assert.fail("result should be an error")
+        }
+        assertError(vm.dump(result.error), {
+          name: "SyntaxError",
+          message: "unexpected end of string",
+        })
+        result.error.dispose()
       })
-      if (!result.error) {
-        assert.fail("result should be an error")
-      }
-      assertError(vm.dump(result.error), {
-        name: "SyntaxError",
-        message: "unexpected end of string",
-      })
-      result.error.dispose()
     })
 
     it("module: on TypeError: returns { error: exception }", () => {
-      const result = vm.evalCode(`null.prop`, "mod.js", { type: "module" })
-      if (!result.error) {
-        result.value.consume((val) =>
-          assert.fail(`result should be an error, instead is: ${inspect(vm.dump(val))}`),
-        )
-        return
-      }
-      const error = result.error.consume(vm.dump)
-      assertError(error, {
-        name: "TypeError",
-        message: "cannot read property 'prop' of null",
+      requiresFeature("modules", () => {
+        const result = vm.evalCode(`null.prop`, "mod.js", { type: "module" })
+        if (!result.error) {
+          result.value.consume((val) =>
+            assert.fail(`result should be an error, instead is: ${inspect(vm.dump(val))}`),
+          )
+          return
+        }
+        const error = result.error.consume(vm.dump)
+        assertError(error, {
+          name: "TypeError",
+          message: "cannot read property 'prop' of null",
+        })
       })
     })
 
@@ -610,25 +685,27 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
     })
 
     it("can handle imports", () => {
-      let moduleLoaderCalls = 0
-      vm.runtime.setModuleLoader(() => {
-        moduleLoaderCalls++
-        return `export const name = "from import";`
-      })
-      vm.unwrapResult(
-        vm.evalCode(
-          `
-          import {name} from './foo.js'
-          globalThis.declaredWithEval = name
-          `,
-          "importer.js",
-        ),
-      ).dispose()
-      const declaredWithEval = vm.getProp(vm.global, "declaredWithEval")
-      assert.equal(vm.getString(declaredWithEval), "from import")
-      declaredWithEval.dispose()
+      requiresFeature("modules", () => {
+        let moduleLoaderCalls = 0
+        vm.runtime.setModuleLoader(() => {
+          moduleLoaderCalls++
+          return `export const name = "from import";`
+        })
+        vm.unwrapResult(
+          vm.evalCode(
+            `
+            import {name} from './foo.js'
+            globalThis.declaredWithEval = name
+            `,
+            "importer.js",
+          ),
+        ).dispose()
+        const declaredWithEval = vm.getProp(vm.global, "declaredWithEval")
+        assert.equal(vm.getString(declaredWithEval), "from import")
+        declaredWithEval.dispose()
 
-      assert.equal(moduleLoaderCalls, 1, "Only called once")
+        assert.equal(moduleLoaderCalls, 1, "Only called once")
+      })
     })
 
     it("respects maxStackSize", async () => {
@@ -640,143 +717,161 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
     })
 
     it("returns the module exports", () => {
-      const modExports = vm.unwrapResult(
-        vm.evalCode(`export const s = "hello"; export const n = 42; export default "the default";`),
-      )
+      requiresFeature("modules", () => {
+        const modExports = vm.unwrapResult(
+          vm.evalCode(
+            `export const s = "hello"; export const n = 42; export default "the default";`,
+          ),
+        )
 
-      const s = vm.getProp(modExports, "s").consume(vm.dump)
-      const n = vm.getProp(modExports, "n").consume(vm.dump)
-      const defaultExport = vm.getProp(modExports, "default").consume(vm.dump)
-      const asJson = modExports.consume(vm.dump)
-      try {
-        assert.equal(s, "hello")
-        assert.equal(n, 42)
-        assert.equal(defaultExport, "the default")
-      } catch (error) {
-        console.log("Error with module exports:", asJson)
-        throw error
-      }
+        const s = vm.getProp(modExports, "s").consume(vm.dump)
+        const n = vm.getProp(modExports, "n").consume(vm.dump)
+        const defaultExport = vm.getProp(modExports, "default").consume(vm.dump)
+        const asJson = modExports.consume(vm.dump)
+        try {
+          assert.equal(s, "hello")
+          assert.equal(n, 42)
+          assert.equal(defaultExport, "the default")
+        } catch (error) {
+          console.log("Error with module exports:", asJson)
+          throw error
+        }
+      })
     })
 
     it("returns a promise of module exports", () => {
-      const promise = vm.unwrapResult(
-        vm.evalCode(
-          `
+      requiresFeature("modules", () => {
+        const promise = vm.unwrapResult(
+          vm.evalCode(
+            `
 await Promise.resolve(0);
 export const s = "hello";
 export const n = 42;
 export default "the default";
 `,
-          "mod.js",
-          { type: "module" },
-        ),
-      )
+            "mod.js",
+            { type: "module" },
+          ),
+        )
 
-      vm.runtime.executePendingJobs()
-      const promiseState = promise.consume((p) => vm.getPromiseState(p))
-      if (promiseState.type === "pending") {
-        throw new Error(`By now promise should be resolved.`)
-      }
+        vm.runtime.executePendingJobs()
+        const promiseState = promise.consume((p) => vm.getPromiseState(p))
+        if (promiseState.type === "pending") {
+          throw new Error(`By now promise should be resolved.`)
+        }
 
-      const modExports = vm.unwrapResult(promiseState)
-      const s = vm.getProp(modExports, "s").consume(vm.dump)
-      const n = vm.getProp(modExports, "n").consume(vm.dump)
-      const defaultExport = vm.getProp(modExports, "default").consume(vm.dump)
-      const asJson = modExports.consume(vm.dump)
-      try {
-        assert.equal(s, "hello")
-        assert.equal(n, 42)
-        assert.equal(defaultExport, "the default")
-      } catch (error) {
-        console.log("Error with module exports:", asJson)
-        throw error
-      }
+        const modExports = vm.unwrapResult(promiseState)
+        const s = vm.getProp(modExports, "s").consume(vm.dump)
+        const n = vm.getProp(modExports, "n").consume(vm.dump)
+        const defaultExport = vm.getProp(modExports, "default").consume(vm.dump)
+        const asJson = modExports.consume(vm.dump)
+        try {
+          assert.equal(s, "hello")
+          assert.equal(n, 42)
+          assert.equal(defaultExport, "the default")
+        } catch (error) {
+          console.log("Error with module exports:", asJson)
+          throw error
+        }
+      })
     })
   })
 
   describe("intrinsics", () => {
     it("evalCode - context respects intrinsic options - Date Unavailable", async () => {
-      // Eval is required to use `evalCode`
-      const newContext = await getContext({
-        intrinsics: {
-          BaseObjects: true,
-          Eval: true,
-        },
+      return requiresFeature("intrinsics", async () => {
+        // Eval is required to use `evalCode`
+        const newContext = await getContext({
+          intrinsics: {
+            BaseObjects: true,
+            Eval: true,
+          },
+        })
+
+        const result = newContext.evalCode(`new Date()`)
+
+        if (!result.error) {
+          result.value.dispose()
+          assert.fail("result should be an error")
+        }
+
+        const error = newContext.dump(result.error)
+        assert.strictEqual(error.name, "ReferenceError")
+        // quickjs-ng: "Date is not defined", bellard: "'Date' is not defined"
+        const expectedMessage = isNG ? "Date is not defined" : "'Date' is not defined"
+        assert.strictEqual(error.message, expectedMessage)
+
+        result.error.dispose()
+        newContext.dispose()
       })
-
-      const result = newContext.evalCode(`new Date()`)
-
-      if (!result.error) {
-        result.value.dispose()
-        assert.fail("result should be an error")
-      }
-
-      const error = newContext.dump(result.error)
-      assert.strictEqual(error.name, "ReferenceError")
-      // quickjs-ng: "Date is not defined", bellard: "'Date' is not defined"
-      const expectedMessage = isNG ? "Date is not defined" : "'Date' is not defined"
-      assert.strictEqual(error.message, expectedMessage)
-
-      result.error.dispose()
-      newContext.dispose()
     })
 
     it("evalCode - context executes as expected with default intrinsics", async () => {
-      // Eval is required to use `evalCode`
-      const newContext = await getContext({ intrinsics: DefaultIntrinsics })
+      return requiresFeature("intrinsics", async () => {
+        // Eval is required to use `evalCode`
+        const newContext = await getContext({ intrinsics: DefaultIntrinsics })
 
-      let handle
-      try {
-        handle = newContext.unwrapResult(newContext.evalCode(`new Date()`))
-      } finally {
-        if (handle?.alive) {
-          handle.dispose()
+        let handle
+        try {
+          handle = newContext.unwrapResult(newContext.evalCode(`new Date()`))
+        } finally {
+          if (handle?.alive) {
+            handle.dispose()
+          }
+          newContext.dispose()
         }
-        newContext.dispose()
-      }
+      })
     })
   })
 
   describe(".executePendingJobs", () => {
     it("runs pending jobs", () => {
-      let i = 0
-      const fnHandle = vm.newFunction("nextId", () => {
-        return vm.newNumber(++i)
-      })
-      vm.setProp(vm.global, "nextId", fnHandle)
-      fnHandle.dispose()
+      requiresFeature("promises", () => {
+        let i = 0
+        const fnHandle = vm.newFunction("nextId", () => {
+          return vm.newNumber(++i)
+        })
+        vm.setProp(vm.global, "nextId", fnHandle)
+        fnHandle.dispose()
 
-      const result = vm.unwrapResult(
-        vm.evalCode(`(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`),
-      )
-      assert.equal(i, 0)
-      vm.runtime.executePendingJobs()
-      assert.equal(i, 3)
-      assert.equal(vm.getNumber(result), 1)
-      result.dispose()
+        const result = vm.unwrapResult(
+          vm.evalCode(
+            `(new Promise(resolve => resolve())).then(nextId).then(nextId).then(nextId);1`,
+          ),
+        )
+        assert.equal(i, 0)
+        vm.runtime.executePendingJobs()
+        assert.equal(i, 3)
+        assert.equal(vm.getNumber(result), 1)
+        result.dispose()
+      })
     })
   })
 
   describe(".hasPendingJob", () => {
     it("returns true when job pending", () => {
-      let i = 0
-      const fnHandle = vm.newFunction("nextId", () => {
-        return vm.newNumber(++i)
+      requiresFeature("promises", () => {
+        let i = 0
+        const fnHandle = vm.newFunction("nextId", () => {
+          return vm.newNumber(++i)
+        })
+        vm.setProp(vm.global, "nextId", fnHandle)
+        fnHandle.dispose()
+
+        vm.unwrapResult(
+          vm.evalCode(`(new Promise(resolve => resolve(5)).then(nextId));1`),
+        ).dispose()
+        assert.strictEqual(
+          vm.runtime.hasPendingJob(),
+          true,
+          "has a pending job after creating a promise",
+        )
+
+        const executed = vm.unwrapResult(vm.runtime.executePendingJobs())
+        assert.strictEqual(executed, 1, "executed exactly 1 job")
+
+        assert.strictEqual(vm.runtime.hasPendingJob(), false, "no longer any jobs after execution")
       })
-      vm.setProp(vm.global, "nextId", fnHandle)
-      fnHandle.dispose()
-
-      vm.unwrapResult(vm.evalCode(`(new Promise(resolve => resolve(5)).then(nextId));1`)).dispose()
-      assert.strictEqual(
-        vm.runtime.hasPendingJob(),
-        true,
-        "has a pending job after creating a promise",
-      )
-
-      const executed = vm.unwrapResult(vm.runtime.executePendingJobs())
-      assert.strictEqual(executed, 1, "executed exactly 1 job")
-
-      assert.strictEqual(vm.runtime.hasPendingJob(), false, "no longer any jobs after execution")
     })
   })
 
@@ -1029,108 +1124,118 @@ export default "the default";
 
   describe(".newPromise()", () => {
     it("dispose does not leak", () => {
-      vm.newPromise().dispose()
+      requiresFeature("promises", () => {
+        vm.newPromise().dispose()
+      })
     })
 
     it("passes an end-to-end test", async () => {
-      const expectedValue = Math.random()
-      let deferred: QuickJSDeferredPromise = undefined as any
+      return requiresFeature("promises", async () => {
+        const expectedValue = Math.random()
+        let deferred: QuickJSDeferredPromise = undefined as any
 
-      function timeout(ms: number) {
-        return new Promise<void>((resolve) => {
-          setTimeout(() => resolve(), ms)
+        function timeout(ms: number) {
+          return new Promise<void>((resolve) => {
+            setTimeout(() => resolve(), ms)
+          })
+        }
+
+        const asyncFuncHandle = vm.newFunction("getThingy", () => {
+          deferred = vm.newPromise()
+          timeout(5).then(() => vm.newNumber(expectedValue).consume((val) => deferred.resolve(val)))
+          return deferred.handle
         })
-      }
 
-      const asyncFuncHandle = vm.newFunction("getThingy", () => {
-        deferred = vm.newPromise()
-        timeout(5).then(() => vm.newNumber(expectedValue).consume((val) => deferred.resolve(val)))
-        return deferred.handle
+        asyncFuncHandle.consume((func) => vm.setProp(vm.global, "getThingy", func))
+
+        vm.unwrapResult(
+          vm.evalCode(`
+            var globalThingy = 'not set by promise';
+            getThingy().then(thingy => { globalThingy = thingy })
+          `),
+        ).dispose()
+
+        // Wait for the promise to settle
+        await deferred.settled
+
+        // Execute promise callbacks inside the VM
+        vm.runtime.executePendingJobs()
+
+        // Check that the promise executed.
+        const vmValue = vm.unwrapResult(vm.evalCode(`globalThingy`)).consume((x) => vm.dump(x))
+        assert.equal(vmValue, expectedValue)
       })
-
-      asyncFuncHandle.consume((func) => vm.setProp(vm.global, "getThingy", func))
-
-      vm.unwrapResult(
-        vm.evalCode(`
-          var globalThingy = 'not set by promise';
-          getThingy().then(thingy => { globalThingy = thingy })
-        `),
-      ).dispose()
-
-      // Wait for the promise to settle
-      await deferred.settled
-
-      // Execute promise callbacks inside the VM
-      vm.runtime.executePendingJobs()
-
-      // Check that the promise executed.
-      const vmValue = vm.unwrapResult(vm.evalCode(`globalThingy`)).consume((x) => vm.dump(x))
-      assert.equal(vmValue, expectedValue)
     })
   })
 
   describe(".resolvePromise()", () => {
     it("retrieves async function return value as a successful VM result", async () => {
-      const result = vm.unwrapResult(
-        vm.evalCode(`
-        async function return1() {
-          return 1
-        }
+      return requiresFeature("promises", async () => {
+        const result = vm.unwrapResult(
+          vm.evalCode(`
+          async function return1() {
+            return 1
+          }
 
-        return1()
-        `),
-      )
+          return1()
+          `),
+        )
 
-      assert.equal(vm.typeof(result), "object", "Async function returns an object (promise)")
+        assert.equal(vm.typeof(result), "object", "Async function returns an object (promise)")
 
-      const promise = result.consume((result) => vm.resolvePromise(result))
-      vm.runtime.executePendingJobs()
-      const asyncResult = vm.unwrapResult(await promise)
+        const promise = result.consume((result) => vm.resolvePromise(result))
+        vm.runtime.executePendingJobs()
+        const asyncResult = vm.unwrapResult(await promise)
 
-      assert.equal(vm.dump(asyncResult), 1, "Awaited promise returns 1")
+        assert.equal(vm.dump(asyncResult), 1, "Awaited promise returns 1")
 
-      asyncResult.dispose()
+        asyncResult.dispose()
+      })
     })
 
     it("retrieves async function error as a error VM result", async () => {
-      const result = vm.unwrapResult(
-        vm.evalCode(`
-        async function throwOops() {
-          throw new Error('oops')
+      return requiresFeature("promises", async () => {
+        const result = vm.unwrapResult(
+          vm.evalCode(`
+          async function throwOops() {
+            throw new Error('oops')
+          }
+
+          throwOops()
+          `),
+        )
+
+        assert.equal(vm.typeof(result), "object", "Async function returns an object (promise)")
+
+        const promise = result.consume((result) => vm.resolvePromise(result))
+        vm.runtime.executePendingJobs()
+        const asyncResult = await promise
+
+        if (!asyncResult.error) {
+          throw new Error("Should have returned an error")
         }
+        const error = vm.dump(asyncResult.error)
+        asyncResult.error.dispose()
 
-        throwOops()
-        `),
-      )
-
-      assert.equal(vm.typeof(result), "object", "Async function returns an object (promise)")
-
-      const promise = result.consume((result) => vm.resolvePromise(result))
-      vm.runtime.executePendingJobs()
-      const asyncResult = await promise
-
-      if (!asyncResult.error) {
-        throw new Error("Should have returned an error")
-      }
-      const error = vm.dump(asyncResult.error)
-      asyncResult.error.dispose()
-
-      assert.equal(error.name, "Error")
-      assert.equal(error.message, "oops")
+        assert.equal(error.name, "Error")
+        assert.equal(error.message, "oops")
+      })
     })
 
     it("converts non-promise handles into a promise, too", async () => {
-      const stringHandle = vm.newString("foo")
-      const promise = vm.resolvePromise(stringHandle)
-      stringHandle.dispose()
+      return requiresFeature("promises", async () => {
+        const stringHandle = vm.newString("foo")
+        const promise = vm.resolvePromise(stringHandle)
+        stringHandle.dispose()
 
-      vm.runtime.executePendingJobs()
+        vm.runtime.executePendingJobs()
 
-      const final = await promise.then((result) => {
-        const stringHandle2 = vm.unwrapResult(result)
-        return `unwrapped: ${stringHandle2.consume((stringHandle2) => vm.dump(stringHandle2))}`
+        const final = await promise.then((result) => {
+          const stringHandle2 = vm.unwrapResult(result)
+          return `unwrapped: ${stringHandle2.consume((stringHandle2) => vm.dump(stringHandle2))}`
+        })
+        assert.equal(final, `unwrapped: foo`)
       })
-      assert.equal(final, `unwrapped: foo`)
     })
   })
 
@@ -1395,6 +1500,24 @@ describe("QuickJSContext", function () {
       })
     }
   }
+
+  if (TEST_MQUICKJS) {
+    if (TEST_RELEASE) {
+      describe("mquickjs RELEASE_SYNC", function () {
+        const loader = memoizePromiseFactory(() => newQuickJSWASMModule(MQUICKJS_RELEASE_SYNC))
+        const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
+        contextTests(getContext)
+      })
+    }
+
+    if (TEST_DEBUG) {
+      describe("mquickjs DEBUG_SYNC", function () {
+        const loader = memoizePromiseFactory(() => newQuickJSWASMModule(MQUICKJS_DEBUG_SYNC))
+        const getContext: GetTestContext = (opts) => loader().then((mod) => mod.newContext(opts))
+        contextTests(getContext, { isDebug: true })
+      })
+    }
+  }
 })
 
 if (TEST_ASYNC) {
@@ -1451,6 +1574,15 @@ describe("QuickJSWASMModule", () => {
     { name: "DEBUG_SYNC", loader: () => newQuickJSWASMModule(DEBUG_SYNC) },
     { name: "DEBUG_ASYNC", loader: () => newQuickJSAsyncWASMModule(DEBUG_ASYNC) },
     { name: "RELEASE_ASYNC", loader: () => newQuickJSAsyncWASMModule(RELEASE_ASYNC) },
+    ...(TEST_MQUICKJS
+      ? [
+          {
+            name: "MQUICKJS_RELEASE_SYNC",
+            loader: () => newQuickJSWASMModule(MQUICKJS_RELEASE_SYNC),
+          },
+          { name: "MQUICKJS_DEBUG_SYNC", loader: () => newQuickJSWASMModule(MQUICKJS_DEBUG_SYNC) },
+        ]
+      : []),
   ]
 
   for (const variant of variants) {

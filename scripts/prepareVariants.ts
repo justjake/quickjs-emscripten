@@ -29,6 +29,7 @@ enum SyncMode {
 enum CLibrary {
   QuickJS = "quickjs",
   NG = "quickjs-ng",
+  MQuickJS = "mquickjs",
 }
 
 enum EmscriptenInclusion {
@@ -43,6 +44,65 @@ enum EmscriptenEnvironment {
   webview = "webview",
   worker = "worker",
   node = "node",
+}
+
+/**
+ * Features that may or may not be supported by a QuickJS variant.
+ * This is the single source of truth for feature availability.
+ */
+type QuickJSFeature =
+  | "modules"
+  | "promises"
+  | "symbols"
+  | "bigint"
+  | "intrinsics"
+  | "eval"
+  | "functions"
+
+const FEATURE_DESCRIPTIONS: Record<QuickJSFeature, string> = {
+  modules: "ES Modules",
+  promises: "Promises",
+  symbols: "Symbols",
+  bigint: "BigInt",
+  intrinsics: "Intrinsics",
+  eval: "eval()",
+  functions: "vm.newFunction()",
+}
+
+/**
+ * Feature support matrix for each C library.
+ * This is the single source of truth - it generates:
+ * - TypeScript feature exports in each variant
+ * - Feature tables in variant READMEs
+ */
+const LIBRARY_FEATURES: Record<CLibrary, Record<QuickJSFeature, boolean>> = {
+  [CLibrary.QuickJS]: {
+    modules: true,
+    promises: true,
+    symbols: true,
+    bigint: true,
+    intrinsics: true,
+    eval: true,
+    functions: true,
+  },
+  [CLibrary.NG]: {
+    modules: true,
+    promises: true,
+    symbols: true,
+    bigint: true,
+    intrinsics: true,
+    eval: true,
+    functions: true,
+  },
+  [CLibrary.MQuickJS]: {
+    modules: false,
+    promises: false,
+    symbols: false,
+    bigint: false,
+    intrinsics: false,
+    eval: true,
+    functions: true,
+  },
 }
 
 const DEFAULT_EMSCRIPTEN_VERSION = "5.0.1"
@@ -91,7 +151,7 @@ const SEPARATE_FILE_INCLUSION: BuildVariant["exports"] = {
 }
 
 const buildMatrix = {
-  library: [CLibrary.QuickJS, CLibrary.NG],
+  library: [CLibrary.QuickJS, CLibrary.NG, CLibrary.MQuickJS],
   releaseMode: [ReleaseMode.Debug, ReleaseMode.Release],
   syncMode: [SyncMode.Sync, SyncMode.Asyncify],
 } as const
@@ -163,11 +223,16 @@ function makeTarget(partialVariant: TargetSpec): BuildVariant[] {
           ...partialVariant,
         }
 
-        // Eliminate singlefile builds for quickjs-ng
+        // Eliminate singlefile builds for quickjs-ng and mquickjs
         if (
-          variant.library === CLibrary.NG &&
+          (variant.library === CLibrary.NG || variant.library === CLibrary.MQuickJS) &&
           variant.emscriptenInclusion === EmscriptenInclusion.SingleFile
         ) {
+          return []
+        }
+
+        // Eliminate asyncify builds for mquickjs (not supported yet)
+        if (variant.library === CLibrary.MQuickJS && variant.syncMode === SyncMode.Asyncify) {
           return []
         }
 
@@ -535,6 +600,7 @@ and [QuickJSAsyncContext](${DOC_ROOT_URL}/quickjs-emscripten/classes/QuickJSAsyn
 const describeLibrary = {
   [CLibrary.QuickJS]: `The original [bellard/quickjs](https://github.com/bellard/quickjs) library.`,
   [CLibrary.NG]: `[quickjs-ng](https://github.com/quickjs-ng/quickjs) is a fork of quickjs that tends to add features more quickly.`,
+  [CLibrary.MQuickJS]: `[mquickjs](https://github.com/bellard/mquickjs) is a minimal/micro version of QuickJS by Fabrice Bellard, optimized for small size.`,
 }
 
 const describeModuleFactory = {
@@ -767,6 +833,9 @@ function renderIndexTs(
     [SyncMode.Asyncify]: "QuickJSAsyncVariant",
   }[variant.syncMode]
 
+  const features = LIBRARY_FEATURES[variant.library]
+  const featuresJson = JSON.stringify(features, null, 2).replace(/\n/g, "\n  ")
+
   if (variant.emscriptenInclusion === EmscriptenInclusion.AsmJs) {
     // Eager loading please!
     return `
@@ -780,6 +849,7 @@ const variant: ${variantTypeName} = {
   type: '${modeName}',
   importFFI: () => Promise.resolve(${className}),
   importModuleLoader: () => Promise.resolve(moduleLoader),
+  features: ${featuresJson},
 } as const
 export default variant
 `
@@ -795,6 +865,7 @@ const variant: ${variantTypeName} = {
   type: '${modeName}',
   importFFI: () => import('./ffi.js').then(mod => mod.${className}),
   importModuleLoader: () => import('${packageJson.name}/emscripten-module').then(mod => mod.default),
+  features: ${featuresJson},
 } as const
 
 export default variant
@@ -872,11 +943,13 @@ function getTargetPackageSuffix(targetName: string, variant: BuildVariant): stri
 const CLibrarySubtree: Record<CLibrary, string> = {
   quickjs: "vendor/quickjs",
   "quickjs-ng": "vendor/quickjs-ng",
+  mquickjs: "vendor/mquickjs",
 }
 
 const CLibraryGithubRepo: Record<CLibrary, string> = {
   quickjs: "bellard/quickjs",
   "quickjs-ng": "quickjs-ng/quickjs",
+  mquickjs: "bellard/mquickjs",
 }
 
 // Libraries that use release tags (from VERSION file) instead of git subtree SHA

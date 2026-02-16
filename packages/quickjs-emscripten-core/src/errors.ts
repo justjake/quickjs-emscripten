@@ -64,3 +64,24 @@ export class QuickJSHostRefRangeExceeded extends Error {
 export class QuickJSHostRefInvalid extends Error {
   name = "QuickJSHostRefInvalid"
 }
+
+/**
+ * Error thrown when attempting to use a feature that is not supported by the
+ * current QuickJS variant (e.g., modules in mquickjs).
+ */
+export class QuickJSUnsupported extends Error {
+  name = "QuickJSUnsupported"
+
+  constructor(
+    /** The feature that is not supported */
+    public feature: string,
+    /** The operation that was attempted, if specified */
+    public operation: string | undefined,
+    /** The name of the variant that doesn't support this feature */
+    public variantName: string | undefined,
+  ) {
+    const operationPart = operation ? ` (${operation})` : ""
+    const variantPart = variantName ? ` in ${variantName}` : ""
+    super(`Feature not supported: ${feature}${operationPart}${variantPart}`)
+  }
+}

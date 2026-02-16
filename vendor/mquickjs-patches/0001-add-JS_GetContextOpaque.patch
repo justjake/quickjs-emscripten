@@ -1,0 +1,28 @@
+diff --git a/vendor/mquickjs/mquickjs.c b/vendor/mquickjs/mquickjs.c
+index a950f3c..3cd7aff 100644
+--- a/vendor/mquickjs/mquickjs.c
++++ b/vendor/mquickjs/mquickjs.c
+@@ -3675,6 +3675,11 @@ void JS_SetContextOpaque(JSContext *ctx, void *opaque)
+     ctx->opaque = opaque;
+ }
+ 
++void *JS_GetContextOpaque(JSContext *ctx)
++{
++    return ctx->opaque;
++}
++
+ void JS_SetInterruptHandler(JSContext *ctx, JSInterruptHandler *interrupt_handler)
+ {
+     ctx->interrupt_handler = interrupt_handler;
+diff --git a/vendor/mquickjs/mquickjs.h b/vendor/mquickjs/mquickjs.h
+index a1557fe..cf12c95 100644
+--- a/vendor/mquickjs/mquickjs.h
++++ b/vendor/mquickjs/mquickjs.h
+@@ -264,6 +264,7 @@ JSContext *JS_NewContext(void *mem_start, size_t mem_size, const JSSTDLibraryDef
+ JSContext *JS_NewContext2(void *mem_start, size_t mem_size, const JSSTDLibraryDef *stdlib_def, JS_BOOL prepare_compilation);
+ void JS_FreeContext(JSContext *ctx);
+ void JS_SetContextOpaque(JSContext *ctx, void *opaque);
++void *JS_GetContextOpaque(JSContext *ctx);
+ void JS_SetInterruptHandler(JSContext *ctx, JSInterruptHandler *interrupt_handler);
+ void JS_SetRandomSeed(JSContext *ctx, uint64_t seed);
+ JSValue JS_GetGlobalObject(JSContext *ctx);

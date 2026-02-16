@@ -10,6 +10,7 @@ import type {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   QuickJSAsyncWASMModule,
 } from "./module-asyncify"
+import type { QuickJSFeatures } from "./features"
 import type { QuickJSModuleCallbacks } from "./module"
 import { QuickJSRuntime } from "./runtime"
 import type {
@@ -42,6 +43,7 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
     ffi: QuickJSAsyncFFI
     rt: Lifetime<JSRuntimePointer>
     callbacks: QuickJSModuleCallbacks
+    features: QuickJSFeatures
   }) {
     super(args)
   }

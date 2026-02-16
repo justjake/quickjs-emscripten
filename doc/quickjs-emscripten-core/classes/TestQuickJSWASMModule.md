@@ -23,6 +23,8 @@ freed all the memory you've ever allocated.
 - [Properties](TestQuickJSWASMModule.md#properties)
   - [contexts](TestQuickJSWASMModule.md#contexts)
   - [runtimes](TestQuickJSWASMModule.md#runtimes)
+- [Accessors](TestQuickJSWASMModule.md#accessors)
+  - [features](TestQuickJSWASMModule.md#features)
 - [Methods](TestQuickJSWASMModule.md#methods)
   - [assertNoMemoryAllocated()](TestQuickJSWASMModule.md#assertnomemoryallocated)
   - [disposeAll()](TestQuickJSWASMModule.md#disposeall)
@@ -51,7 +53,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-test.ts:21](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L21)
+[packages/quickjs-emscripten-core/src/module-test.ts:22](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L22)
 
 ## Properties
 
@@ -61,7 +63,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-test.ts:19](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L19)
+[packages/quickjs-emscripten-core/src/module-test.ts:20](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L20)
 
 ***
 
@@ -71,7 +73,21 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-test.ts:20](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L20)
+[packages/quickjs-emscripten-core/src/module-test.ts:21](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L21)
+
+## Accessors
+
+### features
+
+> **`get`** **features**(): [`QuickJSFeatures`](QuickJSFeatures.md)
+
+#### Returns
+
+[`QuickJSFeatures`](QuickJSFeatures.md)
+
+#### Source
+
+[packages/quickjs-emscripten-core/src/module-test.ts:89](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L89)
 
 ## Methods
 
@@ -85,7 +101,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-test.ts:62](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L62)
+[packages/quickjs-emscripten-core/src/module-test.ts:63](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L63)
 
 ***
 
@@ -99,7 +115,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-test.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L51)
+[packages/quickjs-emscripten-core/src/module-test.ts:52](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L52)
 
 ***
 
@@ -123,7 +139,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-test.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L47)
+[packages/quickjs-emscripten-core/src/module-test.ts:48](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L48)
 
 ***
 
@@ -141,7 +157,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-test.ts:79](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L79)
+[packages/quickjs-emscripten-core/src/module-test.ts:80](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L80)
 
 ***
 
@@ -163,7 +179,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-test.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L35)
+[packages/quickjs-emscripten-core/src/module-test.ts:36](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L36)
 
 ***
 
@@ -185,7 +201,7 @@ freed all the memory you've ever allocated.
 
 #### Source
 
-[packages/quickjs-emscripten-core/src/module-test.ts:23](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L23)
+[packages/quickjs-emscripten-core/src/module-test.ts:24](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L24)
 
 ***
 
