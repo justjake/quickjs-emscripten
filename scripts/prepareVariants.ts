@@ -215,9 +215,10 @@ const SyncModeLinkFlags = {
 }
 
 // Compiler flags for release mode
+// Note: -gsource-map is added conditionally in getFlags() since it's incompatible with SINGLE_FILE
 const ReleaseModeCompileFlags = {
   [ReleaseMode.Release]: [`-Oz`, `-flto`],
-  [ReleaseMode.Debug]: [`-O0`, "-DQTS_DEBUG_MODE", `-DDUMP_LEAKS=1`, `-gsource-map`],
+  [ReleaseMode.Debug]: [`-O0`, "-DQTS_DEBUG_MODE", `-DDUMP_LEAKS=1`],
 }
 
 // Linker flags for release mode
@@ -260,6 +261,14 @@ function getFlags(targetName: string, variant: BuildVariant): SplitFlags {
   link.push(...ReleaseModeLinkFlags[variant.releaseMode])
 
   link.push(...EmscriptenInclusionLinkFlags[variant.emscriptenInclusion])
+
+  // Add source maps for debug builds, but not for SINGLE_FILE (they're incompatible)
+  if (
+    variant.releaseMode === ReleaseMode.Debug &&
+    variant.emscriptenInclusion === EmscriptenInclusion.Separate
+  ) {
+    compile.push("-gsource-map")
+  }
 
   if (variant.releaseMode === ReleaseMode.Debug) {
     switch (variant.syncMode) {
