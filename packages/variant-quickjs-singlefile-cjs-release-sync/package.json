@@ -1,7 +1,7 @@
 {
   "name": "@jitl/quickjs-singlefile-cjs-release-sync",
   "license": "MIT",
-  "version": "0.31.0",
+  "version": "0.32.0",
   "description": "Variant of quickjs library: Variant with the WASM data embedded into a universal (Node and Browser compatible) CommonJS module.",
   "sideEffects": false,
   "repository": {

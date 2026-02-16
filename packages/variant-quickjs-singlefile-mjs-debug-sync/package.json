@@ -1,7 +1,7 @@
 {
   "name": "@jitl/quickjs-singlefile-mjs-debug-sync",
   "license": "MIT",
-  "version": "0.31.0",
+  "version": "0.32.0",
   "description": "Variant of quickjs library: Variant with the WASM data embedded into a NodeJS ESModule.",
   "sideEffects": false,
   "repository": {
