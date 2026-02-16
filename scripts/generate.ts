@@ -286,6 +286,8 @@ const TRIVIAL_FUNCTIONS_EXCLUDED_FROM_ASYNCIFY_REMOVE = new Set([
   "QTS_BuildIsSanitizeLeak",
   "QTS_BuildIsDebug",
   "QTS_TestStringArg",
+  "QTS_RecoverableLeakCheck",
+  "QTS_GetDebugLogEnabled",
 ])
 
 function buildSyncSymbols(context: Context, matches: RegExpMatchArray[]) {

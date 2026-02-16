@@ -65,7 +65,6 @@ Variant-specific Emscripten build flags:
   "-O0",
   "-DQTS_DEBUG_MODE",
   "-DDUMP_LEAKS=1",
-  "-gsource-map",
   "-O3",
   "-s ASYNCIFY=1",
   "-s ASYNCIFY_STACK_SIZE=81920",

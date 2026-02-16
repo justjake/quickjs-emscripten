@@ -219,7 +219,7 @@ An `Array` that also implements [Disposable](interfaces/Disposable.md):
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:547
+packages/quickjs-ffi-types/dist/index.d.ts:540
 
 ***
 
@@ -229,7 +229,7 @@ packages/quickjs-ffi-types/dist/index.d.ts:547
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:337
+packages/quickjs-ffi-types/dist/index.d.ts:330
 
 ***
 
@@ -757,7 +757,7 @@ Property key for getting or setting a property on a handle with
 
 #### Source
 
-packages/quickjs-ffi-types/dist/index.d.ts:546
+packages/quickjs-ffi-types/dist/index.d.ts:539
 
 ***
 

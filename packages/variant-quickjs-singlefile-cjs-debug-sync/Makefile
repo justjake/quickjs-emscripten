@@ -61,7 +61,7 @@ LDFLAGS_WASM+=-s SUPPORT_ERRNO=0
 # Emscripten linker options - like STRICT
 # https://github.com/emscripten-core/emscripten/blob/fa339b76424ca9fbe5cf15faea0295d2ac8d58cc/src/settings.js#L1095-L1109
 LDFLAGS_WASM+=-s IGNORE_MISSING_MAIN=0 --no-entry
-# Suppress warnings about HEAPU8/HEAP8 in EXPORTED_RUNTIME_METHODS (they're needed but marked "invalid")
+# Suppress warnings about HEAPU8 in EXPORTED_RUNTIME_METHODS (it's needed but marked "invalid")
 LDFLAGS_WASM+=-Wno-js-compiler
 LDFLAGS_WASM+=-s AUTO_JS_LIBRARIES=0
 LDFLAGS_WASM+=-lccall.js
@@ -88,7 +88,6 @@ endif
 CFLAGS_COMPILE+=-O0
 CFLAGS_COMPILE+=-DQTS_DEBUG_MODE
 CFLAGS_COMPILE+=-DDUMP_LEAKS=1
-CFLAGS_COMPILE+=-gsource-map
 CFLAGS_COMPILE+=-DQTS_SANITIZE_LEAK
 CFLAGS_COMPILE+=-fsanitize=leak
 CFLAGS_COMPILE+=-g2

@@ -76,7 +76,6 @@ Variant-specific Emscripten build flags:
   "-O0",
   "-DQTS_DEBUG_MODE",
   "-DDUMP_LEAKS=1",
-  "-gsource-map",
   "-DQTS_SANITIZE_LEAK",
   "-fsanitize=leak",
   "-g2",
