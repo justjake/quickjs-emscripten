@@ -725,10 +725,7 @@ function renderMakefile(targetName: string, variant: BuildVariant): string {
   // Get split flags for variant
   const { compile, link } = getFlags(targetName, variant)
 
-  template.replace(
-    "CFLAGS_COMPILE_VARIANT=REPLACE_THIS",
-    appendEnvVars("CFLAGS_COMPILE", compile),
-  )
+  template.replace("CFLAGS_COMPILE_VARIANT=REPLACE_THIS", appendEnvVars("CFLAGS_COMPILE", compile))
 
   template.replace("LDFLAGS_VARIANT=REPLACE_THIS", appendEnvVars("LDFLAGS_WASM", link))
 

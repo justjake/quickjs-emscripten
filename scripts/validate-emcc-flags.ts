@@ -82,11 +82,7 @@ interface TestResult {
   stderr?: string
 }
 
-async function testFlag(
-  flag: string,
-  testCFile: string,
-  testOFile: string,
-): Promise<FlagType> {
+async function testFlag(flag: string, testCFile: string, testOFile: string): Promise<FlagType> {
   // Split flag into parts (e.g., "-s MODULARIZE=1" -> ["-s", "MODULARIZE=1"])
   const flagParts = flag.split(" ")
 
@@ -130,7 +126,9 @@ async function main() {
     await execFileAsync("emcc", ["--version"], { encoding: "utf-8" })
   } catch (error) {
     console.error("Error: emcc not found. Please ensure Emscripten is installed and in PATH.")
-    console.error("You can install it via: brew install emscripten (macOS) or see https://emscripten.org/docs/getting_started/downloads.html")
+    console.error(
+      "You can install it via: brew install emscripten (macOS) or see https://emscripten.org/docs/getting_started/downloads.html",
+    )
     process.exit(1)
   }
 
@@ -139,14 +137,14 @@ async function main() {
   const testCFile = path.join(tmpDir, "test.c")
   const testOFile = path.join(tmpDir, "test.o")
 
-  fs.writeFileSync(testCFile, 'int main() { return 0; }\n')
+  fs.writeFileSync(testCFile, "int main() { return 0; }\n")
 
   const results: TestResult[] = []
   let passCount = 0
   let failCount = 0
 
   console.log("Testing compiler flags (should NOT produce linker warnings)...")
-  console.log("=" .repeat(60))
+  console.log("=".repeat(60))
 
   for (const flag of EXPECTED_COMPILER_FLAGS) {
     const actual = await testFlag(flag, testCFile, testOFile)
