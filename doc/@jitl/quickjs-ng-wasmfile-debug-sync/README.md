@@ -1,6 +1,8 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-ng-wasmfile-debug-sync** • [Readme](README.md) \| [Exports](exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
+
+[quickjs-emscripten](../../packages.md) / @jitl/quickjs-ng-wasmfile-debug-sync
 
 # @jitl/quickjs-ng-wasmfile-debug-sync
 
@@ -16,15 +18,6 @@ const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
 ```
 
 This variant was built with the following settings:
-
-## Contents
-
-- [Library: quickjs-ng](README.md#library-quickjs-ng)
-- [Release mode: debug](README.md#release-mode-debug)
-- [Exports: require import browser workerd](README.md#exports-require-import-browser-workerd)
-- [Extra async magic? No](README.md#extra-async-magic-no)
-- [Single-file, or separate .wasm file? wasm](README.md#single-file-or-separate-wasm-file-wasm)
-- [More details](README.md#more-details)
 
 ## Library: quickjs-ng
 
@@ -100,6 +93,23 @@ Variant-specific Emscripten build flags:
 ]
 ```
 
-***
+## Variables
 
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+### default
+
+> `const` **default**: [`QuickJSSyncVariant`](../../quickjs-emscripten/interfaces/QuickJSSyncVariant.md)
+
+Defined in: [index.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-ng-wasmfile-debug-sync/src/index.ts#L18)
+
+### @jitl/quickjs-ng-wasmfile-debug-sync
+
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-ng-wasmfile-debug-sync/README.md) |
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
+
+| Variable            |    Setting                     |    Description    |
+| --                  | --                             | --                |
+| library             | quickjs-ng             | [quickjs-ng](https://github.com/quickjs-ng/quickjs) is a fork of quickjs that tends to add features more quickly. Version [v0.12.1](https://github.com/quickjs-ng/quickjs/releases/tag/v0.12.1) vendored to quickjs-emscripten. |
+| releaseMode         | debug         | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
+| syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
+| emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
+| exports             | require import browser workerd                  | Has these package.json export conditions |

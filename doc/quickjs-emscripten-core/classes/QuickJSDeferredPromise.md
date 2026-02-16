@@ -1,49 +1,32 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten-core** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../exports.md) / QuickJSDeferredPromise
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../README.md) / QuickJSDeferredPromise
 
 # Class: QuickJSDeferredPromise
 
-QuickJSDeferredPromise wraps a QuickJS promise [handle](QuickJSDeferredPromise.md#handle) and allows
-[resolve](QuickJSDeferredPromise.md#resolve)ing or [reject](QuickJSDeferredPromise.md#reject)ing that promise. Use it to bridge asynchronous
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:71](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L71)
+
+QuickJSDeferredPromise wraps a QuickJS promise [handle](#handle) and allows
+[resolve](#resolve)ing or [reject](#reject)ing that promise. Use it to bridge asynchronous
 code on the host to APIs inside a QuickJSContext.
 
 Managing the lifetime of promises is tricky. There are three
-[QuickJSHandle](../exports.md#quickjshandle)s inside of each deferred promise object: (1) the promise
+[QuickJSHandle](../README.md#quickjshandle)s inside of each deferred promise object: (1) the promise
 itself, (2) the `resolve` callback, and (3) the `reject` callback.
 
-- If the promise will be fulfilled before the end of it's [owner](QuickJSDeferredPromise.md#owner)'s lifetime,
+- If the promise will be fulfilled before the end of it's [owner](#owner)'s lifetime,
   the only cleanup necessary is `deferred.handle.dispose()`, because
-  calling [resolve](QuickJSDeferredPromise.md#resolve) or [reject](QuickJSDeferredPromise.md#reject) will dispose of both callbacks automatically.
+  calling [resolve](#resolve) or [reject](#reject) will dispose of both callbacks automatically.
 
-- As the return value of a [VmFunctionImplementation](../exports.md#vmfunctionimplementationvmhandle), return [handle](QuickJSDeferredPromise.md#handle),
-  and ensure that either [resolve](QuickJSDeferredPromise.md#resolve) or [reject](QuickJSDeferredPromise.md#reject) will be called. No other
+- As the return value of a [VmFunctionImplementation](../README.md#vmfunctionimplementation), return [handle](#handle),
+  and ensure that either [resolve](#resolve) or [reject](#reject) will be called. No other
   clean-up is necessary.
 
-- In other cases, call [dispose](QuickJSDeferredPromise.md#dispose-1), which will dispose [handle](QuickJSDeferredPromise.md#handle) as well as the
-  QuickJS handles that back [resolve](QuickJSDeferredPromise.md#resolve) and [reject](QuickJSDeferredPromise.md#reject). For this object,
-  [dispose](QuickJSDeferredPromise.md#dispose-1) is idempotent.
-
-## Contents
-
-- [Extends](QuickJSDeferredPromise.md#extends)
-- [Implements](QuickJSDeferredPromise.md#implements)
-- [Constructors](QuickJSDeferredPromise.md#constructors)
-  - [new QuickJSDeferredPromise(args)](QuickJSDeferredPromise.md#new-quickjsdeferredpromiseargs)
-- [Properties](QuickJSDeferredPromise.md#properties)
-  - [context](QuickJSDeferredPromise.md#context)
-  - [handle](QuickJSDeferredPromise.md#handle)
-  - [owner](QuickJSDeferredPromise.md#owner)
-  - [settled](QuickJSDeferredPromise.md#settled)
-- [Accessors](QuickJSDeferredPromise.md#accessors)
-  - [alive](QuickJSDeferredPromise.md#alive)
-- [Methods](QuickJSDeferredPromise.md#methods)
-  - [`[dispose]`()](QuickJSDeferredPromise.md#dispose)
-  - [dispose()](QuickJSDeferredPromise.md#dispose)
-  - [reject()](QuickJSDeferredPromise.md#reject)
-  - [resolve()](QuickJSDeferredPromise.md#resolve)
+- In other cases, call [dispose](#dispose-1), which will dispose [handle](#handle) as well as the
+  QuickJS handles that back [resolve](#resolve) and [reject](#reject). For this object,
+  [dispose](#dispose-1) is idempotent.
 
 ## Extends
 
@@ -55,36 +38,42 @@ itself, (2) the `resolve` callback, and (3) the `reject` callback.
 
 ## Constructors
 
-### new QuickJSDeferredPromise(args)
+### Constructor
 
-> **new QuickJSDeferredPromise**(`args`): [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
+> **new QuickJSDeferredPromise**(`args`): `QuickJSDeferredPromise`
+
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:95](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L95)
 
 Use [QuickJSContext#newPromise](QuickJSContext.md#newpromise) to create a new promise instead of calling
 this constructor directly.
 
 #### Parameters
 
-• **args**: `Object`
+##### args
 
-• **args\.context**: [`QuickJSContext`](QuickJSContext.md)
+###### context
 
-• **args\.promiseHandle**: [`QuickJSHandle`](../exports.md#quickjshandle)
+[`QuickJSContext`](QuickJSContext.md)
 
-• **args\.rejectHandle**: [`QuickJSHandle`](../exports.md#quickjshandle)
+###### promiseHandle
 
-• **args\.resolveHandle**: [`QuickJSHandle`](../exports.md#quickjshandle)
+[`QuickJSHandle`](../README.md#quickjshandle)
+
+###### rejectHandle
+
+[`QuickJSHandle`](../README.md#quickjshandle)
+
+###### resolveHandle
+
+[`QuickJSHandle`](../README.md#quickjshandle)
 
 #### Returns
 
-[`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
+`QuickJSDeferredPromise`
 
 #### Overrides
 
-[`quickjs-emscripten-core.UsingDisposable.constructor`](UsingDisposable.md#constructors)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:95](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L95)
+[`UsingDisposable`](UsingDisposable.md).[`constructor`](UsingDisposable.md#constructor)
 
 ## Properties
 
@@ -92,23 +81,19 @@ this constructor directly.
 
 > **context**: [`QuickJSContext`](QuickJSContext.md)
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:73](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L73)
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:73](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L73)
 
 ***
 
 ### handle
 
-> **handle**: [`QuickJSHandle`](../exports.md#quickjshandle)
+> **handle**: [`QuickJSHandle`](../README.md#quickjshandle)
+
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:80](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L80)
 
 A handle of the Promise instance inside the QuickJSContext.
-You must dispose [handle](QuickJSDeferredPromise.md#handle) or the entire QuickJSDeferredPromise once you
+You must dispose [handle](#handle) or the entire QuickJSDeferredPromise once you
 are finished with it.
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:80](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L80)
 
 ***
 
@@ -116,9 +101,7 @@ are finished with it.
 
 > **owner**: [`QuickJSRuntime`](QuickJSRuntime.md)
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:72](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L72)
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:72](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L72)
 
 ***
 
@@ -126,35 +109,41 @@ are finished with it.
 
 > **settled**: `Promise`\<`void`\>
 
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L85)
+
 A native promise that will resolve once this deferred is settled.
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L85)
 
 ## Accessors
 
 ### alive
 
-> **`get`** **alive**(): `boolean`
+#### Get Signature
 
-#### Returns
+> **get** **alive**(): `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:166](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L166)
+
+##### Returns
 
 `boolean`
 
 true if the object is alive
 
-false after the object has been [dispose](QuickJSDeferredPromise.md#dispose-1)d
+#### Implementation of
 
-#### Source
+[`Disposable`](../interfaces/Disposable.md).[`alive`](../interfaces/Disposable.md#alive)
 
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:166](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L166)
+#### Overrides
+
+[`UsingDisposable`](UsingDisposable.md).[`alive`](UsingDisposable.md#alive)
 
 ## Methods
 
-### `[dispose]`()
+### \[dispose\]()
 
-> **[dispose]**(): `void`
+> **\[dispose\]**(): `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
 Just calls the standard .dispose() method of this class.
 
@@ -164,21 +153,19 @@ Just calls the standard .dispose() method of this class.
 
 #### Implementation of
 
-[`quickjs-emscripten-core.Disposable.[dispose]`](../interfaces/Disposable.md#dispose)
+[`Disposable`](../interfaces/Disposable.md).[`[dispose]`](../interfaces/Disposable.md#dispose)
 
 #### Inherited from
 
-[`quickjs-emscripten-core.UsingDisposable.[dispose]`](UsingDisposable.md#dispose)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
+[`UsingDisposable`](UsingDisposable.md).[`[dispose]`](UsingDisposable.md#dispose)
 
 ***
 
 ### dispose()
 
 > **dispose**(): `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:170](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L170)
 
 Dispose of the underlying resources used by this object.
 
@@ -188,24 +175,22 @@ Dispose of the underlying resources used by this object.
 
 #### Implementation of
 
-[`quickjs-emscripten-core.Disposable.dispose`](../interfaces/Disposable.md#dispose-1)
+[`Disposable`](../interfaces/Disposable.md).[`dispose`](../interfaces/Disposable.md#dispose-1)
 
 #### Overrides
 
-[`quickjs-emscripten-core.UsingDisposable.dispose`](UsingDisposable.md#abstract-dispose)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:170](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L170)
+[`UsingDisposable`](UsingDisposable.md).[`dispose`](UsingDisposable.md#dispose-1)
 
 ***
 
 ### reject()
 
-> **reject**(`value`?): `void`
+> **reject**(`value?`): `void`
 
-Reject [handle](QuickJSDeferredPromise.md#handle) with the given value, if any.
-Calling this method after calling [dispose](QuickJSDeferredPromise.md#dispose-1) is a no-op.
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:147](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L147)
+
+Reject [handle](#handle) with the given value, if any.
+Calling this method after calling [dispose](#dispose-1) is a no-op.
 
 Note that after rejecting a promise, you may need to call
 [QuickJSRuntime#executePendingJobs](QuickJSRuntime.md#executependingjobs) to propagate the result to the promise's
@@ -213,24 +198,24 @@ callbacks.
 
 #### Parameters
 
-• **value?**: [`QuickJSHandle`](../exports.md#quickjshandle)
+##### value?
+
+[`QuickJSHandle`](../README.md#quickjshandle)
 
 #### Returns
 
 `void`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:147](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L147)
-
 ***
 
 ### resolve()
 
-> **resolve**(`value`?): `void`
+> **resolve**(`value?`): `void`
 
-Resolve [handle](QuickJSDeferredPromise.md#handle) with the given value, if any.
-Calling this method after calling [dispose](QuickJSDeferredPromise.md#dispose-1) is a no-op.
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:120](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L120)
+
+Resolve [handle](#handle) with the given value, if any.
+Calling this method after calling [dispose](#dispose-1) is a no-op.
 
 Note that after resolving a promise, you may need to call
 [QuickJSRuntime#executePendingJobs](QuickJSRuntime.md#executependingjobs) to propagate the result to the promise's
@@ -238,16 +223,10 @@ callbacks.
 
 #### Parameters
 
-• **value?**: [`QuickJSHandle`](../exports.md#quickjshandle)
+##### value?
+
+[`QuickJSHandle`](../README.md#quickjshandle)
 
 #### Returns
 
 `void`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:120](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L120)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

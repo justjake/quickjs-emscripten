@@ -1,4 +1,4 @@
-**quickjs-emscripten** • [Readme](README.md) \| [Packages](packages.md)
+**quickjs-emscripten**
 
 ***
 
@@ -89,7 +89,7 @@ main()
 Install from `npm`: `npm install --save quickjs-emscripten` or `yarn add quickjs-emscripten`.
 
 The root entrypoint of this library is the `getQuickJS` function, which returns
-a promise that resolves to a [QuickJSWASMModule](./doc/quickjs-emscripten/classes/QuickJSWASMModule.md) when
+a promise that resolves to a [QuickJSWASMModule](_media/QuickJSWASMModule.md) when
 the QuickJS WASM module is ready.
 
 Once `getQuickJS` has been awaited at least once, you also can use the `getQuickJSSync`
@@ -623,7 +623,7 @@ The main `quickjs-emscripten` package includes several build variants of the Web
   - `DEBUG_SYNC`: Instrumented to detect memory leaks, in addition to assertions and source maps.
   - `DEBUG_ASYNC`: An [asyncify][] variant with source maps.
 
-To use a variant, call `newQuickJSWASMModule` or `newQuickJSAsyncWASMModule` with the variant object. These functions return a promise that resolves to a [QuickJSWASMModule](./doc/quickjs-emscripten/classes/QuickJSWASMModule.md), the same as `getQuickJS`.
+To use a variant, call `newQuickJSWASMModule` or `newQuickJSAsyncWASMModule` with the variant object. These functions return a promise that resolves to a [QuickJSWASMModule](_media/QuickJSWASMModule.md), the same as `getQuickJS`.
 
 ```typescript
 import {
@@ -930,7 +930,3 @@ Related NPM scripts:
 ### Yarn updates
 
 Just run `yarn set version from sources` to upgrade the Yarn release.
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

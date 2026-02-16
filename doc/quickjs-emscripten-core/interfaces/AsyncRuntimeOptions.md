@@ -1,23 +1,12 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten-core** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../exports.md) / AsyncRuntimeOptions
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../README.md) / AsyncRuntimeOptions
 
 # Interface: AsyncRuntimeOptions
 
-## Contents
-
-- [Extends](AsyncRuntimeOptions.md#extends)
-- [Properties](AsyncRuntimeOptions.md#properties)
-  - [gcThreshold?](AsyncRuntimeOptions.md#gcthreshold)
-  - [interruptHandler?](AsyncRuntimeOptions.md#interrupthandler)
-  - [maxStackSizeBytes?](AsyncRuntimeOptions.md#maxstacksizebytes)
-  - [memoryLimitBytes?](AsyncRuntimeOptions.md#memorylimitbytes)
-  - [moduleLoader?](AsyncRuntimeOptions.md#moduleloader)
-  - [promiseRejectionHandler?](AsyncRuntimeOptions.md#promiserejectionhandler)
-  - [runtimeInfo?](AsyncRuntimeOptions.md#runtimeinfo)
-  - [sharedArrayBufferFunctions?](AsyncRuntimeOptions.md#sharedarraybufferfunctions)
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:136](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L136)
 
 ## Extends
 
@@ -27,110 +16,90 @@
 
 ### gcThreshold?
 
-> **gcThreshold**?: `undefined`
+> `optional` **gcThreshold**: `undefined`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:119](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L119)
 
 #### Inherited from
 
-[`quickjs-emscripten-core.RuntimeOptionsBase.gcThreshold`](RuntimeOptionsBase.md#gcthreshold)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/types.ts:119](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L119)
+[`RuntimeOptionsBase`](RuntimeOptionsBase.md).[`gcThreshold`](RuntimeOptionsBase.md#gcthreshold)
 
 ***
 
 ### interruptHandler?
 
-> **interruptHandler**?: [`InterruptHandler`](../exports.md#interrupthandler)
+> `optional` **interruptHandler**: [`InterruptHandler`](../README.md#interrupthandler)
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:113](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L113)
 
 #### Inherited from
 
-[`quickjs-emscripten-core.RuntimeOptionsBase.interruptHandler`](RuntimeOptionsBase.md#interrupthandler)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/types.ts:113](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L113)
+[`RuntimeOptionsBase`](RuntimeOptionsBase.md).[`interruptHandler`](RuntimeOptionsBase.md#interrupthandler)
 
 ***
 
 ### maxStackSizeBytes?
 
-> **maxStackSizeBytes**?: `number`
+> `optional` **maxStackSizeBytes**: `number`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L114)
 
 #### Inherited from
 
-[`quickjs-emscripten-core.RuntimeOptionsBase.maxStackSizeBytes`](RuntimeOptionsBase.md#maxstacksizebytes)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/types.ts:114](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L114)
+[`RuntimeOptionsBase`](RuntimeOptionsBase.md).[`maxStackSizeBytes`](RuntimeOptionsBase.md#maxstacksizebytes)
 
 ***
 
 ### memoryLimitBytes?
 
-> **memoryLimitBytes**?: `number`
+> `optional` **memoryLimitBytes**: `number`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:115](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L115)
 
 #### Inherited from
 
-[`quickjs-emscripten-core.RuntimeOptionsBase.memoryLimitBytes`](RuntimeOptionsBase.md#memorylimitbytes)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/types.ts:115](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L115)
+[`RuntimeOptionsBase`](RuntimeOptionsBase.md).[`memoryLimitBytes`](RuntimeOptionsBase.md#memorylimitbytes)
 
 ***
 
 ### moduleLoader?
 
-> **moduleLoader**?: [`JSModuleLoader`](JSModuleLoader.md) \| [`JSModuleLoaderAsync`](JSModuleLoaderAsync.md)
+> `optional` **moduleLoader**: [`JSModuleLoader`](JSModuleLoader.md) \| [`JSModuleLoaderAsync`](JSModuleLoaderAsync.md)
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/types.ts:137](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L137)
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:137](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L137)
 
 ***
 
 ### promiseRejectionHandler?
 
-> **promiseRejectionHandler**?: `undefined`
+> `optional` **promiseRejectionHandler**: `undefined`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:117](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L117)
 
 #### Inherited from
 
-[`quickjs-emscripten-core.RuntimeOptionsBase.promiseRejectionHandler`](RuntimeOptionsBase.md#promiserejectionhandler)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/types.ts:117](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L117)
+[`RuntimeOptionsBase`](RuntimeOptionsBase.md).[`promiseRejectionHandler`](RuntimeOptionsBase.md#promiserejectionhandler)
 
 ***
 
 ### runtimeInfo?
 
-> **runtimeInfo**?: `undefined`
+> `optional` **runtimeInfo**: `undefined`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:118](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L118)
 
 #### Inherited from
 
-[`quickjs-emscripten-core.RuntimeOptionsBase.runtimeInfo`](RuntimeOptionsBase.md#runtimeinfo)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/types.ts:118](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L118)
+[`RuntimeOptionsBase`](RuntimeOptionsBase.md).[`runtimeInfo`](RuntimeOptionsBase.md#runtimeinfo)
 
 ***
 
 ### sharedArrayBufferFunctions?
 
-> **sharedArrayBufferFunctions**?: `undefined`
+> `optional` **sharedArrayBufferFunctions**: `undefined`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:120](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L120)
 
 #### Inherited from
 
-[`quickjs-emscripten-core.RuntimeOptionsBase.sharedArrayBufferFunctions`](RuntimeOptionsBase.md#sharedarraybufferfunctions)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/types.ts:120](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L120)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+[`RuntimeOptionsBase`](RuntimeOptionsBase.md).[`sharedArrayBufferFunctions`](RuntimeOptionsBase.md#sharedarraybufferfunctions)

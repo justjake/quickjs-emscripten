@@ -12,12 +12,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -78,12 +78,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -144,12 +144,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -210,12 +210,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -276,12 +276,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -342,12 +342,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -408,12 +408,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -474,12 +474,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -540,12 +540,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -596,12 +596,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -652,12 +652,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -708,12 +708,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.ts",
@@ -764,12 +764,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
@@ -817,12 +817,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
@@ -870,12 +870,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
@@ -923,12 +923,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
@@ -976,12 +976,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
@@ -1031,12 +1031,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
@@ -1086,12 +1086,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
@@ -1141,12 +1141,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",
@@ -1196,12 +1196,12 @@
       "repository": { "type": "git", "url": "https://github.com/justjake/quickjs-emscripten" },
       "author": { "name": "Jake Teton-Landis", "url": "https://jake.tl" },
       "scripts": {
-        "build": "yarn build:c && yarn build:ts",
+        "build": "npm run build:c && npm run build:ts",
         "build:c": "make -j2",
         "build:ts": "npx tsup",
         "check:types": "npx tsc --project . --noEmit",
         "clean": "make clean",
-        "prepare": "yarn clean && yarn build"
+        "prepare": "npm run clean && npm run build"
       },
       "files": ["LICENSE", "README.md", "dist/**/*", "!dist/*.tsbuildinfo"],
       "types": "./dist/index.d.mts",

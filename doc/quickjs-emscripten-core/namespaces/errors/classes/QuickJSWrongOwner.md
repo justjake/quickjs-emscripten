@@ -1,18 +1,12 @@
-[quickjs-emscripten](../../../../packages.md) • **quickjs-emscripten-core** • [Readme](../../../README.md) \| [Exports](../../../exports.md)
+[**quickjs-emscripten**](../../../../README.md)
 
 ***
 
-[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten-core](../../../exports.md) / [errors](../README.md) / QuickJSWrongOwner
+[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten-core](../../../README.md) / [errors](../README.md) / QuickJSWrongOwner
 
 # Class: QuickJSWrongOwner
 
-## Contents
-
-- [Extends](QuickJSWrongOwner.md#extends)
-- [Constructors](QuickJSWrongOwner.md#constructors)
-  - [new QuickJSWrongOwner(message)](QuickJSWrongOwner.md#new-quickjswrongownermessage)
-- [Properties](QuickJSWrongOwner.md#properties)
-  - [name](QuickJSWrongOwner.md#name)
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:20](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L20)
 
 ## Extends
 
@@ -20,25 +14,25 @@
 
 ## Constructors
 
-### new QuickJSWrongOwner(message)
+### Constructor
 
-> **new QuickJSWrongOwner**(`message`?): [`QuickJSWrongOwner`](QuickJSWrongOwner.md)
+> **new QuickJSWrongOwner**(`message?`): `QuickJSWrongOwner`
+
+Defined in: node\_modules/typescript/lib/lib.es5.d.ts:1082
 
 #### Parameters
 
-• **message?**: `string`
+##### message?
+
+`string`
 
 #### Returns
 
-[`QuickJSWrongOwner`](QuickJSWrongOwner.md)
+`QuickJSWrongOwner`
 
 #### Inherited from
 
 `Error.constructor`
-
-#### Source
-
-node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 ## Properties
 
@@ -46,14 +40,8 @@ node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 > **name**: `string` = `"QuickJSWrongOwner"`
 
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:21](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L21)
+
 #### Overrides
 
 `Error.name`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/errors.ts:21](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L21)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

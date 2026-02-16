@@ -1,20 +1,15 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten-core** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../exports.md) / JSPromiseStatePending
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../README.md) / JSPromiseStatePending
 
 # Interface: JSPromiseStatePending
 
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:20](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L20)
+
 Pending promise state.
-See [JSPromiseState](../exports.md#jspromisestate).
-
-## Contents
-
-- [Properties](JSPromiseStatePending.md#properties)
-  - [type](JSPromiseStatePending.md#type)
-- [Accessors](JSPromiseStatePending.md#accessors)
-  - [error](JSPromiseStatePending.md#error)
+See [JSPromiseState](../README.md#jspromisestate).
 
 ## Properties
 
@@ -22,27 +17,21 @@ See [JSPromiseState](../exports.md#jspromisestate).
 
 > **type**: `"pending"`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:21](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L21)
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:21](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L21)
 
 ## Accessors
 
 ### error
 
-> **`get`** **error**(): `Error`
+#### Get Signature
+
+> **get** **error**(): `Error`
+
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L26)
 
 The error property here allows unwrapping a JSPromiseState with [QuickJSContext#unwrapResult](../classes/QuickJSContext.md#unwrapresult).
 Unwrapping a pending promise will throw a QuickJSPromisePending error.
 
-#### Returns
+##### Returns
 
 `Error`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L26)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

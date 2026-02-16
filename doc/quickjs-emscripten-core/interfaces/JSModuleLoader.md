@@ -1,29 +1,29 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten-core** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../exports.md) / JSModuleLoader
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../README.md) / JSModuleLoader
 
 # Interface: JSModuleLoader()
 
-> **JSModuleLoader**(`moduleName`, `context`): [`JSModuleLoadResult`](../exports.md#jsmoduleloadresult)
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:81](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L81)
+
+> **JSModuleLoader**(`moduleName`, `context`): [`JSModuleLoadResult`](../README.md#jsmoduleloadresult)
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L83)
 
 Load module (sync)
 
 ## Parameters
 
-• **moduleName**: `string`
+### moduleName
 
-• **context**: [`QuickJSContext`](../classes/QuickJSContext.md)
+`string`
+
+### context
+
+[`QuickJSContext`](../classes/QuickJSContext.md)
 
 ## Returns
 
-[`JSModuleLoadResult`](../exports.md#jsmoduleloadresult)
-
-## Source
-
-[packages/quickjs-emscripten-core/src/types.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L83)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+[`JSModuleLoadResult`](../README.md#jsmoduleloadresult)

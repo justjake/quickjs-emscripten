@@ -1,10 +1,12 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / QuickJSAsyncRuntime
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / QuickJSAsyncRuntime
 
 # Class: QuickJSAsyncRuntime
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime-asyncify.ts:25](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L25)
 
 A runtime represents a Javascript runtime corresponding to an object heap.
 Several runtimes can exist at the same time but they cannot exchange objects.
@@ -20,41 +22,15 @@ You should create separate runtime instances for untrusted code from
 different sources for isolation. However, stronger isolation is also
 available (at the cost of memory usage), by creating separate WebAssembly
 modules to further isolate untrusted code.
-See [newQuickJSWASMModule](../exports.md#newquickjswasmmodule).
+See [newQuickJSWASMModule](../README.md#newquickjswasmmodule).
 
-Implement memory and CPU constraints with [setInterruptHandler](QuickJSAsyncRuntime.md#setinterrupthandler)
-(called regularly while the interpreter runs), [setMemoryLimit](QuickJSAsyncRuntime.md#setmemorylimit), and
-[setMaxStackSize](QuickJSAsyncRuntime.md#setmaxstacksize).
-Use [computeMemoryUsage](QuickJSAsyncRuntime.md#computememoryusage) or [dumpMemoryUsage](QuickJSAsyncRuntime.md#dumpmemoryusage) to guide memory limit
+Implement memory and CPU constraints with [setInterruptHandler](QuickJSRuntime.md#setinterrupthandler)
+(called regularly while the interpreter runs), [setMemoryLimit](QuickJSRuntime.md#setmemorylimit), and
+[setMaxStackSize](QuickJSRuntime.md#setmaxstacksize).
+Use [computeMemoryUsage](QuickJSRuntime.md#computememoryusage) or [dumpMemoryUsage](QuickJSRuntime.md#dumpmemoryusage) to guide memory limit
 tuning.
 
-Configure ES module loading with [setModuleLoader](QuickJSAsyncRuntime.md#setmoduleloader).
-
-## Contents
-
-- [Extends](QuickJSAsyncRuntime.md#extends)
-- [Properties](QuickJSAsyncRuntime.md#properties)
-  - [context](QuickJSAsyncRuntime.md#context)
-- [Accessors](QuickJSAsyncRuntime.md#accessors)
-  - [alive](QuickJSAsyncRuntime.md#alive)
-- [Methods](QuickJSAsyncRuntime.md#methods)
-  - [`[dispose]`()](QuickJSAsyncRuntime.md#dispose)
-  - [assertOwned()](QuickJSAsyncRuntime.md#assertowned)
-  - [computeMemoryUsage()](QuickJSAsyncRuntime.md#computememoryusage)
-  - [debugLog()](QuickJSAsyncRuntime.md#debuglog)
-  - [dispose()](QuickJSAsyncRuntime.md#dispose)
-  - [dumpMemoryUsage()](QuickJSAsyncRuntime.md#dumpmemoryusage)
-  - [executePendingJobs()](QuickJSAsyncRuntime.md#executependingjobs)
-  - [hasPendingJob()](QuickJSAsyncRuntime.md#haspendingjob)
-  - [isDebugMode()](QuickJSAsyncRuntime.md#isdebugmode)
-  - [newContext()](QuickJSAsyncRuntime.md#newcontext)
-  - [removeInterruptHandler()](QuickJSAsyncRuntime.md#removeinterrupthandler)
-  - [removeModuleLoader()](QuickJSAsyncRuntime.md#removemoduleloader)
-  - [setDebugMode()](QuickJSAsyncRuntime.md#setdebugmode)
-  - [setInterruptHandler()](QuickJSAsyncRuntime.md#setinterrupthandler)
-  - [setMaxStackSize()](QuickJSAsyncRuntime.md#setmaxstacksize)
-  - [setMemoryLimit()](QuickJSAsyncRuntime.md#setmemorylimit)
-  - [setModuleLoader()](QuickJSAsyncRuntime.md#setmoduleloader)
+Configure ES module loading with [setModuleLoader](QuickJSRuntime.md#setmoduleloader).
 
 ## Extends
 
@@ -64,45 +40,47 @@ Configure ES module loading with [setModuleLoader](QuickJSAsyncRuntime.md#setmod
 
 ### context
 
-> **context**: `undefined` \| [`QuickJSAsyncContext`](QuickJSAsyncContext.md)
+> **context**: [`QuickJSAsyncContext`](QuickJSAsyncContext.md) \| `undefined`
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime-asyncify.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L26)
 
 If this runtime was created as as part of a context, points to the context
 associated with the runtime.
 
 If this runtime was created stand-alone, this may or may not contain a context.
-A context here may be allocated if one is needed by the runtime, eg for [computeMemoryUsage](QuickJSAsyncRuntime.md#computememoryusage).
+A context here may be allocated if one is needed by the runtime, eg for [computeMemoryUsage](QuickJSRuntime.md#computememoryusage).
 
 #### Overrides
 
-[`quickjs-emscripten.QuickJSRuntime.context`](QuickJSRuntime.md#context)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L26)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`context`](QuickJSRuntime.md#context)
 
 ## Accessors
 
 ### alive
 
-> **`get`** **alive**(): `boolean`
+#### Get Signature
 
-#### Returns
+> **get** **alive**(): `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:128](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L128)
+
+##### Returns
 
 `boolean`
 
 true if the object is alive
 
-false after the object has been [dispose](QuickJSAsyncRuntime.md#dispose-1)d
+#### Inherited from
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:128](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L128)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`alive`](QuickJSRuntime.md#alive)
 
 ## Methods
 
-### `[dispose]`()
+### \[dispose\]()
 
-> **[dispose]**(): `void`
+> **\[dispose\]**(): `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
 Just calls the standard .dispose() method of this class.
 
@@ -112,11 +90,7 @@ Just calls the standard .dispose() method of this class.
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.[dispose]`](QuickJSRuntime.md#dispose)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`[dispose]`](QuickJSRuntime.md#dispose)
 
 ***
 
@@ -124,57 +98,57 @@ Just calls the standard .dispose() method of this class.
 
 > **assertOwned**(`handle`): `void`
 
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:330](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L330)
+
 Assert that `handle` is owned by this runtime.
 
 #### Parameters
 
-• **handle**: [`QuickJSHandle`](../exports.md#quickjshandle)
+##### handle
+
+[`QuickJSHandle`](../README.md#quickjshandle)
 
 #### Returns
 
 `void`
 
-#### Inherited from
-
-[`quickjs-emscripten.QuickJSRuntime.assertOwned`](QuickJSRuntime.md#assertowned)
-
 #### Throws
 
 QuickJSWrongOwner if owned by a different runtime.
 
-#### Source
+#### Inherited from
 
-[packages/quickjs-emscripten-core/src/runtime.ts:330](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L330)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`assertOwned`](QuickJSRuntime.md#assertowned)
 
 ***
 
 ### computeMemoryUsage()
 
-> **computeMemoryUsage**(): [`QuickJSHandle`](../exports.md#quickjshandle)
+> **computeMemoryUsage**(): [`QuickJSHandle`](../README.md#quickjshandle)
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:299](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L299)
 
 Compute memory usage for this runtime. Returns the result as a handle to a
 JSValue object. Use [QuickJSContext#dump](QuickJSContext.md#dump) to convert to a native object.
 Calling this method will allocate more memory inside the runtime. The information
 is accurate as of just before the call to `computeMemoryUsage`.
-For a human-digestible representation, see [dumpMemoryUsage](QuickJSAsyncRuntime.md#dumpmemoryusage).
+For a human-digestible representation, see [dumpMemoryUsage](QuickJSRuntime.md#dumpmemoryusage).
 
 #### Returns
 
-[`QuickJSHandle`](../exports.md#quickjshandle)
+[`QuickJSHandle`](../README.md#quickjshandle)
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.computeMemoryUsage`](QuickJSRuntime.md#computememoryusage)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:299](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L299)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`computeMemoryUsage`](QuickJSRuntime.md#computememoryusage)
 
 ***
 
 ### debugLog()
 
 > **debugLog**(...`msg`): `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:366](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L366)
 
 In debug mode, log the result of calling `msg()`.
 
@@ -183,7 +157,9 @@ manipulation if debug logging is disabled.
 
 #### Parameters
 
-• ...**msg**: `unknown`[]
+##### msg
+
+...`unknown`[]
 
 #### Returns
 
@@ -191,17 +167,15 @@ manipulation if debug logging is disabled.
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.debugLog`](QuickJSRuntime.md#debuglog)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:366](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L366)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`debugLog`](QuickJSRuntime.md#debuglog)
 
 ***
 
 ### dispose()
 
 > **dispose**(): `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:132](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L132)
 
 Dispose of the underlying resources used by this object.
 
@@ -211,11 +185,7 @@ Dispose of the underlying resources used by this object.
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.dispose`](QuickJSRuntime.md#dispose-1)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:132](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L132)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`dispose`](QuickJSRuntime.md#dispose-1)
 
 ***
 
@@ -223,26 +193,26 @@ Dispose of the underlying resources used by this object.
 
 > **dumpMemoryUsage**(): `string`
 
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:310](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L310)
+
 #### Returns
 
 `string`
 
 a human-readable description of memory usage in this runtime.
-For programmatic access to this information, see [computeMemoryUsage](QuickJSAsyncRuntime.md#computememoryusage).
+For programmatic access to this information, see [computeMemoryUsage](QuickJSRuntime.md#computememoryusage).
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.dumpMemoryUsage`](QuickJSRuntime.md#dumpmemoryusage)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:310](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L310)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`dumpMemoryUsage`](QuickJSRuntime.md#dumpmemoryusage)
 
 ***
 
 ### executePendingJobs()
 
-> **executePendingJobs**(`maxJobsToExecute`): [`ExecutePendingJobsResult`](../exports.md#executependingjobsresult)
+> **executePendingJobs**(`maxJobsToExecute?`): [`ExecutePendingJobsResult`](../README.md#executependingjobsresult)
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:246](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L246)
 
 Execute pendingJobs on the runtime until `maxJobsToExecute` jobs are
 executed (default all pendingJobs), the queue is exhausted, or the runtime
@@ -253,14 +223,16 @@ pendingJobs. These do not execute immediately and need to triggered to run.
 
 #### Parameters
 
-• **maxJobsToExecute**: `number` \| `void`= `-1`
+##### maxJobsToExecute?
 
 When negative, run all pending jobs. Otherwise execute
 at most `maxJobsToExecute` before returning.
 
+`number` | `void`
+
 #### Returns
 
-[`ExecutePendingJobsResult`](../exports.md#executependingjobsresult)
+[`ExecutePendingJobsResult`](../README.md#executependingjobsresult)
 
 On success, the number of executed jobs. On error, the exception
 that stopped execution, and the context it occurred in. Note that
@@ -270,11 +242,7 @@ functions or rejected promises. Those errors are available by calling
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.executePendingJobs`](QuickJSRuntime.md#executependingjobs)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:246](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L246)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`executePendingJobs`](QuickJSRuntime.md#executependingjobs)
 
 ***
 
@@ -282,8 +250,10 @@ functions or rejected promises. Those errors are available by calling
 
 > **hasPendingJob**(): `boolean`
 
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:197](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L197)
+
 In QuickJS, promises and async functions create pendingJobs. These do not execute
-immediately and need to be run by calling [executePendingJobs](QuickJSAsyncRuntime.md#executependingjobs).
+immediately and need to be run by calling [executePendingJobs](QuickJSRuntime.md#executependingjobs).
 
 #### Returns
 
@@ -293,17 +263,15 @@ true if there is at least one pendingJob queued up.
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.hasPendingJob`](QuickJSRuntime.md#haspendingjob)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:197](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L197)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`hasPendingJob`](QuickJSRuntime.md#haspendingjob)
 
 ***
 
 ### isDebugMode()
 
 > **isDebugMode**(): `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:356](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L356)
 
 #### Returns
 
@@ -313,17 +281,15 @@ true if debug logging is enabled
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.isDebugMode`](QuickJSRuntime.md#isdebugmode)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:356](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L356)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`isDebugMode`](QuickJSRuntime.md#isdebugmode)
 
 ***
 
 ### newContext()
 
-> **newContext**(`options`): [`QuickJSAsyncContext`](QuickJSAsyncContext.md)
+> **newContext**(`options?`): [`QuickJSAsyncContext`](QuickJSAsyncContext.md)
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime-asyncify.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L49)
 
 Create a new context within this runtime. Contexts have isolated globals,
 but you can explicitly share objects between contexts with the same
@@ -333,7 +299,9 @@ You should dispose a created context before disposing this runtime.
 
 #### Parameters
 
-• **options**: [`ContextOptions`](../interfaces/ContextOptions.md)= `{}`
+##### options?
+
+[`ContextOptions`](../interfaces/ContextOptions.md) = `{}`
 
 #### Returns
 
@@ -341,11 +309,7 @@ You should dispose a created context before disposing this runtime.
 
 #### Overrides
 
-[`quickjs-emscripten.QuickJSRuntime.newContext`](QuickJSRuntime.md#newcontext)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L49)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`newContext`](QuickJSRuntime.md#newcontext)
 
 ***
 
@@ -353,8 +317,10 @@ You should dispose a created context before disposing this runtime.
 
 > **removeInterruptHandler**(): `void`
 
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:222](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L222)
+
 Remove the interrupt handler, if any.
-See [setInterruptHandler](QuickJSAsyncRuntime.md#setinterrupthandler).
+See [setInterruptHandler](QuickJSRuntime.md#setinterrupthandler).
 
 #### Returns
 
@@ -362,11 +328,7 @@ See [setInterruptHandler](QuickJSAsyncRuntime.md#setinterrupthandler).
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.removeInterruptHandler`](QuickJSRuntime.md#removeinterrupthandler)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:222](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L222)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`removeInterruptHandler`](QuickJSRuntime.md#removeinterrupthandler)
 
 ***
 
@@ -374,7 +336,9 @@ See [setInterruptHandler](QuickJSAsyncRuntime.md#setinterrupthandler).
 
 > **removeModuleLoader**(): `void`
 
-Remove the the loader set by [setModuleLoader](QuickJSAsyncRuntime.md#setmoduleloader). This disables module loading.
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:184](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L184)
+
+Remove the the loader set by [setModuleLoader](QuickJSRuntime.md#setmoduleloader). This disables module loading.
 
 #### Returns
 
@@ -382,17 +346,15 @@ Remove the the loader set by [setModuleLoader](QuickJSAsyncRuntime.md#setmodulel
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.removeModuleLoader`](QuickJSRuntime.md#removemoduleloader)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:184](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L184)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`removeModuleLoader`](QuickJSRuntime.md#removemoduleloader)
 
 ***
 
 ### setDebugMode()
 
 > **setDebugMode**(`enabled`): `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:346](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L346)
 
 Enable or disable debug logging.
 
@@ -401,7 +363,9 @@ code.
 
 #### Parameters
 
-• **enabled**: `boolean`
+##### enabled
+
+`boolean`
 
 #### Returns
 
@@ -409,11 +373,7 @@ code.
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.setDebugMode`](QuickJSRuntime.md#setdebugmode)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:346](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L346)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`setDebugMode`](QuickJSRuntime.md#setdebugmode)
 
 ***
 
@@ -421,15 +381,19 @@ code.
 
 > **setInterruptHandler**(`cb`): `void`
 
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:210](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L210)
+
 Set a callback which is regularly called by the QuickJS engine when it is
 executing code. This callback can be used to implement an execution
 timeout.
 
-The interrupt handler can be removed with [removeInterruptHandler](QuickJSAsyncRuntime.md#removeinterrupthandler).
+The interrupt handler can be removed with [removeInterruptHandler](QuickJSRuntime.md#removeinterrupthandler).
 
 #### Parameters
 
-• **cb**: [`InterruptHandler`](../exports.md#interrupthandler)
+##### cb
+
+[`InterruptHandler`](../README.md#interrupthandler)
 
 #### Returns
 
@@ -437,17 +401,15 @@ The interrupt handler can be removed with [removeInterruptHandler](QuickJSAsyncR
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.setInterruptHandler`](QuickJSRuntime.md#setinterrupthandler)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:210](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L210)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`setInterruptHandler`](QuickJSRuntime.md#setinterrupthandler)
 
 ***
 
 ### setMaxStackSize()
 
 > **setMaxStackSize**(`stackSize`): `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime-asyncify.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L92)
 
 Set the max stack size for this runtime in bytes.
 To remove the limit, set to `0`.
@@ -457,7 +419,9 @@ See the [pull request](https://github.com/justjake/quickjs-emscripten/pull/114) 
 
 #### Parameters
 
-• **stackSize**: `number`
+##### stackSize
+
+`number`
 
 #### Returns
 
@@ -465,11 +429,7 @@ See the [pull request](https://github.com/justjake/quickjs-emscripten/pull/114) 
 
 #### Overrides
 
-[`quickjs-emscripten.QuickJSRuntime.setMaxStackSize`](QuickJSRuntime.md#setmaxstacksize)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L92)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`setMaxStackSize`](QuickJSRuntime.md#setmaxstacksize)
 
 ***
 
@@ -477,12 +437,16 @@ See the [pull request](https://github.com/justjake/quickjs-emscripten/pull/114) 
 
 > **setMemoryLimit**(`limitBytes`): `void`
 
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:284](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L284)
+
 Set the max memory this runtime can allocate.
 To remove the limit, set to `-1`.
 
 #### Parameters
 
-• **limitBytes**: `number`
+##### limitBytes
+
+`number`
 
 #### Returns
 
@@ -490,28 +454,30 @@ To remove the limit, set to `-1`.
 
 #### Inherited from
 
-[`quickjs-emscripten.QuickJSRuntime.setMemoryLimit`](QuickJSRuntime.md#setmemorylimit)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime.ts:284](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L284)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`setMemoryLimit`](QuickJSRuntime.md#setmemorylimit)
 
 ***
 
 ### setModuleLoader()
 
-> **setModuleLoader**(`moduleLoader`, `moduleNormalizer`?): `void`
+> **setModuleLoader**(`moduleLoader`, `moduleNormalizer?`): `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime-asyncify.ts:75](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L75)
 
 Set the loader for EcmaScript modules requested by any context in this
 runtime.
 
-The loader can be removed with [removeModuleLoader](QuickJSAsyncRuntime.md#removemoduleloader).
+The loader can be removed with [removeModuleLoader](QuickJSRuntime.md#removemoduleloader).
 
 #### Parameters
 
-• **moduleLoader**: [`JSModuleLoaderAsync`](../interfaces/JSModuleLoaderAsync.md)
+##### moduleLoader
 
-• **moduleNormalizer?**: [`JSModuleNormalizerAsync`](../interfaces/JSModuleNormalizerAsync.md)
+[`JSModuleLoaderAsync`](../interfaces/JSModuleLoaderAsync.md)
+
+##### moduleNormalizer?
+
+[`JSModuleNormalizerAsync`](../interfaces/JSModuleNormalizerAsync.md)
 
 #### Returns
 
@@ -519,12 +485,4 @@ The loader can be removed with [removeModuleLoader](QuickJSAsyncRuntime.md#remov
 
 #### Overrides
 
-[`quickjs-emscripten.QuickJSRuntime.setModuleLoader`](QuickJSRuntime.md#setmoduleloader)
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/runtime-asyncify.ts:75](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L75)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+[`QuickJSRuntime`](QuickJSRuntime.md).[`setModuleLoader`](QuickJSRuntime.md#setmoduleloader)

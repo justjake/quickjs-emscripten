@@ -1,6 +1,8 @@
-[quickjs-emscripten](../packages.md) • **quickjs-emscripten** • [Readme](README.md) \| [Exports](exports.md)
+[**quickjs-emscripten**](../README.md)
 
 ***
+
+[quickjs-emscripten](../packages.md) / quickjs-emscripten
 
 # quickjs-emscripten
 
@@ -83,26 +85,6 @@ main()
     - [The C parts](#the-c-parts)
     - [The Typescript parts](#the-typescript-parts)
     - [Yarn updates](#yarn-updates)
-
-## Contents
-
-- [Usage](README.md#usage)
-  - [Safely evaluate Javascript code](README.md#safely-evaluate-javascript-code)
-  - [Interfacing with the interpreter](README.md#interfacing-with-the-interpreter)
-  - [Memory Management](README.md#memory-management)
-  - [Exposing APIs](README.md#exposing-apis)
-  - [Testing your code](README.md#testing-your-code)
-  - [Packaging](README.md#packaging)
-  - [Debugging](README.md#debugging)
-  - [Supported Platforms](README.md#supported-platforms)
-  - [More Documentation](README.md#more-documentation)
-- [Background](README.md#background)
-- [Status & Roadmap](README.md#status-roadmap)
-- [Related](README.md#related)
-- [Developing](README.md#developing)
-  - [The C parts](README.md#the-c-parts)
-  - [The Typescript parts](README.md#the-typescript-parts)
-  - [Yarn updates](README.md#yarn-updates)
 
 ## Usage
 
@@ -951,6 +933,1538 @@ Related NPM scripts:
 
 Just run `yarn set version from sources` to upgrade the Yarn release.
 
+## Namespaces
+
+- [errors](namespaces/errors/README.md)
+
+## Classes
+
+- [DisposableFail](classes/DisposableFail.md)
+- [DisposableSuccess](classes/DisposableSuccess.md)
+- [Lifetime](classes/Lifetime.md)
+- [QuickJSAsyncContext](classes/QuickJSAsyncContext.md)
+- [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md)
+- [QuickJSAsyncWASMModule](classes/QuickJSAsyncWASMModule.md)
+- [QuickJSContext](classes/QuickJSContext.md)
+- [QuickJSDeferredPromise](classes/QuickJSDeferredPromise.md)
+- [QuickJSRuntime](classes/QuickJSRuntime.md)
+- [QuickJSWASMModule](classes/QuickJSWASMModule.md)
+- [Scope](classes/Scope.md)
+- [StaticLifetime](classes/StaticLifetime.md)
+- [TestQuickJSWASMModule](classes/TestQuickJSWASMModule.md)
+- [UsingDisposable](classes/UsingDisposable.md)
+- [WeakLifetime](classes/WeakLifetime.md)
+
+## Interfaces
+
+- [AsyncRuntimeOptions](interfaces/AsyncRuntimeOptions.md)
+- [ContextEvalOptions](interfaces/ContextEvalOptions.md)
+- [ContextOptions](interfaces/ContextOptions.md)
+- [CustomizeVariantOptions](interfaces/CustomizeVariantOptions.md)
+- [Disposable](interfaces/Disposable.md)
+- [EmscriptenModule](interfaces/EmscriptenModule.md)
+- [EmscriptenModuleLoader](interfaces/EmscriptenModuleLoader.md)
+- [EmscriptenModuleLoaderOptions](interfaces/EmscriptenModuleLoaderOptions.md)
+- [JSModuleLoader](interfaces/JSModuleLoader.md)
+- [JSModuleLoaderAsync](interfaces/JSModuleLoaderAsync.md)
+- [JSModuleNormalizer](interfaces/JSModuleNormalizer.md)
+- [JSModuleNormalizerAsync](interfaces/JSModuleNormalizerAsync.md)
+- [JSPromiseStateFulfilled](interfaces/JSPromiseStateFulfilled.md)
+- [JSPromiseStatePending](interfaces/JSPromiseStatePending.md)
+- [JSPromiseStateRejected](interfaces/JSPromiseStateRejected.md)
+- [LowLevelJavascriptVm](interfaces/LowLevelJavascriptVm.md)
+- [ModuleEvalOptions](interfaces/ModuleEvalOptions.md)
+- [QuickJSAsyncEmscriptenModule](interfaces/QuickJSAsyncEmscriptenModule.md)
+- [QuickJSAsyncFFI](interfaces/QuickJSAsyncFFI.md)
+- [QuickJSAsyncVariant](interfaces/QuickJSAsyncVariant.md)
+- [QuickJSEmscriptenModule](interfaces/QuickJSEmscriptenModule.md)
+- [QuickJSFFI](interfaces/QuickJSFFI.md)
+- [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md)
+- [RuntimeOptions](interfaces/RuntimeOptions.md)
+- [RuntimeOptionsBase](interfaces/RuntimeOptionsBase.md)
+- [SourceMapData](interfaces/SourceMapData.md)
+- [VmPropertyDescriptor](interfaces/VmPropertyDescriptor.md)
+
+## Type Aliases
+
+### AsyncFunctionImplementation()
+
+> **AsyncFunctionImplementation** = (`this`, ...`args`) => `Promise`\<[`QuickJSHandle`](#quickjshandle) \| [`VmCallResult`](#vmcallresult)\<[`QuickJSHandle`](#quickjshandle)\> \| `void`\>
+
+Defined in: [packages/quickjs-emscripten-core/src/context-asyncify.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context-asyncify.ts#L18)
+
+#### Parameters
+
+##### this
+
+[`QuickJSHandle`](#quickjshandle)
+
+##### args
+
+...[`QuickJSHandle`](#quickjshandle)[]
+
+#### Returns
+
+`Promise`\<[`QuickJSHandle`](#quickjshandle) \| [`VmCallResult`](#vmcallresult)\<[`QuickJSHandle`](#quickjshandle)\> \| `void`\>
+
 ***
 
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+### BorrowedHeapCharPointer
+
+> **BorrowedHeapCharPointer** = `Pointer`\<`"const char"` \| `"char"` \| `"js const char"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:70
+
+Used internally for Javascript-to-C calls that may contain strings too large
+for the Emscripten stack.
+
+***
+
+### DisposableArray
+
+> **DisposableArray**\<`T`\> = `T`[] & [`Disposable`](interfaces/Disposable.md)
+
+Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:354](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L354)
+
+An `Array` that also implements [Disposable](interfaces/Disposable.md):
+
+- Considered [Disposable#alive](interfaces/Disposable.md#alive) if any of its elements are `alive`.
+- When [Disposable#dispose](interfaces/Disposable.md#dispose-1)d, it will dispose of all its elements that are `alive`.
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+***
+
+### DisposableResult
+
+> **DisposableResult**\<`S`, `F`\> = [`DisposableSuccess`](classes/DisposableSuccess.md)\<`S`\> \| [`DisposableFail`](classes/DisposableFail.md)\<`F`\>
+
+Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:478](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L478)
+
+#### Type Parameters
+
+##### S
+
+`S`
+
+##### F
+
+`F`
+
+***
+
+### EitherFFI
+
+> **EitherFFI** = [`QuickJSFFI`](interfaces/QuickJSFFI.md) \| [`QuickJSAsyncFFI`](interfaces/QuickJSAsyncFFI.md)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:547
+
+***
+
+### EitherModule
+
+> **EitherModule** = [`QuickJSEmscriptenModule`](interfaces/QuickJSEmscriptenModule.md) \| [`QuickJSAsyncEmscriptenModule`](interfaces/QuickJSAsyncEmscriptenModule.md)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:337
+
+***
+
+### ExecutePendingJobsResult
+
+> **ExecutePendingJobsResult** = [`DisposableResult`](#disposableresult)\<`number`, [`QuickJSHandle`](#quickjshandle) & `object`\>
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:36](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L36)
+
+Used as an optional for the results of executing pendingJobs.
+On success, `value` contains the number of async jobs executed
+by the runtime.
+
+#### Source
+
+***
+
+### InterruptHandler()
+
+> **InterruptHandler** = (`runtime`) => `boolean` \| `undefined` \| `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:28](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L28)
+
+Callback called regularly while the VM executes code.
+Determines if a VM's execution should be interrupted.
+
+#### Parameters
+
+##### runtime
+
+[`QuickJSRuntime`](classes/QuickJSRuntime.md)
+
+#### Returns
+
+`boolean` \| `undefined` \| `void`
+
+`true` to interrupt JS execution inside the VM.
+
+***
+
+### Intrinsics
+
+> **Intrinsics** = `object`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:146](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L146)
+
+Language features that can be enabled or disabled in a QuickJSContext.
+
+#### See
+
+[ContextOptions](interfaces/ContextOptions.md)
+
+#### Properties
+
+##### BaseObjects?
+
+> `optional` **BaseObjects**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:147](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L147)
+
+##### BigDecimal?
+
+> `optional` **BigDecimal**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:160](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L160)
+
+##### BigFloat?
+
+> `optional` **BigFloat**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:159](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L159)
+
+##### BigInt?
+
+> `optional` **BigInt**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:158](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L158)
+
+##### BignumExt?
+
+> `optional` **BignumExt**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:162](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L162)
+
+##### Date?
+
+> `optional` **Date**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:148](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L148)
+
+##### Eval?
+
+> `optional` **Eval**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:149](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L149)
+
+##### JSON?
+
+> `optional` **JSON**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:153](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L153)
+
+##### MapSet?
+
+> `optional` **MapSet**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:155](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L155)
+
+##### OperatorOverloading?
+
+> `optional` **OperatorOverloading**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:161](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L161)
+
+##### Promise?
+
+> `optional` **Promise**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:157](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L157)
+
+##### Proxy?
+
+> `optional` **Proxy**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:154](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L154)
+
+##### RegExp?
+
+> `optional` **RegExp**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:151](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L151)
+
+##### RegExpCompiler?
+
+> `optional` **RegExpCompiler**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:152](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L152)
+
+##### StringNormalize?
+
+> `optional` **StringNormalize**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:150](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L150)
+
+##### TypedArrays?
+
+> `optional` **TypedArrays**: `boolean`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:156](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L156)
+
+***
+
+### JSBorrowedCharPointer
+
+> **JSBorrowedCharPointer** = `Pointer`\<`"js const char"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:80
+
+Used internally for Javascript-to-C calls that may contain strings too large
+for the Emscripten stack.
+
+***
+
+### JSContextPointer
+
+> **JSContextPointer** = `Pointer`\<`"JSContext"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:20
+
+`JSContext*`.
+
+***
+
+### JSContextPointerPointer
+
+> **JSContextPointerPointer** = `Pointer`\<`"JSContext"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:24
+
+`JSContext**`. Used internally for execute pending jobs.
+
+***
+
+### JSModuleDefPointer
+
+> **JSModuleDefPointer** = `Pointer`\<`"JSModuleDef"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:28
+
+`JSModuleDef*`.
+
+***
+
+### JSModuleLoadFailure
+
+> **JSModuleLoadFailure** = `Error` \| [`QuickJSHandle`](#quickjshandle)
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:69](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L69)
+
+***
+
+### JSModuleLoadResult
+
+> **JSModuleLoadResult** = [`JSModuleLoadSuccess`](#jsmoduleloadsuccess) \| [`SuccessOrFail`](#successorfail)\<[`JSModuleLoadSuccess`](#jsmoduleloadsuccess), [`JSModuleLoadFailure`](#jsmoduleloadfailure)\>
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:70](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L70)
+
+***
+
+### JSModuleLoadSuccess
+
+> **JSModuleLoadSuccess** = `string`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L68)
+
+***
+
+### JSModuleNormalizeFailure
+
+> **JSModuleNormalizeFailure** = `Error` \| [`QuickJSHandle`](#quickjshandle)
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:87](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L87)
+
+***
+
+### JSModuleNormalizeResult
+
+> **JSModuleNormalizeResult** = [`JSModuleNormalizeSuccess`](#jsmodulenormalizesuccess) \| [`SuccessOrFail`](#successorfail)\<[`JSModuleNormalizeSuccess`](#jsmodulenormalizesuccess), [`JSModuleNormalizeFailure`](#jsmodulenormalizefailure)\>
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:88](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L88)
+
+***
+
+### JSModuleNormalizeSuccess
+
+> **JSModuleNormalizeSuccess** = `string`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:86](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L86)
+
+***
+
+### JSPromiseState
+
+> **JSPromiseState** = [`JSPromiseStatePending`](interfaces/JSPromiseStatePending.md) \| [`JSPromiseStateFulfilled`](interfaces/JSPromiseStateFulfilled.md) \| [`JSPromiseStateRejected`](interfaces/JSPromiseStateRejected.md)
+
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:11](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L11)
+
+A promise state inside QuickJS, which can be pending, fulfilled, or rejected.
+You can unwrap a JSPromiseState with [QuickJSContext#unwrapResult](classes/QuickJSContext.md#unwrapresult).
+
+***
+
+### JSPromiseStateEnum
+
+> **JSPromiseStateEnum** = `Brand`\<*typeof* [`JSPromiseStateEnum`](#jspromisestateenum-1)\[keyof *typeof* [`JSPromiseStateEnum`](#jspromisestateenum-1)\], `"JSPromiseStateEnum"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:149
+
+State of a promise.
+
+***
+
+### JSRuntimePointer
+
+> **JSRuntimePointer** = `Pointer`\<`"JSRuntime"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:16
+
+`JSRuntime*`.
+
+***
+
+### JSValue
+
+> **JSValue** = [`Lifetime`](classes/Lifetime.md)\<[`JSValuePointer`](#jsvaluepointer), [`JSValuePointer`](#jsvaluepointer), [`QuickJSRuntime`](classes/QuickJSRuntime.md)\>
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L43)
+
+A owned QuickJSHandle that should be disposed or returned.
+
+The QuickJS interpreter passes Javascript values between functions as
+`JSValue` structs that references some internal data. Because passing
+structs cross the Empscripten FFI interfaces is bothersome, we use pointers
+to these structs instead.
+
+A JSValue reference is "owned" in its scope. before exiting the scope, it
+should be freed,  by calling `JS_FreeValue(ctx, js_value)`) or returned from
+the scope. We extend that contract - a JSValuePointer (`JSValue*`) must also
+be `free`d.
+
+You can do so from Javascript by calling the .dispose() method.
+
+***
+
+### JSValueConst
+
+> **JSValueConst** = [`Lifetime`](classes/Lifetime.md)\<[`JSValueConstPointer`](#jsvalueconstpointer), [`JSValuePointer`](#jsvaluepointer), [`QuickJSRuntime`](classes/QuickJSRuntime.md)\>
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L26)
+
+A QuickJSHandle to a borrowed value that does not need to be disposed.
+
+In QuickJS, a JSValueConst is a "borrowed" reference that isn't owned by the
+current scope. That means that the current scope should not `JS_FreeValue`
+it, or retain a reference to it after the scope exits, because it may be
+freed by its owner.
+
+quickjs-emscripten takes care of disposing JSValueConst references.
+
+***
+
+### JSValueConstPointer
+
+> **JSValueConstPointer** = `Pointer`\<`"JSValueConst"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:38
+
+`JSValueConst*
+See [JSValueConst](#jsvalueconst) and [StaticJSValue](#staticjsvalue).
+
+***
+
+### JSValueConstPointerPointer
+
+> **JSValueConstPointerPointer** = `Pointer`\<`"JSValueConst[]"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:50
+
+Used internally for Javascript-to-C function calls.
+
+***
+
+### JSValuePointer
+
+> **JSValuePointer** = `Pointer`\<`"JSValue"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:33
+
+`JSValue*`.
+See [JSValue](#jsvalue).
+
+***
+
+### JSValuePointerPointer
+
+> **JSValuePointerPointer** = `Pointer`\<`"JSValue[]"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:42
+
+Used internally for Javascript-to-C function calls.
+
+***
+
+### JSValuePointerPointerPointer
+
+> **JSValuePointerPointerPointer** = `Pointer`\<`"*JSValue[]"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:46
+
+Used internally for Javascript-to-C function calls.
+
+***
+
+### JSVoidPointer
+
+> **JSVoidPointer** = `Pointer`\<`any`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:84
+
+Opaque pointer that was allocated by js_malloc.
+
+***
+
+### OrLoader
+
+> **OrLoader**\<`T`\> = `T` \| () => `Promise`\<`T`\>
+
+Defined in: [packages/quickjs-emscripten-core/src/from-variant.ts:117](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L117)
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+***
+
+### OwnedHeapCharPointer
+
+> **OwnedHeapCharPointer** = `Pointer`\<`"char"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:75
+
+Used internally for Javascript-to-C calls that may contain strings too large
+for the Emscripten stack.
+
+***
+
+### PromisedDefault
+
+> **PromisedDefault**\<`T`\> = `T` \| `Promise`\<`T`\> \| `Promise`\<\{ `default`: `T`; \}\> \| `Promise`\<\{ `default`: \{ `default`: `T`; \}; \}\>
+
+Defined in: [packages/quickjs-emscripten-core/src/from-variant.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L17)
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+***
+
+### PromiseExecutor()
+
+> **PromiseExecutor**\<`ResolveT`, `RejectT`\> = (`resolve`, `reject`) => `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:333](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L333)
+
+#### Type Parameters
+
+##### ResolveT
+
+`ResolveT`
+
+##### RejectT
+
+`RejectT`
+
+#### Parameters
+
+##### resolve
+
+(`value`) => `void`
+
+##### reject
+
+(`reason`) => `void`
+
+#### Returns
+
+`void`
+
+***
+
+### QTS\_C\_To\_HostCallbackFuncPointer
+
+> **QTS\_C\_To\_HostCallbackFuncPointer** = `Pointer`\<`"C_To_HostCallbackFunc"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:57
+
+Used internally for C-to-Javascript function calls.
+
+***
+
+### QTS\_C\_To\_HostInterruptFuncPointer
+
+> **QTS\_C\_To\_HostInterruptFuncPointer** = `Pointer`\<`"C_To_HostInterruptFunc"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:61
+
+Used internally for C-to-Javascript interrupt handlers.
+
+***
+
+### QTS\_C\_To\_HostLoadModuleFuncPointer
+
+> **QTS\_C\_To\_HostLoadModuleFuncPointer** = `Pointer`\<`"C_To_HostLoadModuleFunc"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:65
+
+Used internally for C-to-Javascript module loading.
+
+***
+
+### QuickJSHandle
+
+> **QuickJSHandle** = [`StaticJSValue`](#staticjsvalue) \| [`JSValue`](#jsvalue) \| [`JSValueConst`](#jsvalueconst)
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L53)
+
+Wraps a C pointer to a QuickJS JSValue, which represents a Javascript value inside
+a QuickJS virtual machine.
+
+Values must not be shared between QuickJSContext instances.
+You must dispose of any handles you create by calling the `.dispose()` method.
+
+***
+
+### QuickJSPropertyKey
+
+> **QuickJSPropertyKey** = `number` \| `string` \| [`QuickJSHandle`](#quickjshandle)
+
+Defined in: [packages/quickjs-emscripten-core/src/context.ts:71](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/context.ts#L71)
+
+Property key for getting or setting a property on a handle with
+[QuickJSContext#getProp](classes/QuickJSContext.md#getprop), [QuickJSContext#setProp](classes/QuickJSContext.md#setprop), or [QuickJSContext#defineProp](classes/QuickJSContext.md#defineprop).
+
+***
+
+### QuickJSVariant
+
+> **QuickJSVariant** = [`QuickJSSyncVariant`](interfaces/QuickJSSyncVariant.md) \| [`QuickJSAsyncVariant`](interfaces/QuickJSAsyncVariant.md)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:546
+
+***
+
+### StaticJSValue
+
+> **StaticJSValue** = [`Lifetime`](classes/Lifetime.md)\<[`JSValueConstPointer`](#jsvalueconstpointer), [`JSValueConstPointer`](#jsvalueconstpointer), [`QuickJSRuntime`](classes/QuickJSRuntime.md)\>
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:14](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L14)
+
+A QuickJSHandle to a constant that will never change, and does not need to
+be disposed.
+
+***
+
+### SuccessOrFail
+
+> **SuccessOrFail**\<`S`, `F`\> = \{ `error?`: `undefined`; `value`: `S`; \} \| \{ `error`: `F`; \}
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:5](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L5)
+
+Used as an optional.
+`{ value: S } | { error: E }`.
+
+#### Type Parameters
+
+##### S
+
+`S`
+
+##### F
+
+`F`
+
+***
+
+### UInt32Pointer
+
+> **UInt32Pointer** = `Pointer`\<`"uint32_t"`\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:85
+
+***
+
+### VmCallResult
+
+> **VmCallResult**\<`VmHandle`\> = [`SuccessOrFail`](#successorfail)\<`VmHandle`, `VmHandle`\>
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L26)
+
+Used as an optional for results of a Vm call.
+`{ value: VmHandle } | { error: VmHandle }`.
+
+#### Type Parameters
+
+##### VmHandle
+
+`VmHandle`
+
+***
+
+### VmFunctionImplementation()
+
+> **VmFunctionImplementation**\<`VmHandle`\> = (`this`, ...`args`) => `VmHandle` \| [`VmCallResult`](#vmcallresult)\<`VmHandle`\> \| `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:40](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L40)
+
+A VmFunctionImplementation takes handles as arguments.
+It should return a handle, or be void.
+
+To indicate an exception, a VMs can throw either a handle (transferred
+directly) or any other Javascript value (only the poperties `name` and
+`message` will be transferred). Or, the VmFunctionImplementation may return
+a VmCallResult's `{ error: handle }` error variant.
+
+VmFunctionImplementation should not free its arguments or its return value.
+It should not retain a reference to its return value or thrown error.
+
+#### Type Parameters
+
+##### VmHandle
+
+`VmHandle`
+
+#### Parameters
+
+##### this
+
+`VmHandle`
+
+##### args
+
+...`VmHandle`[]
+
+#### Returns
+
+`VmHandle` \| [`VmCallResult`](#vmcallresult)\<`VmHandle`\> \| `void`
+
+## Variables
+
+### DEBUG\_ASYNC
+
+> `const` **DEBUG\_ASYNC**: [`QuickJSAsyncVariant`](interfaces/QuickJSAsyncVariant.md)
+
+Defined in: packages/variant-quickjs-wasmfile-debug-asyncify/dist/index.d.ts:18
+
+### @jitl/quickjs-wasmfile-debug-asyncify
+
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-asyncify/README.md) |
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
+
+| Variable            |    Setting                     |    Description    |
+| --                  | --                             | --                |
+| library             | quickjs             | The original [bellard/quickjs](https://github.com/bellard/quickjs) library. Version [2025-09-13+f1139494](https://github.com/bellard/quickjs/commit/f1139494d18a2053630c5ed3384a42bb70db3c53) vendored to quickjs-emscripten on 2026-02-15. |
+| releaseMode         | debug         | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
+| syncMode            | asyncify            | Build run through the ASYNCIFY WebAssembly transform. This imposes substantial size (2x the size of sync) and speed penalties (40% the speed of sync). In return, allows synchronous calls from the QuickJS WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! The [QuickJSAsyncRuntime](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncRuntime.md) and [QuickJSAsyncContext](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncContext.md) classes expose the ASYNCIFY-specific APIs. |
+| emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
+| exports             | require import browser workerd                  | Has these package.json export conditions |
+
+***
+
+### DEBUG\_SYNC
+
+> `const` **DEBUG\_SYNC**: [`QuickJSSyncVariant`](interfaces/QuickJSSyncVariant.md)
+
+Defined in: packages/variant-quickjs-wasmfile-debug-sync/dist/index.d.ts:18
+
+### @jitl/quickjs-wasmfile-debug-sync
+
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-debug-sync/README.md) |
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
+
+| Variable            |    Setting                     |    Description    |
+| --                  | --                             | --                |
+| library             | quickjs             | The original [bellard/quickjs](https://github.com/bellard/quickjs) library. Version [2025-09-13+f1139494](https://github.com/bellard/quickjs/commit/f1139494d18a2053630c5ed3384a42bb70db3c53) vendored to quickjs-emscripten on 2026-02-15. |
+| releaseMode         | debug         | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
+| syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
+| emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
+| exports             | require import browser workerd                  | Has these package.json export conditions |
+
+***
+
+### DefaultIntrinsics
+
+> `const` **DefaultIntrinsics**: `Readonly`\<\{ `BaseObjects`: `true`; `Date`: `true`; `Eval`: `true`; `JSON`: `true`; `MapSet`: `true`; `Promise`: `true`; `Proxy`: `true`; `RegExp`: `true`; `StringNormalize`: `true`; `TypedArrays`: `true`; \}\>
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:173](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L173)
+
+The default [Intrinsics](#intrinsics) language features enabled in a QuickJSContext.
+
+#### See
+
+[ContextOptions](interfaces/ContextOptions.md)
+
+***
+
+### DisposableResult
+
+> **DisposableResult**: *typeof* `AbstractDisposableResult`
+
+Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:478](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L478)
+
+***
+
+### EvalFlags
+
+> **EvalFlags**: `object`
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:98
+
+Bitfield options for JS_Eval() C function.
+
+#### Type Declaration
+
+##### JS\_EVAL\_FLAG\_BACKTRACE\_BARRIER
+
+> `readonly` **JS\_EVAL\_FLAG\_BACKTRACE\_BARRIER**: `number`
+
+don't include the stack frames before this eval in the Error() backtraces
+
+##### JS\_EVAL\_FLAG\_COMPILE\_ONLY
+
+> `readonly` **JS\_EVAL\_FLAG\_COMPILE\_ONLY**: `number`
+
+compile but do not run. The result is an object with a
+JS_TAG_FUNCTION_BYTECODE or JS_TAG_MODULE tag. It can be executed
+with JS_EvalFunction().
+
+##### JS\_EVAL\_FLAG\_STRICT
+
+> `readonly` **JS\_EVAL\_FLAG\_STRICT**: `number`
+
+force 'strict' mode
+
+##### JS\_EVAL\_FLAG\_STRIP
+
+> `readonly` **JS\_EVAL\_FLAG\_STRIP**: `number`
+
+force 'strip' mode
+
+##### JS\_EVAL\_TYPE\_DIRECT
+
+> `readonly` **JS\_EVAL\_TYPE\_DIRECT**: `number`
+
+direct call (internal use)
+
+##### JS\_EVAL\_TYPE\_GLOBAL
+
+> `readonly` **JS\_EVAL\_TYPE\_GLOBAL**: `number`
+
+global code (default)
+
+##### JS\_EVAL\_TYPE\_INDIRECT
+
+> `readonly` **JS\_EVAL\_TYPE\_INDIRECT**: `number`
+
+indirect call (internal use)
+
+##### JS\_EVAL\_TYPE\_MASK
+
+> `readonly` **JS\_EVAL\_TYPE\_MASK**: `number`
+
+##### JS\_EVAL\_TYPE\_MODULE
+
+> `readonly` **JS\_EVAL\_TYPE\_MODULE**: `number`
+
+module code
+
+***
+
+### GetOwnPropertyNamesFlags
+
+> **GetOwnPropertyNamesFlags**: `object`
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:158
+
+Bitfield options for QTS_GetOwnPropertyNames
+
+#### Type Declaration
+
+##### JS\_GPN\_ENUM\_ONLY
+
+> **JS\_GPN\_ENUM\_ONLY**: `number`
+
+##### JS\_GPN\_PRIVATE\_MASK
+
+> **JS\_GPN\_PRIVATE\_MASK**: `number`
+
+##### JS\_GPN\_SET\_ENUM
+
+> **JS\_GPN\_SET\_ENUM**: `number`
+
+##### JS\_GPN\_STRING\_MASK
+
+> **JS\_GPN\_STRING\_MASK**: `number`
+
+##### JS\_GPN\_SYMBOL\_MASK
+
+> **JS\_GPN\_SYMBOL\_MASK**: `number`
+
+##### QTS\_GPN\_NUMBER\_MASK
+
+> **QTS\_GPN\_NUMBER\_MASK**: `number`
+
+##### QTS\_STANDARD\_COMPLIANT\_NUMBER
+
+> **QTS\_STANDARD\_COMPLIANT\_NUMBER**: `number`
+
+***
+
+### IntrinsicsFlags
+
+> **IntrinsicsFlags**: `object`
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:126
+
+Bitfield options for QTS_NewContext intrinsics
+
+#### Type Declaration
+
+##### BaseObjects
+
+> `readonly` **BaseObjects**: `number`
+
+##### BigDecimal
+
+> `readonly` **BigDecimal**: `number`
+
+##### BigFloat
+
+> `readonly` **BigFloat**: `number`
+
+##### BigInt
+
+> `readonly` **BigInt**: `number`
+
+##### BignumExt
+
+> `readonly` **BignumExt**: `number`
+
+##### Date
+
+> `readonly` **Date**: `number`
+
+##### Eval
+
+> `readonly` **Eval**: `number`
+
+##### JSON
+
+> `readonly` **JSON**: `number`
+
+##### MapSet
+
+> `readonly` **MapSet**: `number`
+
+##### OperatorOverloading
+
+> `readonly` **OperatorOverloading**: `number`
+
+##### Promise
+
+> `readonly` **Promise**: `number`
+
+##### Proxy
+
+> `readonly` **Proxy**: `number`
+
+##### RegExp
+
+> `readonly` **RegExp**: `number`
+
+##### RegExpCompiler
+
+> `readonly` **RegExpCompiler**: `number`
+
+##### StringNormalize
+
+> `readonly` **StringNormalize**: `number`
+
+##### TypedArrays
+
+> `readonly` **TypedArrays**: `number`
+
+***
+
+### IsEqualOp
+
+> **IsEqualOp**: `object`
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:172
+
+#### Type Declaration
+
+##### IsSameValue
+
+> **IsSameValue**: [`IsEqualOp`](#isequalop)
+
+##### IsSameValueZero
+
+> **IsSameValueZero**: [`IsEqualOp`](#isequalop)
+
+##### IsStrictlyEqual
+
+> **IsStrictlyEqual**: [`IsEqualOp`](#isequalop)
+
+***
+
+### JSPromiseStateEnum
+
+> **JSPromiseStateEnum**: `object`
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:149
+
+#### Type Declaration
+
+##### Fulfilled
+
+> `readonly` **Fulfilled**: `1`
+
+##### Pending
+
+> `readonly` **Pending**: `0`
+
+##### Rejected
+
+> `readonly` **Rejected**: `2`
+
+***
+
+### RELEASE\_ASYNC
+
+> `const` **RELEASE\_ASYNC**: [`QuickJSAsyncVariant`](interfaces/QuickJSAsyncVariant.md)
+
+Defined in: packages/variant-quickjs-wasmfile-release-asyncify/dist/index.d.ts:18
+
+### @jitl/quickjs-wasmfile-release-asyncify
+
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-asyncify/README.md) |
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
+
+| Variable            |    Setting                     |    Description    |
+| --                  | --                             | --                |
+| library             | quickjs             | The original [bellard/quickjs](https://github.com/bellard/quickjs) library. Version [2025-09-13+f1139494](https://github.com/bellard/quickjs/commit/f1139494d18a2053630c5ed3384a42bb70db3c53) vendored to quickjs-emscripten on 2026-02-15. |
+| releaseMode         | release         | Optimized for performance; use when building/deploying your application. |
+| syncMode            | asyncify            | Build run through the ASYNCIFY WebAssembly transform. This imposes substantial size (2x the size of sync) and speed penalties (40% the speed of sync). In return, allows synchronous calls from the QuickJS WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! The [QuickJSAsyncRuntime](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncRuntime.md) and [QuickJSAsyncContext](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncContext.md) classes expose the ASYNCIFY-specific APIs. |
+| emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
+| exports             | require import browser workerd                  | Has these package.json export conditions |
+
+***
+
+### RELEASE\_SYNC
+
+> `const` **RELEASE\_SYNC**: [`QuickJSSyncVariant`](interfaces/QuickJSSyncVariant.md)
+
+Defined in: packages/variant-quickjs-wasmfile-release-sync/dist/index.d.ts:18
+
+### @jitl/quickjs-wasmfile-release-sync
+
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-sync/README.md) |
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
+
+| Variable            |    Setting                     |    Description    |
+| --                  | --                             | --                |
+| library             | quickjs             | The original [bellard/quickjs](https://github.com/bellard/quickjs) library. Version [2025-09-13+f1139494](https://github.com/bellard/quickjs/commit/f1139494d18a2053630c5ed3384a42bb70db3c53) vendored to quickjs-emscripten on 2026-02-15. |
+| releaseMode         | release         | Optimized for performance; use when building/deploying your application. |
+| syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
+| emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
+| exports             | require import browser workerd                  | Has these package.json export conditions |
+
+## Functions
+
+### assertSync()
+
+> **assertSync**\<`Args`, `R`\>(`fn`): (...`args`) => `R`
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:94
+
+#### Type Parameters
+
+##### Args
+
+`Args` *extends* `any`[]
+
+##### R
+
+`R`
+
+#### Parameters
+
+##### fn
+
+(...`args`) => `R`
+
+#### Returns
+
+> (...`args`): `R`
+
+##### Parameters
+
+###### args
+
+...`Args`
+
+##### Returns
+
+`R`
+
+***
+
+### createDisposableArray()
+
+> **createDisposableArray**\<`T`\>(`items?`): [`DisposableArray`](#disposablearray)\<`T`\>
+
+Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:359](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L359)
+
+Create an array that also implements [Disposable](interfaces/Disposable.md).
+
+#### Type Parameters
+
+##### T
+
+`T` *extends* [`Disposable`](interfaces/Disposable.md)
+
+#### Parameters
+
+##### items?
+
+`Iterable`\<`T`, `any`, `any`\>
+
+#### Returns
+
+[`DisposableArray`](#disposablearray)\<`T`\>
+
+***
+
+### getQuickJS()
+
+> **getQuickJS**(): `Promise`\<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
+
+Defined in: [packages/quickjs-emscripten/src/mod.ts:28](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L28)
+
+Get a shared singleton [QuickJSWASMModule](classes/QuickJSWASMModule.md). Use this to evaluate code
+or create Javascript environments.
+
+This is the top-level entrypoint for the quickjs-emscripten library.
+
+If you need strictest possible isolation guarantees, you may create a
+separate [QuickJSWASMModule](classes/QuickJSWASMModule.md) via [newQuickJSWASMModule](#newquickjswasmmodule).
+
+To work with the asyncified version of this library, see these functions:
+
+- [newAsyncRuntime](#newasyncruntime).
+- [newAsyncContext](#newasynccontext).
+- [newQuickJSAsyncWASMModule](#newquickjsasyncwasmmodule).
+
+#### Returns
+
+`Promise`\<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
+
+***
+
+### getQuickJSSync()
+
+> **getQuickJSSync**(): [`QuickJSWASMModule`](classes/QuickJSWASMModule.md)
+
+Defined in: [packages/quickjs-emscripten/src/mod.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L41)
+
+Provides synchronous access to the shared [QuickJSWASMModule](classes/QuickJSWASMModule.md) instance returned by [getQuickJS](#getquickjs), as long as
+least once.
+
+#### Returns
+
+[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)
+
+#### Throws
+
+If called before `getQuickJS` resolves.
+
+***
+
+### isFail()
+
+> **isFail**\<`S`, `F`\>(`successOrFail`): `successOrFail is { error: F }`
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L18)
+
+#### Type Parameters
+
+##### S
+
+`S`
+
+##### F
+
+`F`
+
+#### Parameters
+
+##### successOrFail
+
+[`SuccessOrFail`](#successorfail)\<`S`, `F`\>
+
+#### Returns
+
+`successOrFail is { error: F }`
+
+***
+
+### isSuccess()
+
+> **isSuccess**\<`S`, `F`\>(`successOrFail`): `successOrFail is { value: S }`
+
+Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:14](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L14)
+
+#### Type Parameters
+
+##### S
+
+`S`
+
+##### F
+
+`F`
+
+#### Parameters
+
+##### successOrFail
+
+[`SuccessOrFail`](#successorfail)\<`S`, `F`\>
+
+#### Returns
+
+`successOrFail is { value: S }`
+
+***
+
+### memoizePromiseFactory()
+
+> **memoizePromiseFactory**\<`T`\>(`fn`): () => `Promise`\<`T`\>
+
+Defined in: [packages/quickjs-emscripten-core/src/from-variant.ts:100](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L100)
+
+Helper intended to memoize the creation of a WebAssembly module.
+```typescript
+const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
+```
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+#### Parameters
+
+##### fn
+
+() => `Promise`\<`T`\>
+
+#### Returns
+
+> (): `Promise`\<`T`\>
+
+##### Returns
+
+`Promise`\<`T`\>
+
+***
+
+### newAsyncContext()
+
+> **newAsyncContext**(`options?`): `Promise`\<[`QuickJSAsyncContext`](classes/QuickJSAsyncContext.md)\>
+
+Defined in: [packages/quickjs-emscripten/src/mod.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L76)
+
+Create a new [QuickJSAsyncContext](classes/QuickJSAsyncContext.md) (with an associated runtime) in an
+separate WebAssembly module.
+
+Each context is isolated in a separate WebAssembly module, so that errors in
+one runtime cannot contaminate another runtime, and each runtime can execute
+an asynchronous action without conflicts.
+
+Note that there is a hard limit on the number of WebAssembly modules in older
+versions of v8:
+https://bugs.chromium.org/p/v8/issues/detail?id=12076
+
+#### Parameters
+
+##### options?
+
+[`ContextOptions`](interfaces/ContextOptions.md)
+
+#### Returns
+
+`Promise`\<[`QuickJSAsyncContext`](classes/QuickJSAsyncContext.md)\>
+
+***
+
+### newAsyncRuntime()
+
+> **newAsyncRuntime**(`options?`): `Promise`\<[`QuickJSAsyncRuntime`](classes/QuickJSAsyncRuntime.md)\>
+
+Defined in: [packages/quickjs-emscripten/src/mod.ts:59](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/mod.ts#L59)
+
+Create a new [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md) in a separate WebAssembly module.
+
+Each runtime is isolated in a separate WebAssembly module, so that errors in
+one runtime cannot contaminate another runtime, and each runtime can execute
+an asynchronous action without conflicts.
+
+Note that there is a hard limit on the number of WebAssembly modules in older
+versions of v8:
+https://bugs.chromium.org/p/v8/issues/detail?id=12076
+
+#### Parameters
+
+##### options?
+
+[`AsyncRuntimeOptions`](interfaces/AsyncRuntimeOptions.md)
+
+#### Returns
+
+`Promise`\<[`QuickJSAsyncRuntime`](classes/QuickJSAsyncRuntime.md)\>
+
+***
+
+### newQuickJSAsyncWASMModule()
+
+> **newQuickJSAsyncWASMModule**(`variantOrPromise?`): `Promise`\<[`QuickJSAsyncWASMModule`](classes/QuickJSAsyncWASMModule.md)\>
+
+Defined in: [packages/quickjs-emscripten/src/variants.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L47)
+
+Create a new, completely isolated WebAssembly module containing a version of the QuickJS library
+compiled with Emscripten's [ASYNCIFY](https://emscripten.org/docs/porting/asyncify.html) transform.
+
+This version of the library offers features that enable synchronous code
+inside the VM to interact with asynchronous code in the host environment.
+See the documentation on [QuickJSAsyncWASMModule](classes/QuickJSAsyncWASMModule.md), [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md),
+and [QuickJSAsyncContext](classes/QuickJSAsyncContext.md).
+
+Note that there is a hard limit on the number of WebAssembly modules in older
+versions of v8:
+https://bugs.chromium.org/p/v8/issues/detail?id=12076
+
+#### Parameters
+
+##### variantOrPromise?
+
+[`PromisedDefault`](#promiseddefault)\<[`QuickJSAsyncVariant`](interfaces/QuickJSAsyncVariant.md)\> = `RELEASE_ASYNC`
+
+Optionally, pass a [QuickJSAsyncVariant](interfaces/QuickJSAsyncVariant.md) to construct a different WebAssembly module.
+
+#### Returns
+
+`Promise`\<[`QuickJSAsyncWASMModule`](classes/QuickJSAsyncWASMModule.md)\>
+
+***
+
+### newQuickJSAsyncWASMModuleFromVariant()
+
+> **newQuickJSAsyncWASMModuleFromVariant**(`variantOrPromise`): `Promise`\<[`QuickJSAsyncWASMModule`](classes/QuickJSAsyncWASMModule.md)\>
+
+Defined in: [packages/quickjs-emscripten-core/src/from-variant.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L76)
+
+Create a new, completely isolated WebAssembly module containing a version of the QuickJS library
+compiled with Emscripten's [ASYNCIFY](https://emscripten.org/docs/porting/asyncify.html) transform.
+
+This version of the library offers features that enable synchronous code
+inside the VM to interact with asynchronous code in the host environment.
+See the documentation on [QuickJSAsyncWASMModule](classes/QuickJSAsyncWASMModule.md), [QuickJSAsyncRuntime](classes/QuickJSAsyncRuntime.md),
+and [QuickJSAsyncContext](classes/QuickJSAsyncContext.md).
+
+Note that there is a hard limit on the number of WebAssembly modules in older
+versions of v8:
+https://bugs.chromium.org/p/v8/issues/detail?id=12076
+
+#### Parameters
+
+##### variantOrPromise
+
+[`PromisedDefault`](#promiseddefault)\<[`QuickJSAsyncVariant`](interfaces/QuickJSAsyncVariant.md)\>
+
+A [QuickJSAsyncVariant](interfaces/QuickJSAsyncVariant.md) to construct the WebAssembly module.
+
+#### Returns
+
+`Promise`\<[`QuickJSAsyncWASMModule`](classes/QuickJSAsyncWASMModule.md)\>
+
+#### Example
+
+```ts
+const quickjs = new newQuickJSAsyncWASMModuleFromVariant(
+  import('@jitl/quickjs-browser-debug-asyncify-wasm')
+)
+```
+
+***
+
+### newQuickJSWASMModule()
+
+> **newQuickJSWASMModule**(`variantOrPromise?`): `Promise`\<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
+
+Defined in: [packages/quickjs-emscripten/src/variants.ts:25](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten/src/variants.ts#L25)
+
+Create a new, completely isolated WebAssembly module containing the QuickJS library.
+See the documentation on [QuickJSWASMModule](classes/QuickJSWASMModule.md).
+
+Note that there is a hard limit on the number of WebAssembly modules in older
+versions of v8:
+https://bugs.chromium.org/p/v8/issues/detail?id=12076
+
+#### Parameters
+
+##### variantOrPromise?
+
+[`PromisedDefault`](#promiseddefault)\<[`QuickJSSyncVariant`](interfaces/QuickJSSyncVariant.md)\> = `RELEASE_SYNC`
+
+Optionally, pass a [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md) to construct a different WebAssembly module.
+
+#### Returns
+
+`Promise`\<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
+
+***
+
+### newQuickJSWASMModuleFromVariant()
+
+> **newQuickJSWASMModuleFromVariant**(`variantOrPromise`): `Promise`\<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
+
+Defined in: [packages/quickjs-emscripten-core/src/from-variant.ts:38](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L38)
+
+Create a new, completely isolated WebAssembly module containing the QuickJS library.
+See the documentation on [QuickJSWASMModule](classes/QuickJSWASMModule.md).
+
+Note that there is a hard limit on the number of WebAssembly modules in older
+versions of v8:
+https://bugs.chromium.org/p/v8/issues/detail?id=12076
+
+#### Parameters
+
+##### variantOrPromise
+
+[`PromisedDefault`](#promiseddefault)\<[`QuickJSSyncVariant`](interfaces/QuickJSSyncVariant.md)\>
+
+A [QuickJSSyncVariant](interfaces/QuickJSSyncVariant.md) to construct the WebAssembly module.
+
+#### Returns
+
+`Promise`\<[`QuickJSWASMModule`](classes/QuickJSWASMModule.md)\>
+
+#### Example
+
+```ts
+const quickjs = new newQuickJSWASMModuleFromVariant(
+  import('@jitl/quickjs-browser-release-sync-wasm')
+)
+```
+
+***
+
+### newVariant()
+
+> **newVariant**\<`T`\>(`baseVariant`, `options`): `T`
+
+Defined in: [packages/quickjs-emscripten-core/src/from-variant.ts:162](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L162)
+
+Create a new variant by overriding how Emscripten obtains the WebAssembly module.
+This may be necessary in Cloudflare Workers, which can't compile WebAssembly modules from binary data.
+
+#### Type Parameters
+
+##### T
+
+`T` *extends* [`QuickJSVariant`](#quickjsvariant)
+
+#### Parameters
+
+##### baseVariant
+
+`T`
+
+##### options
+
+[`CustomizeVariantOptions`](interfaces/CustomizeVariantOptions.md)
+
+#### Returns
+
+`T`
+
+***
+
+### setDebugMode()
+
+> **setDebugMode**(`enabled?`): `void`
+
+Defined in: [packages/quickjs-emscripten-core/src/debug.ts:13](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/debug.ts#L13)
+
+Enable (or disable) debug logging and object creation tracking globally.
+This setting is inherited by newly created QuickJSRuntime instances.
+To get debug logging in the WebAssembly module, you need to use a debug build variant.
+See [the quickjs-emscripten-core README](https://github.com/justjake/quickjs-emscripten/tree/main/doc/quickjs-emscripten-core) for more about build variants.
+
+#### Parameters
+
+##### enabled?
+
+`boolean` = `true`
+
+#### Returns
+
+`void`
+
+***
+
+### shouldInterruptAfterDeadline()
+
+> **shouldInterruptAfterDeadline**(`deadline`): [`InterruptHandler`](#interrupthandler)
+
+Defined in: [packages/quickjs-emscripten-core/src/interrupt-helpers.ts:9](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/interrupt-helpers.ts#L9)
+
+Returns an interrupt handler that interrupts Javascript execution after a deadline time.
+
+#### Parameters
+
+##### deadline
+
+Interrupt execution if it's still running after this time.
+  Number values are compared against `Date.now()`
+
+`number` | `Date`
+
+#### Returns
+
+[`InterruptHandler`](#interrupthandler)

@@ -1,6 +1,8 @@
-[quickjs-emscripten](../../packages.md) • **@jitl/quickjs-wasmfile-release-sync** • [Readme](README.md) \| [Exports](exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
+
+[quickjs-emscripten](../../packages.md) / @jitl/quickjs-wasmfile-release-sync
 
 # @jitl/quickjs-wasmfile-release-sync
 
@@ -16,15 +18,6 @@ const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
 ```
 
 This variant was built with the following settings:
-
-## Contents
-
-- [Library: quickjs](README.md#library-quickjs)
-- [Release mode: release](README.md#release-mode-release)
-- [Exports: require import browser workerd](README.md#exports-require-import-browser-workerd)
-- [Extra async magic? No](README.md#extra-async-magic-no)
-- [Single-file, or separate .wasm file? wasm](README.md#single-file-or-separate-wasm-file-wasm)
-- [More details](README.md#more-details)
 
 ## Library: quickjs
 
@@ -94,6 +87,23 @@ Variant-specific Emscripten build flags:
 ]
 ```
 
-***
+## Variables
 
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+### default
+
+> `const` **default**: [`QuickJSSyncVariant`](../../quickjs-emscripten/interfaces/QuickJSSyncVariant.md)
+
+Defined in: [index.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-wasmfile-release-sync/src/index.ts#L18)
+
+### @jitl/quickjs-wasmfile-release-sync
+
+[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-wasmfile-release-sync/README.md) |
+Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
+
+| Variable            |    Setting                     |    Description    |
+| --                  | --                             | --                |
+| library             | quickjs             | The original [bellard/quickjs](https://github.com/bellard/quickjs) library. Version [2025-09-13+f1139494](https://github.com/bellard/quickjs/commit/f1139494d18a2053630c5ed3384a42bb70db3c53) vendored to quickjs-emscripten on 2026-02-15. |
+| releaseMode         | release         | Optimized for performance; use when building/deploying your application. |
+| syncMode            | sync            | The default, normal build. Note that both variants support regular async functions. |
+| emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
+| exports             | require import browser workerd                  | Has these package.json export conditions |

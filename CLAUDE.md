@@ -2,11 +2,11 @@
 
 ## Package Manager
 
-Use `corepack yarn` to run yarn commands, e.g.:
+Use `corepack pnpm` to run pnpm commands, e.g.:
 
-- `corepack yarn install`
-- `corepack yarn build`
-- `corepack yarn build:ts`
+- `corepack pnpm install`
+- `corepack pnpm build`
+- `corepack pnpm build:ts`
 
 ## Building Variants
 
@@ -17,7 +17,7 @@ To build a variant:
 ```bash
 cd packages/variant-quickjs-<name>
 make           # builds the C code with emscripten
-corepack yarn build:ts  # builds the TypeScript wrapper
+corepack pnpm build:ts  # builds the TypeScript wrapper
 ```
 
 ## Emscripten
@@ -31,7 +31,7 @@ corepack yarn build:ts  # builds the TypeScript wrapper
 Run all tests:
 
 ```bash
-corepack yarn test
+corepack pnpm test
 ```
 
 Run tests for a specific variant (e.g., quickjs-ng only):

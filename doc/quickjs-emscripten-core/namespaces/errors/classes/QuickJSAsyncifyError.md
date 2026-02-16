@@ -1,18 +1,12 @@
-[quickjs-emscripten](../../../../packages.md) • **quickjs-emscripten-core** • [Readme](../../../README.md) \| [Exports](../../../exports.md)
+[**quickjs-emscripten**](../../../../README.md)
 
 ***
 
-[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten-core](../../../exports.md) / [errors](../README.md) / QuickJSAsyncifyError
+[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten-core](../../../README.md) / [errors](../README.md) / QuickJSAsyncifyError
 
 # Class: QuickJSAsyncifyError
 
-## Contents
-
-- [Extends](QuickJSAsyncifyError.md#extends)
-- [Constructors](QuickJSAsyncifyError.md#constructors)
-  - [new QuickJSAsyncifyError(message)](QuickJSAsyncifyError.md#new-quickjsasyncifyerrormessage)
-- [Properties](QuickJSAsyncifyError.md#properties)
-  - [name](QuickJSAsyncifyError.md#name)
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:32](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L32)
 
 ## Extends
 
@@ -20,25 +14,25 @@
 
 ## Constructors
 
-### new QuickJSAsyncifyError(message)
+### Constructor
 
-> **new QuickJSAsyncifyError**(`message`?): [`QuickJSAsyncifyError`](QuickJSAsyncifyError.md)
+> **new QuickJSAsyncifyError**(`message?`): `QuickJSAsyncifyError`
+
+Defined in: node\_modules/typescript/lib/lib.es5.d.ts:1082
 
 #### Parameters
 
-• **message?**: `string`
+##### message?
+
+`string`
 
 #### Returns
 
-[`QuickJSAsyncifyError`](QuickJSAsyncifyError.md)
+`QuickJSAsyncifyError`
 
 #### Inherited from
 
 `Error.constructor`
-
-#### Source
-
-node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 ## Properties
 
@@ -46,14 +40,8 @@ node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 > **name**: `string` = `"QuickJSAsyncifyError"`
 
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:33](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L33)
+
 #### Overrides
 
 `Error.name`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/errors.ts:33](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L33)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

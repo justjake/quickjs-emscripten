@@ -1,22 +1,14 @@
-[quickjs-emscripten](../../../../packages.md) • **quickjs-emscripten** • [Readme](../../../README.md) \| [Exports](../../../exports.md)
+[**quickjs-emscripten**](../../../../README.md)
 
 ***
 
-[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten](../../../exports.md) / [errors](../README.md) / QuickJSUnwrapError
+[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten](../../../README.md) / [errors](../README.md) / QuickJSUnwrapError
 
 # Class: QuickJSUnwrapError
 
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:6](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L6)
+
 Error thrown if [QuickJSContext#unwrapResult](../../../classes/QuickJSContext.md#unwrapresult) unwraps an error value that isn't an object.
-
-## Contents
-
-- [Extends](QuickJSUnwrapError.md#extends)
-- [Constructors](QuickJSUnwrapError.md#constructors)
-  - [new QuickJSUnwrapError(cause, context)](QuickJSUnwrapError.md#new-quickjsunwraperrorcause-context)
-- [Properties](QuickJSUnwrapError.md#properties)
-  - [cause](QuickJSUnwrapError.md#cause)
-  - [context?](QuickJSUnwrapError.md#context)
-  - [name](QuickJSUnwrapError.md#name)
 
 ## Extends
 
@@ -24,27 +16,29 @@ Error thrown if [QuickJSContext#unwrapResult](../../../classes/QuickJSContext.md
 
 ## Constructors
 
-### new QuickJSUnwrapError(cause, context)
+### Constructor
 
-> **new QuickJSUnwrapError**(`cause`, `context`?): [`QuickJSUnwrapError`](QuickJSUnwrapError.md)
+> **new QuickJSUnwrapError**(`cause`, `context?`): `QuickJSUnwrapError`
+
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:8](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L8)
 
 #### Parameters
 
-• **cause**: `unknown`
+##### cause
 
-• **context?**: [`QuickJSContext`](../../../classes/QuickJSContext.md)
+`unknown`
+
+##### context?
+
+[`QuickJSContext`](../../../classes/QuickJSContext.md)
 
 #### Returns
 
-[`QuickJSUnwrapError`](QuickJSUnwrapError.md)
+`QuickJSUnwrapError`
 
 #### Overrides
 
 `Error.constructor`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/errors.ts:8](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L8)
 
 ## Properties
 
@@ -52,19 +46,15 @@ Error thrown if [QuickJSContext#unwrapResult](../../../classes/QuickJSContext.md
 
 > **cause**: `unknown`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/errors.ts:9](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L9)
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:9](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L9)
 
 ***
 
 ### context?
 
-> **context**?: [`QuickJSContext`](../../../classes/QuickJSContext.md)
+> `optional` **context**: [`QuickJSContext`](../../../classes/QuickJSContext.md)
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/errors.ts:10](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L10)
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:10](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L10)
 
 ***
 
@@ -72,14 +62,8 @@ Error thrown if [QuickJSContext#unwrapResult](../../../classes/QuickJSContext.md
 
 > **name**: `string` = `"QuickJSUnwrapError"`
 
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:7](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L7)
+
 #### Overrides
 
 `Error.name`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/errors.ts:7](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L7)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

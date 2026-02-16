@@ -1,29 +1,23 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten-core** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../exports.md) / JSPromiseStateRejected
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../README.md) / JSPromiseStateRejected
 
 # Interface: JSPromiseStateRejected
 
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:45](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L45)
+
 Rejected promise state.
-See [JSPromiseState](../exports.md#jspromisestate).
-
-## Contents
-
-- [Properties](JSPromiseStateRejected.md#properties)
-  - [error](JSPromiseStateRejected.md#error)
-  - [type](JSPromiseStateRejected.md#type)
+See [JSPromiseState](../README.md#jspromisestate).
 
 ## Properties
 
 ### error
 
-> **error**: [`QuickJSHandle`](../exports.md#quickjshandle)
+> **error**: [`QuickJSHandle`](../README.md#quickjshandle)
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L47)
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L47)
 
 ***
 
@@ -31,10 +25,4 @@ See [JSPromiseState](../exports.md#jspromisestate).
 
 > **type**: `"rejected"`
 
-#### Source
-
-[packages/quickjs-emscripten-core/src/deferred-promise.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L46)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L46)

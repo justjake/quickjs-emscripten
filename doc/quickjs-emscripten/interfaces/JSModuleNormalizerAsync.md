@@ -1,33 +1,35 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / JSModuleNormalizerAsync
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / JSModuleNormalizerAsync
 
 # Interface: JSModuleNormalizerAsync()
 
-## Extended By
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L92)
+
+## Extended by
 
 - [`JSModuleNormalizer`](JSModuleNormalizer.md)
 
-> **JSModuleNormalizerAsync**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult)\>
+> **JSModuleNormalizerAsync**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult)\>
+
+Defined in: [packages/quickjs-emscripten-core/src/types.ts:93](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L93)
 
 ## Parameters
 
-• **baseModuleName**: `string`
+### baseModuleName
 
-• **requestedName**: `string`
+`string`
 
-• **vm**: [`QuickJSAsyncContext`](../classes/QuickJSAsyncContext.md)
+### requestedName
+
+`string`
+
+### vm
+
+[`QuickJSAsyncContext`](../classes/QuickJSAsyncContext.md)
 
 ## Returns
 
-[`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../exports.md#jsmodulenormalizeresult)\>
-
-## Source
-
-[packages/quickjs-emscripten-core/src/types.ts:93](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L93)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+[`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult)\>

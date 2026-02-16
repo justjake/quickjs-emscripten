@@ -1,18 +1,12 @@
-[quickjs-emscripten](../../../../packages.md) • **quickjs-emscripten** • [Readme](../../../README.md) \| [Exports](../../../exports.md)
+[**quickjs-emscripten**](../../../../README.md)
 
 ***
 
-[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten](../../../exports.md) / [errors](../README.md) / QuickJSMemoryLeakDetected
+[quickjs-emscripten](../../../../packages.md) / [quickjs-emscripten](../../../README.md) / [errors](../README.md) / QuickJSMemoryLeakDetected
 
 # Class: QuickJSMemoryLeakDetected
 
-## Contents
-
-- [Extends](QuickJSMemoryLeakDetected.md#extends)
-- [Constructors](QuickJSMemoryLeakDetected.md#constructors)
-  - [new QuickJSMemoryLeakDetected(message)](QuickJSMemoryLeakDetected.md#new-quickjsmemoryleakdetectedmessage)
-- [Properties](QuickJSMemoryLeakDetected.md#properties)
-  - [name](QuickJSMemoryLeakDetected.md#name)
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:40](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L40)
 
 ## Extends
 
@@ -20,25 +14,25 @@
 
 ## Constructors
 
-### new QuickJSMemoryLeakDetected(message)
+### Constructor
 
-> **new QuickJSMemoryLeakDetected**(`message`?): [`QuickJSMemoryLeakDetected`](QuickJSMemoryLeakDetected.md)
+> **new QuickJSMemoryLeakDetected**(`message?`): `QuickJSMemoryLeakDetected`
+
+Defined in: node\_modules/typescript/lib/lib.es5.d.ts:1082
 
 #### Parameters
 
-• **message?**: `string`
+##### message?
+
+`string`
 
 #### Returns
 
-[`QuickJSMemoryLeakDetected`](QuickJSMemoryLeakDetected.md)
+`QuickJSMemoryLeakDetected`
 
 #### Inherited from
 
 `Error.constructor`
-
-#### Source
-
-node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 ## Properties
 
@@ -46,14 +40,8 @@ node\_modules/typescript/lib/lib.es5.d.ts:1081
 
 > **name**: `string` = `"QuickJSMemoryLeakDetected"`
 
+Defined in: [packages/quickjs-emscripten-core/src/errors.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L41)
+
 #### Overrides
 
 `Error.name`
-
-#### Source
-
-[packages/quickjs-emscripten-core/src/errors.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L41)
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)

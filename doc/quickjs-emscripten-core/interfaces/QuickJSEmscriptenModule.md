@@ -1,43 +1,15 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten-core** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../exports.md) / QuickJSEmscriptenModule
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../README.md) / QuickJSEmscriptenModule
 
 # Interface: QuickJSEmscriptenModule
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:242](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L242)
+
 Typings for the features we use to interface with our Emscripten build of
 QuickJS.
-
-## Contents
-
-- [Extends](QuickJSEmscriptenModule.md#extends)
-- [Properties](QuickJSEmscriptenModule.md#properties)
-  - [FAST\_MEMORY](QuickJSEmscriptenModule.md#fast-memory)
-  - [HEAP16](QuickJSEmscriptenModule.md#heap16)
-  - [HEAP32](QuickJSEmscriptenModule.md#heap32)
-  - [HEAP8](QuickJSEmscriptenModule.md#heap8)
-  - [HEAPF32](QuickJSEmscriptenModule.md#heapf32)
-  - [HEAPF64](QuickJSEmscriptenModule.md#heapf64)
-  - [HEAPU16](QuickJSEmscriptenModule.md#heapu16)
-  - [HEAPU32](QuickJSEmscriptenModule.md#heapu32)
-  - [HEAPU8](QuickJSEmscriptenModule.md#heapu8)
-  - [TOTAL\_MEMORY](QuickJSEmscriptenModule.md#total-memory)
-  - [TOTAL\_STACK](QuickJSEmscriptenModule.md#total-stack)
-  - [callbacks](QuickJSEmscriptenModule.md#callbacks)
-  - [type](QuickJSEmscriptenModule.md#type)
-  - [wasmBinary?](QuickJSEmscriptenModule.md#wasmbinary)
-  - [wasmMemory?](QuickJSEmscriptenModule.md#wasmmemory)
-- [Methods](QuickJSEmscriptenModule.md#methods)
-  - [UTF8ToString()](QuickJSEmscriptenModule.md#utf8tostring)
-  - [\_free()](QuickJSEmscriptenModule.md#free)
-  - [\_malloc()](QuickJSEmscriptenModule.md#malloc)
-  - [cwrap()](QuickJSEmscriptenModule.md#cwrap)
-  - [instantiateWasm()?](QuickJSEmscriptenModule.md#instantiatewasm)
-  - [lengthBytesUTF8()](QuickJSEmscriptenModule.md#lengthbytesutf8)
-  - [locateFile()?](QuickJSEmscriptenModule.md#locatefile)
-  - [monitorRunDependencies()?](QuickJSEmscriptenModule.md#monitorrundependencies)
-  - [stringToUTF8()](QuickJSEmscriptenModule.md#stringtoutf8)
 
 ## Extends
 
@@ -45,17 +17,23 @@ QuickJS.
 
 ## Properties
 
+### callbacks
+
+> **callbacks**: `EmscriptenModuleCallbacks`
+
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:244](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L244)
+
+***
+
 ### FAST\_MEMORY
 
 > **FAST\_MEMORY**: `number`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:169](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L169)
+
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.FAST_MEMORY`](EmscriptenModule.md#fast-memory)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:169](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L169)
+[`EmscriptenModule`](EmscriptenModule.md).[`FAST_MEMORY`](EmscriptenModule.md#fast_memory)
 
 ***
 
@@ -63,13 +41,11 @@ QuickJS.
 
 > **HEAP16**: `Int16Array`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:159](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L159)
+
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.HEAP16`](EmscriptenModule.md#heap16)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:159](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L159)
+[`EmscriptenModule`](EmscriptenModule.md).[`HEAP16`](EmscriptenModule.md#heap16)
 
 ***
 
@@ -77,13 +53,11 @@ QuickJS.
 
 > **HEAP32**: `Int32Array`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:160](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L160)
+
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.HEAP32`](EmscriptenModule.md#heap32)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:160](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L160)
+[`EmscriptenModule`](EmscriptenModule.md).[`HEAP32`](EmscriptenModule.md#heap32)
 
 ***
 
@@ -91,13 +65,11 @@ QuickJS.
 
 > **HEAP8**: `Int8Array`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:158](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L158)
+
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.HEAP8`](EmscriptenModule.md#heap8)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:158](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L158)
+[`EmscriptenModule`](EmscriptenModule.md).[`HEAP8`](EmscriptenModule.md#heap8)
 
 ***
 
@@ -105,13 +77,11 @@ QuickJS.
 
 > **HEAPF32**: `Float32Array`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:164](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L164)
+
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.HEAPF32`](EmscriptenModule.md#heapf32)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:164](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L164)
+[`EmscriptenModule`](EmscriptenModule.md).[`HEAPF32`](EmscriptenModule.md#heapf32)
 
 ***
 
@@ -119,13 +89,11 @@ QuickJS.
 
 > **HEAPF64**: `Float64Array`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:165](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L165)
+
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.HEAPF64`](EmscriptenModule.md#heapf64)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:165](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L165)
+[`EmscriptenModule`](EmscriptenModule.md).[`HEAPF64`](EmscriptenModule.md#heapf64)
 
 ***
 
@@ -133,13 +101,11 @@ QuickJS.
 
 > **HEAPU16**: `Uint16Array`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:162](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L162)
+
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.HEAPU16`](EmscriptenModule.md#heapu16)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:162](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L162)
+[`EmscriptenModule`](EmscriptenModule.md).[`HEAPU16`](EmscriptenModule.md#heapu16)
 
 ***
 
@@ -147,13 +113,11 @@ QuickJS.
 
 > **HEAPU32**: `Uint32Array`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:163](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L163)
+
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.HEAPU32`](EmscriptenModule.md#heapu32)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:163](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L163)
+[`EmscriptenModule`](EmscriptenModule.md).[`HEAPU32`](EmscriptenModule.md#heapu32)
 
 ***
 
@@ -161,13 +125,11 @@ QuickJS.
 
 > **HEAPU8**: `Uint8Array`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:161](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L161)
+
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.HEAPU8`](EmscriptenModule.md#heapu8)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:161](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L161)
+[`EmscriptenModule`](EmscriptenModule.md).[`HEAPU8`](EmscriptenModule.md#heapu8)
 
 ***
 
@@ -175,13 +137,11 @@ QuickJS.
 
 > **TOTAL\_MEMORY**: `number`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:168](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L168)
+
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.TOTAL_MEMORY`](EmscriptenModule.md#total-memory)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:168](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L168)
+[`EmscriptenModule`](EmscriptenModule.md).[`TOTAL_MEMORY`](EmscriptenModule.md#total_memory)
 
 ***
 
@@ -189,23 +149,11 @@ QuickJS.
 
 > **TOTAL\_STACK**: `number`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:167](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L167)
+
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.TOTAL_STACK`](EmscriptenModule.md#total-stack)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:167](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L167)
-
-***
-
-### callbacks
-
-> **callbacks**: `EmscriptenModuleCallbacks`
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:244](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L244)
+[`EmscriptenModule`](EmscriptenModule.md).[`TOTAL_STACK`](EmscriptenModule.md#total_stack)
 
 ***
 
@@ -213,78 +161,49 @@ QuickJS.
 
 > **type**: `"sync"`
 
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:243](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L243)
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:243](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L243)
 
 ***
 
 ### wasmBinary?
 
-> **wasmBinary**?: `ArrayBuffer`
+> `optional` **wasmBinary**: `ArrayBuffer`
+
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:105](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L105)
 
 Compile this to WebAssembly.Module
 
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.wasmBinary`](EmscriptenModule.md#wasmbinary)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:105](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L105)
+[`EmscriptenModule`](EmscriptenModule.md).[`wasmBinary`](EmscriptenModule.md#wasmbinary)
 
 ***
 
 ### wasmMemory?
 
-> **wasmMemory**?: `Memory`
+> `optional` **wasmMemory**: `Memory`
+
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:108](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L108)
 
 If provided, use this WebAssembly.Memory instead of an automatically created one.
 
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.wasmMemory`](EmscriptenModule.md#wasmmemory)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:108](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L108)
+[`EmscriptenModule`](EmscriptenModule.md).[`wasmMemory`](EmscriptenModule.md#wasmmemory)
 
 ## Methods
-
-### UTF8ToString()
-
-> **UTF8ToString**(`ptr`, `maxBytesToRead`?): `string`
-
-HeapChar to JS string.
-https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
-
-#### Parameters
-
-• **ptr**: [`BorrowedHeapCharPointer`](../exports.md#borrowedheapcharpointer)
-
-• **maxBytesToRead?**: `number`
-
-#### Returns
-
-`string`
-
-#### Inherited from
-
-[`quickjs-emscripten-core.EmscriptenModule.UTF8ToString`](EmscriptenModule.md#utf8tostring)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:145](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L145)
-
-***
 
 ### \_free()
 
 > **\_free**(`ptr`): `void`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:149](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L149)
+
 #### Parameters
 
-• **ptr**: `number`
+##### ptr
+
+`number`
 
 #### Returns
 
@@ -292,11 +211,7 @@ https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
 
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule._free`](EmscriptenModule.md#free)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:149](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L149)
+[`EmscriptenModule`](EmscriptenModule.md).[`_free`](EmscriptenModule.md#_free)
 
 ***
 
@@ -304,9 +219,13 @@ https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
 
 > **\_malloc**(`size`): `number`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:148](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L148)
+
 #### Parameters
 
-• **size**: `number`
+##### size
+
+`number`
 
 #### Returns
 
@@ -314,62 +233,71 @@ https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
 
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule._malloc`](EmscriptenModule.md#malloc)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:148](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L148)
+[`EmscriptenModule`](EmscriptenModule.md).[`_malloc`](EmscriptenModule.md#_malloc)
 
 ***
 
 ### cwrap()
 
-> **cwrap**(`ident`, `returnType`, `argTypes`, `opts`?): (...`args`) => `any`
+> **cwrap**(`ident`, `returnType`, `argTypes`, `opts?`): (...`args`) => `any`
+
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:150](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L150)
 
 #### Parameters
 
-• **ident**: `string`
+##### ident
 
-• **returnType**: `null` \| `ValueType`
+`string`
 
-• **argTypes**: `ValueType`[]
+##### returnType
 
-• **opts?**: `CCallOpts`
+`ValueType` | `null`
+
+##### argTypes
+
+`ValueType`[]
+
+##### opts?
+
+`CCallOpts`
 
 #### Returns
 
-`Function`
+> (...`args`): `any`
 
-> ##### Parameters
->
-> • ...**args**: `any`[]
->
-> ##### Returns
->
-> `any`
->
+##### Parameters
+
+###### args
+
+...`any`[]
+
+##### Returns
+
+`any`
 
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.cwrap`](EmscriptenModule.md#cwrap)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:150](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L150)
+[`EmscriptenModule`](EmscriptenModule.md).[`cwrap`](EmscriptenModule.md#cwrap)
 
 ***
 
 ### instantiateWasm()?
 
-> **`optional`** **instantiateWasm**(`imports`, `onSuccess`): `Exports` \| `Promise`\<`Exports`\>
+> `optional` **instantiateWasm**(`imports`, `onSuccess`): `Exports` \| `Promise`\<`Exports`\>
+
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L111)
 
 Create an instance of the WASM module, call onSuccess(instance), then return instance.exports
 
 #### Parameters
 
-• **imports**: `Imports`
+##### imports
 
-• **onSuccess**: (`instance`) => `void`
+`WebAssembly.Imports`
+
+##### onSuccess
+
+(`instance`) => `void`
 
 #### Returns
 
@@ -377,11 +305,7 @@ Create an instance of the WASM module, call onSuccess(instance), then return ins
 
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.instantiateWasm`](EmscriptenModule.md#instantiatewasm)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:111](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L111)
+[`EmscriptenModule`](EmscriptenModule.md).[`instantiateWasm`](EmscriptenModule.md#instantiatewasm)
 
 ***
 
@@ -389,9 +313,13 @@ Create an instance of the WASM module, call onSuccess(instance), then return ins
 
 > **lengthBytesUTF8**(`str`): `number`
 
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:146](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L146)
+
 #### Parameters
 
-• **str**: `string`
+##### str
+
+`string`
 
 #### Returns
 
@@ -399,17 +327,15 @@ Create an instance of the WASM module, call onSuccess(instance), then return ins
 
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.lengthBytesUTF8`](EmscriptenModule.md#lengthbytesutf8)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:146](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L146)
+[`EmscriptenModule`](EmscriptenModule.md).[`lengthBytesUTF8`](EmscriptenModule.md#lengthbytesutf8)
 
 ***
 
 ### locateFile()?
 
-> **`optional`** **locateFile**(`fileName`, `prefix`): `string`
+> `optional` **locateFile**(`fileName`, `prefix`): `string`
+
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:98](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L98)
 
 If set, this method will be called when the runtime needs to load a file,
 such as a .wasm WebAssembly file, .mem memory init file, or a file
@@ -431,9 +357,13 @@ you want to host them on a CDN.
 
 #### Parameters
 
-• **fileName**: `string`
+##### fileName
 
-• **prefix**: `string`
+`string`
+
+##### prefix
+
+`string`
 
 Often `''` (empty string)
 
@@ -443,23 +373,23 @@ Often `''` (empty string)
 
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.locateFile`](EmscriptenModule.md#locatefile)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:98](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L98)
+[`EmscriptenModule`](EmscriptenModule.md).[`locateFile`](EmscriptenModule.md#locatefile)
 
 ***
 
 ### monitorRunDependencies()?
 
-> **`optional`** **monitorRunDependencies**(`left`): `void`
+> `optional` **monitorRunDependencies**(`left`): `void`
+
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:117](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L117)
 
 Called by emscripten as dependencies blocking initialization are added or fulfilled. May only be called in debug builds.
 
 #### Parameters
 
-• **left**: `number`
+##### left
+
+`number`
 
 #### Returns
 
@@ -467,28 +397,32 @@ Called by emscripten as dependencies blocking initialization are added or fulfil
 
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.monitorRunDependencies`](EmscriptenModule.md#monitorrundependencies)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:117](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L117)
+[`EmscriptenModule`](EmscriptenModule.md).[`monitorRunDependencies`](EmscriptenModule.md#monitorrundependencies)
 
 ***
 
 ### stringToUTF8()
 
-> **stringToUTF8**(`str`, `outPtr`, `maxBytesToRead`?): `void`
+> **stringToUTF8**(`str`, `outPtr`, `maxBytesToRead?`): `void`
+
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:140](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L140)
 
 Write JS `str` to HeapChar pointer.
 https://emscripten.org/docs/api_reference/preamble.js.html#stringToUTF8
 
 #### Parameters
 
-• **str**: `string`
+##### str
 
-• **outPtr**: [`OwnedHeapCharPointer`](../exports.md#ownedheapcharpointer)
+`string`
 
-• **maxBytesToRead?**: `number`
+##### outPtr
+
+[`OwnedHeapCharPointer`](../README.md#ownedheapcharpointer)
+
+##### maxBytesToRead?
+
+`number`
 
 #### Returns
 
@@ -496,12 +430,33 @@ https://emscripten.org/docs/api_reference/preamble.js.html#stringToUTF8
 
 #### Inherited from
 
-[`quickjs-emscripten-core.EmscriptenModule.stringToUTF8`](EmscriptenModule.md#stringtoutf8)
-
-#### Source
-
-[packages/quickjs-ffi-types/src/emscripten-types.ts:140](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L140)
+[`EmscriptenModule`](EmscriptenModule.md).[`stringToUTF8`](EmscriptenModule.md#stringtoutf8)
 
 ***
 
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+### UTF8ToString()
+
+> **UTF8ToString**(`ptr`, `maxBytesToRead?`): `string`
+
+Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:145](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L145)
+
+HeapChar to JS string.
+https://emscripten.org/docs/api_reference/preamble.js.html#UTF8ToString
+
+#### Parameters
+
+##### ptr
+
+[`BorrowedHeapCharPointer`](../README.md#borrowedheapcharpointer)
+
+##### maxBytesToRead?
+
+`number`
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`EmscriptenModule`](EmscriptenModule.md).[`UTF8ToString`](EmscriptenModule.md#utf8tostring)

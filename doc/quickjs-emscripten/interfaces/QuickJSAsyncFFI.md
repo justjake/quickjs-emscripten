@@ -1,97 +1,16 @@
-[quickjs-emscripten](../../packages.md) • **quickjs-emscripten** • [Readme](../README.md) \| [Exports](../exports.md)
+[**quickjs-emscripten**](../../README.md)
 
 ***
 
-[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../exports.md) / QuickJSAsyncFFI
+[quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / QuickJSAsyncFFI
 
 # Interface: QuickJSAsyncFFI
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:429
 
 Low-level FFI bindings to QuickJS's Emscripten module.
 See instead [QuickJSContext](../classes/QuickJSContext.md), the public Javascript interface exposed by this
 library.
-
-## Contents
-
-- [Unstable](QuickJSAsyncFFI.md#unstable)
-- [Properties](QuickJSAsyncFFI.md#properties)
-  - [DEBUG](QuickJSAsyncFFI.md#debug)
-  - [QTS\_ArgvGetJSValueConstPointer](QuickJSAsyncFFI.md#qts-argvgetjsvalueconstpointer)
-  - [QTS\_BuildIsAsyncify](QuickJSAsyncFFI.md#qts-buildisasyncify)
-  - [QTS\_BuildIsDebug](QuickJSAsyncFFI.md#qts-buildisdebug)
-  - [QTS\_BuildIsSanitizeLeak](QuickJSAsyncFFI.md#qts-buildissanitizeleak)
-  - [QTS\_Call](QuickJSAsyncFFI.md#qts-call)
-  - [QTS\_Call\_MaybeAsync](QuickJSAsyncFFI.md#qts-call-maybeasync)
-  - [QTS\_DefineProp](QuickJSAsyncFFI.md#qts-defineprop)
-  - [QTS\_Dump](QuickJSAsyncFFI.md#qts-dump)
-  - [QTS\_Dump\_MaybeAsync](QuickJSAsyncFFI.md#qts-dump-maybeasync)
-  - [QTS\_DupValuePointer](QuickJSAsyncFFI.md#qts-dupvaluepointer)
-  - [QTS\_Eval](QuickJSAsyncFFI.md#qts-eval)
-  - [QTS\_Eval\_MaybeAsync](QuickJSAsyncFFI.md#qts-eval-maybeasync)
-  - [QTS\_ExecutePendingJob](QuickJSAsyncFFI.md#qts-executependingjob)
-  - [QTS\_ExecutePendingJob\_MaybeAsync](QuickJSAsyncFFI.md#qts-executependingjob-maybeasync)
-  - [QTS\_FreeCString](QuickJSAsyncFFI.md#qts-freecstring)
-  - [QTS\_FreeContext](QuickJSAsyncFFI.md#qts-freecontext)
-  - [QTS\_FreeRuntime](QuickJSAsyncFFI.md#qts-freeruntime)
-  - [QTS\_FreeValuePointer](QuickJSAsyncFFI.md#qts-freevaluepointer)
-  - [QTS\_FreeValuePointerRuntime](QuickJSAsyncFFI.md#qts-freevaluepointerruntime)
-  - [QTS\_FreeVoidPointer](QuickJSAsyncFFI.md#qts-freevoidpointer)
-  - [QTS\_GetArrayBuffer](QuickJSAsyncFFI.md#qts-getarraybuffer)
-  - [QTS\_GetArrayBufferLength](QuickJSAsyncFFI.md#qts-getarraybufferlength)
-  - [QTS\_GetDebugLogEnabled](QuickJSAsyncFFI.md#qts-getdebuglogenabled)
-  - [QTS\_GetFalse](QuickJSAsyncFFI.md#qts-getfalse)
-  - [QTS\_GetFloat64](QuickJSAsyncFFI.md#qts-getfloat64)
-  - [QTS\_GetGlobalObject](QuickJSAsyncFFI.md#qts-getglobalobject)
-  - [QTS\_GetHostRefId](QuickJSAsyncFFI.md#qts-gethostrefid)
-  - [QTS\_GetLength](QuickJSAsyncFFI.md#qts-getlength)
-  - [QTS\_GetModuleNamespace](QuickJSAsyncFFI.md#qts-getmodulenamespace)
-  - [QTS\_GetNull](QuickJSAsyncFFI.md#qts-getnull)
-  - [QTS\_GetOwnPropertyNames](QuickJSAsyncFFI.md#qts-getownpropertynames)
-  - [QTS\_GetOwnPropertyNames\_MaybeAsync](QuickJSAsyncFFI.md#qts-getownpropertynames-maybeasync)
-  - [QTS\_GetProp](QuickJSAsyncFFI.md#qts-getprop)
-  - [QTS\_GetPropNumber](QuickJSAsyncFFI.md#qts-getpropnumber)
-  - [QTS\_GetPropNumber\_MaybeAsync](QuickJSAsyncFFI.md#qts-getpropnumber-maybeasync)
-  - [QTS\_GetProp\_MaybeAsync](QuickJSAsyncFFI.md#qts-getprop-maybeasync)
-  - [QTS\_GetString](QuickJSAsyncFFI.md#qts-getstring)
-  - [QTS\_GetSymbolDescriptionOrKey](QuickJSAsyncFFI.md#qts-getsymboldescriptionorkey)
-  - [QTS\_GetSymbolDescriptionOrKey\_MaybeAsync](QuickJSAsyncFFI.md#qts-getsymboldescriptionorkey-maybeasync)
-  - [QTS\_GetTrue](QuickJSAsyncFFI.md#qts-gettrue)
-  - [QTS\_GetUndefined](QuickJSAsyncFFI.md#qts-getundefined)
-  - [QTS\_IsEqual](QuickJSAsyncFFI.md#qts-isequal)
-  - [QTS\_IsGlobalSymbol](QuickJSAsyncFFI.md#qts-isglobalsymbol)
-  - [QTS\_IsJobPending](QuickJSAsyncFFI.md#qts-isjobpending)
-  - [QTS\_NewArray](QuickJSAsyncFFI.md#qts-newarray)
-  - [QTS\_NewArrayBuffer](QuickJSAsyncFFI.md#qts-newarraybuffer)
-  - [QTS\_NewContext](QuickJSAsyncFFI.md#qts-newcontext)
-  - [QTS\_NewError](QuickJSAsyncFFI.md#qts-newerror)
-  - [QTS\_NewFloat64](QuickJSAsyncFFI.md#qts-newfloat64)
-  - [QTS\_NewFunction](QuickJSAsyncFFI.md#qts-newfunction)
-  - [QTS\_NewHostRef](QuickJSAsyncFFI.md#qts-newhostref)
-  - [QTS\_NewObject](QuickJSAsyncFFI.md#qts-newobject)
-  - [QTS\_NewObjectProto](QuickJSAsyncFFI.md#qts-newobjectproto)
-  - [QTS\_NewPromiseCapability](QuickJSAsyncFFI.md#qts-newpromisecapability)
-  - [QTS\_NewRuntime](QuickJSAsyncFFI.md#qts-newruntime)
-  - [QTS\_NewString](QuickJSAsyncFFI.md#qts-newstring)
-  - [QTS\_NewSymbol](QuickJSAsyncFFI.md#qts-newsymbol)
-  - [QTS\_PromiseResult](QuickJSAsyncFFI.md#qts-promiseresult)
-  - [QTS\_PromiseState](QuickJSAsyncFFI.md#qts-promisestate)
-  - [QTS\_RecoverableLeakCheck](QuickJSAsyncFFI.md#qts-recoverableleakcheck)
-  - [QTS\_ResolveException](QuickJSAsyncFFI.md#qts-resolveexception)
-  - [QTS\_RuntimeComputeMemoryUsage](QuickJSAsyncFFI.md#qts-runtimecomputememoryusage)
-  - [QTS\_RuntimeDisableInterruptHandler](QuickJSAsyncFFI.md#qts-runtimedisableinterrupthandler)
-  - [QTS\_RuntimeDisableModuleLoader](QuickJSAsyncFFI.md#qts-runtimedisablemoduleloader)
-  - [QTS\_RuntimeDumpMemoryUsage](QuickJSAsyncFFI.md#qts-runtimedumpmemoryusage)
-  - [QTS\_RuntimeEnableInterruptHandler](QuickJSAsyncFFI.md#qts-runtimeenableinterrupthandler)
-  - [QTS\_RuntimeEnableModuleLoader](QuickJSAsyncFFI.md#qts-runtimeenablemoduleloader)
-  - [QTS\_RuntimeSetMaxStackSize](QuickJSAsyncFFI.md#qts-runtimesetmaxstacksize)
-  - [QTS\_RuntimeSetMemoryLimit](QuickJSAsyncFFI.md#qts-runtimesetmemorylimit)
-  - [QTS\_SetDebugLogEnabled](QuickJSAsyncFFI.md#qts-setdebuglogenabled)
-  - [QTS\_SetProp](QuickJSAsyncFFI.md#qts-setprop)
-  - [QTS\_SetProp\_MaybeAsync](QuickJSAsyncFFI.md#qts-setprop-maybeasync)
-  - [QTS\_TestStringArg](QuickJSAsyncFFI.md#qts-teststringarg)
-  - [QTS\_Throw](QuickJSAsyncFFI.md#qts-throw)
-  - [QTS\_Typeof](QuickJSAsyncFFI.md#qts-typeof)
-  - [QTS\_bjson\_decode](QuickJSAsyncFFI.md#qts-bjson-decode)
-  - [QTS\_bjson\_encode](QuickJSAsyncFFI.md#qts-bjson-encode)
 
 ## Unstable
 
@@ -101,1562 +20,1736 @@ The FFI interface is considered private and may change.
 
 ### DEBUG
 
-> **`readonly`** **DEBUG**: `boolean`
+> `readonly` **DEBUG**: `boolean`
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:431
 
 Set at compile time.
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:431
-
 ***
 
-### QTS\_ArgvGetJSValueConstPointer
+### QTS\_ArgvGetJSValueConstPointer()
 
-> **QTS\_ArgvGetJSValueConstPointer**: (`argv`, `index`) => [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+> **QTS\_ArgvGetJSValueConstPointer**: (`argv`, `index`) => [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:502
 
 #### Parameters
 
-• **argv**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### argv
 
-• **index**: `number`
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### index
+
+`number`
 
 #### Returns
 
-[`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:502
+[`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 ***
 
-### QTS\_BuildIsAsyncify
+### QTS\_bjson\_decode()
+
+> **QTS\_bjson\_decode**: (`ctx`, `data`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:508
+
+#### Parameters
+
+##### ctx
+
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### data
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+#### Returns
+
+[`JSValuePointer`](../README.md#jsvaluepointer)
+
+***
+
+### QTS\_bjson\_encode()
+
+> **QTS\_bjson\_encode**: (`ctx`, `val`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:507
+
+#### Parameters
+
+##### ctx
+
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### val
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+#### Returns
+
+[`JSValuePointer`](../README.md#jsvaluepointer)
+
+***
+
+### QTS\_BuildIsAsyncify()
 
 > **QTS\_BuildIsAsyncify**: () => `number`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:500
+
 #### Returns
 
 `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:500
-
 ***
 
-### QTS\_BuildIsDebug
+### QTS\_BuildIsDebug()
 
 > **QTS\_BuildIsDebug**: () => `number`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:499
+
 #### Returns
 
 `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:499
-
 ***
 
-### QTS\_BuildIsSanitizeLeak
+### QTS\_BuildIsSanitizeLeak()
 
 > **QTS\_BuildIsSanitizeLeak**: () => `number`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:438
+
 #### Returns
 
 `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:438
-
 ***
 
-### QTS\_Call
+### QTS\_Call()
 
-> **QTS\_Call**: (`ctx`, `func_obj`, `this_obj`, `argc`, `argv_ptrs`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_Call**: (`ctx`, `func_obj`, `this_obj`, `argc`, `argv_ptrs`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:481
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **func\_obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **this\_obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### func\_obj
 
-• **argc**: `number`
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
-• **argv\_ptrs**: [`JSValueConstPointerPointer`](../exports.md#jsvalueconstpointerpointer)
+##### this\_obj
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### argc
+
+`number`
+
+##### argv\_ptrs
+
+[`JSValueConstPointerPointer`](../README.md#jsvalueconstpointerpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:481
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_Call\_MaybeAsync
+### QTS\_Call\_MaybeAsync()
 
-> **QTS\_Call\_MaybeAsync**: (`ctx`, `func_obj`, `this_obj`, `argc`, `argv_ptrs`) => [`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
+> **QTS\_Call\_MaybeAsync**: (`ctx`, `func_obj`, `this_obj`, `argc`, `argv_ptrs`) => [`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:482
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **func\_obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **this\_obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### func\_obj
 
-• **argc**: `number`
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
-• **argv\_ptrs**: [`JSValueConstPointerPointer`](../exports.md#jsvalueconstpointerpointer)
+##### this\_obj
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### argc
+
+`number`
+
+##### argv\_ptrs
+
+[`JSValueConstPointerPointer`](../README.md#jsvalueconstpointerpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:482
+[`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
 
 ***
 
-### QTS\_DefineProp
+### QTS\_DefineProp()
 
 > **QTS\_DefineProp**: (`ctx`, `this_val`, `prop_name`, `prop_value`, `get`, `set`, `configurable`, `enumerable`, `has_value`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:478
+
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **prop\_name**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### this\_val
 
-• **prop\_value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
-• **get**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### prop\_name
 
-• **set**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
-• **configurable**: `boolean`
+##### prop\_value
 
-• **enumerable**: `boolean`
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
-• **has\_value**: `boolean`
+##### get
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### set
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### configurable
+
+`boolean`
+
+##### enumerable
+
+`boolean`
+
+##### has\_value
+
+`boolean`
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:478
-
 ***
 
-### QTS\_Dump
+### QTS\_Dump()
 
-> **QTS\_Dump**: (`ctx`, `obj`) => [`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
+> **QTS\_Dump**: (`ctx`, `obj`) => [`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:484
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### obj
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:484
+[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
 
 ***
 
-### QTS\_Dump\_MaybeAsync
+### QTS\_Dump\_MaybeAsync()
 
-> **QTS\_Dump\_MaybeAsync**: (`ctx`, `obj`) => [`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer) \| `Promise`\<[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)\>
+> **QTS\_Dump\_MaybeAsync**: (`ctx`, `obj`) => [`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer) \| `Promise`\<[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:485
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### obj
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer) \| `Promise`\<[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)\>
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:485
+[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer) \| `Promise`\<[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)\>
 
 ***
 
-### QTS\_DupValuePointer
+### QTS\_DupValuePointer()
 
-> **QTS\_DupValuePointer**: (`ctx`, `val`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_DupValuePointer**: (`ctx`, `val`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:454
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### val
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:454
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_Eval
+### QTS\_Eval()
 
-> **QTS\_Eval**: (`ctx`, `js_code`, `js_code_length`, `filename`, `detectModule`, `evalFlags`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_Eval**: (`ctx`, `js_code`, `js_code_length`, `filename`, `detectModule`, `evalFlags`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:486
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **js\_code**: [`BorrowedHeapCharPointer`](../exports.md#borrowedheapcharpointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **js\_code\_length**: `number`
+##### js\_code
 
-• **filename**: `string`
+[`BorrowedHeapCharPointer`](../README.md#borrowedheapcharpointer)
 
-• **detectModule**: `EvalDetectModule`
+##### js\_code\_length
 
-• **evalFlags**: [`EvalFlags`](../exports.md#evalflags)
+`number`
+
+##### filename
+
+`string`
+
+##### detectModule
+
+`EvalDetectModule`
+
+##### evalFlags
+
+[`EvalFlags`](../README.md#evalflags)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:486
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_Eval\_MaybeAsync
+### QTS\_Eval\_MaybeAsync()
 
-> **QTS\_Eval\_MaybeAsync**: (`ctx`, `js_code`, `js_code_length`, `filename`, `detectModule`, `evalFlags`) => [`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
+> **QTS\_Eval\_MaybeAsync**: (`ctx`, `js_code`, `js_code_length`, `filename`, `detectModule`, `evalFlags`) => [`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:487
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **js\_code**: [`BorrowedHeapCharPointer`](../exports.md#borrowedheapcharpointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **js\_code\_length**: `number`
+##### js\_code
 
-• **filename**: `string`
+[`BorrowedHeapCharPointer`](../README.md#borrowedheapcharpointer)
 
-• **detectModule**: `EvalDetectModule`
+##### js\_code\_length
 
-• **evalFlags**: [`EvalFlags`](../exports.md#evalflags)
+`number`
+
+##### filename
+
+`string`
+
+##### detectModule
+
+`EvalDetectModule`
+
+##### evalFlags
+
+[`EvalFlags`](../README.md#evalflags)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:487
+[`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
 
 ***
 
-### QTS\_ExecutePendingJob
+### QTS\_ExecutePendingJob()
 
-> **QTS\_ExecutePendingJob**: (`rt`, `maxJobsToExecute`, `lastJobContext`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_ExecutePendingJob**: (`rt`, `maxJobsToExecute`, `lastJobContext`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:470
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
 
-• **maxJobsToExecute**: `number`
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
 
-• **lastJobContext**: [`JSContextPointerPointer`](../exports.md#jscontextpointerpointer)
+##### maxJobsToExecute
+
+`number`
+
+##### lastJobContext
+
+[`JSContextPointerPointer`](../README.md#jscontextpointerpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:470
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_ExecutePendingJob\_MaybeAsync
+### QTS\_ExecutePendingJob\_MaybeAsync()
 
-> **QTS\_ExecutePendingJob\_MaybeAsync**: (`rt`, `maxJobsToExecute`, `lastJobContext`) => [`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
+> **QTS\_ExecutePendingJob\_MaybeAsync**: (`rt`, `maxJobsToExecute`, `lastJobContext`) => [`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:471
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
 
-• **maxJobsToExecute**: `number`
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
 
-• **lastJobContext**: [`JSContextPointerPointer`](../exports.md#jscontextpointerpointer)
+##### maxJobsToExecute
 
-#### Returns
+`number`
 
-[`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
+##### lastJobContext
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:471
-
-***
-
-### QTS\_FreeCString
-
-> **QTS\_FreeCString**: (`ctx`, `str`) => `void`
-
-#### Parameters
-
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
-
-• **str**: [`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
+[`JSContextPointerPointer`](../README.md#jscontextpointerpointer)
 
 #### Returns
 
-`void`
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:453
+[`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
 
 ***
 
-### QTS\_FreeContext
+### QTS\_FreeContext()
 
 > **QTS\_FreeContext**: (`ctx`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:449
+
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
+
+[`JSContextPointer`](../README.md#jscontextpointer)
 
 #### Returns
 
 `void`
 
-#### Source
+***
 
-packages/quickjs-ffi-types/dist/index.d.ts:449
+### QTS\_FreeCString()
+
+> **QTS\_FreeCString**: (`ctx`, `str`) => `void`
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:453
+
+#### Parameters
+
+##### ctx
+
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### str
+
+[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
+
+#### Returns
+
+`void`
 
 ***
 
-### QTS\_FreeRuntime
+### QTS\_FreeRuntime()
 
 > **QTS\_FreeRuntime**: (`rt`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:447
+
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
+
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:447
-
 ***
 
-### QTS\_FreeValuePointer
+### QTS\_FreeValuePointer()
 
 > **QTS\_FreeValuePointer**: (`ctx`, `value`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:450
+
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### value
+
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:450
-
 ***
 
-### QTS\_FreeValuePointerRuntime
+### QTS\_FreeValuePointerRuntime()
 
 > **QTS\_FreeValuePointerRuntime**: (`rt`, `value`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:451
+
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
 
-• **value**: [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
+
+##### value
+
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:451
-
 ***
 
-### QTS\_FreeVoidPointer
+### QTS\_FreeVoidPointer()
 
 > **QTS\_FreeVoidPointer**: (`ctx`, `ptr`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:452
+
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **ptr**: [`JSVoidPointer`](../exports.md#jsvoidpointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### ptr
+
+[`JSVoidPointer`](../README.md#jsvoidpointer)
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:452
-
 ***
 
-### QTS\_GetArrayBuffer
+### QTS\_GetArrayBuffer()
 
-> **QTS\_GetArrayBuffer**: (`ctx`, `data`) => [`JSVoidPointer`](../exports.md#jsvoidpointer)
+> **QTS\_GetArrayBuffer**: (`ctx`, `data`) => [`JSVoidPointer`](../README.md#jsvoidpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:463
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **data**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### data
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSVoidPointer`](../exports.md#jsvoidpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:463
+[`JSVoidPointer`](../README.md#jsvoidpointer)
 
 ***
 
-### QTS\_GetArrayBufferLength
+### QTS\_GetArrayBufferLength()
 
 > **QTS\_GetArrayBufferLength**: (`ctx`, `data`) => `number`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:464
+
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **data**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### data
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
 `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:464
-
 ***
 
-### QTS\_GetDebugLogEnabled
+### QTS\_GetDebugLogEnabled()
 
 > **QTS\_GetDebugLogEnabled**: (`rt`) => `number`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:497
+
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
+
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
 
 #### Returns
 
 `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:497
-
 ***
 
-### QTS\_GetFalse
+### QTS\_GetFalse()
 
-> **QTS\_GetFalse**: () => [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+> **QTS\_GetFalse**: () => [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:442
 
 #### Returns
 
-[`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:442
+[`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 ***
 
-### QTS\_GetFloat64
+### QTS\_GetFloat64()
 
 > **QTS\_GetFloat64**: (`ctx`, `value`) => `number`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:460
+
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### value
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
 `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:460
-
 ***
 
-### QTS\_GetGlobalObject
+### QTS\_GetGlobalObject()
 
-> **QTS\_GetGlobalObject**: (`ctx`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_GetGlobalObject**: (`ctx`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:492
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
+
+[`JSContextPointer`](../README.md#jscontextpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:492
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_GetHostRefId
+### QTS\_GetHostRefId()
 
 > **QTS\_GetHostRefId**: (`value`) => `HostRefId`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:445
+
 #### Parameters
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### value
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
 `HostRefId`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:445
-
 ***
 
-### QTS\_GetLength
+### QTS\_GetLength()
 
 > **QTS\_GetLength**: (`ctx`, `out_len`, `value`) => `number`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:490
+
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **out\_len**: [`UInt32Pointer`](../exports.md#uint32pointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### out\_len
+
+[`UInt32Pointer`](../README.md#uint32pointer)
+
+##### value
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
 `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:490
-
 ***
 
-### QTS\_GetModuleNamespace
+### QTS\_GetModuleNamespace()
 
-> **QTS\_GetModuleNamespace**: (`ctx`, `module_func_obj`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_GetModuleNamespace**: (`ctx`, `module_func_obj`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:488
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **module\_func\_obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-#### Returns
+##### module\_func\_obj
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:488
-
-***
-
-### QTS\_GetNull
-
-> **QTS\_GetNull**: () => [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:441
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_GetOwnPropertyNames
+### QTS\_GetNull()
 
-> **QTS\_GetOwnPropertyNames**: (`ctx`, `out_ptrs`, `out_len`, `obj`, `flags`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_GetNull**: () => [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:441
+
+#### Returns
+
+[`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+***
+
+### QTS\_GetOwnPropertyNames()
+
+> **QTS\_GetOwnPropertyNames**: (`ctx`, `out_ptrs`, `out_len`, `obj`, `flags`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:479
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **out\_ptrs**: [`JSValuePointerPointerPointer`](../exports.md#jsvaluepointerpointerpointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **out\_len**: [`UInt32Pointer`](../exports.md#uint32pointer)
+##### out\_ptrs
 
-• **obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSValuePointerPointerPointer`](../README.md#jsvaluepointerpointerpointer)
 
-• **flags**: `number`
+##### out\_len
+
+[`UInt32Pointer`](../README.md#uint32pointer)
+
+##### obj
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### flags
+
+`number`
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:479
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_GetOwnPropertyNames\_MaybeAsync
+### QTS\_GetOwnPropertyNames\_MaybeAsync()
 
-> **QTS\_GetOwnPropertyNames\_MaybeAsync**: (`ctx`, `out_ptrs`, `out_len`, `obj`, `flags`) => [`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
+> **QTS\_GetOwnPropertyNames\_MaybeAsync**: (`ctx`, `out_ptrs`, `out_len`, `obj`, `flags`) => [`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:480
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **out\_ptrs**: [`JSValuePointerPointerPointer`](../exports.md#jsvaluepointerpointerpointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **out\_len**: [`UInt32Pointer`](../exports.md#uint32pointer)
+##### out\_ptrs
 
-• **obj**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSValuePointerPointerPointer`](../README.md#jsvaluepointerpointerpointer)
 
-• **flags**: `number`
+##### out\_len
+
+[`UInt32Pointer`](../README.md#uint32pointer)
+
+##### obj
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### flags
+
+`number`
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:480
+[`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
 
 ***
 
-### QTS\_GetProp
+### QTS\_GetProp()
 
-> **QTS\_GetProp**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_GetProp**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:472
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **prop\_name**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### this\_val
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### prop\_name
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:472
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_GetPropNumber
+### QTS\_GetProp\_MaybeAsync()
 
-> **QTS\_GetPropNumber**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_GetProp\_MaybeAsync**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:473
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **prop\_name**: `number`
+##### this\_val
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### prop\_name
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:474
+[`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
 
 ***
 
-### QTS\_GetPropNumber\_MaybeAsync
+### QTS\_GetPropNumber()
 
-> **QTS\_GetPropNumber\_MaybeAsync**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
+> **QTS\_GetPropNumber**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:474
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **prop\_name**: `number`
+##### this\_val
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### prop\_name
+
+`number`
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:475
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_GetProp\_MaybeAsync
+### QTS\_GetPropNumber\_MaybeAsync()
 
-> **QTS\_GetProp\_MaybeAsync**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
+> **QTS\_GetPropNumber\_MaybeAsync**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:475
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **prop\_name**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### this\_val
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### prop\_name
+
+`number`
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../exports.md#jsvaluepointer)\>
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:473
+[`JSValuePointer`](../README.md#jsvaluepointer) \| `Promise`\<[`JSValuePointer`](../README.md#jsvaluepointer)\>
 
 ***
 
-### QTS\_GetString
+### QTS\_GetString()
 
-> **QTS\_GetString**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
+> **QTS\_GetString**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:462
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### value
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:462
+[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
 
 ***
 
-### QTS\_GetSymbolDescriptionOrKey
+### QTS\_GetSymbolDescriptionOrKey()
 
-> **QTS\_GetSymbolDescriptionOrKey**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
+> **QTS\_GetSymbolDescriptionOrKey**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:466
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### value
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:466
+[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
 
 ***
 
-### QTS\_GetSymbolDescriptionOrKey\_MaybeAsync
+### QTS\_GetSymbolDescriptionOrKey\_MaybeAsync()
 
-> **QTS\_GetSymbolDescriptionOrKey\_MaybeAsync**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer) \| `Promise`\<[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)\>
+> **QTS\_GetSymbolDescriptionOrKey\_MaybeAsync**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer) \| `Promise`\<[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)\>
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:467
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-#### Returns
+##### value
 
-[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer) \| `Promise`\<[`JSBorrowedCharPointer`](../exports.md#jsborrowedcharpointer)\>
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:467
-
-***
-
-### QTS\_GetTrue
-
-> **QTS\_GetTrue**: () => [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:443
+[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer) \| `Promise`\<[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)\>
 
 ***
 
-### QTS\_GetUndefined
+### QTS\_GetTrue()
 
-> **QTS\_GetUndefined**: () => [`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
+> **QTS\_GetTrue**: () => [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:443
 
 #### Returns
 
-[`JSValueConstPointer`](../exports.md#jsvalueconstpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:440
+[`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 ***
 
-### QTS\_IsEqual
+### QTS\_GetUndefined()
+
+> **QTS\_GetUndefined**: () => [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:440
+
+#### Returns
+
+[`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+***
+
+### QTS\_IsEqual()
 
 > **QTS\_IsEqual**: (`ctx`, `a`, `b`, `op`) => `number`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:491
+
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **a**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **b**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### a
 
-• **op**: [`IsEqualOp`](../exports.md#isequalop)
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### b
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### op
+
+[`IsEqualOp`](../README.md#isequalop)
 
 #### Returns
 
 `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:491
-
 ***
 
-### QTS\_IsGlobalSymbol
+### QTS\_IsGlobalSymbol()
 
 > **QTS\_IsGlobalSymbol**: (`ctx`, `value`) => `number`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:468
+
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### value
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
 `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:468
-
 ***
 
-### QTS\_IsJobPending
+### QTS\_IsJobPending()
 
 > **QTS\_IsJobPending**: (`rt`) => `number`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:469
+
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
+
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
 
 #### Returns
 
 `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:469
-
 ***
 
-### QTS\_NewArray
+### QTS\_NewArray()
 
-> **QTS\_NewArray**: (`ctx`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_NewArray**: (`ctx`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:457
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
+
+[`JSContextPointer`](../README.md#jscontextpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:457
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_NewArrayBuffer
+### QTS\_NewArrayBuffer()
 
-> **QTS\_NewArrayBuffer**: (`ctx`, `buffer`, `length`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_NewArrayBuffer**: (`ctx`, `buffer`, `length`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:458
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **buffer**: [`JSVoidPointer`](../exports.md#jsvoidpointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **length**: `number`
+##### buffer
+
+[`JSVoidPointer`](../README.md#jsvoidpointer)
+
+##### length
+
+`number`
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:458
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_NewContext
+### QTS\_NewContext()
 
-> **QTS\_NewContext**: (`rt`, `intrinsics`) => [`JSContextPointer`](../exports.md#jscontextpointer)
+> **QTS\_NewContext**: (`rt`, `intrinsics`) => [`JSContextPointer`](../README.md#jscontextpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:448
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
 
-• **intrinsics**: [`IntrinsicsFlags`](../exports.md#intrinsicsflags)
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
+
+##### intrinsics
+
+[`IntrinsicsFlags`](../README.md#intrinsicsflags)
 
 #### Returns
 
-[`JSContextPointer`](../exports.md#jscontextpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:448
+[`JSContextPointer`](../README.md#jscontextpointer)
 
 ***
 
-### QTS\_NewError
+### QTS\_NewError()
 
-> **QTS\_NewError**: (`ctx`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_NewError**: (`ctx`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:433
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
+
+[`JSContextPointer`](../README.md#jscontextpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:433
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_NewFloat64
+### QTS\_NewFloat64()
 
-> **QTS\_NewFloat64**: (`ctx`, `num`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_NewFloat64**: (`ctx`, `num`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:459
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **num**: `number`
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### num
+
+`number`
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:459
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_NewFunction
+### QTS\_NewFunction()
 
-> **QTS\_NewFunction**: (`ctx`, `name`, `arg_length`, `is_constructor`, `host_ref_id`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_NewFunction**: (`ctx`, `name`, `arg_length`, `is_constructor`, `host_ref_id`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:501
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **name**: `string`
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **arg\_length**: `number`
+##### name
 
-• **is\_constructor**: `boolean`
+`string`
 
-• **host\_ref\_id**: `HostRefId`
+##### arg\_length
+
+`number`
+
+##### is\_constructor
+
+`boolean`
+
+##### host\_ref\_id
+
+`HostRefId`
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:501
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_NewHostRef
+### QTS\_NewHostRef()
 
-> **QTS\_NewHostRef**: (`ctx`, `id`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_NewHostRef**: (`ctx`, `id`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:444
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **id**: `HostRefId`
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### id
+
+`HostRefId`
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:444
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_NewObject
+### QTS\_NewObject()
 
-> **QTS\_NewObject**: (`ctx`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_NewObject**: (`ctx`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:455
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
+
+[`JSContextPointer`](../README.md#jscontextpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:455
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_NewObjectProto
+### QTS\_NewObjectProto()
 
-> **QTS\_NewObjectProto**: (`ctx`, `proto`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_NewObjectProto**: (`ctx`, `proto`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:456
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **proto**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### proto
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:456
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_NewPromiseCapability
+### QTS\_NewPromiseCapability()
 
-> **QTS\_NewPromiseCapability**: (`ctx`, `resolve_funcs_out`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_NewPromiseCapability**: (`ctx`, `resolve_funcs_out`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:493
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **resolve\_funcs\_out**: [`JSValuePointerPointer`](../exports.md#jsvaluepointerpointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-#### Returns
+##### resolve\_funcs\_out
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:493
-
-***
-
-### QTS\_NewRuntime
-
-> **QTS\_NewRuntime**: () => [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+[`JSValuePointerPointer`](../README.md#jsvaluepointerpointer)
 
 #### Returns
 
-[`JSRuntimePointer`](../exports.md#jsruntimepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:446
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_NewString
+### QTS\_NewRuntime()
 
-> **QTS\_NewString**: (`ctx`, `string`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_NewRuntime**: () => [`JSRuntimePointer`](../README.md#jsruntimepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:446
+
+#### Returns
+
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
+
+***
+
+### QTS\_NewString()
+
+> **QTS\_NewString**: (`ctx`, `string`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:461
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **string**: [`BorrowedHeapCharPointer`](../exports.md#borrowedheapcharpointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### string
+
+[`BorrowedHeapCharPointer`](../README.md#borrowedheapcharpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:461
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_NewSymbol
+### QTS\_NewSymbol()
 
-> **QTS\_NewSymbol**: (`ctx`, `description`, `isGlobal`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_NewSymbol**: (`ctx`, `description`, `isGlobal`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:465
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **description**: [`BorrowedHeapCharPointer`](../exports.md#borrowedheapcharpointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **isGlobal**: `number`
+##### description
+
+[`BorrowedHeapCharPointer`](../README.md#borrowedheapcharpointer)
+
+##### isGlobal
+
+`number`
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:465
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_PromiseResult
+### QTS\_PromiseResult()
 
-> **QTS\_PromiseResult**: (`ctx`, `promise`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_PromiseResult**: (`ctx`, `promise`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:495
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **promise**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### promise
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:495
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_PromiseState
+### QTS\_PromiseState()
 
-> **QTS\_PromiseState**: (`ctx`, `promise`) => [`JSPromiseStateEnum`](../exports.md#jspromisestateenum-1)
+> **QTS\_PromiseState**: (`ctx`, `promise`) => [`JSPromiseStateEnum`](../README.md#jspromisestateenum)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:494
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **promise**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### promise
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSPromiseStateEnum`](../exports.md#jspromisestateenum-1)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:494
+[`JSPromiseStateEnum`](../README.md#jspromisestateenum)
 
 ***
 
-### QTS\_RecoverableLeakCheck
+### QTS\_RecoverableLeakCheck()
 
 > **QTS\_RecoverableLeakCheck**: () => `number`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:437
+
 #### Returns
 
 `number`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:437
-
 ***
 
-### QTS\_ResolveException
+### QTS\_ResolveException()
 
-> **QTS\_ResolveException**: (`ctx`, `maybe_exception`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_ResolveException**: (`ctx`, `maybe_exception`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:483
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **maybe\_exception**: [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### maybe\_exception
+
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:483
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_RuntimeComputeMemoryUsage
+### QTS\_RuntimeComputeMemoryUsage()
 
-> **QTS\_RuntimeComputeMemoryUsage**: (`rt`, `ctx`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_RuntimeComputeMemoryUsage**: (`rt`, `ctx`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:435
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
+
+##### ctx
+
+[`JSContextPointer`](../README.md#jscontextpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:435
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_RuntimeDisableInterruptHandler
+### QTS\_RuntimeDisableInterruptHandler()
 
 > **QTS\_RuntimeDisableInterruptHandler**: (`rt`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:504
+
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
+
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:504
-
 ***
 
-### QTS\_RuntimeDisableModuleLoader
+### QTS\_RuntimeDisableModuleLoader()
 
 > **QTS\_RuntimeDisableModuleLoader**: (`rt`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:506
+
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
+
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:506
-
 ***
 
-### QTS\_RuntimeDumpMemoryUsage
+### QTS\_RuntimeDumpMemoryUsage()
 
-> **QTS\_RuntimeDumpMemoryUsage**: (`rt`) => [`OwnedHeapCharPointer`](../exports.md#ownedheapcharpointer)
+> **QTS\_RuntimeDumpMemoryUsage**: (`rt`) => [`OwnedHeapCharPointer`](../README.md#ownedheapcharpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:436
 
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
+
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
 
 #### Returns
 
-[`OwnedHeapCharPointer`](../exports.md#ownedheapcharpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:436
+[`OwnedHeapCharPointer`](../README.md#ownedheapcharpointer)
 
 ***
 
-### QTS\_RuntimeEnableInterruptHandler
+### QTS\_RuntimeEnableInterruptHandler()
 
 > **QTS\_RuntimeEnableInterruptHandler**: (`rt`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:503
+
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
+
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:503
-
 ***
 
-### QTS\_RuntimeEnableModuleLoader
+### QTS\_RuntimeEnableModuleLoader()
 
 > **QTS\_RuntimeEnableModuleLoader**: (`rt`, `use_custom_normalize`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:505
+
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
 
-• **use\_custom\_normalize**: `number`
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
+
+##### use\_custom\_normalize
+
+`number`
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:505
-
 ***
 
-### QTS\_RuntimeSetMaxStackSize
+### QTS\_RuntimeSetMaxStackSize()
 
 > **QTS\_RuntimeSetMaxStackSize**: (`rt`, `stack_size`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:439
+
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
 
-• **stack\_size**: `number`
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
+
+##### stack\_size
+
+`number`
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:439
-
 ***
 
-### QTS\_RuntimeSetMemoryLimit
+### QTS\_RuntimeSetMemoryLimit()
 
 > **QTS\_RuntimeSetMemoryLimit**: (`rt`, `limit`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:434
+
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
 
-• **limit**: `number`
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
+
+##### limit
+
+`number`
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:434
-
 ***
 
-### QTS\_SetDebugLogEnabled
+### QTS\_SetDebugLogEnabled()
 
 > **QTS\_SetDebugLogEnabled**: (`rt`, `is_enabled`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:498
+
 #### Parameters
 
-• **rt**: [`JSRuntimePointer`](../exports.md#jsruntimepointer)
+##### rt
 
-• **is\_enabled**: `number`
+[`JSRuntimePointer`](../README.md#jsruntimepointer)
+
+##### is\_enabled
+
+`number`
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:498
-
 ***
 
-### QTS\_SetProp
+### QTS\_SetProp()
 
 > **QTS\_SetProp**: (`ctx`, `this_val`, `prop_name`, `prop_value`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:476
+
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **prop\_name**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### this\_val
 
-• **prop\_value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### prop\_name
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### prop\_value
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:476
-
 ***
 
-### QTS\_SetProp\_MaybeAsync
+### QTS\_SetProp\_MaybeAsync()
 
 > **QTS\_SetProp\_MaybeAsync**: (`ctx`, `this_val`, `prop_name`, `prop_value`) => `void` \| `Promise`\<`void`\>
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:477
+
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **this\_val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-• **prop\_name**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+##### this\_val
 
-• **prop\_value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### prop\_name
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+
+##### prop\_value
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
 `void` \| `Promise`\<`void`\>
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:477
-
 ***
 
-### QTS\_TestStringArg
+### QTS\_TestStringArg()
 
 > **QTS\_TestStringArg**: (`string`) => `void`
 
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:496
+
 #### Parameters
 
-• **string**: `string`
+##### string
+
+`string`
 
 #### Returns
 
 `void`
 
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:496
-
 ***
 
-### QTS\_Throw
+### QTS\_Throw()
 
-> **QTS\_Throw**: (`ctx`, `error`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
+> **QTS\_Throw**: (`ctx`, `error`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:432
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **error**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
+
+##### error
+
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:432
+[`JSValuePointer`](../README.md#jsvaluepointer)
 
 ***
 
-### QTS\_Typeof
+### QTS\_Typeof()
 
-> **QTS\_Typeof**: (`ctx`, `value`) => [`OwnedHeapCharPointer`](../exports.md#ownedheapcharpointer)
+> **QTS\_Typeof**: (`ctx`, `value`) => [`OwnedHeapCharPointer`](../README.md#ownedheapcharpointer)
+
+Defined in: packages/quickjs-ffi-types/dist/index.d.ts:489
 
 #### Parameters
 
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
+##### ctx
 
-• **value**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSContextPointer`](../README.md#jscontextpointer)
 
-#### Returns
+##### value
 
-[`OwnedHeapCharPointer`](../exports.md#ownedheapcharpointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:489
-
-***
-
-### QTS\_bjson\_decode
-
-> **QTS\_bjson\_decode**: (`ctx`, `data`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Parameters
-
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
-
-• **data**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
+[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
 
 #### Returns
 
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:508
-
-***
-
-### QTS\_bjson\_encode
-
-> **QTS\_bjson\_encode**: (`ctx`, `val`) => [`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Parameters
-
-• **ctx**: [`JSContextPointer`](../exports.md#jscontextpointer)
-
-• **val**: [`JSValueConstPointer`](../exports.md#jsvalueconstpointer) \| [`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Returns
-
-[`JSValuePointer`](../exports.md#jsvaluepointer)
-
-#### Source
-
-packages/quickjs-ffi-types/dist/index.d.ts:507
-
-***
-
-Generated using [typedoc-plugin-markdown](https://www.npmjs.com/package/typedoc-plugin-markdown) and [TypeDoc](https://typedoc.org/)
+[`OwnedHeapCharPointer`](../README.md#ownedheapcharpointer)

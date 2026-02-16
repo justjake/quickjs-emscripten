@@ -1,6 +1,6 @@
 #!/usr/bin/env -S npx tsx
 import type { PackageJson } from "./helpers.js"
-import { getYarnWorkspaces, readJson, writePretty } from "./helpers.js"
+import { getWorkspaces, readJson, writePretty } from "./helpers.js"
 
 async function main() {
   const NEXT_VERSION = process.argv[2]
@@ -9,7 +9,7 @@ async function main() {
   }
 
   const set: Record<string, string> = {}
-  for (const workspace of getYarnWorkspaces()) {
+  for (const workspace of getWorkspaces()) {
     const packageJson: PackageJson = readJson(workspace.location + "/package.json")
     if (packageJson.version === NEXT_VERSION) {
       set[packageJson.name] = `unchanged (${NEXT_VERSION})`

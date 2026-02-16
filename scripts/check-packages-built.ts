@@ -84,7 +84,7 @@ function checkProperties(pkg: sh.WorkspaceJson, packageJson: sh.PackageJson) {
   }
 }
 
-for (const pkg of sh.getYarnWorkspaces()) {
+for (const pkg of sh.getWorkspaces()) {
   const packageJson: sh.PackageJson = sh.readJson(sh.resolve(pkg.location, "package.json"))
   if (packageJson.private) {
     continue
