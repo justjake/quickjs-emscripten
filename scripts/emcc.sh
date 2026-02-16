@@ -2,9 +2,15 @@
 # Use system emcc if installed, otherwise use Docker.
 set -eo pipefail
 
+# Use sccache wrapper if available (for CI caching based on content hash)
+SCCACHE_WRAP=""
+if [[ -n "$SCCACHE_GHA_ENABLED" ]] && command -v sccache >/dev/null; then
+  SCCACHE_WRAP="sccache"
+fi
+
 if [[ -z "$EMSDK_USE_DOCKER" ]] && command -v emcc >/dev/null; then
   if emcc --version | grep "$EMSDK_VERSION" >/dev/null; then
-    exec emcc "$@"
+    exec $SCCACHE_WRAP emcc "$@"
   fi
 fi
 

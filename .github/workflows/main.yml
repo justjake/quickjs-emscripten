@@ -47,11 +47,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: EMSDK cache
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: '5.0.1'
+          actions-cache-folder: 'emsdk-cache'
+
+      - name: EMSDK cache (Docker fallback)
         uses: actions/cache@v3
         with:
           path: "emsdk-cache"
-          key: ${{ hashFiles('scripts/emcc.sh') }}
+          key: emsdk-docker-${{ hashFiles('scripts/emcc.sh') }}
 
       - name: Environment info
         run: |
@@ -61,9 +70,16 @@ jobs:
           echo $(npx which tsc) $(npx tsc --version)
           echo $(npx which tsup) $(npx tsup --version)
           echo $(npx which esbuild) v$(npx esbuild --version)
+          echo "emcc: $(which emcc) $(emcc --version | head -1)"
+          echo "sccache: $(which sccache) $(sccache --version)"
 
       - name: Build
         run: pnpm run build
+        env:
+          SCCACHE_GHA_ENABLED: "true"
+
+      - name: sccache stats
+        run: sccache --show-stats
 
       - name: Check types
         run: pnpm run check:types
