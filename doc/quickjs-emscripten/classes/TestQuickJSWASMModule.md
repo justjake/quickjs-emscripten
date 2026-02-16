@@ -17,19 +17,15 @@ Call [disposeAll](#disposeall) to reset these sets and calls `dispose` on any le
 Call [assertNoMemoryAllocated](#assertnomemoryallocated) at the end of a test, when you expect that you've
 freed all the memory you've ever allocated.
 
+## Contents
+
 * [Implements](#implements)
-
 * [Constructors](#constructors)
-
   * [Constructor](#constructor)
-
 * [Properties](#properties)
-
   * [contexts](#contexts)
   * [runtimes](#runtimes)
-
 * [Methods](#methods)
-
   * [assertNoMemoryAllocated()](#assertnomemoryallocated)
   * [disposeAll()](#disposeall)
   * [evalCode()](#evalcode)

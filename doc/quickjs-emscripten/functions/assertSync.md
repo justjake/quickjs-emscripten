@@ -10,17 +10,14 @@
 
 Defined in: packages/quickjs-ffi-types/dist/index.d.ts:94
 
-* [Type Parameters](#type-parameters)
+## Contents
 
+* [Type Parameters](#type-parameters)
   * [Args](#args)
   * [R](#r)
-
 * [Parameters](#parameters)
-
   * [fn](#fn)
-
 * [Returns](#returns)
-
   * [Parameters](#parameters-1)
   * [Returns](#returns-1)
 

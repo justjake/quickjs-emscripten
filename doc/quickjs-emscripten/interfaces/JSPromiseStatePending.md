@@ -11,12 +11,11 @@ Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:20](https:
 Pending promise state.
 See [JSPromiseState](../type-aliases/JSPromiseState.md).
 
+## Contents
+
 * [Properties](#properties)
-
   * [type](#type)
-
 * [Accessors](#accessors)
-
   * [error](#error)
 
 ## Properties

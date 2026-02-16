@@ -13,10 +13,10 @@ Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:28](https://github.
 Callback called regularly while the VM executes code.
 Determines if a VM's execution should be interrupted.
 
+## Contents
+
 * [Parameters](#parameters)
-
   * [runtime](#runtime)
-
 * [Returns](#returns)
 
 ## Parameters

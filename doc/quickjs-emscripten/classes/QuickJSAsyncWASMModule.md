@@ -20,10 +20,10 @@ WebAssembly are limited to a single concurrent async action.
 To allow for multiple concurrent async actions, you must create multiple WebAssembly
 modules.
 
+## Contents
+
 * [Extends](#extends)
-
 * [Methods](#methods)
-
   * [evalCode()](#evalcode)
   * [evalCodeAsync()](#evalcodeasync)
   * [getWasmMemory()](#getwasmmemory)

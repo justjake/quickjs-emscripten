@@ -11,12 +11,11 @@ Defined in: packages/quickjs-ffi-types/dist/index.d.ts:268
 Typings for the features we use to interface with our Emscripten build of
 QuickJS.
 
+## Contents
+
 * [Extends](#extends)
-
 * [Extended by](#extended-by)
-
 * [Properties](#properties)
-
   * [FAST\_MEMORY](#fast_memory)
   * [HEAP16](#heap16)
   * [HEAP32](#heap32)
@@ -30,9 +29,7 @@ QuickJS.
   * [TOTAL\_STACK](#total_stack)
   * [wasmBinary?](#wasmbinary)
   * [wasmMemory?](#wasmmemory)
-
 * [Methods](#methods)
-
   * [\_free()](#_free)
   * [\_malloc()](#_malloc)
   * [cwrap()](#cwrap)

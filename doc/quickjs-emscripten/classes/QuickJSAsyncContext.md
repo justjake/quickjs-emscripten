@@ -14,27 +14,21 @@ Asyncified version of [QuickJSContext](QuickJSContext.md).
 or callbacks. The asyncified version of QuickJSContext can wait for async
 host functions as though they were synchronous.
 
+## Contents
+
 * [Extends](#extends)
-
 * [Constructors](#constructors)
-
   * [Constructor](#constructor)
-
 * [Properties](#properties)
-
   * [runtime](#runtime-1)
-
 * [Accessors](#accessors)
-
   * [alive](#alive)
   * [false](#false)
   * [global](#global)
   * [null](#null)
   * [true](#true)
   * [undefined](#undefined)
-
 * [Methods](#methods)
-
   * [\[dispose\]()](#dispose)
   * [callFunction()](#callfunction)
   * [callMethod()](#callmethod)

@@ -11,20 +11,15 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:265](https://githu
 Scope helps reduce the burden of manually tracking and disposing of
 Lifetimes. See [withScope](#withscope). and [withScopeAsync](#withscopeasync).
 
+## Contents
+
 * [Extends](#extends)
-
 * [Implements](#implements)
-
 * [Constructors](#constructors)
-
   * [Constructor](#constructor)
-
 * [Accessors](#accessors)
-
   * [alive](#alive)
-
 * [Methods](#methods)
-
   * [\[dispose\]()](#dispose)
   * [dispose()](#dispose-1)
   * [manage()](#manage)

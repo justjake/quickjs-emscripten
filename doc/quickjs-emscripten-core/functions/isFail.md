@@ -10,15 +10,13 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L18)
 
-* [Type Parameters](#type-parameters)
+## Contents
 
+* [Type Parameters](#type-parameters)
   * [S](#s)
   * [F](#f)
-
 * [Parameters](#parameters)
-
   * [successOrFail](#successorfail)
-
 * [Returns](#returns)
 
 ## Type Parameters

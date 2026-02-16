@@ -13,8 +13,9 @@ Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:26](https://gi
 Used as an optional for results of a Vm call.
 `{ value: VmHandle } | { error: VmHandle }`.
 
-* [Type Parameters](#type-parameters)
+## Contents
 
+* [Type Parameters](#type-parameters)
   * [VmHandle](#vmhandle)
 
 ## Type Parameters

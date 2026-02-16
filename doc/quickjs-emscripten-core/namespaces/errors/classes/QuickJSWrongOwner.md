@@ -8,14 +8,12 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/errors.ts:20](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L20)
 
+## Contents
+
 * [Extends](#extends)
-
 * [Constructors](#constructors)
-
   * [Constructor](#constructor)
-
 * [Properties](#properties)
-
   * [name](#name)
 
 ## Extends

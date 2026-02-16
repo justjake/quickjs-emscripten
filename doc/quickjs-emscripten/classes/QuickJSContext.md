@@ -38,31 +38,23 @@ of any such results to avoid leaking memory inside the VM.
 Implement memory and CPU constraints at the runtime level, using [runtime](#runtime).
 See [QuickJSRuntime](QuickJSRuntime.md) for more information.
 
+## Contents
+
 * [Extends](#extends)
-
 * [Extended by](#extended-by)
-
 * [Implements](#implements)
-
 * [Constructors](#constructors)
-
   * [Constructor](#constructor)
-
 * [Properties](#properties)
-
   * [runtime](#runtime-1)
-
 * [Accessors](#accessors)
-
   * [alive](#alive)
   * [false](#false)
   * [global](#global)
   * [null](#null)
   * [true](#true)
   * [undefined](#undefined)
-
 * [Methods](#methods)
-
   * [\[dispose\]()](#dispose)
   * [callFunction()](#callfunction)
   * [callMethod()](#callmethod)

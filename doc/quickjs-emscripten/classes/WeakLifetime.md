@@ -14,36 +14,28 @@ do.
 
 Used for function arguments.
 
+## Contents
+
 * [Extends](#extends)
-
 * [Type Parameters](#type-parameters)
-
   * [T](#t)
   * [TCopy](#tcopy)
   * [Owner](#owner)
-
 * [Constructors](#constructors)
-
   * [Constructor](#constructor)
-
 * [Properties](#properties)
-
   * [\_alive](#_alive)
   * [\_constructorStack](#_constructorstack)
   * [\_owner?](#_owner)
   * [\_value](#_value)
   * [copier()?](#copier-1)
   * [disposer()?](#disposer-1)
-
 * [Accessors](#accessors)
-
   * [alive](#alive)
   * [dupable](#dupable)
   * [owner](#owner-2)
   * [value](#value-3)
-
 * [Methods](#methods)
-
   * [\[dispose\]()](#dispose)
   * [assertAlive()](#assertalive)
   * [consume()](#consume)

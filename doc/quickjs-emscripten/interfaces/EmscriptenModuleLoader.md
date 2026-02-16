@@ -8,14 +8,12 @@
 
 Defined in: packages/quickjs-ffi-types/dist/index.d.ts:338
 
+## Contents
+
 * [Type Parameters](#type-parameters)
-
   * [T](#t)
-
 * [Parameters](#parameters)
-
   * [options?](#options)
-
 * [Returns](#returns)
 
 ## Type Parameters

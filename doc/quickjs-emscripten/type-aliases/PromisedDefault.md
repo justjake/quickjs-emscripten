@@ -10,8 +10,9 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/from-variant.ts:17](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/from-variant.ts#L17)
 
-* [Type Parameters](#type-parameters)
+## Contents
 
+* [Type Parameters](#type-parameters)
   * [T](#t)
 
 ## Type Parameters

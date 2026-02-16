@@ -10,8 +10,9 @@ Defined in: [packages/quickjs-emscripten-core/src/module.ts:69](https://github.c
 
 Options for [QuickJSWASMModule#evalCode](../classes/QuickJSWASMModule.md#evalcode).
 
-* [Properties](#properties)
+## Contents
 
+* [Properties](#properties)
   * [maxStackSizeBytes?](#maxstacksizebytes)
   * [memoryLimitBytes?](#memorylimitbytes)
   * [moduleLoader?](#moduleloader)

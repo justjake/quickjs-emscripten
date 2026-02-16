@@ -15,17 +15,14 @@ share as much as possible between executors.
 
 From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
 
+## Contents
+
 * [Type Parameters](#type-parameters)
-
   * [VmHandle](#vmhandle)
-
 * [Properties](#properties)
-
   * [global](#global)
   * [undefined](#undefined)
-
 * [Methods](#methods)
-
   * [callFunction()](#callfunction)
   * [defineProp()](#defineprop)
   * [evalCode()](#evalcode)

@@ -13,15 +13,13 @@ Defined in: [packages/quickjs-emscripten-core/src/from-variant.ts:162](https://g
 Create a new variant by overriding how Emscripten obtains the WebAssembly module.
 This may be necessary in Cloudflare Workers, which can't compile WebAssembly modules from binary data.
 
+## Contents
+
 * [Type Parameters](#type-parameters)
-
   * [T](#t)
-
 * [Parameters](#parameters)
-
   * [baseVariant](#basevariant)
   * [options](#options)
-
 * [Returns](#returns)
 
 ## Type Parameters

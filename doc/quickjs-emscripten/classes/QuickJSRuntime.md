@@ -32,22 +32,16 @@ tuning.
 
 Configure ES module loading with [setModuleLoader](#setmoduleloader).
 
+## Contents
+
 * [Extends](#extends)
-
 * [Extended by](#extended-by)
-
 * [Implements](#implements)
-
 * [Properties](#properties)
-
   * [context](#context)
-
 * [Accessors](#accessors)
-
   * [alive](#alive)
-
 * [Methods](#methods)
-
   * [\[dispose\]()](#dispose)
   * [assertOwned()](#assertowned)
   * [computeMemoryUsage()](#computememoryusage)

@@ -10,8 +10,9 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:478](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L478)
 
-* [Type Parameters](#type-parameters)
+## Contents
 
+* [Type Parameters](#type-parameters)
   * [S](#s)
   * [F](#f)
 

@@ -8,8 +8,9 @@
 
 Defined in: [emscripten-types.ts:55](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L55)
 
-* [Properties](#properties)
+## Contents
 
+* [Properties](#properties)
   * [mappings](#mappings)
   * [names](#names)
   * [sources](#sources)

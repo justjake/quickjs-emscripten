@@ -24,7 +24,9 @@ To work with the asyncified version of this library, see these functions:
 * [newAsyncContext](newAsyncContext.md).
 * [newQuickJSAsyncWASMModule](newQuickJSAsyncWASMModule.md).
 
-- [Returns](#returns)
+## Contents
+
+* [Returns](#returns)
 
 ## Returns
 

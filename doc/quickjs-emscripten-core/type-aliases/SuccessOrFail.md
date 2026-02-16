@@ -13,8 +13,9 @@ Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:5](https://git
 Used as an optional.
 `{ value: S } | { error: E }`.
 
-* [Type Parameters](#type-parameters)
+## Contents
 
+* [Type Parameters](#type-parameters)
   * [S](#s)
   * [F](#f)
 

@@ -11,8 +11,9 @@ Defined in: [packages/quickjs-emscripten-core/src/types.ts:212](https://github.c
 Options for creating a [QuickJSContext](../classes/QuickJSContext.md) or [QuickJSAsyncContext](../classes/QuickJSAsyncContext.md)
 Pass to [QuickJSRuntime#newContext](../classes/QuickJSRuntime.md#newcontext).
 
-* [Properties](#properties)
+## Contents
 
+* [Properties](#properties)
   * [intrinsics?](#intrinsics)
 
 ## Properties

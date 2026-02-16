@@ -11,10 +11,10 @@ Defined in: [emscripten-types.ts:247](https://github.com/justjake/quickjs-emscri
 Typings for the features we use to interface with our Emscripten build of
 QuickJS.
 
+## Contents
+
 * [Extends](#extends)
-
 * [Properties](#properties)
-
   * [callbacks](#callbacks)
   * [FAST\_MEMORY](#fast_memory)
   * [HEAP16](#heap16)
@@ -30,9 +30,7 @@ QuickJS.
   * [type](#type)
   * [wasmBinary?](#wasmbinary)
   * [wasmMemory?](#wasmmemory)
-
 * [Methods](#methods)
-
   * [\_free()](#_free)
   * [\_malloc()](#_malloc)
   * [cwrap()](#cwrap)

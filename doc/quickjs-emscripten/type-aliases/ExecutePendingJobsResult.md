@@ -14,6 +14,8 @@ Used as an optional for the results of executing pendingJobs.
 On success, `value` contains the number of async jobs executed
 by the runtime.
 
+## Contents
+
 * [Source](#source)
 
 ## Source

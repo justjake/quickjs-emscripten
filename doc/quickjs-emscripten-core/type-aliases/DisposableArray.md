@@ -15,8 +15,9 @@ An `Array` that also implements [Disposable](../interfaces/Disposable.md):
 * Considered [Disposable#alive](../interfaces/Disposable.md#alive) if any of its elements are `alive`.
 * When [Disposable#dispose](../interfaces/Disposable.md#dispose-1)d, it will dispose of all its elements that are `alive`.
 
-- [Type Parameters](#type-parameters)
+## Contents
 
+* [Type Parameters](#type-parameters)
   * [T](#t)
 
 ## Type Parameters

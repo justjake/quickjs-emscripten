@@ -11,8 +11,9 @@ Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:33](https:
 Fulfilled promise state.
 See [JSPromiseState](../type-aliases/JSPromiseState.md).
 
-* [Properties](#properties)
+## Contents
 
+* [Properties](#properties)
   * [error?](#error)
   * [notAPromise?](#notapromise)
   * [type](#type)

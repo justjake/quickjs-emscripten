@@ -13,6 +13,8 @@ Defined in: [packages/quickjs-emscripten/src/mod.ts:41](https://github.com/justj
 Provides synchronous access to the shared [QuickJSWASMModule](../classes/QuickJSWASMModule.md) instance returned by [getQuickJS](getQuickJS.md), as long as
 least once.
 
+## Contents
+
 * [Returns](#returns)
 * [Throws](#throws)
 

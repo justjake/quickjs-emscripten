@@ -8,14 +8,13 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/types.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L92)
 
+## Contents
+
 * [Extended by](#extended-by)
-
 * [Parameters](#parameters)
-
   * [baseModuleName](#basemodulename)
   * [requestedName](#requestedname)
   * [vm](#vm)
-
 * [Returns](#returns)
 
 ## Extended by

@@ -16,16 +16,13 @@ Helper intended to memoize the creation of a WebAssembly module.
 const getDebugModule = memoizePromiseFactory(() => newQuickJSWASMModule(DEBUG_SYNC))
 ```
 
+## Contents
+
 * [Type Parameters](#type-parameters)
-
   * [T](#t)
-
 * [Parameters](#parameters)
-
   * [fn](#fn)
-
 * [Returns](#returns)
-
   * [Returns](#returns-1)
 
 ## Type Parameters

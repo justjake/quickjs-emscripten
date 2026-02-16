@@ -8,14 +8,12 @@
 
 Defined in: [packages/quickjs-ffi-types/src/emscripten-types.ts:255](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L255)
 
+## Contents
+
 * [Type Parameters](#type-parameters)
-
   * [T](#t)
-
 * [Parameters](#parameters)
-
   * [options?](#options)
-
 * [Returns](#returns)
 
 ## Type Parameters

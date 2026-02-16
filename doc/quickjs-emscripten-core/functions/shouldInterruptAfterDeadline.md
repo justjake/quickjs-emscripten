@@ -12,10 +12,10 @@ Defined in: [packages/quickjs-emscripten-core/src/interrupt-helpers.ts:9](https:
 
 Returns an interrupt handler that interrupts Javascript execution after a deadline time.
 
+## Contents
+
 * [Parameters](#parameters)
-
   * [deadline](#deadline)
-
 * [Returns](#returns)
 
 ## Parameters

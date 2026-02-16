@@ -11,8 +11,9 @@ Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:45](https:
 Rejected promise state.
 See [JSPromiseState](../type-aliases/JSPromiseState.md).
 
-* [Properties](#properties)
+## Contents
 
+* [Properties](#properties)
   * [error](#error)
   * [type](#type)
 
