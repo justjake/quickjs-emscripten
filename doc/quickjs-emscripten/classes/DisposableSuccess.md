@@ -4,13 +4,34 @@
 
 [quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / DisposableSuccess
 
-# Class: DisposableSuccess\<S\>
+# Class: DisposableSuccess\<S>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:424](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L424)
 
+## Contents
+
+* [Extends](#extends)
+* [Type Parameters](#type-parameters)
+  * [S](#s)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Properties](#properties)
+  * [error?](#error)
+  * [value](#value-1)
+* [Accessors](#accessors)
+  * [alive](#alive)
+* [Methods](#methods)
+  * [\[dispose\]()](#dispose)
+  * [dispose()](#dispose-1)
+  * [unwrap()](#unwrap)
+  * [unwrapOr()](#unwrapor)
+  * [fail()](#fail)
+  * [is()](#is)
+  * [success()](#success)
+
 ## Extends
 
-- `AbstractDisposableResult`
+* `AbstractDisposableResult`
 
 ## Type Parameters
 
@@ -22,7 +43,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:424](https://githu
 
 ### Constructor
 
-> **new DisposableSuccess**\<`S`\>(`value`): `DisposableSuccess`\<`S`\>
+> **new DisposableSuccess**<`S`>(`value`): `DisposableSuccess`<`S`>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:427](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L427)
 
@@ -34,7 +55,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:427](https://githu
 
 #### Returns
 
-`DisposableSuccess`\<`S`\>
+`DisposableSuccess`<`S`>
 
 #### Overrides
 
@@ -76,9 +97,9 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:431](https://githu
 
 ## Methods
 
-### \[dispose\]()
+### \[dispose]\()
 
-> **\[dispose\]**(): `void`
+> **\[dispose]**(): `void`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
@@ -124,7 +145,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:441](https://githu
 
 ### unwrapOr()
 
-> **unwrapOr**\<`T`\>(`_fallback`): `S` \| `T`
+> **unwrapOr**<`T`>(`_fallback`): `S` | `T`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:445](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L445)
 
@@ -142,13 +163,13 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:445](https://githu
 
 #### Returns
 
-`S` \| `T`
+`S` | `T`
 
 ***
 
 ### fail()
 
-> `static` **fail**\<`S`, `F`\>(`error`, `onUnwrap`): [`DisposableFail`](DisposableFail.md)\<`F`\>
+> `static` **fail**<`S`, `F`>(`error`, `onUnwrap`): [`DisposableFail`](DisposableFail.md)<`F`>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:409](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L409)
 
@@ -174,7 +195,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:409](https://githu
 
 #### Returns
 
-[`DisposableFail`](DisposableFail.md)\<`F`\>
+[`DisposableFail`](DisposableFail.md)<`F`>
 
 #### Inherited from
 
@@ -184,7 +205,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:409](https://githu
 
 ### is()
 
-> `static` **is**\<`S`, `F`\>(`result`): `result is DisposableResult<S, F>`
+> `static` **is**<`S`, `F`>(`result`): `result is DisposableResult<S, F>`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:416](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L416)
 
@@ -202,7 +223,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:416](https://githu
 
 ##### result
 
-[`SuccessOrFail`](../README.md#successorfail)\<`S`, `F`\>
+[`SuccessOrFail`](../type-aliases/SuccessOrFail.md)<`S`, `F`>
 
 #### Returns
 
@@ -216,7 +237,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:416](https://githu
 
 ### success()
 
-> `static` **success**\<`S`, `F`\>(`value`): `DisposableSuccess`\<`S`\>
+> `static` **success**<`S`, `F`>(`value`): `DisposableSuccess`<`S`>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:405](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L405)
 
@@ -238,7 +259,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:405](https://githu
 
 #### Returns
 
-`DisposableSuccess`\<`S`\>
+`DisposableSuccess`<`S`>
 
 #### Inherited from
 

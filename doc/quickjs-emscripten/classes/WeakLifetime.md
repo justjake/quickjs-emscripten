@@ -4,7 +4,7 @@
 
 [quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / WeakLifetime
 
-# Class: WeakLifetime\<T, TCopy, Owner\>
+# Class: WeakLifetime\<T, TCopy, Owner>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:223](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L223)
 
@@ -14,9 +14,39 @@ do.
 
 Used for function arguments.
 
+## Contents
+
+* [Extends](#extends)
+* [Type Parameters](#type-parameters)
+  * [T](#t)
+  * [TCopy](#tcopy)
+  * [Owner](#owner)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Properties](#properties)
+  * [\_alive](#_alive)
+  * [\_constructorStack](#_constructorstack)
+  * [\_owner?](#_owner)
+  * [\_value](#_value)
+  * [copier()?](#copier-1)
+  * [disposer()?](#disposer-1)
+* [Accessors](#accessors)
+  * [alive](#alive)
+  * [dupable](#dupable)
+  * [owner](#owner-2)
+  * [value](#value-3)
+* [Methods](#methods)
+  * [\[dispose\]()](#dispose)
+  * [assertAlive()](#assertalive)
+  * [consume()](#consume)
+  * [dispose()](#dispose-1)
+  * [dup()](#dup)
+  * [map()](#map-2)
+  * [tap()](#tap)
+
 ## Extends
 
-- [`Lifetime`](Lifetime.md)\<`T`, `TCopy`, `Owner`\>
+* [`Lifetime`](Lifetime.md)<`T`, `TCopy`, `Owner`>
 
 ## Type Parameters
 
@@ -36,7 +66,7 @@ Used for function arguments.
 
 ### Constructor
 
-> **new WeakLifetime**\<`T`, `TCopy`, `Owner`\>(`value`, `copier?`, `disposer?`, `owner?`): `WeakLifetime`\<`T`, `TCopy`, `Owner`\>
+> **new WeakLifetime**<`T`, `TCopy`, `Owner`>(`value`, `copier?`, `disposer?`, `owner?`): `WeakLifetime`<`T`, `TCopy`, `Owner`>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:224](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L224)
 
@@ -60,7 +90,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:224](https://githu
 
 #### Returns
 
-`WeakLifetime`\<`T`, `TCopy`, `Owner`\>
+`WeakLifetime`<`T`, `TCopy`, `Owner`>
 
 #### Overrides
 
@@ -82,7 +112,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:72](https://github
 
 ### \_constructorStack
 
-> `protected` **\_constructorStack**: `string` \| `undefined`
+> `protected` **\_constructorStack**: `string` | `undefined`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:73](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L73)
 
@@ -202,13 +232,13 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:111](https://githu
 
 #### Get Signature
 
-> **get** **owner**(): `Owner` \| `undefined`
+> **get** **owner**(): `Owner` | `undefined`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:107](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L107)
 
 ##### Returns
 
-`Owner` \| `undefined`
+`Owner` | `undefined`
 
 #### Inherited from
 
@@ -241,9 +271,9 @@ If the lifetime has been [dispose](Lifetime.md#dispose-1)d already.
 
 ## Methods
 
-### \[dispose\]()
+### \[dispose]\()
 
-> **\[dispose\]**(): `void`
+> **\[dispose]**(): `void`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
@@ -279,7 +309,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:182](https://githu
 
 #### Call Signature
 
-> **consume**\<`O`\>(`map`): `O`
+> **consume**<`O`>(`map`): `O`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:135](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L135)
 
@@ -309,7 +339,7 @@ the result of `map(this)`.
 
 #### Call Signature
 
-> **consume**\<`O`\>(`map`): `O`
+> **consume**<`O`>(`map`): `O`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:138](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L138)
 
@@ -359,7 +389,7 @@ Dispose of [value](Lifetime.md#value) and perform cleanup.
 
 ### dup()
 
-> **dup**(): [`Lifetime`](Lifetime.md)\<`TCopy`, `TCopy`, `Owner`\>
+> **dup**(): [`Lifetime`](Lifetime.md)<`TCopy`, `TCopy`, `Owner`>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:118](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L118)
 
@@ -367,7 +397,7 @@ Create a new handle pointing to the same [value](Lifetime.md#value).
 
 #### Returns
 
-[`Lifetime`](Lifetime.md)\<`TCopy`, `TCopy`, `Owner`\>
+[`Lifetime`](Lifetime.md)<`TCopy`, `TCopy`, `Owner`>
 
 #### Inherited from
 
@@ -379,7 +409,7 @@ Create a new handle pointing to the same [value](Lifetime.md#value).
 
 #### Call Signature
 
-> **map**\<`O`\>(`map`): `O`
+> **map**<`O`>(`map`): `O`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:151](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L151)
 
@@ -410,7 +440,7 @@ the result of `map(this)`.
 
 #### Call Signature
 
-> **map**\<`O`\>(`map`): `O`
+> **map**<`O`>(`map`): `O`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:152](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L152)
 
@@ -471,7 +501,7 @@ this
 
 #### Call Signature
 
-> **tap**(`fn`): [`QuickJSHandle`](../README.md#quickjshandle)
+> **tap**(`fn`): [`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:165](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L165)
 
@@ -487,7 +517,7 @@ you're building up objects, or to add logging in the middle of a call chain.
 
 ##### Returns
 
-[`QuickJSHandle`](../README.md#quickjshandle)
+[`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 this
 

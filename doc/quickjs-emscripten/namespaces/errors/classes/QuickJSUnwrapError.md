@@ -10,9 +10,19 @@ Defined in: [packages/quickjs-emscripten-core/src/errors.ts:6](https://github.co
 
 Error thrown if [QuickJSContext#unwrapResult](../../../classes/QuickJSContext.md#unwrapresult) unwraps an error value that isn't an object.
 
+## Contents
+
+* [Extends](#extends)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Properties](#properties)
+  * [cause](#cause-1)
+  * [context?](#context-1)
+  * [name](#name)
+
 ## Extends
 
-- `Error`
+* `Error`
 
 ## Constructors
 

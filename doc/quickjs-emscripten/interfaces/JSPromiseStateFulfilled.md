@@ -9,7 +9,15 @@
 Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:33](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L33)
 
 Fulfilled promise state.
-See [JSPromiseState](../README.md#jspromisestate).
+See [JSPromiseState](../type-aliases/JSPromiseState.md).
+
+## Contents
+
+* [Properties](#properties)
+  * [error?](#error)
+  * [notAPromise?](#notapromise)
+  * [type](#type)
+  * [value](#value)
 
 ## Properties
 
@@ -41,6 +49,6 @@ Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:34](https:
 
 ### value
 
-> **value**: [`QuickJSHandle`](../README.md#quickjshandle)
+> **value**: [`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:35](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L35)

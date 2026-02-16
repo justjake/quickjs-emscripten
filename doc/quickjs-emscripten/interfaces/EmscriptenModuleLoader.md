@@ -4,9 +4,17 @@
 
 [quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / EmscriptenModuleLoader
 
-# Interface: EmscriptenModuleLoader()\<T\>
+# Interface: EmscriptenModuleLoader()\<T>
 
 Defined in: packages/quickjs-ffi-types/dist/index.d.ts:338
+
+## Contents
+
+* [Type Parameters](#type-parameters)
+  * [T](#t)
+* [Parameters](#parameters)
+  * [options?](#options)
+* [Returns](#returns)
 
 ## Type Parameters
 
@@ -14,7 +22,7 @@ Defined in: packages/quickjs-ffi-types/dist/index.d.ts:338
 
 `T` *extends* [`EmscriptenModule`](EmscriptenModule.md)
 
-> **EmscriptenModuleLoader**(`options?`): `Promise`\<`T`\>
+> **EmscriptenModuleLoader**(`options?`): `Promise`<`T`>
 
 Defined in: packages/quickjs-ffi-types/dist/index.d.ts:339
 
@@ -26,4 +34,4 @@ Defined in: packages/quickjs-ffi-types/dist/index.d.ts:339
 
 ## Returns
 
-`Promise`\<`T`\>
+`Promise`<`T`>

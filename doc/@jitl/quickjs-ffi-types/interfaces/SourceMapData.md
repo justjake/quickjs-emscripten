@@ -8,6 +8,14 @@
 
 Defined in: [emscripten-types.ts:55](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L55)
 
+## Contents
+
+* [Properties](#properties)
+  * [mappings](#mappings)
+  * [names](#names)
+  * [sources](#sources)
+  * [version](#version)
+
 ## Properties
 
 ### mappings
@@ -20,7 +28,7 @@ Defined in: [emscripten-types.ts:59](https://github.com/justjake/quickjs-emscrip
 
 ### names
 
-> **names**: `string`[]
+> **names**: `string`\[]
 
 Defined in: [emscripten-types.ts:58](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L58)
 
@@ -28,7 +36,7 @@ Defined in: [emscripten-types.ts:58](https://github.com/justjake/quickjs-emscrip
 
 ### sources
 
-> **sources**: `string`[]
+> **sources**: `string`\[]
 
 Defined in: [emscripten-types.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/emscripten-types.ts#L57)
 

@@ -33,10 +33,10 @@ Enables assertions and memory sanitizers. Try to run your tests against debug va
 
 Exports the following in package.json for the package entrypoint:
 
-- Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.
-- Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
-- Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.
-- Targets Cloudflare Workers.
+* Exports a NodeJS-compatible CommonJS module, which is faster to load and run compared to an ESModule.
+* Exports a NodeJS-compatible ESModule. Cannot be imported synchronously from a NodeJS CommonJS module.
+* Exports a browser-compatible ESModule, designed to work in browsers and browser-like environments.
+* Targets Cloudflare Workers.
 
 ## Extra async magic? Yes
 
@@ -100,21 +100,4 @@ Variant-specific Emscripten build flags:
 
 ## Variables
 
-### default
-
-> `const` **default**: [`QuickJSAsyncVariant`](../../quickjs-emscripten/interfaces/QuickJSAsyncVariant.md)
-
-Defined in: [index.ts:18](https://github.com/justjake/quickjs-emscripten/blob/main/packages/variant-quickjs-ng-wasmfile-debug-asyncify/src/index.ts#L18)
-
-### @jitl/quickjs-ng-wasmfile-debug-asyncify
-
-[Docs](https://github.com/justjake/quickjs-emscripten/blob/main/doc/@jitl/quickjs-ng-wasmfile-debug-asyncify/README.md) |
-Variant with separate .WASM file. Supports browser ESM, NodeJS ESM, and NodeJS CommonJS.
-
-| Variable            |    Setting                     |    Description    |
-| --                  | --                             | --                |
-| library             | quickjs-ng             | [quickjs-ng](https://github.com/quickjs-ng/quickjs) is a fork of quickjs that tends to add features more quickly. Version [v0.12.1](https://github.com/quickjs-ng/quickjs/releases/tag/v0.12.1) vendored to quickjs-emscripten. |
-| releaseMode         | debug         | Enables assertions and memory sanitizers. Try to run your tests against debug variants, in addition to your preferred production variant, to catch more bugs. |
-| syncMode            | asyncify            | Build run through the ASYNCIFY WebAssembly transform. This imposes substantial size (2x the size of sync) and speed penalties (40% the speed of sync). In return, allows synchronous calls from the QuickJS WASM runtime to async functions on the host. The extra magic makes this variant slower than sync variants. Note that both variants support regular async functions. Only adopt ASYNCIFY if you need to! The [QuickJSAsyncRuntime](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncRuntime.md) and [QuickJSAsyncContext](https://github.com/justjake/quickjs-emscripten/blob/main/doc/quickjs-emscripten/classes/QuickJSAsyncContext.md) classes expose the ASYNCIFY-specific APIs. |
-| emscriptenInclusion | wasm | Has a separate .wasm file. May offer better caching in your browser, and reduces the size of your JS bundle. If you have issues, try a 'singlefile' variant. |
-| exports             | require import browser workerd                  | Has these package.json export conditions |
+* [default](variables/default.md)

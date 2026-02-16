@@ -12,6 +12,80 @@ Low-level FFI bindings to QuickJS's Emscripten module.
 See instead QuickJSContext, the public Javascript interface exposed by this
 library.
 
+## Contents
+
+* [Unstable](#unstable)
+* [Properties](#properties)
+  * [DEBUG](#debug)
+  * [QTS\_ArgvGetJSValueConstPointer()](#qts_argvgetjsvalueconstpointer)
+  * [QTS\_bjson\_decode()](#qts_bjson_decode)
+  * [QTS\_bjson\_encode()](#qts_bjson_encode)
+  * [QTS\_BuildIsAsyncify()](#qts_buildisasyncify)
+  * [QTS\_BuildIsDebug()](#qts_buildisdebug)
+  * [QTS\_BuildIsSanitizeLeak()](#qts_buildissanitizeleak)
+  * [QTS\_Call()](#qts_call)
+  * [QTS\_DefineProp()](#qts_defineprop)
+  * [QTS\_Dump()](#qts_dump)
+  * [QTS\_DupValuePointer()](#qts_dupvaluepointer)
+  * [QTS\_Eval()](#qts_eval)
+  * [QTS\_ExecutePendingJob()](#qts_executependingjob)
+  * [QTS\_FreeContext()](#qts_freecontext)
+  * [QTS\_FreeCString()](#qts_freecstring)
+  * [QTS\_FreeRuntime()](#qts_freeruntime)
+  * [QTS\_FreeValuePointer()](#qts_freevaluepointer)
+  * [QTS\_FreeValuePointerRuntime()](#qts_freevaluepointerruntime)
+  * [QTS\_FreeVoidPointer()](#qts_freevoidpointer)
+  * [QTS\_GetArrayBuffer()](#qts_getarraybuffer)
+  * [QTS\_GetArrayBufferLength()](#qts_getarraybufferlength)
+  * [QTS\_GetDebugLogEnabled()](#qts_getdebuglogenabled)
+  * [QTS\_GetFalse()](#qts_getfalse)
+  * [QTS\_GetFloat64()](#qts_getfloat64)
+  * [QTS\_GetGlobalObject()](#qts_getglobalobject)
+  * [QTS\_GetHostRefId()](#qts_gethostrefid)
+  * [QTS\_GetLength()](#qts_getlength)
+  * [QTS\_GetModuleNamespace()](#qts_getmodulenamespace)
+  * [QTS\_GetNull()](#qts_getnull)
+  * [QTS\_GetOwnPropertyNames()](#qts_getownpropertynames)
+  * [QTS\_GetProp()](#qts_getprop)
+  * [QTS\_GetPropNumber()](#qts_getpropnumber)
+  * [QTS\_GetString()](#qts_getstring)
+  * [QTS\_GetSymbolDescriptionOrKey()](#qts_getsymboldescriptionorkey)
+  * [QTS\_GetTrue()](#qts_gettrue)
+  * [QTS\_GetUndefined()](#qts_getundefined)
+  * [QTS\_IsEqual()](#qts_isequal)
+  * [QTS\_IsGlobalSymbol()](#qts_isglobalsymbol)
+  * [QTS\_IsJobPending()](#qts_isjobpending)
+  * [QTS\_NewArray()](#qts_newarray)
+  * [QTS\_NewArrayBuffer()](#qts_newarraybuffer)
+  * [QTS\_NewContext()](#qts_newcontext)
+  * [QTS\_NewError()](#qts_newerror)
+  * [QTS\_NewFloat64()](#qts_newfloat64)
+  * [QTS\_NewFunction()](#qts_newfunction)
+  * [QTS\_NewHostRef()](#qts_newhostref)
+  * [QTS\_NewObject()](#qts_newobject)
+  * [QTS\_NewObjectProto()](#qts_newobjectproto)
+  * [QTS\_NewPromiseCapability()](#qts_newpromisecapability)
+  * [QTS\_NewRuntime()](#qts_newruntime)
+  * [QTS\_NewString()](#qts_newstring)
+  * [QTS\_NewSymbol()](#qts_newsymbol)
+  * [QTS\_PromiseResult()](#qts_promiseresult)
+  * [QTS\_PromiseState()](#qts_promisestate)
+  * [QTS\_RecoverableLeakCheck()](#qts_recoverableleakcheck)
+  * [QTS\_ResolveException()](#qts_resolveexception)
+  * [QTS\_RuntimeComputeMemoryUsage()](#qts_runtimecomputememoryusage)
+  * [QTS\_RuntimeDisableInterruptHandler()](#qts_runtimedisableinterrupthandler)
+  * [QTS\_RuntimeDisableModuleLoader()](#qts_runtimedisablemoduleloader)
+  * [QTS\_RuntimeDumpMemoryUsage()](#qts_runtimedumpmemoryusage)
+  * [QTS\_RuntimeEnableInterruptHandler()](#qts_runtimeenableinterrupthandler)
+  * [QTS\_RuntimeEnableModuleLoader()](#qts_runtimeenablemoduleloader)
+  * [QTS\_RuntimeSetMaxStackSize()](#qts_runtimesetmaxstacksize)
+  * [QTS\_RuntimeSetMemoryLimit()](#qts_runtimesetmemorylimit)
+  * [QTS\_SetDebugLogEnabled()](#qts_setdebuglogenabled)
+  * [QTS\_SetProp()](#qts_setprop)
+  * [QTS\_TestStringArg()](#qts_teststringarg)
+  * [QTS\_Throw()](#qts_throw)
+  * [QTS\_Typeof()](#qts_typeof)
+
 ## Unstable
 
 The FFI interface is considered private and may change.
@@ -30,7 +104,7 @@ Set at compile time.
 
 ### QTS\_ArgvGetJSValueConstPointer()
 
-> **QTS\_ArgvGetJSValueConstPointer**: (`argv`, `index`) => [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+> **QTS\_ArgvGetJSValueConstPointer**: (`argv`, `index`) => [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 Defined in: [ffi.ts:207](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L207)
 
@@ -38,7 +112,7 @@ Defined in: [ffi.ts:207](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### argv
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### index
 
@@ -46,13 +120,13 @@ Defined in: [ffi.ts:207](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 #### Returns
 
-[`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ***
 
 ### QTS\_bjson\_decode()
 
-> **QTS\_bjson\_decode**: (`ctx`, `data`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_bjson\_decode**: (`ctx`, `data`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:219](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L219)
 
@@ -60,21 +134,21 @@ Defined in: [ffi.ts:219](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### data
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_bjson\_encode()
 
-> **QTS\_bjson\_encode**: (`ctx`, `val`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_bjson\_encode**: (`ctx`, `val`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:215](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L215)
 
@@ -82,15 +156,15 @@ Defined in: [ffi.ts:215](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### val
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
@@ -132,7 +206,7 @@ Defined in: [ffi.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ### QTS\_Call()
 
-> **QTS\_Call**: (`ctx`, `func_obj`, `this_obj`, `argc`, `argv_ptrs`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_Call**: (`ctx`, `func_obj`, `this_obj`, `argc`, `argv_ptrs`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:143](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L143)
 
@@ -140,15 +214,15 @@ Defined in: [ffi.ts:143](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### func\_obj
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### this\_obj
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### argc
 
@@ -156,11 +230,11 @@ Defined in: [ffi.ts:143](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### argv\_ptrs
 
-[`JSValueConstPointerPointer`](../README.md#jsvalueconstpointerpointer)
+[`JSValueConstPointerPointer`](../type-aliases/JSValueConstPointerPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
@@ -174,27 +248,27 @@ Defined in: [ffi.ts:125](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### this\_val
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### prop\_name
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### prop\_value
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### get
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### set
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### configurable
 
@@ -216,7 +290,7 @@ Defined in: [ffi.ts:125](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ### QTS\_Dump()
 
-> **QTS\_Dump**: (`ctx`, `obj`) => [`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
+> **QTS\_Dump**: (`ctx`, `obj`) => [`JSBorrowedCharPointer`](../type-aliases/JSBorrowedCharPointer.md)
 
 Defined in: [ffi.ts:151](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L151)
 
@@ -224,21 +298,21 @@ Defined in: [ffi.ts:151](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### obj
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
+[`JSBorrowedCharPointer`](../type-aliases/JSBorrowedCharPointer.md)
 
 ***
 
 ### QTS\_DupValuePointer()
 
-> **QTS\_DupValuePointer**: (`ctx`, `val`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_DupValuePointer**: (`ctx`, `val`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:63](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L63)
 
@@ -246,21 +320,21 @@ Defined in: [ffi.ts:63](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### val
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_Eval()
 
-> **QTS\_Eval**: (`ctx`, `js_code`, `js_code_length`, `filename`, `detectModule`, `evalFlags`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_Eval**: (`ctx`, `js_code`, `js_code_length`, `filename`, `detectModule`, `evalFlags`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:155](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L155)
 
@@ -268,11 +342,11 @@ Defined in: [ffi.ts:155](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### js\_code
 
-[`BorrowedHeapCharPointer`](../README.md#borrowedheapcharpointer)
+[`BorrowedHeapCharPointer`](../type-aliases/BorrowedHeapCharPointer.md)
 
 ##### js\_code\_length
 
@@ -288,17 +362,17 @@ Defined in: [ffi.ts:155](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### evalFlags
 
-[`EvalFlags`](../README.md#evalflags)
+[`EvalFlags`](../variables/EvalFlags.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_ExecutePendingJob()
 
-> **QTS\_ExecutePendingJob**: (`rt`, `maxJobsToExecute`, `lastJobContext`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_ExecutePendingJob**: (`rt`, `maxJobsToExecute`, `lastJobContext`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:104](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L104)
 
@@ -306,7 +380,7 @@ Defined in: [ffi.ts:104](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 ##### maxJobsToExecute
 
@@ -314,11 +388,11 @@ Defined in: [ffi.ts:104](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### lastJobContext
 
-[`JSContextPointerPointer`](../README.md#jscontextpointerpointer)
+[`JSContextPointerPointer`](../type-aliases/JSContextPointerPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
@@ -332,7 +406,7 @@ Defined in: [ffi.ts:58](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 #### Returns
 
@@ -350,11 +424,11 @@ Defined in: [ffi.ts:62](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### str
 
-[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
+[`JSBorrowedCharPointer`](../type-aliases/JSBorrowedCharPointer.md)
 
 #### Returns
 
@@ -372,7 +446,7 @@ Defined in: [ffi.ts:56](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 #### Returns
 
@@ -390,11 +464,11 @@ Defined in: [ffi.ts:59](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### value
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 #### Returns
 
@@ -412,11 +486,11 @@ Defined in: [ffi.ts:60](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 ##### value
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 #### Returns
 
@@ -434,11 +508,11 @@ Defined in: [ffi.ts:61](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### ptr
 
-[`JSVoidPointer`](../README.md#jsvoidpointer)
+[`JSVoidPointer`](../type-aliases/JSVoidPointer.md)
 
 #### Returns
 
@@ -448,7 +522,7 @@ Defined in: [ffi.ts:61](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ### QTS\_GetArrayBuffer()
 
-> **QTS\_GetArrayBuffer**: (`ctx`, `data`) => [`JSVoidPointer`](../README.md#jsvoidpointer)
+> **QTS\_GetArrayBuffer**: (`ctx`, `data`) => [`JSVoidPointer`](../type-aliases/JSVoidPointer.md)
 
 Defined in: [ffi.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L85)
 
@@ -456,15 +530,15 @@ Defined in: [ffi.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### data
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSVoidPointer`](../README.md#jsvoidpointer)
+[`JSVoidPointer`](../type-aliases/JSVoidPointer.md)
 
 ***
 
@@ -478,11 +552,11 @@ Defined in: [ffi.ts:89](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### data
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
@@ -500,7 +574,7 @@ Defined in: [ffi.ts:196](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 #### Returns
 
@@ -510,13 +584,13 @@ Defined in: [ffi.ts:196](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ### QTS\_GetFalse()
 
-> **QTS\_GetFalse**: () => [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+> **QTS\_GetFalse**: () => [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 Defined in: [ffi.ts:51](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L51)
 
 #### Returns
 
-[`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ***
 
@@ -530,11 +604,11 @@ Defined in: [ffi.ts:79](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### value
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
@@ -544,7 +618,7 @@ Defined in: [ffi.ts:79](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ### QTS\_GetGlobalObject()
 
-> **QTS\_GetGlobalObject**: (`ctx`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_GetGlobalObject**: (`ctx`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:182](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L182)
 
@@ -552,11 +626,11 @@ Defined in: [ffi.ts:182](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
@@ -570,7 +644,7 @@ Defined in: [ffi.ts:54](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### value
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
@@ -588,15 +662,15 @@ Defined in: [ffi.ts:171](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### out\_len
 
-[`UInt32Pointer`](../README.md#uint32pointer)
+[`UInt32Pointer`](../type-aliases/UInt32Pointer.md)
 
 ##### value
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
@@ -606,7 +680,7 @@ Defined in: [ffi.ts:171](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ### QTS\_GetModuleNamespace()
 
-> **QTS\_GetModuleNamespace**: (`ctx`, `module_func_obj`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_GetModuleNamespace**: (`ctx`, `module_func_obj`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:163](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L163)
 
@@ -614,33 +688,33 @@ Defined in: [ffi.ts:163](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### module\_func\_obj
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_GetNull()
 
-> **QTS\_GetNull**: () => [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+> **QTS\_GetNull**: () => [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 Defined in: [ffi.ts:50](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L50)
 
 #### Returns
 
-[`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ***
 
 ### QTS\_GetOwnPropertyNames()
 
-> **QTS\_GetOwnPropertyNames**: (`ctx`, `out_ptrs`, `out_len`, `obj`, `flags`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_GetOwnPropertyNames**: (`ctx`, `out_ptrs`, `out_len`, `obj`, `flags`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:136](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L136)
 
@@ -648,19 +722,19 @@ Defined in: [ffi.ts:136](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### out\_ptrs
 
-[`JSValuePointerPointerPointer`](../README.md#jsvaluepointerpointerpointer)
+[`JSValuePointerPointerPointer`](../type-aliases/JSValuePointerPointerPointer.md)
 
 ##### out\_len
 
-[`UInt32Pointer`](../README.md#uint32pointer)
+[`UInt32Pointer`](../type-aliases/UInt32Pointer.md)
 
 ##### obj
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### flags
 
@@ -668,13 +742,13 @@ Defined in: [ffi.ts:136](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_GetProp()
 
-> **QTS\_GetProp**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_GetProp**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:109](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L109)
 
@@ -682,25 +756,25 @@ Defined in: [ffi.ts:109](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### this\_val
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### prop\_name
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_GetPropNumber()
 
-> **QTS\_GetPropNumber**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_GetPropNumber**: (`ctx`, `this_val`, `prop_name`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:114](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L114)
 
@@ -708,11 +782,11 @@ Defined in: [ffi.ts:114](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### this\_val
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### prop\_name
 
@@ -720,13 +794,13 @@ Defined in: [ffi.ts:114](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_GetString()
 
-> **QTS\_GetString**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
+> **QTS\_GetString**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../type-aliases/JSBorrowedCharPointer.md)
 
 Defined in: [ffi.ts:81](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L81)
 
@@ -734,21 +808,21 @@ Defined in: [ffi.ts:81](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### value
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
+[`JSBorrowedCharPointer`](../type-aliases/JSBorrowedCharPointer.md)
 
 ***
 
 ### QTS\_GetSymbolDescriptionOrKey()
 
-> **QTS\_GetSymbolDescriptionOrKey**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
+> **QTS\_GetSymbolDescriptionOrKey**: (`ctx`, `value`) => [`JSBorrowedCharPointer`](../type-aliases/JSBorrowedCharPointer.md)
 
 Defined in: [ffi.ts:98](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L98)
 
@@ -756,39 +830,39 @@ Defined in: [ffi.ts:98](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### value
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSBorrowedCharPointer`](../README.md#jsborrowedcharpointer)
+[`JSBorrowedCharPointer`](../type-aliases/JSBorrowedCharPointer.md)
 
 ***
 
 ### QTS\_GetTrue()
 
-> **QTS\_GetTrue**: () => [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+> **QTS\_GetTrue**: () => [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 Defined in: [ffi.ts:52](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L52)
 
 #### Returns
 
-[`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ***
 
 ### QTS\_GetUndefined()
 
-> **QTS\_GetUndefined**: () => [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+> **QTS\_GetUndefined**: () => [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 Defined in: [ffi.ts:49](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L49)
 
 #### Returns
 
-[`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ***
 
@@ -802,19 +876,19 @@ Defined in: [ffi.ts:176](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### a
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### b
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### op
 
-[`IsEqualOp`](../README.md#isequalop)
+[`IsEqualOp`](../variables/IsEqualOp.md)
 
 #### Returns
 
@@ -832,11 +906,11 @@ Defined in: [ffi.ts:102](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### value
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
@@ -854,7 +928,7 @@ Defined in: [ffi.ts:103](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 #### Returns
 
@@ -864,7 +938,7 @@ Defined in: [ffi.ts:103](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ### QTS\_NewArray()
 
-> **QTS\_NewArray**: (`ctx`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_NewArray**: (`ctx`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:72](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L72)
 
@@ -872,17 +946,17 @@ Defined in: [ffi.ts:72](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_NewArrayBuffer()
 
-> **QTS\_NewArrayBuffer**: (`ctx`, `buffer`, `length`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_NewArrayBuffer**: (`ctx`, `buffer`, `length`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:73](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L73)
 
@@ -890,11 +964,11 @@ Defined in: [ffi.ts:73](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### buffer
 
-[`JSVoidPointer`](../README.md#jsvoidpointer)
+[`JSVoidPointer`](../type-aliases/JSVoidPointer.md)
 
 ##### length
 
@@ -902,13 +976,13 @@ Defined in: [ffi.ts:73](https://github.com/justjake/quickjs-emscripten/blob/main
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_NewContext()
 
-> **QTS\_NewContext**: (`rt`, `intrinsics`) => [`JSContextPointer`](../README.md#jscontextpointer)
+> **QTS\_NewContext**: (`rt`, `intrinsics`) => [`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 Defined in: [ffi.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L57)
 
@@ -916,21 +990,21 @@ Defined in: [ffi.ts:57](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 ##### intrinsics
 
-[`IntrinsicsFlags`](../README.md#intrinsicsflags)
+[`IntrinsicsFlags`](../variables/IntrinsicsFlags.md)
 
 #### Returns
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ***
 
 ### QTS\_NewError()
 
-> **QTS\_NewError**: (`ctx`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_NewError**: (`ctx`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L42)
 
@@ -938,17 +1012,17 @@ Defined in: [ffi.ts:42](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_NewFloat64()
 
-> **QTS\_NewFloat64**: (`ctx`, `num`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_NewFloat64**: (`ctx`, `num`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:78](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L78)
 
@@ -956,7 +1030,7 @@ Defined in: [ffi.ts:78](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### num
 
@@ -964,13 +1038,13 @@ Defined in: [ffi.ts:78](https://github.com/justjake/quickjs-emscripten/blob/main
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_NewFunction()
 
-> **QTS\_NewFunction**: (`ctx`, `name`, `arg_length`, `is_constructor`, `host_ref_id`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_NewFunction**: (`ctx`, `name`, `arg_length`, `is_constructor`, `host_ref_id`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:200](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L200)
 
@@ -978,7 +1052,7 @@ Defined in: [ffi.ts:200](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### name
 
@@ -998,13 +1072,13 @@ Defined in: [ffi.ts:200](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_NewHostRef()
 
-> **QTS\_NewHostRef**: (`ctx`, `id`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_NewHostRef**: (`ctx`, `id`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L53)
 
@@ -1012,7 +1086,7 @@ Defined in: [ffi.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### id
 
@@ -1020,13 +1094,13 @@ Defined in: [ffi.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_NewObject()
 
-> **QTS\_NewObject**: (`ctx`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_NewObject**: (`ctx`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L67)
 
@@ -1034,17 +1108,17 @@ Defined in: [ffi.ts:67](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_NewObjectProto()
 
-> **QTS\_NewObjectProto**: (`ctx`, `proto`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_NewObjectProto**: (`ctx`, `proto`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L68)
 
@@ -1052,21 +1126,21 @@ Defined in: [ffi.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### proto
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_NewPromiseCapability()
 
-> **QTS\_NewPromiseCapability**: (`ctx`, `resolve_funcs_out`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_NewPromiseCapability**: (`ctx`, `resolve_funcs_out`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:183](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L183)
 
@@ -1074,33 +1148,33 @@ Defined in: [ffi.ts:183](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### resolve\_funcs\_out
 
-[`JSValuePointerPointer`](../README.md#jsvaluepointerpointer)
+[`JSValuePointerPointer`](../type-aliases/JSValuePointerPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_NewRuntime()
 
-> **QTS\_NewRuntime**: () => [`JSRuntimePointer`](../README.md#jsruntimepointer)
+> **QTS\_NewRuntime**: () => [`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 Defined in: [ffi.ts:55](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L55)
 
 #### Returns
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 ***
 
 ### QTS\_NewString()
 
-> **QTS\_NewString**: (`ctx`, `string`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_NewString**: (`ctx`, `string`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:80](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L80)
 
@@ -1108,21 +1182,21 @@ Defined in: [ffi.ts:80](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### string
 
-[`BorrowedHeapCharPointer`](../README.md#borrowedheapcharpointer)
+[`BorrowedHeapCharPointer`](../type-aliases/BorrowedHeapCharPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_NewSymbol()
 
-> **QTS\_NewSymbol**: (`ctx`, `description`, `isGlobal`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_NewSymbol**: (`ctx`, `description`, `isGlobal`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:93](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L93)
 
@@ -1130,11 +1204,11 @@ Defined in: [ffi.ts:93](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### description
 
-[`BorrowedHeapCharPointer`](../README.md#borrowedheapcharpointer)
+[`BorrowedHeapCharPointer`](../type-aliases/BorrowedHeapCharPointer.md)
 
 ##### isGlobal
 
@@ -1142,13 +1216,13 @@ Defined in: [ffi.ts:93](https://github.com/justjake/quickjs-emscripten/blob/main
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_PromiseResult()
 
-> **QTS\_PromiseResult**: (`ctx`, `promise`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_PromiseResult**: (`ctx`, `promise`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:191](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L191)
 
@@ -1156,21 +1230,21 @@ Defined in: [ffi.ts:191](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### promise
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_PromiseState()
 
-> **QTS\_PromiseState**: (`ctx`, `promise`) => [`JSPromiseStateEnum`](../README.md#jspromisestateenum)
+> **QTS\_PromiseState**: (`ctx`, `promise`) => [`JSPromiseStateEnum`](../type-aliases/JSPromiseStateEnum.md)
 
 Defined in: [ffi.ts:187](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L187)
 
@@ -1178,15 +1252,15 @@ Defined in: [ffi.ts:187](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### promise
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSPromiseStateEnum`](../README.md#jspromisestateenum)
+[`JSPromiseStateEnum`](../type-aliases/JSPromiseStateEnum.md)
 
 ***
 
@@ -1204,7 +1278,7 @@ Defined in: [ffi.ts:46](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ### QTS\_ResolveException()
 
-> **QTS\_ResolveException**: (`ctx`, `maybe_exception`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_ResolveException**: (`ctx`, `maybe_exception`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:150](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L150)
 
@@ -1212,21 +1286,21 @@ Defined in: [ffi.ts:150](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### maybe\_exception
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_RuntimeComputeMemoryUsage()
 
-> **QTS\_RuntimeComputeMemoryUsage**: (`rt`, `ctx`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_RuntimeComputeMemoryUsage**: (`rt`, `ctx`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:44](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L44)
 
@@ -1234,15 +1308,15 @@ Defined in: [ffi.ts:44](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
@@ -1256,7 +1330,7 @@ Defined in: [ffi.ts:212](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 #### Returns
 
@@ -1274,7 +1348,7 @@ Defined in: [ffi.ts:214](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 #### Returns
 
@@ -1284,7 +1358,7 @@ Defined in: [ffi.ts:214](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ### QTS\_RuntimeDumpMemoryUsage()
 
-> **QTS\_RuntimeDumpMemoryUsage**: (`rt`) => [`OwnedHeapCharPointer`](../README.md#ownedheapcharpointer)
+> **QTS\_RuntimeDumpMemoryUsage**: (`rt`) => [`OwnedHeapCharPointer`](../type-aliases/OwnedHeapCharPointer.md)
 
 Defined in: [ffi.ts:45](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L45)
 
@@ -1292,11 +1366,11 @@ Defined in: [ffi.ts:45](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 #### Returns
 
-[`OwnedHeapCharPointer`](../README.md#ownedheapcharpointer)
+[`OwnedHeapCharPointer`](../type-aliases/OwnedHeapCharPointer.md)
 
 ***
 
@@ -1310,7 +1384,7 @@ Defined in: [ffi.ts:211](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 #### Returns
 
@@ -1328,7 +1402,7 @@ Defined in: [ffi.ts:213](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 ##### use\_custom\_normalize
 
@@ -1350,7 +1424,7 @@ Defined in: [ffi.ts:48](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 ##### stack\_size
 
@@ -1372,7 +1446,7 @@ Defined in: [ffi.ts:43](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 ##### limit
 
@@ -1394,7 +1468,7 @@ Defined in: [ffi.ts:197](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### rt
 
-[`JSRuntimePointer`](../README.md#jsruntimepointer)
+[`JSRuntimePointer`](../type-aliases/JSRuntimePointer.md)
 
 ##### is\_enabled
 
@@ -1416,19 +1490,19 @@ Defined in: [ffi.ts:119](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### this\_val
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### prop\_name
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 ##### prop\_value
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
@@ -1456,7 +1530,7 @@ Defined in: [ffi.ts:195](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ### QTS\_Throw()
 
-> **QTS\_Throw**: (`ctx`, `error`) => [`JSValuePointer`](../README.md#jsvaluepointer)
+> **QTS\_Throw**: (`ctx`, `error`) => [`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 Defined in: [ffi.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L41)
 
@@ -1464,21 +1538,21 @@ Defined in: [ffi.ts:41](https://github.com/justjake/quickjs-emscripten/blob/main
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### error
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`JSValuePointer`](../README.md#jsvaluepointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md)
 
 ***
 
 ### QTS\_Typeof()
 
-> **QTS\_Typeof**: (`ctx`, `value`) => [`OwnedHeapCharPointer`](../README.md#ownedheapcharpointer)
+> **QTS\_Typeof**: (`ctx`, `value`) => [`OwnedHeapCharPointer`](../type-aliases/OwnedHeapCharPointer.md)
 
 Defined in: [ffi.ts:167](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/ffi.ts#L167)
 
@@ -1486,12 +1560,12 @@ Defined in: [ffi.ts:167](https://github.com/justjake/quickjs-emscripten/blob/mai
 
 ##### ctx
 
-[`JSContextPointer`](../README.md#jscontextpointer)
+[`JSContextPointer`](../type-aliases/JSContextPointer.md)
 
 ##### value
 
-[`JSValuePointer`](../README.md#jsvaluepointer) | [`JSValueConstPointer`](../README.md#jsvalueconstpointer)
+[`JSValuePointer`](../type-aliases/JSValuePointer.md) | [`JSValueConstPointer`](../type-aliases/JSValueConstPointer.md)
 
 #### Returns
 
-[`OwnedHeapCharPointer`](../README.md#ownedheapcharpointer)
+[`OwnedHeapCharPointer`](../type-aliases/OwnedHeapCharPointer.md)

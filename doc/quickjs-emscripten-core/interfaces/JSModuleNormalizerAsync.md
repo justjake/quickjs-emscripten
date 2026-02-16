@@ -8,11 +8,20 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/types.ts:92](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L92)
 
+## Contents
+
+* [Extended by](#extended-by)
+* [Parameters](#parameters)
+  * [baseModuleName](#basemodulename)
+  * [requestedName](#requestedname)
+  * [vm](#vm)
+* [Returns](#returns)
+
 ## Extended by
 
-- [`JSModuleNormalizer`](JSModuleNormalizer.md)
+* [`JSModuleNormalizer`](JSModuleNormalizer.md)
 
-> **JSModuleNormalizerAsync**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult)\>
+> **JSModuleNormalizerAsync**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md) | `Promise`<[`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md)>
 
 Defined in: [packages/quickjs-emscripten-core/src/types.ts:93](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L93)
 
@@ -32,4 +41,4 @@ Defined in: [packages/quickjs-emscripten-core/src/types.ts:93](https://github.co
 
 ## Returns
 
-[`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult)\>
+[`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md) | `Promise`<[`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md)>

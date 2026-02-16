@@ -20,9 +20,19 @@ WebAssembly are limited to a single concurrent async action.
 To allow for multiple concurrent async actions, you must create multiple WebAssembly
 modules.
 
+## Contents
+
+* [Extends](#extends)
+* [Methods](#methods)
+  * [evalCode()](#evalcode)
+  * [evalCodeAsync()](#evalcodeasync)
+  * [getWasmMemory()](#getwasmmemory)
+  * [newContext()](#newcontext)
+  * [newRuntime()](#newruntime)
+
 ## Extends
 
-- [`QuickJSWASMModule`](QuickJSWASMModule.md)
+* [`QuickJSWASMModule`](QuickJSWASMModule.md)
 
 ## Methods
 
@@ -46,7 +56,7 @@ Synchronous evalCode is not supported.
 
 ### evalCodeAsync()
 
-> **evalCodeAsync**(`code`, `options`): `Promise`\<`unknown`\>
+> **evalCodeAsync**(`code`, `options`): `Promise`<`unknown`>
 
 Defined in: [packages/quickjs-emscripten-core/src/module-asyncify.ts:91](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-asyncify.ts#L91)
 
@@ -72,7 +82,7 @@ See the documentation for [QuickJSWASMModule#evalCode](QuickJSWASMModule.md#eval
 
 #### Returns
 
-`Promise`\<`unknown`\>
+`Promise`<`unknown`>
 
 ***
 

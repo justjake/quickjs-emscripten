@@ -24,9 +24,18 @@ For more control over the execution environment, or to interact with values
 inside QuickJS, create a context with [newContext](#newcontext) or a runtime with
 [newRuntime](#newruntime).
 
+## Contents
+
+* [Extended by](#extended-by)
+* [Methods](#methods)
+  * [evalCode()](#evalcode)
+  * [getWasmMemory()](#getwasmmemory)
+  * [newContext()](#newcontext)
+  * [newRuntime()](#newruntime)
+
 ## Extended by
 
-- [`QuickJSAsyncWASMModule`](QuickJSAsyncWASMModule.md)
+* [`QuickJSAsyncWASMModule`](QuickJSAsyncWASMModule.md)
 
 ## Methods
 
@@ -40,7 +49,7 @@ One-off evaluate code without needing to create a [QuickJSRuntime](QuickJSRuntim
 [QuickJSContext](QuickJSContext.md) explicitly.
 
 To protect against infinite loops, use the `shouldInterrupt` option. The
-[shouldInterruptAfterDeadline](../README.md#shouldinterruptafterdeadline) function will create a time-based deadline.
+[shouldInterruptAfterDeadline](../functions/shouldInterruptAfterDeadline.md) function will create a time-based deadline.
 
 If you need more control over how the code executes, create a
 [QuickJSRuntime](QuickJSRuntime.md) (with [newRuntime](#newruntime)) or a [QuickJSContext](QuickJSContext.md) (with

@@ -12,6 +12,14 @@ An object that can be disposed.
 [Lifetime](../classes/Lifetime.md) is the canonical implementation of Disposable.
 Use [Scope](../classes/Scope.md) to manage cleaning up multiple disposables.
 
+## Contents
+
+* [Properties](#properties)
+  * [alive](#alive)
+* [Methods](#methods)
+  * [\[dispose\]()](#dispose)
+  * [dispose()](#dispose-1)
+
 ## Properties
 
 ### alive
@@ -30,9 +38,9 @@ false after the object has been [dispose](#dispose-1)d
 
 ## Methods
 
-### \[dispose\]()
+### \[dispose]\()
 
-> **\[dispose\]**(): `void`
+> **\[dispose]**(): `void`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:28](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L28)
 

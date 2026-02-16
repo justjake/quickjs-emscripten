@@ -4,7 +4,7 @@
 
 [quickjs-emscripten](../../packages.md) / [quickjs-emscripten-core](../README.md) / Lifetime
 
-# Class: Lifetime\<T, TCopy, Owner\>
+# Class: Lifetime\<T, TCopy, Owner>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:68](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L68)
 
@@ -13,14 +13,46 @@ A lifetime prevents access to a value after the lifetime has been
 
 Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
 
+## Contents
+
+* [Extends](#extends)
+* [Extended by](#extended-by)
+* [Type Parameters](#type-parameters)
+  * [T](#t)
+  * [TCopy](#tcopy)
+  * [Owner](#owner)
+* [Implements](#implements)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Properties](#properties)
+  * [\_alive](#_alive)
+  * [\_constructorStack](#_constructorstack)
+  * [\_owner?](#_owner-1)
+  * [\_value](#_value-1)
+  * [copier()?](#copier-1)
+  * [disposer()?](#disposer-1)
+* [Accessors](#accessors)
+  * [alive](#alive)
+  * [dupable](#dupable)
+  * [owner](#owner-1)
+  * [value](#value-2)
+* [Methods](#methods)
+  * [\[dispose\]()](#dispose)
+  * [assertAlive()](#assertalive)
+  * [consume()](#consume)
+  * [dispose()](#dispose-1)
+  * [dup()](#dup)
+  * [map()](#map-2)
+  * [tap()](#tap)
+
 ## Extends
 
-- [`UsingDisposable`](UsingDisposable.md)
+* [`UsingDisposable`](UsingDisposable.md)
 
 ## Extended by
 
-- [`StaticLifetime`](StaticLifetime.md)
-- [`WeakLifetime`](WeakLifetime.md)
+* [`StaticLifetime`](StaticLifetime.md)
+* [`WeakLifetime`](WeakLifetime.md)
 
 ## Type Parameters
 
@@ -38,13 +70,13 @@ Typically, quickjs-emscripten uses Lifetimes to protect C memory pointers.
 
 ## Implements
 
-- [`Disposable`](../interfaces/Disposable.md)
+* [`Disposable`](../interfaces/Disposable.md)
 
 ## Constructors
 
 ### Constructor
 
-> **new Lifetime**\<`T`, `TCopy`, `Owner`\>(`_value`, `copier?`, `disposer?`, `_owner?`): `Lifetime`\<`T`, `TCopy`, `Owner`\>
+> **new Lifetime**<`T`, `TCopy`, `Owner`>(`_value`, `copier?`, `disposer?`, `_owner?`): `Lifetime`<`T`, `TCopy`, `Owner`>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L83)
 
@@ -75,7 +107,7 @@ the creator.
 
 #### Returns
 
-`Lifetime`\<`T`, `TCopy`, `Owner`\>
+`Lifetime`<`T`, `TCopy`, `Owner`>
 
 #### Overrides
 
@@ -93,7 +125,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:72](https://github
 
 ### \_constructorStack
 
-> `protected` **\_constructorStack**: `string` \| `undefined`
+> `protected` **\_constructorStack**: `string` | `undefined`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:73](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L73)
 
@@ -193,13 +225,13 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:111](https://githu
 
 #### Get Signature
 
-> **get** **owner**(): `Owner` \| `undefined`
+> **get** **owner**(): `Owner` | `undefined`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:107](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L107)
 
 ##### Returns
 
-`Owner` \| `undefined`
+`Owner` | `undefined`
 
 ***
 
@@ -224,9 +256,9 @@ If the lifetime has been [dispose](#dispose-1)d already.
 
 ## Methods
 
-### \[dispose\]()
+### \[dispose]\()
 
-> **\[dispose\]**(): `void`
+> **\[dispose]**(): `void`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
@@ -262,7 +294,7 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:182](https://githu
 
 #### Call Signature
 
-> **consume**\<`O`\>(`map`): `O`
+> **consume**<`O`>(`map`): `O`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:135](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L135)
 
@@ -288,7 +320,7 @@ the result of `map(this)`.
 
 #### Call Signature
 
-> **consume**\<`O`\>(`map`): `O`
+> **consume**<`O`>(`map`): `O`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:138](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L138)
 
@@ -338,7 +370,7 @@ Dispose of [value](#value) and perform cleanup.
 
 ### dup()
 
-> **dup**(): `Lifetime`\<`TCopy`, `TCopy`, `Owner`\>
+> **dup**(): `Lifetime`<`TCopy`, `TCopy`, `Owner`>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:118](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L118)
 
@@ -346,7 +378,7 @@ Create a new handle pointing to the same [value](#value).
 
 #### Returns
 
-`Lifetime`\<`TCopy`, `TCopy`, `Owner`\>
+`Lifetime`<`TCopy`, `TCopy`, `Owner`>
 
 ***
 
@@ -354,7 +386,7 @@ Create a new handle pointing to the same [value](#value).
 
 #### Call Signature
 
-> **map**\<`O`\>(`map`): `O`
+> **map**<`O`>(`map`): `O`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:151](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L151)
 
@@ -381,7 +413,7 @@ the result of `map(this)`.
 
 #### Call Signature
 
-> **map**\<`O`\>(`map`): `O`
+> **map**<`O`>(`map`): `O`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:152](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L152)
 
@@ -434,7 +466,7 @@ this
 
 #### Call Signature
 
-> **tap**(`fn`): [`QuickJSHandle`](../README.md#quickjshandle)
+> **tap**(`fn`): [`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:165](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L165)
 
@@ -450,6 +482,6 @@ you're building up objects, or to add logging in the middle of a call chain.
 
 ##### Returns
 
-[`QuickJSHandle`](../README.md#quickjshandle)
+[`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 this

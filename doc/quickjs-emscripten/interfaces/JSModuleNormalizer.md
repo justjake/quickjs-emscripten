@@ -8,13 +8,23 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/types.ts:99](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L99)
 
+## Contents
+
+* [Extends](#extends)
+* [Call Signature](#call-signature)
+  * [Parameters](#parameters)
+  * [Returns](#returns)
+* [Call Signature](#call-signature-1)
+  * [Parameters](#parameters-1)
+  * [Returns](#returns-1)
+
 ## Extends
 
-- [`JSModuleNormalizerAsync`](JSModuleNormalizerAsync.md)
+* [`JSModuleNormalizerAsync`](JSModuleNormalizerAsync.md)
 
 ## Call Signature
 
-> **JSModuleNormalizer**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult)
+> **JSModuleNormalizer**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md)
 
 Defined in: [packages/quickjs-emscripten-core/src/types.ts:100](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L100)
 
@@ -34,11 +44,11 @@ Defined in: [packages/quickjs-emscripten-core/src/types.ts:100](https://github.c
 
 ### Returns
 
-[`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult)
+[`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md)
 
 ## Call Signature
 
-> **JSModuleNormalizer**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult)\>
+> **JSModuleNormalizer**(`baseModuleName`, `requestedName`, `vm`): [`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md) | `Promise`<[`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md)>
 
 Defined in: [packages/quickjs-emscripten-core/src/types.ts:99](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L99)
 
@@ -58,4 +68,4 @@ Defined in: [packages/quickjs-emscripten-core/src/types.ts:99](https://github.co
 
 ### Returns
 
-[`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult) \| `Promise`\<[`JSModuleNormalizeResult`](../README.md#jsmodulenormalizeresult)\>
+[`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md) | `Promise`<[`JSModuleNormalizeResult`](../type-aliases/JSModuleNormalizeResult.md)>

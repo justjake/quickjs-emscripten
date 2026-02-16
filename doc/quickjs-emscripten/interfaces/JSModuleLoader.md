@@ -8,11 +8,18 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/types.ts:81](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L81)
 
-> **JSModuleLoader**(`moduleName`, `context`): [`JSModuleLoadResult`](../README.md#jsmoduleloadresult)
+> **JSModuleLoader**(`moduleName`, `context`): [`JSModuleLoadResult`](../type-aliases/JSModuleLoadResult.md)
 
 Defined in: [packages/quickjs-emscripten-core/src/types.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L83)
 
 Load module (sync)
+
+## Contents
+
+* [Parameters](#parameters)
+  * [moduleName](#modulename)
+  * [context](#context)
+* [Returns](#returns)
 
 ## Parameters
 
@@ -26,4 +33,4 @@ Load module (sync)
 
 ## Returns
 
-[`JSModuleLoadResult`](../README.md#jsmoduleloadresult)
+[`JSModuleLoadResult`](../type-aliases/JSModuleLoadResult.md)

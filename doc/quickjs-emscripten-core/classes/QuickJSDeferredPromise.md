@@ -13,28 +13,47 @@ QuickJSDeferredPromise wraps a QuickJS promise [handle](#handle) and allows
 code on the host to APIs inside a QuickJSContext.
 
 Managing the lifetime of promises is tricky. There are three
-[QuickJSHandle](../README.md#quickjshandle)s inside of each deferred promise object: (1) the promise
+[QuickJSHandle](../type-aliases/QuickJSHandle.md)s inside of each deferred promise object: (1) the promise
 itself, (2) the `resolve` callback, and (3) the `reject` callback.
 
-- If the promise will be fulfilled before the end of it's [owner](#owner)'s lifetime,
+* If the promise will be fulfilled before the end of it's [owner](#owner)'s lifetime,
   the only cleanup necessary is `deferred.handle.dispose()`, because
   calling [resolve](#resolve) or [reject](#reject) will dispose of both callbacks automatically.
 
-- As the return value of a [VmFunctionImplementation](../README.md#vmfunctionimplementation), return [handle](#handle),
+* As the return value of a [VmFunctionImplementation](../type-aliases/VmFunctionImplementation.md), return [handle](#handle),
   and ensure that either [resolve](#resolve) or [reject](#reject) will be called. No other
   clean-up is necessary.
 
-- In other cases, call [dispose](#dispose-1), which will dispose [handle](#handle) as well as the
+* In other cases, call [dispose](#dispose-1), which will dispose [handle](#handle) as well as the
   QuickJS handles that back [resolve](#resolve) and [reject](#reject). For this object,
   [dispose](#dispose-1) is idempotent.
 
+## Contents
+
+* [Extends](#extends)
+* [Implements](#implements)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Properties](#properties)
+  * [context](#context-1)
+  * [handle](#handle)
+  * [owner](#owner)
+  * [settled](#settled)
+* [Accessors](#accessors)
+  * [alive](#alive)
+* [Methods](#methods)
+  * [\[dispose\]()](#dispose)
+  * [dispose()](#dispose-1)
+  * [reject()](#reject)
+  * [resolve()](#resolve)
+
 ## Extends
 
-- [`UsingDisposable`](UsingDisposable.md)
+* [`UsingDisposable`](UsingDisposable.md)
 
 ## Implements
 
-- [`Disposable`](../interfaces/Disposable.md)
+* [`Disposable`](../interfaces/Disposable.md)
 
 ## Constructors
 
@@ -57,15 +76,15 @@ this constructor directly.
 
 ###### promiseHandle
 
-[`QuickJSHandle`](../README.md#quickjshandle)
+[`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 ###### rejectHandle
 
-[`QuickJSHandle`](../README.md#quickjshandle)
+[`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 ###### resolveHandle
 
-[`QuickJSHandle`](../README.md#quickjshandle)
+[`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 #### Returns
 
@@ -87,7 +106,7 @@ Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:73](https:
 
 ### handle
 
-> **handle**: [`QuickJSHandle`](../README.md#quickjshandle)
+> **handle**: [`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:80](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L80)
 
@@ -107,7 +126,7 @@ Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:72](https:
 
 ### settled
 
-> **settled**: `Promise`\<`void`\>
+> **settled**: `Promise`<`void`>
 
 Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:85](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L85)
 
@@ -139,9 +158,9 @@ true if the object is alive
 
 ## Methods
 
-### \[dispose\]()
+### \[dispose]\()
 
-> **\[dispose\]**(): `void`
+> **\[dispose]**(): `void`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
@@ -200,7 +219,7 @@ callbacks.
 
 ##### value?
 
-[`QuickJSHandle`](../README.md#quickjshandle)
+[`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 #### Returns
 
@@ -225,7 +244,7 @@ callbacks.
 
 ##### value?
 
-[`QuickJSHandle`](../README.md#quickjshandle)
+[`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 #### Returns
 

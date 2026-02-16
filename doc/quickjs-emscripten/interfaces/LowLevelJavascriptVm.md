@@ -4,7 +4,7 @@
 
 [quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / LowLevelJavascriptVm
 
-# Interface: LowLevelJavascriptVm\<VmHandle\>
+# Interface: LowLevelJavascriptVm\<VmHandle>
 
 Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:53](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L53)
 
@@ -14,6 +14,27 @@ Higher-level tools should build over the LowLevelJavascriptVm interface to
 share as much as possible between executors.
 
 From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
+
+## Contents
+
+* [Type Parameters](#type-parameters)
+  * [VmHandle](#vmhandle)
+* [Properties](#properties)
+  * [global](#global)
+  * [undefined](#undefined)
+* [Methods](#methods)
+  * [callFunction()](#callfunction)
+  * [defineProp()](#defineprop)
+  * [evalCode()](#evalcode)
+  * [getNumber()](#getnumber)
+  * [getProp()](#getprop)
+  * [getString()](#getstring)
+  * [newFunction()](#newfunction)
+  * [newNumber()](#newnumber)
+  * [newObject()](#newobject)
+  * [newString()](#newstring)
+  * [setProp()](#setprop)
+  * [typeof()](#typeof)
 
 ## Type Parameters
 
@@ -41,7 +62,7 @@ Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:55](https://gi
 
 ### callFunction()
 
-> **callFunction**(`func`, `thisVal`, ...`args`): [`VmCallResult`](../README.md#vmcallresult)\<`VmHandle`\>
+> **callFunction**(`func`, `thisVal`, ...`args`): [`VmCallResult`](../type-aliases/VmCallResult.md)<`VmHandle`>
 
 Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:76](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L76)
 
@@ -57,11 +78,11 @@ Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:76](https://gi
 
 ##### args
 
-...`VmHandle`[]
+...`VmHandle`\[]
 
 #### Returns
 
-[`VmCallResult`](../README.md#vmcallresult)\<`VmHandle`\>
+[`VmCallResult`](../type-aliases/VmCallResult.md)<`VmHandle`>
 
 ***
 
@@ -83,7 +104,7 @@ Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:70](https://gi
 
 ##### descriptor
 
-[`VmPropertyDescriptor`](VmPropertyDescriptor.md)\<`VmHandle`\>
+[`VmPropertyDescriptor`](VmPropertyDescriptor.md)<`VmHandle`>
 
 #### Returns
 
@@ -93,7 +114,7 @@ Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:70](https://gi
 
 ### evalCode()
 
-> **evalCode**(`code`, `filename?`): [`VmCallResult`](../README.md#vmcallresult)\<`VmHandle`\>
+> **evalCode**(`code`, `filename?`): [`VmCallResult`](../type-aliases/VmCallResult.md)<`VmHandle`>
 
 Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:77](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L77)
 
@@ -109,7 +130,7 @@ Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:77](https://gi
 
 #### Returns
 
-[`VmCallResult`](../README.md#vmcallresult)\<`VmHandle`\>
+[`VmCallResult`](../type-aliases/VmCallResult.md)<`VmHandle`>
 
 ***
 
@@ -185,7 +206,7 @@ Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:65](https://gi
 
 ##### value
 
-[`VmFunctionImplementation`](../README.md#vmfunctionimplementation)\<`VmHandle`\>
+[`VmFunctionImplementation`](../type-aliases/VmFunctionImplementation.md)<`VmHandle`>
 
 #### Returns
 

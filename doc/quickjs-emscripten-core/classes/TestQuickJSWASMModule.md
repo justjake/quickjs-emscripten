@@ -17,9 +17,25 @@ Call [disposeAll](#disposeall) to reset these sets and calls `dispose` on any le
 Call [assertNoMemoryAllocated](#assertnomemoryallocated) at the end of a test, when you expect that you've
 freed all the memory you've ever allocated.
 
+## Contents
+
+* [Implements](#implements)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Properties](#properties)
+  * [contexts](#contexts)
+  * [runtimes](#runtimes)
+* [Methods](#methods)
+  * [assertNoMemoryAllocated()](#assertnomemoryallocated)
+  * [disposeAll()](#disposeall)
+  * [evalCode()](#evalcode)
+  * [getWasmMemory()](#getwasmmemory)
+  * [newContext()](#newcontext)
+  * [newRuntime()](#newruntime)
+
 ## Implements
 
-- `Pick`\<[`QuickJSWASMModule`](QuickJSWASMModule.md), keyof [`QuickJSWASMModule`](QuickJSWASMModule.md)\>
+* `Pick`<[`QuickJSWASMModule`](QuickJSWASMModule.md), keyof [`QuickJSWASMModule`](QuickJSWASMModule.md)>
 
 ## Constructors
 
@@ -43,7 +59,7 @@ Defined in: [packages/quickjs-emscripten-core/src/module-test.ts:21](https://git
 
 ### contexts
 
-> **contexts**: `Set`\<[`QuickJSContext`](QuickJSContext.md)\>
+> **contexts**: `Set`<[`QuickJSContext`](QuickJSContext.md)>
 
 Defined in: [packages/quickjs-emscripten-core/src/module-test.ts:19](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L19)
 
@@ -51,7 +67,7 @@ Defined in: [packages/quickjs-emscripten-core/src/module-test.ts:19](https://git
 
 ### runtimes
 
-> **runtimes**: `Set`\<[`QuickJSRuntime`](QuickJSRuntime.md)\>
+> **runtimes**: `Set`<[`QuickJSRuntime`](QuickJSRuntime.md)>
 
 Defined in: [packages/quickjs-emscripten-core/src/module-test.ts:20](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module-test.ts#L20)
 
@@ -91,7 +107,7 @@ One-off evaluate code without needing to create a [QuickJSRuntime](QuickJSRuntim
 [QuickJSContext](QuickJSContext.md) explicitly.
 
 To protect against infinite loops, use the `shouldInterrupt` option. The
-[shouldInterruptAfterDeadline](../README.md#shouldinterruptafterdeadline) function will create a time-based deadline.
+[shouldInterruptAfterDeadline](../functions/shouldInterruptAfterDeadline.md) function will create a time-based deadline.
 
 If you need more control over how the code executes, create a
 [QuickJSRuntime](QuickJSRuntime.md) (with [newRuntime](QuickJSWASMModule.md#newruntime)) or a [QuickJSContext](QuickJSContext.md) (with

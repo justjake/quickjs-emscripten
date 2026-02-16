@@ -10,17 +10,29 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:34](https://github
 
 Base abstract class that helps implement [Disposable](../interfaces/Disposable.md) by providing a default implementation of Symbol.dispose.
 
+## Contents
+
+* [Extended by](#extended-by)
+* [Implements](#implements)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Properties](#properties)
+  * [alive](#alive)
+* [Methods](#methods)
+  * [\[dispose\]()](#dispose)
+  * [dispose()](#dispose-1)
+
 ## Extended by
 
-- [`Lifetime`](Lifetime.md)
-- [`Scope`](Scope.md)
-- [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
-- [`QuickJSContext`](QuickJSContext.md)
-- [`QuickJSRuntime`](QuickJSRuntime.md)
+* [`Lifetime`](Lifetime.md)
+* [`Scope`](Scope.md)
+* [`QuickJSDeferredPromise`](QuickJSDeferredPromise.md)
+* [`QuickJSContext`](QuickJSContext.md)
+* [`QuickJSRuntime`](QuickJSRuntime.md)
 
 ## Implements
 
-- [`Disposable`](../interfaces/Disposable.md)
+* [`Disposable`](../interfaces/Disposable.md)
 
 ## Constructors
 
@@ -54,9 +66,9 @@ false after the object has been [dispose](../interfaces/Disposable.md#dispose-1)
 
 ## Methods
 
-### \[dispose\]()
+### \[dispose]\()
 
-> **\[dispose\]**(): `void`
+> **\[dispose]**(): `void`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 

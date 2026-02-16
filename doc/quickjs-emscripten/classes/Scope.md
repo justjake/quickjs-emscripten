@@ -11,13 +11,29 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:265](https://githu
 Scope helps reduce the burden of manually tracking and disposing of
 Lifetimes. See [withScope](#withscope). and [withScopeAsync](#withscopeasync).
 
+## Contents
+
+* [Extends](#extends)
+* [Implements](#implements)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+* [Accessors](#accessors)
+  * [alive](#alive)
+* [Methods](#methods)
+  * [\[dispose\]()](#dispose)
+  * [dispose()](#dispose-1)
+  * [manage()](#manage)
+  * [withScope()](#withscope)
+  * [withScopeAsync()](#withscopeasync)
+  * [withScopeMaybeAsync()](#withscopemaybeasync)
+
 ## Extends
 
-- [`UsingDisposable`](UsingDisposable.md)
+* [`UsingDisposable`](UsingDisposable.md)
 
 ## Implements
 
-- [`Disposable`](../interfaces/Disposable.md)
+* [`Disposable`](../interfaces/Disposable.md)
 
 ## Constructors
 
@@ -59,9 +75,9 @@ true if the object is alive
 
 ## Methods
 
-### \[dispose\]()
+### \[dispose]\()
 
-> **\[dispose\]**(): `void`
+> **\[dispose]**(): `void`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
@@ -105,7 +121,7 @@ Dispose of the underlying resources used by this object.
 
 ### manage()
 
-> **manage**\<`T`\>(`lifetime`): `T`
+> **manage**<`T`>(`lifetime`): `T`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:328](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L328)
 
@@ -131,7 +147,7 @@ Track `lifetime` so that it is disposed when this scope is disposed.
 
 ### withScope()
 
-> `static` **withScope**\<`R`\>(`block`): `R`
+> `static` **withScope**<`R`>(`block`): `R`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:273](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L273)
 
@@ -163,7 +179,7 @@ Do not use with async functions. Instead, use [withScopeAsync](#withscopeasync).
 
 ### withScopeAsync()
 
-> `static` **withScopeAsync**\<`R`\>(`block`): `Promise`\<`R`\>
+> `static` **withScopeAsync**<`R`>(`block`): `Promise`<`R`>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:310](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L310)
 
@@ -182,17 +198,17 @@ block returns.
 
 ##### block
 
-(`scope`) => `Promise`\<`R`\>
+(`scope`) => `Promise`<`R`>
 
 #### Returns
 
-`Promise`\<`R`\>
+`Promise`<`R`>
 
 ***
 
 ### withScopeMaybeAsync()
 
-> `static` **withScopeMaybeAsync**\<`Return`, `This`, `Yielded`\>(`_this`, `block`): `Return` \| `Promise`\<`Return`\>
+> `static` **withScopeMaybeAsync**<`Return`, `This`, `Yielded`>(`_this`, `block`): `Return` | `Promise`<`Return`>
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:286](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L286)
 
@@ -218,8 +234,8 @@ Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:286](https://githu
 
 ##### block
 
-`MaybeAsyncBlock`\<`Return`, `This`, `Yielded`, \[`Scope`\]\>
+`MaybeAsyncBlock`<`Return`, `This`, `Yielded`, \[`Scope`]>
 
 #### Returns
 
-`Return` \| `Promise`\<`Return`\>
+`Return` | `Promise`<`Return`>

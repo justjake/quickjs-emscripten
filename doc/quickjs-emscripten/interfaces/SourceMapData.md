@@ -8,6 +8,14 @@
 
 Defined in: packages/quickjs-ffi-types/dist/index.d.ts:205
 
+## Contents
+
+* [Properties](#properties)
+  * [mappings](#mappings)
+  * [names](#names)
+  * [sources](#sources)
+  * [version](#version)
+
 ## Properties
 
 ### mappings
@@ -20,7 +28,7 @@ Defined in: packages/quickjs-ffi-types/dist/index.d.ts:209
 
 ### names
 
-> **names**: `string`[]
+> **names**: `string`\[]
 
 Defined in: packages/quickjs-ffi-types/dist/index.d.ts:208
 
@@ -28,7 +36,7 @@ Defined in: packages/quickjs-ffi-types/dist/index.d.ts:208
 
 ### sources
 
-> **sources**: `string`[]
+> **sources**: `string`\[]
 
 Defined in: packages/quickjs-ffi-types/dist/index.d.ts:207
 

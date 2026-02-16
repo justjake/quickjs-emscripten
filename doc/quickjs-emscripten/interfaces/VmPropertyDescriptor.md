@@ -4,11 +4,22 @@
 
 [quickjs-emscripten](../../packages.md) / [quickjs-emscripten](../README.md) / VmPropertyDescriptor
 
-# Interface: VmPropertyDescriptor\<VmHandle\>
+# Interface: VmPropertyDescriptor\<VmHandle>
 
 Defined in: [packages/quickjs-emscripten-core/src/vm-interface.ts:83](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/vm-interface.ts#L83)
 
 From https://www.figma.com/blog/how-we-built-the-figma-plugin-system/
+
+## Contents
+
+* [Type Parameters](#type-parameters)
+  * [VmHandle](#vmhandle)
+* [Properties](#properties)
+  * [configurable?](#configurable)
+  * [enumerable?](#enumerable)
+  * [get()?](#get)
+  * [set()?](#set)
+  * [value?](#value-1)
 
 ## Type Parameters
 

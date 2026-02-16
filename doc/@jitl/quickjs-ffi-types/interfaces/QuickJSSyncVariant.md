@@ -16,29 +16,36 @@ module. These variants are each intended for a different use case.
 To create an instance of the library using a specific build variant, pass the
 build variant to newQuickJSWASMModule or newQuickJSAsyncWASMModule.
 
+## Contents
+
+* [Properties](#properties)
+  * [importFFI()](#importffi)
+  * [importModuleLoader()](#importmoduleloader)
+  * [type](#type)
+
 ## Properties
 
 ### importFFI()
 
-> `readonly` **importFFI**: () => `Promise`\<(`module`) => [`QuickJSFFI`](QuickJSFFI.md)\>
+> `readonly` **importFFI**: () => `Promise`<(`module`) => [`QuickJSFFI`](QuickJSFFI.md)>
 
 Defined in: [variant-types.ts:30](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L30)
 
 #### Returns
 
-`Promise`\<(`module`) => [`QuickJSFFI`](QuickJSFFI.md)\>
+`Promise`<(`module`) => [`QuickJSFFI`](QuickJSFFI.md)>
 
 ***
 
 ### importModuleLoader()
 
-> `readonly` **importModuleLoader**: () => `Promise`\<`EmscriptenImport`\<[`QuickJSEmscriptenModule`](QuickJSEmscriptenModule.md)\>\>
+> `readonly` **importModuleLoader**: () => `Promise`<`EmscriptenImport`<[`QuickJSEmscriptenModule`](QuickJSEmscriptenModule.md)>>
 
 Defined in: [variant-types.ts:31](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-ffi-types/src/variant-types.ts#L31)
 
 #### Returns
 
-`Promise`\<`EmscriptenImport`\<[`QuickJSEmscriptenModule`](QuickJSEmscriptenModule.md)\>\>
+`Promise`<`EmscriptenImport`<[`QuickJSEmscriptenModule`](QuickJSEmscriptenModule.md)>>
 
 ***
 

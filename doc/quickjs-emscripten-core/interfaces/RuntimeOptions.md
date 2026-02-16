@@ -8,9 +8,22 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/types.ts:132](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L132)
 
+## Contents
+
+* [Extends](#extends)
+* [Properties](#properties)
+  * [gcThreshold?](#gcthreshold)
+  * [interruptHandler?](#interrupthandler)
+  * [maxStackSizeBytes?](#maxstacksizebytes)
+  * [memoryLimitBytes?](#memorylimitbytes)
+  * [moduleLoader?](#moduleloader)
+  * [promiseRejectionHandler?](#promiserejectionhandler)
+  * [runtimeInfo?](#runtimeinfo)
+  * [sharedArrayBufferFunctions?](#sharedarraybufferfunctions)
+
 ## Extends
 
-- [`RuntimeOptionsBase`](RuntimeOptionsBase.md)
+* [`RuntimeOptionsBase`](RuntimeOptionsBase.md)
 
 ## Properties
 
@@ -28,7 +41,7 @@ Defined in: [packages/quickjs-emscripten-core/src/types.ts:119](https://github.c
 
 ### interruptHandler?
 
-> `optional` **interruptHandler**: [`InterruptHandler`](../README.md#interrupthandler)
+> `optional` **interruptHandler**: [`InterruptHandler`](../type-aliases/InterruptHandler.md)
 
 Defined in: [packages/quickjs-emscripten-core/src/types.ts:113](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/types.ts#L113)
 

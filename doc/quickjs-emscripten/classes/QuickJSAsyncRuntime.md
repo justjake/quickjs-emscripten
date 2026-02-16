@@ -22,7 +22,7 @@ You should create separate runtime instances for untrusted code from
 different sources for isolation. However, stronger isolation is also
 available (at the cost of memory usage), by creating separate WebAssembly
 modules to further isolate untrusted code.
-See [newQuickJSWASMModule](../README.md#newquickjswasmmodule).
+See [newQuickJSWASMModule](../functions/newQuickJSWASMModule.md).
 
 Implement memory and CPU constraints with [setInterruptHandler](QuickJSRuntime.md#setinterrupthandler)
 (called regularly while the interpreter runs), [setMemoryLimit](QuickJSRuntime.md#setmemorylimit), and
@@ -32,15 +32,41 @@ tuning.
 
 Configure ES module loading with [setModuleLoader](QuickJSRuntime.md#setmoduleloader).
 
+## Contents
+
+* [Extends](#extends)
+* [Properties](#properties)
+  * [context](#context)
+* [Accessors](#accessors)
+  * [alive](#alive)
+* [Methods](#methods)
+  * [\[dispose\]()](#dispose)
+  * [assertOwned()](#assertowned)
+  * [computeMemoryUsage()](#computememoryusage)
+  * [debugLog()](#debuglog)
+  * [dispose()](#dispose-1)
+  * [dumpMemoryUsage()](#dumpmemoryusage)
+  * [executePendingJobs()](#executependingjobs)
+  * [hasPendingJob()](#haspendingjob)
+  * [isDebugMode()](#isdebugmode)
+  * [newContext()](#newcontext)
+  * [removeInterruptHandler()](#removeinterrupthandler)
+  * [removeModuleLoader()](#removemoduleloader)
+  * [setDebugMode()](#setdebugmode)
+  * [setInterruptHandler()](#setinterrupthandler)
+  * [setMaxStackSize()](#setmaxstacksize)
+  * [setMemoryLimit()](#setmemorylimit)
+  * [setModuleLoader()](#setmoduleloader)
+
 ## Extends
 
-- [`QuickJSRuntime`](QuickJSRuntime.md)
+* [`QuickJSRuntime`](QuickJSRuntime.md)
 
 ## Properties
 
 ### context
 
-> **context**: [`QuickJSAsyncContext`](QuickJSAsyncContext.md) \| `undefined`
+> **context**: [`QuickJSAsyncContext`](QuickJSAsyncContext.md) | `undefined`
 
 Defined in: [packages/quickjs-emscripten-core/src/runtime-asyncify.ts:26](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime-asyncify.ts#L26)
 
@@ -76,9 +102,9 @@ true if the object is alive
 
 ## Methods
 
-### \[dispose\]()
+### \[dispose]\()
 
-> **\[dispose\]**(): `void`
+> **\[dispose]**(): `void`
 
 Defined in: [packages/quickjs-emscripten-core/src/lifetime.ts:47](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/lifetime.ts#L47)
 
@@ -106,7 +132,7 @@ Assert that `handle` is owned by this runtime.
 
 ##### handle
 
-[`QuickJSHandle`](../README.md#quickjshandle)
+[`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 #### Returns
 
@@ -124,7 +150,7 @@ QuickJSWrongOwner if owned by a different runtime.
 
 ### computeMemoryUsage()
 
-> **computeMemoryUsage**(): [`QuickJSHandle`](../README.md#quickjshandle)
+> **computeMemoryUsage**(): [`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:299](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L299)
 
@@ -136,7 +162,7 @@ For a human-digestible representation, see [dumpMemoryUsage](QuickJSRuntime.md#d
 
 #### Returns
 
-[`QuickJSHandle`](../README.md#quickjshandle)
+[`QuickJSHandle`](../type-aliases/QuickJSHandle.md)
 
 #### Inherited from
 
@@ -159,7 +185,7 @@ manipulation if debug logging is disabled.
 
 ##### msg
 
-...`unknown`[]
+...`unknown`\[]
 
 #### Returns
 
@@ -210,7 +236,7 @@ For programmatic access to this information, see [computeMemoryUsage](QuickJSRun
 
 ### executePendingJobs()
 
-> **executePendingJobs**(`maxJobsToExecute?`): [`ExecutePendingJobsResult`](../README.md#executependingjobsresult)
+> **executePendingJobs**(`maxJobsToExecute?`): [`ExecutePendingJobsResult`](../type-aliases/ExecutePendingJobsResult.md)
 
 Defined in: [packages/quickjs-emscripten-core/src/runtime.ts:246](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/runtime.ts#L246)
 
@@ -232,7 +258,7 @@ at most `maxJobsToExecute` before returning.
 
 #### Returns
 
-[`ExecutePendingJobsResult`](../README.md#executependingjobsresult)
+[`ExecutePendingJobsResult`](../type-aliases/ExecutePendingJobsResult.md)
 
 On success, the number of executed jobs. On error, the exception
 that stopped execution, and the context it occurred in. Note that
@@ -393,7 +419,7 @@ The interrupt handler can be removed with [removeInterruptHandler](QuickJSRuntim
 
 ##### cb
 
-[`InterruptHandler`](../README.md#interrupthandler)
+[`InterruptHandler`](../type-aliases/InterruptHandler.md)
 
 #### Returns
 

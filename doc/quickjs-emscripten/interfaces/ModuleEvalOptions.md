@@ -10,6 +10,14 @@ Defined in: [packages/quickjs-emscripten-core/src/module.ts:69](https://github.c
 
 Options for [QuickJSWASMModule#evalCode](../classes/QuickJSWASMModule.md#evalcode).
 
+## Contents
+
+* [Properties](#properties)
+  * [maxStackSizeBytes?](#maxstacksizebytes)
+  * [memoryLimitBytes?](#memorylimitbytes)
+  * [moduleLoader?](#moduleloader)
+  * [shouldInterrupt?](#shouldinterrupt)
+
 ## Properties
 
 ### maxStackSizeBytes?
@@ -45,9 +53,9 @@ Module loader for any `import` statements or expressions.
 
 ### shouldInterrupt?
 
-> `optional` **shouldInterrupt**: [`InterruptHandler`](../README.md#interrupthandler)
+> `optional` **shouldInterrupt**: [`InterruptHandler`](../type-aliases/InterruptHandler.md)
 
 Defined in: [packages/quickjs-emscripten-core/src/module.ts:74](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/module.ts#L74)
 
 Interrupt evaluation if `shouldInterrupt` returns `true`.
-See [shouldInterruptAfterDeadline](../README.md#shouldinterruptafterdeadline).
+See [shouldInterruptAfterDeadline](../functions/shouldInterruptAfterDeadline.md).

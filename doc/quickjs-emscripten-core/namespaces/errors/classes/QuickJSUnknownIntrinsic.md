@@ -8,9 +8,18 @@
 
 Defined in: [packages/quickjs-emscripten-core/src/errors.ts:48](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/errors.ts#L48)
 
+## Contents
+
+* [Extends](#extends)
+* [Constructors](#constructors)
+  * [Constructor](#constructor)
+  * [Constructor](#constructor-1)
+* [Properties](#properties)
+  * [name](#name)
+
 ## Extends
 
-- `TypeError`
+* `TypeError`
 
 ## Constructors
 

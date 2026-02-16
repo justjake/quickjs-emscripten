@@ -9,7 +9,14 @@
 Defined in: [packages/quickjs-emscripten-core/src/deferred-promise.ts:20](https://github.com/justjake/quickjs-emscripten/blob/main/packages/quickjs-emscripten-core/src/deferred-promise.ts#L20)
 
 Pending promise state.
-See [JSPromiseState](../README.md#jspromisestate).
+See [JSPromiseState](../type-aliases/JSPromiseState.md).
+
+## Contents
+
+* [Properties](#properties)
+  * [type](#type)
+* [Accessors](#accessors)
+  * [error](#error)
 
 ## Properties
 
