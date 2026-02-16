@@ -27,6 +27,56 @@
 #include "../vendor/mquickjs/mquickjs.h"
 #include "../vendor/mquickjs/cutils.h"
 
+/**
+ * Stub implementations for REPL-specific functions referenced by mqjs_stdlib.h.
+ * These are defined in mqjs.c but we don't include that file.
+ */
+static JSValue js_date_now(JSContext *ctx, JSValue *this_val, int argc, JSValue *argv) {
+  // Return 0 since we don't have access to real time in mquickjs
+  return JS_NewFloat64(ctx, 0.0);
+}
+
+static JSValue js_print(JSContext *ctx, JSValue *this_val, int argc, JSValue *argv) {
+  // No-op print function
+  return JS_UNDEFINED;
+}
+
+static JSValue js_performance_now(JSContext *ctx, JSValue *this_val, int argc, JSValue *argv) {
+  // Return 0 since we don't have access to real time
+  return JS_NewFloat64(ctx, 0.0);
+}
+
+static JSValue js_gc(JSContext *ctx, JSValue *this_val, int argc, JSValue *argv) {
+  // No-op - mquickjs doesn't have GC in the traditional sense
+  return JS_UNDEFINED;
+}
+
+static JSValue js_load(JSContext *ctx, JSValue *this_val, int argc, JSValue *argv) {
+  // Not supported
+  return JS_ThrowTypeError(ctx, "load() is not supported");
+}
+
+static JSValue js_setTimeout(JSContext *ctx, JSValue *this_val, int argc, JSValue *argv) {
+  // Not supported
+  return JS_ThrowTypeError(ctx, "setTimeout() is not supported");
+}
+
+static JSValue js_clearTimeout(JSContext *ctx, JSValue *this_val, int argc, JSValue *argv) {
+  // Not supported
+  return JS_ThrowTypeError(ctx, "clearTimeout() is not supported");
+}
+
+/* Forward declaration of the host trampoline function.
+ * This function is referenced in the generated qts_mquickjs_stdlib.h and defined later in this file.
+ * It's called when a host-created function is invoked from JavaScript.
+ */
+JSValue qts_host_trampoline(JSContext *ctx, JSValue *this_val, int argc, JSValue *argv, JSValue params);
+
+/* Generated stdlib header - built from c/qts_mquickjs_stdlib.c
+ * The include path is set via -I flag in Variant.mk to point to the build directory
+ */
+#include "qts_mquickjs_stdlib.h"
+
 #define PKG "quickjs-emscripten: "
 #define LOG_LEN 500
 
@@ -237,7 +287,7 @@ JSRuntime *QTS_NewRuntime() {
     }
   }
 
-  JSContext *ctx = JS_NewContext(mquickjs_heap, MQUICKJS_HEAP_SIZE, NULL);
+  JSContext *ctx = JS_NewContext(mquickjs_heap, MQUICKJS_HEAP_SIZE, &qts_mquickjs_stdlib);
   return ctx;  // JSRuntime* is actually JSContext* for mquickjs
 }
 
@@ -424,6 +474,14 @@ MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue ***out_ptr
 }
 
 MaybeAsync(JSValue *) QTS_Call(JSContext *ctx, JSValueConst *func_obj, JSValueConst *this_obj, int argc, JSValueConst **argv_ptrs) {
+#ifdef QTS_DEBUG_MODE
+  {
+    char msg[LOG_LEN];
+    snprintf(msg, LOG_LEN, "QTS_Call: func_obj=%llu, this_obj=%llu, argc=%d",
+             (unsigned long long)*func_obj, (unsigned long long)*this_obj, argc);
+    qts_log(msg);
+  }
+#endif
   // mquickjs has a different calling convention - arguments are pushed onto a stack
   // Push this, then args
   for (int i = argc - 1; i >= 0; i--) {
@@ -433,6 +491,23 @@ MaybeAsync(JSValue *) QTS_Call(JSContext *ctx, JSValueConst *func_obj, JSValueCo
   JS_PushArg(ctx, *func_obj);
 
   JSValue result = JS_Call(ctx, argc);
+#ifdef QTS_DEBUG_MODE
+  {
+    char msg[LOG_LEN];
+    snprintf(msg, LOG_LEN, "QTS_Call: result=%llu, is_exception=%d",
+             (unsigned long long)result, JS_IsException(result));
+    qts_log(msg);
+    if (JS_IsException(result)) {
+      JSValue exc = JS_GetException(ctx);
+      JSCStringBuf buf;
+      const char *exc_str = JS_ToCString(ctx, exc, &buf);
+      if (exc_str) {
+        snprintf(msg, LOG_LEN, "QTS_Call: exception=%s", exc_str);
+        qts_log(msg);
+      }
+    }
+  }
+#endif
   return jsvalue_to_heap(result);
 }
 
@@ -599,36 +674,123 @@ int QTS_HasEvalSupport() {
   return 1;  // Basic eval is supported
 }
 
+int QTS_HasFunctionsSupport() {
+  return 1;  // Host function callbacks supported via trampoline
+}
+
 // ----------------------------------------------------------------------------
 // C -> Host Callbacks
 
 #ifdef __EMSCRIPTEN__
-EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, uint32_t magic_func_id), {
+EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueConst *this_ptr, int argc, JSValueConst *argv, HostRefId host_ref_id), {
 #ifdef QTS_ASYNCIFY
   const asyncify = {['handleSleep'] : Asyncify.handleSleep};
 #else
   const asyncify = undefined;
 #endif
-  return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, magic_func_id);
+#ifdef QTS_DEBUG_MODE
+  console.log('qts_host_call_function: host_ref_id=' + host_ref_id + ' (typeof: ' + typeof host_ref_id + ')');
+#endif
+  return Module['callbacks']['callFunction'](asyncify, ctx, this_ptr, argc, argv, host_ref_id);
 });
+
+/**
+ * Host function trampoline - called by mquickjs when a host-created function is invoked.
+ * This is referenced in mqjs_stdlib.c and included in the compiled stdlib table.
+ *
+ * @param ctx - The JS context
+ * @param this_val - Pointer to `this` value
+ * @param argc - Number of arguments (may include FRAME_CF_CTOR flag)
+ * @param argv - Array of argument values
+ * @param params - The host_ref_id stored when the function was created (as a float)
+ * @return The result of calling the host function
+ */
+JSValue qts_host_trampoline(JSContext *ctx, JSValue *this_val, int argc, JSValue *argv, JSValue params) {
+  // Extract host_ref_id from params (stored as a float64)
+  double host_ref_id_double = 0.0;
+  int convert_result = JS_ToNumber(ctx, &host_ref_id_double, params);
+
+#ifdef QTS_DEBUG_MODE
+  {
+    char msg[LOG_LEN];
+    snprintf(msg, LOG_LEN, "qts_host_trampoline: params=%llu, convert_result=%d, host_ref_id_double=%f",
+             (unsigned long long)params, convert_result, host_ref_id_double);
+    qts_log(msg);
+  }
 #endif
 
-// Callback storage for C functions
-typedef struct {
-  uint32_t func_id;
-  JSContext *ctx;
-} QTSFunctionData;
+  if (convert_result) {
+    return JS_ThrowInternalError(ctx, "qts_host_trampoline: invalid params");
+  }
+  HostRefId host_ref_id = (HostRefId)host_ref_id_double;
 
-// Function callback wrapper
-JSValue qts_call_function_wrapper(JSContext *ctx, JSValue *this_val, int argc, JSValue *argv) {
-  // This is simplified - mquickjs has different function calling
-  return JS_UNDEFINED;
+#ifdef QTS_DEBUG_MODE
+  {
+    char msg[LOG_LEN];
+    snprintf(msg, LOG_LEN, "qts_host_trampoline: host_ref_id=%d", host_ref_id);
+    qts_log(msg);
+  }
+#endif
+
+  // Clear the FRAME_CF_CTOR flag from argc to get actual argument count
+  int actual_argc = argc & ~FRAME_CF_CTOR;
+
+  // Build argv pointer array for qts_host_call_function
+  // mquickjs passes arguments directly as JSValue*, we need JSValueConst**
+  JSValue *result_ptr = qts_host_call_function(ctx, this_val, actual_argc, argv, host_ref_id);
+
+  if (result_ptr == NULL) {
+    return JS_UNDEFINED;
+  }
+  JSValue result = *result_ptr;
+  free(result_ptr);
+  return result;
 }
+#else
+// Stub for non-EMSCRIPTEN builds (used by clang analysis)
+JSValue qts_host_trampoline(JSContext *ctx, JSValue *this_val, int argc, JSValue *argv, JSValue params) {
+  return JS_ThrowInternalError(ctx, "qts_host_trampoline: not available outside EMSCRIPTEN");
+}
+#endif
 
-JSValue *QTS_NewFunction(JSContext *ctx, uint32_t func_id, const char *name) {
-  // mquickjs has a very different function creation model
-  // For now, return an error
-  return jsvalue_to_heap(JS_ThrowInternalError(ctx, "Custom functions not yet supported in mquickjs binding"));
+/**
+ * Create a new function that calls back to the host when invoked.
+ * Uses mquickjs's JS_NewCFunctionParams to create a closure with the host_ref_id.
+ */
+JSValue *QTS_NewFunction(JSContext *ctx, const char *name, int arg_length, bool is_constructor, HostRefId host_ref_id) {
+  // Store host_ref_id as a float in params (mquickjs closure data)
+  JSValue params = JS_NewFloat64(ctx, (double)host_ref_id);
+
+#ifdef QTS_DEBUG_MODE
+  {
+    char msg[LOG_LEN];
+    snprintf(msg, LOG_LEN, "QTS_NewFunction: host_ref_id=%d, params=%llu", (int)host_ref_id, (unsigned long long)params);
+    qts_log(msg);
+  }
+#endif
+
+  // Create function using the trampoline - JS_CFUNCTION_qts_host_trampoline is defined in mqjs_stdlib.c
+  // It equals JS_CFUNCTION_USER (1), the second entry in js_c_function_decl
+  #define JS_CFUNCTION_qts_host_trampoline 1
+
+  JSValue func_obj = JS_NewCFunctionParams(ctx, JS_CFUNCTION_qts_host_trampoline, params);
+
+#ifdef QTS_DEBUG_MODE
+  {
+    char msg[LOG_LEN];
+    snprintf(msg, LOG_LEN, "QTS_NewFunction: func_obj=%llu, is_exception=%d", (unsigned long long)func_obj, JS_IsException(func_obj));
+    qts_log(msg);
+  }
+#endif
+
+  if (JS_IsException(func_obj)) {
+    return jsvalue_to_heap(func_obj);
+  }
+
+  // Note: mquickjs doesn't support setting function name or length properties directly
+  // Those would need to be set via JS_SetPropertyStr if needed
+
+  return jsvalue_to_heap(func_obj);
 }
 
 JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {

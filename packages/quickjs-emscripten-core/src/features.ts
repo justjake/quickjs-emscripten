@@ -48,6 +48,9 @@ export class QuickJSFeatures {
       case "eval":
         result = this.ffi.QTS_HasEvalSupport()
         break
+      case "functions":
+        result = this.ffi.QTS_HasFunctionsSupport()
+        break
       default:
         return unreachable(feature)
     }

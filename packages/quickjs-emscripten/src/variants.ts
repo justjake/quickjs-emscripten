@@ -13,6 +13,8 @@ import DEBUG_SYNC from "@jitl/quickjs-wasmfile-debug-sync"
 import RELEASE_SYNC from "@jitl/quickjs-wasmfile-release-sync"
 import DEBUG_ASYNC from "@jitl/quickjs-wasmfile-debug-asyncify"
 import RELEASE_ASYNC from "@jitl/quickjs-wasmfile-release-asyncify"
+import MQUICKJS_DEBUG_SYNC from "@jitl/mquickjs-wasmfile-debug-sync"
+import MQUICKJS_RELEASE_SYNC from "@jitl/mquickjs-wasmfile-release-sync"
 
 /**
  * Create a new, completely isolated WebAssembly module containing the QuickJS library.
@@ -53,4 +55,11 @@ export async function newQuickJSAsyncWASMModule(
   return newQuickJSAsyncWASMModuleFromVariant(variantOrPromise)
 }
 
-export { DEBUG_SYNC, RELEASE_SYNC, DEBUG_ASYNC, RELEASE_ASYNC }
+export {
+  DEBUG_SYNC,
+  RELEASE_SYNC,
+  DEBUG_ASYNC,
+  RELEASE_ASYNC,
+  MQUICKJS_DEBUG_SYNC,
+  MQUICKJS_RELEASE_SYNC,
+}

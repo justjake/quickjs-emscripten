@@ -508,6 +508,8 @@ export class QuickJSAsyncFFI {
 
   QTS_HasEvalSupport: () => number = this.module.cwrap("QTS_HasEvalSupport", "number", [])
 
+  QTS_HasFunctionsSupport: () => number = this.module.cwrap("QTS_HasFunctionsSupport", "number", [])
+
   QTS_NewFunction: (
     ctx: JSContextPointer,
     name: string,

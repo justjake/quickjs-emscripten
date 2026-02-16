@@ -1172,6 +1172,10 @@ int QTS_HasEvalSupport() {
   return 1;
 }
 
+int QTS_HasFunctionsSupport() {
+  return 1;
+}
+
 // ----------------------------------------------------------------------------
 // C -> Host Callbacks
 // Note: inside EM_JS, we need to use ['...'] subscript syntax for accessing JS

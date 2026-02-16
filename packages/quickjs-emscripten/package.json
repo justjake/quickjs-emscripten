@@ -53,6 +53,8 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
+    "@jitl/mquickjs-wasmfile-debug-sync": "workspace:*",
+    "@jitl/mquickjs-wasmfile-release-sync": "workspace:*",
     "@jitl/quickjs-wasmfile-debug-asyncify": "workspace:*",
     "@jitl/quickjs-wasmfile-debug-sync": "workspace:*",
     "@jitl/quickjs-wasmfile-release-asyncify": "workspace:*",

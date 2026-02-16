@@ -255,6 +255,7 @@ export interface QuickJSAsyncFFI {
   QTS_HasBigIntSupport: () => number
   QTS_HasIntrinsicsSupport: () => number
   QTS_HasEvalSupport: () => number
+  QTS_HasFunctionsSupport: () => number
   QTS_NewFunction: (
     ctx: JSContextPointer,
     name: string,

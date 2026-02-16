@@ -17,8 +17,9 @@ import { QuickJSUnknownIntrinsic } from "./errors"
  * - `bigint`: BigInt type support
  * - `intrinsics`: Intrinsics configuration support
  * - `eval`: eval() function support
+ * - `functions`: Host function callbacks (vm.newFunction)
  */
-export type QuickJSFeature = "modules" | "promises" | "symbols" | "bigint" | "intrinsics" | "eval"
+export type QuickJSFeature = "modules" | "promises" | "symbols" | "bigint" | "intrinsics" | "eval" | "functions"
 
 /**
  * A QuickJSHandle to a constant that will never change, and does not need to
