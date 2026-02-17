@@ -4,11 +4,10 @@ QTS_CommandStatus perform_funclist_apply(QTS_CommandEnv *env, JSValueSlot obj, F
     OP_ERROR_IF(env, obj >= env->jsvalue_slots_count, "funclist_apply: obj slot out of range");
     OP_ERROR_IF(env, list >= env->funclist_slots_count, "funclist_apply: list slot out of range");
 
-    JSValue obj_val = env->jsvalue_slots[obj];
-    JSCFunctionListEntry *entries = env->funclist_slots[list].entries;
+    QTS_FuncList *funclist = &env->funclist_slots[list];
+    OP_ERROR_IF(env, funclist->entries == NULL, "funclist_apply: list not initialized");
 
-    OP_ERROR_IF(env, count > 0 && entries == NULL, "funclist_apply: funclist entries is NULL");
-    OP_ERROR_IF(env, JS_SetPropertyFunctionList(env->ctx, obj_val, entries, (int)count) < 0,  "funclist_apply: JS_SetPropertyFunctionList failed");
+    JS_SetPropertyFunctionList(env->ctx, env->jsvalue_slots[obj], funclist->entries, (int)count);
 
     return QTS_COMMAND_OK;
 }

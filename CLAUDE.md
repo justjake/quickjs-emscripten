@@ -237,6 +237,53 @@ If you see assertions like:
 
 These usually indicate memory management bugs: double-frees, use-after-free, or missing frees.
 
+### JSCFunctionListEntry and Property Definition Macros
+
+QuickJS provides `JSCFunctionListEntry` for bulk-defining properties on objects using `JS_SetPropertyFunctionList`. **Always use the DEF macros from quickjs.h** instead of manually setting struct fields:
+
+**Function definitions:**
+
+```c
+// Regular function with magic (for callbacks)
+entry = (JSCFunctionListEntry)JS_CFUNC_MAGIC_DEF(name, length, func, magic);
+entry.prop_flags = flags;  // Override if needed (macro defaults to WRITABLE|CONFIGURABLE)
+
+// Constructor with magic
+entry = (JSCFunctionListEntry)JS_CFUNC_SPECIAL_DEF(name, length, constructor_magic, func);
+entry.prop_flags = flags;
+entry.magic = magic;  // Must set separately (macro defaults to 0)
+
+// Getter/setter
+entry = (JSCFunctionListEntry)JS_CGETSET_DEF(name, getter, setter);
+entry.prop_flags = flags;  // Override if needed (macro defaults to CONFIGURABLE)
+```
+
+**Property definitions (macros accept flags directly):**
+
+```c
+entry = (JSCFunctionListEntry)JS_PROP_STRING_DEF(name, str, flags);
+entry = (JSCFunctionListEntry)JS_PROP_INT32_DEF(name, val, flags);
+entry = (JSCFunctionListEntry)JS_PROP_INT64_DEF(name, val, flags);
+entry = (JSCFunctionListEntry)JS_PROP_DOUBLE_DEF(name, val, flags);
+entry = (JSCFunctionListEntry)JS_PROP_UNDEFINED_DEF(name, flags);
+entry = (JSCFunctionListEntry)JS_OBJECT_DEF(name, tab, len, flags);
+```
+
+**Memory allocation for funclist arrays:**
+
+```c
+// Use QuickJS runtime allocator (tracked by runtime, freed on runtime cleanup)
+JSCFunctionListEntry *entries = js_mallocz_rt(JS_GetRuntime(ctx), sizeof(JSCFunctionListEntry) * count);
+// ...
+js_free_rt(JS_GetRuntime(ctx), entries);
+```
+
+**Applying to an object:**
+
+```c
+JS_SetPropertyFunctionList(ctx, obj, entries, count);
+```
+
 ## C Code Style in interface.c
 
 ### Naming Conventions
