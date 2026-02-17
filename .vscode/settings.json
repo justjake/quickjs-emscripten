@@ -11,7 +11,8 @@
     "emscripten.h": "c",
     "quickjs-atom.h": "c",
     "perform_float64.h": "c",
-    "op.h": "c"
+    "op.h": "c",
+    "perform_set_idx_undef.h": "c"
   },
   "files.exclude": {}
 }
