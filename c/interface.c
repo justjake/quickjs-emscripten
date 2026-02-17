@@ -94,7 +94,7 @@ void js_std_dump_error(JSContext *ctx);
 #define BorrowedHeapChar const char
 #define OwnedHeapChar char
 #define JSBorrowedChar const char
-#define HostRefId int32_t
+#include "op.h"  // For HostRefId typedef
 
 /**
  * Signal to our FFI code generator that this function should be called

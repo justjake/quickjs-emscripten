@@ -166,6 +166,13 @@ function cTypeToTypescriptType(ctype: string, branded = false): ParsedType {
   if (type === "FuncListSlot") {
     return { ffi: "number", typescript: "FuncListSlot", ctype, attributes }
   }
+  // IDL semantic types
+  if (type === "JSPropFlags") {
+    return { ffi: "number", typescript: "JSPropFlags", ctype, attributes }
+  }
+  if (type === "HostRefId") {
+    return { ffi: "number", typescript: "HostRefId", ctype, attributes }
+  }
 
   // mapping
   if (type.includes("char*")) {
@@ -630,6 +637,8 @@ function buildOps(): string {
   CommandPtr,
   JSValueSlot,
   FuncListSlot,
+  JSPropFlags,
+  HostRefId,
   Uint8,
   Uint32,
   Int32,
@@ -715,9 +724,11 @@ export type Command = OpcodeToCommand[keyof OpcodeToCommand]
  * Build the op.h header file containing opcode enum and command struct.
  */
 function buildOpHeader(): string {
-  const opcodeEnumEntries = OPCODE_TO_COMMAND.map(
-    (name, index) => `    QTS_OP_${name} = ${index}`,
-  ).join(",\n")
+  const opcodeEnumEntries = OPCODE_TO_COMMAND.map((name, index) => {
+    const cmd = COMMANDS[name as OpName]
+    const doc = cmd.doc ? ` /** ${cmd.doc} */` : ""
+    return `    QTS_OP_${name} = ${index},${doc}`
+  }).join("\n")
 
   return `// Generated - do not edit
 #ifndef QTS_OP_H
@@ -729,6 +740,10 @@ function buildOpHeader(): string {
 // Slot types - used for indexing into the command environment arrays
 typedef uint8_t JSValueSlot;
 typedef uint8_t FuncListSlot;
+
+// Semantic types
+typedef uint8_t JSPropFlags;   /** JS_PROP_* flags */
+typedef int32_t HostRefId;     /** Host callback reference ID */
 
 typedef enum {
 ${opcodeEnumEntries}
@@ -787,7 +802,9 @@ QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd);
  * Build the perform_op.c dispatcher file.
  */
 function buildPerformOpC(): string {
-  const cfuncs = OPCODE_TO_COMMAND.map((name) => CFunc(name, COMMANDS[name as OpName]))
+  // Filter out INVALID - it's handled specially
+  const validOps = OPCODE_TO_COMMAND.filter((name) => name !== "INVALID")
+  const cfuncs = validOps.map((name) => CFunc(name, COMMANDS[name as OpName]))
 
   const includes = cfuncs.map((cf) => cf.includeDirective).join("\n")
   const switchCases = cfuncs.map((cf) => `        ${cf.switchCase}`).join("\n")
@@ -798,6 +815,9 @@ ${includes}
 
 QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd) {
     switch (cmd.opcode) {
+        case QTS_OP_INVALID:
+            env->error = "Invalid opcode (uninitialized command)";
+            return QTS_COMMAND_ERROR;
 ${switchCases}
         default:
             env->error = "Unknown opcode";
@@ -854,12 +874,13 @@ function buildCOps(outputDir: string): void {
   fs.writeFileSync(utilHeaderPath, buildUtilHeader())
   console.log(`Generated ${utilHeaderPath}`)
 
-  // 5. For each op, generate .h and .c files
+  // 5. For each op, generate .h and .c files (skip INVALID - handled specially)
   let headersGenerated = 0
   let scaffoldsGenerated = 0
   let scaffoldsSkipped = 0
 
   for (const name of OPCODE_TO_COMMAND) {
+    if (name === "INVALID") continue
     const cf = CFunc(name, COMMANDS[name as OpName])
 
     // Always regenerate .h

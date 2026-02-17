@@ -4,6 +4,7 @@
 
 #include "op.h"
 
+/** Create a new empty object (JS_NewObject) */
 QTS_CommandStatus perform_object(QTS_CommandEnv*env, JSValueSlot result);
 
 #endif // QTS_PERFORM_OBJECT_H

@@ -6,7 +6,7 @@ Focus is on **semantics** (what inputs, what outputs), not encoding/layout.
 ## Conventions
 
 - `str` = pointer + length (not necessarily null-terminated)
-- `jsval` = JSValue* (pointer to a JSValue somewhere in WASM memory)
+- `jsval` = JSValue\* (pointer to a JSValue somewhere in WASM memory)
 - `-> result` = operation produces a JSValue that caller may want to read
 - `-> void` = operation has no meaningful return value for caller
 - `slot` = when we say "store result in slot N", that's an implementation detail
@@ -20,7 +20,8 @@ any JS value from the host into QuickJS. Types supported by structuredClone:
 
 ## 1.1 Primitives (inline in property set ops, no separate create needed)
 
-These are values, not operations. They appear as the "value" argument in SET_* ops:
+These are values, not operations. They appear as the "value" argument in SET\_\* ops:
+
 - null
 - undefined
 - boolean (true/false)
@@ -38,6 +39,7 @@ CREATE_ARRAY() -> result               // JS_NewArray
 ```
 
 **Map, Set via CALL_CONSTRUCT** (no QuickJS built-in):
+
 ```
 GET_GLOBAL() -> g
 GET_PROP_STR(g, "Map") -> MapCtor
@@ -74,6 +76,7 @@ CREATE_PROMISE() -> (promise: jsval, resolve: jsval, reject: jsval)
 ```
 
 **RegExp, DataView via CALL_CONSTRUCT** (no QuickJS built-in):
+
 ```
 GET_GLOBAL() -> g
 GET_PROP_STR(g, "RegExp") -> RegExpCtor
@@ -245,7 +248,7 @@ FUNCLIST_OBJECT(funclist: ptr, index: u32, name: str, nested_list: ptr, nested_c
 
 # 3. interface.c Surface Area Operations
 
-Mapping current QTS_* functions to command buffer ops.
+Mapping current QTS\_\* functions to command buffer ops.
 
 ## 3.1 Value Creation
 
@@ -290,6 +293,7 @@ GET_PROP_IDX(obj: jsval, index: u32) -> result  // JS_GetPropertyUint32
 ```
 
 **Too specific for command buffer (keep as FFI calls):**
+
 - `GET_LENGTH` → just use `GET_PROP_STR(obj, "length")`
 - `GET_OWN_PROPERTY_NAMES` → niche, returns array of property names
 - `GET_TYPEOF` → niche, or JS reads tag directly
@@ -398,152 +402,152 @@ IS_EQUAL(a: jsval, b: jsval, op: enum) -> result
 
 ---
 
-# 4. Complete QTS_* Function Mapping
+# 4. Complete QTS\_\* Function Mapping
 
-Every QTS_* function in interface.c, mapped to command buffer ops or marked as excluded.
+Every QTS\_\* function in interface.c, mapped to command buffer ops or marked as excluded.
 
 ## 4.1 Runtime/Context Management (NOT in command buffer)
 
 These operate on runtime/context level, not value level:
 
-| Function | Why Excluded |
-|----------|--------------|
-| `QTS_NewRuntime()` | Runtime creation - one-time setup |
-| `QTS_FreeRuntime(rt)` | Runtime destruction |
-| `QTS_NewContext(rt, intrinsics)` | Context creation - one-time setup |
-| `QTS_FreeContext(ctx)` | Context destruction |
-| `QTS_RuntimeSetMemoryLimit(rt, limit)` | Runtime configuration |
-| `QTS_RuntimeSetMaxStackSize(rt, stack_size)` | Runtime configuration |
-| `QTS_RuntimeEnableInterruptHandler(rt)` | Runtime configuration |
-| `QTS_RuntimeDisableInterruptHandler(rt)` | Runtime configuration |
-| `QTS_RuntimeEnableModuleLoader(rt, use_custom_normalize)` | Runtime configuration |
-| `QTS_RuntimeDisableModuleLoader(rt)` | Runtime configuration |
-| `QTS_IsJobPending(rt)` | Job queue query - returns simple bool |
-| `QTS_ExecutePendingJob(rt, maxJobs, lastJobContext)` | Job execution - complex async semantics |
+| Function                                                  | Why Excluded                            |
+| --------------------------------------------------------- | --------------------------------------- |
+| `QTS_NewRuntime()`                                        | Runtime creation - one-time setup       |
+| `QTS_FreeRuntime(rt)`                                     | Runtime destruction                     |
+| `QTS_NewContext(rt, intrinsics)`                          | Context creation - one-time setup       |
+| `QTS_FreeContext(ctx)`                                    | Context destruction                     |
+| `QTS_RuntimeSetMemoryLimit(rt, limit)`                    | Runtime configuration                   |
+| `QTS_RuntimeSetMaxStackSize(rt, stack_size)`              | Runtime configuration                   |
+| `QTS_RuntimeEnableInterruptHandler(rt)`                   | Runtime configuration                   |
+| `QTS_RuntimeDisableInterruptHandler(rt)`                  | Runtime configuration                   |
+| `QTS_RuntimeEnableModuleLoader(rt, use_custom_normalize)` | Runtime configuration                   |
+| `QTS_RuntimeDisableModuleLoader(rt)`                      | Runtime configuration                   |
+| `QTS_IsJobPending(rt)`                                    | Job queue query - returns simple bool   |
+| `QTS_ExecutePendingJob(rt, maxJobs, lastJobContext)`      | Job execution - complex async semantics |
 
 ## 4.2 Build/Debug Introspection (NOT in command buffer)
 
 Static queries, no value operations:
 
-| Function | Why Excluded |
-|----------|--------------|
-| `QTS_BuildIsDebug()` | Build-time constant |
-| `QTS_BuildIsAsyncify()` | Build-time constant |
-| `QTS_BuildIsSanitizeLeak()` | Build-time constant |
-| `QTS_GetDebugLogEnabled(rt)` | Debug config query |
-| `QTS_SetDebugLogEnabled(rt, is_enabled)` | Debug config set |
-| `QTS_RecoverableLeakCheck()` | Testing utility |
-| `QTS_TestStringArg(string)` | Testing utility |
-| `QTS_RuntimeComputeMemoryUsage(rt, ctx)` | Introspection |
-| `QTS_RuntimeDumpMemoryUsage(rt)` | Introspection |
+| Function                                 | Why Excluded        |
+| ---------------------------------------- | ------------------- |
+| `QTS_BuildIsDebug()`                     | Build-time constant |
+| `QTS_BuildIsAsyncify()`                  | Build-time constant |
+| `QTS_BuildIsSanitizeLeak()`              | Build-time constant |
+| `QTS_GetDebugLogEnabled(rt)`             | Debug config query  |
+| `QTS_SetDebugLogEnabled(rt, is_enabled)` | Debug config set    |
+| `QTS_RecoverableLeakCheck()`             | Testing utility     |
+| `QTS_TestStringArg(string)`              | Testing utility     |
+| `QTS_RuntimeComputeMemoryUsage(rt, ctx)` | Introspection       |
+| `QTS_RuntimeDumpMemoryUsage(rt)`         | Introspection       |
 
 ## 4.3 Singleton Constants (NOT in command buffer)
 
 These return pointers to static JSValues - JS can read directly:
 
-| Function | Why Excluded |
-|----------|--------------|
+| Function             | Why Excluded                    |
+| -------------------- | ------------------------------- |
 | `QTS_GetUndefined()` | Returns &QTS_Undefined (static) |
-| `QTS_GetNull()` | Returns &QTS_Null (static) |
-| `QTS_GetTrue()` | Returns &QTS_True (static) |
-| `QTS_GetFalse()` | Returns &QTS_False (static) |
+| `QTS_GetNull()`      | Returns &QTS_Null (static)      |
+| `QTS_GetTrue()`      | Returns &QTS_True (static)      |
+| `QTS_GetFalse()`     | Returns &QTS_False (static)     |
 
 JS can just use the known addresses of these singletons.
 
 ## 4.4 Value Creation → Command Buffer Ops
 
-| Function | Command Buffer Op(s) |
-|----------|---------------------|
-| `QTS_NewObject(ctx)` | `CREATE_OBJECT() -> jsval` |
-| `QTS_NewObjectProto(ctx, proto)` | `CREATE_OBJECT_PROTO(proto: jsval) -> jsval` |
-| `QTS_NewArray(ctx)` | `CREATE_ARRAY() -> jsval` |
-| `QTS_NewArrayBuffer(ctx, buffer, length)` | `CREATE_ARRAYBUFFER(data: ptr, len: u32) -> jsval` |
-| `QTS_NewFloat64(ctx, num)` | `CREATE_FLOAT64(value: f64) -> jsval` |
-| `QTS_NewString(ctx, string)` | `CREATE_STRING(value: str) -> jsval` |
-| `QTS_NewSymbol(ctx, description, isGlobal)` | `CREATE_SYMBOL(description: str, is_global: bool) -> jsval` |
-| `QTS_NewError(ctx)` | `CREATE_ERROR() -> jsval` (empty Error) |
+| Function                                                              | Command Buffer Op(s)                                                                      |
+| --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `QTS_NewObject(ctx)`                                                  | `CREATE_OBJECT() -> jsval`                                                                |
+| `QTS_NewObjectProto(ctx, proto)`                                      | `CREATE_OBJECT_PROTO(proto: jsval) -> jsval`                                              |
+| `QTS_NewArray(ctx)`                                                   | `CREATE_ARRAY() -> jsval`                                                                 |
+| `QTS_NewArrayBuffer(ctx, buffer, length)`                             | `CREATE_ARRAYBUFFER(data: ptr, len: u32) -> jsval`                                        |
+| `QTS_NewFloat64(ctx, num)`                                            | `CREATE_FLOAT64(value: f64) -> jsval`                                                     |
+| `QTS_NewString(ctx, string)`                                          | `CREATE_STRING(value: str) -> jsval`                                                      |
+| `QTS_NewSymbol(ctx, description, isGlobal)`                           | `CREATE_SYMBOL(description: str, is_global: bool) -> jsval`                               |
+| `QTS_NewError(ctx)`                                                   | `CREATE_ERROR() -> jsval` (empty Error)                                                   |
 | `QTS_NewFunction(ctx, name, arg_length, is_constructor, host_ref_id)` | `CREATE_FUNCTION(name: str, host_ref_id: i32, length: u8, is_constructor: bool) -> jsval` |
-| `QTS_NewPromiseCapability(ctx, resolve_funcs_out)` | `CREATE_PROMISE() -> (promise: jsval, resolve: jsval, reject: jsval)` — returns 3 values |
-| `QTS_NewHostRef(ctx, id)` | `CREATE_HOST_REF(id: i32) -> jsval` — internal, wraps HostRefId |
+| `QTS_NewPromiseCapability(ctx, resolve_funcs_out)`                    | `CREATE_PROMISE() -> (promise: jsval, resolve: jsval, reject: jsval)` — returns 3 values  |
+| `QTS_NewHostRef(ctx, id)`                                             | `CREATE_HOST_REF(id: i32) -> jsval` — internal, wraps HostRefId                           |
 
 ## 4.5 Value Getters → Command Buffer Ops
 
-| Function | Command Buffer Op(s) |
-|----------|---------------------|
-| `QTS_GetGlobalObject(ctx)` | `GET_GLOBAL() -> jsval` |
-| `QTS_GetProp(ctx, this_val, prop_name)` | `GET_PROP(obj: jsval, key: jsval) -> jsval` |
-| `QTS_GetPropNumber(ctx, this_val, prop_name)` | `GET_PROP_IDX(obj: jsval, index: u32) -> jsval` |
-| `QTS_GetOwnPropertyNames(...)` | Keep as FFI call — niche, complex return |
-| `QTS_GetLength(ctx, out_len, value)` | Use `GET_PROP_STR(obj, "length")` — not a dedicated op |
-| `QTS_GetModuleNamespace(...)` | Keep as FFI call — ES module loading only |
-| `QTS_PromiseState(ctx, promise)` | Keep as FFI call — niche |
-| `QTS_PromiseResult(ctx, promise)` | Keep as FFI call — niche |
+| Function                                      | Command Buffer Op(s)                                   |
+| --------------------------------------------- | ------------------------------------------------------ |
+| `QTS_GetGlobalObject(ctx)`                    | `GET_GLOBAL() -> jsval`                                |
+| `QTS_GetProp(ctx, this_val, prop_name)`       | `GET_PROP(obj: jsval, key: jsval) -> jsval`            |
+| `QTS_GetPropNumber(ctx, this_val, prop_name)` | `GET_PROP_IDX(obj: jsval, index: u32) -> jsval`        |
+| `QTS_GetOwnPropertyNames(...)`                | Keep as FFI call — niche, complex return               |
+| `QTS_GetLength(ctx, out_len, value)`          | Use `GET_PROP_STR(obj, "length")` — not a dedicated op |
+| `QTS_GetModuleNamespace(...)`                 | Keep as FFI call — ES module loading only              |
+| `QTS_PromiseState(ctx, promise)`              | Keep as FFI call — niche                               |
+| `QTS_PromiseResult(ctx, promise)`             | Keep as FFI call — niche                               |
 
 ## 4.6 Value Extraction (to host memory) → Command Buffer Ops
 
-| Function | Command Buffer Op(s) |
-|----------|---------------------|
-| `QTS_GetFloat64(ctx, value)` | No op needed — JS reads f64 directly from JSValue bytes |
-| `QTS_GetString(ctx, value)` | `EXTRACT_STRING(value: jsval) -> (ptr, len)` — returns pointer to string data |
-| `QTS_GetArrayBuffer(ctx, data)` | `EXTRACT_ARRAYBUFFER(value: jsval) -> (ptr, len)` |
-| `QTS_GetArrayBufferLength(ctx, data)` | Part of `EXTRACT_ARRAYBUFFER` |
-| `QTS_GetSymbolDescriptionOrKey(ctx, value)` | `EXTRACT_SYMBOL_DESCRIPTION(value: jsval) -> (ptr, len)` |
-| `QTS_IsGlobalSymbol(ctx, value)` | `IS_GLOBAL_SYMBOL(value: jsval) -> bool` |
-| `QTS_GetHostRefId(value)` | No op needed — JS reads HostRefId directly from JSValue bytes |
-| `QTS_Typeof(ctx, value)` | `TYPEOF(value: jsval) -> jsval` (string) — or return enum |
-| `QTS_Dump(ctx, obj)` | `DUMP(value: jsval) -> (ptr, len)` — JSON string |
+| Function                                    | Command Buffer Op(s)                                                          |
+| ------------------------------------------- | ----------------------------------------------------------------------------- |
+| `QTS_GetFloat64(ctx, value)`                | No op needed — JS reads f64 directly from JSValue bytes                       |
+| `QTS_GetString(ctx, value)`                 | `EXTRACT_STRING(value: jsval) -> (ptr, len)` — returns pointer to string data |
+| `QTS_GetArrayBuffer(ctx, data)`             | `EXTRACT_ARRAYBUFFER(value: jsval) -> (ptr, len)`                             |
+| `QTS_GetArrayBufferLength(ctx, data)`       | Part of `EXTRACT_ARRAYBUFFER`                                                 |
+| `QTS_GetSymbolDescriptionOrKey(ctx, value)` | `EXTRACT_SYMBOL_DESCRIPTION(value: jsval) -> (ptr, len)`                      |
+| `QTS_IsGlobalSymbol(ctx, value)`            | `IS_GLOBAL_SYMBOL(value: jsval) -> bool`                                      |
+| `QTS_GetHostRefId(value)`                   | No op needed — JS reads HostRefId directly from JSValue bytes                 |
+| `QTS_Typeof(ctx, value)`                    | `TYPEOF(value: jsval) -> jsval` (string) — or return enum                     |
+| `QTS_Dump(ctx, obj)`                        | `DUMP(value: jsval) -> (ptr, len)` — JSON string                              |
 
 ## 4.7 Value Mutation → Command Buffer Ops
 
-| Function | Command Buffer Op(s) |
-|----------|---------------------|
-| `QTS_SetProp(ctx, this_val, prop_name, prop_value)` | `SET_PROP(obj: jsval, key: jsval, value: jsval) -> void` |
+| Function                                                                                              | Command Buffer Op(s)                                                                                 |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `QTS_SetProp(ctx, this_val, prop_name, prop_value)`                                                   | `SET_PROP(obj: jsval, key: jsval, value: jsval) -> void`                                             |
 | `QTS_DefineProp(ctx, this_val, prop_name, prop_value, get, set, configurable, enumerable, has_value)` | `DEFINE_PROP(obj: jsval, key: jsval, value: jsval, getter: jsval, setter: jsval, flags: u8) -> void` |
 
-Note: `SET_PROP` variants with inline primitives (SET_PROP_STR_INT32, etc.) are optimizations that combine multiple QTS_* calls.
+Note: `SET_PROP` variants with inline primitives (SET*PROP_STR_INT32, etc.) are optimizations that combine multiple QTS*\* calls.
 
 ## 4.8 Function Calls → Command Buffer Ops
 
-| Function | Command Buffer Op(s) |
-|----------|---------------------|
-| `QTS_Call(ctx, func_obj, this_obj, argc, argv_ptrs)` | `CALL(func: jsval, this: jsval, argc: u32, argv: jsval*) -> jsval` |
-| `QTS_Eval(ctx, js_code, js_code_length, filename, detectModule, evalFlags)` | `EVAL(code: str, filename: str, flags: u32) -> jsval` |
-| `QTS_DetectModule(input, input_len)` | Not needed — JS can do module detection |
+| Function                                                                    | Command Buffer Op(s)                                               |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `QTS_Call(ctx, func_obj, this_obj, argc, argv_ptrs)`                        | `CALL(func: jsval, this: jsval, argc: u32, argv: jsval*) -> jsval` |
+| `QTS_Eval(ctx, js_code, js_code_length, filename, detectModule, evalFlags)` | `EVAL(code: str, filename: str, flags: u32) -> jsval`              |
+| `QTS_DetectModule(input, input_len)`                                        | Not needed — JS can do module detection                            |
 
 ## 4.9 Error Handling → Command Buffer Ops
 
-| Function | Command Buffer Op(s) |
-|----------|---------------------|
-| `QTS_Throw(ctx, error)` | `THROW(error: jsval) -> void` |
+| Function                                     | Command Buffer Op(s)                                                             |
+| -------------------------------------------- | -------------------------------------------------------------------------------- |
+| `QTS_Throw(ctx, error)`                      | `THROW(error: jsval) -> void`                                                    |
 | `QTS_ResolveException(ctx, maybe_exception)` | `RESOLVE_EXCEPTION(maybe_exception: jsval) -> jsval` — returns exception or null |
 
 ## 4.10 Reference Counting → Command Buffer Ops
 
-| Function | Command Buffer Op(s) |
-|----------|---------------------|
-| `QTS_DupValuePointer(ctx, val)` | `DUP(value: jsval) -> jsval` |
-| `QTS_FreeValuePointer(ctx, value)` | `FREE(value: jsval) -> void` |
+| Function                                 | Command Buffer Op(s)                                    |
+| ---------------------------------------- | ------------------------------------------------------- |
+| `QTS_DupValuePointer(ctx, val)`          | `DUP(value: jsval) -> jsval`                            |
+| `QTS_FreeValuePointer(ctx, value)`       | `FREE(value: jsval) -> void`                            |
 | `QTS_FreeValuePointerRuntime(rt, value)` | `FREE(value: jsval) -> void` (same op, runtime variant) |
-| `QTS_FreeCString(ctx, str)` | Not an op — JS manages borrowed string lifetime |
-| `QTS_FreeVoidPointer(ctx, ptr)` | Not an op — internal memory management |
+| `QTS_FreeCString(ctx, str)`              | Not an op — JS manages borrowed string lifetime         |
+| `QTS_FreeVoidPointer(ctx, ptr)`          | Not an op — internal memory management                  |
 
 ## 4.11 Comparison → Command Buffer Ops
 
-| Function | Command Buffer Op(s) |
-|----------|---------------------|
+| Function                     | Command Buffer Op(s)                             |
+| ---------------------------- | ------------------------------------------------ |
 | `QTS_IsEqual(ctx, a, b, op)` | `IS_EQUAL(a: jsval, b: jsval, op: enum) -> bool` |
 
 ## 4.12 Serialization → Command Buffer Ops
 
-| Function | Command Buffer Op(s) |
-|----------|---------------------|
-| `QTS_bjson_encode(ctx, val)` | `BJSON_ENCODE(value: jsval) -> jsval` (ArrayBuffer) |
-| `QTS_bjson_decode(ctx, data)` | `BJSON_DECODE(data: jsval) -> jsval` |
+| Function                      | Command Buffer Op(s)                                |
+| ----------------------------- | --------------------------------------------------- |
+| `QTS_bjson_encode(ctx, val)`  | `BJSON_ENCODE(value: jsval) -> jsval` (ArrayBuffer) |
+| `QTS_bjson_decode(ctx, data)` | `BJSON_DECODE(data: jsval) -> jsval`                |
 
 ## 4.13 Internal/Callback Helpers (NOT in command buffer)
 
-| Function | Why Excluded |
-|----------|--------------|
+| Function                                      | Why Excluded                                 |
+| --------------------------------------------- | -------------------------------------------- |
 | `QTS_ArgvGetJSValueConstPointer(argv, index)` | Internal — used in C callback implementation |
 
 ---
@@ -553,23 +557,26 @@ Note: `SET_PROP` variants with inline primitives (SET_PROP_STR_INT32, etc.) are 
 ## 5.1 Which ops produce results?
 
 **Produce JSValue result (caller wants to read/use):**
-- All CREATE_* ops
-- All GET_* ops
+
+- All CREATE\_\* ops
+- All GET\_\* ops
 - CALL
 - EVAL
 - DUP
 - RESOLVE_EXCEPTION
 
 **No result (side effect only):**
-- All SET_PROP_* ops
-- All DEF_* ops
-- MAP_SET_*, SET_ADD_*
+
+- All SET*PROP*\* ops
+- All DEF\_\* ops
+- MAP*SET*_, SET*ADD*_
 - THROW
 - FREE
 
 ## 5.2 Error Handling
 
 On failure:
+
 - Execution stops at the failed op
 - Return: (success_count: u32, error: JSValue)
 - success_count = number of ops that completed successfully
@@ -578,6 +585,7 @@ On failure:
 ## 5.3 Result Storage
 
 Options for where results go:
+
 1. **Pre-allocated result array**: Results written to `JSValue results[N]` at indices specified by ops
 2. **Inline in command**: Each op that produces result specifies destination slot
 3. **Sequential**: Results written sequentially to result array, caller tracks which op produced which result
@@ -593,24 +601,28 @@ Grouping by category, here's the complete set that will be in the command buffer
 **Note:** Map, Set, RegExp, DataView have no QuickJS built-in functions - use CALL_CONSTRUCT.
 
 ## Container Creation (3 ops)
+
 - OBJECT
 - OBJECT_PROTO
 - ARRAY
 
 ## Special Type Creation (5 ops)
+
 - DATE (JS_NewDate)
-- ERROR (JS_NewError / JS_New*Error)
+- ERROR (JS_NewError / JS_New\*Error)
 - ARRAYBUFFER (JS_NewArrayBufferCopy)
 - TYPED_ARRAY (JS_NewTypedArray)
 - SYMBOL (JS_NewSymbol)
 
 ## Standalone Value Creation (4 ops)
+
 - FLOAT64
 - STRING
 - BIGINT
 - FUNCTION
 
 ## Property Set by String Key (8 ops)
+
 - SET_STR_SLOT (jsval value)
 - SET_STR_NULL
 - SET_STR_UNDEF
@@ -621,6 +633,7 @@ Grouping by category, here's the complete set that will be in the command buffer
 - SET_STR_STRING
 
 ## Property Set by Index (8 ops)
+
 - SET_IDX_SLOT (jsval value)
 - SET_IDX_NULL
 - SET_IDX_UNDEF
@@ -631,25 +644,30 @@ Grouping by category, here's the complete set that will be in the command buffer
 - SET_IDX_STRING
 
 ## Property Set by JSValue Key (1 op)
+
 - SET_PROP (jsval key, jsval value)
 
 ## Map/Set Operations (3 ops)
+
 - MAP_SET (jsval key, jsval value)
 - MAP_SET_STR (str key, jsval value)
 - SET_ADD (jsval value)
 
 ## Property Get (4 ops)
+
 - GET_PROP (jsval key)
 - GET_STR (str key)
 - GET_IDX (u32 index)
 - GET_GLOBAL
 
 ## Host Function Definition (3 ops)
+
 - DEF_CFUNC
 - DEF_CFUNC_CTOR
 - DEF_CGETSET
 
 ## Property Definition with inline values (8 ops)
+
 - DEF_PROP_SLOT (jsval value + flags)
 - DEF_PROP_NULL
 - DEF_PROP_UNDEF
@@ -660,23 +678,28 @@ Grouping by category, here's the complete set that will be in the command buffer
 - DEF_PROP_STRING
 
 ## Full Property Definition (2 ops)
+
 - DEFINE_VALUE (obj, name, value_slot, flags)
 - DEFINE_GETSET (obj, name, getter_slot, setter_slot, flags)
 
 ## Call/Eval (3 ops)
+
 - CALL
 - CALL_CONSTRUCT
 - EVAL
 
 ## Error Handling (2 ops)
+
 - THROW
 - RESOLVE_EXC
 
 ## Reference Counting (2 ops)
+
 - DUP
 - FREE
 
 ## Serialization (2 ops)
+
 - WRITE_OBJECT (JS_WriteObject)
 - READ_OBJECT (JS_ReadObject)
 
@@ -685,20 +708,22 @@ Grouping by category, here's the complete set that will be in the command buffer
 **Total: 58 ops**
 
 Breakdown:
+
 - 24 are primitive-value variants (NULL/UNDEF/BOOL/INT32/F64/BIGINT/STRING/I64)
 - 34 are unique operations
 
 **Ops that produce JSValue results: 19**
-(OBJECT, OBJECT_PROTO, ARRAY, DATE, ERROR, ARRAYBUFFER, TYPED_ARRAY, SYMBOL, FLOAT64, STRING, BIGINT, FUNCTION, GET_*, CALL, CALL_CONSTRUCT, EVAL, DUP, RESOLVE_EXC, WRITE_OBJECT, READ_OBJECT)
+(OBJECT, OBJECT*PROTO, ARRAY, DATE, ERROR, ARRAYBUFFER, TYPED_ARRAY, SYMBOL, FLOAT64, STRING, BIGINT, FUNCTION, GET*\*, CALL, CALL_CONSTRUCT, EVAL, DUP, RESOLVE_EXC, WRITE_OBJECT, READ_OBJECT)
 
 **Ops that are side-effect only: 39**
-(SET_STR_*, SET_IDX_*, SET_PROP, MAP_SET*, SET_ADD, DEF_*, DEFINE_*, THROW, FREE)
+(SET*STR*_, SET*IDX*_, SET*PROP, MAP_SET\*, SET_ADD, DEF*_, DEFINE\__, THROW, FREE)
 
 ---
 
 ## Kept as FFI calls (not in command buffer)
 
 These are too niche or complex for the command buffer:
+
 - CREATE_PROMISE → 3 return values, awkward in command buffer
 - GET_OWN_PROPERTY_NAMES → complex return (array of property descriptors)
 - GET_PROMISE_STATE / GET_PROMISE_RESULT → niche promise introspection
@@ -707,7 +732,7 @@ These are too niche or complex for the command buffer:
 - IS_EQUAL → comparison semantics, JS can use === for most cases
 - TYPEOF → JS can read tag directly from JSValue bytes
 - DUMP → debugging only
-- All EXTRACT_* → read-back phase, not batch creation
+- All EXTRACT\_\* → read-back phase, not batch creation
 
 ---
 
@@ -766,102 +791,103 @@ _Static_assert(sizeof(QTS_Command) == 16, "QTS_Command must be 16 bytes");
 ## 7.2 Field Usage Reference
 
 Legend:
+
 - `name_ptr` = pointer to null-terminated string (property names, common case)
 - `data.buf.ptr` + `data.buf.len` = pointer + length (string values, binary data)
 - `data.call.argv` + `data.call.argc` = pointer to JSValue array + count (function calls)
 - `slot_a`, `slot_b`, `slot_c` = slot indices (0-127) or small values (bool, enum, flags)
 
-| Opcode | slot_a | slot_b | slot_c | data |
-|--------|--------|--------|--------|------|
-| **Container Creation** |
-| OBJECT | result | - | - | - |
-| OBJECT_PROTO | result | proto | - | - |
-| ARRAY | result | - | - | - |
-| **Special Type Creation** |
-| DATE | result | - | - | `f64.value`=timestamp |
-| ERROR | result | type | - | `buf.ptr`=msg, `buf.len` |
-| ARRAYBUFFER | result | - | - | `buf.ptr`, `buf.len` |
-| TYPED_ARRAY | result | buffer | type | `raw.d1`=byteOffset, `raw.d2`=length |
-| SYMBOL | result | is_global | - | `buf.ptr`=desc, `buf.len` |
-| FUNCTION | result | length | is_ctor | `buf.ptr`=name, `buf.len`, `buf.extra`=host_ref |
-| **Value Creation** |
-| FLOAT64 | result | - | - | `f64.value` |
-| STRING | result | - | - | `buf.ptr`, `buf.len` |
-| BIGINT | result | - | - | `i64.value` |
-| **SET_PROP by String** |
-| SET_STR_SLOT | obj | val | - | `buf.ptr`=name, `buf.len` |
-| SET_STR_NULL | obj | - | - | `buf.ptr`=name, `buf.len` |
-| SET_STR_UNDEF | obj | - | - | `buf.ptr`=name, `buf.len` |
-| SET_STR_BOOL | obj | 0\|1 | - | `buf.ptr`=name, `buf.len` |
-| SET_STR_INT32 | obj | - | - | `buf.ptr`=name, `buf.len`, `buf.extra`=value |
-| SET_STR_F64 | obj | - | - | `raw.d1`=name_ptr (null-term), `f64.value` |
-| SET_STR_BIGINT | obj | - | - | `raw.d1`=name_ptr (null-term), `i64.value` |
-| SET_STR_STRING | obj | - | - | `buf.ptr`=val, `buf.len`, `buf.extra`=name_ptr (null-term) |
-| **SET_PROP by Index** |
-| SET_IDX_SLOT | obj | val | - | `raw.d1`=index |
-| SET_IDX_NULL | obj | - | - | `raw.d1`=index |
-| SET_IDX_UNDEF | obj | - | - | `raw.d1`=index |
-| SET_IDX_BOOL | obj | 0\|1 | - | `raw.d1`=index |
-| SET_IDX_INT32 | obj | - | - | `raw.d1`=index, `raw.d2`=value |
-| SET_IDX_F64 | obj | - | - | `raw.d1`=index, `f64.value` (bytes 8-15) |
-| SET_IDX_BIGINT | obj | - | - | `raw.d1`=index, `i64.value` (bytes 8-15) |
-| SET_IDX_STRING | obj | - | - | `buf.ptr`=val, `buf.len`, `buf.extra`=index |
-| **SET_PROP by Key** |
-| SET_PROP | obj | key | val | - |
-| **GET_PROP** |
-| GET_PROP | result | obj | key | - |
-| GET_STR | result | obj | - | `buf.ptr`=name, `buf.len` |
-| GET_IDX | result | obj | - | `raw.d1`=index |
-| GET_GLOBAL | result | - | - | - |
-| **Map/Set** |
-| MAP_SET | map | key | val | - |
-| MAP_SET_STR | map | val | - | `buf.ptr`=key, `buf.len` |
-| SET_ADD | set | val | - | - |
-| **Host Function Def** |
-| DEF_CFUNC | obj | length | flags | `buf.ptr`=name, `buf.len`, `buf.extra`=host_ref |
-| DEF_CFUNC_CTOR | obj | length | flags | `buf.ptr`=name, `buf.len`, `buf.extra`=host_ref |
-| DEF_CGETSET | obj | flags | - | `raw.d1`=name_ptr, `raw.d2`=getter_ref, `raw.d3`=setter_ref |
-| **Property Def (inline)** |
-| DEF_PROP_SLOT | obj | val | flags | `buf.ptr`=name, `buf.len` |
-| DEF_PROP_NULL | obj | flags | - | `buf.ptr`=name, `buf.len` |
-| DEF_PROP_UNDEF | obj | flags | - | `buf.ptr`=name, `buf.len` |
-| DEF_PROP_BOOL | obj | flags | 0\|1 | `buf.ptr`=name, `buf.len` |
-| DEF_PROP_INT32 | obj | flags | - | `buf.ptr`=name, `buf.len`, `buf.extra`=value |
-| DEF_PROP_I64 | obj | flags | - | `raw.d1`=name_ptr (null-term), `i64.value` |
-| DEF_PROP_F64 | obj | flags | - | `raw.d1`=name_ptr (null-term), `f64.value` |
-| DEF_PROP_STRING | obj | flags | - | `buf.ptr`=val, `buf.len`, `buf.extra`=name_ptr (null-term) |
-| **Full Property Def** |
-| DEFINE_VALUE | obj | val | flags | `buf.ptr`=name, `buf.len` |
-| DEFINE_GETSET | obj | getter | setter | `buf.ptr`=name, `buf.len`, `buf.extra`=flags |
-| **Call/Eval** |
-| CALL | result | func | this | `call.argv`, `call.argc` |
-| CALL_CONSTRUCT | result | ctor | - | `call.argv`, `call.argc` |
-| EVAL | result | - | - | `buf.ptr`=code, `buf.len`, `buf.extra`=filename_ptr\|(flags<<16) |
-| **Error** |
-| THROW | error | - | - | - |
-| RESOLVE_EXC | result | maybe | - | - |
-| **Refcount** |
-| DUP | result | src | - | - |
-| FREE | slot | - | - | - |
-| **Serialization** |
-| WRITE_OBJECT | result | val | - | `raw.d1`=flags |
-| READ_OBJECT | result | data | - | `raw.d1`=flags |
+| Opcode                                                   | slot_a | slot_b    | slot_c  | data                                                                    |
+| -------------------------------------------------------- | ------ | --------- | ------- | ----------------------------------------------------------------------- |
+| **Container Creation**                                   |
+| OBJECT                                                   | result | -         | -       | -                                                                       |
+| OBJECT_PROTO                                             | result | proto     | -       | -                                                                       |
+| ARRAY                                                    | result | -         | -       | -                                                                       |
+| **Special Type Creation**                                |
+| DATE                                                     | result | -         | -       | `f64.value`=timestamp                                                   |
+| ERROR                                                    | result | type      | -       | `buf.ptr`=msg, `buf.len`                                                |
+| ARRAYBUFFER                                              | result | -         | -       | `buf.ptr`, `buf.len`                                                    |
+| TYPED_ARRAY                                              | result | buffer    | type    | `raw.d1`=byteOffset, `raw.d2`=length                                    |
+| SYMBOL                                                   | result | is_global | -       | `buf.ptr`=desc, `buf.len`                                               |
+| FUNCTION                                                 | result | length    | is_ctor | `buf.ptr`=name, `buf.len`, `buf.extra`=host_ref                         |
+| **Value Creation**                                       |
+| FLOAT64                                                  | result | -         | -       | `f64.value`                                                             |
+| STRING                                                   | result | -         | -       | `buf.ptr`, `buf.len`                                                    |
+| BIGINT                                                   | result | -         | -       | `i64.value`                                                             |
+| **SET_PROP by String**                                   |
+| SET_STR_SLOT                                             | obj    | val       | -       | `buf.ptr`=name, `buf.len`                                               |
+| SET_STR_NULL                                             | obj    | -         | -       | `buf.ptr`=name, `buf.len`                                               |
+| SET_STR_UNDEF                                            | obj    | -         | -       | `buf.ptr`=name, `buf.len`                                               |
+| SET_STR_BOOL                                             | obj    | 0\|1      | -       | `buf.ptr`=name, `buf.len`                                               |
+| SET_STR_INT32                                            | obj    | -         | -       | `buf.ptr`=name, `buf.len`, `buf.extra`=value                            |
+| SET_STR_F64                                              | obj    | -         | -       | `raw.d1`=name_ptr (null-term), `f64.value`                              |
+| SET_STR_BIGINT                                           | obj    | -         | -       | `raw.d1`=name_ptr (null-term), `i64.value`                              |
+| SET_STR_STRING                                           | obj    | -         | -       | `buf.ptr`=val, `buf.len`, `buf.extra`=name_ptr (null-term)              |
+| **SET_PROP by Index**                                    |
+| SET_IDX_SLOT                                             | obj    | val       | -       | `raw.d1`=index                                                          |
+| SET_IDX_NULL                                             | obj    | -         | -       | `raw.d1`=index                                                          |
+| SET_IDX_UNDEF                                            | obj    | -         | -       | `raw.d1`=index                                                          |
+| SET_IDX_BOOL                                             | obj    | 0\|1      | -       | `raw.d1`=index                                                          |
+| SET_IDX_INT32                                            | obj    | -         | -       | `raw.d1`=index, `raw.d2`=value                                          |
+| SET_IDX_F64                                              | obj    | -         | -       | `raw.d1`=index, `f64.value` (bytes 8-15)                                |
+| SET_IDX_BIGINT                                           | obj    | -         | -       | `raw.d1`=index, `i64.value` (bytes 8-15)                                |
+| SET_IDX_STRING                                           | obj    | -         | -       | `buf.ptr`=val, `buf.len`, `buf.extra`=index                             |
+| **SET_PROP by Key**                                      |
+| SET_PROP                                                 | obj    | key       | val     | -                                                                       |
+| **GET_PROP**                                             |
+| GET_PROP                                                 | result | obj       | key     | -                                                                       |
+| GET_STR                                                  | result | obj       | -       | `buf.ptr`=name, `buf.len`                                               |
+| GET_IDX                                                  | result | obj       | -       | `raw.d1`=index                                                          |
+| GET_GLOBAL                                               | result | -         | -       | -                                                                       |
+| **Map/Set**                                              |
+| MAP_SET                                                  | map    | key       | val     | -                                                                       |
+| MAP_SET_STR                                              | map    | val       | -       | `buf.ptr`=key, `buf.len`                                                |
+| SET_ADD                                                  | set    | val       | -       | -                                                                       |
+| **Host Function Def**                                    |
+| DEF_CFUNC                                                | obj    | length    | flags   | `buf.ptr`=name, `buf.len`, `buf.extra`=host_ref                         |
+| DEF_CFUNC_CTOR                                           | obj    | length    | flags   | `buf.ptr`=name, `buf.len`, `buf.extra`=host_ref                         |
+| DEF_CGETSET                                              | obj    | flags     | -       | `raw.d1`=name_ptr, `raw.d2`=getter_ref, `raw.d3`=setter_ref             |
+| **Property Def (inline)**                                |
+| DEF_PROP_SLOT                                            | obj    | val       | flags   | `buf.ptr`=name, `buf.len`                                               |
+| DEF_PROP_NULL                                            | obj    | flags     | -       | `buf.ptr`=name, `buf.len`                                               |
+| DEF_PROP_UNDEF                                           | obj    | flags     | -       | `buf.ptr`=name, `buf.len`                                               |
+| DEF_PROP_BOOL                                            | obj    | flags     | 0\|1    | `buf.ptr`=name, `buf.len`                                               |
+| DEF_PROP_INT32                                           | obj    | flags     | -       | `buf.ptr`=name, `buf.len`, `buf.extra`=value                            |
+| DEF_PROP_I64                                             | obj    | flags     | -       | `raw.d1`=name_ptr (null-term), `i64.value`                              |
+| DEF_PROP_F64                                             | obj    | flags     | -       | `raw.d1`=name_ptr (null-term), `f64.value`                              |
+| DEF_PROP_STRING                                          | obj    | flags     | -       | `buf.ptr`=val, `buf.len`, `buf.extra`=name_ptr (null-term)              |
+| **Full Property Def**                                    |
+| DEFINE_VALUE                                             | obj    | val       | flags   | `buf.ptr`=name, `buf.len`                                               |
+| DEFINE_GETSET                                            | obj    | getter    | setter  | `buf.ptr`=name, `buf.len`, `buf.extra`=flags                            |
+| **Call/Eval**                                            |
+| CALL                                                     | result | func      | this    | `call.argv`, `call.argc`                                                |
+| CALL_CONSTRUCT                                           | result | ctor      | -       | `call.argv`, `call.argc`                                                |
+| EVAL                                                     | result | -         | -       | `buf.ptr`=code, `buf.len`, `buf.extra`=filename_ptr\|(flags<<16)        |
+| **Error**                                                |
+| THROW                                                    | error  | -         | -       | -                                                                       |
+| RESOLVE_EXC                                              | result | maybe     | -       | -                                                                       |
+| **Refcount**                                             |
+| DUP                                                      | result | src       | -       | -                                                                       |
+| FREE                                                     | slot   | -         | -       | -                                                                       |
+| **Serialization**                                        |
+| WRITE_OBJECT                                             | result | val       | -       | `raw.d1`=flags                                                          |
+| READ_OBJECT                                              | result | data      | -       | `raw.d1`=flags                                                          |
 | **FuncList Lifecycle** (slot holds raw ptr, not JSValue) |
-| FUNCLIST_NEW | result | - | - | `raw.d1`=count |
-| FUNCLIST_APPLY | obj | list | - | `raw.d1`=count |
-| FUNCLIST_FREE | list | - | - | - |
-| **FuncList Entry Setters** |
-| FUNCLIST_CFUNC | list | len | flags | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=host_ref |
-| FUNCLIST_CFUNC_CTOR | list | len | flags | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=host_ref |
-| FUNCLIST_CGETSET | list | flags | - | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=getter\|setter (packed) |
-| FUNCLIST_CGETSET_MAGIC | list | flags | magic | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=getter\|setter (packed) |
-| FUNCLIST_PROP_STRING | list | flags | - | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=val_ptr |
-| FUNCLIST_PROP_INT32 | list | flags | - | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=value |
-| FUNCLIST_PROP_INT64 | list | flags | index | `raw.d1`=name_ptr, `i64.value` |
-| FUNCLIST_PROP_DOUBLE | list | flags | index | `raw.d1`=name_ptr, `f64.value` |
-| FUNCLIST_PROP_UNDEFINED | list | flags | - | `raw.d1`=index, `raw.d2`=name_ptr |
-| FUNCLIST_ALIAS | list | flags | - | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=from_ptr |
-| FUNCLIST_OBJECT | list | flags | - | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=nested_list\|count (packed) |
+| FUNCLIST_NEW                                             | result | -         | -       | `raw.d1`=count                                                          |
+| FUNCLIST_APPLY                                           | obj    | list      | -       | `raw.d1`=count                                                          |
+| FUNCLIST_FREE                                            | list   | -         | -       | -                                                                       |
+| **FuncList Entry Setters**                               |
+| FUNCLIST_CFUNC                                           | list   | len       | flags   | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=host_ref                    |
+| FUNCLIST_CFUNC_CTOR                                      | list   | len       | flags   | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=host_ref                    |
+| FUNCLIST_CGETSET                                         | list   | flags     | -       | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=getter\|setter (packed)     |
+| FUNCLIST_CGETSET_MAGIC                                   | list   | flags     | magic   | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=getter\|setter (packed)     |
+| FUNCLIST_PROP_STRING                                     | list   | flags     | -       | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=val_ptr                     |
+| FUNCLIST_PROP_INT32                                      | list   | flags     | -       | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=value                       |
+| FUNCLIST_PROP_INT64                                      | list   | flags     | index   | `raw.d1`=name_ptr, `i64.value`                                          |
+| FUNCLIST_PROP_DOUBLE                                     | list   | flags     | index   | `raw.d1`=name_ptr, `f64.value`                                          |
+| FUNCLIST_PROP_UNDEFINED                                  | list   | flags     | -       | `raw.d1`=index, `raw.d2`=name_ptr                                       |
+| FUNCLIST_ALIAS                                           | list   | flags     | -       | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=from_ptr                    |
+| FUNCLIST_OBJECT                                          | list   | flags     | -       | `raw.d1`=index, `raw.d2`=name_ptr, `raw.d3`=nested_list\|count (packed) |
 
 ## 7.3 Notes on Representation
 
@@ -870,12 +896,14 @@ Legend:
 Most ops use `data.buf.ptr` + `data.buf.len` for strings, supporting arbitrary content including null bytes.
 
 **Exceptions using null-terminated strings** (can't fit len due to f64/i64 taking 8 bytes):
+
 - SET_STR_F64, SET_STR_BIGINT: `data.raw.d1`=name_ptr (null-term)
 - DEF_PROP_F64, DEF_PROP_I64: `data.raw.d1`=name_ptr (null-term)
 - DEF_CGETSET: `data.raw.d1`=name_ptr (null-term, needs getter_ref + setter_ref)
 - SET_STR_STRING, DEF_PROP_STRING: `data.buf.extra`=name_ptr (null-term, value uses buf.ptr+len)
 
 **Property name with null byte** (rare edge case): Fall back to slot-based ops:
+
 ```
 CREATE_STRING(ptr, len) -> key_slot   // key with null byte
 SET_PROP(obj_slot, key_slot, val_slot)
@@ -890,6 +918,7 @@ SET_PROP(obj_slot, key_slot, val_slot)
 **EVAL flags encoding**: `data.d3 = filename_ptrset | (eval_flags << 16)`. Filename offset is 16 bits (max 65535), flags are 16 bits.
 
 **FUNCLIST ops**:
+
 - Slots hold raw `JSCFunctionListEntry*` pointers, not JSValues
 - All property names use null-terminated strings (property names rarely have null bytes)
 - FUNCLIST_CGETSET packs getter_ref and setter_ref into 16 bits each: `raw.d3 = (getter & 0xFFFF) | (setter << 16)`

@@ -43,14 +43,14 @@ type ParamDef<T extends string = string> = {
  *
  * Add more types as needed.
  */
-type UInt8Types = "uint8_t" | "JSValueSlot" | "FuncListSlot"
+type UInt8Types = "uint8_t" | "JSValueSlot" | "FuncListSlot" | "JSPropFlags"
 
 /**
  * Type aliases for uint32_t; any type that fits in 32 bits.
  *
  * Add more types as needed.
  */
-type UInt32Types = "uint32_t" | "int32_t"
+type UInt32Types = "uint32_t" | "int32_t" | "HostRefId"
 
 type CommandDataRawDef = {
   type: "raw"
@@ -102,7 +102,16 @@ type CommandDataDef = CommandDataUnion[keyof CommandDataUnion]
 
 export const COMMANDS = {
   // ============================================================================
-  // Container Creation (3 ops)
+  // Invalid/Uninitialized
+  // ============================================================================
+
+  /** Opcode 0: detect uninitialized commands (mallocz zeros memory) */
+  INVALID: {
+    doc: "Invalid opcode - indicates uninitialized command",
+  },
+
+  // ============================================================================
+  // Container Creation
   // ============================================================================
 
   OBJECT: {
@@ -137,7 +146,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Special Type Creation (5 ops)
+  // Special Type Creation
   // ============================================================================
 
   DATE: {
@@ -234,7 +243,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Value Creation (4 ops)
+  // Value Creation
   // ============================================================================
 
   FLOAT64: {
@@ -286,7 +295,7 @@ export const COMMANDS = {
       len: { name: "name_len", type: "uint32_t", doc: "Length of function name", usage: "in" },
       extra: {
         name: "host_ref_id",
-        type: "int32_t",
+        type: "HostRefId",
         doc: "Host reference ID for callback",
         usage: "in",
       },
@@ -294,7 +303,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Property Set by String Key (8 ops)
+  // Property Set by String Key
   // ============================================================================
 
   SET_STR_SLOT: {
@@ -397,7 +406,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Property Set by Index (8 ops)
+  // Property Set by Index
   // ============================================================================
 
   SET_IDX_SLOT: {
@@ -480,7 +489,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Property Set by JSValue Key (1 op)
+  // Property Set by JSValue Key
   // ============================================================================
 
   SET_PROP: {
@@ -491,7 +500,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Property Get (4 ops)
+  // Property Get
   // ============================================================================
 
   GET_PROP: {
@@ -533,7 +542,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Map/Set Operations (3 ops)
+  // Map/Set Operations
   // ============================================================================
 
   MAP_SET: {
@@ -561,21 +570,21 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Host Function Definition (3 ops)
+  // Host Function Definition
   // ============================================================================
 
   DEF_CFUNC: {
     doc: "Define a host function property on object",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     slot_b: { name: "length", type: "uint8_t", doc: "Function.length (arity)", usage: "in" },
-    slot_c: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "buf",
       ptr: { name: "name_ptr", type: "char*", doc: "Function name pointer", usage: "in" },
       len: { name: "name_len", type: "uint32_t", doc: "Function name length", usage: "in" },
       extra: {
         name: "host_ref_id",
-        type: "int32_t",
+        type: "HostRefId",
         doc: "Host reference ID for callback",
         usage: "in",
       },
@@ -586,14 +595,14 @@ export const COMMANDS = {
     doc: "Define a host constructor function property on object",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     slot_b: { name: "length", type: "uint8_t", doc: "Function.length (arity)", usage: "in" },
-    slot_c: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "buf",
       ptr: { name: "name_ptr", type: "char*", doc: "Function name pointer", usage: "in" },
       len: { name: "name_len", type: "uint32_t", doc: "Function name length", usage: "in" },
       extra: {
         name: "host_ref_id",
-        type: "int32_t",
+        type: "HostRefId",
         doc: "Host reference ID for callback",
         usage: "in",
       },
@@ -603,7 +612,7 @@ export const COMMANDS = {
   DEF_CGETSET: {
     doc: "Define a host getter/setter property on object (name must be null-terminated)",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "raw",
       d1: {
@@ -628,14 +637,14 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Property Definition with Inline Values (8 ops)
+  // Property Definition with Inline Values
   // ============================================================================
 
   DEF_PROP_SLOT: {
     doc: "Define property with JSValue from slot (JS_DefinePropertyValueStr)",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     slot_b: { name: "val", type: "JSValueSlot", doc: "Value slot", usage: "in" },
-    slot_c: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "buf",
       ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
@@ -646,7 +655,7 @@ export const COMMANDS = {
   DEF_PROP_NULL: {
     doc: "Define property with null value",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "buf",
       ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
@@ -657,7 +666,7 @@ export const COMMANDS = {
   DEF_PROP_UNDEF: {
     doc: "Define property with undefined value",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "buf",
       ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
@@ -668,7 +677,7 @@ export const COMMANDS = {
   DEF_PROP_BOOL: {
     doc: "Define property with boolean value",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     slot_c: { name: "bool_val", type: "uint8_t", doc: "Boolean value (0 or 1)", usage: "in" },
     data: {
       type: "buf",
@@ -680,7 +689,7 @@ export const COMMANDS = {
   DEF_PROP_INT32: {
     doc: "Define property with int32 value",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "buf",
       ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
@@ -692,7 +701,7 @@ export const COMMANDS = {
   DEF_PROP_I64: {
     doc: "Define property with int64/BigInt value (name must be null-terminated)",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "i64",
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
@@ -708,7 +717,7 @@ export const COMMANDS = {
   DEF_PROP_F64: {
     doc: "Define property with float64 value (name must be null-terminated)",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The float64 value", usage: "in" },
@@ -724,7 +733,7 @@ export const COMMANDS = {
   DEF_PROP_STRING: {
     doc: "Define property with string value (name must be null-terminated)",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "buf",
       ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
@@ -739,14 +748,14 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Full Property Definition (2 ops)
+  // Full Property Definition
   // ============================================================================
 
   DEFINE_VALUE: {
     doc: "Define property with value from slot and flags (JS_DefinePropertyValueStr)",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     slot_b: { name: "val", type: "JSValueSlot", doc: "Value slot", usage: "in" },
-    slot_c: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "buf",
       ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
@@ -778,7 +787,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Call/Eval (3 ops)
+  // Call/Eval
   // ============================================================================
 
   CALL: {
@@ -821,7 +830,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Error Handling (2 ops)
+  // Error Handling
   // ============================================================================
 
   THROW: {
@@ -846,7 +855,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Reference Counting (2 ops)
+  // Reference Counting
   // ============================================================================
 
   DUP: {
@@ -871,7 +880,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // Serialization (2 ops)
+  // Serialization
   // ============================================================================
 
   WRITE_OBJECT: {
@@ -910,7 +919,7 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // FuncList Lifecycle (3 ops)
+  // FuncList Lifecycle
   // ============================================================================
 
   FUNCLIST_NEW: {
@@ -943,14 +952,14 @@ export const COMMANDS = {
   },
 
   // ============================================================================
-  // FuncList Entry Setters (11 ops)
+  // FuncList Entry Setters
   // ============================================================================
 
   FUNCLIST_CFUNC: {
     doc: "Set funclist entry to JS_DEF_CFUNC",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
     slot_b: { name: "length", type: "uint8_t", doc: "Function.length (arity)", usage: "in" },
-    slot_c: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
@@ -962,7 +971,7 @@ export const COMMANDS = {
       },
       d3: {
         name: "host_ref_id",
-        type: "int32_t",
+        type: "HostRefId",
         doc: "Host reference ID for callback",
         usage: "in",
       },
@@ -973,7 +982,7 @@ export const COMMANDS = {
     doc: "Set funclist entry to JS_DEF_CFUNC with constructor proto",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
     slot_b: { name: "length", type: "uint8_t", doc: "Function.length (arity)", usage: "in" },
-    slot_c: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
@@ -985,7 +994,7 @@ export const COMMANDS = {
       },
       d3: {
         name: "host_ref_id",
-        type: "int32_t",
+        type: "HostRefId",
         doc: "Host reference ID for callback",
         usage: "in",
       },
@@ -995,7 +1004,7 @@ export const COMMANDS = {
   FUNCLIST_CGETSET: {
     doc: "Set funclist entry to JS_DEF_CGETSET",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
@@ -1017,7 +1026,7 @@ export const COMMANDS = {
   FUNCLIST_CGETSET_MAGIC: {
     doc: "Set funclist entry to JS_DEF_CGETSET_MAGIC",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     slot_c: { name: "magic", type: "uint8_t", doc: "Magic value (low 8 bits)", usage: "in" },
     data: {
       type: "raw",
@@ -1040,7 +1049,7 @@ export const COMMANDS = {
   FUNCLIST_PROP_STRING: {
     doc: "Set funclist entry to JS_DEF_PROP_STRING",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
@@ -1062,7 +1071,7 @@ export const COMMANDS = {
   FUNCLIST_PROP_INT32: {
     doc: "Set funclist entry to JS_DEF_PROP_INT32",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
@@ -1079,7 +1088,7 @@ export const COMMANDS = {
   FUNCLIST_PROP_INT64: {
     doc: "Set funclist entry to JS_DEF_PROP_INT64 (index in slot_c)",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     slot_c: { name: "index", type: "uint8_t", doc: "Entry index in funclist (0-255)", usage: "in" },
     data: {
       type: "i64",
@@ -1096,7 +1105,7 @@ export const COMMANDS = {
   FUNCLIST_PROP_DOUBLE: {
     doc: "Set funclist entry to JS_DEF_PROP_DOUBLE (index in slot_c)",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     slot_c: { name: "index", type: "uint8_t", doc: "Entry index in funclist (0-255)", usage: "in" },
     data: {
       type: "f64",
@@ -1113,7 +1122,7 @@ export const COMMANDS = {
   FUNCLIST_PROP_UNDEFINED: {
     doc: "Set funclist entry to JS_DEF_PROP_UNDEFINED",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
@@ -1129,7 +1138,7 @@ export const COMMANDS = {
   FUNCLIST_ALIAS: {
     doc: "Set funclist entry to JS_DEF_ALIAS",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
@@ -1151,7 +1160,7 @@ export const COMMANDS = {
   FUNCLIST_OBJECT: {
     doc: "Set funclist entry to JS_DEF_OBJECT (nested object with its own funclist)",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
+    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
@@ -1273,13 +1282,14 @@ export function CFunc(name: string, command: CommandDef) {
 
   // Generate header file content
   const headerGuard = `QTS_PERFORM_${name}_H`
+  const docComment = command.doc ? `/** ${command.doc} */\n` : ""
   const headerContent = `// Generated - do not edit
 #ifndef ${headerGuard}
 #define ${headerGuard}
 
 #include "op.h"
 
-${signature};
+${docComment}${signature};
 
 #endif // ${headerGuard}
 `

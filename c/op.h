@@ -3,85 +3,90 @@
 #define QTS_OP_H
 
 #include <stdint.h>
-#include "quickjs.h"
+// Note: includer must #include quickjs.h before this header
 
 // Slot types - used for indexing into the command environment arrays
 typedef uint8_t JSValueSlot;
 typedef uint8_t FuncListSlot;
 
+// Semantic types
+typedef uint8_t JSPropFlags;   /** JS_PROP_* flags */
+typedef int32_t HostRefId;     /** Host callback reference ID */
+
 typedef enum {
-    QTS_OP_OBJECT = 0,
-    QTS_OP_OBJECT_PROTO = 1,
-    QTS_OP_ARRAY = 2,
-    QTS_OP_DATE = 3,
-    QTS_OP_ERROR = 4,
-    QTS_OP_ARRAYBUFFER = 5,
-    QTS_OP_TYPED_ARRAY = 6,
-    QTS_OP_SYMBOL = 7,
-    QTS_OP_FLOAT64 = 8,
-    QTS_OP_STRING = 9,
-    QTS_OP_BIGINT = 10,
-    QTS_OP_FUNCTION = 11,
-    QTS_OP_SET_STR_SLOT = 12,
-    QTS_OP_SET_STR_NULL = 13,
-    QTS_OP_SET_STR_UNDEF = 14,
-    QTS_OP_SET_STR_BOOL = 15,
-    QTS_OP_SET_STR_INT32 = 16,
-    QTS_OP_SET_STR_F64 = 17,
-    QTS_OP_SET_STR_BIGINT = 18,
-    QTS_OP_SET_STR_STRING = 19,
-    QTS_OP_SET_IDX_SLOT = 20,
-    QTS_OP_SET_IDX_NULL = 21,
-    QTS_OP_SET_IDX_UNDEF = 22,
-    QTS_OP_SET_IDX_BOOL = 23,
-    QTS_OP_SET_IDX_INT32 = 24,
-    QTS_OP_SET_IDX_F64 = 25,
-    QTS_OP_SET_IDX_BIGINT = 26,
-    QTS_OP_SET_IDX_STRING = 27,
-    QTS_OP_SET_PROP = 28,
-    QTS_OP_GET_PROP = 29,
-    QTS_OP_GET_STR = 30,
-    QTS_OP_GET_IDX = 31,
-    QTS_OP_GET_GLOBAL = 32,
-    QTS_OP_MAP_SET = 33,
-    QTS_OP_MAP_SET_STR = 34,
-    QTS_OP_SET_ADD = 35,
-    QTS_OP_DEF_CFUNC = 36,
-    QTS_OP_DEF_CFUNC_CTOR = 37,
-    QTS_OP_DEF_CGETSET = 38,
-    QTS_OP_DEF_PROP_SLOT = 39,
-    QTS_OP_DEF_PROP_NULL = 40,
-    QTS_OP_DEF_PROP_UNDEF = 41,
-    QTS_OP_DEF_PROP_BOOL = 42,
-    QTS_OP_DEF_PROP_INT32 = 43,
-    QTS_OP_DEF_PROP_I64 = 44,
-    QTS_OP_DEF_PROP_F64 = 45,
-    QTS_OP_DEF_PROP_STRING = 46,
-    QTS_OP_DEFINE_VALUE = 47,
-    QTS_OP_DEFINE_GETSET = 48,
-    QTS_OP_CALL = 49,
-    QTS_OP_CALL_CONSTRUCT = 50,
-    QTS_OP_EVAL = 51,
-    QTS_OP_THROW = 52,
-    QTS_OP_RESOLVE_EXC = 53,
-    QTS_OP_DUP = 54,
-    QTS_OP_FREE = 55,
-    QTS_OP_WRITE_OBJECT = 56,
-    QTS_OP_READ_OBJECT = 57,
-    QTS_OP_FUNCLIST_NEW = 58,
-    QTS_OP_FUNCLIST_APPLY = 59,
-    QTS_OP_FUNCLIST_FREE = 60,
-    QTS_OP_FUNCLIST_CFUNC = 61,
-    QTS_OP_FUNCLIST_CFUNC_CTOR = 62,
-    QTS_OP_FUNCLIST_CGETSET = 63,
-    QTS_OP_FUNCLIST_CGETSET_MAGIC = 64,
-    QTS_OP_FUNCLIST_PROP_STRING = 65,
-    QTS_OP_FUNCLIST_PROP_INT32 = 66,
-    QTS_OP_FUNCLIST_PROP_INT64 = 67,
-    QTS_OP_FUNCLIST_PROP_DOUBLE = 68,
-    QTS_OP_FUNCLIST_PROP_UNDEFINED = 69,
-    QTS_OP_FUNCLIST_ALIAS = 70,
-    QTS_OP_FUNCLIST_OBJECT = 71
+    QTS_OP_INVALID = 0, /** Invalid opcode - indicates uninitialized command */
+    QTS_OP_OBJECT = 1, /** Create a new empty object (JS_NewObject) */
+    QTS_OP_OBJECT_PROTO = 2, /** Create a new object with prototype (JS_NewObjectProto) */
+    QTS_OP_ARRAY = 3, /** Create a new empty array (JS_NewArray) */
+    QTS_OP_DATE = 4, /** Create a Date object from timestamp (JS_NewDate) */
+    QTS_OP_ERROR = 5, /** Create an Error object (JS_NewError or JS_New*Error) */
+    QTS_OP_ARRAYBUFFER = 6, /** Create an ArrayBuffer by copying data (JS_NewArrayBufferCopy) */
+    QTS_OP_TYPED_ARRAY = 7, /** Create a TypedArray view (JS_NewTypedArray) */
+    QTS_OP_SYMBOL = 8, /** Create a Symbol (JS_NewSymbol or global symbol) */
+    QTS_OP_FLOAT64 = 9, /** Create a float64 number value (JS_NewFloat64) */
+    QTS_OP_STRING = 10, /** Create a string value (JS_NewStringLen) */
+    QTS_OP_BIGINT = 11, /** Create a BigInt value from i64 (JS_NewBigInt64) */
+    QTS_OP_FUNCTION = 12, /** Create a host function (QTS_NewFunction) */
+    QTS_OP_SET_STR_SLOT = 13, /** Set property by string key to JSValue from slot (JS_SetPropertyStr) */
+    QTS_OP_SET_STR_NULL = 14, /** Set property by string key to null */
+    QTS_OP_SET_STR_UNDEF = 15, /** Set property by string key to undefined */
+    QTS_OP_SET_STR_BOOL = 16, /** Set property by string key to boolean */
+    QTS_OP_SET_STR_INT32 = 17, /** Set property by string key to int32 */
+    QTS_OP_SET_STR_F64 = 18, /** Set property by string key to float64 (name must be null-terminated) */
+    QTS_OP_SET_STR_BIGINT = 19, /** Set property by string key to BigInt (name must be null-terminated) */
+    QTS_OP_SET_STR_STRING = 20, /** Set property by string key to string value (name must be null-terminated) */
+    QTS_OP_SET_IDX_SLOT = 21, /** Set array element by index to JSValue from slot (JS_SetPropertyUint32) */
+    QTS_OP_SET_IDX_NULL = 22, /** Set array element by index to null */
+    QTS_OP_SET_IDX_UNDEF = 23, /** Set array element by index to undefined */
+    QTS_OP_SET_IDX_BOOL = 24, /** Set array element by index to boolean */
+    QTS_OP_SET_IDX_INT32 = 25, /** Set array element by index to int32 */
+    QTS_OP_SET_IDX_F64 = 26, /** Set array element by index to float64 */
+    QTS_OP_SET_IDX_BIGINT = 27, /** Set array element by index to BigInt */
+    QTS_OP_SET_IDX_STRING = 28, /** Set array element by index to string */
+    QTS_OP_SET_PROP = 29, /** Set property using JSValue key (JS_SetProperty) */
+    QTS_OP_GET_PROP = 30, /** Get property using JSValue key (JS_GetProperty) */
+    QTS_OP_GET_STR = 31, /** Get property by string key (JS_GetPropertyStr) */
+    QTS_OP_GET_IDX = 32, /** Get property by numeric index (JS_GetPropertyUint32) */
+    QTS_OP_GET_GLOBAL = 33, /** Get the global object (JS_GetGlobalObject) */
+    QTS_OP_MAP_SET = 34, /** Call map.set(key, value) using JSValue key */
+    QTS_OP_MAP_SET_STR = 35, /** Call map.set(key, value) with string key */
+    QTS_OP_SET_ADD = 36, /** Call set.add(value) */
+    QTS_OP_DEF_CFUNC = 37, /** Define a host function property on object */
+    QTS_OP_DEF_CFUNC_CTOR = 38, /** Define a host constructor function property on object */
+    QTS_OP_DEF_CGETSET = 39, /** Define a host getter/setter property on object (name must be null-terminated) */
+    QTS_OP_DEF_PROP_SLOT = 40, /** Define property with JSValue from slot (JS_DefinePropertyValueStr) */
+    QTS_OP_DEF_PROP_NULL = 41, /** Define property with null value */
+    QTS_OP_DEF_PROP_UNDEF = 42, /** Define property with undefined value */
+    QTS_OP_DEF_PROP_BOOL = 43, /** Define property with boolean value */
+    QTS_OP_DEF_PROP_INT32 = 44, /** Define property with int32 value */
+    QTS_OP_DEF_PROP_I64 = 45, /** Define property with int64/BigInt value (name must be null-terminated) */
+    QTS_OP_DEF_PROP_F64 = 46, /** Define property with float64 value (name must be null-terminated) */
+    QTS_OP_DEF_PROP_STRING = 47, /** Define property with string value (name must be null-terminated) */
+    QTS_OP_DEFINE_VALUE = 48, /** Define property with value from slot and flags (JS_DefinePropertyValueStr) */
+    QTS_OP_DEFINE_GETSET = 49, /** Define property with getter/setter from slots (JS_DefinePropertyGetSet) */
+    QTS_OP_CALL = 50, /** Call a function (JS_Call) */
+    QTS_OP_CALL_CONSTRUCT = 51, /** Call a constructor (JS_CallConstructor) */
+    QTS_OP_EVAL = 52, /** Evaluate JavaScript code (JS_Eval) */
+    QTS_OP_THROW = 53, /** Throw an exception (JS_Throw) */
+    QTS_OP_RESOLVE_EXC = 54, /** Resolve exception - if maybe_exc is exception, return the exception value */
+    QTS_OP_DUP = 55, /** Duplicate a value (JS_DupValue) - increment refcount */
+    QTS_OP_FREE = 56, /** Free a value (JS_FreeValue) - decrement refcount */
+    QTS_OP_WRITE_OBJECT = 57, /** Serialize a value to binary (JS_WriteObject) */
+    QTS_OP_READ_OBJECT = 58, /** Deserialize a value from binary (JS_ReadObject) */
+    QTS_OP_FUNCLIST_NEW = 59, /** Allocate a new JSCFunctionListEntry array */
+    QTS_OP_FUNCLIST_APPLY = 60, /** Apply funclist to object (JS_SetPropertyFunctionList) */
+    QTS_OP_FUNCLIST_FREE = 61, /** Free a funclist array */
+    QTS_OP_FUNCLIST_CFUNC = 62, /** Set funclist entry to JS_DEF_CFUNC */
+    QTS_OP_FUNCLIST_CFUNC_CTOR = 63, /** Set funclist entry to JS_DEF_CFUNC with constructor proto */
+    QTS_OP_FUNCLIST_CGETSET = 64, /** Set funclist entry to JS_DEF_CGETSET */
+    QTS_OP_FUNCLIST_CGETSET_MAGIC = 65, /** Set funclist entry to JS_DEF_CGETSET_MAGIC */
+    QTS_OP_FUNCLIST_PROP_STRING = 66, /** Set funclist entry to JS_DEF_PROP_STRING */
+    QTS_OP_FUNCLIST_PROP_INT32 = 67, /** Set funclist entry to JS_DEF_PROP_INT32 */
+    QTS_OP_FUNCLIST_PROP_INT64 = 68, /** Set funclist entry to JS_DEF_PROP_INT64 (index in slot_c) */
+    QTS_OP_FUNCLIST_PROP_DOUBLE = 69, /** Set funclist entry to JS_DEF_PROP_DOUBLE (index in slot_c) */
+    QTS_OP_FUNCLIST_PROP_UNDEFINED = 70, /** Set funclist entry to JS_DEF_PROP_UNDEFINED */
+    QTS_OP_FUNCLIST_ALIAS = 71, /** Set funclist entry to JS_DEF_ALIAS */
+    QTS_OP_FUNCLIST_OBJECT = 72, /** Set funclist entry to JS_DEF_OBJECT (nested object with its own funclist) */
 } QTS_Opcode;
 
 typedef struct QTS_Command {

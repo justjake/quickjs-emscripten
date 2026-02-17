@@ -4,6 +4,7 @@
 
 #include "op.h"
 
+/** Call set.add(value) */
 QTS_CommandStatus perform_set_add(QTS_CommandEnv*env, JSValueSlot set, JSValueSlot val);
 
 #endif // QTS_PERFORM_SET_ADD_H

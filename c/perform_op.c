@@ -75,6 +75,9 @@
 
 QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd) {
     switch (cmd.opcode) {
+        case QTS_OP_INVALID:
+            env->error = "Invalid opcode (uninitialized command)";
+            return QTS_COMMAND_ERROR;
         case QTS_OP_OBJECT: return perform_object(env, cmd.slot_a);
         case QTS_OP_OBJECT_PROTO: return perform_object_proto(env, cmd.slot_a, cmd.slot_b);
         case QTS_OP_ARRAY: return perform_array(env, cmd.slot_a);

@@ -4,6 +4,7 @@
 
 #include "op.h"
 
+/** Free a value (JS_FreeValue) - decrement refcount */
 QTS_CommandStatus perform_free(QTS_CommandEnv*env, JSValueSlot slot);
 
 #endif // QTS_PERFORM_FREE_H

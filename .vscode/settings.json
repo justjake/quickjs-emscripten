@@ -9,7 +9,9 @@
     "math.h": "c",
     "stdbool.h": "c",
     "emscripten.h": "c",
-    "quickjs-atom.h": "c"
+    "quickjs-atom.h": "c",
+    "perform_float64.h": "c",
+    "op.h": "c"
   },
   "files.exclude": {}
 }

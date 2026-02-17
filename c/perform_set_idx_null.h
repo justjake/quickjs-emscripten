@@ -4,6 +4,7 @@
 
 #include "op.h"
 
+/** Set array element by index to null */
 QTS_CommandStatus perform_set_idx_null(QTS_CommandEnv*env, JSValueSlot obj, uint32_t index);
 
 #endif // QTS_PERFORM_SET_IDX_NULL_H
