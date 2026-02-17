@@ -828,31 +828,23 @@ export default "the default";
       assert.strictEqual(dumped.message, "CustomMessage")
     })
 
-    it("returns informative fallback when serialization fails due to memory limit", () => {
-      // Use a memory limit that allows object creation but fails during JSON serialization
-      vm.runtime.setMemoryLimit(1024 * 200) // 200KB
-
-      // Create an object that's too large to serialize
-      const result = vm.evalCode(`
-        const big = {};
-        for (let i = 0; i < 5000; i++) big['key' + i] = 'value' + i;
-        big;
-      `)
+    it("returns informative fallback when JSON serialization fails", () => {
+      // Create an object containing BigInt - JSON.stringify throws for BigInt in both
+      // bellard/quickjs and quickjs-ng
+      const result = vm.evalCode(`({ value: 123n })`)
 
       if (result.error) {
-        // OOM during eval is acceptable - remove limit and clean up
-        vm.runtime.setMemoryLimit(-1)
         result.error.dispose()
-        return
+        throw new Error("Failed to create BigInt object")
       }
 
       const dumped = vm.dump(result.value)
       result.value.dispose()
-      vm.runtime.setMemoryLimit(-1) // Remove limit for cleanup
 
-      // Format: JS_PrintValue output + "\n---\nnot JSON serializable: ${error}"
-      assert(typeof dumped === "string", "fallback should be a string")
-      assert(dumped.includes("---"), "should include separator")
+      // Should return a string (not parsed JSON object) since serialization failed
+      assert(typeof dumped === "string", `fallback should be a string, got ${typeof dumped}`)
+      // Format: value representation + "\n---\nnot JSON serializable: ${error}"
+      assert(dumped.includes("---"), `should include separator, got: ${JSON.stringify(dumped).slice(0, 500)}`)
       assert(dumped.includes("not JSON serializable"), "should include error context")
     })
   })
