@@ -200,24 +200,24 @@ const FUNC_ARITY_SLOT = {
   usage: "in",
 } as const satisfies ParamDef<"uint8_t">
 
+const PROP_KEY_PTR = {
+  name: "key_ptr",
+  type: "char*",
+  doc: "Property name/key string; must be null-terminated if maybe_name_len is not set",
+  usage: "in",
+} as const satisfies ParamDef<"char*">
+
 const PROP_MAYBE_NAME_LEN_SLOT = {
-  doc: "if >0, length of name_ptr. if 0, name_ptr is null-terminated",
-  name: "maybe_name_len",
+  doc: `if >0, length of ${PROP_KEY_PTR.name}. if 0, ${PROP_KEY_PTR.name} is null-terminated`,
+  name: "maybe_key_len",
   type: "uint8_t",
   usage: "in",
 } as const satisfies ParamDef<"uint8_t">
 
-const PROP_NAME_PTR = {
-  name: "name_ptr",
-  type: "char*",
-  doc: "Property name string; must be null-terminated if maybe_name_len is not set",
-  usage: "in",
-} as const satisfies ParamDef<"char*">
-
-const PROP_NAME_DATA = {
+const PROP_KEY_DATA = {
   type: "buf",
-  ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-  len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
+  ptr: PROP_KEY_PTR,
+  len: { name: "key_len", type: "uint32_t", doc: "Property name/key length", usage: "in" },
 } as const satisfies CommandDataBufDef
 
 const ARRAY_INDEX = {
@@ -280,7 +280,7 @@ export const COMMANDS = {
       value: {
         name: "timestamp",
         type: "double",
-        doc: "Unix timestamp in milliseconds",
+        doc: "Unix timestamp in milliseconds, eg from Date.now()",
         usage: "in",
       },
     },
@@ -290,6 +290,12 @@ export const COMMANDS = {
     doc: "Create an Error object (JS_NewError or JS_New*Error)",
     slot_a: RESULT_JSVALUE_SLOT,
     slot_b: {
+      name: "maybe_name_len",
+      type: "uint8_t",
+      doc: "If >0, length of error_name_ptr. if 0, error_name_ptr is null-terminated or not set",
+      usage: "in",
+    },
+    slot_c: {
       name: "new_error_flags",
       type: "NewErrorFlags",
       doc: "Flags used when creating the error; specifies the error type",
@@ -299,6 +305,12 @@ export const COMMANDS = {
       type: "buf",
       ptr: { name: "message_ptr", type: "char*", doc: "Pointer to error message", usage: "in" },
       len: { name: "message_len", type: "uint32_t", doc: "Length of error message", usage: "in" },
+      extra: {
+        name: "name_ptr",
+        type: "char*",
+        doc: "Optional. If given, override `error.name = NAME`. Otherwise use default name for given flags",
+        usage: "in",
+      },
     },
   },
 
@@ -419,21 +431,21 @@ export const COMMANDS = {
     slot_a: TARGET_JSVALUE_SLOT,
     slot_b: VALUE_JSVALUE_SLOT,
     slot_c: PROP_FLAGS,
-    data: PROP_NAME_DATA,
+    data: PROP_KEY_DATA,
   },
 
   SET_STR_NULL: {
     doc: "Set property by string key to null",
     slot_a: TARGET_JSVALUE_SLOT,
     slot_c: PROP_FLAGS,
-    data: PROP_NAME_DATA,
+    data: PROP_KEY_DATA,
   },
 
   SET_STR_UNDEF: {
     doc: "Set property by string key to undefined",
     slot_a: TARGET_JSVALUE_SLOT,
     slot_c: PROP_FLAGS,
-    data: PROP_NAME_DATA,
+    data: PROP_KEY_DATA,
   },
 
   SET_STR_BOOL: {
@@ -441,7 +453,7 @@ export const COMMANDS = {
     slot_a: TARGET_JSVALUE_SLOT,
     slot_b: BOOL_VAL_SLOT,
     slot_c: PROP_FLAGS,
-    data: PROP_NAME_DATA,
+    data: PROP_KEY_DATA,
   },
 
   SET_STR_INT32: {
@@ -449,7 +461,7 @@ export const COMMANDS = {
     slot_a: TARGET_JSVALUE_SLOT,
     slot_c: PROP_FLAGS,
     data: {
-      ...PROP_NAME_DATA,
+      ...PROP_KEY_DATA,
       extra: { name: "int_val", type: "int32_t", doc: "The int32 value", usage: "in" },
     },
   },
@@ -462,7 +474,7 @@ export const COMMANDS = {
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The float64 value", usage: "in" },
-      extra: PROP_NAME_PTR,
+      extra: PROP_KEY_PTR,
     },
   },
 
@@ -474,7 +486,7 @@ export const COMMANDS = {
     data: {
       type: "i64",
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
-      extra: PROP_NAME_PTR,
+      extra: PROP_KEY_PTR,
     },
   },
 
@@ -487,7 +499,7 @@ export const COMMANDS = {
       type: "buf",
       ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
       len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
-      extra: PROP_NAME_PTR,
+      extra: PROP_KEY_PTR,
     },
   },
 
@@ -595,7 +607,7 @@ export const COMMANDS = {
         doc: "Host reference ID for setter (0 = none)",
         usage: "in",
       },
-      d3: PROP_NAME_PTR,
+      d3: PROP_KEY_PTR,
     },
   },
 
@@ -614,7 +626,7 @@ export const COMMANDS = {
     doc: "Get property by string key (JS_GetPropertyStr)",
     slot_a: RESULT_JSVALUE_SLOT,
     slot_b: SOURCE_JSVALUE_SLOT,
-    data: PROP_NAME_DATA,
+    data: PROP_KEY_DATA,
   },
 
   GET_IDX: {
@@ -636,14 +648,14 @@ export const COMMANDS = {
   GLOBAL_GET_STR: {
     doc: "Get property by string key from global object (JS_GetPropertyStr)",
     slot_a: RESULT_JSVALUE_SLOT,
-    data: PROP_NAME_DATA,
+    data: PROP_KEY_DATA,
   },
 
   GLOBAL_SET_STR: {
     doc: "Set property by string key on global object (JS_SetPropertyStr)",
-    slot_a: SOURCE_JSVALUE_SLOT,
+    slot_a: VALUE_JSVALUE_SLOT,
     slot_c: PROP_FLAGS,
-    data: PROP_NAME_DATA,
+    data: PROP_KEY_DATA,
   },
 
   // ============================================================================
@@ -877,7 +889,7 @@ export const COMMANDS = {
     slot_c: PROP_FLAGS,
     data: {
       type: "raw",
-      d1: PROP_NAME_PTR,
+      d1: PROP_KEY_PTR,
       d2: {
         name: "getter_ptr",
         type: "JSCFunctionType*",
@@ -920,7 +932,7 @@ export const COMMANDS = {
       type: "raw",
       d1: TARGET_FUNCLIST_INDEX,
       d2: { name: "int_val", type: "int32_t", doc: "The int32 value", usage: "in" },
-      d3: PROP_NAME_PTR,
+      d3: PROP_KEY_PTR,
     },
   },
 
@@ -949,7 +961,7 @@ export const COMMANDS = {
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The double value", usage: "in" },
-      extra: PROP_NAME_PTR,
+      extra: PROP_KEY_PTR,
     },
   },
 
@@ -958,7 +970,7 @@ export const COMMANDS = {
     slot_a: TARGET_FUNCLIST_SLOT,
     slot_c: PROP_FLAGS,
     data: {
-      ...PROP_NAME_DATA,
+      ...PROP_KEY_DATA,
       extra: TARGET_FUNCLIST_INDEX,
     },
   },
@@ -968,7 +980,7 @@ export const COMMANDS = {
     slot_a: TARGET_FUNCLIST_SLOT,
     slot_c: PROP_FLAGS,
     data: {
-      ...PROP_NAME_DATA,
+      ...PROP_KEY_DATA,
       extra: TARGET_FUNCLIST_INDEX,
     },
   },
@@ -984,7 +996,7 @@ export const COMMANDS = {
     },
     slot_c: PROP_FLAGS,
     data: {
-      ...PROP_NAME_DATA,
+      ...PROP_KEY_DATA,
       extra: TARGET_FUNCLIST_INDEX,
     },
   },
