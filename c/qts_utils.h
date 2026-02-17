@@ -18,9 +18,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-// ----------------------------------------------------------------------------
-// Semantic types for op parameters
-// ----------------------------------------------------------------------------
 
 typedef uint8_t JSPropFlags;   /** JS_PROP_* flags */
 typedef int32_t HostRefId;     /** Host callback reference ID */
@@ -28,6 +25,29 @@ typedef int32_t HostRefId;     /** Host callback reference ID */
 // Slot types - used for indexing into the command environment arrays
 typedef uint8_t JSValueSlot;
 typedef uint8_t FuncListSlot;
+
+/**
+ * A funclist is a dynamically allocated JSCFunctionListEntry array.
+ * Used for bulk-defining properties on objects with JS_SetPropertyFunctionList.
+ */
+typedef struct QTS_FuncList {
+    JSCFunctionListEntry *entries;
+    uint32_t count;
+} QTS_FuncList;
+
+
+/** Debug macros for op implementations */
+#ifdef QTS_DEBUG_MODE
+#define OP_DEBUG(ctx, msg) do { \
+    if (qts_get_context_rt_data(ctx)->debug_log) qts_log(msg); \
+} while(0)
+#define OP_DUMP(ctx, value) do { \
+    if (qts_get_context_rt_data(ctx)->debug_log) qts_dump(ctx, value); \
+} while(0)
+#else
+#define OP_DEBUG(ctx, msg) do {} while(0)
+#define OP_DUMP(ctx, value) do {} while(0)
+#endif
 
 // ----------------------------------------------------------------------------
 // Runtime metadata

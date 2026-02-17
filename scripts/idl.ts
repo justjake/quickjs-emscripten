@@ -47,10 +47,24 @@ type UInt8Types = "uint8_t" | "JSValueSlot" | "FuncListSlot" | "JSPropFlags"
 
 /**
  * Type aliases for uint32_t; any type that fits in 32 bits.
+ * Includes pointer types since wasm32 pointers are 32-bit.
  *
  * Add more types as needed.
  */
-type UInt32Types = "uint32_t" | "int32_t" | "HostRefId"
+type UInt32Types = "uint32_t" | "int32_t" | "HostRefId" | "char*" | "Uint16Pair" | "JSCFunctionType*"
+
+/**
+ * Uint16Pair: Two uint16 values packed into one uint32.
+ * Layout: low 16 bits = first value, high 16 bits = second value.
+ *
+ * In C, unpack with:
+ *   uint16_t first = (uint16_t)(packed & 0xFFFF);
+ *   uint16_t second = (uint16_t)(packed >> 16);
+ *
+ * In TypeScript, pack with:
+ *   const packed = (first & 0xFFFF) | ((second & 0xFFFF) << 16);
+ */
+// (Uint16Pair is a semantic type alias defined in UInt32Types above)
 
 type CommandDataRawDef = {
   type: "raw"
@@ -360,37 +374,37 @@ export const COMMANDS = {
   },
 
   SET_STR_F64: {
-    doc: "Set property by string key to float64 (name must be null-terminated)",
+    doc: "Set property by string key to float64",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The float64 value", usage: "in" },
       extra: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
     },
   },
 
   SET_STR_BIGINT: {
-    doc: "Set property by string key to BigInt (name must be null-terminated)",
+    doc: "Set property by string key to BigInt",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     data: {
       type: "i64",
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
       extra: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
     },
   },
 
   SET_STR_STRING: {
-    doc: "Set property by string key to string value (name must be null-terminated)",
+    doc: "Set property by string key to string value",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     data: {
       type: "buf",
@@ -398,8 +412,8 @@ export const COMMANDS = {
       len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
       extra: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
     },
@@ -610,26 +624,26 @@ export const COMMANDS = {
   },
 
   DEF_CGETSET: {
-    doc: "Define a host getter/setter property on object (name must be null-terminated)",
+    doc: "Define a host getter/setter property on object",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
       type: "raw",
       d1: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
       d2: {
         name: "getter_ref",
-        type: "int32_t",
+        type: "HostRefId",
         doc: "Host reference ID for getter (0 = none)",
         usage: "in",
       },
       d3: {
         name: "setter_ref",
-        type: "int32_t",
+        type: "HostRefId",
         doc: "Host reference ID for setter (0 = none)",
         usage: "in",
       },
@@ -699,7 +713,7 @@ export const COMMANDS = {
   },
 
   DEF_PROP_I64: {
-    doc: "Define property with int64/BigInt value (name must be null-terminated)",
+    doc: "Define property with int64/BigInt value",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
@@ -707,15 +721,15 @@ export const COMMANDS = {
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
       extra: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
     },
   },
 
   DEF_PROP_F64: {
-    doc: "Define property with float64 value (name must be null-terminated)",
+    doc: "Define property with float64 value",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
@@ -723,15 +737,15 @@ export const COMMANDS = {
       value: { name: "f64_val", type: "double", doc: "The float64 value", usage: "in" },
       extra: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
     },
   },
 
   DEF_PROP_STRING: {
-    doc: "Define property with string value (name must be null-terminated)",
+    doc: "Define property with string value",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
     data: {
@@ -740,8 +754,8 @@ export const COMMANDS = {
       len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
       extra: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
     },
@@ -822,8 +836,8 @@ export const COMMANDS = {
       len: { name: "code_len", type: "uint32_t", doc: "Length of code in bytes", usage: "in" },
       extra: {
         name: "filename_and_flags",
-        type: "uint32_t",
-        doc: "Packed: filename_ptr (low 16) | flags (high 16)",
+        type: "Uint16Pair",
+        doc: "Uint16Pair: filename_ptr (low) | flags (high)",
         usage: "in",
       },
     },
@@ -965,8 +979,8 @@ export const COMMANDS = {
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
       d2: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Function name pointer (null-terminated)",
+        type: "char*",
+        doc: "Function name pointer",
         usage: "in",
       },
       d3: {
@@ -988,8 +1002,8 @@ export const COMMANDS = {
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
       d2: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Function name pointer (null-terminated)",
+        type: "char*",
+        doc: "Function name pointer",
         usage: "in",
       },
       d3: {
@@ -1005,64 +1019,44 @@ export const COMMANDS = {
     doc: "Set funclist entry to JS_DEF_CGETSET",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
     slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
+    slot_c: { name: "index", type: "uint8_t", doc: "Entry index in funclist (max 255)", usage: "in" },
     data: {
       type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: {
+      d1: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
+        usage: "in",
+      },
+      d2: {
+        name: "getter_ptr",
+        type: "JSCFunctionType*",
+        doc: "Getter function pointer",
         usage: "in",
       },
       d3: {
-        name: "getter_setter_packed",
-        type: "uint32_t",
-        doc: "Packed: getter_ref (low 16) | setter_ref (high 16)",
+        name: "setter_ptr",
+        type: "JSCFunctionType*",
+        doc: "Setter function pointer",
         usage: "in",
       },
     },
   },
 
-  FUNCLIST_CGETSET_MAGIC: {
-    doc: "Set funclist entry to JS_DEF_CGETSET_MAGIC",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    slot_c: { name: "magic", type: "uint8_t", doc: "Magic value (low 8 bits)", usage: "in" },
-    data: {
-      type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: {
-        name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
-        usage: "in",
-      },
-      d3: {
-        name: "getter_setter_packed",
-        type: "uint32_t",
-        doc: "Packed: getter_ref (low 16) | setter_ref (high 16)",
-        usage: "in",
-      },
-    },
-  },
 
   FUNCLIST_PROP_STRING: {
     doc: "Set funclist entry to JS_DEF_PROP_STRING",
     slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
     slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
+    slot_c: { name: "index", type: "uint8_t", doc: "Entry index in funclist (0-255)", usage: "in" },
     data: {
-      type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: {
+      type: "buf",
+      ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
+      len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
+      extra: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
-        usage: "in",
-      },
-      d3: {
-        name: "val_ptr",
-        type: "uint32_t",
-        doc: "String value pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
     },
@@ -1077,8 +1071,8 @@ export const COMMANDS = {
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
       d2: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
       d3: { name: "int_val", type: "int32_t", doc: "The int32 value", usage: "in" },
@@ -1095,8 +1089,8 @@ export const COMMANDS = {
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
       extra: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
     },
@@ -1112,8 +1106,8 @@ export const COMMANDS = {
       value: { name: "f64_val", type: "double", doc: "The double value", usage: "in" },
       extra: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
     },
@@ -1128,34 +1122,13 @@ export const COMMANDS = {
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
       d2: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
     },
   },
 
-  FUNCLIST_ALIAS: {
-    doc: "Set funclist entry to JS_DEF_ALIAS",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: {
-        name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
-        usage: "in",
-      },
-      d3: {
-        name: "from_ptr",
-        type: "uint32_t",
-        doc: "Source property name pointer (null-terminated)",
-        usage: "in",
-      },
-    },
-  },
 
   FUNCLIST_OBJECT: {
     doc: "Set funclist entry to JS_DEF_OBJECT (nested object with its own funclist)",
@@ -1166,14 +1139,14 @@ export const COMMANDS = {
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
       d2: {
         name: "name_ptr",
-        type: "uint32_t",
-        doc: "Property name pointer (null-terminated)",
+        type: "char*",
+        doc: "Property name pointer",
         usage: "in",
       },
       d3: {
         name: "nested_packed",
-        type: "uint32_t",
-        doc: "Packed: nested_list_ptr (low 16) | count (high 16)",
+        type: "Uint16Pair",
+        doc: "Uint16Pair: nested_list_ptr (low) | count (high)",
         usage: "in",
       },
     },
@@ -1193,6 +1166,61 @@ if (OPCODE_TO_COMMAND.length > 256) {
 
 function COpName(name: OpName | string) {
   return `QTS_OP_${name}` as const
+}
+
+/**
+ * Get the raw C type for a path in the QTS_Command struct.
+ * This is the actual type in the struct, not the semantic type from the IDL.
+ */
+function getRawCType(path: string[]): string {
+  const key = path.join(".")
+  const rawTypes: Record<string, string> = {
+    "cmd.slot_a": "uint8_t",
+    "cmd.slot_b": "uint8_t",
+    "cmd.slot_c": "uint8_t",
+    "cmd.data.raw.d1": "uint32_t",
+    "cmd.data.raw.d2": "uint32_t",
+    "cmd.data.raw.d3": "uint32_t",
+    "cmd.data.f64.value": "double",
+    "cmd.data.f64.extra": "uint32_t",
+    "cmd.data.i64.value": "int64_t",
+    "cmd.data.i64.extra": "uint32_t",
+    "cmd.data.buf.ptr": "char*",
+    "cmd.data.buf.len": "uint32_t",
+    "cmd.data.buf.extra": "uint32_t",
+    "cmd.data.jsvalues.ptr": "JSValue*",
+    "cmd.data.jsvalues.len": "uint32_t",
+    "cmd.data.jsvalues.extra": "uint32_t",
+  }
+  return rawTypes[key] ?? "unknown"
+}
+
+/**
+ * Generate a C expression to extract a value from a path, with casting if needed.
+ * - If semantic type matches raw type: just return the path
+ * - If semantic type is a pointer: cast with (type)path
+ * - Uint16Pair: reinterpret uint32_t as struct via pointer cast
+ */
+function cExtractExpr(path: string[], semanticType: string): string {
+  const pathExpr = path.join(".")
+  const rawType = getRawCType(path)
+
+  if (semanticType === rawType) {
+    return pathExpr
+  }
+
+  if (semanticType === "Uint16Pair") {
+    // Reinterpret uint32_t as Uint16Pair struct
+    return `*(Uint16Pair*)&${pathExpr}`
+  }
+
+  if (semanticType.endsWith("*")) {
+    // Pointer cast
+    return `(${semanticType})${pathExpr}`
+  }
+
+  // Default: simple cast for other scalar types
+  return `(${semanticType})${pathExpr}`
 }
 
 export function CFunc(name: string, command: CommandDef) {
@@ -1259,8 +1287,9 @@ export function CFunc(name: string, command: CommandDef) {
 
   const signatureParams = Object.values(params)
     .map((param) => {
-      if (param.type.endsWith("*")) {
-        return param.type + param.name
+      const stars = param.type.match(/\*+$/g)?.length || 0
+      if (stars > 0) {
+        return param.type.slice(0, -stars) + " " + "*".repeat(stars) + param.name
       }
       return param.type + " " + param.name
     })
@@ -1270,8 +1299,8 @@ export function CFunc(name: string, command: CommandDef) {
   const callParams = Object.values(params)
     .map((param) => {
       if (param.path) {
-        // cmd is passed by value, use . for all access
-        return param.path.join(".")
+        // Extract value from cmd struct, with casting if needed
+        return cExtractExpr(param.path, param.type)
       }
       return param.name
     })

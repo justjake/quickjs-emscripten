@@ -5,6 +5,6 @@
 #include "command.h"
 
 /** Call a constructor (JS_CallConstructor) */
-QTS_CommandStatus perform_call_construct(QTS_CommandEnv*env, JSValueSlot result, JSValueSlot ctor, JSValue*argv, uint32_t argc);
+QTS_CommandStatus perform_call_construct(QTS_CommandEnv *env, JSValueSlot result, JSValueSlot ctor, JSValue *argv, uint32_t argc);
 
 #endif // QTS_PERFORM_CALL_CONSTRUCT_H

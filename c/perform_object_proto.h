@@ -5,6 +5,6 @@
 #include "command.h"
 
 /** Create a new object with prototype (JS_NewObjectProto) */
-QTS_CommandStatus perform_object_proto(QTS_CommandEnv*env, JSValueSlot result, JSValueSlot proto);
+QTS_CommandStatus perform_object_proto(QTS_CommandEnv *env, JSValueSlot result, JSValueSlot proto);
 
 #endif // QTS_PERFORM_OBJECT_PROTO_H

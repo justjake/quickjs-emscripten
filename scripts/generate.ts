@@ -751,7 +751,7 @@ function buildPerformOpHeader(): string {
 #ifndef QTS_PERFORM_OP_H
 #define QTS_PERFORM_OP_H
 
-#include "op.h"
+#include "command.h"
 
 QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd);
 
@@ -789,6 +789,43 @@ ${switchCases}
 }
 
 /**
+ * Update the function signature in an existing .c file while preserving the implementation body.
+ * Returns the updated content, or the original content if the signature couldn't be found/updated.
+ */
+function updateFunctionSignature(
+  content: string,
+  functionName: string,
+  newSignature: string,
+): string {
+  // Match the function definition: return_type function_name(params) {
+  // The signature can span multiple lines, so we match up to the opening brace
+  // Pattern: QTS_CommandStatus perform_xxx(...) {
+  const signaturePattern = new RegExp(
+    `(QTS_CommandStatus\\s+${functionName}\\s*\\([^)]*\\))\\s*\\{`,
+    "s",
+  )
+
+  const match = content.match(signaturePattern)
+  if (!match) {
+    // Couldn't find the function signature - return unchanged
+    return content
+  }
+
+  const oldSignature = match[1]
+  // Normalize whitespace for comparison
+  const normalizedOld = oldSignature.replace(/\s+/g, " ").trim()
+  const normalizedNew = newSignature.replace(/\s+/g, " ").trim()
+
+  if (normalizedOld === normalizedNew) {
+    // Signature hasn't changed
+    return content
+  }
+
+  // Replace the old signature with the new one
+  return content.replace(signaturePattern, `${newSignature} {`)
+}
+
+/**
  * Build all C ops files in the specified output directory.
  */
 function buildCOps(outputDir: string): void {
@@ -813,7 +850,8 @@ function buildCOps(outputDir: string): void {
   // 5. For each op, generate .h and .c files (skip INVALID - handled specially)
   let headersGenerated = 0
   let scaffoldsGenerated = 0
-  let scaffoldsSkipped = 0
+  let signaturesUpdated = 0
+  let signaturesUnchanged = 0
 
   for (const name of OPCODE_TO_COMMAND) {
     if (name === "INVALID") continue
@@ -824,18 +862,26 @@ function buildCOps(outputDir: string): void {
     fs.writeFileSync(headerPath, cf.headerContent)
     headersGenerated++
 
-    // Only create .c if missing
+    // For .c files: create if missing, or update signature if it changed
     const cPath = pathlib.join(outputDir, `perform_${cf.lcName}.c`)
     if (!fs.existsSync(cPath)) {
       fs.writeFileSync(cPath, cf.scaffoldContent)
       scaffoldsGenerated++
     } else {
-      scaffoldsSkipped++
+      // Read existing file and try to update the function signature
+      const existingContent = fs.readFileSync(cPath, "utf-8")
+      const updatedContent = updateFunctionSignature(existingContent, cf.functionName, cf.signature)
+      if (updatedContent !== existingContent) {
+        fs.writeFileSync(cPath, updatedContent)
+        signaturesUpdated++
+      } else {
+        signaturesUnchanged++
+      }
     }
   }
 
   console.log(
-    `Generated ${headersGenerated} .h files, ${scaffoldsGenerated} new .c scaffolds, ${scaffoldsSkipped} .c files already existed`,
+    `Generated ${headersGenerated} .h files, ${scaffoldsGenerated} new .c scaffolds, ${signaturesUpdated} signatures updated, ${signaturesUnchanged} unchanged`,
   )
 }
 

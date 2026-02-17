@@ -5,6 +5,6 @@
 #include "command.h"
 
 /** Set array element by index to int32 */
-QTS_CommandStatus perform_set_idx_int32(QTS_CommandEnv*env, JSValueSlot obj, uint32_t index, int32_t int_val);
+QTS_CommandStatus perform_set_idx_int32(QTS_CommandEnv *env, JSValueSlot obj, uint32_t index, int32_t int_val);
 
 #endif // QTS_PERFORM_SET_IDX_INT32_H

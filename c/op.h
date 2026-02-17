@@ -21,9 +21,9 @@ typedef enum {
     QTS_OP_SET_STR_UNDEF = 15, /** Set property by string key to undefined */
     QTS_OP_SET_STR_BOOL = 16, /** Set property by string key to boolean */
     QTS_OP_SET_STR_INT32 = 17, /** Set property by string key to int32 */
-    QTS_OP_SET_STR_F64 = 18, /** Set property by string key to float64 (name must be null-terminated) */
-    QTS_OP_SET_STR_BIGINT = 19, /** Set property by string key to BigInt (name must be null-terminated) */
-    QTS_OP_SET_STR_STRING = 20, /** Set property by string key to string value (name must be null-terminated) */
+    QTS_OP_SET_STR_F64 = 18, /** Set property by string key to float64 */
+    QTS_OP_SET_STR_BIGINT = 19, /** Set property by string key to BigInt */
+    QTS_OP_SET_STR_STRING = 20, /** Set property by string key to string value */
     QTS_OP_SET_IDX_SLOT = 21, /** Set array element by index to JSValue from slot (JS_SetPropertyUint32) */
     QTS_OP_SET_IDX_NULL = 22, /** Set array element by index to null */
     QTS_OP_SET_IDX_UNDEF = 23, /** Set array element by index to undefined */
@@ -42,15 +42,15 @@ typedef enum {
     QTS_OP_SET_ADD = 36, /** Call set.add(value) */
     QTS_OP_DEF_CFUNC = 37, /** Define a host function property on object */
     QTS_OP_DEF_CFUNC_CTOR = 38, /** Define a host constructor function property on object */
-    QTS_OP_DEF_CGETSET = 39, /** Define a host getter/setter property on object (name must be null-terminated) */
+    QTS_OP_DEF_CGETSET = 39, /** Define a host getter/setter property on object */
     QTS_OP_DEF_PROP_SLOT = 40, /** Define property with JSValue from slot (JS_DefinePropertyValueStr) */
     QTS_OP_DEF_PROP_NULL = 41, /** Define property with null value */
     QTS_OP_DEF_PROP_UNDEF = 42, /** Define property with undefined value */
     QTS_OP_DEF_PROP_BOOL = 43, /** Define property with boolean value */
     QTS_OP_DEF_PROP_INT32 = 44, /** Define property with int32 value */
-    QTS_OP_DEF_PROP_I64 = 45, /** Define property with int64/BigInt value (name must be null-terminated) */
-    QTS_OP_DEF_PROP_F64 = 46, /** Define property with float64 value (name must be null-terminated) */
-    QTS_OP_DEF_PROP_STRING = 47, /** Define property with string value (name must be null-terminated) */
+    QTS_OP_DEF_PROP_I64 = 45, /** Define property with int64/BigInt value */
+    QTS_OP_DEF_PROP_F64 = 46, /** Define property with float64 value */
+    QTS_OP_DEF_PROP_STRING = 47, /** Define property with string value */
     QTS_OP_DEFINE_VALUE = 48, /** Define property with value from slot and flags (JS_DefinePropertyValueStr) */
     QTS_OP_DEFINE_GETSET = 49, /** Define property with getter/setter from slots (JS_DefinePropertyGetSet) */
     QTS_OP_CALL = 50, /** Call a function (JS_Call) */
@@ -68,14 +68,12 @@ typedef enum {
     QTS_OP_FUNCLIST_CFUNC = 62, /** Set funclist entry to JS_DEF_CFUNC */
     QTS_OP_FUNCLIST_CFUNC_CTOR = 63, /** Set funclist entry to JS_DEF_CFUNC with constructor proto */
     QTS_OP_FUNCLIST_CGETSET = 64, /** Set funclist entry to JS_DEF_CGETSET */
-    QTS_OP_FUNCLIST_CGETSET_MAGIC = 65, /** Set funclist entry to JS_DEF_CGETSET_MAGIC */
-    QTS_OP_FUNCLIST_PROP_STRING = 66, /** Set funclist entry to JS_DEF_PROP_STRING */
-    QTS_OP_FUNCLIST_PROP_INT32 = 67, /** Set funclist entry to JS_DEF_PROP_INT32 */
-    QTS_OP_FUNCLIST_PROP_INT64 = 68, /** Set funclist entry to JS_DEF_PROP_INT64 (index in slot_c) */
-    QTS_OP_FUNCLIST_PROP_DOUBLE = 69, /** Set funclist entry to JS_DEF_PROP_DOUBLE (index in slot_c) */
-    QTS_OP_FUNCLIST_PROP_UNDEFINED = 70, /** Set funclist entry to JS_DEF_PROP_UNDEFINED */
-    QTS_OP_FUNCLIST_ALIAS = 71, /** Set funclist entry to JS_DEF_ALIAS */
-    QTS_OP_FUNCLIST_OBJECT = 72, /** Set funclist entry to JS_DEF_OBJECT (nested object with its own funclist) */
+    QTS_OP_FUNCLIST_PROP_STRING = 65, /** Set funclist entry to JS_DEF_PROP_STRING */
+    QTS_OP_FUNCLIST_PROP_INT32 = 66, /** Set funclist entry to JS_DEF_PROP_INT32 */
+    QTS_OP_FUNCLIST_PROP_INT64 = 67, /** Set funclist entry to JS_DEF_PROP_INT64 (index in slot_c) */
+    QTS_OP_FUNCLIST_PROP_DOUBLE = 68, /** Set funclist entry to JS_DEF_PROP_DOUBLE (index in slot_c) */
+    QTS_OP_FUNCLIST_PROP_UNDEFINED = 69, /** Set funclist entry to JS_DEF_PROP_UNDEFINED */
+    QTS_OP_FUNCLIST_OBJECT = 70, /** Set funclist entry to JS_DEF_OBJECT (nested object with its own funclist) */
 } QTS_Opcode;
 
 #endif // QTS_OP_H

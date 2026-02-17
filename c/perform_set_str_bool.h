@@ -5,6 +5,6 @@
 #include "command.h"
 
 /** Set property by string key to boolean */
-QTS_CommandStatus perform_set_str_bool(QTS_CommandEnv*env, JSValueSlot obj, uint8_t bool_val, char*name_ptr, uint32_t name_len);
+QTS_CommandStatus perform_set_str_bool(QTS_CommandEnv *env, JSValueSlot obj, uint8_t bool_val, char *name_ptr, uint32_t name_len);
 
 #endif // QTS_PERFORM_SET_STR_BOOL_H

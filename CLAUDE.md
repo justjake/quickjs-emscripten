@@ -79,8 +79,79 @@ The full CI build takes ~20 minutes due to emscripten compilation.
 
 - `scripts/prepareVariants.ts` - Generates all variant packages from templates
 - `scripts/generate.ts` - Generates FFI bindings and symbols
+- `scripts/idl.ts` - Command buffer IDL definitions and C code generator
 - `templates/Variant.mk` - Makefile template for variants
 - `c/interface.c` - C interface to QuickJS exposed to JavaScript
+- `c/command.h` - Command buffer structures (QTS_Command, QTS_CommandEnv)
+- `c/perform_op.c` - Generated dispatcher for command execution
+- `c/perform_*.h/c` - Generated op implementations (one per command)
+
+## Command Buffer System (Ops)
+
+The command buffer system allows batching multiple QuickJS operations into a single FFI call.
+
+### Code Generation
+
+Regenerate all C ops files:
+
+```bash
+pnpm run generate:c-ops
+# or directly: ./scripts/generate.ts c-ops c/
+```
+
+This generates:
+- `c/op.h` - Opcode enum
+- `c/perform_op.h/c` - Dispatcher
+- `c/perform_*.h` - Op function declarations (always regenerated)
+- `c/perform_*.c` - Op implementations (only created if missing, signatures updated if changed)
+
+### IDL Structure (scripts/idl.ts)
+
+Commands are defined in the `COMMANDS` object. Each command is exactly 16 bytes:
+
+```typescript
+COMMAND_NAME: {
+  doc: "Description",
+  slot_a: { name: "result", type: "JSValueSlot", ... },  // byte 1
+  slot_b: { name: "obj", type: "JSValueSlot", ... },     // byte 2
+  slot_c: { name: "flags", type: "JSPropFlags", ... },   // byte 3
+  data: {                                                 // bytes 4-15
+    type: "raw",  // or "f64", "i64", "buf", "jsvalues"
+    d1: { name: "name_ptr", type: "char*", ... },
+    d2: { name: "value", type: "uint32_t", ... },
+  }
+}
+```
+
+### Type System
+
+Slot types (uint8_t): `JSValueSlot`, `FuncListSlot`, `JSPropFlags`
+
+Data types (uint32_t): `uint32_t`, `int32_t`, `HostRefId`, `char*`, `Uint16Pair`
+
+The generator automatically casts when extracting values from the command struct:
+- Pointer types (`char*`): simple cast `(char*)cmd.data.raw.d1`
+- Struct types (`Uint16Pair`): pointer reinterpret `*(Uint16Pair*)&cmd.data.raw.d3`
+
+### Uint16Pair
+
+Two uint16 values packed into one uint32. Used for passing two small values in one field.
+
+```c
+// In C, access via struct fields:
+Uint16Pair pair = *(Uint16Pair*)&cmd.data.buf.extra;
+uint16_t first = pair.low;   // bits 0-15
+uint16_t second = pair.high; // bits 16-31
+```
+
+Memory layout (little-endian, which wasm always is): `[low_byte0, low_byte1, high_byte0, high_byte1]`
+
+### Implementing an Op
+
+1. Find your `c/perform_<name>.c` file (scaffold is auto-generated)
+2. Replace `OP_UNIMPLEMENTED(env, "perform_<name>")` with implementation
+3. Use `env->ctx` for JSContext, `env->jsvalue_slots[slot]` for JSValue access
+4. Return `QTS_COMMAND_OK` on success, or use `OP_ERROR(env, "message")` on failure
 
 ## QuickJS C API Tips
 

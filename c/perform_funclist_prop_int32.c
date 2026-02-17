@@ -1,5 +1,12 @@
 #include "perform_funclist_prop_int32.h"
 
-QTS_CommandStatus perform_funclist_prop_int32(QTS_CommandEnv*env, FuncListSlot list, uint8_t flags, uint32_t index, uint32_t name_ptr, int32_t int_val) {
-    OP_UNIMPLEMENTED(env, "perform_funclist_prop_int32");
+QTS_CommandStatus perform_funclist_prop_int32(QTS_CommandEnv *env, FuncListSlot list, JSPropFlags flags, uint32_t index, char *name_ptr, int32_t int_val) {
+    OP_ERROR_IF(env, list >= env->funclist_slots_count, "funclist_prop_int32: list slot out of range");
+    QTS_FuncList *funclist = &env->funclist_slots[list];
+    OP_ERROR_IF(env, index >= funclist->count, "funclist_prop_int32: index out of range");
+
+    const char *name = (const char *)(uintptr_t)name_ptr;
+    funclist->entries[index] = (JSCFunctionListEntry)JS_PROP_INT32_DEF(name, int_val, flags);
+
+    return QTS_COMMAND_OK;
 }

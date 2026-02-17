@@ -5,6 +5,6 @@
 #include "command.h"
 
 /** Get the global object (JS_GetGlobalObject) */
-QTS_CommandStatus perform_get_global(QTS_CommandEnv*env, JSValueSlot result);
+QTS_CommandStatus perform_get_global(QTS_CommandEnv *env, JSValueSlot result);
 
 #endif // QTS_PERFORM_GET_GLOBAL_H
