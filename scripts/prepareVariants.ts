@@ -4,13 +4,13 @@
  * This file defines all the different variants of the quickjs WASM library.
  */
 
-import path from "node:path"
-import fs from "node:fs"
 import child_process from "node:child_process"
+import fs from "node:fs"
+import path from "node:path"
 import type { TypeDocOptions } from "typedoc"
+import { buildFFI, Context, getMatches } from "./generate"
 import type { PackageJson } from "./helpers"
-import { writePretty, tryReadJson, repoRoot } from "./helpers"
-import { Context, getMatches, buildFFI } from "./generate"
+import { repoRoot, tryReadJson, writePretty } from "./helpers"
 
 const CLEAN = Boolean(process.env.CLEAN)
 
