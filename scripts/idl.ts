@@ -5,7 +5,7 @@
  * All commands are exactly 16 bytes long.
  * Assumes wasm32 (32-bit pointers).
  */
-type CommandDef = {
+export type CommandDef = {
   doc: string
 
   /** byte 0: uint8_t opcode (implicit) */
@@ -21,7 +21,7 @@ type CommandDef = {
 }
 
 /** Describes a scalar parameter in a command. */
-type ParamDef<T extends string = string> = {
+export type ParamDef<T extends string = string> = {
   /** Parameter name. */
   name: string
   /** Parameter c type. */
@@ -43,7 +43,14 @@ type ParamDef<T extends string = string> = {
  *
  * Add more types as needed.
  */
-type UInt8Types = "uint8_t" | "JSValueSlot" | "FuncListSlot" | "JSPropFlags"
+type UInt8Types =
+  | "uint8_t"
+  | "JSValueSlot"
+  | "FuncListSlot"
+  | "JSPropFlags"
+  | "EvalFlags"
+  | "NewErrorFlags"
+  | "NewTypedArrayFlags"
 
 /**
  * Type aliases for uint32_t; any type that fits in 32 bits.
@@ -51,20 +58,14 @@ type UInt8Types = "uint8_t" | "JSValueSlot" | "FuncListSlot" | "JSPropFlags"
  *
  * Add more types as needed.
  */
-type UInt32Types = "uint32_t" | "int32_t" | "HostRefId" | "char*" | "Uint16Pair" | "JSCFunctionType*"
-
-/**
- * Uint16Pair: Two uint16 values packed into one uint32.
- * Layout: low 16 bits = first value, high 16 bits = second value.
- *
- * In C, unpack with:
- *   uint16_t first = (uint16_t)(packed & 0xFFFF);
- *   uint16_t second = (uint16_t)(packed >> 16);
- *
- * In TypeScript, pack with:
- *   const packed = (first & 0xFFFF) | ((second & 0xFFFF) << 16);
- */
-// (Uint16Pair is a semantic type alias defined in UInt32Types above)
+type UInt32Types =
+  | "uint32_t"
+  | "int32_t"
+  | "HostRefId"
+  | "char*"
+  | "Uint16Pair"
+  | "JSCFunctionType*"
+  | "JSPropFlags"
 
 type CommandDataRawDef = {
   type: "raw"
@@ -114,6 +115,129 @@ type CommandDataUnion = {
  */
 type CommandDataDef = CommandDataUnion[keyof CommandDataUnion]
 
+// Commonly used params
+const RESULT_JSVALUE_SLOT = {
+  doc: "result will be written to this slot",
+  name: "result_slot",
+  type: "JSValueSlot",
+  usage: "out",
+} as const satisfies ParamDef<"JSValueSlot">
+
+const SOURCE_JSVALUE_SLOT = {
+  doc: "source value will be read from this slot",
+  name: "source_slot",
+  type: "JSValueSlot",
+  usage: "in",
+} as const satisfies ParamDef<"JSValueSlot">
+
+const KEY_JSVALUE_SLOT = {
+  doc: "slot containing property key",
+  name: "key_slot",
+  type: "JSValueSlot",
+  usage: "in",
+} as const satisfies ParamDef<"JSValueSlot">
+
+const VALUE_JSVALUE_SLOT = {
+  doc: "slot containing value",
+  name: "value_slot",
+  type: "JSValueSlot",
+  usage: "in",
+} as const satisfies ParamDef<"JSValueSlot">
+
+const TARGET_JSVALUE_SLOT = {
+  doc: "Target object to modify",
+  name: "target_slot",
+  type: "JSValueSlot",
+  usage: "in",
+} as const satisfies ParamDef<"JSValueSlot">
+
+const TARGET_FUNCLIST_SLOT = {
+  doc: "Target funclist to modify",
+  name: "target_funclist_slot",
+  type: "FuncListSlot",
+  usage: "in",
+} as const satisfies ParamDef<"FuncListSlot">
+
+const TARGET_FUNCLIST_INDEX = {
+  doc: "Index to set in the target funclist (uint32_t)",
+  name: "index",
+  type: "uint32_t",
+  usage: "in",
+} as const satisfies ParamDef<"uint32_t">
+
+const TARGET_FUNCLIST_INDEX_SLOT = {
+  doc: "Index to set in the target funclist (0-255 / uint8_t)",
+  name: "index",
+  type: "uint8_t",
+  usage: "in",
+} as const satisfies ParamDef<"uint8_t">
+
+const C_FUNC_PTR = {
+  doc: "Pointer to C function implementing one of JSFunctionType (*not* a HostRef, this is a raw function pointer)",
+  name: "c_func_ptr",
+  type: "JSCFunctionType*",
+  usage: "in",
+} as const satisfies ParamDef<"JSCFunctionType*">
+
+const PROP_FLAGS = {
+  doc: "JS_PROP_* property flags",
+  name: "flags",
+  type: "JSPropFlags",
+  usage: "in",
+} as const satisfies ParamDef<"JSPropFlags">
+
+const BOOL_VAL_SLOT = {
+  doc: "Boolean value (0 or 1)",
+  name: "bool_val",
+  type: "uint8_t",
+  usage: "in",
+} as const satisfies ParamDef<"uint8_t">
+
+const FUNC_ARITY_SLOT = {
+  doc: "Function.length (arity)",
+  name: "arity",
+  type: "uint8_t",
+  usage: "in",
+} as const satisfies ParamDef<"uint8_t">
+
+const PROP_MAYBE_NAME_LEN_SLOT = {
+  doc: "if >0, length of name_ptr. if 0, name_ptr is null-terminated",
+  name: "maybe_name_len",
+  type: "uint8_t",
+  usage: "in",
+} as const satisfies ParamDef<"uint8_t">
+
+const PROP_NAME_PTR = {
+  name: "name_ptr",
+  type: "char*",
+  doc: "Property name string; must be null-terminated if maybe_name_len is not set",
+  usage: "in",
+} as const satisfies ParamDef<"char*">
+
+const PROP_NAME_DATA = {
+  type: "buf",
+  ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
+  len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
+} as const satisfies CommandDataBufDef
+
+const ARRAY_INDEX = {
+  name: "index",
+  type: "uint32_t",
+  doc: "Array index",
+  usage: "in",
+} as const satisfies ParamDef<"uint32_t">
+
+const ARRAY_INDEX_DATA = {
+  type: "raw",
+  d1: ARRAY_INDEX,
+} as const satisfies CommandDataRawDef
+
+const CALL_ARGV = {
+  type: "jsvalues",
+  ptr: { name: "argv", type: "JSValue*", doc: "Pointer to argument array", usage: "in" },
+  len: { name: "argc", type: "uint32_t", doc: "Number of arguments", usage: "in" },
+} as const satisfies CommandDataCallDef
+
 export const COMMANDS = {
   // ============================================================================
   // Invalid/Uninitialized
@@ -128,49 +252,29 @@ export const COMMANDS = {
   // Container Creation
   // ============================================================================
 
-  OBJECT: {
+  NEW_OBJECT: {
     doc: "Create a new empty object (JS_NewObject)",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the new object",
-      usage: "out",
-    },
+    slot_a: RESULT_JSVALUE_SLOT,
   },
 
-  OBJECT_PROTO: {
+  NEW_OBJECT_PROTO: {
     doc: "Create a new object with prototype (JS_NewObjectProto)",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the new object",
-      usage: "out",
-    },
-    slot_b: { name: "proto", type: "JSValueSlot", doc: "Prototype object slot", usage: "in" },
+    slot_a: RESULT_JSVALUE_SLOT,
+    slot_b: { name: "proto_slot", type: "JSValueSlot", doc: "Prototype object slot", usage: "in" },
   },
 
-  ARRAY: {
+  NEW_ARRAY: {
     doc: "Create a new empty array (JS_NewArray)",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the new array",
-      usage: "out",
-    },
+    slot_a: RESULT_JSVALUE_SLOT,
   },
 
   // ============================================================================
   // Special Type Creation
   // ============================================================================
 
-  DATE: {
+  NEW_DATE: {
     doc: "Create a Date object from timestamp (JS_NewDate)",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the new Date",
-      usage: "out",
-    },
+    slot_a: RESULT_JSVALUE_SLOT,
     data: {
       type: "f64",
       value: {
@@ -182,18 +286,13 @@ export const COMMANDS = {
     },
   },
 
-  ERROR: {
+  NEW_ERROR: {
     doc: "Create an Error object (JS_NewError or JS_New*Error)",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the new Error",
-      usage: "out",
-    },
+    slot_a: RESULT_JSVALUE_SLOT,
     slot_b: {
-      name: "error_type",
-      type: "uint8_t",
-      doc: "Error type enum (0=Error, 1=RangeError, etc.)",
+      name: "new_error_flags",
+      type: "NewErrorFlags",
+      doc: "Flags used when creating the error; specifies the error type",
       usage: "in",
     },
     data: {
@@ -203,14 +302,9 @@ export const COMMANDS = {
     },
   },
 
-  ARRAYBUFFER: {
+  NEW_ARRAYBUFFER: {
     doc: "Create an ArrayBuffer by copying data (JS_NewArrayBufferCopy)",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the new ArrayBuffer",
-      usage: "out",
-    },
+    slot_a: RESULT_JSVALUE_SLOT,
     data: {
       type: "buf",
       ptr: { name: "data_ptr", type: "char*", doc: "Pointer to source data", usage: "in" },
@@ -218,31 +312,31 @@ export const COMMANDS = {
     },
   },
 
-  TYPED_ARRAY: {
+  NEW_TYPED_ARRAY: {
     doc: "Create a TypedArray view (JS_NewTypedArray)",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the new TypedArray",
-      usage: "out",
+    slot_a: RESULT_JSVALUE_SLOT,
+    slot_b: SOURCE_JSVALUE_SLOT,
+    slot_c: {
+      name: "array_type",
+      type: "NewTypedArrayFlags",
+      doc: "TypedArray type enum",
+      usage: "in",
     },
-    slot_b: { name: "buffer", type: "JSValueSlot", doc: "ArrayBuffer slot", usage: "in" },
-    slot_c: { name: "array_type", type: "uint8_t", doc: "TypedArray type enum", usage: "in" },
     data: {
       type: "raw",
-      d1: { name: "byte_offset", type: "uint32_t", doc: "Byte offset into buffer", usage: "in" },
+      d1: {
+        name: "source_offset",
+        type: "uint32_t",
+        doc: "Byte offset into source array buffer",
+        usage: "in",
+      },
       d2: { name: "length", type: "uint32_t", doc: "Number of elements", usage: "in" },
     },
   },
 
-  SYMBOL: {
+  NEW_SYMBOL: {
     doc: "Create a Symbol (JS_NewSymbol or global symbol)",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the new Symbol",
-      usage: "out",
-    },
+    slot_a: RESULT_JSVALUE_SLOT,
     slot_b: {
       name: "is_global",
       type: "uint8_t",
@@ -260,18 +354,18 @@ export const COMMANDS = {
   // Value Creation
   // ============================================================================
 
-  FLOAT64: {
+  NEW_FLOAT64: {
     doc: "Create a float64 number value (JS_NewFloat64)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the number", usage: "out" },
+    slot_a: RESULT_JSVALUE_SLOT,
     data: {
       type: "f64",
       value: { name: "value", type: "double", doc: "The float64 value", usage: "in" },
     },
   },
 
-  STRING: {
+  NEW_STRING: {
     doc: "Create a string value (JS_NewStringLen)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the string", usage: "out" },
+    slot_a: RESULT_JSVALUE_SLOT,
     data: {
       type: "buf",
       ptr: { name: "str_ptr", type: "char*", doc: "Pointer to string data", usage: "in" },
@@ -279,24 +373,24 @@ export const COMMANDS = {
     },
   },
 
-  BIGINT: {
+  NEW_BIGINT: {
     doc: "Create a BigInt value from i64 (JS_NewBigInt64)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the BigInt", usage: "out" },
+    slot_a: RESULT_JSVALUE_SLOT,
     data: {
       type: "i64",
       value: { name: "value", type: "int64_t", doc: "The int64 value", usage: "in" },
     },
   },
 
-  FUNCTION: {
+  NEW_FUNC: {
     doc: "Create a host function (QTS_NewFunction)",
     slot_a: {
-      name: "result",
+      name: "result_slot",
       type: "JSValueSlot",
       doc: "Slot to store the function",
       usage: "out",
     },
-    slot_b: { name: "length", type: "uint8_t", doc: "Function.length (arity)", usage: "in" },
+    slot_b: FUNC_ARITY_SLOT,
     slot_c: {
       name: "is_constructor",
       type: "uint8_t",
@@ -320,102 +414,80 @@ export const COMMANDS = {
   // Property Set by String Key
   // ============================================================================
 
-  SET_STR_SLOT: {
+  SET_STR_VALUE: {
     doc: "Set property by string key to JSValue from slot (JS_SetPropertyStr)",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "val", type: "JSValueSlot", doc: "Value slot", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-    },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: VALUE_JSVALUE_SLOT,
+    slot_c: PROP_FLAGS,
+    data: PROP_NAME_DATA,
   },
 
   SET_STR_NULL: {
     doc: "Set property by string key to null",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-    },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_c: PROP_FLAGS,
+    data: PROP_NAME_DATA,
   },
 
   SET_STR_UNDEF: {
     doc: "Set property by string key to undefined",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-    },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_c: PROP_FLAGS,
+    data: PROP_NAME_DATA,
   },
 
   SET_STR_BOOL: {
     doc: "Set property by string key to boolean",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "bool_val", type: "uint8_t", doc: "Boolean value (0 or 1)", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-    },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: BOOL_VAL_SLOT,
+    slot_c: PROP_FLAGS,
+    data: PROP_NAME_DATA,
   },
 
   SET_STR_INT32: {
     doc: "Set property by string key to int32",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
+      ...PROP_NAME_DATA,
       extra: { name: "int_val", type: "int32_t", doc: "The int32 value", usage: "in" },
     },
   },
 
   SET_STR_F64: {
     doc: "Set property by string key to float64",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: PROP_MAYBE_NAME_LEN_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The float64 value", usage: "in" },
-      extra: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
+      extra: PROP_NAME_PTR,
     },
   },
 
   SET_STR_BIGINT: {
     doc: "Set property by string key to BigInt",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: PROP_MAYBE_NAME_LEN_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
       type: "i64",
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
-      extra: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
+      extra: PROP_NAME_PTR,
     },
   },
 
   SET_STR_STRING: {
     doc: "Set property by string key to string value",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
+    slot_a: { name: "target_slot", type: "JSValueSlot", doc: "Object slot", usage: "in" },
+    slot_b: PROP_MAYBE_NAME_LEN_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
       type: "buf",
       ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
       len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
-      extra: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
+      extra: PROP_NAME_PTR,
     },
   },
 
@@ -423,82 +495,69 @@ export const COMMANDS = {
   // Property Set by Index
   // ============================================================================
 
-  SET_IDX_SLOT: {
+  SET_IDX_VALUE: {
     doc: "Set array element by index to JSValue from slot (JS_SetPropertyUint32)",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Array/object slot", usage: "in" },
-    slot_b: { name: "val", type: "JSValueSlot", doc: "Value slot", usage: "in" },
-    data: {
-      type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Array index", usage: "in" },
-    },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: VALUE_JSVALUE_SLOT,
+    data: ARRAY_INDEX_DATA,
   },
 
   SET_IDX_NULL: {
     doc: "Set array element by index to null",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Array/object slot", usage: "in" },
-    data: {
-      type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Array index", usage: "in" },
-    },
+    slot_a: TARGET_JSVALUE_SLOT,
+    data: ARRAY_INDEX_DATA,
   },
 
   SET_IDX_UNDEF: {
     doc: "Set array element by index to undefined",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Array/object slot", usage: "in" },
-    data: {
-      type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Array index", usage: "in" },
-    },
+    slot_a: TARGET_JSVALUE_SLOT,
+    data: ARRAY_INDEX_DATA,
   },
 
   SET_IDX_BOOL: {
     doc: "Set array element by index to boolean",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Array/object slot", usage: "in" },
-    slot_b: { name: "bool_val", type: "uint8_t", doc: "Boolean value (0 or 1)", usage: "in" },
-    data: {
-      type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Array index", usage: "in" },
-    },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: BOOL_VAL_SLOT,
+    data: ARRAY_INDEX_DATA,
   },
 
   SET_IDX_INT32: {
     doc: "Set array element by index to int32",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Array/object slot", usage: "in" },
+    slot_a: TARGET_JSVALUE_SLOT,
     data: {
-      type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Array index", usage: "in" },
+      ...ARRAY_INDEX_DATA,
       d2: { name: "int_val", type: "int32_t", doc: "The int32 value", usage: "in" },
     },
   },
 
   SET_IDX_F64: {
     doc: "Set array element by index to float64",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Array/object slot", usage: "in" },
+    slot_a: TARGET_JSVALUE_SLOT,
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The float64 value", usage: "in" },
-      extra: { name: "index", type: "uint32_t", doc: "Array index", usage: "in" },
+      extra: ARRAY_INDEX,
     },
   },
 
   SET_IDX_BIGINT: {
     doc: "Set array element by index to BigInt",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Array/object slot", usage: "in" },
+    slot_a: TARGET_JSVALUE_SLOT,
     data: {
       type: "i64",
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
-      extra: { name: "index", type: "uint32_t", doc: "Array index", usage: "in" },
+      extra: ARRAY_INDEX,
     },
   },
 
   SET_IDX_STRING: {
     doc: "Set array element by index to string",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Array/object slot", usage: "in" },
+    slot_a: TARGET_JSVALUE_SLOT,
     data: {
       type: "buf",
       ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
       len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
-      extra: { name: "index", type: "uint32_t", doc: "Array index", usage: "in" },
+      extra: ARRAY_INDEX,
     },
   },
 
@@ -506,53 +565,85 @@ export const COMMANDS = {
   // Property Set by JSValue Key
   // ============================================================================
 
-  SET_PROP: {
+  SET: {
     doc: "Set property using JSValue key (JS_SetProperty)",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "key", type: "JSValueSlot", doc: "Property key slot", usage: "in" },
-    slot_c: { name: "val", type: "JSValueSlot", doc: "Value slot", usage: "in" },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: KEY_JSVALUE_SLOT,
+    slot_c: VALUE_JSVALUE_SLOT,
+    data: {
+      type: "raw",
+      d1: PROP_FLAGS,
+    },
+  },
+
+  DEF_GETSET: {
+    doc: "define a getter/setter property on object",
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: PROP_MAYBE_NAME_LEN_SLOT,
+    slot_c: PROP_FLAGS,
+    data: {
+      type: "raw",
+      d1: {
+        name: "getter_ref",
+        type: "HostRefId",
+        doc: "Host reference ID for getter (0 = none)",
+        usage: "in",
+      },
+      d2: {
+        name: "setter_ref",
+        type: "HostRefId",
+        doc: "Host reference ID for setter (0 = none)",
+        usage: "in",
+      },
+      d3: PROP_NAME_PTR,
+    },
   },
 
   // ============================================================================
   // Property Get
   // ============================================================================
 
-  GET_PROP: {
+  GET: {
     doc: "Get property using JSValue key (JS_GetProperty)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the result", usage: "out" },
-    slot_b: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_c: { name: "key", type: "JSValueSlot", doc: "Property key slot", usage: "in" },
+    slot_a: RESULT_JSVALUE_SLOT,
+    slot_b: SOURCE_JSVALUE_SLOT,
+    slot_c: KEY_JSVALUE_SLOT,
   },
 
   GET_STR: {
     doc: "Get property by string key (JS_GetPropertyStr)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the result", usage: "out" },
-    slot_b: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-    },
+    slot_a: RESULT_JSVALUE_SLOT,
+    slot_b: SOURCE_JSVALUE_SLOT,
+    data: PROP_NAME_DATA,
   },
 
   GET_IDX: {
     doc: "Get property by numeric index (JS_GetPropertyUint32)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the result", usage: "out" },
-    slot_b: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    data: {
-      type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Array index", usage: "in" },
-    },
+    slot_a: RESULT_JSVALUE_SLOT,
+    slot_b: SOURCE_JSVALUE_SLOT,
+    data: ARRAY_INDEX_DATA,
   },
 
-  GET_GLOBAL: {
+  // ============================================================================
+  // Global Object access
+  // ============================================================================
+
+  GLOBAL: {
     doc: "Get the global object (JS_GetGlobalObject)",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the global object",
-      usage: "out",
-    },
+    slot_a: RESULT_JSVALUE_SLOT,
+  },
+
+  GLOBAL_GET_STR: {
+    doc: "Get property by string key from global object (JS_GetPropertyStr)",
+    slot_a: RESULT_JSVALUE_SLOT,
+    data: PROP_NAME_DATA,
+  },
+
+  GLOBAL_SET_STR: {
+    doc: "Set property by string key on global object (JS_SetPropertyStr)",
+    slot_a: SOURCE_JSVALUE_SLOT,
+    slot_c: PROP_FLAGS,
+    data: PROP_NAME_DATA,
   },
 
   // ============================================================================
@@ -561,15 +652,15 @@ export const COMMANDS = {
 
   MAP_SET: {
     doc: "Call map.set(key, value) using JSValue key",
-    slot_a: { name: "map", type: "JSValueSlot", doc: "Map object slot", usage: "in" },
-    slot_b: { name: "key", type: "JSValueSlot", doc: "Key slot", usage: "in" },
-    slot_c: { name: "val", type: "JSValueSlot", doc: "Value slot", usage: "in" },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: KEY_JSVALUE_SLOT,
+    slot_c: VALUE_JSVALUE_SLOT,
   },
 
   MAP_SET_STR: {
     doc: "Call map.set(key, value) with string key",
-    slot_a: { name: "map", type: "JSValueSlot", doc: "Map object slot", usage: "in" },
-    slot_b: { name: "val", type: "JSValueSlot", doc: "Value slot", usage: "in" },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: VALUE_JSVALUE_SLOT,
     data: {
       type: "buf",
       ptr: { name: "key_ptr", type: "char*", doc: "Key string pointer", usage: "in" },
@@ -579,225 +670,8 @@ export const COMMANDS = {
 
   SET_ADD: {
     doc: "Call set.add(value)",
-    slot_a: { name: "set", type: "JSValueSlot", doc: "Set object slot", usage: "in" },
-    slot_b: { name: "val", type: "JSValueSlot", doc: "Value slot", usage: "in" },
-  },
-
-  // ============================================================================
-  // Host Function Definition
-  // ============================================================================
-
-  DEF_CFUNC: {
-    doc: "Define a host function property on object",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "length", type: "uint8_t", doc: "Function.length (arity)", usage: "in" },
-    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Function name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Function name length", usage: "in" },
-      extra: {
-        name: "host_ref_id",
-        type: "HostRefId",
-        doc: "Host reference ID for callback",
-        usage: "in",
-      },
-    },
-  },
-
-  DEF_CFUNC_CTOR: {
-    doc: "Define a host constructor function property on object",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "length", type: "uint8_t", doc: "Function.length (arity)", usage: "in" },
-    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Function name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Function name length", usage: "in" },
-      extra: {
-        name: "host_ref_id",
-        type: "HostRefId",
-        doc: "Host reference ID for callback",
-        usage: "in",
-      },
-    },
-  },
-
-  DEF_CGETSET: {
-    doc: "Define a host getter/setter property on object",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "raw",
-      d1: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
-      d2: {
-        name: "getter_ref",
-        type: "HostRefId",
-        doc: "Host reference ID for getter (0 = none)",
-        usage: "in",
-      },
-      d3: {
-        name: "setter_ref",
-        type: "HostRefId",
-        doc: "Host reference ID for setter (0 = none)",
-        usage: "in",
-      },
-    },
-  },
-
-  // ============================================================================
-  // Property Definition with Inline Values
-  // ============================================================================
-
-  DEF_PROP_SLOT: {
-    doc: "Define property with JSValue from slot (JS_DefinePropertyValueStr)",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "val", type: "JSValueSlot", doc: "Value slot", usage: "in" },
-    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-    },
-  },
-
-  DEF_PROP_NULL: {
-    doc: "Define property with null value",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-    },
-  },
-
-  DEF_PROP_UNDEF: {
-    doc: "Define property with undefined value",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-    },
-  },
-
-  DEF_PROP_BOOL: {
-    doc: "Define property with boolean value",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    slot_c: { name: "bool_val", type: "uint8_t", doc: "Boolean value (0 or 1)", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-    },
-  },
-
-  DEF_PROP_INT32: {
-    doc: "Define property with int32 value",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-      extra: { name: "int_val", type: "int32_t", doc: "The int32 value", usage: "in" },
-    },
-  },
-
-  DEF_PROP_I64: {
-    doc: "Define property with int64/BigInt value",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "i64",
-      value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
-      extra: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
-    },
-  },
-
-  DEF_PROP_F64: {
-    doc: "Define property with float64 value",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "f64",
-      value: { name: "f64_val", type: "double", doc: "The float64 value", usage: "in" },
-      extra: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
-    },
-  },
-
-  DEF_PROP_STRING: {
-    doc: "Define property with string value",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
-      len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
-      extra: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
-    },
-  },
-
-  // ============================================================================
-  // Full Property Definition
-  // ============================================================================
-
-  DEFINE_VALUE: {
-    doc: "Define property with value from slot and flags (JS_DefinePropertyValueStr)",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "val", type: "JSValueSlot", doc: "Value slot", usage: "in" },
-    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-    },
-  },
-
-  DEFINE_GETSET: {
-    doc: "Define property with getter/setter from slots (JS_DefinePropertyGetSet)",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: {
-      name: "getter",
-      type: "JSValueSlot",
-      doc: "Getter function slot (0xFF = none)",
-      usage: "in",
-    },
-    slot_c: {
-      name: "setter",
-      type: "JSValueSlot",
-      doc: "Setter function slot (0xFF = none)",
-      usage: "in",
-    },
-    data: {
-      type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
-      len: { name: "name_len", type: "uint32_t", doc: "Property name length", usage: "in" },
-      extra: { name: "flags", type: "uint32_t", doc: "JS_PROP_* flags", usage: "in" },
-    },
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: VALUE_JSVALUE_SLOT,
   },
 
   // ============================================================================
@@ -805,39 +679,48 @@ export const COMMANDS = {
   // ============================================================================
 
   CALL: {
-    doc: "Call a function (JS_Call)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the result", usage: "out" },
-    slot_b: { name: "func", type: "JSValueSlot", doc: "Function slot", usage: "in" },
-    slot_c: { name: "this_val", type: "JSValueSlot", doc: "This value slot", usage: "in" },
-    data: {
-      type: "jsvalues",
-      ptr: { name: "argv", type: "JSValue*", doc: "Pointer to argument array", usage: "in" },
-      len: { name: "argc", type: "uint32_t", doc: "Number of arguments", usage: "in" },
+    doc: "Call a function (JS_Call) eg `func(args)`",
+    slot_a: RESULT_JSVALUE_SLOT,
+    slot_b: { name: "func_slot", type: "JSValueSlot", doc: "Function slot", usage: "in" },
+    slot_c: {
+      name: "this_slot",
+      type: "JSValueSlot",
+      doc: "This value slot; 0=undefined",
+      usage: "in",
     },
+    data: CALL_ARGV,
   },
 
-  CALL_CONSTRUCT: {
-    doc: "Call a constructor (JS_CallConstructor)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the result", usage: "out" },
-    slot_b: { name: "ctor", type: "JSValueSlot", doc: "Constructor function slot", usage: "in" },
-    data: {
-      type: "jsvalues",
-      ptr: { name: "argv", type: "JSValue*", doc: "Pointer to argument array", usage: "in" },
-      len: { name: "argc", type: "uint32_t", doc: "Number of arguments", usage: "in" },
+  CALL_CTOR: {
+    doc: "Call a constructor (JS_CallConstructor) eg `new Ctor(args)`",
+    slot_a: RESULT_JSVALUE_SLOT,
+    slot_b: {
+      name: "ctor_slot",
+      type: "JSValueSlot",
+      doc: "Constructor function slot",
+      usage: "in",
     },
+    data: CALL_ARGV,
   },
 
   EVAL: {
     doc: "Evaluate JavaScript code (JS_Eval)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the result", usage: "out" },
+    slot_a: RESULT_JSVALUE_SLOT,
+    slot_b: {
+      name: "maybe_filename_len",
+      type: "uint8_t",
+      doc: "Length of filename; 0=filename is null-terminated (or no filename)",
+      usage: "in",
+    },
+    slot_c: { name: "call_flags", type: "EvalFlags", doc: "Eval flags", usage: "in" },
     data: {
       type: "buf",
       ptr: { name: "code_ptr", type: "char*", doc: "Pointer to code string", usage: "in" },
       len: { name: "code_len", type: "uint32_t", doc: "Length of code in bytes", usage: "in" },
       extra: {
-        name: "filename_and_flags",
-        type: "Uint16Pair",
-        doc: "Uint16Pair: filename_ptr (low) | flags (high)",
+        name: "filename",
+        type: "char*",
+        doc: "Filename used for error messages",
         usage: "in",
       },
     },
@@ -849,19 +732,19 @@ export const COMMANDS = {
 
   THROW: {
     doc: "Throw an exception (JS_Throw)",
-    slot_a: { name: "error", type: "JSValueSlot", doc: "Error value slot to throw", usage: "in" },
+    slot_a: {
+      name: "error_slot",
+      type: "JSValueSlot",
+      doc: "Error value slot to throw",
+      usage: "in",
+    },
   },
 
   RESOLVE_EXC: {
     doc: "Resolve exception - if maybe_exc is exception, return the exception value",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store result (exception or null)",
-      usage: "out",
-    },
+    slot_a: RESULT_JSVALUE_SLOT,
     slot_b: {
-      name: "maybe_exc",
+      name: "maybe_exc_slot",
       type: "JSValueSlot",
       doc: "Value that may be an exception",
       usage: "in",
@@ -874,57 +757,38 @@ export const COMMANDS = {
 
   DUP: {
     doc: "Duplicate a value (JS_DupValue) - increment refcount",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the duplicated value",
-      usage: "out",
-    },
-    slot_b: { name: "src", type: "JSValueSlot", doc: "Source value slot", usage: "in" },
+    slot_a: RESULT_JSVALUE_SLOT,
+    slot_b: SOURCE_JSVALUE_SLOT,
   },
 
   FREE: {
     doc: "Free a value (JS_FreeValue) - decrement refcount",
-    slot_a: {
-      name: "slot",
-      type: "JSValueSlot",
-      doc: "Slot containing value to free",
-      usage: "in",
-    },
+    slot_a: TARGET_JSVALUE_SLOT,
   },
 
   // ============================================================================
   // Serialization
   // ============================================================================
 
-  WRITE_OBJECT: {
+  BYTECODE_WRITE: {
     doc: "Serialize a value to binary (JS_WriteObject)",
     slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the ArrayBuffer result",
-      usage: "out",
+      ...RESULT_JSVALUE_SLOT,
+      doc: "Serialized data written to this slot as a ArrayBuffer JSValue",
     },
-    slot_b: { name: "val", type: "JSValueSlot", doc: "Value to serialize", usage: "in" },
+    slot_b: SOURCE_JSVALUE_SLOT,
     data: {
       type: "raw",
       d1: { name: "flags", type: "uint32_t", doc: "JS_WRITE_OBJ_* flags", usage: "in" },
     },
   },
 
-  READ_OBJECT: {
+  BYTECODE_READ: {
     doc: "Deserialize a value from binary (JS_ReadObject)",
-    slot_a: {
-      name: "result",
-      type: "JSValueSlot",
-      doc: "Slot to store the deserialized value",
-      usage: "out",
-    },
+    slot_a: RESULT_JSVALUE_SLOT,
     slot_b: {
-      name: "data",
-      type: "JSValueSlot",
-      doc: "ArrayBuffer containing serialized data",
-      usage: "in",
+      ...SOURCE_JSVALUE_SLOT,
+      doc: "ArrayBuffer JSValue containing serialized data",
     },
     data: {
       type: "raw",
@@ -939,7 +803,7 @@ export const COMMANDS = {
   FUNCLIST_NEW: {
     doc: "Allocate a new JSCFunctionListEntry array",
     slot_a: {
-      name: "result",
+      name: "result_funclist_slot",
       type: "FuncListSlot",
       doc: "Slot to store the funclist pointer",
       usage: "out",
@@ -950,105 +814,90 @@ export const COMMANDS = {
     },
   },
 
-  FUNCLIST_APPLY: {
-    doc: "Apply funclist to object (JS_SetPropertyFunctionList)",
-    slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    data: {
-      type: "raw",
-      d1: { name: "count", type: "uint32_t", doc: "Number of entries", usage: "in" },
+  FUNCLIST_ASSIGN: {
+    doc: "Assign all properties defined in the funclist to the target object (JS_SetPropertyFunctionList)",
+    slot_a: TARGET_JSVALUE_SLOT,
+    slot_b: {
+      name: "source_funclist_slot",
+      type: "FuncListSlot",
+      doc: "Funclist slot",
+      usage: "in",
     },
   },
 
   FUNCLIST_FREE: {
     doc: "Free a funclist array",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot to free", usage: "in" },
+    slot_a: TARGET_FUNCLIST_SLOT,
   },
 
   // ============================================================================
   // FuncList Entry Setters
   // ============================================================================
 
-  FUNCLIST_CFUNC: {
+  FUNCLIST_DEF_CFUNC: {
     doc: "Set funclist entry to JS_DEF_CFUNC",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "length", type: "uint8_t", doc: "Function.length (arity)", usage: "in" },
-    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
+    slot_a: TARGET_FUNCLIST_SLOT,
+    slot_b: FUNC_ARITY_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
       type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
+      d1: TARGET_FUNCLIST_INDEX,
       d2: {
-        name: "name_ptr",
+        name: "func_name_ptr",
         type: "char*",
-        doc: "Function name pointer",
+        doc: "Function name, MUST be null-terminated",
         usage: "in",
       },
-      d3: {
-        name: "host_ref_id",
-        type: "HostRefId",
-        doc: "Host reference ID for callback",
-        usage: "in",
-      },
+      d3: C_FUNC_PTR,
     },
   },
 
-  FUNCLIST_CFUNC_CTOR: {
+  FUNCLIST_DEF_CFUNC_CTOR: {
     doc: "Set funclist entry to JS_DEF_CFUNC with constructor proto",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "length", type: "uint8_t", doc: "Function.length (arity)", usage: "in" },
-    slot_c: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
+    slot_a: TARGET_FUNCLIST_SLOT,
+    slot_b: FUNC_ARITY_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
       type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
+      d1: TARGET_FUNCLIST_INDEX,
       d2: {
-        name: "name_ptr",
+        name: "func_name_ptr",
         type: "char*",
-        doc: "Function name pointer",
+        doc: "Function name, MUST be null-terminated",
         usage: "in",
       },
-      d3: {
-        name: "host_ref_id",
-        type: "HostRefId",
-        doc: "Host reference ID for callback",
-        usage: "in",
-      },
+      d3: C_FUNC_PTR,
     },
   },
 
-  FUNCLIST_CGETSET: {
+  FUNCLIST_DEF_CGETSET: {
     doc: "Set funclist entry to JS_DEF_CGETSET",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    slot_c: { name: "index", type: "uint8_t", doc: "Entry index in funclist (max 255)", usage: "in" },
+    slot_a: TARGET_FUNCLIST_SLOT,
+    slot_b: TARGET_FUNCLIST_INDEX_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
       type: "raw",
-      d1: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
+      d1: PROP_NAME_PTR,
       d2: {
         name: "getter_ptr",
         type: "JSCFunctionType*",
-        doc: "Getter function pointer",
+        doc: "Getter c function pointer (0=no getter)",
         usage: "in",
       },
       d3: {
         name: "setter_ptr",
         type: "JSCFunctionType*",
-        doc: "Setter function pointer",
+        doc: "Setter c function pointer (0=no setter)",
         usage: "in",
       },
     },
   },
 
-
-  FUNCLIST_PROP_STRING: {
+  FUNCLIST_DEF_STRING: {
     doc: "Set funclist entry to JS_DEF_PROP_STRING",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    slot_c: { name: "index", type: "uint8_t", doc: "Entry index in funclist (0-255)", usage: "in" },
+    slot_a: TARGET_FUNCLIST_SLOT,
+    slot_b: TARGET_FUNCLIST_INDEX_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
       type: "buf",
       ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
@@ -1056,99 +905,87 @@ export const COMMANDS = {
       extra: {
         name: "name_ptr",
         type: "char*",
-        doc: "Property name pointer",
+        doc: "Property name pointer (MUST be null-terminated)",
         usage: "in",
       },
     },
   },
 
-  FUNCLIST_PROP_INT32: {
+  FUNCLIST_DEF_INT32: {
     doc: "Set funclist entry to JS_DEF_PROP_INT32",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
+    slot_a: TARGET_FUNCLIST_SLOT,
+    slot_b: PROP_MAYBE_NAME_LEN_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
       type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
-      d3: { name: "int_val", type: "int32_t", doc: "The int32 value", usage: "in" },
+      d1: TARGET_FUNCLIST_INDEX,
+      d2: { name: "int_val", type: "int32_t", doc: "The int32 value", usage: "in" },
+      d3: PROP_NAME_PTR,
     },
   },
 
-  FUNCLIST_PROP_INT64: {
+  FUNCLIST_DEF_INT64: {
     doc: "Set funclist entry to JS_DEF_PROP_INT64 (index in slot_c)",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    slot_c: { name: "index", type: "uint8_t", doc: "Entry index in funclist (0-255)", usage: "in" },
+    slot_a: TARGET_FUNCLIST_SLOT,
+    slot_b: TARGET_FUNCLIST_INDEX_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
       type: "i64",
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
       extra: {
         name: "name_ptr",
         type: "char*",
-        doc: "Property name pointer",
+        doc: "Property name pointer (MUST be null-terminated)",
         usage: "in",
       },
     },
   },
 
-  FUNCLIST_PROP_DOUBLE: {
+  FUNCLIST_DEF_DOUBLE: {
     doc: "Set funclist entry to JS_DEF_PROP_DOUBLE (index in slot_c)",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
-    slot_c: { name: "index", type: "uint8_t", doc: "Entry index in funclist (0-255)", usage: "in" },
+    slot_a: TARGET_FUNCLIST_SLOT,
+    slot_b: TARGET_FUNCLIST_INDEX_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The double value", usage: "in" },
-      extra: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
+      extra: PROP_NAME_PTR,
     },
   },
 
-  FUNCLIST_PROP_UNDEFINED: {
+  FUNCLIST_DEF_NULL: {
+    doc: "Set funclist entry to JS_DEF_PROP_NULL",
+    slot_a: TARGET_FUNCLIST_SLOT,
+    slot_c: PROP_FLAGS,
+    data: {
+      ...PROP_NAME_DATA,
+      extra: TARGET_FUNCLIST_INDEX,
+    },
+  },
+
+  FUNCLIST_DEF_UNDEFINED: {
     doc: "Set funclist entry to JS_DEF_PROP_UNDEFINED",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
+    slot_a: TARGET_FUNCLIST_SLOT,
+    slot_c: PROP_FLAGS,
     data: {
-      type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
+      ...PROP_NAME_DATA,
+      extra: TARGET_FUNCLIST_INDEX,
     },
   },
 
-
-  FUNCLIST_OBJECT: {
+  FUNCLIST_DEF_OBJECT: {
     doc: "Set funclist entry to JS_DEF_OBJECT (nested object with its own funclist)",
-    slot_a: { name: "list", type: "FuncListSlot", doc: "Funclist slot", usage: "in" },
-    slot_b: { name: "flags", type: "JSPropFlags", doc: "JS_PROP_* property flags", usage: "in" },
+    slot_a: TARGET_FUNCLIST_SLOT,
+    slot_b: {
+      name: "object_funclist_slot",
+      doc: "A funclist defining the properties of the nested object to create",
+      type: "FuncListSlot",
+      usage: "in",
+    },
+    slot_c: PROP_FLAGS,
     data: {
-      type: "raw",
-      d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: {
-        name: "name_ptr",
-        type: "char*",
-        doc: "Property name pointer",
-        usage: "in",
-      },
-      d3: {
-        name: "nested_packed",
-        type: "Uint16Pair",
-        doc: "Uint16Pair: nested_list_ptr (low) | count (high)",
-        usage: "in",
-      },
+      ...PROP_NAME_DATA,
+      extra: TARGET_FUNCLIST_INDEX,
     },
   },
 } as const satisfies Record<string, CommandDef>
@@ -1164,190 +1001,8 @@ if (OPCODE_TO_COMMAND.length > 256) {
   throw new Error("Too many commands: " + OPCODE_TO_COMMAND.length)
 }
 
-function COpName(name: OpName | string) {
+export function COpName(name: OpName | string) {
   return `QTS_OP_${name}` as const
-}
-
-/**
- * Get the raw C type for a path in the QTS_Command struct.
- * This is the actual type in the struct, not the semantic type from the IDL.
- */
-function getRawCType(path: string[]): string {
-  const key = path.join(".")
-  const rawTypes: Record<string, string> = {
-    "cmd.slot_a": "uint8_t",
-    "cmd.slot_b": "uint8_t",
-    "cmd.slot_c": "uint8_t",
-    "cmd.data.raw.d1": "uint32_t",
-    "cmd.data.raw.d2": "uint32_t",
-    "cmd.data.raw.d3": "uint32_t",
-    "cmd.data.f64.value": "double",
-    "cmd.data.f64.extra": "uint32_t",
-    "cmd.data.i64.value": "int64_t",
-    "cmd.data.i64.extra": "uint32_t",
-    "cmd.data.buf.ptr": "char*",
-    "cmd.data.buf.len": "uint32_t",
-    "cmd.data.buf.extra": "uint32_t",
-    "cmd.data.jsvalues.ptr": "JSValue*",
-    "cmd.data.jsvalues.len": "uint32_t",
-    "cmd.data.jsvalues.extra": "uint32_t",
-  }
-  return rawTypes[key] ?? "unknown"
-}
-
-/**
- * Generate a C expression to extract a value from a path, with casting if needed.
- * - If semantic type matches raw type: just return the path
- * - If semantic type is a pointer: cast with (type)path
- * - Uint16Pair: reinterpret uint32_t as struct via pointer cast
- */
-function cExtractExpr(path: string[], semanticType: string): string {
-  const pathExpr = path.join(".")
-  const rawType = getRawCType(path)
-
-  if (semanticType === rawType) {
-    return pathExpr
-  }
-
-  if (semanticType === "Uint16Pair") {
-    // Reinterpret uint32_t as Uint16Pair struct
-    return `*(Uint16Pair*)&${pathExpr}`
-  }
-
-  if (semanticType.endsWith("*")) {
-    // Pointer cast
-    return `(${semanticType})${pathExpr}`
-  }
-
-  // Default: simple cast for other scalar types
-  return `(${semanticType})${pathExpr}`
-}
-
-export function CFunc(name: string, command: CommandDef) {
-  const lcName = lowercase_c_name(name)
-  const functionName = `perform_${lcName}` as const
-  const returnType = `QTS_CommandStatus` as const
-  const params: Record<string, ParamDef & { path?: string[] }> = {
-    /**
-     * ```
-     * typedef struct QTS_FuncList {
-     *   JSCFunctionListEntry *entries;
-     *   uint32_t count;
-     * } QTS_FuncList;
-     *
-     * typedef struct QTS_CommandEnv {
-     *   JSContext *ctx;
-     *   JSValue *jsvalue_slots;
-     *   uint32_t jsvalue_slots_count;
-     *
-     *   QTS_FuncList *funclist_slots;
-     *   uint32_t funclist_slots_count;
-     * } QTS_CommandEnv;
-     * ```
-     */
-    env: {
-      doc: "Command execution environment",
-      name: "env",
-      type: "QTS_CommandEnv*",
-      usage: "in-out",
-    },
-  }
-
-  const pathUsed = new Set<string>()
-  const addParam = (path: string[], param: ParamDef | undefined) => {
-    if (!param) {
-      return
-    }
-
-    const pathString = path.join(".")
-    if (pathUsed.has(pathString)) {
-      throw new Error(`Path ${pathString} is used multiple times`)
-    }
-    pathUsed.add(pathString)
-
-    if (param.name in params) {
-      throw new Error(`Name ${param.name} is used multiple times`)
-    }
-    params[param.name] = {
-      path,
-      ...param,
-    }
-  }
-
-  addParam(["cmd", "slot_a"], command.slot_a)
-  addParam(["cmd", "slot_b"], command.slot_b)
-  addParam(["cmd", "slot_c"], command.slot_c)
-  if (command.data) {
-    for (const [dataProp, dataValue] of Object.entries(command.data)) {
-      if (typeof dataValue === "object") {
-        addParam(["cmd", "data", command.data.type, dataProp], dataValue)
-      }
-    }
-  }
-
-  const signatureParams = Object.values(params)
-    .map((param) => {
-      const stars = param.type.match(/\*+$/g)?.length || 0
-      if (stars > 0) {
-        return param.type.slice(0, -stars) + " " + "*".repeat(stars) + param.name
-      }
-      return param.type + " " + param.name
-    })
-    .join(", ")
-  const signature = `${returnType} ${functionName}(${signatureParams})`
-
-  const callParams = Object.values(params)
-    .map((param) => {
-      if (param.path) {
-        // Extract value from cmd struct, with casting if needed
-        return cExtractExpr(param.path, param.type)
-      }
-      return param.name
-    })
-    .join(", ")
-
-  const opcodeName = COpName(name)
-  const switchCase = `case ${opcodeName}: return ${functionName}(${callParams});`
-
-  // Generate header file content
-  const headerGuard = `QTS_PERFORM_${name}_H`
-  const docComment = command.doc ? `/** ${command.doc} */\n` : ""
-  const headerContent = `// Generated - do not edit
-#ifndef ${headerGuard}
-#define ${headerGuard}
-
-#include "command.h"
-
-${docComment}${signature};
-
-#endif // ${headerGuard}
-`
-
-  // Generate scaffold .c file content
-  // Note: op.h (included via perform_*.h) provides OP_UNIMPLEMENTED and qts_utils.h
-  const scaffoldContent = `#include "perform_${lcName}.h"
-
-${signature} {
-    OP_UNIMPLEMENTED(env, "${functionName}");
-}
-`
-
-  // Include directive for perform_op.c
-  const includeDirective = `#include "perform_${lcName}.h"`
-
-  return {
-    functionName,
-    lcName,
-    signature,
-    switchCase,
-    opcodeName,
-    params,
-    returnType,
-    headerContent,
-    scaffoldContent,
-    includeDirective,
-    toString: () => `CFunc(${signature}) { ${switchCase} }`,
-  } as const
 }
 
 /**
