@@ -1287,7 +1287,7 @@ export function CFunc(name: string, command: CommandDef) {
 #ifndef ${headerGuard}
 #define ${headerGuard}
 
-#include "op.h"
+#include "command.h"
 
 ${docComment}${signature};
 
@@ -1295,11 +1295,11 @@ ${docComment}${signature};
 `
 
   // Generate scaffold .c file content
+  // Note: op.h (included via perform_*.h) provides OP_UNIMPLEMENTED and qts_utils.h
   const scaffoldContent = `#include "perform_${lcName}.h"
-#include "util.h"
 
 ${signature} {
-    QTS_UNIMPLEMENTED(env, "${functionName}");
+    OP_UNIMPLEMENTED(env, "${functionName}");
 }
 `
 

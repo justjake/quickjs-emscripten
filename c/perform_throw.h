@@ -2,7 +2,7 @@
 #ifndef QTS_PERFORM_THROW_H
 #define QTS_PERFORM_THROW_H
 
-#include "op.h"
+#include "command.h"
 
 /** Throw an exception (JS_Throw) */
 QTS_CommandStatus perform_throw(QTS_CommandEnv*env, JSValueSlot error);

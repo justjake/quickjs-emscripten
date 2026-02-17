@@ -2,7 +2,7 @@
 #ifndef QTS_PERFORM_SET_STR_BOOL_H
 #define QTS_PERFORM_SET_STR_BOOL_H
 
-#include "op.h"
+#include "command.h"
 
 /** Set property by string key to boolean */
 QTS_CommandStatus perform_set_str_bool(QTS_CommandEnv*env, JSValueSlot obj, uint8_t bool_val, char*name_ptr, uint32_t name_len);

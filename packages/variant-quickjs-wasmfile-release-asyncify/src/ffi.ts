@@ -24,6 +24,14 @@ import {
   GetOwnPropertyNamesFlags,
   IsEqualOp,
   HostRefId,
+  CommandPtr,
+  JSValueSlot,
+  FuncListSlot,
+  Uint8,
+  Uint32,
+  Int32,
+  Float64,
+  Int64,
   JSPromiseStateEnum,
   assertSync,
 } from "@jitl/quickjs-ffi-types"
@@ -403,7 +411,7 @@ export class QuickJSAsyncFFI {
       "number",
       "number",
       "number",
-      "string",
+      "number",
       "number",
       "number",
     ]),
@@ -420,7 +428,7 @@ export class QuickJSAsyncFFI {
     "number",
     "number",
     "number",
-    "string",
+    "number",
     "number",
     "number",
   ])
@@ -473,7 +481,7 @@ export class QuickJSAsyncFFI {
   ) => JSValuePointer = this.module.cwrap("QTS_PromiseResult", "number", ["number", "number"])
 
   QTS_TestStringArg: (string: string) => void = this.module.cwrap("QTS_TestStringArg", null, [
-    "string",
+    "number",
   ])
 
   QTS_GetDebugLogEnabled: (rt: JSRuntimePointer) => number = this.module.cwrap(
@@ -500,7 +508,7 @@ export class QuickJSAsyncFFI {
     host_ref_id: HostRefId,
   ) => JSValuePointer = this.module.cwrap("QTS_NewFunction", "number", [
     "number",
-    "string",
+    "number",
     "number",
     "boolean",
     "number",

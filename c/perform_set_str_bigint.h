@@ -2,7 +2,7 @@
 #ifndef QTS_PERFORM_SET_STR_BIGINT_H
 #define QTS_PERFORM_SET_STR_BIGINT_H
 
-#include "op.h"
+#include "command.h"
 
 /** Set property by string key to BigInt (name must be null-terminated) */
 QTS_CommandStatus perform_set_str_bigint(QTS_CommandEnv*env, JSValueSlot obj, int64_t i64_val, uint32_t name_ptr);

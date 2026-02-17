@@ -2,7 +2,7 @@
 #ifndef QTS_PERFORM_ARRAY_H
 #define QTS_PERFORM_ARRAY_H
 
-#include "op.h"
+#include "command.h"
 
 /** Create a new empty array (JS_NewArray) */
 QTS_CommandStatus perform_array(QTS_CommandEnv*env, JSValueSlot result);

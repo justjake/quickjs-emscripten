@@ -2,7 +2,7 @@
 #ifndef QTS_PERFORM_OBJECT_PROTO_H
 #define QTS_PERFORM_OBJECT_PROTO_H
 
-#include "op.h"
+#include "command.h"
 
 /** Create a new object with prototype (JS_NewObjectProto) */
 QTS_CommandStatus perform_object_proto(QTS_CommandEnv*env, JSValueSlot result, JSValueSlot proto);

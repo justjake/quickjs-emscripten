@@ -36,6 +36,10 @@ else
 endif
 VARIANT_QUICKJS_OBJS=$(patsubst %.o, $(BUILD_QUICKJS)/%.o, $(QUICKJS_OBJS))
 
+# quickjs-emscripten wrapper source files
+WRAPPER_OBJS=interface.o qts_utils.o
+VARIANT_WRAPPER_OBJS=$(patsubst %.o, $(BUILD_WRAPPER)/%.o, $(WRAPPER_OBJS))
+
 # quickjs-emscripten
 WRAPPER_DEFINES+=-Wcast-function-type   # Likewise, warns about some quickjs casts we don't control.
 EMCC_EXPORTED_FUNCS+=-s EXPORTED_FUNCTIONS=@$(BUILD_WRAPPER)/symbols.json
@@ -135,14 +139,14 @@ BROWSER: $(DIST)/emscripten-module.browser.mjs $(DIST)/emscripten-module.browser
 CLOUDFLARE: $(DIST)/emscripten-module.cloudflare.cjs $(DIST)/emscripten-module.cloudflare.d.ts
 
 $(DIST)/emscripten-module.mjs: CFLAGS_WASM+=$(CFLAGS_ESM)
-$(DIST)/emscripten-module.mjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
+$(DIST)/emscripten-module.mjs: $(VARIANT_WRAPPER_OBJS) $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $(VARIANT_WRAPPER_OBJS) $(VARIANT_QUICKJS_OBJS)
 
 $(DIST)/emscripten-module.cjs: CFLAGS_WASM+=$(CFLAGS_CJS)
-$(DIST)/emscripten-module.cjs: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
+$(DIST)/emscripten-module.cjs: $(VARIANT_WRAPPER_OBJS) $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $(VARIANT_WRAPPER_OBJS) $(VARIANT_QUICKJS_OBJS)
 
 $(DIST)/emscripten-module.d.ts: $(TEMPLATES)/emscripten-module.$(SYNC).d.ts
 	$(MKDIRP)
@@ -167,9 +171,9 @@ $(DIST)/emscripten-module.%.cjs: $(BUILD_WRAPPER)/%/emscripten-module.js
 
 $(BUILD_WRAPPER)/browser/emscripten-module.js: CFLAGS_WASM+=$(CFLAGS_BROWSER)
 $(BUILD_WRAPPER)/cloudflare/emscripten-module.js: CFLAGS_WASM+=$(CFLAGS_CLOUDFLARE)
-$(BUILD_WRAPPER)/%/emscripten-module.js: $(BUILD_WRAPPER)/interface.o $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
+$(BUILD_WRAPPER)/%/emscripten-module.js: $(VARIANT_WRAPPER_OBJS) $(VARIANT_QUICKJS_OBJS) $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $< $(VARIANT_QUICKJS_OBJS)
+	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) $(EMCC_EXPORTED_FUNCS) -o $@ $(VARIANT_WRAPPER_OBJS) $(VARIANT_QUICKJS_OBJS)
 
 ###############################################################################
 # Emscripten intermediate files

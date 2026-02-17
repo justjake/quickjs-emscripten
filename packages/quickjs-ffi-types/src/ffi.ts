@@ -24,6 +24,14 @@ import {
   GetOwnPropertyNamesFlags,
   IsEqualOp,
   HostRefId,
+  CommandPtr,
+  JSValueSlot,
+  FuncListSlot,
+  Uint8,
+  Uint32,
+  Int32,
+  Float64,
+  Int64,
   JSPromiseStateEnum,
 } from "."
 

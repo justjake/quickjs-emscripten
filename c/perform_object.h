@@ -2,7 +2,7 @@
 #ifndef QTS_PERFORM_OBJECT_H
 #define QTS_PERFORM_OBJECT_H
 
-#include "op.h"
+#include "command.h"
 
 /** Create a new empty object (JS_NewObject) */
 QTS_CommandStatus perform_object(QTS_CommandEnv*env, JSValueSlot result);

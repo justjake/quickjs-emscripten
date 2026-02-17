@@ -94,7 +94,7 @@ void js_std_dump_error(JSContext *ctx);
 #define BorrowedHeapChar const char
 #define OwnedHeapChar char
 #define JSBorrowedChar const char
-#include "op.h"  // For HostRefId typedef
+#include "qts_utils.h"  // For HostRefId, jsvalue_to_heap, etc.
 
 /**
  * Signal to our FFI code generator that this function should be called
@@ -123,40 +123,7 @@ char *qts_host_load_module_source(JSRuntime *rt, JSContext *ctx, const char *mod
 char *qts_host_normalize_module(JSRuntime *rt, JSContext *ctx, const char *module_base_name, const char *module_name);
 #endif
 
-typedef struct qts_RuntimeData {
-  bool debug_log;
-} qts_RuntimeData;
-
-qts_RuntimeData *qts_get_runtime_data(JSRuntime *rt) {
-  qts_RuntimeData *data = JS_GetRuntimeOpaque(rt);
-  if (data == NULL) {
-    data = malloc(sizeof(qts_RuntimeData));
-    data->debug_log = false;
-    JS_SetRuntimeOpaque(rt, data);
-  }
-  return data;
-}
-
-qts_RuntimeData *qts_get_context_rt_data(JSContext *ctx) {
-  return qts_get_runtime_data(JS_GetRuntime(ctx));
-}
-
-void qts_log(char *msg) {
-  fputs(PKG, stderr);
-  fputs(msg, stderr);
-  fputs("\n", stderr);
-}
-
-void qts_dump(JSContext *ctx, JSValueConst value) {
-  const char *str = JS_ToCString(ctx, value);
-  if (!str) {
-    QTS_DEBUG("QTS_DUMP: can't dump");
-    return;
-  }
-  fputs(str, stderr);
-  JS_FreeCString(ctx, str);
-  putchar('\n');
-}
+// Runtime data, debug utilities, and jsvalue_to_heap moved to qts_utils.c
 
 // ----------------------------------------------------------------------------
 // QTS_Dump helpers
@@ -342,15 +309,7 @@ static JSBorrowedChar *qts_dump_get_fallback(JSContext *ctx, JSValueConst obj, J
   return result;
 }
 
-JSValue *jsvalue_to_heap(JSValueConst value) {
-  JSValue *result = malloc(sizeof(JSValue));
-  if (result) {
-    // Could be better optimized, but at -0z / -ftlo, it
-    // appears to produce the same binary code as a memcpy.
-    *result = value;
-  }
-  return result;
-}
+// jsvalue_to_heap moved to qts_utils.c
 
 JSValue *QTS_Throw(JSContext *ctx, JSValueConst *error) {
   JSValue copy = JS_DupValue(ctx, *error);
@@ -485,81 +444,14 @@ JSValueConst *QTS_GetTrue() {
 
 // ----------------------------------------------------------------------------
 // HostRef - De-reference host value based on JSValue GC.
-// Used for functions
-
-static JSClassID host_ref_class_id;
-// todo: variant with mark callback
-
-typedef struct HostRef {
-  int32_t id;
-} HostRef;
-
-#ifdef __EMSCRIPTEN__
-EM_JS(void, qts_host_ref_free, (JSRuntime *rt, int32_t id), {
-  // For now we don't allow for async freeHostRef.
-  const asyncify = undefined;
-  Module['callbacks']['freeHostRef'](asyncify, rt, id);
-});
-#endif
-
-static void host_ref_finalizer(JSRuntime *rt, JSValue val) {
-  HostRef *hv = JS_GetOpaque(val, host_ref_class_id);
-  if (hv) {
-#ifdef __EMSCRIPTEN__
-    qts_host_ref_free(rt, hv->id);
-#endif
-    js_free_rt(rt, hv);
-  }
-}
-
-static JSClassDef host_ref_class = {
-  .class_name = "HostRef",
-  .finalizer = host_ref_finalizer,
-};
-
-static int host_ref_class_init(JSRuntime *rt) {
-  // Only allocate class ID once globally
-  if (host_ref_class_id == 0) {
-#ifdef QTS_USE_QUICKJS_NG
-    JS_NewClassID(rt, &host_ref_class_id);
-#else
-    JS_NewClassID(&host_ref_class_id);
-#endif
-  }
-  // Register class with this runtime if not already registered
-  // JS_NewClass returns 0 on success, -1 if already registered (which is fine)
-  if (!JS_IsRegisteredClass(rt, host_ref_class_id)) {
-    return JS_NewClass(rt, host_ref_class_id, &host_ref_class);
-  }
-  return 0;
-}
-
-static JSValue new_host_ref(JSContext *ctx, HostRefId id) {
-  HostRef *hv;
-  JSValue obj;
-  obj = JS_NewObjectClass(ctx, host_ref_class_id);
-  if (JS_IsException(obj)) {
-    return obj;
-  }
-
-  hv = js_mallocz(ctx, sizeof(*hv));
-  if (!hv) {
-    // js_mallocz returns NULL on failure and sets rt.exception to OutOfMemory
-    JS_FreeValue(ctx, obj);
-    return JS_EXCEPTION;
-  }
-
-  hv->id = id;
-  JS_SetOpaque(obj, hv);
-  return obj;
-}
+// Used for functions. Implementation in qts_utils.c.
 
 JSValue *QTS_NewHostRef(JSContext *ctx, HostRefId id) {
   return jsvalue_to_heap(new_host_ref(ctx, id));
 }
 
 HostRefId QTS_GetHostRefId(JSValueConst *value) {
-  HostRef *hv = JS_GetOpaque(*value, host_ref_class_id);
+  HostRef *hv = JS_GetOpaque(*value, qts_get_host_ref_class_id());
   if (hv) {
     return hv->id;
   }
@@ -1321,7 +1213,7 @@ EM_JS(MaybeAsync(JSValue *), qts_host_call_function, (JSContext * ctx, JSValueCo
 // Function: QuickJS -> C
 JSValue qts_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic, JSValue *func_data) {
   int32_t host_ref_id = 0;
-  HostRef *host_ref = JS_GetOpaque(*func_data, host_ref_class_id);
+  HostRef *host_ref = JS_GetOpaque(*func_data, qts_get_host_ref_class_id());
   if (host_ref) {
     host_ref_id = host_ref->id;
   }

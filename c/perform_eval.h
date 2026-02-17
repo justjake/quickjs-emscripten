@@ -2,7 +2,7 @@
 #ifndef QTS_PERFORM_EVAL_H
 #define QTS_PERFORM_EVAL_H
 
-#include "op.h"
+#include "command.h"
 
 /** Evaluate JavaScript code (JS_Eval) */
 QTS_CommandStatus perform_eval(QTS_CommandEnv*env, JSValueSlot result, char*code_ptr, uint32_t code_len, uint32_t filename_and_flags);

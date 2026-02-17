@@ -2,7 +2,7 @@
 #ifndef QTS_PERFORM_WRITE_OBJECT_H
 #define QTS_PERFORM_WRITE_OBJECT_H
 
-#include "op.h"
+#include "command.h"
 
 /** Serialize a value to binary (JS_WriteObject) */
 QTS_CommandStatus perform_write_object(QTS_CommandEnv*env, JSValueSlot result, JSValueSlot val, uint32_t flags);
