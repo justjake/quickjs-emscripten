@@ -5,8 +5,9 @@ import * as pathlib from "path"
 import * as crypto from "crypto"
 import * as fs from "fs-extra"
 import { repoRoot } from "./helpers"
+import { COMMANDS, OPCODE_TO_COMMAND, TsOpName, type OpName } from "./idl"
 const USAGE =
-  "Usage: generate.ts [symbols | header | ffi] WRITE_PATH" +
+  "Usage: generate.ts [symbols | header | ffi | ops] WRITE_PATH" +
   "\ngenerate.ts hash READ_PATH WRITE_PATH"
 
 const rooted = (path: string) => pathlib.join(repoRoot, path)
@@ -107,6 +108,11 @@ function main() {
     return
   }
 
+  if (command === "ops") {
+    writeFile(destination, buildOps())
+    return
+  }
+
   throw new Error(`Bad command "${command}". ${USAGE}`)
 }
 
@@ -138,7 +144,7 @@ interface ParsedType {
   attributes: Set<Attribute>
 }
 
-function cTypeToTypescriptType(ctype: string): ParsedType {
+function cTypeToTypescriptType(ctype: string, branded = false): ParsedType {
   // eslint-disable-next-line prefer-const
   let { type, attributes } = parseAttributes(ctype)
 
@@ -148,9 +154,27 @@ function cTypeToTypescriptType(ctype: string): ParsedType {
   // collapse spaces (around a *, maybe)
   type = type.split(" ").join("")
 
+  // IDL slot types (always branded)
+  if (type === "JSValueSlot") {
+    return { ffi: "number", typescript: "JSValueSlot", ctype, attributes }
+  }
+  if (type === "FuncListSlot") {
+    return { ffi: "number", typescript: "FuncListSlot", ctype, attributes }
+  }
+
   // mapping
   if (type.includes("char*")) {
-    return { ffi: "string", typescript: "string", ctype, attributes }
+    return {
+      ffi: "number",
+      typescript: branded ? "BorrowedHeapCharPointer" : "string",
+      ctype,
+      attributes,
+    }
+  }
+
+  // JSValue* pointer type
+  if (type === "JSValue*") {
+    return { ffi: "number", typescript: "JSValuePointer", ctype, attributes }
   }
 
   if (type === "uint32_t*") {
@@ -171,13 +195,25 @@ function cTypeToTypescriptType(ctype: string): ParsedType {
   if (type === "void") {
     ffi = null
   }
-  if (
-    type === "double" ||
-    type === "int" ||
-    type === "size_t" ||
-    type === "uint16_t" ||
-    type === "uint32_t"
-  ) {
+
+  // Scalar types - branded or plain based on flag
+  if (type === "uint8_t") {
+    return { ffi: "number", typescript: branded ? "Uint8" : "number", ctype, attributes }
+  }
+  if (type === "uint32_t") {
+    return { ffi: "number", typescript: branded ? "Uint32" : "number", ctype, attributes }
+  }
+  if (type === "int32_t") {
+    return { ffi: "number", typescript: branded ? "Int32" : "number", ctype, attributes }
+  }
+  if (type === "double") {
+    return { ffi: "number", typescript: branded ? "Float64" : "number", ctype, attributes }
+  }
+  if (type === "int64_t") {
+    return { ffi: "bigint", typescript: branded ? "Int64" : "bigint", ctype, attributes }
+  }
+
+  if (type === "int" || type === "size_t" || type === "uint16_t") {
     ffi = "number"
     typescript = "number"
   }
@@ -405,6 +441,265 @@ function updateHashFile(src: string, dest: string) {
     // pass
   }
   fs.writeFileSync(dest, hash)
+}
+
+// =============================================================================
+// ops.ts Generation
+// =============================================================================
+
+/** Map of setter name -> function code. Only used setters are emitted. */
+const SETTER_DEFS: Record<string, string> = {
+  setOpcode: `function setOpcode(view: DataView, offset: number, opcode: number): void {
+  view.setUint8(offset + 0, opcode)
+}`,
+  setSlotA: `function setSlotA(view: DataView, offset: number, slot: number): void {
+  view.setUint8(offset + 1, slot)
+}`,
+  setSlotB: `function setSlotB(view: DataView, offset: number, slot: number): void {
+  view.setUint8(offset + 2, slot)
+}`,
+  setSlotC: `function setSlotC(view: DataView, offset: number, slot: number): void {
+  view.setUint8(offset + 3, slot)
+}`,
+  setD1_u32: `function setD1_u32(view: DataView, offset: number, value: number): void {
+  view.setUint32(offset + 4, value, true)
+}`,
+  setD1_i32: `function setD1_i32(view: DataView, offset: number, value: number): void {
+  view.setInt32(offset + 4, value, true)
+}`,
+  setD2_u32: `function setD2_u32(view: DataView, offset: number, value: number): void {
+  view.setUint32(offset + 8, value, true)
+}`,
+  setD2_i32: `function setD2_i32(view: DataView, offset: number, value: number): void {
+  view.setInt32(offset + 8, value, true)
+}`,
+  setD3_u32: `function setD3_u32(view: DataView, offset: number, value: number): void {
+  view.setUint32(offset + 12, value, true)
+}`,
+  setD3_i32: `function setD3_i32(view: DataView, offset: number, value: number): void {
+  view.setInt32(offset + 12, value, true)
+}`,
+  setData_f64: `function setData_f64(view: DataView, offset: number, value: number): void {
+  view.setFloat64(offset + 4, value, true)
+}`,
+  setData_i64: `function setData_i64(view: DataView, offset: number, value: bigint): void {
+  view.setBigInt64(offset + 4, value, true)
+}`,
+}
+
+type CommandDef = (typeof COMMANDS)[OpName]
+type CommandDataDef = NonNullable<CommandDef["data"]>
+
+function TSFunc(name: string, opcode: number, command: CommandDef, usedSetters: Set<string>) {
+  const functionName = `write${TsOpName(name)}`
+  const params: Array<{ name: string; tsType: string }> = []
+  const body: string[] = []
+
+  const useSetter = (setter: string, call: string) => {
+    usedSetters.add(setter)
+    body.push(call)
+  }
+
+  const tsType = (ctype: string) => cTypeToTypescriptType(ctype, true).typescript
+
+  useSetter("setOpcode", `setOpcode(view, offset, ${opcode})`)
+
+  // Collect params and body statements from slots
+  if (command.slot_a) {
+    params.push({ name: command.slot_a.name, tsType: tsType(command.slot_a.type) })
+    useSetter("setSlotA", `setSlotA(view, offset, ${command.slot_a.name})`)
+  }
+  if (command.slot_b) {
+    params.push({ name: command.slot_b.name, tsType: tsType(command.slot_b.type) })
+    useSetter("setSlotB", `setSlotB(view, offset, ${command.slot_b.name})`)
+  }
+  if (command.slot_c) {
+    params.push({ name: command.slot_c.name, tsType: tsType(command.slot_c.type) })
+    useSetter("setSlotC", `setSlotC(view, offset, ${command.slot_c.name})`)
+  }
+
+  // Collect params and body from data fields
+  if (command.data) {
+    addDataParams(command.data, params, body, tsType, usedSetters)
+  }
+
+  const paramList =
+    params.length > 0 ? `, ${params.map((p) => `${p.name}: ${p.tsType}`).join(", ")}` : ""
+  const signature = `export function ${functionName}(view: DataView, offset: CommandPtr${paramList}): void`
+
+  const code = `${signature} {\n  ${body.join("\n  ")}\n}`
+
+  return { functionName, params, body, signature, code }
+}
+
+function addDataParams(
+  data: CommandDataDef,
+  params: Array<{ name: string; tsType: string }>,
+  body: string[],
+  tsType: (ctype: string) => string,
+  usedSetters: Set<string>,
+) {
+  const useSetter = (setter: string, call: string) => {
+    usedSetters.add(setter)
+    body.push(call)
+  }
+
+  switch (data.type) {
+    case "raw":
+      params.push({ name: data.d1.name, tsType: tsType(data.d1.type) })
+      if (data.d1.type === "int32_t") {
+        useSetter("setD1_i32", `setD1_i32(view, offset, ${data.d1.name})`)
+      } else {
+        useSetter("setD1_u32", `setD1_u32(view, offset, ${data.d1.name})`)
+      }
+      if (data.d2) {
+        params.push({ name: data.d2.name, tsType: tsType(data.d2.type) })
+        if (data.d2.type === "int32_t") {
+          useSetter("setD2_i32", `setD2_i32(view, offset, ${data.d2.name})`)
+        } else {
+          useSetter("setD2_u32", `setD2_u32(view, offset, ${data.d2.name})`)
+        }
+      }
+      if (data.d3) {
+        params.push({ name: data.d3.name, tsType: tsType(data.d3.type) })
+        if (data.d3.type === "int32_t") {
+          useSetter("setD3_i32", `setD3_i32(view, offset, ${data.d3.name})`)
+        } else {
+          useSetter("setD3_u32", `setD3_u32(view, offset, ${data.d3.name})`)
+        }
+      }
+      break
+
+    case "f64":
+      params.push({ name: data.value.name, tsType: tsType(data.value.type) })
+      useSetter("setData_f64", `setData_f64(view, offset, ${data.value.name})`)
+      if (data.extra) {
+        params.push({ name: data.extra.name, tsType: tsType(data.extra.type) })
+        useSetter("setD3_u32", `setD3_u32(view, offset, ${data.extra.name})`)
+      }
+      break
+
+    case "i64":
+      params.push({ name: data.value.name, tsType: tsType(data.value.type) })
+      useSetter("setData_i64", `setData_i64(view, offset, ${data.value.name})`)
+      if (data.extra) {
+        params.push({ name: data.extra.name, tsType: tsType(data.extra.type) })
+        useSetter("setD3_u32", `setD3_u32(view, offset, ${data.extra.name})`)
+      }
+      break
+
+    case "buf":
+      params.push({ name: data.ptr.name, tsType: tsType(data.ptr.type) })
+      useSetter("setD1_u32", `setD1_u32(view, offset, ${data.ptr.name})`)
+      params.push({ name: data.len.name, tsType: tsType(data.len.type) })
+      useSetter("setD2_u32", `setD2_u32(view, offset, ${data.len.name})`)
+      if (data.extra) {
+        params.push({ name: data.extra.name, tsType: tsType(data.extra.type) })
+        if (data.extra.type === "int32_t") {
+          useSetter("setD3_i32", `setD3_i32(view, offset, ${data.extra.name})`)
+        } else {
+          useSetter("setD3_u32", `setD3_u32(view, offset, ${data.extra.name})`)
+        }
+      }
+      break
+
+    case "jsvalues":
+      params.push({ name: data.ptr.name, tsType: tsType(data.ptr.type) })
+      useSetter("setD1_u32", `setD1_u32(view, offset, ${data.ptr.name})`)
+      params.push({ name: data.len.name, tsType: tsType(data.len.type) })
+      useSetter("setD2_u32", `setD2_u32(view, offset, ${data.len.name})`)
+      if (data.extra) {
+        params.push({ name: data.extra.name, tsType: tsType(data.extra.type) })
+        if (data.extra.type === "int32_t") {
+          useSetter("setD3_i32", `setD3_i32(view, offset, ${data.extra.name})`)
+        } else {
+          useSetter("setD3_u32", `setD3_u32(view, offset, ${data.extra.name})`)
+        }
+      }
+      break
+  }
+}
+
+function buildOps(): string {
+  const imports = `import type {
+  CommandPtr,
+  JSValueSlot,
+  FuncListSlot,
+  Uint8,
+  Uint32,
+  Int32,
+  Float64,
+  Int64,
+  BorrowedHeapCharPointer,
+  JSValuePointer,
+} from "@jitl/quickjs-ffi-types"`
+
+  const usedSetters = new Set<string>()
+  const writers = OPCODE_TO_COMMAND.map((name, opcode) => {
+    const cmd = COMMANDS[name as OpName]
+    return TSFunc(name, opcode, cmd, usedSetters).code
+  })
+
+  // Emit only the setters that are actually used
+  const setterOrder = [
+    "setOpcode",
+    "setSlotA",
+    "setSlotB",
+    "setSlotC",
+    "setD1_u32",
+    "setD1_i32",
+    "setD2_u32",
+    "setD2_i32",
+    "setD3_u32",
+    "setD3_i32",
+    "setData_f64",
+    "setData_i64",
+  ]
+  const setterHelpers = setterOrder
+    .filter((name) => usedSetters.has(name))
+    .map((name) => SETTER_DEFS[name])
+    .join("\n\n")
+
+  const encoderArray = `export const OP_ENCODERS = [
+  ${OPCODE_TO_COMMAND.map((name) => `write${TsOpName(name)}`).join(",\n  ")},
+] as const`
+
+  const types = `
+type OpcodeToEncoder = typeof OP_ENCODERS
+
+type OpcodeToParams = {
+  [Op in keyof OpcodeToEncoder]: OpcodeToEncoder[Op] extends (
+    view: DataView,
+    offset: CommandPtr,
+    ...args: infer P
+  ) => void
+    ? P
+    : never
+}
+
+export type OpcodeToCommand = {
+  [Op in keyof OpcodeToParams]: { op: Op; args: OpcodeToParams[Op] }
+}
+
+export type Command = OpcodeToCommand[keyof OpcodeToCommand]
+`.trim()
+
+  return [
+    "// This file is generated by scripts/generate.ts ops - do not edit manually",
+    imports,
+    "// =============================================================================",
+    "// Setter Helpers",
+    "// =============================================================================",
+    "",
+    setterHelpers,
+    "// =============================================================================",
+    "// Writer Functions (generated)",
+    "// =============================================================================",
+    "",
+    ...writers,
+    encoderArray,
+    types,
+  ].join("\n\n")
 }
 
 if (require.main === module) {

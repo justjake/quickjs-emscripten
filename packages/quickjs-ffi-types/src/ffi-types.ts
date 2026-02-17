@@ -130,6 +130,29 @@ export type IsEqualOp = Brand<number, "IsEqualOp">
  */
 export type HostRefId = Brand<number, "HostRefId">
 
+// -----------------------------------------------------------------------------
+// Command buffer types
+// -----------------------------------------------------------------------------
+
+/** Byte offset to a command within a command buffer */
+export type CommandPtr = Brand<number, "CommandPtr">
+
+/** Index of a JSValue slot (0-255) */
+export type JSValueSlot = Brand<number, "JSValueSlot">
+
+/** Index of a FuncList slot (0-255) */
+export type FuncListSlot = Brand<number, "FuncListSlot">
+
+// -----------------------------------------------------------------------------
+// Scalar types (following TypedArray naming: Uint8, Int32, Float64, etc.)
+// -----------------------------------------------------------------------------
+
+export type Uint8 = Brand<number, "Uint8">
+export type Uint32 = Brand<number, "Uint32">
+export type Int32 = Brand<number, "Int32">
+export type Float64 = Brand<number, "Float64">
+export type Int64 = Brand<bigint, "Int64">
+
 /**
  * State of a promise.
  */
