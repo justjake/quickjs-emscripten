@@ -5,9 +5,9 @@ import * as pathlib from "path"
 import * as crypto from "crypto"
 import * as fs from "fs-extra"
 import { repoRoot } from "./helpers"
-import { COMMANDS, OPCODE_TO_COMMAND, TsOpName, type OpName } from "./idl"
+import { COMMANDS, OPCODE_TO_COMMAND, TsOpName, CFunc, type OpName } from "./idl"
 const USAGE =
-  "Usage: generate.ts [symbols | header | ffi | ops] WRITE_PATH" +
+  "Usage: generate.ts [symbols | header | ffi | ops | c-ops] WRITE_PATH" +
   "\ngenerate.ts hash READ_PATH WRITE_PATH"
 
 const rooted = (path: string) => pathlib.join(repoRoot, path)
@@ -110,6 +110,11 @@ function main() {
 
   if (command === "ops") {
     writeFile(destination, buildOps())
+    return
+  }
+
+  if (command === "c-ops") {
+    buildCOps(destination)
     return
   }
 
@@ -700,6 +705,181 @@ export type Command = OpcodeToCommand[keyof OpcodeToCommand]
     encoderArray,
     types,
   ].join("\n\n")
+}
+
+// =============================================================================
+// C Ops Generation (c-ops command)
+// =============================================================================
+
+/**
+ * Build the op.h header file containing opcode enum and command struct.
+ */
+function buildOpHeader(): string {
+  const opcodeEnumEntries = OPCODE_TO_COMMAND.map(
+    (name, index) => `    QTS_OP_${name} = ${index}`,
+  ).join(",\n")
+
+  return `// Generated - do not edit
+#ifndef QTS_OP_H
+#define QTS_OP_H
+
+#include <stdint.h>
+#include "quickjs.h"
+
+// Slot types - used for indexing into the command environment arrays
+typedef uint8_t JSValueSlot;
+typedef uint8_t FuncListSlot;
+
+typedef enum {
+${opcodeEnumEntries}
+} QTS_Opcode;
+
+typedef struct QTS_Command {
+    uint8_t opcode;
+    uint8_t slot_a;
+    uint8_t slot_b;
+    uint8_t slot_c;
+    union {
+        struct { uint32_t d1, d2, d3; } raw;
+        struct { double value; uint32_t extra; } f64;
+        struct { int64_t value; uint32_t extra; } i64;
+        struct { char *ptr; uint32_t len; uint32_t extra; } buf;
+        struct { JSValue *argv; uint32_t argc; uint32_t extra; } jsvalues;
+    } data;
+} QTS_Command;
+
+_Static_assert(sizeof(QTS_Command) == 16, "QTS_Command must be 16 bytes");
+
+typedef struct QTS_CommandEnv {
+    JSContext *ctx;
+    JSValue *jsvalue_slots;
+    uint32_t jsvalue_slots_count;
+    // TODO: funclist slots?
+    const char *error;
+} QTS_CommandEnv;
+
+typedef enum {
+    QTS_COMMAND_OK = 0,
+    QTS_COMMAND_ERROR = 1,
+} QTS_CommandStatus;
+
+#endif // QTS_OP_H
+`
+}
+
+/**
+ * Build the perform_op.h header file.
+ */
+function buildPerformOpHeader(): string {
+  return `// Generated - do not edit
+#ifndef QTS_PERFORM_OP_H
+#define QTS_PERFORM_OP_H
+
+#include "op.h"
+
+QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd);
+
+#endif // QTS_PERFORM_OP_H
+`
+}
+
+/**
+ * Build the perform_op.c dispatcher file.
+ */
+function buildPerformOpC(): string {
+  const cfuncs = OPCODE_TO_COMMAND.map((name) => CFunc(name, COMMANDS[name as OpName]))
+
+  const includes = cfuncs.map((cf) => cf.includeDirective).join("\n")
+  const switchCases = cfuncs.map((cf) => `        ${cf.switchCase}`).join("\n")
+
+  return `// Generated - do not edit
+#include "perform_op.h"
+${includes}
+
+QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd) {
+    switch (cmd.opcode) {
+${switchCases}
+        default:
+            env->error = "Unknown opcode";
+            return QTS_COMMAND_ERROR;
+    }
+}
+`
+}
+
+/**
+ * Build the util.h header file with shared utilities.
+ */
+function buildUtilHeader(): string {
+  return `// Generated - do not edit
+#ifndef QTS_UTIL_H
+#define QTS_UTIL_H
+
+#include <stdio.h>
+#include "op.h"
+
+#define QTS_UNIMPLEMENTED(env, name) do { \\
+    (env)->error = "UNIMPLEMENTED: " name; \\
+    return QTS_COMMAND_ERROR; \\
+} while(0)
+
+#endif // QTS_UTIL_H
+`
+}
+
+/**
+ * Build all C ops files in the specified output directory.
+ */
+function buildCOps(outputDir: string): void {
+  // Ensure output directory exists
+  fs.ensureDirSync(outputDir)
+
+  // 1. Generate c/op.h
+  const opHeaderPath = pathlib.join(outputDir, "op.h")
+  fs.writeFileSync(opHeaderPath, buildOpHeader())
+  console.log(`Generated ${opHeaderPath}`)
+
+  // 2. Generate c/perform_op.h
+  const performOpHeaderPath = pathlib.join(outputDir, "perform_op.h")
+  fs.writeFileSync(performOpHeaderPath, buildPerformOpHeader())
+  console.log(`Generated ${performOpHeaderPath}`)
+
+  // 3. Generate c/perform_op.c
+  const performOpCPath = pathlib.join(outputDir, "perform_op.c")
+  fs.writeFileSync(performOpCPath, buildPerformOpC())
+  console.log(`Generated ${performOpCPath}`)
+
+  // 4. Generate c/util.h
+  const utilHeaderPath = pathlib.join(outputDir, "util.h")
+  fs.writeFileSync(utilHeaderPath, buildUtilHeader())
+  console.log(`Generated ${utilHeaderPath}`)
+
+  // 5. For each op, generate .h and .c files
+  let headersGenerated = 0
+  let scaffoldsGenerated = 0
+  let scaffoldsSkipped = 0
+
+  for (const name of OPCODE_TO_COMMAND) {
+    const cf = CFunc(name, COMMANDS[name as OpName])
+
+    // Always regenerate .h
+    const headerPath = pathlib.join(outputDir, `perform_${cf.lcName}.h`)
+    fs.writeFileSync(headerPath, cf.headerContent)
+    headersGenerated++
+
+    // Only create .c if missing
+    const cPath = pathlib.join(outputDir, `perform_${cf.lcName}.c`)
+    if (!fs.existsSync(cPath)) {
+      fs.writeFileSync(cPath, cf.scaffoldContent)
+      scaffoldsGenerated++
+    } else {
+      scaffoldsSkipped++
+    }
+  }
+
+  console.log(
+    `Generated ${headersGenerated} .h files, ${scaffoldsGenerated} new .c scaffolds, ${scaffoldsSkipped} .c files already existed`,
+  )
 }
 
 if (require.main === module) {

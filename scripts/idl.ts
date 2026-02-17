@@ -107,18 +107,33 @@ export const COMMANDS = {
 
   OBJECT: {
     doc: "Create a new empty object (JS_NewObject)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the new object", usage: "out" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the new object",
+      usage: "out",
+    },
   },
 
   OBJECT_PROTO: {
     doc: "Create a new object with prototype (JS_NewObjectProto)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the new object", usage: "out" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the new object",
+      usage: "out",
+    },
     slot_b: { name: "proto", type: "JSValueSlot", doc: "Prototype object slot", usage: "in" },
   },
 
   ARRAY: {
     doc: "Create a new empty array (JS_NewArray)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the new array", usage: "out" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the new array",
+      usage: "out",
+    },
   },
 
   // ============================================================================
@@ -127,17 +142,37 @@ export const COMMANDS = {
 
   DATE: {
     doc: "Create a Date object from timestamp (JS_NewDate)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the new Date", usage: "out" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the new Date",
+      usage: "out",
+    },
     data: {
       type: "f64",
-      value: { name: "timestamp", type: "double", doc: "Unix timestamp in milliseconds", usage: "in" },
+      value: {
+        name: "timestamp",
+        type: "double",
+        doc: "Unix timestamp in milliseconds",
+        usage: "in",
+      },
     },
   },
 
   ERROR: {
     doc: "Create an Error object (JS_NewError or JS_New*Error)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the new Error", usage: "out" },
-    slot_b: { name: "error_type", type: "uint8_t", doc: "Error type enum (0=Error, 1=RangeError, etc.)", usage: "in" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the new Error",
+      usage: "out",
+    },
+    slot_b: {
+      name: "error_type",
+      type: "uint8_t",
+      doc: "Error type enum (0=Error, 1=RangeError, etc.)",
+      usage: "in",
+    },
     data: {
       type: "buf",
       ptr: { name: "message_ptr", type: "char*", doc: "Pointer to error message", usage: "in" },
@@ -147,7 +182,12 @@ export const COMMANDS = {
 
   ARRAYBUFFER: {
     doc: "Create an ArrayBuffer by copying data (JS_NewArrayBufferCopy)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the new ArrayBuffer", usage: "out" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the new ArrayBuffer",
+      usage: "out",
+    },
     data: {
       type: "buf",
       ptr: { name: "data_ptr", type: "char*", doc: "Pointer to source data", usage: "in" },
@@ -157,7 +197,12 @@ export const COMMANDS = {
 
   TYPED_ARRAY: {
     doc: "Create a TypedArray view (JS_NewTypedArray)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the new TypedArray", usage: "out" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the new TypedArray",
+      usage: "out",
+    },
     slot_b: { name: "buffer", type: "JSValueSlot", doc: "ArrayBuffer slot", usage: "in" },
     slot_c: { name: "array_type", type: "uint8_t", doc: "TypedArray type enum", usage: "in" },
     data: {
@@ -169,8 +214,18 @@ export const COMMANDS = {
 
   SYMBOL: {
     doc: "Create a Symbol (JS_NewSymbol or global symbol)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the new Symbol", usage: "out" },
-    slot_b: { name: "is_global", type: "uint8_t", doc: "1 for global symbol, 0 for local", usage: "in" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the new Symbol",
+      usage: "out",
+    },
+    slot_b: {
+      name: "is_global",
+      type: "uint8_t",
+      doc: "1 for global symbol, 0 for local",
+      usage: "in",
+    },
     data: {
       type: "buf",
       ptr: { name: "desc_ptr", type: "char*", doc: "Pointer to description string", usage: "in" },
@@ -212,14 +267,29 @@ export const COMMANDS = {
 
   FUNCTION: {
     doc: "Create a host function (QTS_NewFunction)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the function", usage: "out" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the function",
+      usage: "out",
+    },
     slot_b: { name: "length", type: "uint8_t", doc: "Function.length (arity)", usage: "in" },
-    slot_c: { name: "is_constructor", type: "uint8_t", doc: "1 if callable as constructor", usage: "in" },
+    slot_c: {
+      name: "is_constructor",
+      type: "uint8_t",
+      doc: "1 if callable as constructor",
+      usage: "in",
+    },
     data: {
       type: "buf",
       ptr: { name: "name_ptr", type: "char*", doc: "Pointer to function name", usage: "in" },
       len: { name: "name_len", type: "uint32_t", doc: "Length of function name", usage: "in" },
-      extra: { name: "host_ref_id", type: "int32_t", doc: "Host reference ID for callback", usage: "in" },
+      extra: {
+        name: "host_ref_id",
+        type: "int32_t",
+        doc: "Host reference ID for callback",
+        usage: "in",
+      },
     },
   },
 
@@ -286,7 +356,12 @@ export const COMMANDS = {
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The float64 value", usage: "in" },
-      extra: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
+      extra: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
     },
   },
 
@@ -296,7 +371,12 @@ export const COMMANDS = {
     data: {
       type: "i64",
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
-      extra: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
+      extra: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
     },
   },
 
@@ -307,7 +387,12 @@ export const COMMANDS = {
       type: "buf",
       ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
       len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
-      extra: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
+      extra: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
     },
   },
 
@@ -439,7 +524,12 @@ export const COMMANDS = {
 
   GET_GLOBAL: {
     doc: "Get the global object (JS_GetGlobalObject)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the global object", usage: "out" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the global object",
+      usage: "out",
+    },
   },
 
   // ============================================================================
@@ -483,7 +573,12 @@ export const COMMANDS = {
       type: "buf",
       ptr: { name: "name_ptr", type: "char*", doc: "Function name pointer", usage: "in" },
       len: { name: "name_len", type: "uint32_t", doc: "Function name length", usage: "in" },
-      extra: { name: "host_ref_id", type: "int32_t", doc: "Host reference ID for callback", usage: "in" },
+      extra: {
+        name: "host_ref_id",
+        type: "int32_t",
+        doc: "Host reference ID for callback",
+        usage: "in",
+      },
     },
   },
 
@@ -496,7 +591,12 @@ export const COMMANDS = {
       type: "buf",
       ptr: { name: "name_ptr", type: "char*", doc: "Function name pointer", usage: "in" },
       len: { name: "name_len", type: "uint32_t", doc: "Function name length", usage: "in" },
-      extra: { name: "host_ref_id", type: "int32_t", doc: "Host reference ID for callback", usage: "in" },
+      extra: {
+        name: "host_ref_id",
+        type: "int32_t",
+        doc: "Host reference ID for callback",
+        usage: "in",
+      },
     },
   },
 
@@ -506,9 +606,24 @@ export const COMMANDS = {
     slot_b: { name: "flags", type: "uint8_t", doc: "JS_PROP_* flags", usage: "in" },
     data: {
       type: "raw",
-      d1: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
-      d2: { name: "getter_ref", type: "int32_t", doc: "Host reference ID for getter (0 = none)", usage: "in" },
-      d3: { name: "setter_ref", type: "int32_t", doc: "Host reference ID for setter (0 = none)", usage: "in" },
+      d1: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
+      d2: {
+        name: "getter_ref",
+        type: "int32_t",
+        doc: "Host reference ID for getter (0 = none)",
+        usage: "in",
+      },
+      d3: {
+        name: "setter_ref",
+        type: "int32_t",
+        doc: "Host reference ID for setter (0 = none)",
+        usage: "in",
+      },
     },
   },
 
@@ -581,7 +696,12 @@ export const COMMANDS = {
     data: {
       type: "i64",
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
-      extra: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
+      extra: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
     },
   },
 
@@ -592,7 +712,12 @@ export const COMMANDS = {
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The float64 value", usage: "in" },
-      extra: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
+      extra: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
     },
   },
 
@@ -604,7 +729,12 @@ export const COMMANDS = {
       type: "buf",
       ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
       len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
-      extra: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
+      extra: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
     },
   },
 
@@ -627,8 +757,18 @@ export const COMMANDS = {
   DEFINE_GETSET: {
     doc: "Define property with getter/setter from slots (JS_DefinePropertyGetSet)",
     slot_a: { name: "obj", type: "JSValueSlot", doc: "Object slot", usage: "in" },
-    slot_b: { name: "getter", type: "JSValueSlot", doc: "Getter function slot (0xFF = none)", usage: "in" },
-    slot_c: { name: "setter", type: "JSValueSlot", doc: "Setter function slot (0xFF = none)", usage: "in" },
+    slot_b: {
+      name: "getter",
+      type: "JSValueSlot",
+      doc: "Getter function slot (0xFF = none)",
+      usage: "in",
+    },
+    slot_c: {
+      name: "setter",
+      type: "JSValueSlot",
+      doc: "Setter function slot (0xFF = none)",
+      usage: "in",
+    },
     data: {
       type: "buf",
       ptr: { name: "name_ptr", type: "char*", doc: "Property name pointer", usage: "in" },
@@ -671,7 +811,12 @@ export const COMMANDS = {
       type: "buf",
       ptr: { name: "code_ptr", type: "char*", doc: "Pointer to code string", usage: "in" },
       len: { name: "code_len", type: "uint32_t", doc: "Length of code in bytes", usage: "in" },
-      extra: { name: "filename_and_flags", type: "uint32_t", doc: "Packed: filename_ptr (low 16) | flags (high 16)", usage: "in" },
+      extra: {
+        name: "filename_and_flags",
+        type: "uint32_t",
+        doc: "Packed: filename_ptr (low 16) | flags (high 16)",
+        usage: "in",
+      },
     },
   },
 
@@ -686,8 +831,18 @@ export const COMMANDS = {
 
   RESOLVE_EXC: {
     doc: "Resolve exception - if maybe_exc is exception, return the exception value",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store result (exception or null)", usage: "out" },
-    slot_b: { name: "maybe_exc", type: "JSValueSlot", doc: "Value that may be an exception", usage: "in" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store result (exception or null)",
+      usage: "out",
+    },
+    slot_b: {
+      name: "maybe_exc",
+      type: "JSValueSlot",
+      doc: "Value that may be an exception",
+      usage: "in",
+    },
   },
 
   // ============================================================================
@@ -696,13 +851,23 @@ export const COMMANDS = {
 
   DUP: {
     doc: "Duplicate a value (JS_DupValue) - increment refcount",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the duplicated value", usage: "out" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the duplicated value",
+      usage: "out",
+    },
     slot_b: { name: "src", type: "JSValueSlot", doc: "Source value slot", usage: "in" },
   },
 
   FREE: {
     doc: "Free a value (JS_FreeValue) - decrement refcount",
-    slot_a: { name: "slot", type: "JSValueSlot", doc: "Slot containing value to free", usage: "in" },
+    slot_a: {
+      name: "slot",
+      type: "JSValueSlot",
+      doc: "Slot containing value to free",
+      usage: "in",
+    },
   },
 
   // ============================================================================
@@ -711,7 +876,12 @@ export const COMMANDS = {
 
   WRITE_OBJECT: {
     doc: "Serialize a value to binary (JS_WriteObject)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the ArrayBuffer result", usage: "out" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the ArrayBuffer result",
+      usage: "out",
+    },
     slot_b: { name: "val", type: "JSValueSlot", doc: "Value to serialize", usage: "in" },
     data: {
       type: "raw",
@@ -721,8 +891,18 @@ export const COMMANDS = {
 
   READ_OBJECT: {
     doc: "Deserialize a value from binary (JS_ReadObject)",
-    slot_a: { name: "result", type: "JSValueSlot", doc: "Slot to store the deserialized value", usage: "out" },
-    slot_b: { name: "data", type: "JSValueSlot", doc: "ArrayBuffer containing serialized data", usage: "in" },
+    slot_a: {
+      name: "result",
+      type: "JSValueSlot",
+      doc: "Slot to store the deserialized value",
+      usage: "out",
+    },
+    slot_b: {
+      name: "data",
+      type: "JSValueSlot",
+      doc: "ArrayBuffer containing serialized data",
+      usage: "in",
+    },
     data: {
       type: "raw",
       d1: { name: "flags", type: "uint32_t", doc: "JS_READ_OBJ_* flags", usage: "in" },
@@ -735,7 +915,12 @@ export const COMMANDS = {
 
   FUNCLIST_NEW: {
     doc: "Allocate a new JSCFunctionListEntry array",
-    slot_a: { name: "result", type: "FuncListSlot", doc: "Slot to store the funclist pointer", usage: "out" },
+    slot_a: {
+      name: "result",
+      type: "FuncListSlot",
+      doc: "Slot to store the funclist pointer",
+      usage: "out",
+    },
     data: {
       type: "raw",
       d1: { name: "count", type: "uint32_t", doc: "Number of entries to allocate", usage: "in" },
@@ -769,8 +954,18 @@ export const COMMANDS = {
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: { name: "name_ptr", type: "uint32_t", doc: "Function name pointer (null-terminated)", usage: "in" },
-      d3: { name: "host_ref_id", type: "int32_t", doc: "Host reference ID for callback", usage: "in" },
+      d2: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Function name pointer (null-terminated)",
+        usage: "in",
+      },
+      d3: {
+        name: "host_ref_id",
+        type: "int32_t",
+        doc: "Host reference ID for callback",
+        usage: "in",
+      },
     },
   },
 
@@ -782,8 +977,18 @@ export const COMMANDS = {
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: { name: "name_ptr", type: "uint32_t", doc: "Function name pointer (null-terminated)", usage: "in" },
-      d3: { name: "host_ref_id", type: "int32_t", doc: "Host reference ID for callback", usage: "in" },
+      d2: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Function name pointer (null-terminated)",
+        usage: "in",
+      },
+      d3: {
+        name: "host_ref_id",
+        type: "int32_t",
+        doc: "Host reference ID for callback",
+        usage: "in",
+      },
     },
   },
 
@@ -794,8 +999,18 @@ export const COMMANDS = {
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
-      d3: { name: "getter_setter_packed", type: "uint32_t", doc: "Packed: getter_ref (low 16) | setter_ref (high 16)", usage: "in" },
+      d2: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
+      d3: {
+        name: "getter_setter_packed",
+        type: "uint32_t",
+        doc: "Packed: getter_ref (low 16) | setter_ref (high 16)",
+        usage: "in",
+      },
     },
   },
 
@@ -807,8 +1022,18 @@ export const COMMANDS = {
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
-      d3: { name: "getter_setter_packed", type: "uint32_t", doc: "Packed: getter_ref (low 16) | setter_ref (high 16)", usage: "in" },
+      d2: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
+      d3: {
+        name: "getter_setter_packed",
+        type: "uint32_t",
+        doc: "Packed: getter_ref (low 16) | setter_ref (high 16)",
+        usage: "in",
+      },
     },
   },
 
@@ -819,8 +1044,18 @@ export const COMMANDS = {
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
-      d3: { name: "val_ptr", type: "uint32_t", doc: "String value pointer (null-terminated)", usage: "in" },
+      d2: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
+      d3: {
+        name: "val_ptr",
+        type: "uint32_t",
+        doc: "String value pointer (null-terminated)",
+        usage: "in",
+      },
     },
   },
 
@@ -831,7 +1066,12 @@ export const COMMANDS = {
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
+      d2: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
       d3: { name: "int_val", type: "int32_t", doc: "The int32 value", usage: "in" },
     },
   },
@@ -844,7 +1084,12 @@ export const COMMANDS = {
     data: {
       type: "i64",
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
-      extra: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
+      extra: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
     },
   },
 
@@ -856,7 +1101,12 @@ export const COMMANDS = {
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The double value", usage: "in" },
-      extra: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
+      extra: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
     },
   },
 
@@ -867,7 +1117,12 @@ export const COMMANDS = {
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
+      d2: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
     },
   },
 
@@ -878,8 +1133,18 @@ export const COMMANDS = {
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
-      d3: { name: "from_ptr", type: "uint32_t", doc: "Source property name pointer (null-terminated)", usage: "in" },
+      d2: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
+      d3: {
+        name: "from_ptr",
+        type: "uint32_t",
+        doc: "Source property name pointer (null-terminated)",
+        usage: "in",
+      },
     },
   },
 
@@ -890,8 +1155,18 @@ export const COMMANDS = {
     data: {
       type: "raw",
       d1: { name: "index", type: "uint32_t", doc: "Entry index in funclist", usage: "in" },
-      d2: { name: "name_ptr", type: "uint32_t", doc: "Property name pointer (null-terminated)", usage: "in" },
-      d3: { name: "nested_packed", type: "uint32_t", doc: "Packed: nested_list_ptr (low 16) | count (high 16)", usage: "in" },
+      d2: {
+        name: "name_ptr",
+        type: "uint32_t",
+        doc: "Property name pointer (null-terminated)",
+        usage: "in",
+      },
+      d3: {
+        name: "nested_packed",
+        type: "uint32_t",
+        doc: "Packed: nested_list_ptr (low 16) | count (high 16)",
+        usage: "in",
+      },
     },
   },
 } as const satisfies Record<string, CommandDef>
@@ -912,8 +1187,9 @@ function COpName(name: OpName | string) {
 }
 
 export function CFunc(name: string, command: CommandDef) {
-  const functionName = `perform_${name}` as const
-  const returnType = `qts_status` as const
+  const lcName = lowercase_c_name(name)
+  const functionName = `perform_${lcName}` as const
+  const returnType = `QTS_CommandStatus` as const
   const params: Record<string, ParamDef & { path?: string[] }> = {
     /**
      * ```
@@ -923,6 +1199,7 @@ export function CFunc(name: string, command: CommandDef) {
      * } QTS_FuncList;
      *
      * typedef struct QTS_CommandEnv {
+     *   JSContext *ctx;
      *   JSValue *jsvalue_slots;
      *   uint32_t jsvalue_slots_count;
      *
@@ -934,7 +1211,7 @@ export function CFunc(name: string, command: CommandDef) {
     env: {
       doc: "Command execution environment",
       name: "env",
-      type: "qts_command_env",
+      type: "QTS_CommandEnv*",
       usage: "in-out",
     },
   }
@@ -984,6 +1261,7 @@ export function CFunc(name: string, command: CommandDef) {
   const callParams = Object.values(params)
     .map((param) => {
       if (param.path) {
+        // cmd is passed by value, use . for all access
         return param.path.join(".")
       }
       return param.name
@@ -993,13 +1271,42 @@ export function CFunc(name: string, command: CommandDef) {
   const opcodeName = COpName(name)
   const switchCase = `case ${opcodeName}: return ${functionName}(${callParams});`
 
+  // Generate header file content
+  const headerGuard = `QTS_PERFORM_${name}_H`
+  const headerContent = `// Generated - do not edit
+#ifndef ${headerGuard}
+#define ${headerGuard}
+
+#include "op.h"
+
+${signature};
+
+#endif // ${headerGuard}
+`
+
+  // Generate scaffold .c file content
+  const scaffoldContent = `#include "perform_${lcName}.h"
+#include "util.h"
+
+${signature} {
+    QTS_UNIMPLEMENTED(env, "${functionName}");
+}
+`
+
+  // Include directive for perform_op.c
+  const includeDirective = `#include "perform_${lcName}.h"`
+
   return {
     functionName,
+    lcName,
     signature,
     switchCase,
     opcodeName,
     params,
     returnType,
+    headerContent,
+    scaffoldContent,
+    includeDirective,
     toString: () => `CFunc(${signature}) { ${switchCase} }`,
   } as const
 }
@@ -1017,4 +1324,15 @@ export function TsOpName(name: OpName | string): string {
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join("")
+}
+
+/**
+ * Convert C op name (SCREAMING_SNAKE_CASE) to lowercase_snake_case for C function names.
+ * Examples:
+ * - "OBJECT" → "object"
+ * - "SET_STR_INT32" → "set_str_int32"
+ * - "FUNCLIST_CFUNC_CTOR" → "funclist_cfunc_ctor"
+ */
+export function lowercase_c_name(name: OpName | string): string {
+  return name.toLowerCase()
 }
