@@ -31,6 +31,15 @@ typedef struct QTS_Command {
 } QTS_Command;
 
 /**
+ * A funclist is a dynamically allocated JSCFunctionListEntry array.
+ * Used for bulk-defining properties on objects with JS_SetPropertyFunctionList.
+ */
+typedef struct QTS_FuncList {
+    JSCFunctionListEntry *entries;
+    uint32_t count;
+} QTS_FuncList;
+
+/**
  * Environment for command execution.
  * Provides context and slot arrays for the command interpreter.
  */
@@ -38,7 +47,8 @@ typedef struct QTS_CommandEnv {
     JSContext *ctx;
     JSValue *jsvalue_slots;
     uint32_t jsvalue_slots_count;
-    // TODO: funclist slots?
+    QTS_FuncList *funclist_slots;
+    uint32_t funclist_slots_count;
     const char *error;
 } QTS_CommandEnv;
 

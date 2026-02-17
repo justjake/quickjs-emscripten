@@ -105,4 +105,35 @@ void qts_log(char *msg);
  */
 void qts_dump(JSContext *ctx, JSValueConst value);
 
+// ----------------------------------------------------------------------------
+// Funclist callback trampolines
+// These functions are used as callbacks in JSCFunctionListEntry entries.
+// They use the magic field to store the host_ref_id and call back to the host.
+// Declared here, defined in interface.c where qts_host_call_function is available.
+// ----------------------------------------------------------------------------
+
+/**
+ * Trampoline for JS_DEF_CFUNC entries using generic_magic.
+ * The magic parameter is used as the host_ref_id.
+ */
+JSValue qts_funclist_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic);
+
+/**
+ * Trampoline for JS_DEF_CFUNC constructor entries using constructor_magic.
+ * The magic parameter is used as the host_ref_id.
+ */
+JSValue qts_funclist_call_constructor(JSContext *ctx, JSValueConst new_target, int argc, JSValueConst *argv, int magic);
+
+/**
+ * Trampoline for getter in JS_DEF_CGETSET_MAGIC entries.
+ * The magic parameter is used as the host_ref_id for the getter.
+ */
+JSValue qts_funclist_getter(JSContext *ctx, JSValueConst this_val, int magic);
+
+/**
+ * Trampoline for setter in JS_DEF_CGETSET_MAGIC entries.
+ * The magic parameter is used as the host_ref_id for the setter.
+ */
+JSValue qts_funclist_setter(JSContext *ctx, JSValueConst this_val, JSValueConst val, int magic);
+
 #endif // QTS_UTILS_H

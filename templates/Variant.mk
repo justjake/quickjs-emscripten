@@ -36,8 +36,9 @@ else
 endif
 VARIANT_QUICKJS_OBJS=$(patsubst %.o, $(BUILD_QUICKJS)/%.o, $(QUICKJS_OBJS))
 
-# quickjs-emscripten wrapper source files
-WRAPPER_OBJS=interface.o qts_utils.o
+# quickjs-emscripten wrapper source files (auto-detect all .c files in c/)
+WRAPPER_SRCS=$(wildcard $(WRAPPER_ROOT)/*.c)
+WRAPPER_OBJS=$(notdir $(WRAPPER_SRCS:.c=.o))
 VARIANT_WRAPPER_OBJS=$(patsubst %.o, $(BUILD_WRAPPER)/%.o, $(WRAPPER_OBJS))
 
 # quickjs-emscripten
@@ -160,9 +161,12 @@ $(BUILD_WRAPPER)/%/emscripten-module.js: $(VARIANT_WRAPPER_OBJS) $(VARIANT_QUICK
 ###############################################################################
 # Emscripten intermediate files
 WASM_SYMBOLS=$(BUILD_WRAPPER)/symbols.json $(BUILD_WRAPPER)/asyncify-remove.json $(BUILD_WRAPPER)/asyncify-imports.json
+
+# -MMD -MP generates .d dependency files listing headers each .c file includes
+# These are included at the bottom of this Makefile
 $(BUILD_WRAPPER)/%.o: $(WRAPPER_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
-	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) -c -o $@ $<
+	$(EMCC) $(CFLAGS_WASM) $(WRAPPER_DEFINES) -MMD -MP -c -o $@ $<
 
 $(BUILD_QUICKJS)/%.o: $(QUICKJS_ROOT)/%.c $(WASM_SYMBOLS) | $(EMCC_SRC)
 	$(MKDIRP)
@@ -179,3 +183,8 @@ $(BUILD_WRAPPER)/asyncify-remove.json:
 $(BUILD_WRAPPER)/asyncify-imports.json:
 	$(MKDIRP)
 	$(GENERATE_TS) async-callback-symbols $@
+
+###############################################################################
+# Include generated dependency files (lists headers each .c includes)
+# The - prefix means "don't error if missing" (first build won't have them)
+-include $(VARIANT_WRAPPER_OBJS:.o=.d)
