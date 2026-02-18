@@ -8,5 +8,6 @@
  * @param data_len Length of data in bytes
  */
 QTS_CommandStatus perform_new_arraybuffer(QTS_CommandEnv *env, JSValueSlot result_slot, char *data_ptr, uint32_t data_len) {
-    OP_UNIMPLEMENTED(env, "perform_new_arraybuffer");
+    OP_SET_JSVALUE(env, result_slot, JS_NewArrayBufferCopy(env->ctx, (uint8_t *)data_ptr, data_len));
+    return QTS_COMMAND_OK;
 }

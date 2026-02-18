@@ -7,5 +7,6 @@
  * @param timestamp Unix timestamp in milliseconds, eg from Date.now()
  */
 QTS_CommandStatus perform_new_date(QTS_CommandEnv *env, JSValueSlot result_slot, double timestamp) {
-    OP_UNIMPLEMENTED(env, "perform_new_date");
+    OP_SET_JSVALUE(env, result_slot, JS_NewDate(env->ctx, timestamp));
+    return QTS_COMMAND_OK;
 }
