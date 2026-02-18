@@ -1465,7 +1465,15 @@ static JSValue command_jsvalue_slots[QTS_SLOT_COUNT];
 static QTS_FuncList command_funclist_slots[QTS_SLOT_COUNT];
 static QTS_Command command_buffer[QTS_SLOT_COUNT];
 
-QTS_CommandStatus QTS_ExecuteCommands(JSContext *ctx, uint32_t argc, QTS_Command *argv) {
+/**
+ * @brief Execute N commands.
+ *
+ * @param ctx JSContext to execute commands in.
+ * @param argc Number of commands to execute.
+ * @param argv Command buffer to execute.
+ * @return int The number of commands successfully executed. If retval != argc, an error occurred.
+ */
+int QTS_ExecuteCommands(JSContext *ctx, uint32_t argc, QTS_Command *argv) {
   QTS_CommandEnv env = {
     .ctx = ctx,
     .jsvalue_slots = command_jsvalue_slots,
@@ -1474,16 +1482,17 @@ QTS_CommandStatus QTS_ExecuteCommands(JSContext *ctx, uint32_t argc, QTS_Command
     .funclist_slots_count = QTS_SLOT_COUNT,
     .error = NULL,
   };
-  QTS_CommandStatus status = QTS_COMMAND_OK;
+  int successful_count = 0;
 
   for (uint32_t i = 0; i < argc; i++) {
     if (QTS_PerformOp(&env, argv[i]) != QTS_COMMAND_OK) {
-      QTS_DEBUG(env.error);
-      return status;
+      qts_log(env.error);
+      break;
     }
+    successful_count++;
   }
 
-  return QTS_COMMAND_OK;
+  return successful_count;
 }
 
 QTS_Command *QTS_GetCommandBuffer() {
