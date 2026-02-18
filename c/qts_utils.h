@@ -24,6 +24,36 @@
 
 typedef uint8_t JSPropFlags;   /** JS_PROP_* flags */
 typedef int32_t HostRefId;     /** Host callback reference ID */
+typedef uint8_t SetPropFlags;  /** Property flags for set/define operations */
+
+/**
+ * SetPropFlags bit layout:
+ * Bit 0: CONFIGURABLE (0b00001) - matches JS_PROP_CONFIGURABLE
+ * Bit 1: WRITABLE     (0b00010) - matches JS_PROP_WRITABLE
+ * Bit 2: ENUMERABLE   (0b00100) - matches JS_PROP_ENUMERABLE
+ * Bit 3: DEFINE       (0b01000) - force define behavior
+ * Bit 4: THROW        (0b10000) - maps to JS_PROP_THROW (bit 14)
+ *
+ * Behavior:
+ * - If DEFINE bit is set OR any of W/C/E are set -> use JS_DefinePropertyValue
+ * - If all bits are 0 -> use JS_SetProperty (assignment semantics)
+ * - If THROW bit is set -> add JS_PROP_THROW to QuickJS flags (throw on failure)
+ */
+#define QTS_SET_CONFIGURABLE  (1 << 0)  // == JS_PROP_CONFIGURABLE
+#define QTS_SET_WRITABLE      (1 << 1)  // == JS_PROP_WRITABLE
+#define QTS_SET_ENUMERABLE    (1 << 2)  // == JS_PROP_ENUMERABLE
+#define QTS_SET_DEFINE        (1 << 3)  // Force define behavior
+#define QTS_SET_THROW         (1 << 4)  // Throw on failure (maps to JS_PROP_THROW)
+
+/** Check if we should use define vs set semantics */
+#define QTS_SHOULD_DEFINE(flags) ((flags) & (QTS_SET_DEFINE | 0x07))
+
+/**
+ * Convert SetPropFlags to JS_PROP_* flags for QuickJS API.
+ * Lower 3 bits pass through, bit 4 maps to JS_PROP_THROW (bit 14).
+ */
+#define QTS_TO_JS_PROP_FLAGS(flags) \
+    (((flags) & 0x07) | (((flags) & QTS_SET_THROW) ? JS_PROP_THROW : 0))
 
 typedef uint8_t JSValueSlot;   /** Slot (index) of a JSValue in a command environment */
 typedef uint8_t FuncListSlot;  /** Slot (index) of a FuncList in a command environment */
@@ -170,5 +200,43 @@ JSValue qts_funclist_getter(JSContext *ctx, JSValueConst this_val, int magic);
  * The magic parameter is used as the host_ref_id for the setter.
  */
 JSValue qts_funclist_setter(JSContext *ctx, JSValueConst this_val, JSValueConst val, int magic);
+
+// ----------------------------------------------------------------------------
+// Property set/define helpers
+// ----------------------------------------------------------------------------
+
+/**
+ * Set or define a property by atom, depending on flags.
+ * If QTS_SHOULD_DEFINE(flags), uses JS_DefinePropertyValue (define semantics).
+ * Otherwise, uses JS_SetProperty (assignment semantics).
+ *
+ * IMPORTANT: This function CONSUMES the value (takes ownership).
+ * Do NOT call JS_FreeValue on value after calling this function.
+ *
+ * @param ctx JSContext
+ * @param target Target object
+ * @param atom Property atom (caller must free)
+ * @param value Value to set (consumed)
+ * @param flags SetPropFlags controlling behavior
+ * @return 0 on success, -1 on exception
+ */
+int qts_set_or_define_prop_atom(JSContext *ctx, JSValue target, JSAtom atom, JSValue value, SetPropFlags flags);
+
+/**
+ * Set or define a property by uint32 index, depending on flags.
+ * If QTS_SHOULD_DEFINE(flags), uses JS_DefinePropertyValueUint32 (define semantics).
+ * Otherwise, uses JS_SetPropertyUint32 (assignment semantics).
+ *
+ * IMPORTANT: This function CONSUMES the value (takes ownership).
+ * Do NOT call JS_FreeValue on value after calling this function.
+ *
+ * @param ctx JSContext
+ * @param target Target object
+ * @param index Property index
+ * @param value Value to set (consumed)
+ * @param flags SetPropFlags controlling behavior
+ * @return 0 on success, -1 on exception
+ */
+int qts_set_or_define_prop_uint32(JSContext *ctx, JSValue target, uint32_t index, JSValue value, SetPropFlags flags);
 
 #endif // QTS_UTILS_H

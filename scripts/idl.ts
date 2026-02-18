@@ -40,6 +40,8 @@ export type ParamDef<T extends string = string> = {
 
 /**
  * Type aliases for uint8_t; any type that fits in 8 bits.
+ * These strings are the *c* types.
+ * The TypeScript types are defined in ffi-types.ts
  *
  * Add more types as needed.
  */
@@ -48,6 +50,7 @@ type UInt8Types =
   | "JSValueSlot"
   | "FuncListSlot"
   | "JSPropFlags"
+  | "SetPropFlags"
   | "EvalFlags"
   | "NewErrorFlags"
   | "NewTypedArrayFlags"
@@ -55,6 +58,8 @@ type UInt8Types =
 /**
  * Type aliases for uint32_t; any type that fits in 32 bits.
  * Includes pointer types since wasm32 pointers are 32-bit.
+ * These strings are the *c* types.
+ * The TypeScript types are defined in ffi-types.ts
  *
  * Add more types as needed.
  */
@@ -66,6 +71,7 @@ type UInt32Types =
   | "Uint16Pair"
   | "JSCFunctionType*"
   | "JSPropFlags"
+  | "SetPropFlags"
   | "JSValue*"
 
 type CommandDataRawDef = {
@@ -186,6 +192,13 @@ const PROP_FLAGS = {
   type: "JSPropFlags",
   usage: "in",
 } as const satisfies ParamDef<"JSPropFlags">
+
+const SET_PROP_FLAGS = {
+  doc: "SetPropFlags: property flags controlling set vs define behavior",
+  name: "flags",
+  type: "SetPropFlags",
+  usage: "in",
+} as const satisfies ParamDef<"SetPropFlags">
 
 const BOOL_VAL_SLOT = {
   doc: "Boolean value (0 or 1)",
@@ -431,21 +444,21 @@ export const COMMANDS = {
     doc: "Set property by string key to JSValue from slot (JS_SetPropertyStr)",
     slot_a: TARGET_JSVALUE_SLOT,
     slot_b: VALUE_JSVALUE_SLOT,
-    slot_c: PROP_FLAGS,
+    slot_c: SET_PROP_FLAGS,
     data: PROP_KEY_DATA,
   },
 
   SET_STR_NULL: {
     doc: "Set property by string key to null",
     slot_a: TARGET_JSVALUE_SLOT,
-    slot_c: PROP_FLAGS,
+    slot_c: SET_PROP_FLAGS,
     data: PROP_KEY_DATA,
   },
 
   SET_STR_UNDEF: {
     doc: "Set property by string key to undefined",
     slot_a: TARGET_JSVALUE_SLOT,
-    slot_c: PROP_FLAGS,
+    slot_c: SET_PROP_FLAGS,
     data: PROP_KEY_DATA,
   },
 
@@ -453,14 +466,14 @@ export const COMMANDS = {
     doc: "Set property by string key to boolean",
     slot_a: TARGET_JSVALUE_SLOT,
     slot_b: BOOL_VAL_SLOT,
-    slot_c: PROP_FLAGS,
+    slot_c: SET_PROP_FLAGS,
     data: PROP_KEY_DATA,
   },
 
   SET_STR_INT32: {
     doc: "Set property by string key to int32",
     slot_a: TARGET_JSVALUE_SLOT,
-    slot_c: PROP_FLAGS,
+    slot_c: SET_PROP_FLAGS,
     data: {
       ...PROP_KEY_DATA,
       extra: { name: "int_val", type: "int32_t", doc: "The int32 value", usage: "in" },
@@ -471,7 +484,7 @@ export const COMMANDS = {
     doc: "Set property by string key to float64",
     slot_a: TARGET_JSVALUE_SLOT,
     slot_b: PROP_MAYBE_NAME_LEN_SLOT,
-    slot_c: PROP_FLAGS,
+    slot_c: SET_PROP_FLAGS,
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The float64 value", usage: "in" },
@@ -483,7 +496,7 @@ export const COMMANDS = {
     doc: "Set property by string key to BigInt",
     slot_a: TARGET_JSVALUE_SLOT,
     slot_b: PROP_MAYBE_NAME_LEN_SLOT,
-    slot_c: PROP_FLAGS,
+    slot_c: SET_PROP_FLAGS,
     data: {
       type: "i64",
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
@@ -495,7 +508,7 @@ export const COMMANDS = {
     doc: "Set property by string key to string value",
     slot_a: { name: "target_slot", type: "JSValueSlot", doc: "Object slot", usage: "in" },
     slot_b: PROP_MAYBE_NAME_LEN_SLOT,
-    slot_c: PROP_FLAGS,
+    slot_c: SET_PROP_FLAGS,
     data: {
       type: "buf",
       ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
@@ -512,18 +525,21 @@ export const COMMANDS = {
     doc: "Set array element by index to JSValue from slot (JS_SetPropertyUint32)",
     slot_a: TARGET_JSVALUE_SLOT,
     slot_b: VALUE_JSVALUE_SLOT,
+    slot_c: SET_PROP_FLAGS,
     data: ARRAY_INDEX_DATA,
   },
 
   SET_IDX_NULL: {
     doc: "Set array element by index to null",
     slot_a: TARGET_JSVALUE_SLOT,
+    slot_c: SET_PROP_FLAGS,
     data: ARRAY_INDEX_DATA,
   },
 
   SET_IDX_UNDEF: {
     doc: "Set array element by index to undefined",
     slot_a: TARGET_JSVALUE_SLOT,
+    slot_c: SET_PROP_FLAGS,
     data: ARRAY_INDEX_DATA,
   },
 
@@ -531,12 +547,14 @@ export const COMMANDS = {
     doc: "Set array element by index to boolean",
     slot_a: TARGET_JSVALUE_SLOT,
     slot_b: BOOL_VAL_SLOT,
+    slot_c: SET_PROP_FLAGS,
     data: ARRAY_INDEX_DATA,
   },
 
   SET_IDX_INT32: {
     doc: "Set array element by index to int32",
     slot_a: TARGET_JSVALUE_SLOT,
+    slot_c: SET_PROP_FLAGS,
     data: {
       ...ARRAY_INDEX_DATA,
       d2: { name: "int_val", type: "int32_t", doc: "The int32 value", usage: "in" },
@@ -546,6 +564,7 @@ export const COMMANDS = {
   SET_IDX_F64: {
     doc: "Set array element by index to float64",
     slot_a: TARGET_JSVALUE_SLOT,
+    slot_c: SET_PROP_FLAGS,
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The float64 value", usage: "in" },
@@ -556,6 +575,7 @@ export const COMMANDS = {
   SET_IDX_BIGINT: {
     doc: "Set array element by index to BigInt",
     slot_a: TARGET_JSVALUE_SLOT,
+    slot_c: SET_PROP_FLAGS,
     data: {
       type: "i64",
       value: { name: "i64_val", type: "int64_t", doc: "The int64 value", usage: "in" },
@@ -566,6 +586,7 @@ export const COMMANDS = {
   SET_IDX_STRING: {
     doc: "Set array element by index to string",
     slot_a: TARGET_JSVALUE_SLOT,
+    slot_c: SET_PROP_FLAGS,
     data: {
       type: "buf",
       ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
@@ -585,7 +606,12 @@ export const COMMANDS = {
     slot_c: VALUE_JSVALUE_SLOT,
     data: {
       type: "raw",
-      d1: PROP_FLAGS,
+      d1: {
+        doc: "SetPropFlags: property flags controlling set vs define behavior",
+        name: "flags",
+        type: "SetPropFlags",
+        usage: "in",
+      },
     },
   },
 

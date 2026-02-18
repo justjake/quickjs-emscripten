@@ -142,6 +142,42 @@ export type NewErrorFlags = Brand<number, "NewErrorFlags">
  */
 export type NewTypedArrayFlags = Brand<number, "NewTypedArrayFlags">
 
+/**
+ * Flags controlling set vs define property behavior.
+ *
+ * Bit layout:
+ * - Bit 0: CONFIGURABLE (matches JS_PROP_CONFIGURABLE)
+ * - Bit 1: WRITABLE (matches JS_PROP_WRITABLE)
+ * - Bit 2: ENUMERABLE (matches JS_PROP_ENUMERABLE)
+ * - Bit 3: DEFINE (force define behavior)
+ * - Bit 4: THROW (throw on failure)
+ *
+ * Behavior:
+ * - If DEFINE bit is set OR any of W/C/E are set -> use Object.defineProperty semantics
+ * - If all bits are 0 -> use assignment semantics (target[key] = value)
+ * - If THROW bit is set -> throw on failure instead of returning false
+ *
+ * @private
+ */
+export type SetPropFlags = Brand<number, "SetPropFlags">
+
+/**
+ * Constants for SetPropFlags.
+ * @private
+ */
+export const SetPropFlags = {
+  /** Property is configurable (can be deleted, attributes can change) */
+  CONFIGURABLE: 0b00001 as SetPropFlags,
+  /** Property is writable */
+  WRITABLE: 0b00010 as SetPropFlags,
+  /** Property is enumerable (shows up in for..in) */
+  ENUMERABLE: 0b00100 as SetPropFlags,
+  /** Force define behavior even without other flags */
+  DEFINE: 0b01000 as SetPropFlags,
+  /** Throw on failure instead of returning false */
+  THROW: 0b10000 as SetPropFlags,
+} as const
+
 // -----------------------------------------------------------------------------
 // Command buffer types
 // -----------------------------------------------------------------------------

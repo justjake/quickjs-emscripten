@@ -139,3 +139,25 @@ JSValue new_host_ref(JSContext *ctx, int32_t id) {
 JSClassID qts_get_host_ref_class_id(void) {
   return host_ref_class_id;
 }
+
+// ----------------------------------------------------------------------------
+// Property set/define helpers
+// ----------------------------------------------------------------------------
+
+int qts_set_or_define_prop_atom(JSContext *ctx, JSValue target, JSAtom atom, JSValue value, SetPropFlags flags) {
+  if (QTS_SHOULD_DEFINE(flags)) {
+    int js_flags = QTS_TO_JS_PROP_FLAGS(flags);
+    return JS_DefinePropertyValue(ctx, target, atom, value, js_flags);
+  } else {
+    return JS_SetProperty(ctx, target, atom, value);
+  }
+}
+
+int qts_set_or_define_prop_uint32(JSContext *ctx, JSValue target, uint32_t index, JSValue value, SetPropFlags flags) {
+  if (QTS_SHOULD_DEFINE(flags)) {
+    int js_flags = QTS_TO_JS_PROP_FLAGS(flags);
+    return JS_DefinePropertyValueUint32(ctx, target, index, value, js_flags);
+  } else {
+    return JS_SetPropertyUint32(ctx, target, index, value);
+  }
+}

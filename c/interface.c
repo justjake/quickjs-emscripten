@@ -63,9 +63,14 @@ void js_std_dump_error(JSContext *ctx);
 #include "../vendor/quickjs/cutils.h"
 #include "../vendor/quickjs/quickjs-libc.h"
 #include "../vendor/quickjs/quickjs.h"
+
 // bellard/quickjs JS_IsBigInt takes 2 arguments
 #define QTS_JS_IsBigInt(ctx, v) JS_IsBigInt(ctx, v)
 #endif
+
+// Command buffer system - shared by both quickjs variants
+#include "command.h"
+#include "perform_op.h"
 
 #define PKG "quickjs-emscripten: "
 #define LOG_LEN 500
@@ -1449,4 +1454,42 @@ JSValue *QTS_bjson_decode(JSContext *ctx, JSValueConst *data) {
 
   JSValue value = JS_ReadObject(ctx, buffer, length, 0);
   return jsvalue_to_heap(value);
+}
+
+// ----------------------------------------------------------------------------
+// Command execution
+// ----------------------------------------------------------------------------
+
+#define QTS_SLOT_COUNT 256
+static JSValue command_jsvalue_slots[QTS_SLOT_COUNT];
+static QTS_FuncList command_funclist_slots[QTS_SLOT_COUNT];
+static QTS_Command command_buffer[QTS_SLOT_COUNT];
+
+QTS_CommandStatus QTS_ExecuteCommands(JSContext *ctx, uint32_t argc, QTS_Command *argv) {
+  QTS_CommandEnv env = {
+    .ctx = ctx,
+    .jsvalue_slots = command_jsvalue_slots,
+    .jsvalue_slots_count = QTS_SLOT_COUNT,
+    .funclist_slots = command_funclist_slots,
+    .funclist_slots_count = QTS_SLOT_COUNT,
+    .error = NULL,
+  };
+  QTS_CommandStatus status = QTS_COMMAND_OK;
+
+  for (uint32_t i = 0; i < argc; i++) {
+    if (QTS_PerformOp(&env, argv[i]) != QTS_COMMAND_OK) {
+      QTS_DEBUG(env.error);
+      return status;
+    }
+  }
+
+  return QTS_COMMAND_OK;
+}
+
+QTS_Command *QTS_GetCommandBuffer() {
+  return command_buffer;
+}
+
+int QTS_GetCommandBufferLength() {
+  return QTS_SLOT_COUNT;
 }

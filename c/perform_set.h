@@ -10,8 +10,8 @@
  * @param target_slot Target object to modify
  * @param key_slot slot containing property key
  * @param value_slot slot containing value
- * @param flags JS_PROP_* property flags
+ * @param flags SetPropFlags: property flags controlling set vs define behavior
  */
-QTS_CommandStatus perform_set(QTS_CommandEnv *env, JSValueSlot target_slot, JSValueSlot key_slot, JSValueSlot value_slot, JSPropFlags flags);
+QTS_CommandStatus perform_set(QTS_CommandEnv *env, JSValueSlot target_slot, JSValueSlot key_slot, JSValueSlot value_slot, SetPropFlags flags);
 
 #endif // QTS_PERFORM_SET_H
