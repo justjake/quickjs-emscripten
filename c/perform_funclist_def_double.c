@@ -14,5 +14,11 @@
  * @param key_ptr Property name/key string; must be null-terminated if maybe_name_len is not set
  */
 QTS_CommandStatus perform_funclist_def_double(QTS_CommandEnv *env, FuncListSlot target_funclist_slot, uint8_t index, JSPropFlags flags, double f64_val, char *key_ptr) {
-    OP_UNIMPLEMENTED(env, "perform_funclist_def_double");
+    QTS_FuncList *funclist = OP_GET_FUNCLIST(env, target_funclist_slot, "funclist_def_double");
+    OP_ERROR_IF(env, index >= funclist->count, "funclist_def_double: index out of range");
+
+    // Use JS_PROP_DOUBLE_DEF macro
+    funclist->entries[index] = (JSCFunctionListEntry)JS_PROP_DOUBLE_DEF(key_ptr, f64_val, flags);
+
+    return QTS_COMMAND_OK;
 }

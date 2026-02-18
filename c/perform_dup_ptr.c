@@ -11,5 +11,7 @@
  * @param value_ptr Pointer to value to duplicate
  */
 QTS_CommandStatus perform_dup_ptr(QTS_CommandEnv *env, JSValueSlot result_slot, JSValue *value_ptr) {
-    OP_UNIMPLEMENTED(env, "perform_dup_ptr");
+    OP_ERROR_IF(env, !value_ptr, "dup_ptr: null pointer");
+    OP_SET_JSVALUE(env, result_slot, JS_DupValue(env->ctx, *value_ptr));
+    return QTS_COMMAND_OK;
 }

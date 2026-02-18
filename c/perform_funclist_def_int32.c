@@ -15,5 +15,11 @@
  * @param key_ptr Property name/key string; must be null-terminated if maybe_name_len is not set
  */
 QTS_CommandStatus perform_funclist_def_int32(QTS_CommandEnv *env, FuncListSlot target_funclist_slot, uint8_t maybe_key_len, JSPropFlags flags, uint32_t index, int32_t int_val, char *key_ptr) {
-    OP_UNIMPLEMENTED(env, "perform_funclist_def_int32");
+    QTS_FuncList *funclist = OP_GET_FUNCLIST(env, target_funclist_slot, "funclist_def_int32");
+    OP_ERROR_IF(env, index >= funclist->count, "funclist_def_int32: index out of range");
+
+    // Use JS_PROP_INT32_DEF macro
+    funclist->entries[index] = (JSCFunctionListEntry)JS_PROP_INT32_DEF(key_ptr, int_val, flags);
+
+    return QTS_COMMAND_OK;
 }

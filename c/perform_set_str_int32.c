@@ -10,5 +10,13 @@
  * @param int_val The int32 value
  */
 QTS_CommandStatus perform_set_str_int32(QTS_CommandEnv *env, JSValueSlot target_slot, JSPropFlags flags, char *key_ptr, uint32_t key_len, int32_t int_val) {
-    OP_UNIMPLEMENTED(env, "perform_set_str_int32");
+    JSValue target = OP_GET_JSVALUE(env, target_slot, "set_str_int32: target");
+
+    JSAtom key_atom = JS_NewAtomLen(env->ctx, key_ptr, key_len);
+    OP_ERROR_IF(env, key_atom == JS_ATOM_NULL, "set_str_int32: failed to create key atom");
+
+    int ret = JS_DefinePropertyValue(env->ctx, target, key_atom, JS_NewInt32(env->ctx, int_val), flags);
+    JS_FreeAtom(env->ctx, key_atom);
+    OP_ERROR_IF(env, ret < 0, "set_str_int32: exception");
+    return QTS_COMMAND_OK;
 }

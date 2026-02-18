@@ -13,5 +13,19 @@
  * @param key_len Property name/key length
  */
 QTS_CommandStatus perform_global_set_str(QTS_CommandEnv *env, JSValueSlot value_slot, JSPropFlags flags, char *key_ptr, uint32_t key_len) {
-    OP_UNIMPLEMENTED(env, "perform_global_set_str");
+    JSValue value = OP_GET_JSVALUE(env, value_slot, "global_set_str: value");
+    JSValue global = JS_GetGlobalObject(env->ctx);
+    JSAtom key_atom = JS_NewAtomLen(env->ctx, key_ptr, key_len);
+    if (key_atom == JS_ATOM_NULL) {
+        JS_FreeValue(env->ctx, global);
+        OP_ERROR(env, "global_set_str: failed to create key atom");
+    }
+
+    // JS_DefinePropertyValue consumes the value, so we need to dup it
+    int ret = JS_DefinePropertyValue(env->ctx, global, key_atom, JS_DupValue(env->ctx, value), flags);
+    JS_FreeAtom(env->ctx, key_atom);
+    JS_FreeValue(env->ctx, global);
+
+    OP_ERROR_IF(env, ret < 0, "global_set_str: exception");
+    return QTS_COMMAND_OK;
 }

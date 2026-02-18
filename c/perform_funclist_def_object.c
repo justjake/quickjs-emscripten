@@ -15,5 +15,17 @@
  * @param index Index to set in the target funclist (uint32_t)
  */
 QTS_CommandStatus perform_funclist_def_object(QTS_CommandEnv *env, FuncListSlot target_funclist_slot, FuncListSlot object_funclist_slot, JSPropFlags flags, char *key_ptr, uint32_t key_len, uint32_t index) {
-    OP_UNIMPLEMENTED(env, "perform_funclist_def_object");
+    QTS_FuncList *funclist = OP_GET_FUNCLIST(env, target_funclist_slot, "funclist_def_object target");
+    QTS_FuncList *object_funclist = OP_GET_FUNCLIST(env, object_funclist_slot, "funclist_def_object object");
+    OP_ERROR_IF(env, index >= funclist->count, "funclist_def_object: index out of range");
+
+    // Use JS_OBJECT_DEF macro
+    funclist->entries[index] = (JSCFunctionListEntry)JS_OBJECT_DEF(
+        key_ptr,
+        object_funclist->entries,
+        object_funclist->count,
+        flags
+    );
+
+    return QTS_COMMAND_OK;
 }

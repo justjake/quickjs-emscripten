@@ -15,5 +15,12 @@
  * @param name_ptr Property name pointer (MUST be null-terminated)
  */
 QTS_CommandStatus perform_funclist_def_string(QTS_CommandEnv *env, FuncListSlot target_funclist_slot, uint8_t index, JSPropFlags flags, char *str_ptr, uint32_t str_len, char *name_ptr) {
-    OP_UNIMPLEMENTED(env, "perform_funclist_def_string");
+    QTS_FuncList *funclist = OP_GET_FUNCLIST(env, target_funclist_slot, "funclist_def_string");
+    OP_ERROR_IF(env, index >= funclist->count, "funclist_def_string: index out of range");
+
+    // Use JS_PROP_STRING_DEF macro
+    // Note: str_ptr must be null-terminated for JS_DEF_PROP_STRING to work correctly
+    funclist->entries[index] = (JSCFunctionListEntry)JS_PROP_STRING_DEF(name_ptr, str_ptr, flags);
+
+    return QTS_COMMAND_OK;
 }

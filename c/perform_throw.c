@@ -10,5 +10,9 @@
  * @param error_slot Error value slot to throw
  */
 QTS_CommandStatus perform_throw(QTS_CommandEnv *env, JSValueSlot error_slot) {
-    OP_UNIMPLEMENTED(env, "perform_throw");
+    JSValue error = OP_GET_JSVALUE(env, error_slot, "throw: error");
+    // JS_Throw consumes the error value, so we need to dup it
+    JS_Throw(env->ctx, JS_DupValue(env->ctx, error));
+    // Always return error after throwing
+    OP_ERROR(env, "throw: exception thrown");
 }

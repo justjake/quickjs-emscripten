@@ -12,5 +12,18 @@
  * @param key_len Property name/key length
  */
 QTS_CommandStatus perform_global_get_str(QTS_CommandEnv *env, JSValueSlot result_slot, char *key_ptr, uint32_t key_len) {
-    OP_UNIMPLEMENTED(env, "perform_global_get_str");
+    JSValue global = JS_GetGlobalObject(env->ctx);
+    JSAtom key_atom = JS_NewAtomLen(env->ctx, key_ptr, key_len);
+    if (key_atom == JS_ATOM_NULL) {
+        JS_FreeValue(env->ctx, global);
+        OP_ERROR(env, "global_get_str: failed to create key atom");
+    }
+
+    JSValue result = JS_GetProperty(env->ctx, global, key_atom);
+    JS_FreeAtom(env->ctx, key_atom);
+    JS_FreeValue(env->ctx, global);
+
+    OP_SET_JSVALUE(env, result_slot, result);
+    OP_ERROR_IF(env, JS_IsException(result), "global_get_str: exception");
+    return QTS_COMMAND_OK;
 }

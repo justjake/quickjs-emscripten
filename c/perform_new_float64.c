@@ -7,5 +7,6 @@
  * @param value The float64 value
  */
 QTS_CommandStatus perform_new_float64(QTS_CommandEnv *env, JSValueSlot result_slot, double value) {
-    OP_UNIMPLEMENTED(env, "perform_new_float64");
+    OP_SET_JSVALUE(env, result_slot, JS_NewFloat64(env->ctx, value));
+    return QTS_COMMAND_OK;
 }

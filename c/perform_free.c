@@ -10,5 +10,8 @@
  * @param target_slot Target object to modify
  */
 QTS_CommandStatus perform_free(QTS_CommandEnv *env, JSValueSlot target_slot) {
-    OP_UNIMPLEMENTED(env, "perform_free");
+    OP_ERROR_IF(env, target_slot >= env->jsvalue_slots_count, "free: slot out of range");
+    JS_FreeValue(env->ctx, env->jsvalue_slots[target_slot]);
+    env->jsvalue_slots[target_slot] = JS_UNDEFINED;
+    return QTS_COMMAND_OK;
 }

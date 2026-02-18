@@ -15,5 +15,11 @@
  * @param filename Filename used for error messages
  */
 QTS_CommandStatus perform_eval(QTS_CommandEnv *env, JSValueSlot result_slot, uint8_t maybe_filename_len, EvalFlags call_flags, char *code_ptr, uint32_t code_len, char *filename) {
-    OP_UNIMPLEMENTED(env, "perform_eval");
+    // Default filename if not provided
+    const char *file = filename ? filename : "<eval>";
+
+    JSValue result = JS_Eval(env->ctx, code_ptr, code_len, file, call_flags);
+    OP_SET_JSVALUE(env, result_slot, result);
+    OP_ERROR_IF(env, JS_IsException(result), "eval: exception");
+    return QTS_COMMAND_OK;
 }

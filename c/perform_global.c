@@ -10,5 +10,6 @@
  * @param result_slot result will be written to this slot
  */
 QTS_CommandStatus perform_global(QTS_CommandEnv *env, JSValueSlot result_slot) {
-    OP_UNIMPLEMENTED(env, "perform_global");
+    OP_SET_JSVALUE(env, result_slot, JS_GetGlobalObject(env->ctx));
+    return QTS_COMMAND_OK;
 }

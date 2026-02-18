@@ -8,5 +8,8 @@
  * @param index Array index
  */
 QTS_CommandStatus perform_set_idx_f64(QTS_CommandEnv *env, JSValueSlot target_slot, double f64_val, uint32_t index) {
-    OP_UNIMPLEMENTED(env, "perform_set_idx_f64");
+    JSValue target = OP_GET_JSVALUE(env, target_slot, "set_idx_f64: target");
+    int ret = JS_SetPropertyUint32(env->ctx, target, index, JS_NewFloat64(env->ctx, f64_val));
+    OP_ERROR_IF(env, ret < 0, "set_idx_f64: exception");
+    return QTS_COMMAND_OK;
 }

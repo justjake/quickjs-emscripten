@@ -9,5 +9,13 @@
  * @param key_len Property name/key length
  */
 QTS_CommandStatus perform_set_str_undef(QTS_CommandEnv *env, JSValueSlot target_slot, JSPropFlags flags, char *key_ptr, uint32_t key_len) {
-    OP_UNIMPLEMENTED(env, "perform_set_str_undef");
+    JSValue target = OP_GET_JSVALUE(env, target_slot, "set_str_undef: target");
+
+    JSAtom key_atom = JS_NewAtomLen(env->ctx, key_ptr, key_len);
+    OP_ERROR_IF(env, key_atom == JS_ATOM_NULL, "set_str_undef: failed to create key atom");
+
+    int ret = JS_DefinePropertyValue(env->ctx, target, key_atom, JS_UNDEFINED, flags);
+    JS_FreeAtom(env->ctx, key_atom);
+    OP_ERROR_IF(env, ret < 0, "set_str_undef: exception");
+    return QTS_COMMAND_OK;
 }

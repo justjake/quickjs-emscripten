@@ -1275,62 +1275,6 @@ JSValueConst *QTS_ArgvGetJSValueConstPointer(JSValueConst *argv, int index) {
   return &argv[index];
 }
 
-// ----------------------------------------------------------------------------
-// Funclist callback trampolines
-// These are used in JSCFunctionListEntry entries for host callbacks.
-// The magic field stores the host_ref_id.
-// ----------------------------------------------------------------------------
-
-// Trampoline for JS_DEF_CFUNC using generic_magic
-JSValue qts_funclist_call_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic) {
-  int32_t host_ref_id = (int32_t)magic;
-  JSValue *result_ptr = qts_host_call_function(ctx, &this_val, argc, argv, host_ref_id);
-  if (result_ptr == NULL) {
-    return JS_UNDEFINED;
-  }
-  JSValue result = *result_ptr;
-  free(result_ptr);
-  return result;
-}
-
-// Trampoline for JS_DEF_CFUNC with constructor using constructor_magic
-JSValue qts_funclist_call_constructor(JSContext *ctx, JSValueConst new_target, int argc, JSValueConst *argv, int magic) {
-  int32_t host_ref_id = (int32_t)magic;
-  // For constructors, pass new_target as this
-  JSValue *result_ptr = qts_host_call_function(ctx, &new_target, argc, argv, host_ref_id);
-  if (result_ptr == NULL) {
-    return JS_UNDEFINED;
-  }
-  JSValue result = *result_ptr;
-  free(result_ptr);
-  return result;
-}
-
-// Trampoline for getter in JS_DEF_CGETSET_MAGIC
-JSValue qts_funclist_getter(JSContext *ctx, JSValueConst this_val, int magic) {
-  int32_t host_ref_id = (int32_t)magic;
-  // Call host with no arguments for getter
-  JSValue *result_ptr = qts_host_call_function(ctx, &this_val, 0, NULL, host_ref_id);
-  if (result_ptr == NULL) {
-    return JS_UNDEFINED;
-  }
-  JSValue result = *result_ptr;
-  free(result_ptr);
-  return result;
-}
-
-// Trampoline for setter in JS_DEF_CGETSET_MAGIC
-JSValue qts_funclist_setter(JSContext *ctx, JSValueConst this_val, JSValueConst val, int magic) {
-  int32_t host_ref_id = (int32_t)magic;
-  // Call host with the value as single argument for setter
-  JSValue *result_ptr = qts_host_call_function(ctx, &this_val, 1, &val, host_ref_id);
-  if (result_ptr == NULL) {
-    return JS_UNDEFINED;
-  }
-  JSValue result = *result_ptr;
-  free(result_ptr);
-  return result;
-}
 
 // --------------------
 // interrupt: C -> Host

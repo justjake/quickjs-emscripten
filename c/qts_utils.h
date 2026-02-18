@@ -27,6 +27,9 @@ typedef int32_t HostRefId;     /** Host callback reference ID */
 
 typedef uint8_t JSValueSlot;   /** Slot (index) of a JSValue in a command environment */
 typedef uint8_t FuncListSlot;  /** Slot (index) of a FuncList in a command environment */
+typedef uint8_t EvalFlags;     /** JS_EVAL_* flags for evaluation */
+typedef uint8_t NewErrorFlags; /** Flags for NEW_ERROR op (error type selection) */
+typedef uint8_t NewTypedArrayFlags; /** JSTypedArrayEnum - TypedArray type (maps to JSTypedArrayEnum) */
 
 /**
  * Uint16Pair: Two uint16 values packed into one uint32.

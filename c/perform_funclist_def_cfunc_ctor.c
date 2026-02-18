@@ -15,5 +15,12 @@
  * @param c_func_ptr Pointer to C function implementing one of JSFunctionType (*not* a HostRef, this is a raw function pointer)
  */
 QTS_CommandStatus perform_funclist_def_cfunc_ctor(QTS_CommandEnv *env, FuncListSlot target_funclist_slot, uint8_t arity, JSPropFlags flags, uint32_t index, char *func_name_ptr, JSCFunctionType *c_func_ptr) {
-    OP_UNIMPLEMENTED(env, "perform_funclist_def_cfunc_ctor");
+    QTS_FuncList *funclist = OP_GET_FUNCLIST(env, target_funclist_slot, "funclist_def_cfunc_ctor");
+    OP_ERROR_IF(env, index >= funclist->count, "funclist_def_cfunc_ctor: index out of range");
+
+    // Use JS_CFUNC_SPECIAL_DEF macro pattern for constructor, with custom flags
+    funclist->entries[index] = (JSCFunctionListEntry)JS_CFUNC_SPECIAL_DEF(func_name_ptr, arity, constructor, c_func_ptr->constructor);
+    funclist->entries[index].prop_flags = flags;
+
+    return QTS_COMMAND_OK;
 }

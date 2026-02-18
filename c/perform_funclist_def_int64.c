@@ -14,5 +14,11 @@
  * @param name_ptr Property name pointer (MUST be null-terminated)
  */
 QTS_CommandStatus perform_funclist_def_int64(QTS_CommandEnv *env, FuncListSlot target_funclist_slot, uint8_t index, JSPropFlags flags, int64_t i64_val, char *name_ptr) {
-    OP_UNIMPLEMENTED(env, "perform_funclist_def_int64");
+    QTS_FuncList *funclist = OP_GET_FUNCLIST(env, target_funclist_slot, "funclist_def_int64");
+    OP_ERROR_IF(env, index >= funclist->count, "funclist_def_int64: index out of range");
+
+    // Use JS_PROP_INT64_DEF macro
+    funclist->entries[index] = (JSCFunctionListEntry)JS_PROP_INT64_DEF(name_ptr, i64_val, flags);
+
+    return QTS_COMMAND_OK;
 }

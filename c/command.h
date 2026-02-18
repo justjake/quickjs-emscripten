@@ -73,17 +73,15 @@ typedef enum {
 })
 
 #define OP_GET_FUNCLIST(env, slot, msg) ({ \
-    OP_ERROR_IF(env, slot >= env->funclist_slots_count, "funclist slot out of range"); \
-    env->funclist_slots[slot]; \
+    OP_ERROR_IF(env, slot >= env->funclist_slots_count, "funclist slot out of range: " msg); \
+    OP_ERROR_IF(env, !env->funclist_slots[slot].entries, "funclist slot not allocated: " msg); \
+    OP_ERROR_IF(env, env->funclist_slots[slot].count == 0, "funclist slot is empty: " msg); \
+    &env->funclist_slots[slot]; \
 })
 
 #define OP_SET_JSVALUE(env, slot, value) \
     OP_ERROR_IF(env, slot >= env->jsvalue_slots_count, "jsvalue slot out of range"); \
     env->jsvalue_slots[slot] = value;
-
-#define OP_SET_FUNCLIST(env, slot, value) \
-    OP_ERROR_IF(env, slot >= env->funclist_slots_count, "funclist slot out of range"); \
-    env->funclist_slots[slot] = value;
 
 /** Return an error from an op implementation indicating it's not yet implemented */
 #define OP_UNIMPLEMENTED(env, name) OP_ERROR(env, "UNIMPLEMENTED: " name)

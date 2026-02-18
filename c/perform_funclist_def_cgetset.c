@@ -15,5 +15,16 @@
  * @param setter_ptr Setter c function pointer (0=no setter)
  */
 QTS_CommandStatus perform_funclist_def_cgetset(QTS_CommandEnv *env, FuncListSlot target_funclist_slot, uint8_t index, JSPropFlags flags, char *key_ptr, JSCFunctionType *getter_ptr, JSCFunctionType *setter_ptr) {
-    OP_UNIMPLEMENTED(env, "perform_funclist_def_cgetset");
+    QTS_FuncList *funclist = OP_GET_FUNCLIST(env, target_funclist_slot, "funclist_def_cgetset");
+    OP_ERROR_IF(env, index >= funclist->count, "funclist_def_cgetset: index out of range");
+
+    // Use JS_CGETSET_DEF macro pattern, with custom flags
+    funclist->entries[index] = (JSCFunctionListEntry)JS_CGETSET_DEF(
+        key_ptr,
+        getter_ptr ? getter_ptr->getter : NULL,
+        setter_ptr ? setter_ptr->setter : NULL
+    );
+    funclist->entries[index].prop_flags = flags;
+
+    return QTS_COMMAND_OK;
 }

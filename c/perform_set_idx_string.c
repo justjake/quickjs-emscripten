@@ -9,5 +9,8 @@
  * @param index Array index
  */
 QTS_CommandStatus perform_set_idx_string(QTS_CommandEnv *env, JSValueSlot target_slot, char *str_ptr, uint32_t str_len, uint32_t index) {
-    OP_UNIMPLEMENTED(env, "perform_set_idx_string");
+    JSValue target = OP_GET_JSVALUE(env, target_slot, "set_idx_string: target");
+    int ret = JS_SetPropertyUint32(env->ctx, target, index, JS_NewStringLen(env->ctx, str_ptr, str_len));
+    OP_ERROR_IF(env, ret < 0, "set_idx_string: exception");
+    return QTS_COMMAND_OK;
 }
