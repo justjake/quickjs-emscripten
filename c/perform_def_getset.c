@@ -17,13 +17,7 @@
 QTS_CommandStatus perform_def_getset(QTS_CommandEnv *env, JSValueSlot target_slot, uint8_t maybe_key_len, JSPropFlags flags, HostRefId getter_ref, HostRefId setter_ref, char *key_ptr) {
     JSValue target = OP_GET_JSVALUE(env, target_slot, "def_getset: target");
 
-    // Create property key atom
-    JSAtom key_atom;
-    if (maybe_key_len > 0) {
-        key_atom = JS_NewAtomLen(env->ctx, key_ptr, maybe_key_len);
-    } else {
-        key_atom = JS_NewAtom(env->ctx, key_ptr);
-    }
+    JSAtom key_atom = QTS_NewAtomMaybeLen(env->ctx, key_ptr, maybe_key_len);
     OP_ERROR_IF(env, key_atom == JS_ATOM_NULL, "def_getset: failed to create key atom");
 
     // Create getter function if getter_ref is provided

@@ -12,13 +12,7 @@
 QTS_CommandStatus perform_set_str_bigint(QTS_CommandEnv *env, JSValueSlot target_slot, uint8_t maybe_key_len, SetPropFlags flags, int64_t i64_val, char *key_ptr) {
     JSValue target = OP_GET_JSVALUE(env, target_slot, "set_str_bigint: target");
 
-    // If maybe_key_len > 0, use that length; otherwise key_ptr is null-terminated
-    JSAtom key_atom;
-    if (maybe_key_len > 0) {
-        key_atom = JS_NewAtomLen(env->ctx, key_ptr, maybe_key_len);
-    } else {
-        key_atom = JS_NewAtom(env->ctx, key_ptr);
-    }
+    JSAtom key_atom = QTS_NewAtomMaybeLen(env->ctx, key_ptr, maybe_key_len);
     OP_ERROR_IF(env, key_atom == JS_ATOM_NULL, "set_str_bigint: failed to create key atom");
 
     int ret = qts_set_or_define_prop_atom(env->ctx, target, key_atom, JS_NewBigInt64(env->ctx, i64_val), flags);

@@ -55,6 +55,14 @@ typedef uint8_t SetPropFlags;  /** Property flags for set/define operations */
 #define QTS_TO_JS_PROP_FLAGS(flags) \
     (((flags) & 0x07) | (((flags) & QTS_SET_THROW) ? JS_PROP_THROW : 0))
 
+/**
+ * Create an atom from a string with optional length.
+ * If maybe_len > 0, uses JS_NewAtomLen with that length.
+ * If maybe_len == 0, uses JS_NewAtom (null-terminated string).
+ */
+#define QTS_NewAtomMaybeLen(ctx, str, maybe_len) \
+    ((maybe_len) > 0 ? JS_NewAtomLen((ctx), (str), (maybe_len)) : JS_NewAtom((ctx), (str)))
+
 typedef uint8_t JSValueSlot;   /** Slot (index) of a JSValue in a command environment */
 typedef uint8_t FuncListSlot;  /** Slot (index) of a FuncList in a command environment */
 typedef uint8_t EvalFlags;     /** JS_EVAL_* flags for evaluation */
