@@ -12,7 +12,21 @@
     "quickjs-atom.h": "c",
     "perform_float64.h": "c",
     "op.h": "c",
-    "perform_set_idx_undef.h": "c"
+    "perform_set_idx_undef.h": "c",
+    "typeinfo": "c",
+    "__locale": "c",
+    "string": "c",
+    "string_view": "c",
+    "__bit_reference": "cpp",
+    "__node_handle": "cpp",
+    "bitset": "cpp",
+    "deque": "cpp",
+    "limits": "cpp",
+    "locale": "cpp",
+    "optional": "cpp",
+    "ratio": "cpp",
+    "vector": "cpp",
+    "perform_call.h": "c"
   },
   "files.exclude": {}
 }

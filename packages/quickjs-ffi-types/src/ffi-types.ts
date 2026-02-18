@@ -130,6 +130,18 @@ export type IsEqualOp = Brand<number, "IsEqualOp">
  */
 export type HostRefId = Brand<number, "HostRefId">
 
+/**
+ * Flags used when creating errors
+ * @private
+ */
+export type NewErrorFlags = Brand<number, "NewErrorFlags">
+
+/**
+ * Flags used when creating typed arrays
+ * @private
+ */
+export type NewTypedArrayFlags = Brand<number, "NewTypedArrayFlags">
+
 // -----------------------------------------------------------------------------
 // Command buffer types
 // -----------------------------------------------------------------------------
@@ -152,6 +164,19 @@ export type Uint32 = Brand<number, "Uint32">
 export type Int32 = Brand<number, "Int32">
 export type Float64 = Brand<number, "Float64">
 export type Int64 = Brand<bigint, "Int64">
+export type Uint16 = Brand<number, "Uint16">
+
+/**
+ * Two uint16 values packed into one uint32.
+ */
+export type Uint16Pair = Brand<number, "Uint16Pair">
+
+export function Uint16Pair(high: Uint16, low: Uint16): Uint16Pair {
+  if (high > 0xffff || low > 0xffff) {
+    throw new RangeError("Uint16Pair: high and low must be less than 0xFFFF")
+  }
+  return ((high << 16) | low) as Uint16Pair
+}
 
 /**
  * State of a promise.

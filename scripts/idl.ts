@@ -113,7 +113,7 @@ type CommandDataUnion = {
  *
  * New CommandDataXxxDef variants may be added after a design discussion.
  */
-type CommandDataDef = CommandDataUnion[keyof CommandDataUnion]
+export type CommandDataDef = CommandDataUnion[keyof CommandDataUnion]
 
 // Commonly used params
 const RESULT_JSVALUE_SLOT = {

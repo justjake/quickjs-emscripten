@@ -1,11 +1,14 @@
 #!/usr/bin/env -S npx tsx
 // Generate symbols list
 // Generate header file
-import * as pathlib from "path"
 import * as crypto from "crypto"
+import * as pathlib from "path"
+
 import * as fs from "fs-extra"
+import { CFunc } from "./CFunc"
 import { repoRoot } from "./helpers"
-import { COMMANDS, OPCODE_TO_COMMAND, TsOpName, CFunc, type OpName } from "./idl"
+import type { CommandDataDef, CommandDef, type OpName } from "./idl"
+import { COMMANDS, OPCODE_TO_COMMAND, TsOpName } from "./idl"
 const USAGE =
   "Usage: generate.ts [symbols | header | ffi | ops | c-ops] WRITE_PATH" +
   "\ngenerate.ts hash READ_PATH WRITE_PATH"
@@ -498,9 +501,6 @@ const SETTER_DEFS: Record<string, string> = {
   view.setBigInt64(offset + 4, value, true)
 }`,
 }
-
-type CommandDef = (typeof COMMANDS)[OpName]
-type CommandDataDef = NonNullable<CommandDef["data"]>
 
 function TSFunc(name: string, opcode: number, command: CommandDef, usedSetters: Set<string>) {
   const functionName = `write${TsOpName(name)}`
