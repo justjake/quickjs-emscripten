@@ -7,7 +7,7 @@ import * as pathlib from "path"
 import * as fs from "fs-extra"
 import { CFunc } from "./CFunc"
 import { repoRoot } from "./helpers"
-import type { CommandDataDef, CommandDef, type OpName } from "./idl"
+import type { CommandDataDef, CommandDef, OpName } from "./idl"
 import { COMMANDS, OPCODE_TO_COMMAND, TsOpName } from "./idl"
 const USAGE =
   "Usage: generate.ts [symbols | header | ffi | ops | c-ops] WRITE_PATH" +
@@ -875,7 +875,12 @@ function buildCOps(outputDir: string): void {
     } else {
       // Read existing file and try to update the function signature and doc comment
       const existingContent = fs.readFileSync(cPath, "utf-8")
-      const updatedContent = updateFunctionSignature(existingContent, cf.functionName, cf.signature, cf.docComment)
+      const updatedContent = updateFunctionSignature(
+        existingContent,
+        cf.functionName,
+        cf.signature,
+        cf.docComment,
+      )
       if (updatedContent !== existingContent) {
         fs.writeFileSync(cPath, updatedContent)
         signaturesUpdated++
