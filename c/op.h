@@ -49,22 +49,24 @@ typedef enum {
     QTS_OP_THROW = 43, /** Throw an exception (JS_Throw) */
     QTS_OP_RESOLVE_EXC = 44, /** Resolve exception - if maybe_exc is exception, return the exception value */
     QTS_OP_DUP = 45, /** Duplicate a value (JS_DupValue) - increment refcount */
-    QTS_OP_FREE = 46, /** Free a value (JS_FreeValue) - decrement refcount */
-    QTS_OP_BYTECODE_WRITE = 47, /** Serialize a value to binary (JS_WriteObject) */
-    QTS_OP_BYTECODE_READ = 48, /** Deserialize a value from binary (JS_ReadObject) */
-    QTS_OP_FUNCLIST_NEW = 49, /** Allocate a new JSCFunctionListEntry array */
-    QTS_OP_FUNCLIST_ASSIGN = 50, /** Assign all properties defined in the funclist to the target object (JS_SetPropertyFunctionList) */
-    QTS_OP_FUNCLIST_FREE = 51, /** Free a funclist array */
-    QTS_OP_FUNCLIST_DEF_CFUNC = 52, /** Set funclist entry to JS_DEF_CFUNC */
-    QTS_OP_FUNCLIST_DEF_CFUNC_CTOR = 53, /** Set funclist entry to JS_DEF_CFUNC with constructor proto */
-    QTS_OP_FUNCLIST_DEF_CGETSET = 54, /** Set funclist entry to JS_DEF_CGETSET */
-    QTS_OP_FUNCLIST_DEF_STRING = 55, /** Set funclist entry to JS_DEF_PROP_STRING */
-    QTS_OP_FUNCLIST_DEF_INT32 = 56, /** Set funclist entry to JS_DEF_PROP_INT32 */
-    QTS_OP_FUNCLIST_DEF_INT64 = 57, /** Set funclist entry to JS_DEF_PROP_INT64 (index in slot_c) */
-    QTS_OP_FUNCLIST_DEF_DOUBLE = 58, /** Set funclist entry to JS_DEF_PROP_DOUBLE (index in slot_c) */
-    QTS_OP_FUNCLIST_DEF_NULL = 59, /** Set funclist entry to JS_DEF_PROP_NULL */
-    QTS_OP_FUNCLIST_DEF_UNDEFINED = 60, /** Set funclist entry to JS_DEF_PROP_UNDEFINED */
-    QTS_OP_FUNCLIST_DEF_OBJECT = 61, /** Set funclist entry to JS_DEF_OBJECT (nested object with its own funclist) */
+    QTS_OP_DUP_PTR = 46, /** Duplicate a JSValue* pointer into a JSValueSlot */
+    QTS_OP_FREE = 47, /** Free a value (JS_FreeValue) - decrement refcount */
+    QTS_OP_FREE_PTR = 48, /** Free a JSValue* pointer - JS_FreeValue the value, then free the pointer */
+    QTS_OP_BYTECODE_WRITE = 49, /** Serialize a value to binary (JS_WriteObject) */
+    QTS_OP_BYTECODE_READ = 50, /** Deserialize a value from binary (JS_ReadObject) */
+    QTS_OP_FUNCLIST_NEW = 51, /** Allocate a new JSCFunctionListEntry array */
+    QTS_OP_FUNCLIST_ASSIGN = 52, /** Assign all properties defined in the funclist to the target object (JS_SetPropertyFunctionList) */
+    QTS_OP_FUNCLIST_FREE = 53, /** Free a funclist array */
+    QTS_OP_FUNCLIST_DEF_CFUNC = 54, /** Set funclist entry to JS_DEF_CFUNC */
+    QTS_OP_FUNCLIST_DEF_CFUNC_CTOR = 55, /** Set funclist entry to JS_DEF_CFUNC with constructor proto */
+    QTS_OP_FUNCLIST_DEF_CGETSET = 56, /** Set funclist entry to JS_DEF_CGETSET */
+    QTS_OP_FUNCLIST_DEF_STRING = 57, /** Set funclist entry to JS_DEF_PROP_STRING */
+    QTS_OP_FUNCLIST_DEF_INT32 = 58, /** Set funclist entry to JS_DEF_PROP_INT32 */
+    QTS_OP_FUNCLIST_DEF_INT64 = 59, /** Set funclist entry to JS_DEF_PROP_INT64 (index in slot_c) */
+    QTS_OP_FUNCLIST_DEF_DOUBLE = 60, /** Set funclist entry to JS_DEF_PROP_DOUBLE (index in slot_c) */
+    QTS_OP_FUNCLIST_DEF_NULL = 61, /** Set funclist entry to JS_DEF_PROP_NULL */
+    QTS_OP_FUNCLIST_DEF_UNDEFINED = 62, /** Set funclist entry to JS_DEF_PROP_UNDEFINED */
+    QTS_OP_FUNCLIST_DEF_OBJECT = 63, /** Set funclist entry to JS_DEF_OBJECT (nested object with its own funclist) */
 } QTS_Opcode;
 
 #endif // QTS_OP_H

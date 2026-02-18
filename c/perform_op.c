@@ -45,7 +45,9 @@
 #include "perform_throw.h"
 #include "perform_resolve_exc.h"
 #include "perform_dup.h"
+#include "perform_dup_ptr.h"
 #include "perform_free.h"
+#include "perform_free_ptr.h"
 #include "perform_bytecode_write.h"
 #include "perform_bytecode_read.h"
 #include "perform_funclist_new.h"
@@ -112,7 +114,9 @@ QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd) {
         case QTS_OP_THROW: return perform_throw(env, (JSValueSlot)cmd.slot_a);
         case QTS_OP_RESOLVE_EXC: return perform_resolve_exc(env, (JSValueSlot)cmd.slot_a, (JSValueSlot)cmd.slot_b);
         case QTS_OP_DUP: return perform_dup(env, (JSValueSlot)cmd.slot_a, (JSValueSlot)cmd.slot_b);
+        case QTS_OP_DUP_PTR: return perform_dup_ptr(env, (JSValueSlot)cmd.slot_a, (JSValue*)cmd.data.raw.d1);
         case QTS_OP_FREE: return perform_free(env, (JSValueSlot)cmd.slot_a);
+        case QTS_OP_FREE_PTR: return perform_free_ptr(env, (JSValue*)cmd.data.raw.d1);
         case QTS_OP_BYTECODE_WRITE: return perform_bytecode_write(env, (JSValueSlot)cmd.slot_a, (JSValueSlot)cmd.slot_b, cmd.data.raw.d1);
         case QTS_OP_BYTECODE_READ: return perform_bytecode_read(env, (JSValueSlot)cmd.slot_a, (JSValueSlot)cmd.slot_b, cmd.data.raw.d1);
         case QTS_OP_FUNCLIST_NEW: return perform_funclist_new(env, (FuncListSlot)cmd.slot_a, cmd.data.raw.d1);

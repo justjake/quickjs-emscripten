@@ -66,6 +66,7 @@ type UInt32Types =
   | "Uint16Pair"
   | "JSCFunctionType*"
   | "JSPropFlags"
+  | "JSValue*"
 
 type CommandDataRawDef = {
   type: "raw"
@@ -773,9 +774,36 @@ export const COMMANDS = {
     slot_b: SOURCE_JSVALUE_SLOT,
   },
 
+  DUP_PTR: {
+    doc: "Duplicate a JSValue* pointer into a JSValueSlot",
+    slot_a: RESULT_JSVALUE_SLOT,
+    data: {
+      type: "raw",
+      d1: {
+        name: "value_ptr",
+        type: "JSValue*",
+        doc: "Pointer to value to duplicate",
+        usage: "in",
+      },
+    },
+  },
+
   FREE: {
     doc: "Free a value (JS_FreeValue) - decrement refcount",
     slot_a: TARGET_JSVALUE_SLOT,
+  },
+
+  FREE_PTR: {
+    doc: "Free a JSValue* pointer - JS_FreeValue the value, then free the pointer",
+    data: {
+      type: "raw",
+      d1: {
+        name: "value_ptr",
+        type: "JSValue*",
+        doc: "Pointer to value to free",
+        usage: "in",
+      },
+    },
   },
 
   // ============================================================================
