@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include "qts_utils.h"
+#include "funclist.h"
 #include "op.h"
 
 /**
@@ -56,35 +57,33 @@ typedef enum {
 // Op implementation utilities
 // ----------------------------------------------------------------------------
 
-/**
- * Uint16Pair: Two uint16 values packed into one uint32.
- *
- * Bit layout: low 16 bits = first value, high 16 bits = second value.
- * Access via .low and .high fields directly.
- *
- * Memory layout on little-endian (wasm is always little-endian):
- * A uint32_t 0xHHHHLLLL is stored as bytes [LL, LL, HH, HH].
- * The first struct field (low) gets bytes 0-1 = bits 0-15.
- * The second struct field (high) gets bytes 2-3 = bits 16-31.
- */
-typedef struct {
-    uint16_t low;
-    uint16_t high;
-} Uint16Pair;
 
 /** Set the error message and return an error */
 #define OP_ERROR(env, msg) do { \
-    (env)->error = msg; \
+    (env)->error = QTS_DEBUG_STACKFRAME ": " msg; \
     return QTS_COMMAND_ERROR; \
 } while(0)
 
 /** If condition is true, set the error message and return an error */
-#define OP_ERROR_IF(env, cond, msg) do { \
-    if (cond) { \
-        (env)->error = msg; \
-        return QTS_COMMAND_ERROR; \
-    } \
-} while(0)
+#define OP_ERROR_IF(env, cond, msg) if (cond) { OP_ERROR(env, msg); }
+
+#define OP_GET_JSVALUE(env, slot, msg) ({ \
+    OP_ERROR_IF(env, slot >= env->jsvalue_slots_count, "jsvalue slot out of range"); \
+    env->jsvalue_slots[slot]; \
+})
+
+#define OP_GET_FUNCLIST(env, slot, msg) ({ \
+    OP_ERROR_IF(env, slot >= env->funclist_slots_count, "funclist slot out of range"); \
+    env->funclist_slots[slot]; \
+})
+
+#define OP_SET_JSVALUE(env, slot, value) \
+    OP_ERROR_IF(env, slot >= env->jsvalue_slots_count, "jsvalue slot out of range"); \
+    env->jsvalue_slots[slot] = value;
+
+#define OP_SET_FUNCLIST(env, slot, value) \
+    OP_ERROR_IF(env, slot >= env->funclist_slots_count, "funclist slot out of range"); \
+    env->funclist_slots[slot] = value;
 
 /** Return an error from an op implementation indicating it's not yet implemented */
 #define OP_UNIMPLEMENTED(env, name) OP_ERROR(env, "UNIMPLEMENTED: " name)

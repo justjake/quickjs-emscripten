@@ -18,25 +18,36 @@
 #include <stdint.h>
 #include <stdio.h>
 
+// ----------------------------------------------------------------------------
+// Types
+// ----------------------------------------------------------------------------
 
 typedef uint8_t JSPropFlags;   /** JS_PROP_* flags */
 typedef int32_t HostRefId;     /** Host callback reference ID */
 
-// Slot types - used for indexing into the command environment arrays
-typedef uint8_t JSValueSlot;
-typedef uint8_t FuncListSlot;
+typedef uint8_t JSValueSlot;   /** Slot (index) of a JSValue in a command environment */
+typedef uint8_t FuncListSlot;  /** Slot (index) of a FuncList in a command environment */
 
 /**
- * A funclist is a dynamically allocated JSCFunctionListEntry array.
- * Used for bulk-defining properties on objects with JS_SetPropertyFunctionList.
+ * Uint16Pair: Two uint16 values packed into one uint32.
+ *
+ * Bit layout: low 16 bits = first value, high 16 bits = second value.
+ * Access via .low and .high fields directly.
+ *
+ * Memory layout on little-endian (wasm is always little-endian):
+ * A uint32_t 0xHHHHLLLL is stored as bytes [LL, LL, HH, HH].
+ * The first struct field (low) gets bytes 0-1 = bits 0-15.
+ * The second struct field (high) gets bytes 2-3 = bits 16-31.
  */
-typedef struct QTS_FuncList {
-    JSCFunctionListEntry *entries;
-    uint32_t count;
-} QTS_FuncList;
+typedef struct {
+    uint16_t low;
+    uint16_t high;
+} Uint16Pair;
 
+// ----------------------------------------------------------------------------
+// Debug
+// ----------------------------------------------------------------------------
 
-/** Debug macros for op implementations */
 #ifdef QTS_DEBUG_MODE
 #define OP_DEBUG(ctx, msg) do { \
     if (qts_get_context_rt_data(ctx)->debug_log) qts_log(msg); \
@@ -48,6 +59,20 @@ typedef struct QTS_FuncList {
 #define OP_DEBUG(ctx, msg) do {} while(0)
 #define OP_DUMP(ctx, value) do {} while(0)
 #endif
+
+#define _QTS_DEBUG_STRINGIFY1(x) #x
+#define _QTS_DEBUG_STRINGIFY(x) _QTS_DEBUG_STRINGIFY1(x)
+#define QTS_DEBUG_STACKFRAME __FILE__ ":" _QTS_DEBUG_STRINGIFY(__LINE__)
+
+/**
+ * Log a message to stderr with the quickjs-emscripten prefix.
+ */
+void qts_log(char *msg);
+
+/**
+ * Dump a JSValue to stderr (converts to string first).
+ */
+void qts_dump(JSContext *ctx, JSValueConst value);
 
 // ----------------------------------------------------------------------------
 // Runtime metadata
@@ -111,19 +136,6 @@ JSValue new_host_ref(JSContext *ctx, int32_t id);
  */
 JSClassID qts_get_host_ref_class_id(void);
 
-// ----------------------------------------------------------------------------
-// Debug utilities
-// ----------------------------------------------------------------------------
-
-/**
- * Log a message to stderr with the quickjs-emscripten prefix.
- */
-void qts_log(char *msg);
-
-/**
- * Dump a JSValue to stderr (converts to string first).
- */
-void qts_dump(JSContext *ctx, JSValueConst value);
 
 // ----------------------------------------------------------------------------
 // Funclist callback trampolines
