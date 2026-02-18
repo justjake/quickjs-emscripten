@@ -1,5 +1,11 @@
 #include "perform_funclist_new.h"
 
+/**
+ * Allocate a new JSCFunctionListEntry array
+ * @param env Command execution environment
+ * @param result_funclist_slot Slot to store the funclist pointer
+ * @param count Number of entries to allocate
+ */
 QTS_CommandStatus perform_funclist_new(QTS_CommandEnv *env, FuncListSlot result_funclist_slot, uint32_t count) {
     OP_ERROR_IF(env, count == 0, "funclist_new: count must be greater than 0");
 

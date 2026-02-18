@@ -184,6 +184,7 @@ ${signature} {
     functionName,
     lcName,
     signature,
+    docComment,
     switchCase,
     opcodeName,
     params,

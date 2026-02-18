@@ -789,40 +789,45 @@ ${switchCases}
 }
 
 /**
- * Update the function signature in an existing .c file while preserving the implementation body.
+ * Update the function signature and doc comment in an existing .c file while preserving the implementation body.
  * Returns the updated content, or the original content if the signature couldn't be found/updated.
  */
 function updateFunctionSignature(
   content: string,
   functionName: string,
   newSignature: string,
+  newDocComment: string,
 ): string {
-  // Match the function definition: return_type function_name(params) {
-  // The signature can span multiple lines, so we match up to the opening brace
-  // Pattern: QTS_CommandStatus perform_xxx(...) {
-  const signaturePattern = new RegExp(
-    `(QTS_CommandStatus\\s+${functionName}\\s*\\([^)]*\\))\\s*\\{`,
+  // Match an optional doc comment followed by the function definition
+  // Pattern: (optional /** ... */) QTS_CommandStatus perform_xxx(...) {
+  const signatureWithDocPattern = new RegExp(
+    `(/\\*\\*[\\s\\S]*?\\*/\\s*)?` + // Optional doc comment (non-greedy)
+      `(QTS_CommandStatus\\s+${functionName}\\s*\\([^)]*\\))\\s*\\{`,
     "s",
   )
 
-  const match = content.match(signaturePattern)
+  const match = content.match(signatureWithDocPattern)
   if (!match) {
     // Couldn't find the function signature - return unchanged
     return content
   }
 
-  const oldSignature = match[1]
-  // Normalize whitespace for comparison
-  const normalizedOld = oldSignature.replace(/\s+/g, " ").trim()
-  const normalizedNew = newSignature.replace(/\s+/g, " ").trim()
+  const oldDocComment = match[1] || ""
+  const oldSignature = match[2]
 
-  if (normalizedOld === normalizedNew) {
-    // Signature hasn't changed
+  // Normalize whitespace for comparison
+  const normalizedOldSig = oldSignature.replace(/\s+/g, " ").trim()
+  const normalizedNewSig = newSignature.replace(/\s+/g, " ").trim()
+  const normalizedOldDoc = oldDocComment.replace(/\s+/g, " ").trim()
+  const normalizedNewDoc = newDocComment.replace(/\s+/g, " ").trim()
+
+  if (normalizedOldSig === normalizedNewSig && normalizedOldDoc === normalizedNewDoc) {
+    // Neither signature nor doc comment has changed
     return content
   }
 
-  // Replace the old signature with the new one
-  return content.replace(signaturePattern, `${newSignature} {`)
+  // Replace the old doc comment + signature with the new ones
+  return content.replace(signatureWithDocPattern, `${newDocComment}\n${newSignature} {`)
 }
 
 /**
@@ -868,9 +873,9 @@ function buildCOps(outputDir: string): void {
       fs.writeFileSync(cPath, cf.scaffoldContent)
       scaffoldsGenerated++
     } else {
-      // Read existing file and try to update the function signature
+      // Read existing file and try to update the function signature and doc comment
       const existingContent = fs.readFileSync(cPath, "utf-8")
-      const updatedContent = updateFunctionSignature(existingContent, cf.functionName, cf.signature)
+      const updatedContent = updateFunctionSignature(existingContent, cf.functionName, cf.signature, cf.docComment)
       if (updatedContent !== existingContent) {
         fs.writeFileSync(cPath, updatedContent)
         signaturesUpdated++
