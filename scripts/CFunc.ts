@@ -32,7 +32,6 @@ function getRawCType(path: string[]): string {
  * Generate a C expression to extract a value from a path, with casting if needed.
  * - If semantic type matches raw type: just return the path
  * - If semantic type is a pointer: cast with (type)path
- * - Uint16Pair: reinterpret uint32_t as struct via pointer cast
  */
 function cExtractExpr(path: string[], semanticType: string): string {
   const pathExpr = path.join(".")
@@ -40,11 +39,6 @@ function cExtractExpr(path: string[], semanticType: string): string {
 
   if (semanticType === rawType) {
     return pathExpr
-  }
-
-  if (semanticType === "Uint16Pair") {
-    // Reinterpret uint32_t as Uint16Pair struct
-    return `*(Uint16Pair*)&${pathExpr}`
   }
 
   if (semanticType.endsWith("*")) {

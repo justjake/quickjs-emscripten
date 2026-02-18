@@ -68,7 +68,6 @@ type UInt32Types =
   | "int32_t"
   | "HostRefId"
   | "char*"
-  | "Uint16Pair"
   | "JSCFunctionType*"
   | "JSPropFlags"
   | "SetPropFlags"

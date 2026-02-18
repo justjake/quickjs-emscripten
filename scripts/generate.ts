@@ -112,7 +112,9 @@ function main() {
   }
 
   if (command === "ops") {
-    writeFile(destination, buildOps())
+    // Use relative import if destination is in quickjs-ffi-types package
+    const useRelativeImport = destination.includes("quickjs-ffi-types")
+    writeFile(destination, buildOps(useRelativeImport))
     return
   }
 
@@ -162,19 +164,22 @@ function cTypeToTypescriptType(ctype: string, branded = false): ParsedType {
   // collapse spaces (around a *, maybe)
   type = type.split(" ").join("")
 
-  // IDL slot types (always branded)
-  if (type === "JSValueSlot") {
-    return { ffi: "number", typescript: "JSValueSlot", ctype, attributes }
+  // IDL branded types - these map directly to their TypeScript branded equivalents
+  const brandedTypes: Record<string, string> = {
+    // Slot types
+    JSValueSlot: "JSValueSlot",
+    FuncListSlot: "FuncListSlot",
+    // Flag types
+    JSPropFlags: "JSPropFlags",
+    SetPropFlags: "SetPropFlags",
+    EvalFlags: "EvalFlags",
+    NewErrorFlags: "NewErrorFlags",
+    NewTypedArrayFlags: "NewTypedArrayFlags",
+    // Other semantic types
+    HostRefId: "HostRefId",
   }
-  if (type === "FuncListSlot") {
-    return { ffi: "number", typescript: "FuncListSlot", ctype, attributes }
-  }
-  // IDL semantic types
-  if (type === "JSPropFlags") {
-    return { ffi: "number", typescript: "JSPropFlags", ctype, attributes }
-  }
-  if (type === "HostRefId") {
-    return { ffi: "number", typescript: "HostRefId", ctype, attributes }
+  if (type in brandedTypes) {
+    return { ffi: "number", typescript: brandedTypes[type], ctype, attributes }
   }
 
   // mapping
@@ -502,7 +507,13 @@ const SETTER_DEFS: Record<string, string> = {
 }`,
 }
 
-function TSFunc(name: string, opcode: number, command: CommandDef, usedSetters: Set<string>) {
+function TSFunc(
+  name: string,
+  opcode: number,
+  command: CommandDef,
+  usedSetters: Set<string>,
+  usedTypes: Set<string>,
+) {
   const functionName = `write${TsOpName(name)}`
   const params: Array<{ name: string; tsType: string }> = []
   const body: string[] = []
@@ -512,7 +523,11 @@ function TSFunc(name: string, opcode: number, command: CommandDef, usedSetters: 
     body.push(call)
   }
 
-  const tsType = (ctype: string) => cTypeToTypescriptType(ctype, true).typescript
+  const tsType = (ctype: string) => {
+    const ts = cTypeToTypescriptType(ctype, true).typescript
+    usedTypes.add(ts)
+    return ts
+  }
 
   useSetter("setOpcode", `setOpcode(view, offset, ${opcode})`)
 
@@ -632,27 +647,26 @@ function addDataParams(
   }
 }
 
-function buildOps(): string {
-  const imports = `import type {
-  CommandPtr,
-  JSValueSlot,
-  FuncListSlot,
-  JSPropFlags,
-  HostRefId,
-  Uint8,
-  Uint32,
-  Int32,
-  Float64,
-  Int64,
-  BorrowedHeapCharPointer,
-  JSValuePointer,
-} from "@jitl/quickjs-ffi-types"`
-
+function buildOps(useRelativeImport = false): string {
   const usedSetters = new Set<string>()
+  const usedTypes = new Set<string>()
+
+  // CommandPtr is always used in signatures
+  usedTypes.add("CommandPtr")
+
   const writers = OPCODE_TO_COMMAND.map((name, opcode) => {
     const cmd = COMMANDS[name as OpName]
-    return TSFunc(name, opcode, cmd, usedSetters).code
+    return TSFunc(name, opcode, cmd, usedSetters, usedTypes).code
   })
+
+  // Filter out primitive types that don't need to be imported
+  const primitiveTypes = new Set(["number", "bigint", "boolean", "string", "void"])
+  const importTypes = [...usedTypes].filter((t) => !primitiveTypes.has(t)).sort()
+
+  const importFrom = useRelativeImport ? "./ffi-types" : "@jitl/quickjs-ffi-types"
+  const imports = `import type {
+  ${importTypes.join(",\n  ")},
+} from "${importFrom}"`
 
   // Emit only the setters that are actually used
   const setterOrder = [

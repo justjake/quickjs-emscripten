@@ -69,22 +69,6 @@ typedef uint8_t EvalFlags;     /** JS_EVAL_* flags for evaluation */
 typedef uint8_t NewErrorFlags; /** Flags for NEW_ERROR op (error type selection) */
 typedef uint8_t NewTypedArrayFlags; /** JSTypedArrayEnum - TypedArray type (maps to JSTypedArrayEnum) */
 
-/**
- * Uint16Pair: Two uint16 values packed into one uint32.
- *
- * Bit layout: low 16 bits = first value, high 16 bits = second value.
- * Access via .low and .high fields directly.
- *
- * Memory layout on little-endian (wasm is always little-endian):
- * A uint32_t 0xHHHHLLLL is stored as bytes [LL, LL, HH, HH].
- * The first struct field (low) gets bytes 0-1 = bits 0-15.
- * The second struct field (high) gets bytes 2-3 = bits 16-31.
- */
-typedef struct {
-    uint16_t low;
-    uint16_t high;
-} Uint16Pair;
-
 // ----------------------------------------------------------------------------
 // Debug
 // ----------------------------------------------------------------------------
