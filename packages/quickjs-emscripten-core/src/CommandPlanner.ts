@@ -1,5 +1,4 @@
 import {
-  forEachConsumedReadRef as forEachGeneratedConsumedReadRef,
   forEachReadRef as forEachGeneratedReadRef,
   forEachWriteRef as forEachGeneratedWriteRef,
   type Command as OpsCommand,
@@ -74,15 +73,12 @@ export interface CommandShape {
 export interface CommandOperandAccessors<TCommand extends CommandShape = OpsCommand> {
   forEachReadRef(command: TCommand, visit: RefVisitor): void
   forEachWriteRef(command: TCommand, visit: RefVisitor): void
-  forEachConsumedReadRef(command: TCommand, visit: RefVisitor): void
 }
 
 const DEFAULT_OPERAND_ACCESSORS: CommandOperandAccessors<OpsCommand> = {
   forEachReadRef: forEachGeneratedReadRef as unknown as CommandOperandAccessors<OpsCommand>["forEachReadRef"],
   forEachWriteRef:
     forEachGeneratedWriteRef as unknown as CommandOperandAccessors<OpsCommand>["forEachWriteRef"],
-  forEachConsumedReadRef:
-    forEachGeneratedConsumedReadRef as unknown as CommandOperandAccessors<OpsCommand>["forEachConsumedReadRef"],
 }
 
 /**
@@ -302,7 +298,6 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
 
   for (const command of commands) {
     operandAccessors.forEachReadRef(command, noteRef)
-    operandAccessors.forEachConsumedReadRef(command, noteRef)
     operandAccessors.forEachWriteRef(command, noteRef)
   }
 
@@ -345,17 +340,6 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
       const valueId = refValueId(readRef)
       const analysis = bankAnalysis[bankId]
       analysis.remainingReads[valueId] += 1
-    })
-    operandAccessors.forEachConsumedReadRef(command, (consumedRef) => {
-      let foundInReads = false
-      operandAccessors.forEachReadRef(command, (readRef) => {
-        if (readRef === consumedRef) {
-          foundInReads = true
-        }
-      })
-      if (!foundInReads) {
-        throw new Error(`Consumed ref ${consumedRef} is not listed in command reads`)
-      }
     })
   }
 
@@ -691,25 +675,6 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
     bankState.pinEpochByValue[valueId] = bankState.pinEpoch
   }
 
-  const consumeValue = (ref: LogicalRef) => {
-    const bankId = refBankId(ref)
-    const valueId = refValueId(ref)
-    const bankState = bankStates[bankId]
-    const state = bankState.values[valueId]
-
-    if (state.remainingReads > 0) {
-      throw new Error(`Consumed value ${valueId} in bank ${bankId} is referenced after consumption`)
-    }
-    if (state.retained) {
-      throw new Error(`Consumed value ${valueId} in bank ${bankId} cannot be retained`)
-    }
-    if (state.residentSlot >= 0) {
-      clearResident(bankState, state.residentSlot, valueId)
-    }
-    state.parkedAlias = undefined
-    state.freed = true
-  }
-
   for (const command of commands) {
     if (command.barrier && batchCount > 0) {
       flushBatch()
@@ -755,8 +720,6 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
         throw new Error(`Read count for value ${valueId} in bank ${bankId} went negative`)
       }
     })
-
-    operandAccessors.forEachConsumedReadRef(command, consumeValue)
 
     operandAccessors.forEachReadRef(command, postCommandReclaim)
     operandAccessors.forEachWriteRef(command, postCommandReclaim)

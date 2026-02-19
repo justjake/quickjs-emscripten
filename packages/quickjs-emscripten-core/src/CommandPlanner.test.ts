@@ -11,13 +11,15 @@ import {
   type ExecuteCommandPlanOptions,
   type LogicalRef,
   type QuickJSBatchDriver,
-  STRUCTURED_CLONE_KIND,
-  buildStructuredCloneCommands,
   executeCommandPlan,
-  executeStructuredClone,
   packRef,
   refBankId,
-} from "./QuickJSBatch"
+} from "./CommandPlanner"
+import {
+  STRUCTURED_CLONE_KIND,
+  buildStructuredCloneCommands,
+  executeStructuredClone,
+} from "./StructuredCloneCommandProducer"
 import { QuickJSWrongOwner } from "./errors"
 
 const JS_VALUE_BANK = 0 as const
@@ -48,14 +50,11 @@ type TestCommand = CommandShape & {
   readA?: LogicalRef
   readB?: LogicalRef
   write?: LogicalRef
-  consumeReadA?: boolean
-  consumeReadB?: boolean
 }
 
 const NO_OPERAND_ACCESSORS: CommandOperandAccessors<CommandShape> = {
   forEachReadRef() {},
   forEachWriteRef() {},
-  forEachConsumedReadRef() {},
 }
 
 const TEST_OPERAND_ACCESSORS: CommandOperandAccessors<TestCommand> = {
@@ -65,20 +64,6 @@ const TEST_OPERAND_ACCESSORS: CommandOperandAccessors<TestCommand> = {
   },
   forEachWriteRef(command, visit) {
     if (command.write !== undefined) visit(command.write)
-  },
-  forEachConsumedReadRef(command, visit) {
-    if (command.consumeReadA) {
-      if (command.readA === undefined) {
-        throw new Error("consumeReadA requires readA")
-      }
-      visit(command.readA)
-    }
-    if (command.consumeReadB) {
-      if (command.readB === undefined) {
-        throw new Error("consumeReadB requires readB")
-      }
-      visit(command.readB)
-    }
   },
 }
 
@@ -289,23 +274,6 @@ describe("executeCommandPlan", () => {
     )
   })
 
-  it("supports consumedReads and does not emit FREE for consumed values", () => {
-    const driver = new FakeDriver<TestCommand>([8, 8], 256, 2, undefined, TEST_OPERAND_ACCESSORS)
-    const consumed = ref(JS_VALUE_BANK, 1)
-    const produced = ref(JS_VALUE_BANK, 2)
-
-    const commands: TestCommand[] = [
-      cmd("NEW_A", { write: consumed }),
-      cmd("CONSUME_A_PRODUCE_B", { readA: consumed, consumeReadA: true, write: produced }),
-      cmd("USE_B", { readA: produced }),
-    ]
-
-    runTestPlan(commands, driver, {
-      retainedRefs: [produced],
-    })
-    const recordKinds = driver.emitted.map((r) => (r.type === "free" ? `FREE:${r.bankId}` : r.kind))
-    assert.ok(!recordKinds.includes("FREE:0"))
-  })
 })
 
 describe("buildStructuredCloneCommands", () => {

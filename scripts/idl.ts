@@ -58,8 +58,6 @@ export type ParamDef<T extends string = string> = {
    * - use 'in-out' if the command reads from and writes to the pointer or slot
    */
   usage: ParamUsage
-  /** True when the command consumes ownership of an input parameter. */
-  consumed?: boolean
 } & (T extends "char*" ? { pointer: PointerParamConfig } : { pointer?: never })
 
 /**
@@ -1202,10 +1200,6 @@ function isLengthFieldType(type: string): boolean {
 for (const [name, command] of Object.entries(COMMANDS)) {
   const paramMap = collectParamMap(command)
   for (const [path, param] of paramMap.entries()) {
-    if (param.consumed && param.usage === "out") {
-      throw new Error(`${name}.${path}: consumed=true is invalid for usage="out"`)
-    }
-
     if (param.type === "char*") {
       if (!param.pointer) {
         throw new Error(`${name}.${path}: char* params require pointer metadata`)

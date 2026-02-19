@@ -167,7 +167,6 @@ export const STRUCTURED_CLONE_OPERAND_ACCESSORS: CommandOperandAccessors<Structu
         return
     }
   },
-  forEachConsumedReadRef(_command, _visit) {},
 }
 
 type ContainerKind = "object" | "array" | "map" | "set"

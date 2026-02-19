@@ -1309,8 +1309,6 @@ export class GeneratedCommandBuilder {
 
 export type RefVisitor = (ref: LogicalRef) => void
 
-const CONSUMED_READ_MASK = new Uint32Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-
 export function forEachReadRef(command: Command, visit: RefVisitor): void {
   switch (command.kind) {
     case NEW_OBJECT_PROTO:
@@ -1438,14 +1436,6 @@ export function forEachWriteRef(command: Command, visit: RefVisitor): void {
     case FUNCLIST_NEW:
       visit(command.resultFunclistSlot)
       return
-    default:
-      return
-  }
-}
-
-export function forEachConsumedReadRef(command: Command, visit: RefVisitor): void {
-  switch (command.kind) {
-
     default:
       return
   }

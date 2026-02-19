@@ -691,7 +691,6 @@ type RefOperand = {
   isMany: boolean
   read: boolean
   write: boolean
-  consumed: boolean
 }
 
 function snakeToCamel(name: string): string {
@@ -801,7 +800,6 @@ function collectRefOperands(params: readonly ParamWithPath[]): RefOperand[] {
         isMany: false,
         read: param.usage === "in" || param.usage === "in-out",
         write: param.usage === "out" || param.usage === "in-out",
-        consumed: Boolean(param.consumed),
       })
       continue
     }
@@ -812,7 +810,6 @@ function collectRefOperands(params: readonly ParamWithPath[]): RefOperand[] {
         isMany: isJsValuesArrayPtr,
         read: param.usage === "in" || param.usage === "in-out",
         write: param.usage === "out" || param.usage === "in-out",
-        consumed: Boolean(param.consumed),
       })
     }
   }
@@ -827,20 +824,6 @@ function renderVisitStatements(operands: readonly RefOperand[]): string[] {
     } else {
       lines.push(`visit(command.${operand.fieldName})`)
     }
-  }
-  return lines
-}
-
-function renderConsumedVisitStatements(operands: readonly RefOperand[]): string[] {
-  const lines: string[] = []
-  let bit = 1
-  for (const operand of operands) {
-    if (operand.isMany) {
-      lines.push(`if (mask & ${bit}) command.${operand.fieldName}.forEach(visit)`)
-    } else {
-      lines.push(`if (mask & ${bit}) visit(command.${operand.fieldName})`)
-    }
-    bit <<= 1
   }
   return lines
 }
@@ -863,22 +846,16 @@ function addCaseGroup(groups: Map<string, CaseGroup>, name: string, statements: 
   groups.set(key, { names: [name], statements: [...statements] })
 }
 
-function renderCaseGroups(groups: Map<string, CaseGroup>, blockBody = false): string[] {
+function renderCaseGroups(groups: Map<string, CaseGroup>): string[] {
   const out: string[] = []
   for (const group of groups.values()) {
     for (const name of group.names) {
       out.push(`    case ${name}:`)
     }
-    if (blockBody) {
-      out.push("    {")
-    }
     for (const statement of group.statements) {
       out.push(`      ${statement}`)
     }
     out.push("      return")
-    if (blockBody) {
-      out.push("    }")
-    }
   }
   return out
 }
@@ -959,8 +936,6 @@ function buildOpsFiles(useRelativeImport = false): string {
   const builderMethods: string[] = []
   const readCaseGroups = new Map<string, CaseGroup>()
   const writeCaseGroups = new Map<string, CaseGroup>()
-  const consumedCaseGroups = new Map<string, CaseGroup>()
-  const consumedMaskEntries: number[] = new Array(OPCODE_TO_COMMAND.length)
 
   for (let opcode = 0; opcode < OPCODE_TO_COMMAND.length; opcode++) {
     const name = OPCODE_TO_COMMAND[opcode] as OpName
@@ -975,27 +950,10 @@ function buildOpsFiles(useRelativeImport = false): string {
     const readOperands = refOperands.filter((operand) => operand.read)
     const writeOperands = refOperands.filter((operand) => operand.write)
 
-    let consumedMask = 0
-    let maskBit = 1
-    for (const operand of readOperands) {
-      if (operand.consumed) {
-        consumedMask |= maskBit
-      }
-      maskBit <<= 1
-    }
-    consumedMaskEntries[opcode] = consumedMask
-
     const readStatements = renderVisitStatements(readOperands)
     const writeStatements = renderVisitStatements(writeOperands)
     addCaseGroup(readCaseGroups, name, readStatements)
     addCaseGroup(writeCaseGroups, name, writeStatements)
-    if (consumedMask !== 0) {
-      const consumedStatements = [
-        "const mask = CONSUMED_READ_MASK[command.kind]",
-        ...renderConsumedVisitStatements(readOperands),
-      ]
-      addCaseGroup(consumedCaseGroups, name, consumedStatements)
-    }
 
     const fieldRows = visibleParams.map(({ param, isJsValuesArrayPtr }) => {
       const fieldName = commandFieldName(param)
@@ -1146,8 +1104,6 @@ ${builderMethods.join("\n\n")}
   const plannerAccessors = `
 export type RefVisitor = (ref: LogicalRef) => void
 
-const CONSUMED_READ_MASK = new Uint32Array([${consumedMaskEntries.join(", ")}])
-
 export function forEachReadRef(command: Command, visit: RefVisitor): void {
   switch (command.kind) {
 ${renderCaseGroups(readCaseGroups).join("\n")}
@@ -1159,14 +1115,6 @@ ${renderCaseGroups(readCaseGroups).join("\n")}
 export function forEachWriteRef(command: Command, visit: RefVisitor): void {
   switch (command.kind) {
 ${renderCaseGroups(writeCaseGroups).join("\n")}
-    default:
-      return
-  }
-}
-
-export function forEachConsumedReadRef(command: Command, visit: RefVisitor): void {
-  switch (command.kind) {
-${renderCaseGroups(consumedCaseGroups, true).join("\n")}
     default:
       return
   }
