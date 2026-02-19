@@ -9,12 +9,12 @@ import {
   QuickJSBatchExecutionError,
   type BankId,
   type ExecuteCommandPlanOptions,
-  type LogicalRef,
   type QuickJSBatchDriver,
   executeCommandPlan,
   packRef,
   refBankId,
 } from "./CommandPlanner"
+import type { AnyRef } from "./command-types"
 import {
   STRUCTURED_CLONE_KIND,
   buildStructuredCloneCommands,
@@ -47,9 +47,9 @@ type ParkedAlias = {
 }
 
 type TestCommand = CommandShape & {
-  readA?: LogicalRef
-  readB?: LogicalRef
-  write?: LogicalRef
+  readA?: AnyRef
+  readB?: AnyRef
+  write?: AnyRef
 }
 
 const NO_OPERAND_ACCESSORS: CommandOperandAccessors<CommandShape> = {
@@ -93,7 +93,7 @@ class FakeDriver<TCommand extends CommandShape = CommandShape>
     return capacity
   }
 
-  emit(command: TCommand, resolveSlot: (ref: LogicalRef) => number, indexInBatch: number): void {
+  emit(command: TCommand, resolveSlot: (ref: AnyRef) => number, indexInBatch: number): void {
     const readSlots: string[] = []
     const writeSlots: string[] = []
     this.operandAccessors.forEachReadRef(command, (ref) => {
@@ -139,7 +139,7 @@ class FakeDriver<TCommand extends CommandShape = CommandShape>
   }
 }
 
-function ref(bankId: BankId, valueId: number): LogicalRef {
+function ref(bankId: BankId, valueId: number): AnyRef {
   return packRef(bankId, valueId)
 }
 

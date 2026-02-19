@@ -6,7 +6,7 @@
  */
 type Pointer<CType extends string> = number & { ctype: CType }
 
-type Brand<T, B> = T & { brand: B }
+export type Brand<T, B> = T & { brand: B }
 
 /**
  * `JSRuntime*`.

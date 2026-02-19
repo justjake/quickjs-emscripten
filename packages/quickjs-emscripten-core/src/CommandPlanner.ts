@@ -3,6 +3,7 @@ import {
   forEachWriteRef as forEachGeneratedWriteRef,
   type Command as OpsCommand,
 } from "./ops"
+import type { AnyRef } from "./command-types"
 
 export type OwnedValueId = number
 export type SlotId = number
@@ -14,8 +15,6 @@ export const REF_MAX_BANK_ID = (1 << REF_BANK_BITS) - 1
 export const REF_MAX_VALUE_ID = (1 << REF_VALUE_BITS) - 1
 
 export const DEFAULT_JS_VALUE_BANK_ID = 0
-
-export type LogicalRef = number
 
 export interface StringAllocation {
   ptr(inputStringArrayIndex: number): number
@@ -42,7 +41,7 @@ export function hasNullByte(value: string): boolean {
   return value.includes("\0")
 }
 
-export function packRef(bankId: BankId, valueId: OwnedValueId): LogicalRef {
+export function packRef(bankId: BankId, valueId: OwnedValueId): AnyRef {
   if (!Number.isInteger(bankId) || bankId < 0 || bankId > REF_MAX_BANK_ID) {
     throw new Error(`Invalid bank id: ${bankId}`)
   }
@@ -50,19 +49,19 @@ export function packRef(bankId: BankId, valueId: OwnedValueId): LogicalRef {
     throw new Error(`Invalid value id: ${valueId}`)
   }
 
-  return (((bankId << REF_VALUE_BITS) | valueId) >>> 0) as LogicalRef
+  return (((bankId << REF_VALUE_BITS) | valueId) >>> 0) as AnyRef
 }
 
-export function refBankId(ref: LogicalRef): BankId {
+export function refBankId(ref: AnyRef): BankId {
   return (ref >>> REF_VALUE_BITS) & REF_MAX_BANK_ID
 }
 
-export function refValueId(ref: LogicalRef): OwnedValueId {
+export function refValueId(ref: AnyRef): OwnedValueId {
   return ref & REF_MAX_VALUE_ID
 }
 
-type SlotResolver = (ref: LogicalRef) => SlotId
-export type RefVisitor = (ref: LogicalRef) => void
+type SlotResolver = (ref: AnyRef) => SlotId
+export type RefVisitor = (ref: AnyRef) => void
 
 export interface CommandShape {
   kind: number
@@ -102,7 +101,7 @@ export interface QuickJSBatchDriver<
 }
 
 export interface InitialValueBinding<ParkedAlias = unknown> {
-  ref: LogicalRef
+  ref: AnyRef
   slot?: SlotId
   parkedAlias?: ParkedAlias
   retained?: boolean
@@ -112,7 +111,7 @@ export interface ExecuteCommandPlanOptions<
   ParkedAlias = unknown,
   TCommand extends CommandShape = OpsCommand,
 > {
-  retainedRefs?: Iterable<LogicalRef>
+  retainedRefs?: Iterable<AnyRef>
   initialValues?: ReadonlyArray<InitialValueBinding<ParkedAlias>>
   enableFastPath?: boolean
   operandAccessors?: CommandOperandAccessors<TCommand>
@@ -250,7 +249,7 @@ function assertValidBankId(bankId: number, bankCount: number): void {
 }
 
 function assertRefInBounds<ParkedAlias>(
-  ref: LogicalRef,
+  ref: AnyRef,
   bankStates: readonly PlannerBankState<ParkedAlias>[],
   bankCount: number,
 ): PlannerBankState<ParkedAlias> {
@@ -287,7 +286,7 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
   const maxValueIdByBank = new Int32Array(bankCount)
   maxValueIdByBank.fill(-1)
 
-  const noteRef = (ref: LogicalRef) => {
+  const noteRef = (ref: AnyRef) => {
     const bankId = refBankId(ref)
     assertValidBankId(bankId, bankCount)
     const valueId = refValueId(ref)
@@ -623,7 +622,7 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
     return slot
   }
 
-  const ensureResident = (ref: LogicalRef): number => {
+  const ensureResident = (ref: AnyRef): number => {
     const bankId = refBankId(ref)
     const valueId = refValueId(ref)
     assertValidBankId(bankId, bankCount)
@@ -644,7 +643,7 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
     return state.residentSlot
   }
 
-  const postCommandReclaim = (ref: LogicalRef) => {
+  const postCommandReclaim = (ref: AnyRef) => {
     const bankState = assertRefInBounds(ref, bankStates, bankCount)
     const valueId = refValueId(ref)
     const state = bankState.values[valueId]
@@ -657,7 +656,7 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
   const touchedBankIds: number[] = []
   const touchedBankMarks = new Uint8Array(bankCount)
 
-  const markPinned = (ref: LogicalRef) => {
+  const markPinned = (ref: AnyRef) => {
     const bankId = refBankId(ref)
     const valueId = refValueId(ref)
     assertValidBankId(bankId, bankCount)

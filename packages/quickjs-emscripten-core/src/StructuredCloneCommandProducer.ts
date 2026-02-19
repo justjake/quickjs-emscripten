@@ -2,6 +2,7 @@ import { QuickJSWrongOwner } from "./errors"
 import { Lifetime } from "./lifetime"
 import type { QuickJSHandle } from "./types"
 import * as Op from "./ops"
+import type { JSValueRef } from "./command-types"
 import {
   type CommandShape,
   DEFAULT_JS_VALUE_BANK_ID,
@@ -14,7 +15,6 @@ import {
   type BankId,
   type ExecuteCommandPlanOptions,
   type ExecuteCommandPlanResult,
-  type LogicalRef,
   type OwnedValueId,
   type QuickJSBatchDriver,
   type SlotId,
@@ -57,42 +57,42 @@ export const STRUCTURED_CLONE_KIND = {
 } as const
 
 export type StructuredClonePayload =
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_OBJECT; resultRef: LogicalRef }
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_ARRAY; resultRef: LogicalRef }
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_MAP; resultRef: LogicalRef }
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_SET; resultRef: LogicalRef }
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_DATE; resultRef: LogicalRef; timestampMs: number }
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_FLOAT64; resultRef: LogicalRef; value: number }
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_INT32; resultRef: LogicalRef; value: number }
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_BIGINT; resultRef: LogicalRef; value: bigint }
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_STRING; resultRef: LogicalRef; value: string }
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_BOOL; resultRef: LogicalRef; value: boolean }
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_NULL; resultRef: LogicalRef }
-  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_UNDEFINED; resultRef: LogicalRef }
-  | { kind: typeof STRUCTURED_CLONE_KIND.LOAD_HANDLE; resultRef: LogicalRef; handle: QuickJSHandle }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_VALUE; targetRef: LogicalRef; valueRef: LogicalRef; key: string }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_NULL; targetRef: LogicalRef; key: string }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_UNDEF; targetRef: LogicalRef; key: string }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_BOOL; targetRef: LogicalRef; key: string; value: boolean }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_INT32; targetRef: LogicalRef; key: string; value: number }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_F64; targetRef: LogicalRef; key: string; value: number }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_BIGINT; targetRef: LogicalRef; key: string; value: bigint }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_STRING; targetRef: LogicalRef; key: string; value: string }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_VALUE; targetRef: LogicalRef; valueRef: LogicalRef; index: number }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_NULL; targetRef: LogicalRef; index: number }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_UNDEF; targetRef: LogicalRef; index: number }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_BOOL; targetRef: LogicalRef; index: number; value: boolean }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_INT32; targetRef: LogicalRef; index: number; value: number }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_F64; targetRef: LogicalRef; index: number; value: number }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_BIGINT; targetRef: LogicalRef; index: number; value: bigint }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_STRING; targetRef: LogicalRef; index: number; value: string }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_OBJECT; resultRef: JSValueRef }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_ARRAY; resultRef: JSValueRef }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_MAP; resultRef: JSValueRef }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_SET; resultRef: JSValueRef }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_DATE; resultRef: JSValueRef; timestampMs: number }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_FLOAT64; resultRef: JSValueRef; value: number }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_INT32; resultRef: JSValueRef; value: number }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_BIGINT; resultRef: JSValueRef; value: bigint }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_STRING; resultRef: JSValueRef; value: string }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_BOOL; resultRef: JSValueRef; value: boolean }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_NULL; resultRef: JSValueRef }
+  | { kind: typeof STRUCTURED_CLONE_KIND.NEW_UNDEFINED; resultRef: JSValueRef }
+  | { kind: typeof STRUCTURED_CLONE_KIND.LOAD_HANDLE; resultRef: JSValueRef; handle: QuickJSHandle }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_VALUE; targetRef: JSValueRef; valueRef: JSValueRef; key: string }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_NULL; targetRef: JSValueRef; key: string }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_UNDEF; targetRef: JSValueRef; key: string }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_BOOL; targetRef: JSValueRef; key: string; value: boolean }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_INT32; targetRef: JSValueRef; key: string; value: number }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_F64; targetRef: JSValueRef; key: string; value: number }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_BIGINT; targetRef: JSValueRef; key: string; value: bigint }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_STR_STRING; targetRef: JSValueRef; key: string; value: string }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_VALUE; targetRef: JSValueRef; valueRef: JSValueRef; index: number }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_NULL; targetRef: JSValueRef; index: number }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_UNDEF; targetRef: JSValueRef; index: number }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_BOOL; targetRef: JSValueRef; index: number; value: boolean }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_INT32; targetRef: JSValueRef; index: number; value: number }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_F64; targetRef: JSValueRef; index: number; value: number }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_BIGINT; targetRef: JSValueRef; index: number; value: bigint }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_IDX_STRING; targetRef: JSValueRef; index: number; value: string }
   | {
       kind: typeof STRUCTURED_CLONE_KIND.MAP_SET
-      targetRef: LogicalRef
-      keyRef: LogicalRef
-      valueRef: LogicalRef
+      targetRef: JSValueRef
+      keyRef: JSValueRef
+      valueRef: JSValueRef
     }
-  | { kind: typeof STRUCTURED_CLONE_KIND.SET_ADD; targetRef: LogicalRef; valueRef: LogicalRef }
+  | { kind: typeof STRUCTURED_CLONE_KIND.SET_ADD; targetRef: JSValueRef; valueRef: JSValueRef }
 
 export type StructuredCloneCommand = StructuredClonePayload & CommandShape
 
@@ -104,7 +104,7 @@ export interface StructuredCloneBuildOptions {
 
 export interface StructuredClonePlan {
   commands: StructuredCloneCommand[]
-  rootRef: LogicalRef
+  rootRef: JSValueRef
   rootValueId: OwnedValueId
   movedHandles: QuickJSHandle[]
 }
@@ -192,6 +192,10 @@ function addCommand(
   commands.push(payload)
 }
 
+function packJSValueRef(bankId: BankId, valueId: OwnedValueId): JSValueRef {
+  return packRef(bankId, valueId) as JSValueRef
+}
+
 function materializePrimitive(
   value: null | undefined | boolean | number | bigint | string,
   bankId: BankId,
@@ -199,7 +203,7 @@ function materializePrimitive(
   commands: StructuredCloneCommand[],
 ): OwnedValueId {
   const valueId = nextValueId()
-  const writeRef = packRef(bankId, valueId)
+  const writeRef = packJSValueRef(bankId, valueId)
 
   if (value === null) {
     addCommand(commands, { kind: STRUCTURED_CLONE_KIND.NEW_NULL, resultRef: writeRef })
@@ -240,7 +244,7 @@ function emitInlineObjectSet(
   key: string,
   value: unknown,
 ): boolean {
-  const targetRef = packRef(bankId, targetValueId)
+  const targetRef = packJSValueRef(bankId, targetValueId)
 
   if (value === null) {
     addCommand(commands, { kind: STRUCTURED_CLONE_KIND.SET_STR_NULL, key, targetRef })
@@ -280,7 +284,7 @@ function emitInlineArraySet(
   index: number,
   value: unknown,
 ): boolean {
-  const targetRef = packRef(bankId, targetValueId)
+  const targetRef = packJSValueRef(bankId, targetValueId)
 
   if (value === null) {
     addCommand(commands, { kind: STRUCTURED_CLONE_KIND.SET_IDX_NULL, index, targetRef })
@@ -365,7 +369,7 @@ export function buildStructuredCloneCommands(
       objectToValueId.set(value, valueId)
       addCommand(
         commands,
-        { kind: STRUCTURED_CLONE_KIND.LOAD_HANDLE, handle: value, resultRef: packRef(jsValueBankId, valueId) },
+        { kind: STRUCTURED_CLONE_KIND.LOAD_HANDLE, handle: value, resultRef: packJSValueRef(jsValueBankId, valueId) },
       )
       if (move) {
         movedHandles?.add(value)
@@ -381,7 +385,7 @@ export function buildStructuredCloneCommands(
     if (Array.isArray(value)) {
       const valueId = nextValueId()
       objectToValueId.set(value, valueId)
-      addCommand(commands, { kind: STRUCTURED_CLONE_KIND.NEW_ARRAY, resultRef: packRef(jsValueBankId, valueId) })
+      addCommand(commands, { kind: STRUCTURED_CLONE_KIND.NEW_ARRAY, resultRef: packJSValueRef(jsValueBankId, valueId) })
       pendingContainers.push({ kind: "array", input: value, valueId })
       return valueId
     }
@@ -394,7 +398,7 @@ export function buildStructuredCloneCommands(
         {
           kind: STRUCTURED_CLONE_KIND.NEW_DATE,
           timestampMs: value.getTime(),
-          resultRef: packRef(jsValueBankId, valueId),
+          resultRef: packJSValueRef(jsValueBankId, valueId),
         },
       )
       return valueId
@@ -403,7 +407,7 @@ export function buildStructuredCloneCommands(
     if (value instanceof Map) {
       const valueId = nextValueId()
       objectToValueId.set(value, valueId)
-      addCommand(commands, { kind: STRUCTURED_CLONE_KIND.NEW_MAP, resultRef: packRef(jsValueBankId, valueId) })
+      addCommand(commands, { kind: STRUCTURED_CLONE_KIND.NEW_MAP, resultRef: packJSValueRef(jsValueBankId, valueId) })
       pendingContainers.push({ kind: "map", input: value, valueId })
       return valueId
     }
@@ -411,7 +415,7 @@ export function buildStructuredCloneCommands(
     if (value instanceof Set) {
       const valueId = nextValueId()
       objectToValueId.set(value, valueId)
-      addCommand(commands, { kind: STRUCTURED_CLONE_KIND.NEW_SET, resultRef: packRef(jsValueBankId, valueId) })
+      addCommand(commands, { kind: STRUCTURED_CLONE_KIND.NEW_SET, resultRef: packJSValueRef(jsValueBankId, valueId) })
       pendingContainers.push({ kind: "set", input: value, valueId })
       return valueId
     }
@@ -422,18 +426,18 @@ export function buildStructuredCloneCommands(
 
     const valueId = nextValueId()
     objectToValueId.set(value, valueId)
-    addCommand(commands, { kind: STRUCTURED_CLONE_KIND.NEW_OBJECT, resultRef: packRef(jsValueBankId, valueId) })
+    addCommand(commands, { kind: STRUCTURED_CLONE_KIND.NEW_OBJECT, resultRef: packJSValueRef(jsValueBankId, valueId) })
     pendingContainers.push({ kind: "object", input: value, valueId })
     return valueId
   }
 
   const rootValueId = materializeReference(input)
-  const rootRef = packRef(jsValueBankId, rootValueId)
+  const rootRef = packJSValueRef(jsValueBankId, rootValueId)
 
   for (let i = 0; i < pendingContainers.length; i++) {
     const pending = pendingContainers[i]
     const targetId = pending.valueId
-    const targetRef = packRef(jsValueBankId, targetId)
+    const targetRef = packJSValueRef(jsValueBankId, targetId)
 
     if (pending.kind === "object") {
       const source = pending.input as Record<string, unknown>
@@ -446,7 +450,7 @@ export function buildStructuredCloneCommands(
           kind: STRUCTURED_CLONE_KIND.SET_STR_VALUE,
           key,
           targetRef,
-          valueRef: packRef(jsValueBankId, childId),
+          valueRef: packJSValueRef(jsValueBankId, childId),
         })
       }
       continue
@@ -467,7 +471,7 @@ export function buildStructuredCloneCommands(
           kind: STRUCTURED_CLONE_KIND.SET_IDX_VALUE,
           index,
           targetRef,
-          valueRef: packRef(jsValueBankId, childId),
+          valueRef: packJSValueRef(jsValueBankId, childId),
         })
       }
       continue
@@ -481,8 +485,8 @@ export function buildStructuredCloneCommands(
         addCommand(commands, {
           kind: STRUCTURED_CLONE_KIND.MAP_SET,
           targetRef,
-          keyRef: packRef(jsValueBankId, keyId),
-          valueRef: packRef(jsValueBankId, valueId),
+          keyRef: packJSValueRef(jsValueBankId, keyId),
+          valueRef: packJSValueRef(jsValueBankId, valueId),
         })
       }
       continue
@@ -495,7 +499,7 @@ export function buildStructuredCloneCommands(
         addCommand(commands, {
           kind: STRUCTURED_CLONE_KIND.SET_ADD,
           targetRef,
-          valueRef: packRef(jsValueBankId, valueId),
+          valueRef: packJSValueRef(jsValueBankId, valueId),
         })
       }
     }
@@ -514,7 +518,7 @@ export interface ExecuteStructuredCloneOptions<ParkedAlias = unknown>
     Omit<ExecuteCommandPlanOptions<ParkedAlias, StructuredCloneCommand>, "retainedRefs" | "operandAccessors"> {}
 
 export interface ExecuteStructuredCloneResult {
-  rootRef: LogicalRef
+  rootRef: JSValueRef
   rootValueId: OwnedValueId
   rootSlot: SlotId
   plan: ExecuteCommandPlanResult

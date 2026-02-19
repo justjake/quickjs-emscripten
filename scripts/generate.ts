@@ -925,7 +925,8 @@ function buildOpsFiles(useRelativeImport = false): string {
   const importFrom = useRelativeImport ? "./ffi-types" : "@jitl/quickjs-ffi-types"
   const imports = `import type {
   ${importTypes.join(",\n  ")},
-} from "${importFrom}"`
+} from "${importFrom}"
+import type { AnyRef, FuncListRef, JSValueRef } from "./command-types"`
 
   const opcodeConsts = OPCODE_TO_COMMAND.map(
     (name, opcode) => `export const ${name} = ${opcode} as const`,
@@ -993,11 +994,12 @@ function buildOpsFiles(useRelativeImport = false): string {
     })
 
     const commandInit = [
-      `    this.pushCommand({`,
+      `    const command: ${typeName} = {`,
       `      kind: ${name},`,
       commandDef.barrier ? `      barrier: true,` : "",
       ...fieldAssignments,
-      `    } as ${typeName})`,
+      `    }`,
+      `    this.pushCommand(command)`,
     ].filter(Boolean)
 
     let returnBlock = ""
@@ -1045,17 +1047,12 @@ function buildOpsFiles(useRelativeImport = false): string {
 ] as const`
 
   const commandTypes = `
-export type LogicalRef = number
-export type JSValueRef = LogicalRef
-export type FuncListRef = LogicalRef
-export type CommandRef = LogicalRef
-
 const REF_VALUE_BITS = 24
 const JS_VALUE_BANK_ID = 0
 const FUNC_LIST_BANK_ID = 1
 
-function packGeneratedRef(bankId: number, valueId: number): LogicalRef {
-  return (((bankId << REF_VALUE_BITS) | valueId) >>> 0) as LogicalRef
+function packGeneratedRef(bankId: number, valueId: number): AnyRef {
+  return (((bankId << REF_VALUE_BITS) | valueId) >>> 0) as AnyRef
 }
 
 interface BaseCommand {
@@ -1102,7 +1099,7 @@ ${builderMethods.join("\n\n")}
 `.trim()
 
   const plannerAccessors = `
-export type RefVisitor = (ref: LogicalRef) => void
+export type RefVisitor = (ref: AnyRef) => void
 
 export function forEachReadRef(command: Command, visit: RefVisitor): void {
   switch (command.kind) {
@@ -1118,24 +1115,6 @@ ${renderCaseGroups(writeCaseGroups).join("\n")}
     default:
       return
   }
-}
-`.trim()
-
-  const writerTypes = `
-type OpcodeToEncoder = typeof OP_ENCODERS
-
-type OpcodeToParams = {
-  [Op in keyof OpcodeToEncoder]: OpcodeToEncoder[Op] extends (
-    view: DataView,
-    offset: CommandPtr,
-    ...args: infer P
-  ) => void
-    ? P
-    : never
-}
-
-export type OpcodeToCommand = {
-  [Op in keyof OpcodeToParams]: { op: Op; args: OpcodeToParams[Op] }
 }
 `.trim()
 
@@ -1157,7 +1136,6 @@ export type OpcodeToCommand = {
     "",
     ...writers,
     encoderArray,
-    writerTypes,
   ].join("\n\n")
 
   return ops
