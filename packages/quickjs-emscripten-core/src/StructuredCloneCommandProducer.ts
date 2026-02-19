@@ -3,28 +3,55 @@ import type { JSValueRef } from "./command-types"
 import { CommandBuilder } from "./CommandBuilder"
 import type { QuickJSHandle } from "./types"
 
-type ContainerKind = "object" | "array" | "map" | "set"
-
-type PendingContainer = {
-  kind: ContainerKind
-  source: object
+type PendingObjectContainer = {
+  kind: "object"
+  source: Record<string, unknown>
   ref: JSValueRef
+}
+
+type PendingArrayContainer = {
+  kind: "array"
+  source: unknown[]
+  ref: JSValueRef
+}
+
+type PendingMapContainer = {
+  kind: "map"
+  source: Map<unknown, unknown>
+  ref: JSValueRef
+}
+
+type PendingSetContainer = {
+  kind: "set"
+  source: Set<unknown>
+  ref: JSValueRef
+}
+
+type PendingContainer =
+  | PendingObjectContainer
+  | PendingArrayContainer
+  | PendingMapContainer
+  | PendingSetContainer
+
+function assertUnknownPendingContainer(container: never): never {
+  throw new Error(
+    `Unknown structured clone pending container kind: ${String((container as { kind?: unknown }).kind)}`,
+  )
 }
 
 export interface AppendStructuredCloneResult {
   rootRef: JSValueRef
-  encounteredHandles: QuickJSHandle[]
+  encounteredHandles: Set<QuickJSHandle>
 }
 
-function isInlineSetValue(value: unknown): value is null | undefined | boolean | number | bigint | string | QuickJSHandle {
+function isInlinePrimitive(value: unknown): value is null | undefined | boolean | number | bigint | string {
   return (
     value === null ||
     value === undefined ||
     typeof value === "boolean" ||
     typeof value === "number" ||
     typeof value === "bigint" ||
-    typeof value === "string" ||
-    value instanceof JSValueLifetime
+    typeof value === "string"
   )
 }
 
@@ -103,7 +130,7 @@ export function appendStructuredClone(
 
     const ref = builder.newObject()
     objectToRef.set(value, ref)
-    pending.push({ kind: "object", source: value, ref })
+    pending.push({ kind: "object", source: value as Record<string, unknown>, ref })
     return ref
   }
 
@@ -111,57 +138,60 @@ export function appendStructuredClone(
 
   for (let i = 0; i < pending.length; i++) {
     const next = pending[i]
-
-    if (next.kind === "object") {
-      const source = next.source as Record<string, unknown>
-      for (const [key, value] of Object.entries(source)) {
-        if (isInlineSetValue(value)) {
+    switch (next.kind) {
+      case "object": {
+        for (const [key, value] of Object.entries(next.source)) {
+          if (isInlinePrimitive(value)) {
+            builder.setProp(next.ref, key, value)
+            continue
+          }
           if (value instanceof JSValueLifetime) {
             encounteredHandles.add(value)
+            builder.setProp(next.ref, key, value)
+          } else {
+            builder.setPropRef(next.ref, key, materialize(value))
           }
-          builder.setProp(next.ref, key, value)
-        } else {
-          builder.setProp(next.ref, key, materialize(value))
         }
+        break
       }
-      continue
-    }
-
-    if (next.kind === "array") {
-      const source = next.source as unknown[]
-      for (let index = 0; index < source.length; index++) {
-        if (!Object.prototype.hasOwnProperty.call(source, index)) {
-          continue
-        }
-        const value = source[index]
-        if (isInlineSetValue(value)) {
+      case "array": {
+        for (let index = 0; index < next.source.length; index++) {
+          if (!Object.prototype.hasOwnProperty.call(next.source, index)) {
+            continue
+          }
+          const value = next.source[index]
+          if (isInlinePrimitive(value)) {
+            builder.setProp(next.ref, index, value)
+            continue
+          }
           if (value instanceof JSValueLifetime) {
             encounteredHandles.add(value)
+            builder.setProp(next.ref, index, value)
+          } else {
+            builder.setPropRef(next.ref, index, materialize(value))
           }
-          builder.setProp(next.ref, index, value)
-        } else {
-          builder.setProp(next.ref, index, materialize(value))
         }
+        break
       }
-      continue
-    }
-
-    if (next.kind === "map") {
-      const source = next.source as Map<unknown, unknown>
-      for (const [key, value] of source.entries()) {
-        builder.mapSet(next.ref, materialize(key), materialize(value))
+      case "map": {
+        for (const [key, value] of next.source.entries()) {
+          builder.mapSet(next.ref, materialize(key), materialize(value))
+        }
+        break
       }
-      continue
-    }
-
-    const source = next.source as Set<unknown>
-    for (const value of source.values()) {
-      builder.setAdd(next.ref, materialize(value))
+      case "set": {
+        for (const value of next.source.values()) {
+          builder.setAdd(next.ref, materialize(value))
+        }
+        break
+      }
+      default:
+        return assertUnknownPendingContainer(next)
     }
   }
 
   return {
     rootRef,
-    encounteredHandles: [...encounteredHandles],
+    encounteredHandles,
   }
 }

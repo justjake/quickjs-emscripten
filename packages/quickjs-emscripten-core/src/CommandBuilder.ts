@@ -24,7 +24,8 @@ function packGeneratedRef(bankId: number, valueId: number): number {
   return ((bankId << REF_VALUE_BITS) | valueId) >>> 0
 }
 
-export type Primitive = null | undefined | boolean | number | bigint | string
+export type PlainNumber = number & { brand?: never }
+export type Primitive = null | undefined | boolean | PlainNumber | bigint | string
 export type JSValueInput = JSValueRef | QuickJSHandle
 
 export interface InputBinding {
@@ -52,11 +53,6 @@ export interface DefineFuncListPropOptions {
 }
 
 export type FuncListPropValue = Primitive | { object: FuncListRef }
-
-type KeyRouting =
-  | { kind: "string"; key: string }
-  | { kind: "index"; index: number }
-  | { kind: "ref"; keyRef: JSValueRef }
 
 function isArrayIndexKey(value: number): boolean {
   return Number.isInteger(value) && value >= 0 && value <= 0xffffffff
@@ -156,8 +152,20 @@ export class CommandBuilder {
     this.knownFuncListRefs.clear()
   }
 
-  setProp(target: JSValueInput, key: QuickJSPropertyKey, value: Primitive | JSValueInput): void {
-    this.setOrDefineProp(target, key, value, SET_PROP_ASSIGNMENT)
+  setProp(target: JSValueInput, key: QuickJSPropertyKey, value: Primitive | QuickJSHandle): void {
+    if (value instanceof JSValueLifetime) {
+      return this.setOrDefineRefProp(
+        target,
+        key,
+        this.bindHandle(value),
+        SET_PROP_ASSIGNMENT,
+      )
+    }
+    return this.setOrDefinePrimitiveProp(target, key, value, SET_PROP_ASSIGNMENT)
+  }
+
+  setPropRef(target: JSValueInput, key: QuickJSPropertyKey, value: JSValueRef): void {
+    return this.setOrDefineRefProp(target, key, value, SET_PROP_ASSIGNMENT)
   }
 
   bindInput(handle: QuickJSHandle): JSValueRef {
@@ -233,10 +241,24 @@ export class CommandBuilder {
   defineProp(
     target: JSValueInput,
     key: QuickJSPropertyKey,
-    value: Primitive | JSValueInput,
+    value: Primitive,
     options?: DefinePropOptions,
   ): void {
-    this.setOrDefineProp(target, key, value, setPropFlagsFromDefineOptions(options))
+    return this.setOrDefinePrimitiveProp(
+      target,
+      key,
+      value,
+      setPropFlagsFromDefineOptions(options),
+    )
+  }
+
+  definePropRef(
+    target: JSValueInput,
+    key: QuickJSPropertyKey,
+    value: JSValueRef,
+    options?: DefinePropOptions,
+  ): void {
+    return this.setOrDefineRefProp(target, key, value, setPropFlagsFromDefineOptions(options))
   }
 
   newFunction(fn: VmFunctionImplementation<QuickJSHandle>): JSValueRef
@@ -357,37 +379,59 @@ export class CommandBuilder {
     }
   }
 
-  private setOrDefineProp(
+  private setOrDefinePrimitiveProp(
     target: JSValueInput,
     key: QuickJSPropertyKey,
-    value: Primitive | JSValueInput,
+    value: Primitive,
     flags: SetPropFlags,
   ): void {
     const targetRef = this.resolveJsValueInput(target)
-    const keyRouting = this.routePropertyKey(key)
-
-    if (keyRouting.kind === "string") {
-      return this.emitSetByStringKey(targetRef, keyRouting.key, value, flags)
+    if (typeof key === "string") {
+      return this.emitSetPrimitiveByStringKey(targetRef, key, value, flags)
     }
-    if (keyRouting.kind === "index") {
-      return this.emitSetByIndex(targetRef, keyRouting.index, value, flags)
+    if (typeof key === "number") {
+      if (isArrayIndexKey(key)) {
+        return this.emitSetPrimitiveByIndex(targetRef, key, value, flags)
+      }
+      const valueRef = this.materializePrimitiveToRef(value)
+      this.push(Ops.SetCmd(targetRef, this.newNumber(key), valueRef, flags))
+      return
     }
 
-    const valueRef = this.resolveValueRef(value)
-    this.push(Ops.SetCmd(targetRef, keyRouting.keyRef, valueRef, flags))
+    const valueRef = this.materializePrimitiveToRef(value)
+    this.push(Ops.SetCmd(targetRef, this.bindHandle(key), valueRef, flags))
   }
 
-  private emitSetByStringKey(
-    targetRef: JSValueRef,
-    key: string,
-    value: Primitive | JSValueInput,
+  private setOrDefineRefProp(
+    target: JSValueInput,
+    key: QuickJSPropertyKey,
+    value: JSValueRef,
     flags: SetPropFlags,
   ): void {
-    const valueRef = this.tryResolveValueRef(value)
-    if (valueRef !== undefined) {
-      return this.push(Ops.SetStrValueCmd(targetRef, valueRef, flags, key))
+    const targetRef = this.resolveJsValueInput(target)
+    const valueRef = this.resolveJsValueRef(value)
+    if (typeof key === "string") {
+      this.push(Ops.SetStrValueCmd(targetRef, valueRef, flags, key))
+      return
+    }
+    if (typeof key === "number") {
+      if (isArrayIndexKey(key)) {
+        this.push(Ops.SetIdxValueCmd(targetRef, valueRef, flags, key))
+        return
+      }
+      this.push(Ops.SetCmd(targetRef, this.newNumber(key), valueRef, flags))
+      return
     }
 
+    this.push(Ops.SetCmd(targetRef, this.bindHandle(key), valueRef, flags))
+  }
+
+  private emitSetPrimitiveByStringKey(
+    targetRef: JSValueRef,
+    key: string,
+    value: Primitive,
+    flags: SetPropFlags,
+  ): void {
     if (value === null) {
       return this.push(Ops.SetStrNullCmd(targetRef, flags, key))
     }
@@ -413,17 +457,12 @@ export class CommandBuilder {
     throw new TypeError("Unsupported value for setProp/defineProp")
   }
 
-  private emitSetByIndex(
+  private emitSetPrimitiveByIndex(
     targetRef: JSValueRef,
     index: number,
-    value: Primitive | JSValueInput,
+    value: Primitive,
     flags: SetPropFlags,
   ): void {
-    const valueRef = this.tryResolveValueRef(value)
-    if (valueRef !== undefined) {
-      return this.push(Ops.SetIdxValueCmd(targetRef, valueRef, flags, index))
-    }
-
     if (value === null) {
       return this.push(Ops.SetIdxNullCmd(targetRef, flags, index))
     }
@@ -447,50 +486,6 @@ export class CommandBuilder {
     }
 
     throw new TypeError("Unsupported value for setProp/defineProp")
-  }
-
-  private routePropertyKey(key: QuickJSPropertyKey): KeyRouting {
-    if (typeof key === "string") {
-      return { kind: "string", key }
-    }
-    if (typeof key === "number") {
-      if (isArrayIndexKey(key)) {
-        return { kind: "index", index: key }
-      }
-      return { kind: "ref", keyRef: this.newNumber(key) }
-    }
-    return { kind: "ref", keyRef: this.bindHandle(key) }
-  }
-
-  private resolveValueRef(value: Primitive | JSValueInput): JSValueRef {
-    const ref = this.tryResolveValueRef(value)
-    if (ref !== undefined) {
-      return ref
-    }
-    if (
-      value === null ||
-      value === undefined ||
-      typeof value === "boolean" ||
-      typeof value === "number" ||
-      typeof value === "bigint" ||
-      typeof value === "string"
-    ) {
-      return this.materializePrimitiveToRef(value)
-    }
-    throw new TypeError("Unsupported value for setProp/defineProp")
-  }
-
-  private tryResolveValueRef(value: Primitive | JSValueInput): JSValueRef | undefined {
-    if (typeof value === "number") {
-      if (this.isKnownJsValueRef(value)) {
-        return value as JSValueRef
-      }
-      return undefined
-    }
-    if (value instanceof JSValueLifetime) {
-      return this.bindHandle(value)
-    }
-    return undefined
   }
 
   private materializePrimitiveToRef(value: Primitive): JSValueRef {
@@ -526,6 +521,13 @@ export class CommandBuilder {
       return this.bindHandle(input)
     }
     throw new TypeError("Expected JSValueRef or QuickJSHandle")
+  }
+
+  private resolveJsValueRef(ref: JSValueRef): JSValueRef {
+    if (typeof ref !== "number" || !this.isKnownJsValueRef(ref)) {
+      throw new TypeError("Unknown JSValueRef")
+    }
+    return ref
   }
 
   private bindHandle(handle: QuickJSHandle): JSValueRef {

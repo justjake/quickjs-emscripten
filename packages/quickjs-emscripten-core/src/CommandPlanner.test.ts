@@ -338,8 +338,8 @@ describe("appendStructuredClone", () => {
     const handle = makeOwnedHandle(owner)
 
     const result = appendStructuredClone(builder, { a: handle, b: handle })
-    assert.strictEqual(result.encounteredHandles.length, 1)
-    assert.strictEqual(result.encounteredHandles[0], handle)
+    assert.strictEqual(result.encounteredHandles.size, 1)
+    assert.strictEqual(result.encounteredHandles.has(handle), true)
   })
 
   it("throws on wrong-owner handles", () => {

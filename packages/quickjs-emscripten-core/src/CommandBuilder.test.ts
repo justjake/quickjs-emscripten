@@ -1,4 +1,6 @@
 import { SetPropFlags } from "@jitl/quickjs-ffi-types"
+import * as fs from "fs"
+import * as path from "path"
 import { describe, expect, it, vi } from "vitest"
 import { HostRefMap } from "./host-ref"
 import { JSValueLifetime } from "./lifetime"
@@ -32,6 +34,41 @@ describe("CommandBuilder", () => {
     expect(commands).toHaveLength(2)
     expect(commands[0]?.kind).toBe(Op.SET_STR_INT32)
     expect(commands[1]?.kind).toBe(Op.SET_IDX_STRING)
+    expect(builder.getInputBindings()).toHaveLength(1)
+  })
+
+  it("routes setPropRef through value-ref op variants", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+    const target = builder.newObject()
+    const valueRef = builder.newNumber(7)
+    const keyHandle = makeFakeHandle()
+
+    builder.setPropRef(target, "a", valueRef)
+    builder.setPropRef(target, 2, valueRef)
+    builder.setPropRef(target, keyHandle, valueRef)
+
+    const commands = builder.getCommands()
+    expect(commands.map((command) => command.kind)).toEqual([
+      Op.NEW_OBJECT,
+      Op.NEW_FLOAT64,
+      Op.SET_STR_VALUE,
+      Op.SET_IDX_VALUE,
+      Op.SET,
+    ])
+    expect(builder.getInputBindings()).toHaveLength(1)
+  })
+
+  it("accepts QuickJSHandle values in setProp", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+    const target = builder.newObject()
+    const valueHandle = makeFakeHandle()
+
+    builder.setProp(target, "a", valueHandle)
+
+    const command = builder.getCommands()[1]
+    expect(command?.kind).toBe(Op.SET_STR_VALUE)
     expect(builder.getInputBindings()).toHaveLength(1)
   })
 
@@ -76,6 +113,33 @@ describe("CommandBuilder", () => {
     const command = builder.getCommands()[0]
     expect(command?.kind).toBe(Op.SET_STR_BOOL)
     if (!command || command.kind !== Op.SET_STR_BOOL) {
+      return
+    }
+    const expectedFlags =
+      SetPropFlags.DEFINE |
+      SetPropFlags.CONFIGURABLE |
+      SetPropFlags.WRITABLE |
+      SetPropFlags.ENUMERABLE |
+      SetPropFlags.THROW
+    expect(command.flags).toBe(expectedFlags)
+  })
+
+  it("uses define flags for definePropRef", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+    const target = builder.newObject()
+    const value = builder.newNumber(1)
+
+    builder.definePropRef(target, "x", value, {
+      configurable: true,
+      writable: true,
+      enumerable: true,
+      throwOnError: true,
+    })
+
+    const command = builder.getCommands()[2]
+    expect(command?.kind).toBe(Op.SET_STR_VALUE)
+    if (!command || command.kind !== Op.SET_STR_VALUE) {
       return
     }
     const expectedFlags =
@@ -181,5 +245,12 @@ describe("CommandBuilder", () => {
     expect(builder.getInputBindings()).toHaveLength(0)
     expect(builder.getFunctionBindings()).toHaveLength(0)
     expect(() => builder.setProp(staleRef, "x", 1)).toThrow("Unknown JSValueRef")
+  })
+
+  it("does not use mixed Primitive|JSValueInput property value paths", () => {
+    const source = fs.readFileSync(path.join(__dirname, "CommandBuilder.ts"), "utf8")
+    expect(source.includes("Primitive | JSValueInput")).toBe(false)
+    expect(source.includes("tryResolveValueRef")).toBe(false)
+    expect(source.includes("resolveValueRef")).toBe(false)
   })
 })
