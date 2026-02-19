@@ -1,6 +1,6 @@
-import { JSValueLifetime } from "./lifetime"
 import type { JSValueRef } from "./command-types"
-import { CommandBuilder } from "./CommandBuilder"
+import type { CommandBuilder } from "./CommandBuilder"
+import { JSValueLifetime } from "./lifetime"
 import type { QuickJSHandle } from "./types"
 
 type PendingObjectContainer = {
@@ -44,7 +44,9 @@ export interface AppendStructuredCloneResult {
   encounteredHandles: Set<QuickJSHandle>
 }
 
-function isInlinePrimitive(value: unknown): value is null | undefined | boolean | number | bigint | string {
+function isInlinePrimitive(
+  value: unknown,
+): value is null | undefined | boolean | number | bigint | string {
   return (
     value === null ||
     value === undefined ||
@@ -125,7 +127,9 @@ export function appendStructuredClone(
     }
 
     if (ArrayBuffer.isView(value) || value instanceof ArrayBuffer) {
-      throw new TypeError("Typed arrays and ArrayBuffer are not yet supported by this clone producer")
+      throw new TypeError(
+        "Typed arrays and ArrayBuffer are not yet supported by this clone producer",
+      )
     }
 
     const ref = builder.newObject()
