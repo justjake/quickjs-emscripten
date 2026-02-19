@@ -2,8 +2,8 @@ import {
   forEachConsumedReadRef as forEachGeneratedConsumedReadRef,
   forEachReadRef as forEachGeneratedReadRef,
   forEachWriteRef as forEachGeneratedWriteRef,
-} from "./ops-planner.generated"
-import type { Command as OpsCommand } from "./ops"
+  type Command as OpsCommand,
+} from "./ops"
 
 export type OwnedValueId = number
 export type SlotId = number

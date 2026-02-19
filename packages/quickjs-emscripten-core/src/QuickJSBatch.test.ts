@@ -406,7 +406,7 @@ describe("generated command artifacts", () => {
   })
 
   it("generates planner accessors with variable-length argv reads", () => {
-    const plannerSource = fs.readFileSync(path.join(srcDir, "ops-planner.generated.ts"), "utf8")
-    assert.ok(plannerSource.includes("command.argv.forEach(visit)"))
+    const opsSource = fs.readFileSync(path.join(srcDir, "ops.ts"), "utf8")
+    assert.ok(opsSource.includes("command.argv.forEach(visit)"))
   })
 })

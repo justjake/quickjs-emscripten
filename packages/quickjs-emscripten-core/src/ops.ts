@@ -1307,6 +1307,150 @@ export class GeneratedCommandBuilder {
   }
 }
 
+export type RefVisitor = (ref: LogicalRef) => void
+
+const CONSUMED_READ_MASK = new Uint32Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+export function forEachReadRef(command: Command, visit: RefVisitor): void {
+  switch (command.kind) {
+    case NEW_OBJECT_PROTO:
+      visit(command.protoSlot)
+      return
+    case NEW_TYPED_ARRAY:
+    case GET_STR:
+    case GET_IDX:
+    case DUP:
+    case BYTECODE_WRITE:
+    case BYTECODE_READ:
+      visit(command.sourceSlot)
+      return
+    case SET_STR_VALUE:
+    case SET_IDX_VALUE:
+    case MAP_SET_STR:
+    case SET_ADD:
+      visit(command.targetSlot)
+      visit(command.valueSlot)
+      return
+    case SET_STR_NULL:
+    case SET_STR_UNDEF:
+    case SET_STR_BOOL:
+    case SET_STR_INT32:
+    case SET_STR_F64:
+    case SET_STR_BIGINT:
+    case SET_STR_STRING:
+    case SET_IDX_NULL:
+    case SET_IDX_UNDEF:
+    case SET_IDX_BOOL:
+    case SET_IDX_INT32:
+    case SET_IDX_F64:
+    case SET_IDX_BIGINT:
+    case SET_IDX_STRING:
+    case DEF_GETSET:
+    case FREE:
+      visit(command.targetSlot)
+      return
+    case SET:
+    case MAP_SET:
+      visit(command.targetSlot)
+      visit(command.keySlot)
+      visit(command.valueSlot)
+      return
+    case GET:
+      visit(command.sourceSlot)
+      visit(command.keySlot)
+      return
+    case GLOBAL_SET_STR:
+      visit(command.valueSlot)
+      return
+    case CALL:
+      visit(command.funcSlot)
+      visit(command.thisSlot)
+      command.argv.forEach(visit)
+      return
+    case CALL_CTOR:
+      visit(command.ctorSlot)
+      command.argv.forEach(visit)
+      return
+    case THROW:
+      visit(command.errorSlot)
+      return
+    case RESOLVE_EXC:
+      visit(command.maybeExcSlot)
+      return
+    case DUP_PTR:
+    case FREE_PTR:
+      visit(command.valuePtr)
+      return
+    case FUNCLIST_ASSIGN:
+      visit(command.targetSlot)
+      visit(command.sourceFunclistSlot)
+      return
+    case FUNCLIST_FREE:
+    case FUNCLIST_DEF_CFUNC:
+    case FUNCLIST_DEF_CFUNC_CTOR:
+    case FUNCLIST_DEF_CGETSET:
+    case FUNCLIST_DEF_STRING:
+    case FUNCLIST_DEF_INT32:
+    case FUNCLIST_DEF_INT64:
+    case FUNCLIST_DEF_DOUBLE:
+    case FUNCLIST_DEF_NULL:
+    case FUNCLIST_DEF_UNDEFINED:
+      visit(command.targetFunclistSlot)
+      return
+    case FUNCLIST_DEF_OBJECT:
+      visit(command.targetFunclistSlot)
+      visit(command.objectFunclistSlot)
+      return
+    default:
+      return
+  }
+}
+
+export function forEachWriteRef(command: Command, visit: RefVisitor): void {
+  switch (command.kind) {
+    case NEW_OBJECT:
+    case NEW_OBJECT_PROTO:
+    case NEW_ARRAY:
+    case NEW_DATE:
+    case NEW_ERROR:
+    case NEW_ARRAYBUFFER:
+    case NEW_TYPED_ARRAY:
+    case NEW_SYMBOL:
+    case NEW_FLOAT64:
+    case NEW_STRING:
+    case NEW_BIGINT:
+    case NEW_FUNC:
+    case GET:
+    case GET_STR:
+    case GET_IDX:
+    case GLOBAL:
+    case GLOBAL_GET_STR:
+    case CALL:
+    case CALL_CTOR:
+    case EVAL:
+    case RESOLVE_EXC:
+    case DUP:
+    case DUP_PTR:
+    case BYTECODE_WRITE:
+    case BYTECODE_READ:
+      visit(command.resultSlot)
+      return
+    case FUNCLIST_NEW:
+      visit(command.resultFunclistSlot)
+      return
+    default:
+      return
+  }
+}
+
+export function forEachConsumedReadRef(command: Command, visit: RefVisitor): void {
+  switch (command.kind) {
+
+    default:
+      return
+  }
+}
+
 // =============================================================================
 
 // Setter Helpers
