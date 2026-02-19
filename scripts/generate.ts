@@ -7,7 +7,7 @@ import * as pathlib from "path"
 import * as fs from "fs-extra"
 import { CFunc } from "./CFunc"
 import { repoRoot } from "./helpers"
-import type { CommandDataDef, CommandDef, OpName } from "./idl"
+import type { CommandDataDef, CommandDef, OpName, ParamDef, ParamPath } from "./idl"
 import { COMMANDS, OPCODE_TO_COMMAND, TsOpName } from "./idl"
 const USAGE =
   "Usage: generate.ts [symbols | header | ffi | ops | c-ops] WRITE_PATH" +
@@ -114,7 +114,12 @@ function main() {
   if (command === "ops") {
     // Use relative import if destination is in quickjs-ffi-types package
     const useRelativeImport = destination.includes("quickjs-ffi-types")
-    writeFile(destination, buildOps(useRelativeImport))
+    const built = buildOpsFiles(useRelativeImport)
+    writeFile(destination, built.ops)
+    if (built.opsPlanner && !useRelativeImport) {
+      const plannerPath = pathlib.join(pathlib.dirname(destination), "ops-planner.generated.ts")
+      writeFile(plannerPath, built.opsPlanner)
+    }
     return
   }
 
@@ -553,10 +558,42 @@ function TSFunc(
   const paramList =
     params.length > 0 ? `, ${params.map((p) => `${p.name}: ${p.tsType}`).join(", ")}` : ""
   const signature = `export function ${functionName}(view: DataView, offset: CommandPtr${paramList}): void`
+  return { functionName, opcode, params, body, signature }
+}
 
-  const code = `${signature} {\n  ${body.join("\n  ")}\n}`
+type WriterInfo = ReturnType<typeof TSFunc>
 
-  return { functionName, params, body, signature, code }
+type WriterPatternGroup = {
+  helperName: string
+  params: Array<{ name: string; tsType: string }>
+  normalizedBody: string[]
+  writers: WriterInfo[]
+}
+
+function normalizeWriterBody(lines: readonly string[], params: readonly { name: string }[]): string[] {
+  if (params.length === 0) {
+    return [...lines]
+  }
+  const substitutions = params.map((param, idx) => ({
+    pattern: new RegExp(`\\b${param.name}\\b`, "g"),
+    replacement: `p${idx}`,
+  }))
+  return lines.map((line) => {
+    let out = line
+    for (const { pattern, replacement } of substitutions) {
+      out = out.replace(pattern, replacement)
+    }
+    return out
+  })
+}
+
+function renderWriterCode(writer: WriterInfo, helperName?: string): string {
+  if (!helperName) {
+    return `${writer.signature} {\n  ${writer.body.join("\n  ")}\n}`
+  }
+  const args = writer.params.map((param) => param.name).join(", ")
+  const helperCall = args.length > 0 ? `${helperName}(view, offset, ${args})` : `${helperName}(view, offset)`
+  return `${writer.signature} {\n  ${writer.body[0]}\n  ${helperCall}\n}`
 }
 
 function addDataParams(
@@ -647,20 +684,269 @@ function addDataParams(
   }
 }
 
-function buildOps(useRelativeImport = false): string {
+type ParamWithPath = {
+  path: ParamPath
+  param: ParamDef<any>
+  isJsValuesArrayPtr: boolean
+}
+
+type RefOperand = {
+  fieldName: string
+  isMany: boolean
+  read: boolean
+  write: boolean
+  consumed: boolean
+}
+
+function snakeToCamel(name: string): string {
+  return name.replace(/_([a-z])/g, (_m, p1: string) => p1.toUpperCase())
+}
+
+function pascalToCamel(name: string): string {
+  if (name.length === 0) {
+    return name
+  }
+  return name[0].toLowerCase() + name.slice(1)
+}
+
+function commandFieldName(param: ParamDef<any>): string {
+  const fieldName = snakeToCamel(param.name)
+  if (param.type === "char*" && fieldName.endsWith("Ptr")) {
+    if (param.pointer.kind === "bytes") {
+      return fieldName.replace(/Ptr$/, "Bytes")
+    }
+    return fieldName.replace(/Ptr$/, "")
+  }
+  return fieldName
+}
+
+function collectCommandParams(command: CommandDef): ParamWithPath[] {
+  const out: ParamWithPath[] = []
+  if (command.slot_a) out.push({ path: "slot_a", param: command.slot_a, isJsValuesArrayPtr: false })
+  if (command.slot_b) out.push({ path: "slot_b", param: command.slot_b, isJsValuesArrayPtr: false })
+  if (command.slot_c) out.push({ path: "slot_c", param: command.slot_c, isJsValuesArrayPtr: false })
+  if (!command.data) return out
+
+  switch (command.data.type) {
+    case "raw":
+      out.push({ path: "data.d1", param: command.data.d1, isJsValuesArrayPtr: false })
+      if (command.data.d2) out.push({ path: "data.d2", param: command.data.d2, isJsValuesArrayPtr: false })
+      if (command.data.d3) out.push({ path: "data.d3", param: command.data.d3, isJsValuesArrayPtr: false })
+      break
+    case "f64":
+      out.push({ path: "data.value", param: command.data.value, isJsValuesArrayPtr: false })
+      if (command.data.extra) out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
+      break
+    case "i64":
+      out.push({ path: "data.value", param: command.data.value, isJsValuesArrayPtr: false })
+      if (command.data.extra) out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
+      break
+    case "buf":
+      out.push({ path: "data.ptr", param: command.data.ptr, isJsValuesArrayPtr: false })
+      out.push({ path: "data.len", param: command.data.len, isJsValuesArrayPtr: false })
+      if (command.data.extra) out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
+      break
+    case "jsvalues":
+      out.push({ path: "data.ptr", param: command.data.ptr, isJsValuesArrayPtr: true })
+      out.push({ path: "data.len", param: command.data.len, isJsValuesArrayPtr: false })
+      if (command.data.extra) out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
+      break
+  }
+  return out
+}
+
+function isRefSlotType(type: string): boolean {
+  return type === "JSValueSlot" || type === "FuncListSlot"
+}
+
+function refTypeForSlot(type: string): string {
+  if (type === "JSValueSlot") return "JSValueRef"
+  if (type === "FuncListSlot") return "FuncListRef"
+  throw new Error(`Not a slot ref type: ${type}`)
+}
+
+function commandParamType(param: ParamDef<any>, isJsValuesArrayPtr: boolean): string {
+  if (param.type === "JSValueSlot") return "JSValueRef"
+  if (param.type === "FuncListSlot") return "FuncListRef"
+  if (param.type === "char*") {
+    if (param.pointer.kind === "bytes") {
+      return "Uint8Array"
+    }
+    return "string"
+  }
+  if (param.type === "JSValue*") {
+    return isJsValuesArrayPtr ? "readonly JSValueRef[]" : "JSValueRef"
+  }
+  return cTypeToTypescriptType(param.type, false).typescript
+}
+
+function hiddenLenPaths(params: readonly ParamWithPath[]): Set<ParamPath> {
+  const out = new Set<ParamPath>()
+  for (const entry of params) {
+    if (entry.param.type === "char*" && entry.param.pointer.kind !== "utf8.nullTerminated") {
+      out.add(entry.param.pointer.lenParam)
+      continue
+    }
+    if (entry.param.type === "JSValue*" && entry.isJsValuesArrayPtr) {
+      out.add("data.len")
+    }
+  }
+  return out
+}
+
+function collectRefOperands(params: readonly ParamWithPath[]): RefOperand[] {
+  const out: RefOperand[] = []
+  for (const { param, isJsValuesArrayPtr } of params) {
+    const fieldName = commandFieldName(param)
+
+    if (isRefSlotType(param.type)) {
+      out.push({
+        fieldName,
+        isMany: false,
+        read: param.usage === "in" || param.usage === "in-out",
+        write: param.usage === "out" || param.usage === "in-out",
+        consumed: Boolean(param.consumed),
+      })
+      continue
+    }
+
+    if (param.type === "JSValue*") {
+      out.push({
+        fieldName,
+        isMany: isJsValuesArrayPtr,
+        read: param.usage === "in" || param.usage === "in-out",
+        write: param.usage === "out" || param.usage === "in-out",
+        consumed: Boolean(param.consumed),
+      })
+    }
+  }
+  return out
+}
+
+function renderVisitStatements(operands: readonly RefOperand[]): string[] {
+  const lines: string[] = []
+  for (const operand of operands) {
+    if (operand.isMany) {
+      lines.push(`command.${operand.fieldName}.forEach(visit)`)
+    } else {
+      lines.push(`visit(command.${operand.fieldName})`)
+    }
+  }
+  return lines
+}
+
+function renderConsumedVisitStatements(operands: readonly RefOperand[]): string[] {
+  const lines: string[] = []
+  let bit = 1
+  for (const operand of operands) {
+    if (operand.isMany) {
+      lines.push(`if (mask & ${bit}) command.${operand.fieldName}.forEach(visit)`)
+    } else {
+      lines.push(`if (mask & ${bit}) visit(command.${operand.fieldName})`)
+    }
+    bit <<= 1
+  }
+  return lines
+}
+
+type CaseGroup = {
+  names: string[]
+  statements: string[]
+}
+
+function addCaseGroup(groups: Map<string, CaseGroup>, name: string, statements: readonly string[]): void {
+  if (statements.length === 0) {
+    return
+  }
+  const key = statements.join("\n")
+  const existing = groups.get(key)
+  if (existing) {
+    existing.names.push(name)
+    return
+  }
+  groups.set(key, { names: [name], statements: [...statements] })
+}
+
+function renderCaseGroups(groups: Map<string, CaseGroup>, blockBody = false): string[] {
+  const out: string[] = []
+  for (const group of groups.values()) {
+    for (const name of group.names) {
+      out.push(`    case ${name}:`)
+    }
+    if (blockBody) {
+      out.push("    {")
+    }
+    for (const statement of group.statements) {
+      out.push(`      ${statement}`)
+    }
+    out.push("      return")
+    if (blockBody) {
+      out.push("    }")
+    }
+  }
+  return out
+}
+
+function buildOpsFiles(useRelativeImport = false): { ops: string; opsPlanner?: string } {
   const usedSetters = new Set<string>()
   const usedTypes = new Set<string>()
 
-  // CommandPtr is always used in signatures
+  // CommandPtr is always used in writer signatures
   usedTypes.add("CommandPtr")
 
-  const writers = OPCODE_TO_COMMAND.map((name, opcode) => {
+  const writerInfos = OPCODE_TO_COMMAND.map((name, opcode) => {
     const cmd = COMMANDS[name as OpName]
-    return TSFunc(name, opcode, cmd, usedSetters, usedTypes).code
+    return TSFunc(name, opcode, cmd, usedSetters, usedTypes)
   })
 
-  // Filter out primitive types that don't need to be imported
-  const primitiveTypes = new Set(["number", "bigint", "boolean", "string", "void"])
+  const writerPatternGroupsByKey = new Map<string, WriterPatternGroup>()
+  let nextPatternId = 0
+
+  for (const writer of writerInfos) {
+    const nonOpcodeBody = writer.body.slice(1)
+    if (nonOpcodeBody.length === 0) {
+      continue
+    }
+    const normalizedBody = normalizeWriterBody(nonOpcodeBody, writer.params)
+    const key = `${writer.params.map((param) => param.tsType).join("|")}::${normalizedBody.join("\n")}`
+    const existing = writerPatternGroupsByKey.get(key)
+    if (existing) {
+      existing.writers.push(writer)
+      continue
+    }
+    writerPatternGroupsByKey.set(key, {
+      helperName: `writePattern${nextPatternId++}`,
+      params: writer.params.map((param) => ({ ...param })),
+      normalizedBody,
+      writers: [writer],
+    })
+  }
+
+  const writerHelperByFunction = new Map<string, string>()
+  const writerPatternHelpers: string[] = []
+  for (const group of writerPatternGroupsByKey.values()) {
+    if (group.writers.length < 2) {
+      continue
+    }
+    for (const writer of group.writers) {
+      writerHelperByFunction.set(writer.functionName, group.helperName)
+    }
+    const helperParams =
+      group.params.length > 0
+        ? `, ${group.params.map((param, idx) => `p${idx}: ${param.tsType}`).join(", ")}`
+        : ""
+    writerPatternHelpers.push(
+      `function ${group.helperName}(view: DataView, offset: CommandPtr${helperParams}): void {\n  ${group.normalizedBody.join(
+        "\n  ",
+      )}\n}`,
+    )
+  }
+
+  const writers = writerInfos.map((writer) =>
+    renderWriterCode(writer, writerHelperByFunction.get(writer.functionName)),
+  )
+
+  const primitiveTypes = new Set(["number", "bigint", "boolean", "string", "void", "Uint8Array"])
   const importTypes = [...usedTypes].filter((t) => !primitiveTypes.has(t)).sort()
 
   const importFrom = useRelativeImport ? "./ffi-types" : "@jitl/quickjs-ffi-types"
@@ -668,7 +954,119 @@ function buildOps(useRelativeImport = false): string {
   ${importTypes.join(",\n  ")},
 } from "${importFrom}"`
 
-  // Emit only the setters that are actually used
+  const opcodeConsts = OPCODE_TO_COMMAND.map(
+    (name, opcode) => `export const ${name} = ${opcode} as const`,
+  ).join("\n")
+
+  const commandTypeNames: string[] = []
+  const commandTypeInterfaces: string[] = []
+  const builderMethods: string[] = []
+  const readCaseGroups = new Map<string, CaseGroup>()
+  const writeCaseGroups = new Map<string, CaseGroup>()
+  const consumedCaseGroups = new Map<string, CaseGroup>()
+  const consumedMaskEntries: number[] = new Array(OPCODE_TO_COMMAND.length)
+
+  for (let opcode = 0; opcode < OPCODE_TO_COMMAND.length; opcode++) {
+    const name = OPCODE_TO_COMMAND[opcode] as OpName
+    const commandDef = COMMANDS[name]
+    const typeName = `${TsOpName(name)}Command`
+    commandTypeNames.push(typeName)
+
+    const params = collectCommandParams(commandDef)
+    const omittedPaths = hiddenLenPaths(params)
+    const visibleParams = params.filter((entry) => !omittedPaths.has(entry.path))
+    const refOperands = collectRefOperands(visibleParams)
+    const readOperands = refOperands.filter((operand) => operand.read)
+    const writeOperands = refOperands.filter((operand) => operand.write)
+
+    let consumedMask = 0
+    let maskBit = 1
+    for (const operand of readOperands) {
+      if (operand.consumed) {
+        consumedMask |= maskBit
+      }
+      maskBit <<= 1
+    }
+    consumedMaskEntries[opcode] = consumedMask
+
+    const readStatements = renderVisitStatements(readOperands)
+    const writeStatements = renderVisitStatements(writeOperands)
+    addCaseGroup(readCaseGroups, name, readStatements)
+    addCaseGroup(writeCaseGroups, name, writeStatements)
+    if (consumedMask !== 0) {
+      const consumedStatements = [
+        "const mask = CONSUMED_READ_MASK[command.kind]",
+        ...renderConsumedVisitStatements(readOperands),
+      ]
+      addCaseGroup(consumedCaseGroups, name, consumedStatements)
+    }
+
+    const fieldRows = visibleParams.map(({ param, isJsValuesArrayPtr }) => {
+      const fieldName = commandFieldName(param)
+      const fieldType = commandParamType(param, isJsValuesArrayPtr)
+      return `  ${fieldName}: ${fieldType}`
+    })
+
+    const interfaceLines = [
+      `export interface ${typeName} extends BaseCommand {`,
+      `  kind: typeof ${name}`,
+      commandDef.barrier ? `  barrier: true` : "",
+      ...fieldRows,
+      `}`,
+    ].filter(Boolean)
+    commandTypeInterfaces.push(interfaceLines.join("\n"))
+
+    const methodName = pascalToCamel(TsOpName(name))
+    const methodArgs: string[] = []
+    const outParamFields: Array<{ fieldName: string; slotType: string }> = []
+    const fieldAssignments: string[] = []
+
+    for (const { param, isJsValuesArrayPtr } of visibleParams) {
+      const fieldName = commandFieldName(param)
+      if (isRefSlotType(param.type) && param.usage === "out") {
+        outParamFields.push({ fieldName, slotType: param.type })
+      } else {
+        methodArgs.push(`${fieldName}: ${commandParamType(param, isJsValuesArrayPtr)}`)
+      }
+      fieldAssignments.push(`      ${fieldName},`)
+    }
+
+    const outAlloc = outParamFields.map(({ fieldName, slotType }) => {
+      if (slotType === "JSValueSlot") {
+        return `    const ${fieldName} = this.allocateJsValueRef()`
+      }
+      return `    const ${fieldName} = this.allocateFuncListRef()`
+    })
+
+    const commandInit = [
+      `    this.pushCommand({`,
+      `      kind: ${name},`,
+      commandDef.barrier ? `      barrier: true,` : "",
+      ...fieldAssignments,
+      `    } as ${typeName})`,
+    ].filter(Boolean)
+
+    let returnBlock = ""
+    if (outParamFields.length === 1) {
+      returnBlock = `\n    return ${outParamFields[0].fieldName}`
+    } else if (outParamFields.length > 1) {
+      returnBlock = `\n    return [${outParamFields.map((f) => f.fieldName).join(", ")}] as const`
+    }
+
+    const returnType =
+      outParamFields.length === 0
+        ? "void"
+        : outParamFields.length === 1
+          ? refTypeForSlot(outParamFields[0].slotType)
+          : `[${outParamFields.map((f) => refTypeForSlot(f.slotType)).join(", ")}]`
+
+    builderMethods.push(
+      `  ${methodName}(${methodArgs.join(", ")}): ${returnType} {\n${[...outAlloc, ...commandInit].join(
+        "\n",
+      )}${returnBlock}\n  }`,
+    )
+  }
+
   const setterOrder = [
     "setOpcode",
     "setSlotA",
@@ -692,7 +1090,102 @@ function buildOps(useRelativeImport = false): string {
   ${OPCODE_TO_COMMAND.map((name) => `write${TsOpName(name)}`).join(",\n  ")},
 ] as const`
 
-  const types = `
+  const commandTypes = `
+export type LogicalRef = number
+export type JSValueRef = LogicalRef
+export type FuncListRef = LogicalRef
+export type CommandRef = LogicalRef
+
+const REF_VALUE_BITS = 24
+const JS_VALUE_BANK_ID = 0
+const FUNC_LIST_BANK_ID = 1
+
+function packGeneratedRef(bankId: number, valueId: number): LogicalRef {
+  return (((bankId << REF_VALUE_BITS) | valueId) >>> 0) as LogicalRef
+}
+
+interface BaseCommand {
+  kind: number
+  barrier?: boolean
+  label?: string
+}
+
+${commandTypeInterfaces.join("\n\n")}
+
+export type Command = ${commandTypeNames.join(" |\n  ")}
+
+export class GeneratedCommandBuilder {
+  private commands: Command[] = []
+  private nextJsValueId = 1
+  private nextFuncListId = 1
+
+  private pushCommand(command: Command): void {
+    this.commands.push(command)
+  }
+
+  getCommands(): readonly Command[] {
+    return this.commands
+  }
+
+  takeCommands(): Command[] {
+    const out = this.commands
+    this.commands = []
+    return out
+  }
+
+  protected allocateJsValueRef(): JSValueRef {
+    const ref = packGeneratedRef(JS_VALUE_BANK_ID, this.nextJsValueId++)
+    return ref as JSValueRef
+  }
+
+  protected allocateFuncListRef(): FuncListRef {
+    const ref = packGeneratedRef(FUNC_LIST_BANK_ID, this.nextFuncListId++)
+    return ref as FuncListRef
+  }
+
+${builderMethods.join("\n\n")}
+}
+`.trim()
+
+  const plannerModule = `
+// This file is generated by scripts/generate.ts ops - do not edit manually
+
+import {
+  ${OPCODE_TO_COMMAND.join(",\n  ")},
+} from "./ops"
+import type { Command } from "./ops"
+
+export type LogicalRef = number
+export type RefVisitor = (ref: LogicalRef) => void
+
+const CONSUMED_READ_MASK = new Uint32Array([${consumedMaskEntries.join(", ")}])
+
+export function forEachReadRef(command: Command, visit: RefVisitor): void {
+  switch (command.kind) {
+${renderCaseGroups(readCaseGroups).join("\n")}
+    default:
+      return
+  }
+}
+
+export function forEachWriteRef(command: Command, visit: RefVisitor): void {
+  switch (command.kind) {
+${renderCaseGroups(writeCaseGroups).join("\n")}
+    default:
+      return
+  }
+}
+
+export function forEachConsumedReadRef(command: Command, visit: RefVisitor): void {
+  switch (command.kind) {
+${renderCaseGroups(consumedCaseGroups, true).join("\n")}
+    default:
+      return
+  }
+}
+`.trim()
+
+  const writerTypes = `
 type OpcodeToEncoder = typeof OP_ENCODERS
 
 type OpcodeToParams = {
@@ -708,26 +1201,32 @@ type OpcodeToParams = {
 export type OpcodeToCommand = {
   [Op in keyof OpcodeToParams]: { op: Op; args: OpcodeToParams[Op] }
 }
-
-export type Command = OpcodeToCommand[keyof OpcodeToCommand]
 `.trim()
 
-  return [
+  const ops = [
     "// This file is generated by scripts/generate.ts ops - do not edit manually",
     imports,
+    opcodeConsts,
+    commandTypes,
     "// =============================================================================",
     "// Setter Helpers",
     "// =============================================================================",
     "",
     setterHelpers,
+    writerPatternHelpers.join("\n\n"),
     "// =============================================================================",
     "// Writer Functions (generated)",
     "// =============================================================================",
     "",
     ...writers,
     encoderArray,
-    types,
+    writerTypes,
   ].join("\n\n")
+
+  return {
+    ops,
+    opsPlanner: plannerModule,
+  }
 }
 
 // =============================================================================

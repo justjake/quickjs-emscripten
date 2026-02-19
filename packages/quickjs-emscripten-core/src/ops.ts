@@ -20,6 +20,1293 @@ import type {
   Uint8,
 } from "@jitl/quickjs-ffi-types"
 
+export const INVALID = 0 as const
+export const NEW_OBJECT = 1 as const
+export const NEW_OBJECT_PROTO = 2 as const
+export const NEW_ARRAY = 3 as const
+export const NEW_DATE = 4 as const
+export const NEW_ERROR = 5 as const
+export const NEW_ARRAYBUFFER = 6 as const
+export const NEW_TYPED_ARRAY = 7 as const
+export const NEW_SYMBOL = 8 as const
+export const NEW_FLOAT64 = 9 as const
+export const NEW_STRING = 10 as const
+export const NEW_BIGINT = 11 as const
+export const NEW_FUNC = 12 as const
+export const SET_STR_VALUE = 13 as const
+export const SET_STR_NULL = 14 as const
+export const SET_STR_UNDEF = 15 as const
+export const SET_STR_BOOL = 16 as const
+export const SET_STR_INT32 = 17 as const
+export const SET_STR_F64 = 18 as const
+export const SET_STR_BIGINT = 19 as const
+export const SET_STR_STRING = 20 as const
+export const SET_IDX_VALUE = 21 as const
+export const SET_IDX_NULL = 22 as const
+export const SET_IDX_UNDEF = 23 as const
+export const SET_IDX_BOOL = 24 as const
+export const SET_IDX_INT32 = 25 as const
+export const SET_IDX_F64 = 26 as const
+export const SET_IDX_BIGINT = 27 as const
+export const SET_IDX_STRING = 28 as const
+export const SET = 29 as const
+export const DEF_GETSET = 30 as const
+export const GET = 31 as const
+export const GET_STR = 32 as const
+export const GET_IDX = 33 as const
+export const GLOBAL = 34 as const
+export const GLOBAL_GET_STR = 35 as const
+export const GLOBAL_SET_STR = 36 as const
+export const MAP_SET = 37 as const
+export const MAP_SET_STR = 38 as const
+export const SET_ADD = 39 as const
+export const CALL = 40 as const
+export const CALL_CTOR = 41 as const
+export const EVAL = 42 as const
+export const THROW = 43 as const
+export const RESOLVE_EXC = 44 as const
+export const DUP = 45 as const
+export const DUP_PTR = 46 as const
+export const FREE = 47 as const
+export const FREE_PTR = 48 as const
+export const BYTECODE_WRITE = 49 as const
+export const BYTECODE_READ = 50 as const
+export const FUNCLIST_NEW = 51 as const
+export const FUNCLIST_ASSIGN = 52 as const
+export const FUNCLIST_FREE = 53 as const
+export const FUNCLIST_DEF_CFUNC = 54 as const
+export const FUNCLIST_DEF_CFUNC_CTOR = 55 as const
+export const FUNCLIST_DEF_CGETSET = 56 as const
+export const FUNCLIST_DEF_STRING = 57 as const
+export const FUNCLIST_DEF_INT32 = 58 as const
+export const FUNCLIST_DEF_INT64 = 59 as const
+export const FUNCLIST_DEF_DOUBLE = 60 as const
+export const FUNCLIST_DEF_NULL = 61 as const
+export const FUNCLIST_DEF_UNDEFINED = 62 as const
+export const FUNCLIST_DEF_OBJECT = 63 as const
+
+export type LogicalRef = number
+export type JSValueRef = LogicalRef
+export type FuncListRef = LogicalRef
+export type CommandRef = LogicalRef
+
+const REF_VALUE_BITS = 24
+const JS_VALUE_BANK_ID = 0
+const FUNC_LIST_BANK_ID = 1
+
+function packGeneratedRef(bankId: number, valueId: number): LogicalRef {
+  return (((bankId << REF_VALUE_BITS) | valueId) >>> 0) as LogicalRef
+}
+
+interface BaseCommand {
+  kind: number
+  barrier?: boolean
+  label?: string
+}
+
+export interface InvalidCommand extends BaseCommand {
+  kind: typeof INVALID
+}
+
+export interface NewObjectCommand extends BaseCommand {
+  kind: typeof NEW_OBJECT
+  resultSlot: JSValueRef
+}
+
+export interface NewObjectProtoCommand extends BaseCommand {
+  kind: typeof NEW_OBJECT_PROTO
+  resultSlot: JSValueRef
+  protoSlot: JSValueRef
+}
+
+export interface NewArrayCommand extends BaseCommand {
+  kind: typeof NEW_ARRAY
+  resultSlot: JSValueRef
+}
+
+export interface NewDateCommand extends BaseCommand {
+  kind: typeof NEW_DATE
+  resultSlot: JSValueRef
+  timestamp: number
+}
+
+export interface NewErrorCommand extends BaseCommand {
+  kind: typeof NEW_ERROR
+  resultSlot: JSValueRef
+  newErrorFlags: NewErrorFlags
+  message: string
+  name: string
+}
+
+export interface NewArraybufferCommand extends BaseCommand {
+  kind: typeof NEW_ARRAYBUFFER
+  resultSlot: JSValueRef
+  dataBytes: Uint8Array
+}
+
+export interface NewTypedArrayCommand extends BaseCommand {
+  kind: typeof NEW_TYPED_ARRAY
+  resultSlot: JSValueRef
+  sourceSlot: JSValueRef
+  arrayType: NewTypedArrayFlags
+  sourceOffset: number
+  length: number
+}
+
+export interface NewSymbolCommand extends BaseCommand {
+  kind: typeof NEW_SYMBOL
+  resultSlot: JSValueRef
+  isGlobal: number
+  desc: string
+}
+
+export interface NewFloat64Command extends BaseCommand {
+  kind: typeof NEW_FLOAT64
+  resultSlot: JSValueRef
+  value: number
+}
+
+export interface NewStringCommand extends BaseCommand {
+  kind: typeof NEW_STRING
+  resultSlot: JSValueRef
+  str: string
+}
+
+export interface NewBigintCommand extends BaseCommand {
+  kind: typeof NEW_BIGINT
+  resultSlot: JSValueRef
+  value: bigint
+}
+
+export interface NewFuncCommand extends BaseCommand {
+  kind: typeof NEW_FUNC
+  resultSlot: JSValueRef
+  arity: number
+  isConstructor: number
+  name: string
+  hostRefId: HostRefId
+}
+
+export interface SetStrValueCommand extends BaseCommand {
+  kind: typeof SET_STR_VALUE
+  targetSlot: JSValueRef
+  valueSlot: JSValueRef
+  flags: SetPropFlags
+  key: string
+}
+
+export interface SetStrNullCommand extends BaseCommand {
+  kind: typeof SET_STR_NULL
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  key: string
+}
+
+export interface SetStrUndefCommand extends BaseCommand {
+  kind: typeof SET_STR_UNDEF
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  key: string
+}
+
+export interface SetStrBoolCommand extends BaseCommand {
+  kind: typeof SET_STR_BOOL
+  targetSlot: JSValueRef
+  boolVal: number
+  flags: SetPropFlags
+  key: string
+}
+
+export interface SetStrInt32Command extends BaseCommand {
+  kind: typeof SET_STR_INT32
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  key: string
+  intVal: number
+}
+
+export interface SetStrF64Command extends BaseCommand {
+  kind: typeof SET_STR_F64
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  f64Val: number
+  key: string
+}
+
+export interface SetStrBigintCommand extends BaseCommand {
+  kind: typeof SET_STR_BIGINT
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  i64Val: bigint
+  key: string
+}
+
+export interface SetStrStringCommand extends BaseCommand {
+  kind: typeof SET_STR_STRING
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  str: string
+  key: string
+}
+
+export interface SetIdxValueCommand extends BaseCommand {
+  kind: typeof SET_IDX_VALUE
+  targetSlot: JSValueRef
+  valueSlot: JSValueRef
+  flags: SetPropFlags
+  index: number
+}
+
+export interface SetIdxNullCommand extends BaseCommand {
+  kind: typeof SET_IDX_NULL
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  index: number
+}
+
+export interface SetIdxUndefCommand extends BaseCommand {
+  kind: typeof SET_IDX_UNDEF
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  index: number
+}
+
+export interface SetIdxBoolCommand extends BaseCommand {
+  kind: typeof SET_IDX_BOOL
+  targetSlot: JSValueRef
+  boolVal: number
+  flags: SetPropFlags
+  index: number
+}
+
+export interface SetIdxInt32Command extends BaseCommand {
+  kind: typeof SET_IDX_INT32
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  index: number
+  intVal: number
+}
+
+export interface SetIdxF64Command extends BaseCommand {
+  kind: typeof SET_IDX_F64
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  f64Val: number
+  index: number
+}
+
+export interface SetIdxBigintCommand extends BaseCommand {
+  kind: typeof SET_IDX_BIGINT
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  i64Val: bigint
+  index: number
+}
+
+export interface SetIdxStringCommand extends BaseCommand {
+  kind: typeof SET_IDX_STRING
+  targetSlot: JSValueRef
+  flags: SetPropFlags
+  str: string
+  index: number
+}
+
+export interface SetCommand extends BaseCommand {
+  kind: typeof SET
+  targetSlot: JSValueRef
+  keySlot: JSValueRef
+  valueSlot: JSValueRef
+  flags: SetPropFlags
+}
+
+export interface DefGetsetCommand extends BaseCommand {
+  kind: typeof DEF_GETSET
+  targetSlot: JSValueRef
+  flags: JSPropFlags
+  getterRef: HostRefId
+  setterRef: HostRefId
+  key: string
+}
+
+export interface GetCommand extends BaseCommand {
+  kind: typeof GET
+  resultSlot: JSValueRef
+  sourceSlot: JSValueRef
+  keySlot: JSValueRef
+}
+
+export interface GetStrCommand extends BaseCommand {
+  kind: typeof GET_STR
+  resultSlot: JSValueRef
+  sourceSlot: JSValueRef
+  key: string
+}
+
+export interface GetIdxCommand extends BaseCommand {
+  kind: typeof GET_IDX
+  resultSlot: JSValueRef
+  sourceSlot: JSValueRef
+  index: number
+}
+
+export interface GlobalCommand extends BaseCommand {
+  kind: typeof GLOBAL
+  resultSlot: JSValueRef
+}
+
+export interface GlobalGetStrCommand extends BaseCommand {
+  kind: typeof GLOBAL_GET_STR
+  resultSlot: JSValueRef
+  key: string
+}
+
+export interface GlobalSetStrCommand extends BaseCommand {
+  kind: typeof GLOBAL_SET_STR
+  valueSlot: JSValueRef
+  flags: JSPropFlags
+  key: string
+}
+
+export interface MapSetCommand extends BaseCommand {
+  kind: typeof MAP_SET
+  targetSlot: JSValueRef
+  keySlot: JSValueRef
+  valueSlot: JSValueRef
+}
+
+export interface MapSetStrCommand extends BaseCommand {
+  kind: typeof MAP_SET_STR
+  targetSlot: JSValueRef
+  valueSlot: JSValueRef
+  key: string
+}
+
+export interface SetAddCommand extends BaseCommand {
+  kind: typeof SET_ADD
+  targetSlot: JSValueRef
+  valueSlot: JSValueRef
+}
+
+export interface CallCommand extends BaseCommand {
+  kind: typeof CALL
+  barrier: true
+  resultSlot: JSValueRef
+  funcSlot: JSValueRef
+  thisSlot: JSValueRef
+  argv: readonly JSValueRef[]
+}
+
+export interface CallCtorCommand extends BaseCommand {
+  kind: typeof CALL_CTOR
+  barrier: true
+  resultSlot: JSValueRef
+  ctorSlot: JSValueRef
+  argv: readonly JSValueRef[]
+}
+
+export interface EvalCommand extends BaseCommand {
+  kind: typeof EVAL
+  barrier: true
+  resultSlot: JSValueRef
+  callFlags: EvalFlags
+  code: string
+  filename: string
+}
+
+export interface ThrowCommand extends BaseCommand {
+  kind: typeof THROW
+  errorSlot: JSValueRef
+}
+
+export interface ResolveExcCommand extends BaseCommand {
+  kind: typeof RESOLVE_EXC
+  resultSlot: JSValueRef
+  maybeExcSlot: JSValueRef
+}
+
+export interface DupCommand extends BaseCommand {
+  kind: typeof DUP
+  resultSlot: JSValueRef
+  sourceSlot: JSValueRef
+}
+
+export interface DupPtrCommand extends BaseCommand {
+  kind: typeof DUP_PTR
+  resultSlot: JSValueRef
+  valuePtr: JSValueRef
+}
+
+export interface FreeCommand extends BaseCommand {
+  kind: typeof FREE
+  targetSlot: JSValueRef
+}
+
+export interface FreePtrCommand extends BaseCommand {
+  kind: typeof FREE_PTR
+  valuePtr: JSValueRef
+}
+
+export interface BytecodeWriteCommand extends BaseCommand {
+  kind: typeof BYTECODE_WRITE
+  resultSlot: JSValueRef
+  sourceSlot: JSValueRef
+  flags: number
+}
+
+export interface BytecodeReadCommand extends BaseCommand {
+  kind: typeof BYTECODE_READ
+  resultSlot: JSValueRef
+  sourceSlot: JSValueRef
+  flags: number
+}
+
+export interface FunclistNewCommand extends BaseCommand {
+  kind: typeof FUNCLIST_NEW
+  resultFunclistSlot: FuncListRef
+  count: number
+}
+
+export interface FunclistAssignCommand extends BaseCommand {
+  kind: typeof FUNCLIST_ASSIGN
+  targetSlot: JSValueRef
+  sourceFunclistSlot: FuncListRef
+}
+
+export interface FunclistFreeCommand extends BaseCommand {
+  kind: typeof FUNCLIST_FREE
+  targetFunclistSlot: FuncListRef
+}
+
+export interface FunclistDefCfuncCommand extends BaseCommand {
+  kind: typeof FUNCLIST_DEF_CFUNC
+  targetFunclistSlot: FuncListRef
+  arity: number
+  flags: JSPropFlags
+  index: number
+  funcName: string
+  cFuncPtr: JSCFunctionTypePointer
+}
+
+export interface FunclistDefCfuncCtorCommand extends BaseCommand {
+  kind: typeof FUNCLIST_DEF_CFUNC_CTOR
+  targetFunclistSlot: FuncListRef
+  arity: number
+  flags: JSPropFlags
+  index: number
+  funcName: string
+  cFuncPtr: JSCFunctionTypePointer
+}
+
+export interface FunclistDefCgetsetCommand extends BaseCommand {
+  kind: typeof FUNCLIST_DEF_CGETSET
+  targetFunclistSlot: FuncListRef
+  index: number
+  flags: JSPropFlags
+  key: string
+  getterPtr: JSCFunctionTypePointer
+  setterPtr: JSCFunctionTypePointer
+}
+
+export interface FunclistDefStringCommand extends BaseCommand {
+  kind: typeof FUNCLIST_DEF_STRING
+  targetFunclistSlot: FuncListRef
+  index: number
+  flags: JSPropFlags
+  str: string
+  name: string
+}
+
+export interface FunclistDefInt32Command extends BaseCommand {
+  kind: typeof FUNCLIST_DEF_INT32
+  targetFunclistSlot: FuncListRef
+  flags: JSPropFlags
+  index: number
+  intVal: number
+  key: string
+}
+
+export interface FunclistDefInt64Command extends BaseCommand {
+  kind: typeof FUNCLIST_DEF_INT64
+  targetFunclistSlot: FuncListRef
+  index: number
+  flags: JSPropFlags
+  i64Val: bigint
+  name: string
+}
+
+export interface FunclistDefDoubleCommand extends BaseCommand {
+  kind: typeof FUNCLIST_DEF_DOUBLE
+  targetFunclistSlot: FuncListRef
+  index: number
+  flags: JSPropFlags
+  f64Val: number
+  key: string
+}
+
+export interface FunclistDefNullCommand extends BaseCommand {
+  kind: typeof FUNCLIST_DEF_NULL
+  targetFunclistSlot: FuncListRef
+  flags: JSPropFlags
+  key: string
+  index: number
+}
+
+export interface FunclistDefUndefinedCommand extends BaseCommand {
+  kind: typeof FUNCLIST_DEF_UNDEFINED
+  targetFunclistSlot: FuncListRef
+  flags: JSPropFlags
+  key: string
+  index: number
+}
+
+export interface FunclistDefObjectCommand extends BaseCommand {
+  kind: typeof FUNCLIST_DEF_OBJECT
+  targetFunclistSlot: FuncListRef
+  objectFunclistSlot: FuncListRef
+  flags: JSPropFlags
+  key: string
+  index: number
+}
+
+export type Command = InvalidCommand |
+  NewObjectCommand |
+  NewObjectProtoCommand |
+  NewArrayCommand |
+  NewDateCommand |
+  NewErrorCommand |
+  NewArraybufferCommand |
+  NewTypedArrayCommand |
+  NewSymbolCommand |
+  NewFloat64Command |
+  NewStringCommand |
+  NewBigintCommand |
+  NewFuncCommand |
+  SetStrValueCommand |
+  SetStrNullCommand |
+  SetStrUndefCommand |
+  SetStrBoolCommand |
+  SetStrInt32Command |
+  SetStrF64Command |
+  SetStrBigintCommand |
+  SetStrStringCommand |
+  SetIdxValueCommand |
+  SetIdxNullCommand |
+  SetIdxUndefCommand |
+  SetIdxBoolCommand |
+  SetIdxInt32Command |
+  SetIdxF64Command |
+  SetIdxBigintCommand |
+  SetIdxStringCommand |
+  SetCommand |
+  DefGetsetCommand |
+  GetCommand |
+  GetStrCommand |
+  GetIdxCommand |
+  GlobalCommand |
+  GlobalGetStrCommand |
+  GlobalSetStrCommand |
+  MapSetCommand |
+  MapSetStrCommand |
+  SetAddCommand |
+  CallCommand |
+  CallCtorCommand |
+  EvalCommand |
+  ThrowCommand |
+  ResolveExcCommand |
+  DupCommand |
+  DupPtrCommand |
+  FreeCommand |
+  FreePtrCommand |
+  BytecodeWriteCommand |
+  BytecodeReadCommand |
+  FunclistNewCommand |
+  FunclistAssignCommand |
+  FunclistFreeCommand |
+  FunclistDefCfuncCommand |
+  FunclistDefCfuncCtorCommand |
+  FunclistDefCgetsetCommand |
+  FunclistDefStringCommand |
+  FunclistDefInt32Command |
+  FunclistDefInt64Command |
+  FunclistDefDoubleCommand |
+  FunclistDefNullCommand |
+  FunclistDefUndefinedCommand |
+  FunclistDefObjectCommand
+
+export class GeneratedCommandBuilder {
+  private commands: Command[] = []
+  private nextJsValueId = 1
+  private nextFuncListId = 1
+
+  private pushCommand(command: Command): void {
+    this.commands.push(command)
+  }
+
+  getCommands(): readonly Command[] {
+    return this.commands
+  }
+
+  takeCommands(): Command[] {
+    const out = this.commands
+    this.commands = []
+    return out
+  }
+
+  protected allocateJsValueRef(): JSValueRef {
+    const ref = packGeneratedRef(JS_VALUE_BANK_ID, this.nextJsValueId++)
+    return ref as JSValueRef
+  }
+
+  protected allocateFuncListRef(): FuncListRef {
+    const ref = packGeneratedRef(FUNC_LIST_BANK_ID, this.nextFuncListId++)
+    return ref as FuncListRef
+  }
+
+  invalid(): void {
+    this.pushCommand({
+      kind: INVALID,
+    } as InvalidCommand)
+  }
+
+  newObject(): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_OBJECT,
+      resultSlot,
+    } as NewObjectCommand)
+    return resultSlot
+  }
+
+  newObjectProto(protoSlot: JSValueRef): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_OBJECT_PROTO,
+      resultSlot,
+      protoSlot,
+    } as NewObjectProtoCommand)
+    return resultSlot
+  }
+
+  newArray(): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_ARRAY,
+      resultSlot,
+    } as NewArrayCommand)
+    return resultSlot
+  }
+
+  newDate(timestamp: number): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_DATE,
+      resultSlot,
+      timestamp,
+    } as NewDateCommand)
+    return resultSlot
+  }
+
+  newError(newErrorFlags: NewErrorFlags, message: string, name: string): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_ERROR,
+      resultSlot,
+      newErrorFlags,
+      message,
+      name,
+    } as NewErrorCommand)
+    return resultSlot
+  }
+
+  newArraybuffer(dataBytes: Uint8Array): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_ARRAYBUFFER,
+      resultSlot,
+      dataBytes,
+    } as NewArraybufferCommand)
+    return resultSlot
+  }
+
+  newTypedArray(sourceSlot: JSValueRef, arrayType: NewTypedArrayFlags, sourceOffset: number, length: number): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_TYPED_ARRAY,
+      resultSlot,
+      sourceSlot,
+      arrayType,
+      sourceOffset,
+      length,
+    } as NewTypedArrayCommand)
+    return resultSlot
+  }
+
+  newSymbol(isGlobal: number, desc: string): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_SYMBOL,
+      resultSlot,
+      isGlobal,
+      desc,
+    } as NewSymbolCommand)
+    return resultSlot
+  }
+
+  newFloat64(value: number): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_FLOAT64,
+      resultSlot,
+      value,
+    } as NewFloat64Command)
+    return resultSlot
+  }
+
+  newString(str: string): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_STRING,
+      resultSlot,
+      str,
+    } as NewStringCommand)
+    return resultSlot
+  }
+
+  newBigint(value: bigint): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_BIGINT,
+      resultSlot,
+      value,
+    } as NewBigintCommand)
+    return resultSlot
+  }
+
+  newFunc(arity: number, isConstructor: number, name: string, hostRefId: HostRefId): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: NEW_FUNC,
+      resultSlot,
+      arity,
+      isConstructor,
+      name,
+      hostRefId,
+    } as NewFuncCommand)
+    return resultSlot
+  }
+
+  setStrValue(targetSlot: JSValueRef, valueSlot: JSValueRef, flags: SetPropFlags, key: string): void {
+    this.pushCommand({
+      kind: SET_STR_VALUE,
+      targetSlot,
+      valueSlot,
+      flags,
+      key,
+    } as SetStrValueCommand)
+  }
+
+  setStrNull(targetSlot: JSValueRef, flags: SetPropFlags, key: string): void {
+    this.pushCommand({
+      kind: SET_STR_NULL,
+      targetSlot,
+      flags,
+      key,
+    } as SetStrNullCommand)
+  }
+
+  setStrUndef(targetSlot: JSValueRef, flags: SetPropFlags, key: string): void {
+    this.pushCommand({
+      kind: SET_STR_UNDEF,
+      targetSlot,
+      flags,
+      key,
+    } as SetStrUndefCommand)
+  }
+
+  setStrBool(targetSlot: JSValueRef, boolVal: number, flags: SetPropFlags, key: string): void {
+    this.pushCommand({
+      kind: SET_STR_BOOL,
+      targetSlot,
+      boolVal,
+      flags,
+      key,
+    } as SetStrBoolCommand)
+  }
+
+  setStrInt32(targetSlot: JSValueRef, flags: SetPropFlags, key: string, intVal: number): void {
+    this.pushCommand({
+      kind: SET_STR_INT32,
+      targetSlot,
+      flags,
+      key,
+      intVal,
+    } as SetStrInt32Command)
+  }
+
+  setStrF64(targetSlot: JSValueRef, flags: SetPropFlags, f64Val: number, key: string): void {
+    this.pushCommand({
+      kind: SET_STR_F64,
+      targetSlot,
+      flags,
+      f64Val,
+      key,
+    } as SetStrF64Command)
+  }
+
+  setStrBigint(targetSlot: JSValueRef, flags: SetPropFlags, i64Val: bigint, key: string): void {
+    this.pushCommand({
+      kind: SET_STR_BIGINT,
+      targetSlot,
+      flags,
+      i64Val,
+      key,
+    } as SetStrBigintCommand)
+  }
+
+  setStrString(targetSlot: JSValueRef, flags: SetPropFlags, str: string, key: string): void {
+    this.pushCommand({
+      kind: SET_STR_STRING,
+      targetSlot,
+      flags,
+      str,
+      key,
+    } as SetStrStringCommand)
+  }
+
+  setIdxValue(targetSlot: JSValueRef, valueSlot: JSValueRef, flags: SetPropFlags, index: number): void {
+    this.pushCommand({
+      kind: SET_IDX_VALUE,
+      targetSlot,
+      valueSlot,
+      flags,
+      index,
+    } as SetIdxValueCommand)
+  }
+
+  setIdxNull(targetSlot: JSValueRef, flags: SetPropFlags, index: number): void {
+    this.pushCommand({
+      kind: SET_IDX_NULL,
+      targetSlot,
+      flags,
+      index,
+    } as SetIdxNullCommand)
+  }
+
+  setIdxUndef(targetSlot: JSValueRef, flags: SetPropFlags, index: number): void {
+    this.pushCommand({
+      kind: SET_IDX_UNDEF,
+      targetSlot,
+      flags,
+      index,
+    } as SetIdxUndefCommand)
+  }
+
+  setIdxBool(targetSlot: JSValueRef, boolVal: number, flags: SetPropFlags, index: number): void {
+    this.pushCommand({
+      kind: SET_IDX_BOOL,
+      targetSlot,
+      boolVal,
+      flags,
+      index,
+    } as SetIdxBoolCommand)
+  }
+
+  setIdxInt32(targetSlot: JSValueRef, flags: SetPropFlags, index: number, intVal: number): void {
+    this.pushCommand({
+      kind: SET_IDX_INT32,
+      targetSlot,
+      flags,
+      index,
+      intVal,
+    } as SetIdxInt32Command)
+  }
+
+  setIdxF64(targetSlot: JSValueRef, flags: SetPropFlags, f64Val: number, index: number): void {
+    this.pushCommand({
+      kind: SET_IDX_F64,
+      targetSlot,
+      flags,
+      f64Val,
+      index,
+    } as SetIdxF64Command)
+  }
+
+  setIdxBigint(targetSlot: JSValueRef, flags: SetPropFlags, i64Val: bigint, index: number): void {
+    this.pushCommand({
+      kind: SET_IDX_BIGINT,
+      targetSlot,
+      flags,
+      i64Val,
+      index,
+    } as SetIdxBigintCommand)
+  }
+
+  setIdxString(targetSlot: JSValueRef, flags: SetPropFlags, str: string, index: number): void {
+    this.pushCommand({
+      kind: SET_IDX_STRING,
+      targetSlot,
+      flags,
+      str,
+      index,
+    } as SetIdxStringCommand)
+  }
+
+  set(targetSlot: JSValueRef, keySlot: JSValueRef, valueSlot: JSValueRef, flags: SetPropFlags): void {
+    this.pushCommand({
+      kind: SET,
+      targetSlot,
+      keySlot,
+      valueSlot,
+      flags,
+    } as SetCommand)
+  }
+
+  defGetset(targetSlot: JSValueRef, flags: JSPropFlags, getterRef: HostRefId, setterRef: HostRefId, key: string): void {
+    this.pushCommand({
+      kind: DEF_GETSET,
+      targetSlot,
+      flags,
+      getterRef,
+      setterRef,
+      key,
+    } as DefGetsetCommand)
+  }
+
+  get(sourceSlot: JSValueRef, keySlot: JSValueRef): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: GET,
+      resultSlot,
+      sourceSlot,
+      keySlot,
+    } as GetCommand)
+    return resultSlot
+  }
+
+  getStr(sourceSlot: JSValueRef, key: string): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: GET_STR,
+      resultSlot,
+      sourceSlot,
+      key,
+    } as GetStrCommand)
+    return resultSlot
+  }
+
+  getIdx(sourceSlot: JSValueRef, index: number): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: GET_IDX,
+      resultSlot,
+      sourceSlot,
+      index,
+    } as GetIdxCommand)
+    return resultSlot
+  }
+
+  global(): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: GLOBAL,
+      resultSlot,
+    } as GlobalCommand)
+    return resultSlot
+  }
+
+  globalGetStr(key: string): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: GLOBAL_GET_STR,
+      resultSlot,
+      key,
+    } as GlobalGetStrCommand)
+    return resultSlot
+  }
+
+  globalSetStr(valueSlot: JSValueRef, flags: JSPropFlags, key: string): void {
+    this.pushCommand({
+      kind: GLOBAL_SET_STR,
+      valueSlot,
+      flags,
+      key,
+    } as GlobalSetStrCommand)
+  }
+
+  mapSet(targetSlot: JSValueRef, keySlot: JSValueRef, valueSlot: JSValueRef): void {
+    this.pushCommand({
+      kind: MAP_SET,
+      targetSlot,
+      keySlot,
+      valueSlot,
+    } as MapSetCommand)
+  }
+
+  mapSetStr(targetSlot: JSValueRef, valueSlot: JSValueRef, key: string): void {
+    this.pushCommand({
+      kind: MAP_SET_STR,
+      targetSlot,
+      valueSlot,
+      key,
+    } as MapSetStrCommand)
+  }
+
+  setAdd(targetSlot: JSValueRef, valueSlot: JSValueRef): void {
+    this.pushCommand({
+      kind: SET_ADD,
+      targetSlot,
+      valueSlot,
+    } as SetAddCommand)
+  }
+
+  call(funcSlot: JSValueRef, thisSlot: JSValueRef, argv: readonly JSValueRef[]): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: CALL,
+      barrier: true,
+      resultSlot,
+      funcSlot,
+      thisSlot,
+      argv,
+    } as CallCommand)
+    return resultSlot
+  }
+
+  callCtor(ctorSlot: JSValueRef, argv: readonly JSValueRef[]): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: CALL_CTOR,
+      barrier: true,
+      resultSlot,
+      ctorSlot,
+      argv,
+    } as CallCtorCommand)
+    return resultSlot
+  }
+
+  eval(callFlags: EvalFlags, code: string, filename: string): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: EVAL,
+      barrier: true,
+      resultSlot,
+      callFlags,
+      code,
+      filename,
+    } as EvalCommand)
+    return resultSlot
+  }
+
+  throw(errorSlot: JSValueRef): void {
+    this.pushCommand({
+      kind: THROW,
+      errorSlot,
+    } as ThrowCommand)
+  }
+
+  resolveExc(maybeExcSlot: JSValueRef): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: RESOLVE_EXC,
+      resultSlot,
+      maybeExcSlot,
+    } as ResolveExcCommand)
+    return resultSlot
+  }
+
+  dup(sourceSlot: JSValueRef): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: DUP,
+      resultSlot,
+      sourceSlot,
+    } as DupCommand)
+    return resultSlot
+  }
+
+  dupPtr(valuePtr: JSValueRef): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: DUP_PTR,
+      resultSlot,
+      valuePtr,
+    } as DupPtrCommand)
+    return resultSlot
+  }
+
+  free(targetSlot: JSValueRef): void {
+    this.pushCommand({
+      kind: FREE,
+      targetSlot,
+    } as FreeCommand)
+  }
+
+  freePtr(valuePtr: JSValueRef): void {
+    this.pushCommand({
+      kind: FREE_PTR,
+      valuePtr,
+    } as FreePtrCommand)
+  }
+
+  bytecodeWrite(sourceSlot: JSValueRef, flags: number): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: BYTECODE_WRITE,
+      resultSlot,
+      sourceSlot,
+      flags,
+    } as BytecodeWriteCommand)
+    return resultSlot
+  }
+
+  bytecodeRead(sourceSlot: JSValueRef, flags: number): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand({
+      kind: BYTECODE_READ,
+      resultSlot,
+      sourceSlot,
+      flags,
+    } as BytecodeReadCommand)
+    return resultSlot
+  }
+
+  funclistNew(count: number): FuncListRef {
+    const resultFunclistSlot = this.allocateFuncListRef()
+    this.pushCommand({
+      kind: FUNCLIST_NEW,
+      resultFunclistSlot,
+      count,
+    } as FunclistNewCommand)
+    return resultFunclistSlot
+  }
+
+  funclistAssign(targetSlot: JSValueRef, sourceFunclistSlot: FuncListRef): void {
+    this.pushCommand({
+      kind: FUNCLIST_ASSIGN,
+      targetSlot,
+      sourceFunclistSlot,
+    } as FunclistAssignCommand)
+  }
+
+  funclistFree(targetFunclistSlot: FuncListRef): void {
+    this.pushCommand({
+      kind: FUNCLIST_FREE,
+      targetFunclistSlot,
+    } as FunclistFreeCommand)
+  }
+
+  funclistDefCfunc(targetFunclistSlot: FuncListRef, arity: number, flags: JSPropFlags, index: number, funcName: string, cFuncPtr: JSCFunctionTypePointer): void {
+    this.pushCommand({
+      kind: FUNCLIST_DEF_CFUNC,
+      targetFunclistSlot,
+      arity,
+      flags,
+      index,
+      funcName,
+      cFuncPtr,
+    } as FunclistDefCfuncCommand)
+  }
+
+  funclistDefCfuncCtor(targetFunclistSlot: FuncListRef, arity: number, flags: JSPropFlags, index: number, funcName: string, cFuncPtr: JSCFunctionTypePointer): void {
+    this.pushCommand({
+      kind: FUNCLIST_DEF_CFUNC_CTOR,
+      targetFunclistSlot,
+      arity,
+      flags,
+      index,
+      funcName,
+      cFuncPtr,
+    } as FunclistDefCfuncCtorCommand)
+  }
+
+  funclistDefCgetset(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, key: string, getterPtr: JSCFunctionTypePointer, setterPtr: JSCFunctionTypePointer): void {
+    this.pushCommand({
+      kind: FUNCLIST_DEF_CGETSET,
+      targetFunclistSlot,
+      index,
+      flags,
+      key,
+      getterPtr,
+      setterPtr,
+    } as FunclistDefCgetsetCommand)
+  }
+
+  funclistDefString(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, str: string, name: string): void {
+    this.pushCommand({
+      kind: FUNCLIST_DEF_STRING,
+      targetFunclistSlot,
+      index,
+      flags,
+      str,
+      name,
+    } as FunclistDefStringCommand)
+  }
+
+  funclistDefInt32(targetFunclistSlot: FuncListRef, flags: JSPropFlags, index: number, intVal: number, key: string): void {
+    this.pushCommand({
+      kind: FUNCLIST_DEF_INT32,
+      targetFunclistSlot,
+      flags,
+      index,
+      intVal,
+      key,
+    } as FunclistDefInt32Command)
+  }
+
+  funclistDefInt64(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, i64Val: bigint, name: string): void {
+    this.pushCommand({
+      kind: FUNCLIST_DEF_INT64,
+      targetFunclistSlot,
+      index,
+      flags,
+      i64Val,
+      name,
+    } as FunclistDefInt64Command)
+  }
+
+  funclistDefDouble(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, f64Val: number, key: string): void {
+    this.pushCommand({
+      kind: FUNCLIST_DEF_DOUBLE,
+      targetFunclistSlot,
+      index,
+      flags,
+      f64Val,
+      key,
+    } as FunclistDefDoubleCommand)
+  }
+
+  funclistDefNull(targetFunclistSlot: FuncListRef, flags: JSPropFlags, key: string, index: number): void {
+    this.pushCommand({
+      kind: FUNCLIST_DEF_NULL,
+      targetFunclistSlot,
+      flags,
+      key,
+      index,
+    } as FunclistDefNullCommand)
+  }
+
+  funclistDefUndefined(targetFunclistSlot: FuncListRef, flags: JSPropFlags, key: string, index: number): void {
+    this.pushCommand({
+      kind: FUNCLIST_DEF_UNDEFINED,
+      targetFunclistSlot,
+      flags,
+      key,
+      index,
+    } as FunclistDefUndefinedCommand)
+  }
+
+  funclistDefObject(targetFunclistSlot: FuncListRef, objectFunclistSlot: FuncListRef, flags: JSPropFlags, key: string, index: number): void {
+    this.pushCommand({
+      kind: FUNCLIST_DEF_OBJECT,
+      targetFunclistSlot,
+      objectFunclistSlot,
+      flags,
+      key,
+      index,
+    } as FunclistDefObjectCommand)
+  }
+}
+
 // =============================================================================
 
 // Setter Helpers
@@ -72,6 +1359,75 @@ function setData_i64(view: DataView, offset: number, value: bigint): void {
   view.setBigInt64(offset + 4, value, true)
 }
 
+function writePattern0(view: DataView, offset: CommandPtr, p0: JSValueSlot): void {
+  setSlotA(view, offset, p0)
+}
+
+function writePattern1(view: DataView, offset: CommandPtr, p0: JSValueSlot, p1: JSValueSlot): void {
+  setSlotA(view, offset, p0)
+  setSlotB(view, offset, p1)
+}
+
+function writePattern2(view: DataView, offset: CommandPtr, p0: JSValueSlot, p1: Float64): void {
+  setSlotA(view, offset, p0)
+  setData_f64(view, offset, p1)
+}
+
+function writePattern4(view: DataView, offset: CommandPtr, p0: JSValueSlot, p1: BorrowedHeapCharPointer, p2: Uint32): void {
+  setSlotA(view, offset, p0)
+  setD1_u32(view, offset, p1)
+  setD2_u32(view, offset, p2)
+}
+
+function writePattern10(view: DataView, offset: CommandPtr, p0: JSValueSlot, p1: SetPropFlags, p2: BorrowedHeapCharPointer, p3: Uint32): void {
+  setSlotA(view, offset, p0)
+  setSlotC(view, offset, p1)
+  setD1_u32(view, offset, p2)
+  setD2_u32(view, offset, p3)
+}
+
+function writePattern17(view: DataView, offset: CommandPtr, p0: JSValueSlot, p1: SetPropFlags, p2: Uint32): void {
+  setSlotA(view, offset, p0)
+  setSlotC(view, offset, p1)
+  setD1_u32(view, offset, p2)
+}
+
+function writePattern25(view: DataView, offset: CommandPtr, p0: JSValueSlot, p1: JSValueSlot, p2: JSValueSlot): void {
+  setSlotA(view, offset, p0)
+  setSlotB(view, offset, p1)
+  setSlotC(view, offset, p2)
+}
+
+function writePattern26(view: DataView, offset: CommandPtr, p0: JSValueSlot, p1: JSValueSlot, p2: BorrowedHeapCharPointer, p3: Uint32): void {
+  setSlotA(view, offset, p0)
+  setSlotB(view, offset, p1)
+  setD1_u32(view, offset, p2)
+  setD2_u32(view, offset, p3)
+}
+
+function writePattern27(view: DataView, offset: CommandPtr, p0: JSValueSlot, p1: JSValueSlot, p2: Uint32): void {
+  setSlotA(view, offset, p0)
+  setSlotB(view, offset, p1)
+  setD1_u32(view, offset, p2)
+}
+
+function writePattern37(view: DataView, offset: CommandPtr, p0: FuncListSlot, p1: Uint8, p2: JSPropFlags, p3: Uint32, p4: BorrowedHeapCharPointer, p5: JSCFunctionTypePointer): void {
+  setSlotA(view, offset, p0)
+  setSlotB(view, offset, p1)
+  setSlotC(view, offset, p2)
+  setD1_u32(view, offset, p3)
+  setD2_u32(view, offset, p4)
+  setD3_u32(view, offset, p5)
+}
+
+function writePattern43(view: DataView, offset: CommandPtr, p0: FuncListSlot, p1: JSPropFlags, p2: BorrowedHeapCharPointer, p3: Uint32, p4: Uint32): void {
+  setSlotA(view, offset, p0)
+  setSlotC(view, offset, p1)
+  setD1_u32(view, offset, p2)
+  setD2_u32(view, offset, p3)
+  setD3_u32(view, offset, p4)
+}
+
 // =============================================================================
 
 // Writer Functions (generated)
@@ -86,24 +1442,22 @@ export function writeInvalid(view: DataView, offset: CommandPtr): void {
 
 export function writeNewObject(view: DataView, offset: CommandPtr, result_slot: JSValueSlot): void {
   setOpcode(view, offset, 1)
-  setSlotA(view, offset, result_slot)
+  writePattern0(view, offset, result_slot)
 }
 
 export function writeNewObjectProto(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, proto_slot: JSValueSlot): void {
   setOpcode(view, offset, 2)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, proto_slot)
+  writePattern1(view, offset, result_slot, proto_slot)
 }
 
 export function writeNewArray(view: DataView, offset: CommandPtr, result_slot: JSValueSlot): void {
   setOpcode(view, offset, 3)
-  setSlotA(view, offset, result_slot)
+  writePattern0(view, offset, result_slot)
 }
 
 export function writeNewDate(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, timestamp: Float64): void {
   setOpcode(view, offset, 4)
-  setSlotA(view, offset, result_slot)
-  setData_f64(view, offset, timestamp)
+  writePattern2(view, offset, result_slot, timestamp)
 }
 
 export function writeNewError(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, maybe_name_len: Uint8, new_error_flags: NewErrorFlags, message_ptr: BorrowedHeapCharPointer, message_len: Uint32, name_ptr: BorrowedHeapCharPointer): void {
@@ -118,9 +1472,7 @@ export function writeNewError(view: DataView, offset: CommandPtr, result_slot: J
 
 export function writeNewArraybuffer(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, data_ptr: BorrowedHeapCharPointer, data_len: Uint32): void {
   setOpcode(view, offset, 6)
-  setSlotA(view, offset, result_slot)
-  setD1_u32(view, offset, data_ptr)
-  setD2_u32(view, offset, data_len)
+  writePattern4(view, offset, result_slot, data_ptr, data_len)
 }
 
 export function writeNewTypedArray(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, source_slot: JSValueSlot, array_type: NewTypedArrayFlags, source_offset: Uint32, length: Uint32): void {
@@ -142,15 +1494,12 @@ export function writeNewSymbol(view: DataView, offset: CommandPtr, result_slot: 
 
 export function writeNewFloat64(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, value: Float64): void {
   setOpcode(view, offset, 9)
-  setSlotA(view, offset, result_slot)
-  setData_f64(view, offset, value)
+  writePattern2(view, offset, result_slot, value)
 }
 
 export function writeNewString(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, str_ptr: BorrowedHeapCharPointer, str_len: Uint32): void {
   setOpcode(view, offset, 10)
-  setSlotA(view, offset, result_slot)
-  setD1_u32(view, offset, str_ptr)
-  setD2_u32(view, offset, str_len)
+  writePattern4(view, offset, result_slot, str_ptr, str_len)
 }
 
 export function writeNewBigint(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, value: Int64): void {
@@ -180,18 +1529,12 @@ export function writeSetStrValue(view: DataView, offset: CommandPtr, target_slot
 
 export function writeSetStrNull(view: DataView, offset: CommandPtr, target_slot: JSValueSlot, flags: SetPropFlags, key_ptr: BorrowedHeapCharPointer, key_len: Uint32): void {
   setOpcode(view, offset, 14)
-  setSlotA(view, offset, target_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
+  writePattern10(view, offset, target_slot, flags, key_ptr, key_len)
 }
 
 export function writeSetStrUndef(view: DataView, offset: CommandPtr, target_slot: JSValueSlot, flags: SetPropFlags, key_ptr: BorrowedHeapCharPointer, key_len: Uint32): void {
   setOpcode(view, offset, 15)
-  setSlotA(view, offset, target_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
+  writePattern10(view, offset, target_slot, flags, key_ptr, key_len)
 }
 
 export function writeSetStrBool(view: DataView, offset: CommandPtr, target_slot: JSValueSlot, bool_val: Uint8, flags: SetPropFlags, key_ptr: BorrowedHeapCharPointer, key_len: Uint32): void {
@@ -250,16 +1593,12 @@ export function writeSetIdxValue(view: DataView, offset: CommandPtr, target_slot
 
 export function writeSetIdxNull(view: DataView, offset: CommandPtr, target_slot: JSValueSlot, flags: SetPropFlags, index: Uint32): void {
   setOpcode(view, offset, 22)
-  setSlotA(view, offset, target_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, index)
+  writePattern17(view, offset, target_slot, flags, index)
 }
 
 export function writeSetIdxUndef(view: DataView, offset: CommandPtr, target_slot: JSValueSlot, flags: SetPropFlags, index: Uint32): void {
   setOpcode(view, offset, 23)
-  setSlotA(view, offset, target_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, index)
+  writePattern17(view, offset, target_slot, flags, index)
 }
 
 export function writeSetIdxBool(view: DataView, offset: CommandPtr, target_slot: JSValueSlot, bool_val: Uint8, flags: SetPropFlags, index: Uint32): void {
@@ -323,36 +1662,27 @@ export function writeDefGetset(view: DataView, offset: CommandPtr, target_slot: 
 
 export function writeGet(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, source_slot: JSValueSlot, key_slot: JSValueSlot): void {
   setOpcode(view, offset, 31)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, source_slot)
-  setSlotC(view, offset, key_slot)
+  writePattern25(view, offset, result_slot, source_slot, key_slot)
 }
 
 export function writeGetStr(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, source_slot: JSValueSlot, key_ptr: BorrowedHeapCharPointer, key_len: Uint32): void {
   setOpcode(view, offset, 32)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, source_slot)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
+  writePattern26(view, offset, result_slot, source_slot, key_ptr, key_len)
 }
 
 export function writeGetIdx(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, source_slot: JSValueSlot, index: Uint32): void {
   setOpcode(view, offset, 33)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, source_slot)
-  setD1_u32(view, offset, index)
+  writePattern27(view, offset, result_slot, source_slot, index)
 }
 
 export function writeGlobal(view: DataView, offset: CommandPtr, result_slot: JSValueSlot): void {
   setOpcode(view, offset, 34)
-  setSlotA(view, offset, result_slot)
+  writePattern0(view, offset, result_slot)
 }
 
 export function writeGlobalGetStr(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, key_ptr: BorrowedHeapCharPointer, key_len: Uint32): void {
   setOpcode(view, offset, 35)
-  setSlotA(view, offset, result_slot)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
+  writePattern4(view, offset, result_slot, key_ptr, key_len)
 }
 
 export function writeGlobalSetStr(view: DataView, offset: CommandPtr, value_slot: JSValueSlot, flags: JSPropFlags, key_ptr: BorrowedHeapCharPointer, key_len: Uint32): void {
@@ -365,23 +1695,17 @@ export function writeGlobalSetStr(view: DataView, offset: CommandPtr, value_slot
 
 export function writeMapSet(view: DataView, offset: CommandPtr, target_slot: JSValueSlot, key_slot: JSValueSlot, value_slot: JSValueSlot): void {
   setOpcode(view, offset, 37)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, key_slot)
-  setSlotC(view, offset, value_slot)
+  writePattern25(view, offset, target_slot, key_slot, value_slot)
 }
 
 export function writeMapSetStr(view: DataView, offset: CommandPtr, target_slot: JSValueSlot, value_slot: JSValueSlot, key_ptr: BorrowedHeapCharPointer, key_len: Uint32): void {
   setOpcode(view, offset, 38)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, value_slot)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
+  writePattern26(view, offset, target_slot, value_slot, key_ptr, key_len)
 }
 
 export function writeSetAdd(view: DataView, offset: CommandPtr, target_slot: JSValueSlot, value_slot: JSValueSlot): void {
   setOpcode(view, offset, 39)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, value_slot)
+  writePattern1(view, offset, target_slot, value_slot)
 }
 
 export function writeCall(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, func_slot: JSValueSlot, this_slot: JSValueSlot, argv: JSValuePointer, argc: Uint32): void {
@@ -413,19 +1737,17 @@ export function writeEval(view: DataView, offset: CommandPtr, result_slot: JSVal
 
 export function writeThrow(view: DataView, offset: CommandPtr, error_slot: JSValueSlot): void {
   setOpcode(view, offset, 43)
-  setSlotA(view, offset, error_slot)
+  writePattern0(view, offset, error_slot)
 }
 
 export function writeResolveExc(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, maybe_exc_slot: JSValueSlot): void {
   setOpcode(view, offset, 44)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, maybe_exc_slot)
+  writePattern1(view, offset, result_slot, maybe_exc_slot)
 }
 
 export function writeDup(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, source_slot: JSValueSlot): void {
   setOpcode(view, offset, 45)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, source_slot)
+  writePattern1(view, offset, result_slot, source_slot)
 }
 
 export function writeDupPtr(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, value_ptr: JSValuePointer): void {
@@ -436,7 +1758,7 @@ export function writeDupPtr(view: DataView, offset: CommandPtr, result_slot: JSV
 
 export function writeFree(view: DataView, offset: CommandPtr, target_slot: JSValueSlot): void {
   setOpcode(view, offset, 47)
-  setSlotA(view, offset, target_slot)
+  writePattern0(view, offset, target_slot)
 }
 
 export function writeFreePtr(view: DataView, offset: CommandPtr, value_ptr: JSValuePointer): void {
@@ -446,16 +1768,12 @@ export function writeFreePtr(view: DataView, offset: CommandPtr, value_ptr: JSVa
 
 export function writeBytecodeWrite(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, source_slot: JSValueSlot, flags: Uint32): void {
   setOpcode(view, offset, 49)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, source_slot)
-  setD1_u32(view, offset, flags)
+  writePattern27(view, offset, result_slot, source_slot, flags)
 }
 
 export function writeBytecodeRead(view: DataView, offset: CommandPtr, result_slot: JSValueSlot, source_slot: JSValueSlot, flags: Uint32): void {
   setOpcode(view, offset, 50)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, source_slot)
-  setD1_u32(view, offset, flags)
+  writePattern27(view, offset, result_slot, source_slot, flags)
 }
 
 export function writeFunclistNew(view: DataView, offset: CommandPtr, result_funclist_slot: FuncListSlot, count: Uint32): void {
@@ -477,22 +1795,12 @@ export function writeFunclistFree(view: DataView, offset: CommandPtr, target_fun
 
 export function writeFunclistDefCfunc(view: DataView, offset: CommandPtr, target_funclist_slot: FuncListSlot, arity: Uint8, flags: JSPropFlags, index: Uint32, func_name_ptr: BorrowedHeapCharPointer, c_func_ptr: JSCFunctionTypePointer): void {
   setOpcode(view, offset, 54)
-  setSlotA(view, offset, target_funclist_slot)
-  setSlotB(view, offset, arity)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, index)
-  setD2_u32(view, offset, func_name_ptr)
-  setD3_u32(view, offset, c_func_ptr)
+  writePattern37(view, offset, target_funclist_slot, arity, flags, index, func_name_ptr, c_func_ptr)
 }
 
 export function writeFunclistDefCfuncCtor(view: DataView, offset: CommandPtr, target_funclist_slot: FuncListSlot, arity: Uint8, flags: JSPropFlags, index: Uint32, func_name_ptr: BorrowedHeapCharPointer, c_func_ptr: JSCFunctionTypePointer): void {
   setOpcode(view, offset, 55)
-  setSlotA(view, offset, target_funclist_slot)
-  setSlotB(view, offset, arity)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, index)
-  setD2_u32(view, offset, func_name_ptr)
-  setD3_u32(view, offset, c_func_ptr)
+  writePattern37(view, offset, target_funclist_slot, arity, flags, index, func_name_ptr, c_func_ptr)
 }
 
 export function writeFunclistDefCgetset(view: DataView, offset: CommandPtr, target_funclist_slot: FuncListSlot, index: Uint8, flags: JSPropFlags, key_ptr: BorrowedHeapCharPointer, getter_ptr: JSCFunctionTypePointer, setter_ptr: JSCFunctionTypePointer): void {
@@ -545,20 +1853,12 @@ export function writeFunclistDefDouble(view: DataView, offset: CommandPtr, targe
 
 export function writeFunclistDefNull(view: DataView, offset: CommandPtr, target_funclist_slot: FuncListSlot, flags: JSPropFlags, key_ptr: BorrowedHeapCharPointer, key_len: Uint32, index: Uint32): void {
   setOpcode(view, offset, 61)
-  setSlotA(view, offset, target_funclist_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
-  setD3_u32(view, offset, index)
+  writePattern43(view, offset, target_funclist_slot, flags, key_ptr, key_len, index)
 }
 
 export function writeFunclistDefUndefined(view: DataView, offset: CommandPtr, target_funclist_slot: FuncListSlot, flags: JSPropFlags, key_ptr: BorrowedHeapCharPointer, key_len: Uint32, index: Uint32): void {
   setOpcode(view, offset, 62)
-  setSlotA(view, offset, target_funclist_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
-  setD3_u32(view, offset, index)
+  writePattern43(view, offset, target_funclist_slot, flags, key_ptr, key_len, index)
 }
 
 export function writeFunclistDefObject(view: DataView, offset: CommandPtr, target_funclist_slot: FuncListSlot, object_funclist_slot: FuncListSlot, flags: JSPropFlags, key_ptr: BorrowedHeapCharPointer, key_len: Uint32, index: Uint32): void {
@@ -653,5 +1953,3 @@ type OpcodeToParams = {
 export type OpcodeToCommand = {
   [Op in keyof OpcodeToParams]: { op: Op; args: OpcodeToParams[Op] }
 }
-
-export type Command = OpcodeToCommand[keyof OpcodeToCommand]

@@ -1,24 +1,27 @@
 import assert from "assert"
+import * as fs from "fs"
+import * as path from "path"
 import { describe, it } from "vitest"
 import { Lifetime } from "./lifetime"
 import {
+  type CommandShape,
+  type CommandOperandAccessors,
   QuickJSBatchExecutionError,
-  type Command,
+  type BankId,
+  type ExecuteCommandPlanOptions,
+  type LogicalRef,
   type QuickJSBatchDriver,
-  type ValueRef,
+  STRUCTURED_CLONE_KIND,
   buildStructuredCloneCommands,
   executeCommandPlan,
   executeStructuredClone,
-  valueRef,
+  packRef,
+  refBankId,
 } from "./QuickJSBatch"
 import { QuickJSWrongOwner } from "./errors"
 
-const JS_VALUE_BANK = "jsValue" as const
-const FUNC_LIST_BANK = "funcList" as const
-
-type TestBank = typeof JS_VALUE_BANK | typeof FUNC_LIST_BANK
-
-type TestOp = { kind: string }
+const JS_VALUE_BANK = 0 as const
+const FUNC_LIST_BANK = 1 as const
 
 type EmittedCommand = {
   type: "command"
@@ -30,7 +33,7 @@ type EmittedCommand = {
 
 type EmittedFree = {
   type: "free"
-  bank: TestBank
+  bankId: BankId
   slot: number
   indexInBatch: number
 }
@@ -41,43 +44,92 @@ type ParkedAlias = {
   token: number
 }
 
-class FakeDriver implements QuickJSBatchDriver<TestOp, TestBank, ParkedAlias> {
+type TestCommand = CommandShape & {
+  readA?: LogicalRef
+  readB?: LogicalRef
+  write?: LogicalRef
+  consumeReadA?: boolean
+  consumeReadB?: boolean
+}
+
+const NO_OPERAND_ACCESSORS: CommandOperandAccessors<CommandShape> = {
+  forEachReadRef() {},
+  forEachWriteRef() {},
+  forEachConsumedReadRef() {},
+}
+
+const TEST_OPERAND_ACCESSORS: CommandOperandAccessors<TestCommand> = {
+  forEachReadRef(command, visit) {
+    if (command.readA !== undefined) visit(command.readA)
+    if (command.readB !== undefined) visit(command.readB)
+  },
+  forEachWriteRef(command, visit) {
+    if (command.write !== undefined) visit(command.write)
+  },
+  forEachConsumedReadRef(command, visit) {
+    if (command.consumeReadA) {
+      if (command.readA === undefined) {
+        throw new Error("consumeReadA requires readA")
+      }
+      visit(command.readA)
+    }
+    if (command.consumeReadB) {
+      if (command.readB === undefined) {
+        throw new Error("consumeReadB requires readB")
+      }
+      visit(command.readB)
+    }
+  },
+}
+
+class FakeDriver<TCommand extends CommandShape = CommandShape>
+  implements QuickJSBatchDriver<TCommand, ParkedAlias>
+{
   readonly emitted: EmittedRecord[] = []
   readonly batchSizes: number[] = []
-  readonly setSlotCalls: Array<{ bank: TestBank; slot: number; alias: ParkedAlias }> = []
-  readonly getSlotCalls: Array<{ bank: TestBank; slot: number; alias: ParkedAlias }> = []
+  readonly setSlotCalls: Array<{ bankId: BankId; slot: number; alias: ParkedAlias }> = []
+  readonly getSlotCalls: Array<{ bankId: BankId; slot: number; alias: ParkedAlias }> = []
 
   private nextAlias = 1
 
   constructor(
-    readonly slotCapacities: Record<TestBank, number>,
+    private readonly slotCapacities: readonly number[],
     readonly commandCapacity: number,
-    readonly slotBanks: readonly TestBank[] = [JS_VALUE_BANK, FUNC_LIST_BANK],
+    readonly bankCount: number = slotCapacities.length,
     private executeOverride?: (count: number) => number,
+    private operandAccessors: CommandOperandAccessors<TCommand> = NO_OPERAND_ACCESSORS as CommandOperandAccessors<TCommand>,
   ) {}
 
-  getSlotCapacity(bank: TestBank): number {
-    return this.slotCapacities[bank]
+  getSlotCapacity(bankId: BankId): number {
+    const capacity = this.slotCapacities[bankId]
+    if (capacity === undefined) {
+      throw new Error(`No slot capacity configured for bank ${bankId}`)
+    }
+    return capacity
   }
 
-  emit(
-    command: Command<TestOp, TestBank>,
-    resolveSlot: (ref: ValueRef<TestBank>) => number,
-    indexInBatch: number,
-  ): void {
+  emit(command: TCommand, resolveSlot: (ref: LogicalRef) => number, indexInBatch: number): void {
+    const readSlots: string[] = []
+    const writeSlots: string[] = []
+    this.operandAccessors.forEachReadRef(command, (ref) => {
+      readSlots.push(`${refBankId(ref)}:${resolveSlot(ref)}`)
+    })
+    this.operandAccessors.forEachWriteRef(command, (ref) => {
+      writeSlots.push(`${refBankId(ref)}:${resolveSlot(ref)}`)
+    })
     this.emitted.push({
       type: "command",
-      kind: command.op.kind,
-      readSlots: command.reads.map((ref) => `${ref.bank}:${resolveSlot(ref)}`),
-      writeSlots: (command.writes ?? []).map((ref) => `${ref.bank}:${resolveSlot(ref)}`),
+      kind: command.label ?? String(command.kind),
+      readSlots,
+      writeSlots,
       indexInBatch,
     })
   }
 
-  emitFree(bank: TestBank, slot: number, indexInBatch: number): void {
+  emitFree(bankId: BankId, slot: number, indexInBatch: number): void {
     this.emitted.push({
       type: "free",
-      bank,
+      bankId,
       slot,
       indexInBatch,
     })
@@ -91,72 +143,75 @@ class FakeDriver implements QuickJSBatchDriver<TestOp, TestBank, ParkedAlias> {
     return commandCount
   }
 
-  getSlot(bank: TestBank, slot: number): ParkedAlias {
+  getSlot(bankId: BankId, slot: number): ParkedAlias {
     const alias = { token: this.nextAlias++ }
-    this.getSlotCalls.push({ bank, slot, alias })
+    this.getSlotCalls.push({ bankId, slot, alias })
     return alias
   }
 
-  setSlot(bank: TestBank, slot: number, alias: ParkedAlias): void {
-    this.setSlotCalls.push({ bank, slot, alias })
+  setSlot(bankId: BankId, slot: number, alias: ParkedAlias): void {
+    this.setSlotCalls.push({ bankId, slot, alias })
   }
 }
 
-function ref(bank: TestBank, valueId: number): ValueRef<TestBank> {
-  return valueRef(bank, valueId)
+function ref(bankId: BankId, valueId: number): LogicalRef {
+  return packRef(bankId, valueId)
 }
 
+let nextKind = 1
 function cmd(
   kind: string,
-  reads: ValueRef<TestBank>[] = [],
-  write?: ValueRef<TestBank>,
-  isBarrier = false,
-): Command<TestOp, TestBank> {
+  config: Omit<TestCommand, "kind" | "label"> = {},
+): TestCommand {
   return {
-    op: { kind },
-    reads,
-    writes: write ? [write] : undefined,
-    isBarrier,
+    kind: nextKind++,
+    label: kind,
+    ...config,
   }
+}
+
+function runTestPlan(
+  commands: readonly TestCommand[],
+  driver: FakeDriver<TestCommand>,
+  options: Omit<ExecuteCommandPlanOptions<ParkedAlias, TestCommand>, "operandAccessors"> = {},
+) {
+  return executeCommandPlan(commands, driver, {
+    ...options,
+    operandAccessors: TEST_OPERAND_ACCESSORS,
+  })
 }
 
 describe("executeCommandPlan", () => {
   it("emits commands in order and inserts FREE at last use", () => {
-    const driver = new FakeDriver({
-      jsValue: 8,
-      funcList: 8,
-    }, 256)
+    const driver = new FakeDriver<TestCommand>([8, 8], 256, 2, undefined, TEST_OPERAND_ACCESSORS)
 
     const commands = [
-      cmd("NEW_A", [], ref(JS_VALUE_BANK, 1)),
-      cmd("MAKE_B_FROM_A", [ref(JS_VALUE_BANK, 1)], ref(JS_VALUE_BANK, 2)),
-      cmd("RETURN_B", [ref(JS_VALUE_BANK, 2)]),
+      cmd("NEW_A", { write: ref(JS_VALUE_BANK, 1) }),
+      cmd("MAKE_B_FROM_A", { readA: ref(JS_VALUE_BANK, 1), write: ref(JS_VALUE_BANK, 2) }),
+      cmd("RETURN_B", { readA: ref(JS_VALUE_BANK, 2) }),
     ]
 
-    const result = executeCommandPlan(commands, driver, {
+    const result = runTestPlan(commands, driver, {
       retainedRefs: [ref(JS_VALUE_BANK, 2)],
     })
 
     assert.strictEqual(result.commandsExecuted, 4)
     assert.strictEqual(driver.batchSizes.length, 1)
 
-    const recordKinds = driver.emitted.map((r) => (r.type === "free" ? `FREE:${r.bank}` : r.kind))
-    assert.deepStrictEqual(recordKinds, ["NEW_A", "MAKE_B_FROM_A", "FREE:jsValue", "RETURN_B"])
+    const recordKinds = driver.emitted.map((r) => (r.type === "free" ? `FREE:${r.bankId}` : r.kind))
+    assert.deepStrictEqual(recordKinds, ["NEW_A", "MAKE_B_FROM_A", "FREE:0", "RETURN_B"])
   })
 
   it("enforces hard barriers by flushing around barrier commands", () => {
-    const driver = new FakeDriver({
-      jsValue: 8,
-      funcList: 8,
-    }, 256)
+    const driver = new FakeDriver<TestCommand>([8, 8], 256, 2, undefined, TEST_OPERAND_ACCESSORS)
 
     const commands = [
-      cmd("A", [], ref(JS_VALUE_BANK, 1)),
-      cmd("CALL", [ref(JS_VALUE_BANK, 1)], ref(JS_VALUE_BANK, 2), true),
-      cmd("B", [ref(JS_VALUE_BANK, 2)]),
+      cmd("A", { write: ref(JS_VALUE_BANK, 1) }),
+      cmd("CALL", { readA: ref(JS_VALUE_BANK, 1), write: ref(JS_VALUE_BANK, 2), barrier: true }),
+      cmd("B", { readA: ref(JS_VALUE_BANK, 2) }),
     ]
 
-    executeCommandPlan(commands, driver, {
+    runTestPlan(commands, driver, {
       retainedRefs: [ref(JS_VALUE_BANK, 2)],
     })
 
@@ -166,18 +221,15 @@ describe("executeCommandPlan", () => {
   })
 
   it("splits batches at command capacity", () => {
-    const driver = new FakeDriver({
-      jsValue: 8,
-      funcList: 8,
-    }, 2)
+    const driver = new FakeDriver<TestCommand>([8, 8], 2, 2, undefined, TEST_OPERAND_ACCESSORS)
 
     const commands = [
-      cmd("A", [], ref(JS_VALUE_BANK, 1)),
-      cmd("B", [ref(JS_VALUE_BANK, 1)], ref(JS_VALUE_BANK, 2)),
-      cmd("C", [ref(JS_VALUE_BANK, 2)], ref(JS_VALUE_BANK, 3)),
+      cmd("A", { write: ref(JS_VALUE_BANK, 1) }),
+      cmd("B", { readA: ref(JS_VALUE_BANK, 1), write: ref(JS_VALUE_BANK, 2) }),
+      cmd("C", { readA: ref(JS_VALUE_BANK, 2), write: ref(JS_VALUE_BANK, 3) }),
     ]
 
-    executeCommandPlan(commands, driver, {
+    runTestPlan(commands, driver, {
       retainedRefs: [ref(JS_VALUE_BANK, 3)],
     })
 
@@ -187,19 +239,16 @@ describe("executeCommandPlan", () => {
   })
 
   it("parks and restores slots when resident pressure exceeds slot capacity", () => {
-    const driver = new FakeDriver({
-      jsValue: 2,
-      funcList: 2,
-    }, 256)
+    const driver = new FakeDriver<TestCommand>([2, 2], 256, 2, undefined, TEST_OPERAND_ACCESSORS)
 
     const commands = [
-      cmd("V1", [], ref(JS_VALUE_BANK, 1)),
-      cmd("V2", [], ref(JS_VALUE_BANK, 2)),
-      cmd("V3_FROM_V1", [ref(JS_VALUE_BANK, 1)], ref(JS_VALUE_BANK, 3)),
-      cmd("USE_V2_V3", [ref(JS_VALUE_BANK, 2), ref(JS_VALUE_BANK, 3)]),
+      cmd("V1", { write: ref(JS_VALUE_BANK, 1) }),
+      cmd("V2", { write: ref(JS_VALUE_BANK, 2) }),
+      cmd("V3_FROM_V1", { readA: ref(JS_VALUE_BANK, 1), write: ref(JS_VALUE_BANK, 3) }),
+      cmd("USE_V2_V3", { readA: ref(JS_VALUE_BANK, 2), readB: ref(JS_VALUE_BANK, 3) }),
     ]
 
-    executeCommandPlan(commands, driver, {
+    runTestPlan(commands, driver, {
       retainedRefs: [ref(JS_VALUE_BANK, 3)],
       enableFastPath: false,
     })
@@ -209,41 +258,27 @@ describe("executeCommandPlan", () => {
   })
 
   it("tracks banks independently and frees in the correct bank", () => {
-    const driver = new FakeDriver({
-      jsValue: 8,
-      funcList: 1,
-    }, 256)
+    const driver = new FakeDriver<TestCommand>([8, 1], 256, 2, undefined, TEST_OPERAND_ACCESSORS)
 
-    const commands = [
-      cmd("NEW_FUNC", [], ref(FUNC_LIST_BANK, 10)),
-      cmd("USE_FUNC", [ref(FUNC_LIST_BANK, 10)]),
-    ]
+    const commands = [cmd("NEW_FUNC", { write: ref(FUNC_LIST_BANK, 10) }), cmd("USE_FUNC", { readA: ref(FUNC_LIST_BANK, 10) })]
 
-    executeCommandPlan(commands, driver)
+    runTestPlan(commands, driver)
 
     const frees = driver.emitted.filter((x): x is EmittedFree => x.type === "free")
     assert.strictEqual(frees.length, 1)
-    assert.strictEqual(frees[0].bank, FUNC_LIST_BANK)
+    assert.strictEqual(frees[0].bankId, FUNC_LIST_BANK)
   })
 
   it("throws deterministic execution metadata on partial batch failure", () => {
-    const driver = new FakeDriver(
-      {
-        jsValue: 8,
-        funcList: 8,
-      },
-      256,
-      [JS_VALUE_BANK, FUNC_LIST_BANK],
-      () => 1,
-    )
+    const driver = new FakeDriver<TestCommand>([8, 8], 256, 2, () => 1, TEST_OPERAND_ACCESSORS)
 
     const commands = [
-      cmd("A", [], ref(JS_VALUE_BANK, 1)),
-      cmd("B", [ref(JS_VALUE_BANK, 1)], ref(JS_VALUE_BANK, 2)),
+      cmd("A", { write: ref(JS_VALUE_BANK, 1) }),
+      cmd("B", { readA: ref(JS_VALUE_BANK, 1), write: ref(JS_VALUE_BANK, 2) }),
     ]
 
     assert.throws(
-      () => executeCommandPlan(commands, driver),
+      () => runTestPlan(commands, driver),
       (error) => {
         assert.ok(error instanceof QuickJSBatchExecutionError)
         assert.strictEqual(error.failedCommandIndex, 1)
@@ -252,6 +287,24 @@ describe("executeCommandPlan", () => {
         return true
       },
     )
+  })
+
+  it("supports consumedReads and does not emit FREE for consumed values", () => {
+    const driver = new FakeDriver<TestCommand>([8, 8], 256, 2, undefined, TEST_OPERAND_ACCESSORS)
+    const consumed = ref(JS_VALUE_BANK, 1)
+    const produced = ref(JS_VALUE_BANK, 2)
+
+    const commands: TestCommand[] = [
+      cmd("NEW_A", { write: consumed }),
+      cmd("CONSUME_A_PRODUCE_B", { readA: consumed, consumeReadA: true, write: produced }),
+      cmd("USE_B", { readA: produced }),
+    ]
+
+    runTestPlan(commands, driver, {
+      retainedRefs: [produced],
+    })
+    const recordKinds = driver.emitted.map((r) => (r.type === "free" ? `FREE:${r.bankId}` : r.kind))
+    assert.ok(!recordKinds.includes("FREE:0"))
   })
 })
 
@@ -266,7 +319,7 @@ describe("buildStructuredCloneCommands", () => {
     assert.ok(built.commands.length > 0)
     assert.ok(built.rootValueId >= 0)
 
-    const loadCounts = built.commands.filter((c) => c.op.kind === "NEW_OBJECT").length
+    const loadCounts = built.commands.filter((c) => c.kind === STRUCTURED_CLONE_KIND.NEW_OBJECT).length
     assert.strictEqual(loadCounts, 2)
   })
 
@@ -289,11 +342,7 @@ describe("buildStructuredCloneCommands", () => {
       b: movedHandle,
     }
 
-    const driver = new FakeDriver({
-      jsValue: 16,
-      funcList: 8,
-    }, 256)
-
+    const driver = new FakeDriver<any>([16, 8], 256)
     executeStructuredClone({
       input,
       driver,
@@ -327,15 +376,7 @@ describe("buildStructuredCloneCommands", () => {
       targetOwner,
     ) as any
 
-    const driver = new FakeDriver(
-      {
-        jsValue: 16,
-        funcList: 8,
-      },
-      256,
-      [JS_VALUE_BANK, FUNC_LIST_BANK],
-      () => 0,
-    )
+    const driver = new FakeDriver<any>([16, 8], 256, 2, () => 0)
 
     assert.throws(() =>
       executeStructuredClone({
@@ -349,5 +390,23 @@ describe("buildStructuredCloneCommands", () => {
     )
 
     assert.strictEqual(disposedCount, 0)
+  })
+})
+
+describe("generated command artifacts", () => {
+  const srcDir = __dirname
+
+  it("generates BaseCommand inheritance and omits runtime pointer metadata exports", () => {
+    const opsSource = fs.readFileSync(path.join(srcDir, "ops.ts"), "utf8")
+    assert.ok(opsSource.includes("export interface NewObjectCommand extends BaseCommand"))
+    assert.ok(!opsSource.includes('from "./CommandPlanner"'))
+    assert.ok(!opsSource.includes("COMMAND_PARAM_META"))
+    assert.ok(!opsSource.includes("COMMAND_BARRIER"))
+    assert.ok(!opsSource.includes("PointerParamConfig"))
+  })
+
+  it("generates planner accessors with variable-length argv reads", () => {
+    const plannerSource = fs.readFileSync(path.join(srcDir, "ops-planner.generated.ts"), "utf8")
+    assert.ok(plannerSource.includes("command.argv.forEach(visit)"))
   })
 })

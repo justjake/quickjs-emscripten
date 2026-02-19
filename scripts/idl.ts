@@ -7,6 +7,8 @@
  */
 export type CommandDef = {
   doc: string
+  /** True for hard barriers; scheduler must not reorder across these commands. */
+  barrier?: boolean
 
   /** byte 0: uint8_t opcode (implicit) */
   opcode?: never
@@ -19,6 +21,26 @@ export type CommandDef = {
   /** byte 4-15: 12 bytes of data */
   data?: CommandDataDef
 }
+
+export type ParamPath =
+  | "slot_a"
+  | "slot_b"
+  | "slot_c"
+  | "data.d1"
+  | "data.d2"
+  | "data.d3"
+  | "data.value"
+  | "data.ptr"
+  | "data.len"
+  | "data.extra"
+
+export type PointerParamConfig =
+  | { kind: "utf8.nullTerminated" }
+  | { kind: "utf8"; lenParam: ParamPath }
+  | { kind: "utf8.optionalLength"; lenParam: ParamPath }
+  | { kind: "bytes"; lenParam: ParamPath }
+
+export type ParamUsage = "in" | "out" | "in-out"
 
 /** Describes a scalar parameter in a command. */
 export type ParamDef<T extends string = string> = {
@@ -35,8 +57,10 @@ export type ParamDef<T extends string = string> = {
    * - use 'out' if the command writes to the pointer or slot
    * - use 'in-out' if the command reads from and writes to the pointer or slot
    */
-  usage: "in" | "out" | "in-out"
-}
+  usage: ParamUsage
+  /** True when the command consumes ownership of an input parameter. */
+  consumed?: boolean
+} & (T extends "char*" ? { pointer: PointerParamConfig } : { pointer?: never })
 
 /**
  * Type aliases for uint8_t; any type that fits in 8 bits.
@@ -218,6 +242,12 @@ const PROP_KEY_PTR = {
   type: "char*",
   doc: "Property name/key string; must be null-terminated if maybe_name_len is not set",
   usage: "in",
+  pointer: { kind: "utf8.optionalLength", lenParam: "slot_b" },
+} as const satisfies ParamDef<"char*">
+
+const PROP_KEY_PTR_NULL_TERMINATED = {
+  ...PROP_KEY_PTR,
+  pointer: { kind: "utf8.nullTerminated" },
 } as const satisfies ParamDef<"char*">
 
 const PROP_MAYBE_NAME_LEN_SLOT = {
@@ -229,7 +259,10 @@ const PROP_MAYBE_NAME_LEN_SLOT = {
 
 const PROP_KEY_DATA = {
   type: "buf",
-  ptr: PROP_KEY_PTR,
+  ptr: {
+    ...PROP_KEY_PTR,
+    pointer: { kind: "utf8", lenParam: "data.len" },
+  },
   len: { name: "key_len", type: "uint32_t", doc: "Property name/key length", usage: "in" },
 } as const satisfies CommandDataBufDef
 
@@ -316,13 +349,20 @@ export const COMMANDS = {
     },
     data: {
       type: "buf",
-      ptr: { name: "message_ptr", type: "char*", doc: "Pointer to error message", usage: "in" },
+      ptr: {
+        name: "message_ptr",
+        type: "char*",
+        doc: "Pointer to error message",
+        usage: "in",
+        pointer: { kind: "utf8", lenParam: "data.len" },
+      },
       len: { name: "message_len", type: "uint32_t", doc: "Length of error message", usage: "in" },
       extra: {
         name: "name_ptr",
         type: "char*",
         doc: "Optional. If given, override `error.name = NAME`. Otherwise use default name for given flags",
         usage: "in",
+        pointer: { kind: "utf8.optionalLength", lenParam: "slot_b" },
       },
     },
   },
@@ -332,7 +372,13 @@ export const COMMANDS = {
     slot_a: RESULT_JSVALUE_SLOT,
     data: {
       type: "buf",
-      ptr: { name: "data_ptr", type: "char*", doc: "Pointer to source data", usage: "in" },
+      ptr: {
+        name: "data_ptr",
+        type: "char*",
+        doc: "Pointer to source data",
+        usage: "in",
+        pointer: { kind: "bytes", lenParam: "data.len" },
+      },
       len: { name: "data_len", type: "uint32_t", doc: "Length of data in bytes", usage: "in" },
     },
   },
@@ -370,7 +416,13 @@ export const COMMANDS = {
     },
     data: {
       type: "buf",
-      ptr: { name: "desc_ptr", type: "char*", doc: "Pointer to description string", usage: "in" },
+      ptr: {
+        name: "desc_ptr",
+        type: "char*",
+        doc: "Pointer to description string",
+        usage: "in",
+        pointer: { kind: "utf8", lenParam: "data.len" },
+      },
       len: { name: "desc_len", type: "uint32_t", doc: "Length of description", usage: "in" },
     },
   },
@@ -393,7 +445,13 @@ export const COMMANDS = {
     slot_a: RESULT_JSVALUE_SLOT,
     data: {
       type: "buf",
-      ptr: { name: "str_ptr", type: "char*", doc: "Pointer to string data", usage: "in" },
+      ptr: {
+        name: "str_ptr",
+        type: "char*",
+        doc: "Pointer to string data",
+        usage: "in",
+        pointer: { kind: "utf8", lenParam: "data.len" },
+      },
       len: { name: "str_len", type: "uint32_t", doc: "Length of string in bytes", usage: "in" },
     },
   },
@@ -424,7 +482,13 @@ export const COMMANDS = {
     },
     data: {
       type: "buf",
-      ptr: { name: "name_ptr", type: "char*", doc: "Pointer to function name", usage: "in" },
+      ptr: {
+        name: "name_ptr",
+        type: "char*",
+        doc: "Pointer to function name",
+        usage: "in",
+        pointer: { kind: "utf8", lenParam: "data.len" },
+      },
       len: { name: "name_len", type: "uint32_t", doc: "Length of function name", usage: "in" },
       extra: {
         name: "host_ref_id",
@@ -510,9 +574,18 @@ export const COMMANDS = {
     slot_c: SET_PROP_FLAGS,
     data: {
       type: "buf",
-      ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
+      ptr: {
+        name: "str_ptr",
+        type: "char*",
+        doc: "String value pointer",
+        usage: "in",
+        pointer: { kind: "utf8", lenParam: "data.len" },
+      },
       len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
-      extra: PROP_KEY_PTR,
+      extra: {
+        ...PROP_KEY_PTR,
+        pointer: { kind: "utf8.optionalLength", lenParam: "slot_b" },
+      },
     },
   },
 
@@ -588,7 +661,13 @@ export const COMMANDS = {
     slot_c: SET_PROP_FLAGS,
     data: {
       type: "buf",
-      ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
+      ptr: {
+        name: "str_ptr",
+        type: "char*",
+        doc: "String value pointer",
+        usage: "in",
+        pointer: { kind: "utf8", lenParam: "data.len" },
+      },
       len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
       extra: ARRAY_INDEX,
     },
@@ -701,7 +780,13 @@ export const COMMANDS = {
     slot_b: VALUE_JSVALUE_SLOT,
     data: {
       type: "buf",
-      ptr: { name: "key_ptr", type: "char*", doc: "Key string pointer", usage: "in" },
+      ptr: {
+        name: "key_ptr",
+        type: "char*",
+        doc: "Key string pointer",
+        usage: "in",
+        pointer: { kind: "utf8", lenParam: "data.len" },
+      },
       len: { name: "key_len", type: "uint32_t", doc: "Key string length", usage: "in" },
     },
   },
@@ -718,6 +803,7 @@ export const COMMANDS = {
 
   CALL: {
     doc: "Call a function (JS_Call) eg `func(args)`",
+    barrier: true,
     slot_a: RESULT_JSVALUE_SLOT,
     slot_b: { name: "func_slot", type: "JSValueSlot", doc: "Function slot", usage: "in" },
     slot_c: {
@@ -731,6 +817,7 @@ export const COMMANDS = {
 
   CALL_CTOR: {
     doc: "Call a constructor (JS_CallConstructor) eg `new Ctor(args)`",
+    barrier: true,
     slot_a: RESULT_JSVALUE_SLOT,
     slot_b: {
       name: "ctor_slot",
@@ -743,6 +830,7 @@ export const COMMANDS = {
 
   EVAL: {
     doc: "Evaluate JavaScript code (JS_Eval)",
+    barrier: true,
     slot_a: RESULT_JSVALUE_SLOT,
     slot_b: {
       name: "maybe_filename_len",
@@ -753,13 +841,20 @@ export const COMMANDS = {
     slot_c: { name: "call_flags", type: "EvalFlags", doc: "Eval flags", usage: "in" },
     data: {
       type: "buf",
-      ptr: { name: "code_ptr", type: "char*", doc: "Pointer to code string", usage: "in" },
+      ptr: {
+        name: "code_ptr",
+        type: "char*",
+        doc: "Pointer to code string",
+        usage: "in",
+        pointer: { kind: "utf8", lenParam: "data.len" },
+      },
       len: { name: "code_len", type: "uint32_t", doc: "Length of code in bytes", usage: "in" },
       extra: {
         name: "filename",
         type: "char*",
         doc: "Filename used for error messages",
         usage: "in",
+        pointer: { kind: "utf8.optionalLength", lenParam: "slot_b" },
       },
     },
   },
@@ -912,6 +1007,7 @@ export const COMMANDS = {
         type: "char*",
         doc: "Function name, MUST be null-terminated",
         usage: "in",
+        pointer: { kind: "utf8.nullTerminated" },
       },
       d3: C_FUNC_PTR,
     },
@@ -930,6 +1026,7 @@ export const COMMANDS = {
         type: "char*",
         doc: "Function name, MUST be null-terminated",
         usage: "in",
+        pointer: { kind: "utf8.nullTerminated" },
       },
       d3: C_FUNC_PTR,
     },
@@ -942,7 +1039,7 @@ export const COMMANDS = {
     slot_c: PROP_FLAGS,
     data: {
       type: "raw",
-      d1: PROP_KEY_PTR,
+      d1: PROP_KEY_PTR_NULL_TERMINATED,
       d2: {
         name: "getter_ptr",
         type: "JSCFunctionType*",
@@ -965,13 +1062,20 @@ export const COMMANDS = {
     slot_c: PROP_FLAGS,
     data: {
       type: "buf",
-      ptr: { name: "str_ptr", type: "char*", doc: "String value pointer", usage: "in" },
+      ptr: {
+        name: "str_ptr",
+        type: "char*",
+        doc: "String value pointer",
+        usage: "in",
+        pointer: { kind: "utf8", lenParam: "data.len" },
+      },
       len: { name: "str_len", type: "uint32_t", doc: "String value length", usage: "in" },
       extra: {
         name: "name_ptr",
         type: "char*",
         doc: "Property name pointer (MUST be null-terminated)",
         usage: "in",
+        pointer: { kind: "utf8.nullTerminated" },
       },
     },
   },
@@ -1002,6 +1106,7 @@ export const COMMANDS = {
         type: "char*",
         doc: "Property name pointer (MUST be null-terminated)",
         usage: "in",
+        pointer: { kind: "utf8.nullTerminated" },
       },
     },
   },
@@ -1014,7 +1119,7 @@ export const COMMANDS = {
     data: {
       type: "f64",
       value: { name: "f64_val", type: "double", doc: "The double value", usage: "in" },
-      extra: PROP_KEY_PTR,
+      extra: PROP_KEY_PTR_NULL_TERMINATED,
     },
   },
 
@@ -1054,6 +1159,78 @@ export const COMMANDS = {
     },
   },
 } as const satisfies Record<string, CommandDef>
+
+function collectParamMap(command: CommandDef): Map<ParamPath, ParamDef<any>> {
+  const map = new Map<ParamPath, ParamDef<any>>()
+  if (command.slot_a) map.set("slot_a", command.slot_a)
+  if (command.slot_b) map.set("slot_b", command.slot_b)
+  if (command.slot_c) map.set("slot_c", command.slot_c)
+  if (!command.data) return map
+
+  switch (command.data.type) {
+    case "raw":
+      map.set("data.d1", command.data.d1)
+      if (command.data.d2) map.set("data.d2", command.data.d2)
+      if (command.data.d3) map.set("data.d3", command.data.d3)
+      break
+    case "f64":
+      map.set("data.value", command.data.value)
+      if (command.data.extra) map.set("data.extra", command.data.extra)
+      break
+    case "i64":
+      map.set("data.value", command.data.value)
+      if (command.data.extra) map.set("data.extra", command.data.extra)
+      break
+    case "buf":
+      map.set("data.ptr", command.data.ptr)
+      map.set("data.len", command.data.len)
+      if (command.data.extra) map.set("data.extra", command.data.extra)
+      break
+    case "jsvalues":
+      map.set("data.ptr", command.data.ptr)
+      map.set("data.len", command.data.len)
+      if (command.data.extra) map.set("data.extra", command.data.extra)
+      break
+  }
+  return map
+}
+
+function isLengthFieldType(type: string): boolean {
+  return type === "uint8_t" || type === "uint32_t"
+}
+
+for (const [name, command] of Object.entries(COMMANDS)) {
+  const paramMap = collectParamMap(command)
+  for (const [path, param] of paramMap.entries()) {
+    if (param.consumed && param.usage === "out") {
+      throw new Error(`${name}.${path}: consumed=true is invalid for usage="out"`)
+    }
+
+    if (param.type === "char*") {
+      if (!param.pointer) {
+        throw new Error(`${name}.${path}: char* params require pointer metadata`)
+      }
+      const pointer = param.pointer
+      if (pointer.kind === "utf8.nullTerminated") {
+        continue
+      }
+      const lenParam = paramMap.get(pointer.lenParam)
+      if (!lenParam) {
+        throw new Error(`${name}.${path}: pointer lenParam ${pointer.lenParam} does not exist`)
+      }
+      if (!isLengthFieldType(lenParam.type)) {
+        throw new Error(
+          `${name}.${path}: pointer lenParam ${pointer.lenParam} has non-length type ${lenParam.type}`,
+        )
+      }
+      continue
+    }
+
+    if (param.pointer) {
+      throw new Error(`${name}.${path}: pointer metadata is only valid for char* params`)
+    }
+  }
+}
 
 export type OpName = keyof typeof COMMANDS
 
