@@ -358,7 +358,7 @@ describe("appendStructuredClone", () => {
   it("appends commands without clearing existing builder state", () => {
     const context = makeCloneContext()
     const builder = new CommandBuilder(context)
-    builder.newObjectRef()
+    builder.newObject()
     const beforeCount = builder.getCommands().length
 
     appendStructuredClone(builder, { x: 1 })

@@ -38,13 +38,13 @@ describe("CommandBuilder", () => {
   it("supports map/set command helpers and bindInput dedupe", () => {
     const context = makeFakeContext()
     const builder = new CommandBuilder(context)
-    const mapRef = builder.newMapRef()
-    const setRef = builder.newSetRef()
-    const keyRef = builder.newStringRef("k")
-    const valueRef = builder.newNumberRef(1)
+    const mapRef = builder.newMap()
+    const setRef = builder.newSet()
+    const keyRef = builder.newString("k")
+    const valueRef = builder.newNumber(1)
 
-    builder.mapSetValue(mapRef, keyRef, valueRef)
-    builder.setAddValue(setRef, valueRef)
+    builder.mapSet(mapRef, keyRef, valueRef)
+    builder.setAdd(setRef, valueRef)
 
     const handle = makeFakeHandle()
     const boundA = builder.bindInput(handle)

@@ -971,7 +971,7 @@ import type { AnyRef, FuncListRef, JSValueRef } from "./command-types"`
     ].filter(Boolean)
     commandTypeInterfaces.push(interfaceLines.join("\n"))
 
-    const methodName = pascalToCamel(TsOpName(name))
+    const methodName = `raw${TsOpName(name)}`
     const methodArgs: string[] = []
     const outParamFields: Array<{ fieldName: string; slotType: string }> = []
     const fieldAssignments: string[] = []

@@ -672,14 +672,14 @@ export class GeneratedCommandBuilder {
     return ref as FuncListRef
   }
 
-  protected invalid(): void {
+  protected rawInvalid(): void {
     const command: InvalidCommand = {
       kind: INVALID,
     }
     this.pushCommand(command)
   }
 
-  protected newObject(): JSValueRef {
+  protected rawNewObject(): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewObjectCommand = {
       kind: NEW_OBJECT,
@@ -689,7 +689,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newObjectProto(protoSlot: JSValueRef): JSValueRef {
+  protected rawNewObjectProto(protoSlot: JSValueRef): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewObjectProtoCommand = {
       kind: NEW_OBJECT_PROTO,
@@ -700,7 +700,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newArray(): JSValueRef {
+  protected rawNewArray(): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewArrayCommand = {
       kind: NEW_ARRAY,
@@ -710,7 +710,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newMap(): JSValueRef {
+  protected rawNewMap(): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewMapCommand = {
       kind: NEW_MAP,
@@ -720,7 +720,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newSet(): JSValueRef {
+  protected rawNewSet(): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewSetCommand = {
       kind: NEW_SET,
@@ -730,7 +730,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newDate(timestamp: number): JSValueRef {
+  protected rawNewDate(timestamp: number): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewDateCommand = {
       kind: NEW_DATE,
@@ -741,7 +741,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newError(newErrorFlags: NewErrorFlags, message: string, name: string): JSValueRef {
+  protected rawNewError(newErrorFlags: NewErrorFlags, message: string, name: string): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewErrorCommand = {
       kind: NEW_ERROR,
@@ -754,7 +754,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newArraybuffer(dataBytes: Uint8Array): JSValueRef {
+  protected rawNewArraybuffer(dataBytes: Uint8Array): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewArraybufferCommand = {
       kind: NEW_ARRAYBUFFER,
@@ -765,7 +765,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newTypedArray(sourceSlot: JSValueRef, arrayType: NewTypedArrayFlags, sourceOffset: number, length: number): JSValueRef {
+  protected rawNewTypedArray(sourceSlot: JSValueRef, arrayType: NewTypedArrayFlags, sourceOffset: number, length: number): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewTypedArrayCommand = {
       kind: NEW_TYPED_ARRAY,
@@ -779,7 +779,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newSymbol(isGlobal: number, desc: string): JSValueRef {
+  protected rawNewSymbol(isGlobal: number, desc: string): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewSymbolCommand = {
       kind: NEW_SYMBOL,
@@ -791,7 +791,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newFloat64(value: number): JSValueRef {
+  protected rawNewFloat64(value: number): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewFloat64Command = {
       kind: NEW_FLOAT64,
@@ -802,7 +802,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newString(str: string): JSValueRef {
+  protected rawNewString(str: string): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewStringCommand = {
       kind: NEW_STRING,
@@ -813,7 +813,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newBigint(value: bigint): JSValueRef {
+  protected rawNewBigint(value: bigint): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewBigintCommand = {
       kind: NEW_BIGINT,
@@ -824,7 +824,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected newFunc(arity: number, isConstructor: number, name: string, hostRefId: HostRefId): JSValueRef {
+  protected rawNewFunc(arity: number, isConstructor: number, name: string, hostRefId: HostRefId): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: NewFuncCommand = {
       kind: NEW_FUNC,
@@ -838,7 +838,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected setStrValue(targetSlot: JSValueRef, valueSlot: JSValueRef, flags: SetPropFlags, key: string): void {
+  protected rawSetStrValue(targetSlot: JSValueRef, valueSlot: JSValueRef, flags: SetPropFlags, key: string): void {
     const command: SetStrValueCommand = {
       kind: SET_STR_VALUE,
       targetSlot,
@@ -849,7 +849,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setStrNull(targetSlot: JSValueRef, flags: SetPropFlags, key: string): void {
+  protected rawSetStrNull(targetSlot: JSValueRef, flags: SetPropFlags, key: string): void {
     const command: SetStrNullCommand = {
       kind: SET_STR_NULL,
       targetSlot,
@@ -859,7 +859,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setStrUndef(targetSlot: JSValueRef, flags: SetPropFlags, key: string): void {
+  protected rawSetStrUndef(targetSlot: JSValueRef, flags: SetPropFlags, key: string): void {
     const command: SetStrUndefCommand = {
       kind: SET_STR_UNDEF,
       targetSlot,
@@ -869,7 +869,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setStrBool(targetSlot: JSValueRef, boolVal: number, flags: SetPropFlags, key: string): void {
+  protected rawSetStrBool(targetSlot: JSValueRef, boolVal: number, flags: SetPropFlags, key: string): void {
     const command: SetStrBoolCommand = {
       kind: SET_STR_BOOL,
       targetSlot,
@@ -880,7 +880,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setStrInt32(targetSlot: JSValueRef, flags: SetPropFlags, key: string, intVal: number): void {
+  protected rawSetStrInt32(targetSlot: JSValueRef, flags: SetPropFlags, key: string, intVal: number): void {
     const command: SetStrInt32Command = {
       kind: SET_STR_INT32,
       targetSlot,
@@ -891,7 +891,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setStrF64(targetSlot: JSValueRef, flags: SetPropFlags, f64Val: number, key: string): void {
+  protected rawSetStrF64(targetSlot: JSValueRef, flags: SetPropFlags, f64Val: number, key: string): void {
     const command: SetStrF64Command = {
       kind: SET_STR_F64,
       targetSlot,
@@ -902,7 +902,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setStrBigint(targetSlot: JSValueRef, flags: SetPropFlags, i64Val: bigint, key: string): void {
+  protected rawSetStrBigint(targetSlot: JSValueRef, flags: SetPropFlags, i64Val: bigint, key: string): void {
     const command: SetStrBigintCommand = {
       kind: SET_STR_BIGINT,
       targetSlot,
@@ -913,7 +913,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setStrString(targetSlot: JSValueRef, flags: SetPropFlags, str: string, key: string): void {
+  protected rawSetStrString(targetSlot: JSValueRef, flags: SetPropFlags, str: string, key: string): void {
     const command: SetStrStringCommand = {
       kind: SET_STR_STRING,
       targetSlot,
@@ -924,7 +924,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setIdxValue(targetSlot: JSValueRef, valueSlot: JSValueRef, flags: SetPropFlags, index: number): void {
+  protected rawSetIdxValue(targetSlot: JSValueRef, valueSlot: JSValueRef, flags: SetPropFlags, index: number): void {
     const command: SetIdxValueCommand = {
       kind: SET_IDX_VALUE,
       targetSlot,
@@ -935,7 +935,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setIdxNull(targetSlot: JSValueRef, flags: SetPropFlags, index: number): void {
+  protected rawSetIdxNull(targetSlot: JSValueRef, flags: SetPropFlags, index: number): void {
     const command: SetIdxNullCommand = {
       kind: SET_IDX_NULL,
       targetSlot,
@@ -945,7 +945,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setIdxUndef(targetSlot: JSValueRef, flags: SetPropFlags, index: number): void {
+  protected rawSetIdxUndef(targetSlot: JSValueRef, flags: SetPropFlags, index: number): void {
     const command: SetIdxUndefCommand = {
       kind: SET_IDX_UNDEF,
       targetSlot,
@@ -955,7 +955,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setIdxBool(targetSlot: JSValueRef, boolVal: number, flags: SetPropFlags, index: number): void {
+  protected rawSetIdxBool(targetSlot: JSValueRef, boolVal: number, flags: SetPropFlags, index: number): void {
     const command: SetIdxBoolCommand = {
       kind: SET_IDX_BOOL,
       targetSlot,
@@ -966,7 +966,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setIdxInt32(targetSlot: JSValueRef, flags: SetPropFlags, index: number, intVal: number): void {
+  protected rawSetIdxInt32(targetSlot: JSValueRef, flags: SetPropFlags, index: number, intVal: number): void {
     const command: SetIdxInt32Command = {
       kind: SET_IDX_INT32,
       targetSlot,
@@ -977,7 +977,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setIdxF64(targetSlot: JSValueRef, flags: SetPropFlags, f64Val: number, index: number): void {
+  protected rawSetIdxF64(targetSlot: JSValueRef, flags: SetPropFlags, f64Val: number, index: number): void {
     const command: SetIdxF64Command = {
       kind: SET_IDX_F64,
       targetSlot,
@@ -988,7 +988,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setIdxBigint(targetSlot: JSValueRef, flags: SetPropFlags, i64Val: bigint, index: number): void {
+  protected rawSetIdxBigint(targetSlot: JSValueRef, flags: SetPropFlags, i64Val: bigint, index: number): void {
     const command: SetIdxBigintCommand = {
       kind: SET_IDX_BIGINT,
       targetSlot,
@@ -999,7 +999,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setIdxString(targetSlot: JSValueRef, flags: SetPropFlags, str: string, index: number): void {
+  protected rawSetIdxString(targetSlot: JSValueRef, flags: SetPropFlags, str: string, index: number): void {
     const command: SetIdxStringCommand = {
       kind: SET_IDX_STRING,
       targetSlot,
@@ -1010,7 +1010,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected set(targetSlot: JSValueRef, keySlot: JSValueRef, valueSlot: JSValueRef, flags: SetPropFlags): void {
+  protected rawSet(targetSlot: JSValueRef, keySlot: JSValueRef, valueSlot: JSValueRef, flags: SetPropFlags): void {
     const command: SetCommand = {
       kind: SET,
       targetSlot,
@@ -1021,7 +1021,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected defGetset(targetSlot: JSValueRef, flags: JSPropFlags, getterRef: HostRefId, setterRef: HostRefId, key: string): void {
+  protected rawDefGetset(targetSlot: JSValueRef, flags: JSPropFlags, getterRef: HostRefId, setterRef: HostRefId, key: string): void {
     const command: DefGetsetCommand = {
       kind: DEF_GETSET,
       targetSlot,
@@ -1033,7 +1033,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected get(sourceSlot: JSValueRef, keySlot: JSValueRef): JSValueRef {
+  protected rawGet(sourceSlot: JSValueRef, keySlot: JSValueRef): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: GetCommand = {
       kind: GET,
@@ -1045,7 +1045,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected getStr(sourceSlot: JSValueRef, key: string): JSValueRef {
+  protected rawGetStr(sourceSlot: JSValueRef, key: string): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: GetStrCommand = {
       kind: GET_STR,
@@ -1057,7 +1057,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected getIdx(sourceSlot: JSValueRef, index: number): JSValueRef {
+  protected rawGetIdx(sourceSlot: JSValueRef, index: number): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: GetIdxCommand = {
       kind: GET_IDX,
@@ -1069,7 +1069,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected global(): JSValueRef {
+  protected rawGlobal(): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: GlobalCommand = {
       kind: GLOBAL,
@@ -1079,7 +1079,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected globalGetStr(key: string): JSValueRef {
+  protected rawGlobalGetStr(key: string): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: GlobalGetStrCommand = {
       kind: GLOBAL_GET_STR,
@@ -1090,7 +1090,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected globalSetStr(valueSlot: JSValueRef, flags: JSPropFlags, key: string): void {
+  protected rawGlobalSetStr(valueSlot: JSValueRef, flags: JSPropFlags, key: string): void {
     const command: GlobalSetStrCommand = {
       kind: GLOBAL_SET_STR,
       valueSlot,
@@ -1100,7 +1100,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected mapSet(targetSlot: JSValueRef, keySlot: JSValueRef, valueSlot: JSValueRef): void {
+  protected rawMapSet(targetSlot: JSValueRef, keySlot: JSValueRef, valueSlot: JSValueRef): void {
     const command: MapSetCommand = {
       kind: MAP_SET,
       targetSlot,
@@ -1110,7 +1110,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected mapSetStr(targetSlot: JSValueRef, valueSlot: JSValueRef, key: string): void {
+  protected rawMapSetStr(targetSlot: JSValueRef, valueSlot: JSValueRef, key: string): void {
     const command: MapSetStrCommand = {
       kind: MAP_SET_STR,
       targetSlot,
@@ -1120,7 +1120,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected setAdd(targetSlot: JSValueRef, valueSlot: JSValueRef): void {
+  protected rawSetAdd(targetSlot: JSValueRef, valueSlot: JSValueRef): void {
     const command: SetAddCommand = {
       kind: SET_ADD,
       targetSlot,
@@ -1129,7 +1129,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected call(funcSlot: JSValueRef, thisSlot: JSValueRef, argv: readonly JSValueRef[]): JSValueRef {
+  protected rawCall(funcSlot: JSValueRef, thisSlot: JSValueRef, argv: readonly JSValueRef[]): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: CallCommand = {
       kind: CALL,
@@ -1143,7 +1143,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected callCtor(ctorSlot: JSValueRef, argv: readonly JSValueRef[]): JSValueRef {
+  protected rawCallCtor(ctorSlot: JSValueRef, argv: readonly JSValueRef[]): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: CallCtorCommand = {
       kind: CALL_CTOR,
@@ -1156,7 +1156,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected eval(callFlags: EvalFlags, code: string, filename: string): JSValueRef {
+  protected rawEval(callFlags: EvalFlags, code: string, filename: string): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: EvalCommand = {
       kind: EVAL,
@@ -1170,7 +1170,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected throw(errorSlot: JSValueRef): void {
+  protected rawThrow(errorSlot: JSValueRef): void {
     const command: ThrowCommand = {
       kind: THROW,
       errorSlot,
@@ -1178,7 +1178,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected resolveExc(maybeExcSlot: JSValueRef): JSValueRef {
+  protected rawResolveExc(maybeExcSlot: JSValueRef): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: ResolveExcCommand = {
       kind: RESOLVE_EXC,
@@ -1189,7 +1189,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected dup(sourceSlot: JSValueRef): JSValueRef {
+  protected rawDup(sourceSlot: JSValueRef): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: DupCommand = {
       kind: DUP,
@@ -1200,7 +1200,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected dupPtr(valuePtr: JSValueRef): JSValueRef {
+  protected rawDupPtr(valuePtr: JSValueRef): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: DupPtrCommand = {
       kind: DUP_PTR,
@@ -1211,7 +1211,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected free(targetSlot: JSValueRef): void {
+  protected rawFree(targetSlot: JSValueRef): void {
     const command: FreeCommand = {
       kind: FREE,
       targetSlot,
@@ -1219,7 +1219,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected freePtr(valuePtr: JSValueRef): void {
+  protected rawFreePtr(valuePtr: JSValueRef): void {
     const command: FreePtrCommand = {
       kind: FREE_PTR,
       valuePtr,
@@ -1227,7 +1227,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected bytecodeWrite(sourceSlot: JSValueRef, flags: number): JSValueRef {
+  protected rawBytecodeWrite(sourceSlot: JSValueRef, flags: number): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: BytecodeWriteCommand = {
       kind: BYTECODE_WRITE,
@@ -1239,7 +1239,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected bytecodeRead(sourceSlot: JSValueRef, flags: number): JSValueRef {
+  protected rawBytecodeRead(sourceSlot: JSValueRef, flags: number): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
     const command: BytecodeReadCommand = {
       kind: BYTECODE_READ,
@@ -1251,7 +1251,7 @@ export class GeneratedCommandBuilder {
     return resultSlot
   }
 
-  protected funclistNew(count: number): FuncListRef {
+  protected rawFunclistNew(count: number): FuncListRef {
     const resultFunclistSlot = this.allocateFuncListRef()
     const command: FunclistNewCommand = {
       kind: FUNCLIST_NEW,
@@ -1262,7 +1262,7 @@ export class GeneratedCommandBuilder {
     return resultFunclistSlot
   }
 
-  protected funclistAssign(targetSlot: JSValueRef, sourceFunclistSlot: FuncListRef): void {
+  protected rawFunclistAssign(targetSlot: JSValueRef, sourceFunclistSlot: FuncListRef): void {
     const command: FunclistAssignCommand = {
       kind: FUNCLIST_ASSIGN,
       targetSlot,
@@ -1271,7 +1271,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected funclistFree(targetFunclistSlot: FuncListRef): void {
+  protected rawFunclistFree(targetFunclistSlot: FuncListRef): void {
     const command: FunclistFreeCommand = {
       kind: FUNCLIST_FREE,
       targetFunclistSlot,
@@ -1279,7 +1279,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected funclistDefCfunc(targetFunclistSlot: FuncListRef, arity: number, flags: JSPropFlags, index: number, funcName: string, cFuncPtr: JSCFunctionTypePointer): void {
+  protected rawFunclistDefCfunc(targetFunclistSlot: FuncListRef, arity: number, flags: JSPropFlags, index: number, funcName: string, cFuncPtr: JSCFunctionTypePointer): void {
     const command: FunclistDefCfuncCommand = {
       kind: FUNCLIST_DEF_CFUNC,
       targetFunclistSlot,
@@ -1292,7 +1292,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected funclistDefCfuncCtor(targetFunclistSlot: FuncListRef, arity: number, flags: JSPropFlags, index: number, funcName: string, cFuncPtr: JSCFunctionTypePointer): void {
+  protected rawFunclistDefCfuncCtor(targetFunclistSlot: FuncListRef, arity: number, flags: JSPropFlags, index: number, funcName: string, cFuncPtr: JSCFunctionTypePointer): void {
     const command: FunclistDefCfuncCtorCommand = {
       kind: FUNCLIST_DEF_CFUNC_CTOR,
       targetFunclistSlot,
@@ -1305,7 +1305,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected funclistDefCgetset(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, key: string, getterPtr: JSCFunctionTypePointer, setterPtr: JSCFunctionTypePointer): void {
+  protected rawFunclistDefCgetset(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, key: string, getterPtr: JSCFunctionTypePointer, setterPtr: JSCFunctionTypePointer): void {
     const command: FunclistDefCgetsetCommand = {
       kind: FUNCLIST_DEF_CGETSET,
       targetFunclistSlot,
@@ -1318,7 +1318,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected funclistDefString(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, str: string, name: string): void {
+  protected rawFunclistDefString(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, str: string, name: string): void {
     const command: FunclistDefStringCommand = {
       kind: FUNCLIST_DEF_STRING,
       targetFunclistSlot,
@@ -1330,7 +1330,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected funclistDefInt32(targetFunclistSlot: FuncListRef, flags: JSPropFlags, index: number, intVal: number, key: string): void {
+  protected rawFunclistDefInt32(targetFunclistSlot: FuncListRef, flags: JSPropFlags, index: number, intVal: number, key: string): void {
     const command: FunclistDefInt32Command = {
       kind: FUNCLIST_DEF_INT32,
       targetFunclistSlot,
@@ -1342,7 +1342,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected funclistDefInt64(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, i64Val: bigint, name: string): void {
+  protected rawFunclistDefInt64(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, i64Val: bigint, name: string): void {
     const command: FunclistDefInt64Command = {
       kind: FUNCLIST_DEF_INT64,
       targetFunclistSlot,
@@ -1354,7 +1354,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected funclistDefDouble(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, f64Val: number, key: string): void {
+  protected rawFunclistDefDouble(targetFunclistSlot: FuncListRef, index: number, flags: JSPropFlags, f64Val: number, key: string): void {
     const command: FunclistDefDoubleCommand = {
       kind: FUNCLIST_DEF_DOUBLE,
       targetFunclistSlot,
@@ -1366,7 +1366,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected funclistDefNull(targetFunclistSlot: FuncListRef, flags: JSPropFlags, key: string, index: number): void {
+  protected rawFunclistDefNull(targetFunclistSlot: FuncListRef, flags: JSPropFlags, key: string, index: number): void {
     const command: FunclistDefNullCommand = {
       kind: FUNCLIST_DEF_NULL,
       targetFunclistSlot,
@@ -1377,7 +1377,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected funclistDefUndefined(targetFunclistSlot: FuncListRef, flags: JSPropFlags, key: string, index: number): void {
+  protected rawFunclistDefUndefined(targetFunclistSlot: FuncListRef, flags: JSPropFlags, key: string, index: number): void {
     const command: FunclistDefUndefinedCommand = {
       kind: FUNCLIST_DEF_UNDEFINED,
       targetFunclistSlot,
@@ -1388,7 +1388,7 @@ export class GeneratedCommandBuilder {
     this.pushCommand(command)
   }
 
-  protected funclistDefObject(targetFunclistSlot: FuncListRef, objectFunclistSlot: FuncListRef, flags: JSPropFlags, key: string, index: number): void {
+  protected rawFunclistDefObject(targetFunclistSlot: FuncListRef, objectFunclistSlot: FuncListRef, flags: JSPropFlags, key: string, index: number): void {
     const command: FunclistDefObjectCommand = {
       kind: FUNCLIST_DEF_OBJECT,
       targetFunclistSlot,

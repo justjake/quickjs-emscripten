@@ -47,13 +47,13 @@ export function appendStructuredClone(
       return builder.bindInput(value ? builder.context.true : builder.context.false)
     }
     if (typeof value === "number") {
-      return builder.newNumberRef(value)
+      return builder.newNumber(value)
     }
     if (typeof value === "string") {
-      return builder.newStringRef(value)
+      return builder.newString(value)
     }
     if (typeof value === "bigint") {
-      return builder.newBigIntRef(value)
+      return builder.newBigInt(value)
     }
 
     if (typeof value !== "object") {
@@ -71,27 +71,27 @@ export function appendStructuredClone(
     }
 
     if (Array.isArray(value)) {
-      const ref = builder.newArrayRef()
+      const ref = builder.newArray()
       objectToRef.set(value, ref)
       pending.push({ kind: "array", source: value, ref })
       return ref
     }
 
     if (value instanceof Date) {
-      const ref = builder.newDateRef(value.getTime())
+      const ref = builder.newDate(value.getTime())
       objectToRef.set(value, ref)
       return ref
     }
 
     if (value instanceof Map) {
-      const ref = builder.newMapRef()
+      const ref = builder.newMap()
       objectToRef.set(value, ref)
       pending.push({ kind: "map", source: value, ref })
       return ref
     }
 
     if (value instanceof Set) {
-      const ref = builder.newSetRef()
+      const ref = builder.newSet()
       objectToRef.set(value, ref)
       pending.push({ kind: "set", source: value, ref })
       return ref
@@ -101,7 +101,7 @@ export function appendStructuredClone(
       throw new TypeError("Typed arrays and ArrayBuffer are not yet supported by this clone producer")
     }
 
-    const ref = builder.newObjectRef()
+    const ref = builder.newObject()
     objectToRef.set(value, ref)
     pending.push({ kind: "object", source: value, ref })
     return ref
@@ -149,14 +149,14 @@ export function appendStructuredClone(
     if (next.kind === "map") {
       const source = next.source as Map<unknown, unknown>
       for (const [key, value] of source.entries()) {
-        builder.mapSetValue(next.ref, materialize(key), materialize(value))
+        builder.mapSet(next.ref, materialize(key), materialize(value))
       }
       continue
     }
 
     const source = next.source as Set<unknown>
     for (const value of source.values()) {
-      builder.setAddValue(next.ref, materialize(value))
+      builder.setAdd(next.ref, materialize(value))
     }
   }
 
