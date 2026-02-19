@@ -312,6 +312,16 @@ export const COMMANDS = {
     slot_a: RESULT_JSVALUE_SLOT,
   },
 
+  NEW_MAP: {
+    doc: "Create a new empty Map (new Map())",
+    slot_a: RESULT_JSVALUE_SLOT,
+  },
+
+  NEW_SET: {
+    doc: "Create a new empty Set (new Set())",
+    slot_a: RESULT_JSVALUE_SLOT,
+  },
+
   // ============================================================================
   // Special Type Creation
   // ============================================================================

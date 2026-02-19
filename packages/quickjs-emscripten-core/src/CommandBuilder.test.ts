@@ -1,0 +1,185 @@
+import { SetPropFlags } from "@jitl/quickjs-ffi-types"
+import { describe, expect, it, vi } from "vitest"
+import { HostRefMap } from "./host-ref"
+import { JSValueLifetime } from "./lifetime"
+import * as Op from "./ops"
+import { CommandBuilder } from "./CommandBuilder"
+import type { QuickJSContext } from "./context"
+import type { QuickJSHandle } from "./types"
+
+function makeFakeHandle(): QuickJSHandle {
+  return new JSValueLifetime(0 as any) as unknown as QuickJSHandle
+}
+
+function makeFakeContext(): QuickJSContext {
+  const runtime = {
+    hostRefs: new HostRefMap(),
+    assertOwned: vi.fn(),
+  }
+  return { runtime } as unknown as QuickJSContext
+}
+
+describe("CommandBuilder", () => {
+  it("dispatches setProp by key/value shape", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+    const target = makeFakeHandle()
+
+    builder.setProp(target, "a", 123)
+    builder.setProp(target, 2, "ok")
+
+    const commands = builder.getCommands()
+    expect(commands).toHaveLength(2)
+    expect(commands[0]?.kind).toBe(Op.SET_STR_INT32)
+    expect(commands[1]?.kind).toBe(Op.SET_IDX_STRING)
+    expect(builder.getInputBindings()).toHaveLength(1)
+  })
+
+  it("supports map/set command helpers and bindInput dedupe", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+    const mapRef = builder.newMapRef()
+    const setRef = builder.newSetRef()
+    const keyRef = builder.newStringRef("k")
+    const valueRef = builder.newNumberRef(1)
+
+    builder.mapSetValue(mapRef, keyRef, valueRef)
+    builder.setAddValue(setRef, valueRef)
+
+    const handle = makeFakeHandle()
+    const boundA = builder.bindInput(handle)
+    const boundB = builder.bindInput(handle)
+
+    expect(boundA).toBe(boundB)
+    expect(builder.getInputBindings()).toHaveLength(1)
+    expect(builder.getCommands().map((c) => c.kind)).toEqual([
+      Op.NEW_MAP,
+      Op.NEW_SET,
+      Op.NEW_STRING,
+      Op.NEW_FLOAT64,
+      Op.MAP_SET,
+      Op.SET_ADD,
+    ])
+  })
+
+  it("uses define flags for defineProp", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+
+    builder.defineProp(makeFakeHandle(), "x", true, {
+      configurable: true,
+      writable: true,
+      enumerable: true,
+      throwOnError: true,
+    })
+
+    const command = builder.getCommands()[0]
+    expect(command?.kind).toBe(Op.SET_STR_BOOL)
+    if (!command || command.kind !== Op.SET_STR_BOOL) {
+      return
+    }
+    const expectedFlags =
+      SetPropFlags.DEFINE |
+      SetPropFlags.CONFIGURABLE |
+      SetPropFlags.WRITABLE |
+      SetPropFlags.ENUMERABLE |
+      SetPropFlags.THROW
+    expect(command.flags).toBe(expectedFlags)
+  })
+
+  it("matches QuickJSContext newFunction/newConstructorFunction overload behavior", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+
+    const fn = (a: QuickJSHandle, b: QuickJSHandle) => a ?? b
+    const ctorFn = (_x: QuickJSHandle) => undefined
+    const refA = builder.newFunction(fn)
+    const refB = builder.newConstructorFunction("Ctor", ctorFn)
+
+    const commands = builder.getCommands()
+    expect(commands).toHaveLength(2)
+    expect(commands[0]?.kind).toBe(Op.NEW_FUNC)
+    expect(commands[1]?.kind).toBe(Op.NEW_FUNC)
+
+    if (!commands[0] || commands[0].kind !== Op.NEW_FUNC) {
+      return
+    }
+    if (!commands[1] || commands[1].kind !== Op.NEW_FUNC) {
+      return
+    }
+
+    expect(commands[0].arity).toBe(fn.length)
+    expect(commands[0].isConstructor).toBe(0)
+    expect(commands[0].name).toBe("")
+    expect(commands[1].arity).toBe(ctorFn.length)
+    expect(commands[1].isConstructor).toBe(1)
+    expect(commands[1].name).toBe("Ctor")
+
+    const bindings = builder.getFunctionBindings()
+    expect(bindings).toHaveLength(2)
+    expect(bindings[0]).toMatchObject({ ref: refA, fn })
+    expect(bindings[1]).toMatchObject({ ref: refB, fn: ctorFn })
+    expect(context.runtime.hostRefs.get(bindings[0]!.hostRefId)).toBe(fn)
+    expect(context.runtime.hostRefs.get(bindings[1]!.hostRefId)).toBe(ctorFn)
+  })
+
+  it("defines funclist props with a single API", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+
+    const root = builder.newFuncList(4)
+    const child = builder.newFuncList(1)
+    builder.defineFuncListProp(root, 0, "name", "value")
+    builder.defineFuncListProp(root, 1, "pi", 3.14)
+    builder.defineFuncListProp(root, 2, "none", null)
+    builder.defineFuncListProp(root, 3, "nested", { object: child }, { enumerable: true })
+
+    const commands = builder.getCommands()
+    expect(commands.map((c) => c.kind)).toEqual([
+      Op.FUNCLIST_NEW,
+      Op.FUNCLIST_NEW,
+      Op.FUNCLIST_DEF_STRING,
+      Op.FUNCLIST_DEF_DOUBLE,
+      Op.FUNCLIST_DEF_NULL,
+      Op.FUNCLIST_DEF_OBJECT,
+    ])
+
+    const last = commands[5]
+    if (!last || last.kind !== Op.FUNCLIST_DEF_OBJECT) {
+      return
+    }
+    expect(last.flags).toBe(0b00100)
+  })
+
+  it("throws a clear error when defineFuncListProp receives a QuickJSHandle", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+    const root = builder.newFuncList(1)
+    const handle = makeFakeHandle()
+
+    expect(() =>
+      builder.defineFuncListProp(root, 0, "bad", handle as any),
+    ).toThrow(
+      "defineFuncListProp does not accept QuickJSHandle values. FuncList entries must be literals or nested `{ object: FuncListRef }` definitions.",
+    )
+  })
+
+  it("clear resets queued state and bindings", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+    const handle = makeFakeHandle()
+    const staleRef = builder.newFunction(() => undefined)
+    builder.setProp(handle, "x", 1)
+
+    expect(builder.getCommands().length).toBeGreaterThan(0)
+    expect(builder.getInputBindings().length).toBe(1)
+    expect(builder.getFunctionBindings().length).toBe(1)
+
+    builder.clear()
+
+    expect(builder.getCommands()).toHaveLength(0)
+    expect(builder.getInputBindings()).toHaveLength(0)
+    expect(builder.getFunctionBindings()).toHaveLength(0)
+    expect(() => builder.setProp(staleRef, "x", 1)).toThrow("Unknown JSValueRef")
+  })
+})

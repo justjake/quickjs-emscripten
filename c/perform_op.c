@@ -3,6 +3,8 @@
 #include "perform_new_object.h"
 #include "perform_new_object_proto.h"
 #include "perform_new_array.h"
+#include "perform_new_map.h"
+#include "perform_new_set.h"
 #include "perform_new_date.h"
 #include "perform_new_error.h"
 #include "perform_new_arraybuffer.h"
@@ -72,6 +74,8 @@ QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd) {
         case QTS_OP_NEW_OBJECT: return perform_new_object(env, (JSValueSlot)cmd.slot_a);
         case QTS_OP_NEW_OBJECT_PROTO: return perform_new_object_proto(env, (JSValueSlot)cmd.slot_a, (JSValueSlot)cmd.slot_b);
         case QTS_OP_NEW_ARRAY: return perform_new_array(env, (JSValueSlot)cmd.slot_a);
+        case QTS_OP_NEW_MAP: return perform_new_map(env, (JSValueSlot)cmd.slot_a);
+        case QTS_OP_NEW_SET: return perform_new_set(env, (JSValueSlot)cmd.slot_a);
         case QTS_OP_NEW_DATE: return perform_new_date(env, (JSValueSlot)cmd.slot_a, cmd.data.f64.value);
         case QTS_OP_NEW_ERROR: return perform_new_error(env, (JSValueSlot)cmd.slot_a, cmd.slot_b, (NewErrorFlags)cmd.slot_c, cmd.data.buf.ptr, cmd.data.buf.len, (char*)cmd.data.buf.extra);
         case QTS_OP_NEW_ARRAYBUFFER: return perform_new_arraybuffer(env, (JSValueSlot)cmd.slot_a, cmd.data.buf.ptr, cmd.data.buf.len);

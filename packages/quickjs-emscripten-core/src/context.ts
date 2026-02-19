@@ -29,11 +29,12 @@ import {
 import type { Disposable, DisposableArray, DisposableFail, DisposableSuccess } from "./lifetime"
 import {
   DisposableResult,
+  JSValueLifetime,
   Lifetime,
   Scope,
-  StaticLifetime,
+  StaticJSValueLifetime,
   UsingDisposable,
-  WeakLifetime,
+  WeakJSValueLifetime,
   createDisposableArray,
 } from "./lifetime"
 import type { HeapTypedArray } from "./memory"
@@ -139,7 +140,7 @@ class ContextMemory extends ModuleMemory implements Disposable {
           this.freeJSValue(val)
         }
       : this.freeJSValue
-    return new Lifetime(ptr, this.copyJSValue, dispose, this.owner)
+    return new JSValueLifetime(ptr, this.copyJSValue, dispose, this.owner)
   }
 
   /** Manage a heap pointer with the lifetime of the context */
@@ -148,7 +149,7 @@ class ContextMemory extends ModuleMemory implements Disposable {
     // This isn't technically a static lifetime, but since it has the same
     // lifetime as the VM, it's okay to fake one since when the VM is
     // disposed, no other functions will accept the value.
-    return new StaticLifetime(ptr as JSValueConstPointer, this.owner) as StaticJSValue
+    return new StaticJSValueLifetime(ptr as JSValueConstPointer, this.owner) as StaticJSValue
   }
 }
 
@@ -287,7 +288,7 @@ export class QuickJSContext
 
     // Undefined is a constant, immutable value in QuickJS.
     const ptr = this.ffi.QTS_GetUndefined()
-    return (this._undefined = new StaticLifetime(ptr))
+    return (this._undefined = new StaticJSValueLifetime(ptr))
   }
 
   /**
@@ -300,7 +301,7 @@ export class QuickJSContext
 
     // Null is a constant, immutable value in QuickJS.
     const ptr = this.ffi.QTS_GetNull()
-    return (this._null = new StaticLifetime(ptr))
+    return (this._null = new StaticJSValueLifetime(ptr))
   }
 
   /**
@@ -313,7 +314,7 @@ export class QuickJSContext
 
     // True is a constant, immutable value in QuickJS.
     const ptr = this.ffi.QTS_GetTrue()
-    return (this._true = new StaticLifetime(ptr))
+    return (this._true = new StaticJSValueLifetime(ptr))
   }
 
   /**
@@ -326,7 +327,7 @@ export class QuickJSContext
 
     // False is a constant, immutable value in QuickJS.
     const ptr = this.ffi.QTS_GetFalse()
-    return (this._false = new StaticLifetime(ptr))
+    return (this._false = new StaticJSValueLifetime(ptr))
   }
 
   /**
@@ -406,7 +407,7 @@ export class QuickJSContext
     if (!this._BigInt) {
       const bigIntHandle = this.getProp(this.global, "BigInt")
       this.memory.manage(bigIntHandle)
-      this._BigInt = new StaticLifetime(bigIntHandle.value as JSValueConstPointer, this.runtime)
+      this._BigInt = new StaticJSValueLifetime(bigIntHandle.value as JSValueConstPointer, this.runtime)
     }
 
     const bigIntHandle = this._BigInt
@@ -504,7 +505,7 @@ export class QuickJSContext
 
     if (value) {
       Promise.resolve(value).then(deferredPromise.resolve, (error) =>
-        error instanceof Lifetime
+        error instanceof JSValueLifetime
           ? deferredPromise.reject(error)
           : this.newError(error).consume(deferredPromise.reject),
       )
@@ -1331,7 +1332,7 @@ export class QuickJSContext
 
     // key is already a JSValue, but we're borrowing it. Return a static handle
     // for internal use only.
-    return new StaticLifetime(key.value as JSValueConstPointer, this.runtime)
+    return new StaticJSValueLifetime(key.value as JSValueConstPointer, this.runtime)
   }
 
   /**
@@ -1454,7 +1455,7 @@ export class QuickJSContext
       const fn = this.getFunction(fn_id)
       return Scope.withScopeMaybeAsync(this, function* (awaited, scope) {
         const thisHandle = scope.manage(
-          new WeakLifetime(
+          new WeakJSValueLifetime(
             this_ptr,
             this.memory.copyJSValue,
             this.memory.freeJSValue,
@@ -1465,7 +1466,12 @@ export class QuickJSContext
         for (let i = 0; i < argc; i++) {
           const ptr = this.ffi.QTS_ArgvGetJSValueConstPointer(argv, i)
           argHandles[i] = scope.manage(
-            new WeakLifetime(ptr, this.memory.copyJSValue, this.memory.freeJSValue, this.runtime),
+            new WeakJSValueLifetime(
+              ptr,
+              this.memory.copyJSValue,
+              this.memory.freeJSValue,
+              this.runtime,
+            ),
           )
         }
 
@@ -1476,7 +1482,9 @@ export class QuickJSContext
               this.runtime.debugLog("throw error", result.error)
               throw result.error
             }
-            const handle = scope.manage(result instanceof Lifetime ? result : result.value)
+            const handle = scope.manage(
+              result instanceof JSValueLifetime ? result : result.value,
+            )
             return this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
           }
           return 0 as JSValuePointer
@@ -1490,7 +1498,7 @@ export class QuickJSContext
   }
 
   private errorToHandle(error: Error | QuickJSHandle): QuickJSHandle {
-    if (error instanceof Lifetime) {
+    if (error instanceof JSValueLifetime) {
       return error
     }
 

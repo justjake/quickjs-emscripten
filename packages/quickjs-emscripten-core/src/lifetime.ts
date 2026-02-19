@@ -214,6 +214,30 @@ export class StaticLifetime<T, Owner = never> extends Lifetime<T, T, Owner> {
 }
 
 /**
+ * Marker subtype for lifetimes that represent QuickJS handle values.
+ */
+export class JSValueLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, TCopy, Owner> {}
+
+/**
+ * Static handle lifetime marker.
+ */
+export class StaticJSValueLifetime<T, Owner = never> extends JSValueLifetime<T, T, Owner> {
+  constructor(value: T, owner?: Owner) {
+    super(value, undefined, undefined, owner)
+  }
+
+  get dupable() {
+    return true
+  }
+
+  dup() {
+    return this
+  }
+
+  dispose() {}
+}
+
+/**
  * A Lifetime that does not own its `value`. A WeakLifetime never calls its
  * `disposer` function, but can be `dup`ed to produce regular lifetimes that
  * do.
@@ -228,6 +252,29 @@ export class WeakLifetime<T, TCopy = never, Owner = never> extends Lifetime<T, T
     owner?: Owner,
   ) {
     // We don't care if the disposer doesn't support freeing T
+    super(value, copier, disposer as (value: T | TCopy) => void, owner)
+  }
+
+  dispose() {
+    this._alive = false
+  }
+}
+
+/**
+ * Weak lifetime marker for QuickJS handle values.
+ * Used for borrowed callback arguments that should pass handle runtime checks.
+ */
+export class WeakJSValueLifetime<T, TCopy = never, Owner = never> extends JSValueLifetime<
+  T,
+  TCopy,
+  Owner
+> {
+  constructor(
+    value: T,
+    copier?: (value: T | TCopy) => TCopy,
+    disposer?: (value: TCopy) => void,
+    owner?: Owner,
+  ) {
     super(value, copier, disposer as (value: T | TCopy) => void, owner)
   }
 

@@ -2,7 +2,7 @@ import type { JSContextPointer, JSValueConstPointer, JSValuePointer } from "@jit
 import { EvalFlags, GetOwnPropertyNamesFlags, IntrinsicsFlags } from "@jitl/quickjs-ffi-types"
 import type { QuickJSContext } from "./context"
 import type { SuccessOrFail, VmFunctionImplementation } from "./vm-interface"
-import type { Disposable, Lifetime } from "./lifetime"
+import type { Disposable, JSValueLifetime, StaticJSValueLifetime } from "./lifetime"
 import type { QuickJSAsyncContext } from "./context-asyncify"
 import type { InterruptHandler, QuickJSRuntime } from "./runtime"
 import { QuickJSUnknownIntrinsic } from "./errors"
@@ -11,7 +11,7 @@ import { QuickJSUnknownIntrinsic } from "./errors"
  * A QuickJSHandle to a constant that will never change, and does not need to
  * be disposed.
  */
-export type StaticJSValue = Lifetime<JSValueConstPointer, JSValueConstPointer, QuickJSRuntime>
+export type StaticJSValue = StaticJSValueLifetime<JSValueConstPointer, QuickJSRuntime>
 
 /**
  * A QuickJSHandle to a borrowed value that does not need to be disposed.
@@ -23,7 +23,7 @@ export type StaticJSValue = Lifetime<JSValueConstPointer, JSValueConstPointer, Q
  *
  * quickjs-emscripten takes care of disposing JSValueConst references.
  */
-export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJSRuntime>
+export type JSValueConst = JSValueLifetime<JSValueConstPointer, JSValuePointer, QuickJSRuntime>
 
 /**
  * A owned QuickJSHandle that should be disposed or returned.
@@ -40,7 +40,7 @@ export type JSValueConst = Lifetime<JSValueConstPointer, JSValuePointer, QuickJS
  *
  * You can do so from Javascript by calling the .dispose() method.
  */
-export type JSValue = Lifetime<JSValuePointer, JSValuePointer, QuickJSRuntime>
+export type JSValue = JSValueLifetime<JSValuePointer, JSValuePointer, QuickJSRuntime>
 // | Lifetime<JSValueUInt8Array, JSValueUInt8Array, QuickJSRuntime>
 
 /**

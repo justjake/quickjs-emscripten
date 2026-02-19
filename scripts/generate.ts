@@ -1017,7 +1017,7 @@ import type { AnyRef, FuncListRef, JSValueRef } from "./command-types"`
           : `[${outParamFields.map((f) => refTypeForSlot(f.slotType)).join(", ")}]`
 
     builderMethods.push(
-      `  ${methodName}(${methodArgs.join(", ")}): ${returnType} {\n${[...outAlloc, ...commandInit].join(
+      `  protected ${methodName}(${methodArgs.join(", ")}): ${returnType} {\n${[...outAlloc, ...commandInit].join(
         "\n",
       )}${returnBlock}\n  }`,
     )
@@ -1074,11 +1074,11 @@ export class GeneratedCommandBuilder {
     this.commands.push(command)
   }
 
-  getCommands(): readonly Command[] {
+  protected getCommands(): readonly Command[] {
     return this.commands
   }
 
-  takeCommands(): Command[] {
+  protected takeCommands(): Command[] {
     const out = this.commands
     this.commands = []
     return out

@@ -2,7 +2,7 @@ import assert from "assert"
 import * as fs from "fs"
 import * as path from "path"
 import { describe, it } from "vitest"
-import { Lifetime } from "./lifetime"
+import { JSValueLifetime } from "./lifetime"
 import {
   type CommandShape,
   type CommandOperandAccessors,
@@ -15,12 +15,13 @@ import {
   refBankId,
 } from "./CommandPlanner"
 import type { AnyRef } from "./command-types"
-import {
-  STRUCTURED_CLONE_KIND,
-  buildStructuredCloneCommands,
-  executeStructuredClone,
-} from "./StructuredCloneCommandProducer"
+import { appendStructuredClone } from "./StructuredCloneCommandProducer"
+import { CommandBuilder } from "./CommandBuilder"
+import { HostRefMap } from "./host-ref"
+import * as Op from "./ops"
 import { QuickJSWrongOwner } from "./errors"
+import type { QuickJSContext } from "./context"
+import type { QuickJSHandle } from "./types"
 
 const JS_VALUE_BANK = 0 as const
 const FUNC_LIST_BANK = 1 as const
@@ -141,6 +142,29 @@ class FakeDriver<TCommand extends CommandShape = CommandShape>
 
 function ref(bankId: BankId, valueId: number): AnyRef {
   return packRef(bankId, valueId)
+}
+
+function makeOwnedHandle(owner: unknown): QuickJSHandle {
+  return new JSValueLifetime(0 as any, undefined, undefined, owner) as unknown as QuickJSHandle
+}
+
+function makeCloneContext(owner: unknown = { name: "owner" }): QuickJSContext {
+  const runtime = {
+    hostRefs: new HostRefMap(),
+    assertOwned(handle: QuickJSHandle) {
+      if (handle.owner && handle.owner !== owner) {
+        throw new QuickJSWrongOwner("Handle is not owned by target runtime")
+      }
+    },
+  }
+
+  return {
+    runtime,
+    true: makeOwnedHandle(owner),
+    false: makeOwnedHandle(owner),
+    null: makeOwnedHandle(owner),
+    undefined: makeOwnedHandle(owner),
+  } as unknown as QuickJSContext
 }
 
 let nextKind = 1
@@ -276,88 +300,72 @@ describe("executeCommandPlan", () => {
 
 })
 
-describe("buildStructuredCloneCommands", () => {
-  it("creates a command graph for object cycles and shared references", () => {
+describe("appendStructuredClone", () => {
+  it("preserves cycles and shared references", () => {
+    const context = makeCloneContext()
+    const builder = new CommandBuilder(context)
     const shared: Record<string, unknown> = { x: 1 }
     const root: Record<string, unknown> = { a: shared, b: shared }
     root.self = root
 
-    const built = buildStructuredCloneCommands(root)
+    appendStructuredClone(builder, root)
 
-    assert.ok(built.commands.length > 0)
-    assert.ok(built.rootValueId >= 0)
-
-    const loadCounts = built.commands.filter((c) => c.kind === STRUCTURED_CLONE_KIND.NEW_OBJECT).length
-    assert.strictEqual(loadCounts, 2)
+    const commands = builder.getCommands()
+    const newObjectCount = commands.filter((command) => command.kind === Op.NEW_OBJECT).length
+    assert.strictEqual(newObjectCount, 2)
   })
 
-  it("deduplicates moved handles and validates ownership", () => {
-    const targetOwner = { name: "target" }
-    const wrongOwner = { name: "wrong" }
-
-    let disposedCount = 0
-    const movedHandle = new Lifetime(
-      1 as any,
-      undefined,
-      () => {
-        disposedCount++
-      },
-      targetOwner,
-    ) as any
-
+  it("emits NEW_MAP/NEW_SET and their mutator commands", () => {
+    const context = makeCloneContext()
+    const builder = new CommandBuilder(context)
     const input = {
-      a: movedHandle,
-      b: movedHandle,
+      m: new Map<unknown, unknown>([["k", 1]]),
+      s: new Set<unknown>([2]),
     }
 
-    const driver = new FakeDriver<any>([16, 8], 256)
-    executeStructuredClone({
-      input,
-      driver,
-      options: {
-        move: true,
-        targetOwner,
-      },
-    })
+    appendStructuredClone(builder, input)
+    const kinds = builder.getCommands().map((command) => command.kind)
+    assert.ok(kinds.includes(Op.NEW_MAP))
+    assert.ok(kinds.includes(Op.NEW_SET))
+    assert.ok(kinds.includes(Op.MAP_SET))
+    assert.ok(kinds.includes(Op.SET_ADD))
+  })
 
-    assert.strictEqual(disposedCount, 1)
+  it("collects embedded handles once per identity", () => {
+    const owner = { name: "owner" }
+    const context = makeCloneContext(owner)
+    const builder = new CommandBuilder(context)
+    const handle = makeOwnedHandle(owner)
 
-    const badHandle = new Lifetime(2 as any, undefined, () => {}, wrongOwner) as any
+    const result = appendStructuredClone(builder, { a: handle, b: handle })
+    assert.strictEqual(result.encounteredHandles.length, 1)
+    assert.strictEqual(result.encounteredHandles[0], handle)
+  })
+
+  it("throws on wrong-owner handles", () => {
+    const targetOwner = { name: "target" }
+    const wrongOwner = { name: "wrong" }
+    const context = makeCloneContext(targetOwner)
+    const builder = new CommandBuilder(context)
+    const badHandle = makeOwnedHandle(wrongOwner)
+
     assert.throws(
-      () =>
-        buildStructuredCloneCommands({ bad: badHandle }, {
-          targetOwner,
-        }),
+      () => appendStructuredClone(builder, { bad: badHandle }),
       (error) => error instanceof QuickJSWrongOwner,
     )
   })
 
-  it("does not dispose moved handles if execution fails", () => {
-    const targetOwner = { name: "target" }
-    let disposedCount = 0
-    const movedHandle = new Lifetime(
-      1 as any,
-      undefined,
-      () => {
-        disposedCount++
-      },
-      targetOwner,
-    ) as any
+  it("appends commands without clearing existing builder state", () => {
+    const context = makeCloneContext()
+    const builder = new CommandBuilder(context)
+    builder.newObjectRef()
+    const beforeCount = builder.getCommands().length
 
-    const driver = new FakeDriver<any>([16, 8], 256, 2, () => 0)
+    appendStructuredClone(builder, { x: 1 })
 
-    assert.throws(() =>
-      executeStructuredClone({
-        input: { a: movedHandle },
-        driver,
-        options: {
-          move: true,
-          targetOwner,
-        },
-      }),
-    )
-
-    assert.strictEqual(disposedCount, 0)
+    assert.strictEqual(beforeCount, 1)
+    assert.ok(builder.getCommands().length > beforeCount)
+    assert.strictEqual(builder.getCommands()[0]?.kind, Op.NEW_OBJECT)
   })
 })
 

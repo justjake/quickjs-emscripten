@@ -1,5 +1,5 @@
 import type { QuickJSContextResult, QuickJSContext } from "./context"
-import { DisposableResult, Lifetime, UsingDisposable } from "./lifetime"
+import { DisposableResult, JSValueLifetime, UsingDisposable } from "./lifetime"
 import type { QuickJSRuntime } from "./runtime"
 import type { QuickJSHandle } from "./types"
 
@@ -92,7 +92,7 @@ export class QuickJSIterator
       }
     }
 
-    const errorHandle = e instanceof Lifetime ? e : this.context.newError(e)
+    const errorHandle = e instanceof JSValueLifetime ? e : this.context.newError(e)
     const throwMethod = this.context.getProp(this.handle, "throw")
     const result = this.callIteratorMethod(throwMethod, e)
     if (errorHandle.alive) {
