@@ -754,12 +754,6 @@ function isRefSlotType(type: string): boolean {
   return type === "JSValueSlot" || type === "FuncListSlot"
 }
 
-function refTypeForSlot(type: string): string {
-  if (type === "JSValueSlot") return "JSValueRef"
-  if (type === "FuncListSlot") return "FuncListRef"
-  throw new Error(`Not a slot ref type: ${type}`)
-}
-
 function commandParamType(param: ParamDef<any>, isJsValuesArrayPtr: boolean): string {
   if (param.type === "JSValueSlot") return "JSValueRef"
   if (param.type === "FuncListSlot") return "FuncListRef"
@@ -934,7 +928,7 @@ import type { AnyRef, FuncListRef, JSValueRef } from "./command-types"`
 
   const commandTypeNames: string[] = []
   const commandTypeInterfaces: string[] = []
-  const builderMethods: string[] = []
+  const commandCreatorFns: string[] = []
   const readCaseGroups = new Map<string, CaseGroup>()
   const writeCaseGroups = new Map<string, CaseGroup>()
 
@@ -971,55 +965,26 @@ import type { AnyRef, FuncListRef, JSValueRef } from "./command-types"`
     ].filter(Boolean)
     commandTypeInterfaces.push(interfaceLines.join("\n"))
 
-    const methodName = `raw${TsOpName(name)}`
-    const methodArgs: string[] = []
-    const outParamFields: Array<{ fieldName: string; slotType: string }> = []
+    const creatorName = `${TsOpName(name)}Cmd`
+    const creatorArgs: string[] = []
     const fieldAssignments: string[] = []
 
     for (const { param, isJsValuesArrayPtr } of visibleParams) {
       const fieldName = commandFieldName(param)
-      if (isRefSlotType(param.type) && param.usage === "out") {
-        outParamFields.push({ fieldName, slotType: param.type })
-      } else {
-        methodArgs.push(`${fieldName}: ${commandParamType(param, isJsValuesArrayPtr)}`)
-      }
+      creatorArgs.push(`${fieldName}: ${commandParamType(param, isJsValuesArrayPtr)}`)
       fieldAssignments.push(`      ${fieldName},`)
     }
 
-    const outAlloc = outParamFields.map(({ fieldName, slotType }) => {
-      if (slotType === "JSValueSlot") {
-        return `    const ${fieldName} = this.allocateJsValueRef()`
-      }
-      return `    const ${fieldName} = this.allocateFuncListRef()`
-    })
-
     const commandInit = [
-      `    const command: ${typeName} = {`,
-      `      kind: ${name},`,
-      commandDef.barrier ? `      barrier: true,` : "",
-      ...fieldAssignments,
-      `    }`,
-      `    this.pushCommand(command)`,
+      `  return {`,
+      `    kind: ${name},`,
+      commandDef.barrier ? `    barrier: true,` : "",
+      ...fieldAssignments.map((line) => line.replace("      ", "    ")),
+      `  }`,
     ].filter(Boolean)
 
-    let returnBlock = ""
-    if (outParamFields.length === 1) {
-      returnBlock = `\n    return ${outParamFields[0].fieldName}`
-    } else if (outParamFields.length > 1) {
-      returnBlock = `\n    return [${outParamFields.map((f) => f.fieldName).join(", ")}] as const`
-    }
-
-    const returnType =
-      outParamFields.length === 0
-        ? "void"
-        : outParamFields.length === 1
-          ? refTypeForSlot(outParamFields[0].slotType)
-          : `[${outParamFields.map((f) => refTypeForSlot(f.slotType)).join(", ")}]`
-
-    builderMethods.push(
-      `  protected ${methodName}(${methodArgs.join(", ")}): ${returnType} {\n${[...outAlloc, ...commandInit].join(
-        "\n",
-      )}${returnBlock}\n  }`,
+    commandCreatorFns.push(
+      `export function ${creatorName}(${creatorArgs.join(", ")}): ${typeName} {\n${commandInit.join("\n")}\n}`,
     )
   }
 
@@ -1047,14 +1012,6 @@ import type { AnyRef, FuncListRef, JSValueRef } from "./command-types"`
 ] as const`
 
   const commandTypes = `
-const REF_VALUE_BITS = 24
-const JS_VALUE_BANK_ID = 0
-const FUNC_LIST_BANK_ID = 1
-
-function packGeneratedRef(bankId: number, valueId: number): AnyRef {
-  return (((bankId << REF_VALUE_BITS) | valueId) >>> 0) as AnyRef
-}
-
 interface BaseCommand {
   kind: number
   barrier?: boolean
@@ -1065,37 +1022,7 @@ ${commandTypeInterfaces.join("\n\n")}
 
 export type Command = ${commandTypeNames.join(" |\n  ")}
 
-export class GeneratedCommandBuilder {
-  private commands: Command[] = []
-  private nextJsValueId = 1
-  private nextFuncListId = 1
-
-  private pushCommand(command: Command): void {
-    this.commands.push(command)
-  }
-
-  protected getCommands(): readonly Command[] {
-    return this.commands
-  }
-
-  protected takeCommands(): Command[] {
-    const out = this.commands
-    this.commands = []
-    return out
-  }
-
-  protected allocateJsValueRef(): JSValueRef {
-    const ref = packGeneratedRef(JS_VALUE_BANK_ID, this.nextJsValueId++)
-    return ref as JSValueRef
-  }
-
-  protected allocateFuncListRef(): FuncListRef {
-    const ref = packGeneratedRef(FUNC_LIST_BANK_ID, this.nextFuncListId++)
-    return ref as FuncListRef
-  }
-
-${builderMethods.join("\n\n")}
-}
+${commandCreatorFns.join("\n\n")}
 `.trim()
 
   const plannerAccessors = `

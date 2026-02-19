@@ -5,7 +5,8 @@ import {
   type SetPropFlags,
 } from "@jitl/quickjs-ffi-types"
 import { JSValueLifetime } from "./lifetime"
-import { GeneratedCommandBuilder, type Command } from "./ops"
+import * as Ops from "./ops"
+import type { Command } from "./ops"
 import type { FuncListRef, JSValueRef } from "./command-types"
 import type { QuickJSContext, QuickJSPropertyKey } from "./context"
 import type { QuickJSHandle } from "./types"
@@ -15,6 +16,13 @@ const JS_PROP_CONFIGURABLE = 0b00001
 const JS_PROP_WRITABLE = 0b00010
 const JS_PROP_ENUMERABLE = 0b00100
 const SET_PROP_ASSIGNMENT = 0 as SetPropFlags
+const REF_VALUE_BITS = 24
+const JS_VALUE_BANK_ID = 0
+const FUNC_LIST_BANK_ID = 1
+
+function packGeneratedRef(bankId: number, valueId: number): number {
+  return ((bankId << REF_VALUE_BITS) | valueId) >>> 0
+}
 
 export type Primitive = null | undefined | boolean | number | bigint | string
 export type JSValueInput = JSValueRef | QuickJSHandle
@@ -89,9 +97,12 @@ function jsPropFlagsFromOptions(options: DefineFuncListPropOptions | undefined):
   return flags as JSPropFlags
 }
 
-export class CommandBuilder extends GeneratedCommandBuilder {
+export class CommandBuilder {
   public readonly context: QuickJSContext
 
+  private commands: Command[] = []
+  private nextJsValueId = 1
+  private nextFuncListId = 1
   private inputBindings: InputBinding[] = []
   private functionBindings: FunctionBinding[] = []
   private inputRefByHandle = new WeakMap<QuickJSHandle, JSValueRef>()
@@ -99,24 +110,33 @@ export class CommandBuilder extends GeneratedCommandBuilder {
   private knownFuncListRefs = new Set<number>()
 
   constructor(context: QuickJSContext) {
-    super()
     this.context = context
   }
 
-  protected allocateJsValueRef(): JSValueRef {
-    const ref = super.allocateJsValueRef()
+  private pushCommand(command: Command): void {
+    this.commands.push(command)
+  }
+
+  private takeCommands(): Command[] {
+    const out = this.commands
+    this.commands = []
+    return out
+  }
+
+  private allocateJsValueRef(): JSValueRef {
+    const ref = packGeneratedRef(JS_VALUE_BANK_ID, this.nextJsValueId++) as JSValueRef
     this.knownJsValueRefs.add(ref as number)
     return ref
   }
 
-  protected allocateFuncListRef(): FuncListRef {
-    const ref = super.allocateFuncListRef()
+  private allocateFuncListRef(): FuncListRef {
+    const ref = packGeneratedRef(FUNC_LIST_BANK_ID, this.nextFuncListId++) as FuncListRef
     this.knownFuncListRefs.add(ref as number)
     return ref
   }
 
   getCommands(): readonly Command[] {
-    return super.getCommands()
+    return this.commands
   }
 
   getInputBindings(): readonly InputBinding[] {
@@ -128,7 +148,7 @@ export class CommandBuilder extends GeneratedCommandBuilder {
   }
 
   clear(): void {
-    super.takeCommands()
+    this.takeCommands()
     this.inputBindings = []
     this.functionBindings = []
     this.inputRefByHandle = new WeakMap<QuickJSHandle, JSValueRef>()
@@ -146,41 +166,41 @@ export class CommandBuilder extends GeneratedCommandBuilder {
 
   newObject(prototype?: JSValueInput): JSValueRef {
     if (prototype === undefined) {
-      return super.rawNewObject()
+      return this.rawNewObject()
     }
-    return super.rawNewObjectProto(this.resolveJsValueInput(prototype))
+    return this.rawNewObjectProto(this.resolveJsValueInput(prototype))
   }
 
   newArray(): JSValueRef {
-    return super.rawNewArray()
+    return this.rawNewArray()
   }
 
   newMap(): JSValueRef {
-    return super.rawNewMap()
+    return this.rawNewMap()
   }
 
   newSet(): JSValueRef {
-    return super.rawNewSet()
+    return this.rawNewSet()
   }
 
   newDate(timestampMs: number): JSValueRef {
-    return super.rawNewDate(timestampMs)
+    return this.rawNewDate(timestampMs)
   }
 
   newNumber(value: number): JSValueRef {
-    return super.rawNewFloat64(value)
+    return this.rawNewFloat64(value)
   }
 
   newString(value: string): JSValueRef {
-    return super.rawNewString(value)
+    return this.rawNewString(value)
   }
 
   newBigInt(value: bigint): JSValueRef {
-    return super.rawNewBigint(value)
+    return this.rawNewBigint(value)
   }
 
   mapSet(target: JSValueInput, key: JSValueInput, value: JSValueInput): void {
-    return super.rawMapSet(
+    return this.rawMapSet(
       this.resolveJsValueInput(target),
       this.resolveJsValueInput(key),
       this.resolveJsValueInput(value),
@@ -188,7 +208,7 @@ export class CommandBuilder extends GeneratedCommandBuilder {
   }
 
   setAdd(target: JSValueInput, value: JSValueInput): void {
-    return super.rawSetAdd(this.resolveJsValueInput(target), this.resolveJsValueInput(value))
+    return this.rawSetAdd(this.resolveJsValueInput(target), this.resolveJsValueInput(value))
   }
 
   defineProp(
@@ -235,15 +255,15 @@ export class CommandBuilder extends GeneratedCommandBuilder {
   }
 
   newFuncList(count: number): FuncListRef {
-    return super.rawFunclistNew(count)
+    return this.rawFunclistNew(count)
   }
 
   assignFuncList(target: JSValueInput, funclist: FuncListRef): void {
-    return super.rawFunclistAssign(this.resolveJsValueInput(target), this.resolveFuncListRef(funclist))
+    return this.rawFunclistAssign(this.resolveJsValueInput(target), this.resolveFuncListRef(funclist))
   }
 
   freeFuncList(funclist: FuncListRef): void {
-    return super.rawFunclistFree(this.resolveFuncListRef(funclist))
+    return this.rawFunclistFree(this.resolveFuncListRef(funclist))
   }
 
   defineFuncListProp(
@@ -257,25 +277,25 @@ export class CommandBuilder extends GeneratedCommandBuilder {
     const flags = jsPropFlagsFromOptions(options)
 
     if (value === null) {
-      return super.rawFunclistDefNull(targetFunclist, flags, key, index)
+      return this.rawFunclistDefNull(targetFunclist, flags, key, index)
     }
     if (value === undefined) {
-      return super.rawFunclistDefUndefined(targetFunclist, flags, key, index)
+      return this.rawFunclistDefUndefined(targetFunclist, flags, key, index)
     }
     if (typeof value === "string") {
-      return super.rawFunclistDefString(targetFunclist, index, flags, value, key)
+      return this.rawFunclistDefString(targetFunclist, index, flags, value, key)
     }
     if (typeof value === "bigint") {
-      return super.rawFunclistDefInt64(targetFunclist, index, flags, value, key)
+      return this.rawFunclistDefInt64(targetFunclist, index, flags, value, key)
     }
     if (typeof value === "number") {
       if (isInt32(value)) {
-        return super.rawFunclistDefInt32(targetFunclist, flags, index, value, key)
+        return this.rawFunclistDefInt32(targetFunclist, flags, index, value, key)
       }
-      return super.rawFunclistDefDouble(targetFunclist, index, flags, value, key)
+      return this.rawFunclistDefDouble(targetFunclist, index, flags, value, key)
     }
     if (typeof value === "boolean") {
-      return super.rawFunclistDefInt32(targetFunclist, flags, index, value ? 1 : 0, key)
+      return this.rawFunclistDefInt32(targetFunclist, flags, index, value ? 1 : 0, key)
     }
 
     if (value instanceof JSValueLifetime) {
@@ -285,7 +305,7 @@ export class CommandBuilder extends GeneratedCommandBuilder {
     }
 
     if (typeof value === "object" && "object" in value) {
-      return super.rawFunclistDefObject(
+      return this.rawFunclistDefObject(
         targetFunclist,
         this.resolveFuncListRef(value.object),
         flags,
@@ -304,13 +324,309 @@ export class CommandBuilder extends GeneratedCommandBuilder {
   ): JSValueRef {
     const hostRefId = this.context.runtime.hostRefs.put(fn)
     try {
-      const ref = super.rawNewFunc(fn.length, isConstructor ? 1 : 0, name ?? "", hostRefId)
+      const ref = this.rawNewFunc(fn.length, isConstructor ? 1 : 0, name ?? "", hostRefId)
       this.functionBindings.push({ ref, hostRefId, fn })
       return ref
     } catch (error) {
       this.context.runtime.hostRefs.delete(hostRefId)
       throw error
     }
+  }
+
+  private rawNewObject(): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand(Ops.NewObjectCmd(resultSlot))
+    return resultSlot
+  }
+
+  private rawNewObjectProto(protoSlot: JSValueRef): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand(Ops.NewObjectProtoCmd(resultSlot, protoSlot))
+    return resultSlot
+  }
+
+  private rawNewArray(): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand(Ops.NewArrayCmd(resultSlot))
+    return resultSlot
+  }
+
+  private rawNewMap(): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand(Ops.NewMapCmd(resultSlot))
+    return resultSlot
+  }
+
+  private rawNewSet(): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand(Ops.NewSetCmd(resultSlot))
+    return resultSlot
+  }
+
+  private rawNewDate(timestamp: number): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand(Ops.NewDateCmd(resultSlot, timestamp))
+    return resultSlot
+  }
+
+  private rawNewFloat64(value: number): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand(Ops.NewFloat64Cmd(resultSlot, value))
+    return resultSlot
+  }
+
+  private rawNewString(str: string): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand(Ops.NewStringCmd(resultSlot, str))
+    return resultSlot
+  }
+
+  private rawNewBigint(value: bigint): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand(Ops.NewBigintCmd(resultSlot, value))
+    return resultSlot
+  }
+
+  private rawNewFunc(
+    arity: number,
+    isConstructor: number,
+    name: string,
+    hostRefId: HostRefId,
+  ): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand(Ops.NewFuncCmd(resultSlot, arity, isConstructor, name, hostRefId))
+    return resultSlot
+  }
+
+  private rawSetStrValue(
+    targetSlot: JSValueRef,
+    valueSlot: JSValueRef,
+    flags: SetPropFlags,
+    key: string,
+  ): void {
+    this.pushCommand(Ops.SetStrValueCmd(targetSlot, valueSlot, flags, key))
+  }
+
+  private rawSetStrNull(targetSlot: JSValueRef, flags: SetPropFlags, key: string): void {
+    this.pushCommand(Ops.SetStrNullCmd(targetSlot, flags, key))
+  }
+
+  private rawSetStrUndef(targetSlot: JSValueRef, flags: SetPropFlags, key: string): void {
+    this.pushCommand(Ops.SetStrUndefCmd(targetSlot, flags, key))
+  }
+
+  private rawSetStrBool(
+    targetSlot: JSValueRef,
+    boolVal: number,
+    flags: SetPropFlags,
+    key: string,
+  ): void {
+    this.pushCommand(Ops.SetStrBoolCmd(targetSlot, boolVal, flags, key))
+  }
+
+  private rawSetStrInt32(
+    targetSlot: JSValueRef,
+    flags: SetPropFlags,
+    key: string,
+    intVal: number,
+  ): void {
+    this.pushCommand(Ops.SetStrInt32Cmd(targetSlot, flags, key, intVal))
+  }
+
+  private rawSetStrF64(
+    targetSlot: JSValueRef,
+    flags: SetPropFlags,
+    f64Val: number,
+    key: string,
+  ): void {
+    this.pushCommand(Ops.SetStrF64Cmd(targetSlot, flags, f64Val, key))
+  }
+
+  private rawSetStrBigint(
+    targetSlot: JSValueRef,
+    flags: SetPropFlags,
+    i64Val: bigint,
+    key: string,
+  ): void {
+    this.pushCommand(Ops.SetStrBigintCmd(targetSlot, flags, i64Val, key))
+  }
+
+  private rawSetStrString(
+    targetSlot: JSValueRef,
+    flags: SetPropFlags,
+    str: string,
+    key: string,
+  ): void {
+    this.pushCommand(Ops.SetStrStringCmd(targetSlot, flags, str, key))
+  }
+
+  private rawSetIdxValue(
+    targetSlot: JSValueRef,
+    valueSlot: JSValueRef,
+    flags: SetPropFlags,
+    index: number,
+  ): void {
+    this.pushCommand(Ops.SetIdxValueCmd(targetSlot, valueSlot, flags, index))
+  }
+
+  private rawSetIdxNull(targetSlot: JSValueRef, flags: SetPropFlags, index: number): void {
+    this.pushCommand(Ops.SetIdxNullCmd(targetSlot, flags, index))
+  }
+
+  private rawSetIdxUndef(targetSlot: JSValueRef, flags: SetPropFlags, index: number): void {
+    this.pushCommand(Ops.SetIdxUndefCmd(targetSlot, flags, index))
+  }
+
+  private rawSetIdxBool(
+    targetSlot: JSValueRef,
+    boolVal: number,
+    flags: SetPropFlags,
+    index: number,
+  ): void {
+    this.pushCommand(Ops.SetIdxBoolCmd(targetSlot, boolVal, flags, index))
+  }
+
+  private rawSetIdxInt32(
+    targetSlot: JSValueRef,
+    flags: SetPropFlags,
+    index: number,
+    intVal: number,
+  ): void {
+    this.pushCommand(Ops.SetIdxInt32Cmd(targetSlot, flags, index, intVal))
+  }
+
+  private rawSetIdxF64(
+    targetSlot: JSValueRef,
+    flags: SetPropFlags,
+    f64Val: number,
+    index: number,
+  ): void {
+    this.pushCommand(Ops.SetIdxF64Cmd(targetSlot, flags, f64Val, index))
+  }
+
+  private rawSetIdxBigint(
+    targetSlot: JSValueRef,
+    flags: SetPropFlags,
+    i64Val: bigint,
+    index: number,
+  ): void {
+    this.pushCommand(Ops.SetIdxBigintCmd(targetSlot, flags, i64Val, index))
+  }
+
+  private rawSetIdxString(
+    targetSlot: JSValueRef,
+    flags: SetPropFlags,
+    str: string,
+    index: number,
+  ): void {
+    this.pushCommand(Ops.SetIdxStringCmd(targetSlot, flags, str, index))
+  }
+
+  private rawSet(
+    targetSlot: JSValueRef,
+    keySlot: JSValueRef,
+    valueSlot: JSValueRef,
+    flags: SetPropFlags,
+  ): void {
+    this.pushCommand(Ops.SetCmd(targetSlot, keySlot, valueSlot, flags))
+  }
+
+  private rawGetStr(sourceSlot: JSValueRef, key: string): JSValueRef {
+    const resultSlot = this.allocateJsValueRef()
+    this.pushCommand(Ops.GetStrCmd(resultSlot, sourceSlot, key))
+    return resultSlot
+  }
+
+  private rawMapSet(targetSlot: JSValueRef, keySlot: JSValueRef, valueSlot: JSValueRef): void {
+    this.pushCommand(Ops.MapSetCmd(targetSlot, keySlot, valueSlot))
+  }
+
+  private rawSetAdd(targetSlot: JSValueRef, valueSlot: JSValueRef): void {
+    this.pushCommand(Ops.SetAddCmd(targetSlot, valueSlot))
+  }
+
+  private rawFunclistNew(count: number): FuncListRef {
+    const resultFunclistSlot = this.allocateFuncListRef()
+    this.pushCommand(Ops.FunclistNewCmd(resultFunclistSlot, count))
+    return resultFunclistSlot
+  }
+
+  private rawFunclistAssign(targetSlot: JSValueRef, sourceFunclistSlot: FuncListRef): void {
+    this.pushCommand(Ops.FunclistAssignCmd(targetSlot, sourceFunclistSlot))
+  }
+
+  private rawFunclistFree(targetFunclistSlot: FuncListRef): void {
+    this.pushCommand(Ops.FunclistFreeCmd(targetFunclistSlot))
+  }
+
+  private rawFunclistDefString(
+    targetFunclistSlot: FuncListRef,
+    index: number,
+    flags: JSPropFlags,
+    str: string,
+    name: string,
+  ): void {
+    this.pushCommand(Ops.FunclistDefStringCmd(targetFunclistSlot, index, flags, str, name))
+  }
+
+  private rawFunclistDefInt32(
+    targetFunclistSlot: FuncListRef,
+    flags: JSPropFlags,
+    index: number,
+    intVal: number,
+    key: string,
+  ): void {
+    this.pushCommand(Ops.FunclistDefInt32Cmd(targetFunclistSlot, flags, index, intVal, key))
+  }
+
+  private rawFunclistDefInt64(
+    targetFunclistSlot: FuncListRef,
+    index: number,
+    flags: JSPropFlags,
+    i64Val: bigint,
+    name: string,
+  ): void {
+    this.pushCommand(Ops.FunclistDefInt64Cmd(targetFunclistSlot, index, flags, i64Val, name))
+  }
+
+  private rawFunclistDefDouble(
+    targetFunclistSlot: FuncListRef,
+    index: number,
+    flags: JSPropFlags,
+    f64Val: number,
+    key: string,
+  ): void {
+    this.pushCommand(Ops.FunclistDefDoubleCmd(targetFunclistSlot, index, flags, f64Val, key))
+  }
+
+  private rawFunclistDefNull(
+    targetFunclistSlot: FuncListRef,
+    flags: JSPropFlags,
+    key: string,
+    index: number,
+  ): void {
+    this.pushCommand(Ops.FunclistDefNullCmd(targetFunclistSlot, flags, key, index))
+  }
+
+  private rawFunclistDefUndefined(
+    targetFunclistSlot: FuncListRef,
+    flags: JSPropFlags,
+    key: string,
+    index: number,
+  ): void {
+    this.pushCommand(Ops.FunclistDefUndefinedCmd(targetFunclistSlot, flags, key, index))
+  }
+
+  private rawFunclistDefObject(
+    targetFunclistSlot: FuncListRef,
+    objectFunclistSlot: FuncListRef,
+    flags: JSPropFlags,
+    key: string,
+    index: number,
+  ): void {
+    this.pushCommand(
+      Ops.FunclistDefObjectCmd(targetFunclistSlot, objectFunclistSlot, flags, key, index),
+    )
   }
 
   private setOrDefineProp(
@@ -330,7 +646,7 @@ export class CommandBuilder extends GeneratedCommandBuilder {
     }
 
     const valueRef = this.resolveValueRef(value)
-    return super.rawSet(targetRef, keyRouting.keyRef, valueRef, flags)
+    return this.rawSet(targetRef, keyRouting.keyRef, valueRef, flags)
   }
 
   private emitSetByStringKey(
@@ -341,29 +657,29 @@ export class CommandBuilder extends GeneratedCommandBuilder {
   ): void {
     const valueRef = this.tryResolveValueRef(value)
     if (valueRef !== undefined) {
-      return super.rawSetStrValue(targetRef, valueRef, flags, key)
+      return this.rawSetStrValue(targetRef, valueRef, flags, key)
     }
 
     if (value === null) {
-      return super.rawSetStrNull(targetRef, flags, key)
+      return this.rawSetStrNull(targetRef, flags, key)
     }
     if (value === undefined) {
-      return super.rawSetStrUndef(targetRef, flags, key)
+      return this.rawSetStrUndef(targetRef, flags, key)
     }
     if (typeof value === "boolean") {
-      return super.rawSetStrBool(targetRef, value ? 1 : 0, flags, key)
+      return this.rawSetStrBool(targetRef, value ? 1 : 0, flags, key)
     }
     if (typeof value === "string") {
-      return super.rawSetStrString(targetRef, flags, value, key)
+      return this.rawSetStrString(targetRef, flags, value, key)
     }
     if (typeof value === "bigint") {
-      return super.rawSetStrBigint(targetRef, flags, value, key)
+      return this.rawSetStrBigint(targetRef, flags, value, key)
     }
     if (typeof value === "number") {
       if (isInt32(value)) {
-        return super.rawSetStrInt32(targetRef, flags, key, value)
+        return this.rawSetStrInt32(targetRef, flags, key, value)
       }
-      return super.rawSetStrF64(targetRef, flags, value, key)
+      return this.rawSetStrF64(targetRef, flags, value, key)
     }
 
     throw new TypeError("Unsupported value for setProp/defineProp")
@@ -377,29 +693,29 @@ export class CommandBuilder extends GeneratedCommandBuilder {
   ): void {
     const valueRef = this.tryResolveValueRef(value)
     if (valueRef !== undefined) {
-      return super.rawSetIdxValue(targetRef, valueRef, flags, index)
+      return this.rawSetIdxValue(targetRef, valueRef, flags, index)
     }
 
     if (value === null) {
-      return super.rawSetIdxNull(targetRef, flags, index)
+      return this.rawSetIdxNull(targetRef, flags, index)
     }
     if (value === undefined) {
-      return super.rawSetIdxUndef(targetRef, flags, index)
+      return this.rawSetIdxUndef(targetRef, flags, index)
     }
     if (typeof value === "boolean") {
-      return super.rawSetIdxBool(targetRef, value ? 1 : 0, flags, index)
+      return this.rawSetIdxBool(targetRef, value ? 1 : 0, flags, index)
     }
     if (typeof value === "string") {
-      return super.rawSetIdxString(targetRef, flags, value, index)
+      return this.rawSetIdxString(targetRef, flags, value, index)
     }
     if (typeof value === "bigint") {
-      return super.rawSetIdxBigint(targetRef, flags, value, index)
+      return this.rawSetIdxBigint(targetRef, flags, value, index)
     }
     if (typeof value === "number") {
       if (isInt32(value)) {
-        return super.rawSetIdxInt32(targetRef, flags, index, value)
+        return this.rawSetIdxInt32(targetRef, flags, index, value)
       }
-      return super.rawSetIdxF64(targetRef, flags, value, index)
+      return this.rawSetIdxF64(targetRef, flags, value, index)
     }
 
     throw new TypeError("Unsupported value for setProp/defineProp")
@@ -413,7 +729,7 @@ export class CommandBuilder extends GeneratedCommandBuilder {
       if (isArrayIndexKey(key)) {
         return { kind: "index", index: key }
       }
-      return { kind: "ref", keyRef: super.rawNewFloat64(key) }
+      return { kind: "ref", keyRef: this.rawNewFloat64(key) }
     }
     return { kind: "ref", keyRef: this.bindInputHandle(key) }
   }
@@ -452,27 +768,27 @@ export class CommandBuilder extends GeneratedCommandBuilder {
   private materializePrimitiveToRef(value: Primitive): JSValueRef {
     if (value === null) {
       return this.materializeWithTempObject((targetRef, key) =>
-        super.rawSetStrNull(targetRef, SET_PROP_ASSIGNMENT, key),
+        this.rawSetStrNull(targetRef, SET_PROP_ASSIGNMENT, key),
       )
     }
     if (value === undefined) {
       return this.materializeWithTempObject((targetRef, key) =>
-        super.rawSetStrUndef(targetRef, SET_PROP_ASSIGNMENT, key),
+        this.rawSetStrUndef(targetRef, SET_PROP_ASSIGNMENT, key),
       )
     }
     if (typeof value === "boolean") {
       return this.materializeWithTempObject((targetRef, key) =>
-        super.rawSetStrBool(targetRef, value ? 1 : 0, SET_PROP_ASSIGNMENT, key),
+        this.rawSetStrBool(targetRef, value ? 1 : 0, SET_PROP_ASSIGNMENT, key),
       )
     }
     if (typeof value === "string") {
-      return super.rawNewString(value)
+      return this.rawNewString(value)
     }
     if (typeof value === "bigint") {
-      return super.rawNewBigint(value)
+      return this.rawNewBigint(value)
     }
     if (typeof value === "number") {
-      return super.rawNewFloat64(value)
+      return this.rawNewFloat64(value)
     }
     throw new TypeError("Unsupported primitive value")
   }
@@ -480,10 +796,10 @@ export class CommandBuilder extends GeneratedCommandBuilder {
   private materializeWithTempObject(
     writeValue: (targetRef: JSValueRef, key: string) => void,
   ): JSValueRef {
-    const targetRef = super.rawNewObject()
+    const targetRef = this.rawNewObject()
     const key = "value"
     writeValue(targetRef, key)
-    return super.rawGetStr(targetRef, key)
+    return this.rawGetStr(targetRef, key)
   }
 
   private resolveJsValueInput(input: JSValueInput): JSValueRef {
