@@ -709,6 +709,8 @@ type RefOperand = {
   isMany: boolean
   read: boolean
   write: boolean
+  consume: boolean
+  requiresCommandRefCast: boolean
 }
 
 function snakeToCamel(name: string): string {
@@ -798,6 +800,18 @@ function isRefSlotType(type: string): boolean {
   return type === "JSValueSlot" || type === "FuncListSlot"
 }
 
+function isReadUsage(usage: string): boolean {
+  return usage === "in" || usage === "in-out" || usage === "in-consumed"
+}
+
+function isWriteUsage(usage: string): boolean {
+  return usage === "out" || usage === "in-out"
+}
+
+function isConsumeUsage(usage: string): boolean {
+  return usage === "in-consumed"
+}
+
 function commandParamType(param: ParamDef<any>, isJsValuesArrayPtr: boolean): string {
   if (param.type === "JSValueSlot") return "JSValueRef"
   if (param.type === "FuncListSlot") return "FuncListRef"
@@ -836,12 +850,14 @@ function collectRefOperands(params: readonly ParamWithPath[]): RefOperand[] {
   for (const { param, isJsValuesArrayPtr } of params) {
     const fieldName = commandFieldName(param)
 
-    if (isRefSlotType(param.type)) {
+    if (isRefSlotType(param.type) || param.type === "AnySlot") {
       out.push({
         fieldName,
         isMany: false,
-        read: param.usage === "in" || param.usage === "in-out",
-        write: param.usage === "out" || param.usage === "in-out",
+        read: isReadUsage(param.usage),
+        write: isWriteUsage(param.usage),
+        consume: isConsumeUsage(param.usage),
+        requiresCommandRefCast: param.type === "AnySlot",
       })
       continue
     }
@@ -850,8 +866,10 @@ function collectRefOperands(params: readonly ParamWithPath[]): RefOperand[] {
       out.push({
         fieldName,
         isMany: true,
-        read: param.usage === "in" || param.usage === "in-out",
-        write: param.usage === "out" || param.usage === "in-out",
+        read: isReadUsage(param.usage),
+        write: isWriteUsage(param.usage),
+        consume: isConsumeUsage(param.usage),
+        requiresCommandRefCast: false,
       })
     }
   }
@@ -861,10 +879,13 @@ function collectRefOperands(params: readonly ParamWithPath[]): RefOperand[] {
 function renderVisitStatements(operands: readonly RefOperand[]): string[] {
   const lines: string[] = []
   for (const operand of operands) {
+    const fieldExpr = operand.requiresCommandRefCast
+      ? `(command.${operand.fieldName} as CommandRef)`
+      : `command.${operand.fieldName}`
     if (operand.isMany) {
-      lines.push(`command.${operand.fieldName}.forEach(visit)`)
+      lines.push(`command.${operand.fieldName}.forEach((ref) => visit(ref as CommandRef))`)
     } else {
-      lines.push(`visit(command.${operand.fieldName})`)
+      lines.push(`visit(${fieldExpr})`)
     }
   }
   return lines
@@ -969,10 +990,10 @@ function buildOpsFiles(useRelativeImport = false): string {
   const importTypes = [...usedTypes].filter((t) => !primitiveTypes.has(t)).sort()
 
   const importFrom = useRelativeImport ? "./ffi-types" : "@jitl/quickjs-ffi-types"
-  const imports = `import type {
+const imports = `import type {
   ${importTypes.join(",\n  ")},
 } from "${importFrom}"
-import type { FuncListRef, JSValueRef, RefVisitor } from "./command-types"`
+import type { CommandRef, FuncListRef, JSValueRef, RefVisitor } from "./command-types"`
 
   const opcodeConsts = OPCODE_TO_COMMAND.map(
     (name, opcode) => `export const ${name} = ${opcode} as const`,
@@ -983,6 +1004,7 @@ import type { FuncListRef, JSValueRef, RefVisitor } from "./command-types"`
   const commandCreatorFns: string[] = []
   const readCaseGroups = new Map<string, CaseGroup>()
   const writeCaseGroups = new Map<string, CaseGroup>()
+  const consumedCaseGroups = new Map<string, CaseGroup>()
 
   for (let opcode = 0; opcode < OPCODE_TO_COMMAND.length; opcode++) {
     const name = OPCODE_TO_COMMAND[opcode] as OpName
@@ -996,11 +1018,14 @@ import type { FuncListRef, JSValueRef, RefVisitor } from "./command-types"`
     const refOperands = collectRefOperands(visibleParams)
     const readOperands = refOperands.filter((operand) => operand.read)
     const writeOperands = refOperands.filter((operand) => operand.write)
+    const consumedOperands = refOperands.filter((operand) => operand.consume)
 
     const readStatements = renderVisitStatements(readOperands)
     const writeStatements = renderVisitStatements(writeOperands)
+    const consumedStatements = renderVisitStatements(consumedOperands)
     addCaseGroup(readCaseGroups, name, readStatements)
     addCaseGroup(writeCaseGroups, name, writeStatements)
+    addCaseGroup(consumedCaseGroups, name, consumedStatements)
 
     const fieldRows = visibleParams.map(({ param, isJsValuesArrayPtr }) => {
       const fieldName = commandFieldName(param)
@@ -1086,6 +1111,14 @@ ${renderCaseGroups(readCaseGroups).join("\n")}
 export function forEachWriteRef(command: Command, visit: RefVisitor): void {
   switch (command.kind) {
 ${renderCaseGroups(writeCaseGroups).join("\n")}
+    default:
+      return
+  }
+}
+
+export function forEachConsumedRef(command: Command, visit: RefVisitor): void {
+  switch (command.kind) {
+${renderCaseGroups(consumedCaseGroups).join("\n")}
     default:
       return
   }

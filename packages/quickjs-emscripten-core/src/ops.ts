@@ -21,7 +21,7 @@ import type {
   Uint32,
   Uint8,
 } from "@jitl/quickjs-ffi-types"
-import type { FuncListRef, JSValueRef, RefVisitor } from "./command-types"
+import type { CommandRef, FuncListRef, JSValueRef, RefVisitor } from "./command-types"
 
 export const INVALID = 0 as const
 export const SLOT_STORE = 1 as const
@@ -1246,6 +1246,12 @@ export function FunclistDefObjectCmd(targetFunclistSlot: FuncListRef, objectFunc
 
 export function forEachReadRef(command: Command, visit: RefVisitor): void {
   switch (command.kind) {
+    case SLOT_STORE:
+      visit((command.inSlot as CommandRef))
+      return
+    case SLOT_FREE:
+      visit((command.targetSlot as CommandRef))
+      return
     case NEW_OBJECT_PROTO:
       visit(command.protoSlot)
       return
@@ -1343,6 +1349,9 @@ export function forEachReadRef(command: Command, visit: RefVisitor): void {
 
 export function forEachWriteRef(command: Command, visit: RefVisitor): void {
   switch (command.kind) {
+    case SLOT_LOAD:
+      visit((command.outSlot as CommandRef))
+      return
     case NEW_OBJECT:
     case NEW_OBJECT_PROTO:
     case NEW_ARRAY:
@@ -1372,6 +1381,16 @@ export function forEachWriteRef(command: Command, visit: RefVisitor): void {
       return
     case FUNCLIST_NEW:
       visit(command.resultFunclistSlot)
+      return
+    default:
+      return
+  }
+}
+
+export function forEachConsumedRef(command: Command, visit: RefVisitor): void {
+  switch (command.kind) {
+    case SLOT_FREE:
+      visit((command.targetSlot as CommandRef))
       return
     default:
       return

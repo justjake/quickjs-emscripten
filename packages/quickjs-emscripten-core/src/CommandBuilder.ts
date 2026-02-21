@@ -8,6 +8,7 @@ import {
 import type { FuncListRef, JSValueRef } from "./command-types"
 import type { QuickJSContext, QuickJSPropertyKey } from "./context"
 import { JSValueLifetime } from "./lifetime"
+import { finalizeConsumedInputBindings } from "./internal/command-input-ownership"
 import type { Command } from "./ops"
 import * as Ops from "./ops"
 import type { QuickJSHandle } from "./types"
@@ -141,6 +142,10 @@ export class CommandBuilder {
 
   getInputBindings(): readonly InputBinding[] {
     return this.inputBindings
+  }
+
+  finalizeConsumedInputs(successfulCount: number): void {
+    finalizeConsumedInputBindings(this.inputBindings, this.commands, successfulCount)
   }
 
   getFunctionBindings(): readonly FunctionBinding[] {

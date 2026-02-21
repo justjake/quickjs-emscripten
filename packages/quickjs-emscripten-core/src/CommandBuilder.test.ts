@@ -129,6 +129,22 @@ describe("CommandBuilder", () => {
     expect(binding?.mode).toBe("consume_on_success")
   })
 
+  it("finalizeConsumedInputs disposes consume_on_success bindings on success", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+    const target = makeFakeHandle()
+    const moved = makeFakeHandle()
+    const disposeSpy = vi.spyOn(moved, "dispose")
+    const invalidateSpy = vi.spyOn(moved, "invalidateHandle")
+
+    builder.setProp(target, "x", builder.consume(moved))
+    builder.finalizeConsumedInputs(builder.getCommands().length)
+
+    expect(moved.alive).toBe(false)
+    expect(disposeSpy).toHaveBeenCalledTimes(1)
+    expect(invalidateSpy).not.toHaveBeenCalled()
+  })
+
   it("uses define flags for defineProp", () => {
     const context = makeFakeContext()
     const builder = new CommandBuilder(context)
