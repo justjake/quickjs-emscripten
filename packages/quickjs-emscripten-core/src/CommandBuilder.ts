@@ -1,5 +1,6 @@
 import {
   SetPropFlags as SetPropFlagBits,
+  SlotType,
   type HostRefId,
   type JSPropFlags,
   type SetPropFlags,
@@ -305,7 +306,7 @@ export class CommandBuilder {
   }
 
   freeFuncList(funclist: FuncListRef): void {
-    this.push(Ops.FunclistFreeCmd(this.resolveFuncListRef(funclist)))
+    this.push(Ops.SlotFreeCmd(this.resolveFuncListRef(funclist), SlotType.FuncListSlotType))
   }
 
   defineFuncListProp(
@@ -394,12 +395,12 @@ export class CommandBuilder {
         return this.emitSetPrimitiveByIndex(targetRef, key, value, flags)
       }
       const valueRef = this.materializePrimitiveToRef(value)
-      this.push(Ops.SetCmd(targetRef, this.newNumber(key), valueRef, flags))
+      this.push(Ops.SetValueValueCmd(targetRef, this.newNumber(key), valueRef, flags))
       return
     }
 
     const valueRef = this.materializePrimitiveToRef(value)
-    this.push(Ops.SetCmd(targetRef, this.bindHandle(key), valueRef, flags))
+    this.push(Ops.SetValueValueCmd(targetRef, this.bindHandle(key), valueRef, flags))
   }
 
   private setOrDefineRefProp(
@@ -419,11 +420,11 @@ export class CommandBuilder {
         this.push(Ops.SetIdxValueCmd(targetRef, valueRef, flags, key))
         return
       }
-      this.push(Ops.SetCmd(targetRef, this.newNumber(key), valueRef, flags))
+      this.push(Ops.SetValueValueCmd(targetRef, this.newNumber(key), valueRef, flags))
       return
     }
 
-    this.push(Ops.SetCmd(targetRef, this.bindHandle(key), valueRef, flags))
+    this.push(Ops.SetValueValueCmd(targetRef, this.bindHandle(key), valueRef, flags))
   }
 
   private emitSetPrimitiveByStringKey(

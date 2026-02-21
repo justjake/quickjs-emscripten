@@ -199,12 +199,12 @@ function createSlotType<S extends string, V extends number>(name: S, value: V): 
 }
 
 /** Indicates a slot or ref for a JSValue slot */
-export const JSValueSlotType = createSlotType("JSValueSlotType", 1)
+export const JSValueSlotType = createSlotType("JSValueSlotType", 0)
 export type JSValueSlotType = typeof JSValueSlotType
 
 /** Indicates a slot or ref for a FuncList slot */
-export const FuncListSlotType = createSlotType("FuncListSlotType", 2)
-export type FuncListSlotType = Brand<1, "SlotType">
+export const FuncListSlotType = createSlotType("FuncListSlotType", 1)
+export type FuncListSlotType = typeof FuncListSlotType
 
 export const SlotType = {
   JSValueSlotType,

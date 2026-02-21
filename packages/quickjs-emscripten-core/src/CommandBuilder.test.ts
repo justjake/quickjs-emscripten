@@ -54,7 +54,7 @@ describe("CommandBuilder", () => {
       Op.NEW_FLOAT64,
       Op.SET_STR_VALUE,
       Op.SET_IDX_VALUE,
-      Op.SET,
+      Op.SET_VALUE_VALUE,
     ])
     expect(builder.getInputBindings()).toHaveLength(1)
   })

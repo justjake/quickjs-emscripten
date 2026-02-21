@@ -8,9 +8,9 @@ import * as fs from "fs-extra"
 import { CFunc } from "./CFunc"
 import { repoRoot } from "./helpers"
 import type { CommandDataDef, CommandDef, OpName, ParamDef, ParamPath } from "./idl"
-import { COMMANDS, OPCODE_TO_COMMAND, TsOpName } from "./idl"
+import { COMMANDS, lowercase_c_name, OPCODE_TO_COMMAND, TsOpName } from "./idl"
 const USAGE =
-  "Usage: generate.ts [symbols | header | ffi | ops | c-ops] WRITE_PATH" +
+  "Usage: generate.ts [symbols | header | ffi | ops | c-ops | c-ops-cleanup] WRITE_PATH" +
   "\ngenerate.ts hash READ_PATH WRITE_PATH"
 
 const rooted = (path: string) => pathlib.join(repoRoot, path)
@@ -124,6 +124,11 @@ function main() {
     return
   }
 
+  if (command === "c-ops-cleanup") {
+    cleanupCOps(destination)
+    return
+  }
+
   throw new Error(`Bad command "${command}". ${USAGE}`)
 }
 
@@ -183,6 +188,10 @@ function cTypeToTypescriptType(ctype: string, branded = false): ParsedType {
     return { ffi: "number", typescript: brandedTypes[type], ctype, attributes }
   }
 
+  if (type === "AnySlot") {
+    return { ffi: "number", typescript: branded ? "Uint8" : "number", ctype, attributes }
+  }
+
   // mapping
   if (type.includes("char*")) {
     return {
@@ -191,6 +200,10 @@ function cTypeToTypescriptType(ctype: string, branded = false): ParsedType {
       ctype,
       attributes,
     }
+  }
+
+  if (type === "void*" || type === "uint8_t*") {
+    return { ffi: "number", typescript: "JSVoidPointer", ctype, attributes }
   }
 
   // JSValue* pointer type
@@ -767,6 +780,7 @@ function isRefSlotType(type: string): boolean {
 function commandParamType(param: ParamDef<any>, isJsValuesArrayPtr: boolean): string {
   if (param.type === "JSValueSlot") return "JSValueRef"
   if (param.type === "FuncListSlot") return "FuncListRef"
+  if (param.type === "AnySlot") return "number"
   if (param.type === "char*" || param.type === "uint8_t*") {
     if (param.pointer.kind === "bytes") {
       return "Uint8Array"
@@ -774,7 +788,7 @@ function commandParamType(param: ParamDef<any>, isJsValuesArrayPtr: boolean): st
     return "string"
   }
   if (param.type === "JSValue*") {
-    return isJsValuesArrayPtr ? "readonly JSValueRef[]" : "JSValueRef"
+    return isJsValuesArrayPtr ? "readonly JSValueRef[]" : "JSValuePointer"
   }
   return cTypeToTypescriptType(param.type, false).typescript
 }
@@ -811,10 +825,10 @@ function collectRefOperands(params: readonly ParamWithPath[]): RefOperand[] {
       continue
     }
 
-    if (param.type === "JSValue*") {
+    if (param.type === "JSValue*" && isJsValuesArrayPtr) {
       out.push({
         fieldName,
-        isMany: isJsValuesArrayPtr,
+        isMany: true,
         read: param.usage === "in" || param.usage === "in-out",
         write: param.usage === "out" || param.usage === "in-out",
       })
@@ -1260,6 +1274,41 @@ function buildCOps(outputDir: string): void {
   console.log(
     `Generated ${headersGenerated} .h files, ${scaffoldsGenerated} new .c scaffolds, ${signaturesUpdated} signatures updated, ${signaturesUnchanged} unchanged`,
   )
+}
+
+function cleanupCOps(outputDir: string): void {
+  fs.ensureDirSync(outputDir)
+
+  const expected = new Set<string>()
+  for (const name of OPCODE_TO_COMMAND) {
+    if (name === "INVALID") continue
+    const lcName = lowercase_c_name(name)
+    expected.add(`perform_${lcName}.c`)
+    expected.add(`perform_${lcName}.h`)
+  }
+
+  const files = fs
+    .readdirSync(outputDir)
+    .filter((filename) => /^perform_.*\.(c|h)$/.test(filename))
+    .filter((filename) => filename !== "perform_op.c" && filename !== "perform_op.h")
+    .sort()
+
+  const removed: string[] = []
+  for (const filename of files) {
+    if (expected.has(filename)) continue
+    fs.removeSync(pathlib.join(outputDir, filename))
+    removed.push(filename)
+  }
+
+  if (removed.length === 0) {
+    console.log(`No unknown perform_* files to remove in ${outputDir}`)
+    return
+  }
+
+  console.log(`Removed ${removed.length} unknown perform_* files:`)
+  for (const filename of removed) {
+    console.log(`  ${filename}`)
+  }
 }
 
 if (require.main === module) {

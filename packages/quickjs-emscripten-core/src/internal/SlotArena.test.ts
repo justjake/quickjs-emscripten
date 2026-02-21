@@ -108,6 +108,7 @@ describe("SlotArena", () => {
         backing = next
         return 8
       },
+      free: () => {},
     }
 
     const arena = new SlotArena<number>(8, 2, memoryObject)
@@ -129,6 +130,7 @@ describe("SlotArena", () => {
       uint32: () => new Uint32Array(backing.buffer, backing.byteOffset, backing.byteLength >>> 2),
       malloc: () => 2,
       realloc: () => 2,
+      free: () => {},
     }
 
     assert.throws(() => new SlotArena<number>(8, 2, memoryObject), /4-byte aligned/)

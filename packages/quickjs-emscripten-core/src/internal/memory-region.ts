@@ -17,6 +17,7 @@ export type MemoryViewState = {
 
 export class ArrayBufferMemory implements Memory<number> {
   private bytes: Uint8Array
+  free = (_ptr: number): void => {}
 
   constructor(
     memory: ArrayBuffer | Uint8Array | number,
@@ -34,8 +35,6 @@ export class ArrayBufferMemory implements Memory<number> {
     }
     this.bytes = memory instanceof Uint8Array ? memory : new Uint8Array(memory)
   }
-  free: (ptr: number) => void
-
   uint8(): Uint8Array {
     return this.bytes
   }
@@ -79,7 +78,8 @@ export function isMemoryObject<Ptr extends number = number>(value: unknown): val
     "uint32" in value &&
     "uint8" in value &&
     "malloc" in value &&
-    "realloc" in value
+    "realloc" in value &&
+    "free" in value
   )
 }
 
