@@ -2,6 +2,10 @@
 #ifndef QTS_OP_H
 #define QTS_OP_H
 
+#include <stdint.h>
+#include "qts_utils.h"
+#include "funclist.h"
+
 typedef enum {
     QTS_OP_INVALID = 0, /** Invalid opcode - indicates uninitialized command */
     QTS_OP_SLOT_STORE = 1, /** Copy slot memory contents to a memory location owned by the caller */
@@ -68,5 +72,19 @@ typedef enum {
     QTS_OP_FUNCLIST_DEF_UNDEFINED = 62, /** Set funclist entry to JS_DEF_PROP_UNDEFINED */
     QTS_OP_FUNCLIST_DEF_OBJECT = 63, /** Set funclist entry to JS_DEF_OBJECT (nested object with its own funclist) */
 } QTS_Opcode;
+
+#if UINTPTR_MAX == 0xffffffffu
+_Static_assert(sizeof(JSValue) == 16, "REGISTER_BANKS.JSValueSlot.itemBytes mismatch");
+_Static_assert(sizeof(QTS_FuncList) == 8, "REGISTER_BANKS.FuncListSlot.itemBytes mismatch");
+#endif
+
+static inline uint32_t QTS_SlotTypeItemBytes(SlotType slot_type) {
+    switch (slot_type) {
+        case QTS_SLOT_TYPE_JSVALUE: return 16;
+        case QTS_SLOT_TYPE_FUNCLIST: return 8;
+        default:
+            return 0;
+    }
+}
 
 #endif // QTS_OP_H

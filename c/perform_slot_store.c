@@ -11,31 +11,27 @@
  * @param in_slot The slot to save
  * @param in_slot_type The type of the slot
  * @param out_ptr Pointer to the memory location to copy the slot memory contents to
- * @param len Max bytes to copy
  */
-QTS_CommandStatus perform_slot_store(QTS_CommandEnv *env, AnySlot in_slot, SlotType in_slot_type, void *out_ptr, uint32_t len) {
+QTS_CommandStatus perform_slot_store(QTS_CommandEnv *env, AnySlot in_slot, SlotType in_slot_type, void *out_ptr) {
     OP_ERROR_IF(env, !out_ptr, "slot_store: out_ptr is null");
 
     const void *src = NULL;
-    uint32_t item_size = 0;
+    uint32_t item_size = QTS_SlotTypeItemBytes(in_slot_type);
+    OP_ERROR_IF(env, item_size == 0, "slot_store: unknown slot type");
 
     switch (in_slot_type) {
         case QTS_SLOT_TYPE_JSVALUE:
             OP_ERROR_IF(env, in_slot >= env->jsvalue_slots_count, "slot_store: jsvalue slot out of range");
-            OP_ERROR_IF(env, len != sizeof(JSValue), "slot_store: jsvalue slot size mismatch");
             src = &env->jsvalue_slots[in_slot];
-            item_size = sizeof(JSValue);
             break;
         case QTS_SLOT_TYPE_FUNCLIST:
             OP_ERROR_IF(env, in_slot >= env->funclist_slots_count, "slot_store: funclist slot out of range");
-            OP_ERROR_IF(env, len != sizeof(QTS_FuncList), "slot_store: funclist slot size mismatch");
             src = &env->funclist_slots[in_slot];
-            item_size = sizeof(QTS_FuncList);
             break;
         default:
             OP_ERROR(env, "slot_store: unknown slot type");
     }
 
-    memcpy(out_ptr, src, len);
+    memcpy(out_ptr, src, item_size);
     return QTS_COMMAND_OK;
 }

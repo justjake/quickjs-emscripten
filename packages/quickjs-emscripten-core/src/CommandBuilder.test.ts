@@ -99,6 +99,36 @@ describe("CommandBuilder", () => {
     ])
   })
 
+  it("marks consumed inputs for deferred move semantics", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+    const target = makeFakeHandle()
+    const moved = makeFakeHandle()
+
+    builder.setProp(target, "x", builder.consume(moved))
+
+    const bindings = builder.getInputBindings()
+    expect(bindings).toHaveLength(2)
+    expect(bindings.find((binding) => binding.handle === target)?.mode).toBe("borrowed")
+    expect(bindings.find((binding) => binding.handle === moved)?.mode).toBe(
+      "consume_on_success",
+    )
+  })
+
+  it("upgrades existing input binding mode to consume_on_success", () => {
+    const context = makeFakeContext()
+    const builder = new CommandBuilder(context)
+    const handle = makeFakeHandle()
+
+    builder.bindInput(handle)
+    builder.setProp(makeFakeHandle(), "x", builder.consume(handle))
+
+    const binding = builder
+      .getInputBindings()
+      .find((candidate) => candidate.handle === handle)
+    expect(binding?.mode).toBe("consume_on_success")
+  })
+
   it("uses define flags for defineProp", () => {
     const context = makeFakeContext()
     const builder = new CommandBuilder(context)

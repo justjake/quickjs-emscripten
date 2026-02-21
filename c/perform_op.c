@@ -69,8 +69,8 @@ QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd) {
         case QTS_OP_INVALID:
             env->error = "Invalid opcode (uninitialized command)";
             return QTS_COMMAND_ERROR;
-        case QTS_OP_SLOT_STORE: return perform_slot_store(env, (AnySlot)cmd.slot_a, (SlotType)cmd.slot_b, (void*)cmd.data.raw.d1, cmd.data.raw.d2);
-        case QTS_OP_SLOT_LOAD: return perform_slot_load(env, (AnySlot)cmd.slot_a, (SlotType)cmd.slot_b, (void*)cmd.data.raw.d1, cmd.data.raw.d2);
+        case QTS_OP_SLOT_STORE: return perform_slot_store(env, (AnySlot)cmd.slot_a, (SlotType)cmd.slot_b, (void*)cmd.data.raw.d1);
+        case QTS_OP_SLOT_LOAD: return perform_slot_load(env, (AnySlot)cmd.slot_a, (SlotType)cmd.slot_b, (void*)cmd.data.raw.d1);
         case QTS_OP_SLOT_FREE: return perform_slot_free(env, (AnySlot)cmd.slot_a, (SlotType)cmd.slot_b);
         case QTS_OP_NEW_OBJECT: return perform_new_object(env, (JSValueSlot)cmd.slot_a);
         case QTS_OP_NEW_OBJECT_PROTO: return perform_new_object_proto(env, (JSValueSlot)cmd.slot_a, (JSValueSlot)cmd.slot_b);

@@ -194,6 +194,9 @@ export const SetPropFlags = {
 // Command buffer types
 // -----------------------------------------------------------------------------
 
+/** `QTS_Command*`. */
+export type CommandPointer = Pointer<"Command">
+
 function createSlotType<S extends string, V extends number>(name: S, value: V): Brand<V, S> {
   return value as Brand<V, S>
 }

@@ -90,7 +90,6 @@ export const FUNCLIST_DEF_OBJECT = 63 as const
 
 interface BaseCommand {
   kind: number
-  barrier?: boolean
   label?: string
 }
 
@@ -103,7 +102,6 @@ export interface SlotStoreCommand extends BaseCommand {
   inSlot: number
   inSlotType: SlotType
   outPtr: JSVoidPointer
-  len: number
 }
 
 export interface SlotLoadCommand extends BaseCommand {
@@ -111,7 +109,6 @@ export interface SlotLoadCommand extends BaseCommand {
   outSlot: number
   outSlotType: SlotType
   inPtr: JSVoidPointer
-  len: number
 }
 
 export interface SlotFreeCommand extends BaseCommand {
@@ -412,15 +409,25 @@ export interface SetAddCommand extends BaseCommand {
 
 export interface CallCommand extends BaseCommand {
   kind: typeof CALL
-  barrier: true
   resultSlot: JSValueRef
   funcSlot: JSValueRef
   thisSlot: JSValueRef
+  argc: number
+  arg1: JSValueRef
+  arg2: JSValueRef
+  arg3: JSValueRef
+  arg4: JSValueRef
+  arg5: JSValueRef
+  arg6: JSValueRef
+  arg7: JSValueRef
+  arg8: JSValueRef
+  arg9: JSValueRef
+  arg10: JSValueRef
+  callAsConstructor: number
 }
 
 export interface CallArgvCommand extends BaseCommand {
   kind: typeof CALL_ARGV
-  barrier: true
   resultSlot: JSValueRef
   funcSlot: JSValueRef
   thisSlot: JSValueRef
@@ -431,7 +438,6 @@ export interface CallArgvCommand extends BaseCommand {
 
 export interface EvalCommand extends BaseCommand {
   kind: typeof EVAL
-  barrier: true
   resultSlot: JSValueRef
   callFlags: EvalFlags
   code: string
@@ -637,23 +643,21 @@ export function InvalidCmd(): InvalidCommand {
   }
 }
 
-export function SlotStoreCmd(inSlot: number, inSlotType: SlotType, outPtr: JSVoidPointer, len: number): SlotStoreCommand {
+export function SlotStoreCmd(inSlot: number, inSlotType: SlotType, outPtr: JSVoidPointer): SlotStoreCommand {
   return {
     kind: SLOT_STORE,
     inSlot,
     inSlotType,
     outPtr,
-    len,
   }
 }
 
-export function SlotLoadCmd(outSlot: number, outSlotType: SlotType, inPtr: JSVoidPointer, len: number): SlotLoadCommand {
+export function SlotLoadCmd(outSlot: number, outSlotType: SlotType, inPtr: JSVoidPointer): SlotLoadCommand {
   return {
     kind: SLOT_LOAD,
     outSlot,
     outSlotType,
     inPtr,
-    len,
   }
 }
 
@@ -1037,20 +1041,30 @@ export function SetAddCmd(targetSlot: JSValueRef, valueSlot: JSValueRef): SetAdd
   }
 }
 
-export function CallCmd(resultSlot: JSValueRef, funcSlot: JSValueRef, thisSlot: JSValueRef): CallCommand {
+export function CallCmd(resultSlot: JSValueRef, funcSlot: JSValueRef, thisSlot: JSValueRef, argc: number, arg1: JSValueRef, arg2: JSValueRef, arg3: JSValueRef, arg4: JSValueRef, arg5: JSValueRef, arg6: JSValueRef, arg7: JSValueRef, arg8: JSValueRef, arg9: JSValueRef, arg10: JSValueRef, callAsConstructor: number): CallCommand {
   return {
     kind: CALL,
-    barrier: true,
     resultSlot,
     funcSlot,
     thisSlot,
+    argc,
+    arg1,
+    arg2,
+    arg3,
+    arg4,
+    arg5,
+    arg6,
+    arg7,
+    arg8,
+    arg9,
+    arg10,
+    callAsConstructor,
   }
 }
 
 export function CallArgvCmd(resultSlot: JSValueRef, funcSlot: JSValueRef, thisSlot: JSValueRef, argc: number, argv: JSValuePointer, callAsConstructor: number): CallArgvCommand {
   return {
     kind: CALL_ARGV,
-    barrier: true,
     resultSlot,
     funcSlot,
     thisSlot,
@@ -1063,7 +1077,6 @@ export function CallArgvCmd(resultSlot: JSValueRef, funcSlot: JSValueRef, thisSl
 export function EvalCmd(resultSlot: JSValueRef, callFlags: EvalFlags, code: string, filename: string): EvalCommand {
   return {
     kind: EVAL,
-    barrier: true,
     resultSlot,
     callFlags,
     code,
@@ -1281,6 +1294,19 @@ export function forEachReadRef(command: Command, visit: RefVisitor): void {
       visit(command.valueSlot)
       return
     case CALL:
+      visit(command.funcSlot)
+      visit(command.thisSlot)
+      visit(command.arg1)
+      visit(command.arg2)
+      visit(command.arg3)
+      visit(command.arg4)
+      visit(command.arg5)
+      visit(command.arg6)
+      visit(command.arg7)
+      visit(command.arg8)
+      visit(command.arg9)
+      visit(command.arg10)
+      return
     case CALL_ARGV:
       visit(command.funcSlot)
       visit(command.thisSlot)
@@ -1404,11 +1430,10 @@ function setData_i64(view: DataView, offset: number, value: bigint): void {
   view.setBigInt64(offset + 4, value, true)
 }
 
-function writePattern0(view: DataView, offset: CommandPtr, p0: Uint8, p1: SlotType, p2: JSVoidPointer, p3: Uint32): void {
+function writePattern0(view: DataView, offset: CommandPtr, p0: Uint8, p1: SlotType, p2: JSVoidPointer): void {
   setSlotA(view, offset, p0)
   setSlotB(view, offset, p1)
   setD1_u32(view, offset, p2)
-  setD2_u32(view, offset, p3)
 }
 
 function writePattern2(view: DataView, offset: CommandPtr, p0: JSValueSlot): void {
@@ -1492,14 +1517,14 @@ export function writeInvalid(view: DataView, offset: CommandPtr): void {
   setOpcode(view, offset, 0)
 }
 
-export function writeSlotStore(view: DataView, offset: CommandPtr, in_slot: Uint8, in_slot_type: SlotType, out_ptr: JSVoidPointer, len: Uint32): void {
+export function writeSlotStore(view: DataView, offset: CommandPtr, in_slot: Uint8, in_slot_type: SlotType, out_ptr: JSVoidPointer): void {
   setOpcode(view, offset, 1)
-  writePattern0(view, offset, in_slot, in_slot_type, out_ptr, len)
+  writePattern0(view, offset, in_slot, in_slot_type, out_ptr)
 }
 
-export function writeSlotLoad(view: DataView, offset: CommandPtr, out_slot: Uint8, out_slot_type: SlotType, in_ptr: JSVoidPointer, len: Uint32): void {
+export function writeSlotLoad(view: DataView, offset: CommandPtr, out_slot: Uint8, out_slot_type: SlotType, in_ptr: JSVoidPointer): void {
   setOpcode(view, offset, 2)
-  writePattern0(view, offset, out_slot, out_slot_type, in_ptr, len)
+  writePattern0(view, offset, out_slot, out_slot_type, in_ptr)
 }
 
 export function writeSlotFree(view: DataView, offset: CommandPtr, target_slot: Uint8, target_slot_type: SlotType): void {

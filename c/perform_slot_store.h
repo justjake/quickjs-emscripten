@@ -10,8 +10,7 @@
  * @param in_slot The slot to save
  * @param in_slot_type The type of the slot
  * @param out_ptr Pointer to the memory location to copy the slot memory contents to
- * @param len Max bytes to copy
  */
-QTS_CommandStatus perform_slot_store(QTS_CommandEnv *env, AnySlot in_slot, SlotType in_slot_type, void *out_ptr, uint32_t len);
+QTS_CommandStatus perform_slot_store(QTS_CommandEnv *env, AnySlot in_slot, SlotType in_slot_type, void *out_ptr);
 
 #endif // QTS_PERFORM_SLOT_STORE_H

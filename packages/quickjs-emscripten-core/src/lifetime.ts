@@ -179,6 +179,15 @@ export class Lifetime<T, TCopy = never, Owner = never>
     this._alive = false
   }
 
+  /**
+   * Mark this lifetime as no longer usable without invoking its disposer.
+   * Internal hook for ownership transfer/finalization flows.
+   */
+  invalidateHandle() {
+    this.assertAlive()
+    this._alive = false
+  }
+
   protected assertAlive() {
     if (!this.alive) {
       if (this._constructorStack) {

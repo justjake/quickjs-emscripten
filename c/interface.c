@@ -1460,45 +1460,62 @@ JSValue *QTS_bjson_decode(JSContext *ctx, JSValueConst *data) {
 // Command execution
 // ----------------------------------------------------------------------------
 
-#define QTS_SLOT_COUNT 256
-static JSValue command_jsvalue_slots[QTS_SLOT_COUNT];
-static QTS_FuncList command_funclist_slots[QTS_SLOT_COUNT];
-static QTS_Command command_buffer[QTS_SLOT_COUNT];
-
 /**
  * @brief Execute N commands.
  *
  * @param ctx JSContext to execute commands in.
- * @param argc Number of commands to execute.
- * @param argv Command buffer to execute.
- * @return int The number of commands successfully executed. If retval != argc, an error occurred.
+ * @param command_count Number of commands.
+ * @param commands Command array.
+ * @param jsvalue_slots JSValue slot buffer.
+ * @param jsvalue_slots_count Number of JSValue slots.
+ * @param funclist_slots FuncList slot buffer.
+ * @param funclist_slots_count Number of FuncList slots.
+ * @param out_status Optional output status (QTS_COMMAND_OK or QTS_COMMAND_ERROR).
+ * @param out_error Optional output error string.
+ * @return int The number of commands successfully executed. If retval != command_count, an error occurred.
  */
-int QTS_ExecuteCommands(JSContext *ctx, uint32_t argc, QTS_Command *argv) {
+int QTS_ExecuteCommands(JSContext *ctx, uint32_t command_count, QTS_Command *commands, JSValue *jsvalue_slots, uint32_t jsvalue_slots_count, QTS_FuncList *funclist_slots, uint32_t funclist_slots_count, int *out_status, const char **out_error) {
+  if (!ctx || !commands) {
+    if (out_status) {
+      *out_status = QTS_COMMAND_ERROR;
+    }
+    if (out_error) {
+      *out_error = "invalid execute command input";
+    }
+    return 0;
+  }
+
   QTS_CommandEnv env = {
     .ctx = ctx,
-    .jsvalue_slots = command_jsvalue_slots,
-    .jsvalue_slots_count = QTS_SLOT_COUNT,
-    .funclist_slots = command_funclist_slots,
-    .funclist_slots_count = QTS_SLOT_COUNT,
+    .jsvalue_slots = jsvalue_slots,
+    .jsvalue_slots_count = jsvalue_slots_count,
+    .funclist_slots = funclist_slots,
+    .funclist_slots_count = funclist_slots_count,
     .error = NULL,
   };
   int successful_count = 0;
 
-  for (uint32_t i = 0; i < argc; i++) {
-    if (QTS_PerformOp(&env, argv[i]) != QTS_COMMAND_OK) {
-      qts_log(env.error);
+  if (out_status) {
+    *out_status = QTS_COMMAND_OK;
+  }
+  if (out_error) {
+    *out_error = NULL;
+  }
+
+  for (uint32_t i = 0; i < command_count; i++) {
+    QTS_Command cmd = commands[i];
+    if (QTS_PerformOp(&env, cmd) != QTS_COMMAND_OK) {
+      if (out_status) {
+        *out_status = QTS_COMMAND_ERROR;
+      }
+      if (out_error) {
+        *out_error = env.error;
+      }
+      qts_log((char *)env.error);
       break;
     }
     successful_count++;
   }
 
   return successful_count;
-}
-
-QTS_Command *QTS_GetCommandBuffer() {
-  return command_buffer;
-}
-
-int QTS_GetCommandBufferLength() {
-  return QTS_SLOT_COUNT;
 }

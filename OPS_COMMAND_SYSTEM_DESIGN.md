@@ -14,11 +14,11 @@ Note that the specifics of the command system are considered internal. There is 
 
 1. Application-level JavaScript code uses `CommandBuilder` api to construct a high-level list of commands and passes it to the CommandExecutor.
 2. CommandExecutor decides how to execute the commands within allocated resource constraints and without memory leaks.
-3. In a loop, CommandExecutor writes batches of commands to a command buffer in WASM memory, then calls `QTS_ExecuteCommands` to execute the commands.
+3. In a loop, CommandExecutor writes batches of commands to WASM memory, then calls `QTS_ExecuteCommands(ctx, command_count, commands, jsvalue_slots, jsvalue_slots_count, funclist_slots, funclist_slots_count, out_status, out_error)` to execute them.
    - If an error occurs, the loop halts, and CommandExecutor cleans up any intermediate allocations.
 4. CommandExecutor extracts results requested by the application from WASM memory and returns them to the caller. Any other made during command execution are cleaned up.
 
-Currently, the command buffer and the primary storage for arguments are fixed-size static arrays in WASM memory, although it is possible to use a dynamically allocated buffers for any call to `QTS_ExecuteCommands`.
+Execution is re-entrant: all command/slot buffers are passed explicitly as function args for each call. The executor may reuse preallocated buffers internally, but this is an implementation detail rather than protocol state.
 
 ## Commands
 
@@ -65,9 +65,9 @@ After executing the batch, JavaScript code can read `slots[1]` directly from WAS
 Slot types:
 
 ```c
-#define QTS_SLOT_COUNT 256 // uint8_t addressable
-static JSValue command_jsvalue_slots[QTS_SLOT_COUNT];
-static QTS_FuncList command_funclist_slots[QTS_SLOT_COUNT];
+// Example executor-owned buffers (sizes are implementation-defined):
+JSValue *jsvalue_slots;
+QTS_FuncList *funclist_slots;
 ```
 
 - `JSValueSlot`: stores `JSValue` structs. This is the most common slot type as most apis take or return `JSValue`s.
@@ -89,8 +89,6 @@ The source of truth for the command and register bank types is specified in [`sc
  */
 export type CommandDef = {
   doc: string
-  /** True for hard barriers; scheduler must not reorder across these commands. */
-  barrier?: boolean
 
   /** byte 0: uint8_t opcode (implicit) */
   opcode?: never
@@ -109,6 +107,7 @@ export type CommandDef = {
   - `pnpm run ops:ts`
 - IDL -> C: [`c/op.h`](./c/op.h), command handler implementations in [`c/perform_*`](./c/perform_op.h)
   - `pnpm run ops:c`
+  - Codegen emits `_Static_assert`s to verify `REGISTER_BANKS.*.itemBytes` match C `sizeof(...)` at compile time.
 
 ### Parameters
 
@@ -254,6 +253,7 @@ CommandBuilder is the core public API for the command system. sits between appli
 - A list of commands to execute
 - Bindings between JavaScript input parameters and logical reference IDs used in command executor.
   - By default, input parameters are considered "borrowed" from the caller and should not be freed by command executor.
+  - `commands.consume(handle)` marks deferred move semantics: handle remains alive until `execute()` returns; ownership/move finalization happens at execute return.
 
 ### CommandRef
 
@@ -280,7 +280,7 @@ CommandExecutor is an internal class that plans out how to execute a list of com
 - Spilling and restoring slots to/from WASM memory under register pressure.
 - Writing batches of commands to WASM memory and calling `QTS_ExecuteCommands` to execute them.
 - Cleaning up intermediate values that are not returned to the caller.
-- Error handling and reporting.
+- Error handling and reporting via per-call `out_status` + `out_error` outputs (no global last-error state).
 
 CommandExecutor must be optimized around two very different cases:
 
@@ -295,6 +295,7 @@ Implementation guidelines:
 - Use abstract interface types rather than depending on WASM or Emscripten module types directly:
   - use [`type Memory`](./packages/quickjs-emscripten-core/src/internal/memory-region.ts) instead of `Module.HEAPU8` or `Module.HEAP32`.
   - Avoid reaching deeply into internals of QuickJSContext, QuickJSRuntime, or using QuickJSFFI. Instead introduce semantic interface types for these concepts as needed.
+- Code must be easy to follow and maintain. Minimize control flow complexity. Elegance & brevity.
 
 #### Arena allocation
 
@@ -310,6 +311,7 @@ Slot selection is roughly equivalent to a compiler's register allocation pass. S
 
 - Data may be _loaded_ from arbitrary WASM memory (eg in the arena or from a pointer provided by the caller) into a slot using the `SLOT_LOAD` command.
 - Data may be _stored_ from a slot to an arbitrary WASM memory location using the `SLOT_STORE` command.
+- `SLOT_LOAD`/`SLOT_STORE` use slot type widths from IDL register bank definitions; callers do not pass length parameters.
 
 Together the `SLOT_LOAD` and `SLOT_STORE` commands allow the command executor to "spill" register values to memory, just like a compiler's register allocator spills to the stack.
 

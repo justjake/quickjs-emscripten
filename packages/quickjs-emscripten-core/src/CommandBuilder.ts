@@ -27,11 +27,13 @@ function packGeneratedRef(bankId: number, valueId: number): number {
 
 export type PlainNumber = number & { brand?: never }
 export type Primitive = null | undefined | boolean | PlainNumber | bigint | string
+export type InputBindingMode = "borrowed" | "consume_on_success"
 export type JSValueInput = JSValueRef | QuickJSHandle
 
 export interface InputBinding {
   ref: JSValueRef
   handle: QuickJSHandle
+  mode: InputBindingMode
 }
 
 export interface FunctionBinding {
@@ -102,7 +104,8 @@ export class CommandBuilder {
   private nextFuncListId = 1
   private inputBindings: InputBinding[] = []
   private functionBindings: FunctionBinding[] = []
-  private inputRefByHandle = new WeakMap<QuickJSHandle, JSValueRef>()
+  private inputBindingByHandle = new WeakMap<QuickJSHandle, InputBinding>()
+  private consumeOnSuccessHandles = new WeakSet<QuickJSHandle>()
   private knownJsValueRefs = new Set<number>()
   private knownFuncListRefs = new Set<number>()
 
@@ -148,19 +151,15 @@ export class CommandBuilder {
     this.takeCommands()
     this.inputBindings = []
     this.functionBindings = []
-    this.inputRefByHandle = new WeakMap<QuickJSHandle, JSValueRef>()
+    this.inputBindingByHandle = new WeakMap<QuickJSHandle, InputBinding>()
+    this.consumeOnSuccessHandles = new WeakSet<QuickJSHandle>()
     this.knownJsValueRefs.clear()
     this.knownFuncListRefs.clear()
   }
 
   setProp(target: JSValueInput, key: QuickJSPropertyKey, value: Primitive | QuickJSHandle): void {
     if (value instanceof JSValueLifetime) {
-      return this.setOrDefineRefProp(
-        target,
-        key,
-        this.bindHandle(value),
-        SET_PROP_ASSIGNMENT,
-      )
+      return this.setOrDefineRefProp(target, key, this.bindHandle(value), SET_PROP_ASSIGNMENT)
     }
     return this.setOrDefinePrimitiveProp(target, key, value, SET_PROP_ASSIGNMENT)
   }
@@ -171,6 +170,16 @@ export class CommandBuilder {
 
   bindInput(handle: QuickJSHandle): JSValueRef {
     return this.bindHandle(handle)
+  }
+
+  consume(handle: QuickJSHandle): QuickJSHandle {
+    const existing = this.inputBindingByHandle.get(handle)
+    if (existing) {
+      existing.mode = "consume_on_success"
+    } else {
+      this.consumeOnSuccessHandles.add(handle)
+    }
+    return handle
   }
 
   newObject(prototype?: JSValueInput): JSValueRef {
@@ -532,14 +541,21 @@ export class CommandBuilder {
   }
 
   private bindHandle(handle: QuickJSHandle): JSValueRef {
-    const existing = this.inputRefByHandle.get(handle)
+    const mode: InputBindingMode = this.consumeOnSuccessHandles.has(handle)
+      ? "consume_on_success"
+      : "borrowed"
+    const existing = this.inputBindingByHandle.get(handle)
     if (existing !== undefined) {
-      return existing
+      if (mode === "consume_on_success") {
+        existing.mode = mode
+      }
+      return existing.ref
     }
     this.context.runtime.assertOwned(handle)
     const ref = this.allocateJsValueRef()
-    this.inputRefByHandle.set(handle, ref)
-    this.inputBindings.push({ ref, handle })
+    const binding = { ref, handle, mode } satisfies InputBinding
+    this.inputBindingByHandle.set(handle, binding)
+    this.inputBindings.push(binding)
     return ref
   }
 

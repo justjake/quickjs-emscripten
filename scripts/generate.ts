@@ -8,7 +8,7 @@ import * as fs from "fs-extra"
 import { CFunc } from "./CFunc"
 import { repoRoot } from "./helpers"
 import type { CommandDataDef, CommandDef, OpName, ParamDef, ParamPath } from "./idl"
-import { COMMANDS, lowercase_c_name, OPCODE_TO_COMMAND, TsOpName } from "./idl"
+import { COMMANDS, lowercase_c_name, OPCODE_TO_COMMAND, REGISTER_BANKS, TsOpName } from "./idl"
 const USAGE =
   "Usage: generate.ts [symbols | header | ffi | ops | c-ops | c-ops-cleanup] WRITE_PATH" +
   "\ngenerate.ts hash READ_PATH WRITE_PATH"
@@ -193,6 +193,10 @@ function cTypeToTypescriptType(ctype: string, branded = false): ParsedType {
   }
 
   // mapping
+  if (type === "char**") {
+    return { ffi: "number", typescript: "UInt32Pointer", ctype, attributes }
+  }
+
   if (type.includes("char*")) {
     return {
       ffi: "number",
@@ -206,9 +210,20 @@ function cTypeToTypescriptType(ctype: string, branded = false): ParsedType {
     return { ffi: "number", typescript: "JSVoidPointer", ctype, attributes }
   }
 
+  if (type === "QTS_Command*") {
+    return { ffi: "number", typescript: "CommandPointer", ctype, attributes }
+  }
+  if (type === "QTS_FuncList*") {
+    return { ffi: "number", typescript: "JSVoidPointer", ctype, attributes }
+  }
+
   // JSValue* pointer type
   if (type === "JSValue*") {
     return { ffi: "number", typescript: "JSValuePointer", ctype, attributes }
+  }
+
+  if (type === "int*") {
+    return { ffi: "number", typescript: "UInt32Pointer", ctype, attributes }
   }
 
   if (type === "uint32_t*") {
@@ -680,20 +695,6 @@ function addDataParams(
       }
       break
 
-    case "jsvalues":
-      params.push({ name: data.ptr.name, tsType: tsType(data.ptr.type) })
-      useSetter("setD1_u32", `setD1_u32(view, offset, ${data.ptr.name})`)
-      params.push({ name: data.len.name, tsType: tsType(data.len.type) })
-      useSetter("setD2_u32", `setD2_u32(view, offset, ${data.len.name})`)
-      if (data.extra) {
-        params.push({ name: data.extra.name, tsType: tsType(data.extra.type) })
-        if (data.extra.type === "int32_t") {
-          useSetter("setD3_i32", `setD3_i32(view, offset, ${data.extra.name})`)
-        } else {
-          useSetter("setD3_u32", `setD3_u32(view, offset, ${data.extra.name})`)
-        }
-      }
-      break
   }
 }
 
@@ -763,11 +764,31 @@ function collectCommandParams(command: CommandDef): ParamWithPath[] {
       if (command.data.extra)
         out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
       break
-    case "jsvalues":
-      out.push({ path: "data.ptr", param: command.data.ptr, isJsValuesArrayPtr: true })
-      out.push({ path: "data.len", param: command.data.len, isJsValuesArrayPtr: false })
-      if (command.data.extra)
-        out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
+    case "bytes":
+      if (command.data.byte00)
+        out.push({ path: "data.byte00", param: command.data.byte00, isJsValuesArrayPtr: false })
+      if (command.data.byte01)
+        out.push({ path: "data.byte01", param: command.data.byte01, isJsValuesArrayPtr: false })
+      if (command.data.byte02)
+        out.push({ path: "data.byte02", param: command.data.byte02, isJsValuesArrayPtr: false })
+      if (command.data.byte03)
+        out.push({ path: "data.byte03", param: command.data.byte03, isJsValuesArrayPtr: false })
+      if (command.data.byte04)
+        out.push({ path: "data.byte04", param: command.data.byte04, isJsValuesArrayPtr: false })
+      if (command.data.byte05)
+        out.push({ path: "data.byte05", param: command.data.byte05, isJsValuesArrayPtr: false })
+      if (command.data.byte06)
+        out.push({ path: "data.byte06", param: command.data.byte06, isJsValuesArrayPtr: false })
+      if (command.data.byte07)
+        out.push({ path: "data.byte07", param: command.data.byte07, isJsValuesArrayPtr: false })
+      if (command.data.byte08)
+        out.push({ path: "data.byte08", param: command.data.byte08, isJsValuesArrayPtr: false })
+      if (command.data.byte09)
+        out.push({ path: "data.byte09", param: command.data.byte09, isJsValuesArrayPtr: false })
+      if (command.data.byte10)
+        out.push({ path: "data.byte10", param: command.data.byte10, isJsValuesArrayPtr: false })
+      if (command.data.byte11)
+        out.push({ path: "data.byte11", param: command.data.byte11, isJsValuesArrayPtr: false })
       break
   }
   return out
@@ -990,7 +1011,6 @@ import type { FuncListRef, JSValueRef, RefVisitor } from "./command-types"`
     const interfaceLines = [
       `export interface ${typeName} extends BaseCommand {`,
       `  kind: typeof ${name}`,
-      commandDef.barrier ? `  barrier: true` : "",
       ...fieldRows,
       `}`,
     ].filter(Boolean)
@@ -1009,7 +1029,6 @@ import type { FuncListRef, JSValueRef, RefVisitor } from "./command-types"`
     const commandInit = [
       `  return {`,
       `    kind: ${name},`,
-      commandDef.barrier ? `    barrier: true,` : "",
       ...fieldAssignments.map((line) => line.replace("      ", "    ")),
       `  }`,
     ].filter(Boolean)
@@ -1045,7 +1064,6 @@ import type { FuncListRef, JSValueRef, RefVisitor } from "./command-types"`
   const commandTypes = `
 interface BaseCommand {
   kind: number
-  barrier?: boolean
   label?: string
 }
 
@@ -1112,13 +1130,43 @@ function buildOpHeader(): string {
     return `    QTS_OP_${name} = ${index},${doc}`
   }).join("\n")
 
+  const slotTypeByteCases = Object.entries(REGISTER_BANKS)
+    .map(([slotName, slotDef]) => {
+      const constant = `QTS_SLOT_TYPE_${slotName.replace(/Slot$/, "").toUpperCase()}`
+      return `        case ${constant}: return ${slotDef.itemBytes};`
+    })
+    .join("\n")
+
+  const slotTypeAsserts = Object.entries(REGISTER_BANKS)
+    .map(
+      ([slotName, slotDef]) =>
+        `_Static_assert(sizeof(${slotDef.itemType}) == ${slotDef.itemBytes}, "REGISTER_BANKS.${slotName}.itemBytes mismatch");`,
+    )
+    .join("\n")
+
   return `// Generated by scripts/generate.ts - do not edit
 #ifndef QTS_OP_H
 #define QTS_OP_H
 
+#include <stdint.h>
+#include "qts_utils.h"
+#include "funclist.h"
+
 typedef enum {
 ${opcodeEnumEntries}
 } QTS_Opcode;
+
+#if UINTPTR_MAX == 0xffffffffu
+${slotTypeAsserts}
+#endif
+
+static inline uint32_t QTS_SlotTypeItemBytes(SlotType slot_type) {
+    switch (slot_type) {
+${slotTypeByteCases}
+        default:
+            return 0;
+    }
+}
 
 #endif // QTS_OP_H
 `

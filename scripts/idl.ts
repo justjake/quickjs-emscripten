@@ -7,8 +7,6 @@
  */
 export type CommandDef = {
   doc: string
-  /** True for hard barriers; scheduler must not reorder across these commands. */
-  barrier?: boolean
 
   /** byte 0: uint8_t opcode (implicit) */
   opcode?: never
@@ -396,12 +394,6 @@ export const COMMANDS = {
         type: "void*",
         usage: "out",
       },
-      d2: {
-        name: "len",
-        type: "uint32_t",
-        doc: "Max bytes to copy",
-        usage: "in",
-      },
     },
   },
 
@@ -425,12 +417,6 @@ export const COMMANDS = {
         name: "in_ptr",
         doc: "Pointer to the memory location to copy the slot memory contents from",
         type: "void*",
-        usage: "in",
-      },
-      d2: {
-        name: "len",
-        type: "uint32_t",
-        doc: "Max bytes to copy",
         usage: "in",
       },
     },
@@ -978,7 +964,6 @@ export const COMMANDS = {
 
   CALL: {
     doc: "Call a function (JS_Call) eg `func(args)` with up to 10 arguments in slots",
-    barrier: true,
     slot_a: RESULT_JSVALUE_SLOT,
     slot_b: { name: "func_slot", type: "JSValueSlot", doc: "Function slot", usage: "in" },
     slot_c: {
@@ -1016,7 +1001,6 @@ export const COMMANDS = {
 
   CALL_ARGV: {
     doc: "Call a function with any number of arguments stored in adjacent memory (JS_Call)",
-    barrier: true,
     slot_a: RESULT_JSVALUE_SLOT,
     slot_b: { name: "func_slot", type: "JSValueSlot", doc: "Function slot", usage: "in" },
     slot_c: {
@@ -1050,7 +1034,6 @@ export const COMMANDS = {
 
   EVAL: {
     doc: "Evaluate JavaScript code (JS_Eval)",
-    barrier: true,
     slot_a: RESULT_JSVALUE_SLOT,
     slot_b: {
       name: "maybe_filename_len",
