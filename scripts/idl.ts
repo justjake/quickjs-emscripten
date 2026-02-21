@@ -33,6 +33,18 @@ export type ParamPath =
   | "data.ptr"
   | "data.len"
   | "data.extra"
+  | "data.byte00"
+  | "data.byte01"
+  | "data.byte02"
+  | "data.byte03"
+  | "data.byte04"
+  | "data.byte05"
+  | "data.byte06"
+  | "data.byte07"
+  | "data.byte08"
+  | "data.byte09"
+  | "data.byte10"
+  | "data.byte11"
 
 export type PointerParamConfig =
   | { kind: "utf8.nullTerminated" }
@@ -40,7 +52,7 @@ export type PointerParamConfig =
   | { kind: "utf8.optionalLength"; lenParam: ParamPath }
   | { kind: "bytes"; lenParam: ParamPath }
 
-export type ParamUsage = "in" | "out" | "in-out"
+export type ParamUsage = "in" | "in-consumed" | "out" | "in-out"
 
 /** Describes a scalar parameter in a command. */
 export type ParamDef<T extends string = string> = {
@@ -69,13 +81,13 @@ export type ParamDef<T extends string = string> = {
  */
 type UInt8Types =
   | "uint8_t"
-  | "JSValueSlot"
-  | "FuncListSlot"
+  | SlotType
   | "JSPropFlags"
   | "SetPropFlags"
   | "EvalFlags"
   | "NewErrorFlags"
   | "NewTypedArrayFlags"
+  | "SlotType"
 
 /**
  * Type aliases for uint32_t; any type that fits in 32 bits.
@@ -94,6 +106,7 @@ type UInt32Types =
   | "JSPropFlags"
   | "SetPropFlags"
   | "JSValue*"
+  | "void*"
 
 type CommandDataRawDef = {
   type: "raw"
@@ -121,11 +134,26 @@ type CommandDataBufDef = {
   extra?: ParamDef<UInt32Types>
 }
 
-type CommandDataCallDef = {
-  type: "jsvalues"
-  ptr: ParamDef<"JSValue*">
-  len: ParamDef<"uint32_t">
-  extra?: ParamDef<UInt32Types>
+type CommandDataByteDef = {
+  type: "bytes"
+
+  // d1
+  byte00?: ParamDef<UInt8Types>
+  byte01?: ParamDef<UInt8Types>
+  byte02?: ParamDef<UInt8Types>
+  byte03?: ParamDef<UInt8Types>
+
+  // d2
+  byte04?: ParamDef<UInt8Types>
+  byte05?: ParamDef<UInt8Types>
+  byte06?: ParamDef<UInt8Types>
+  byte07?: ParamDef<UInt8Types>
+
+  // d3
+  byte08?: ParamDef<UInt8Types>
+  byte09?: ParamDef<UInt8Types>
+  byte10?: ParamDef<UInt8Types>
+  byte11?: ParamDef<UInt8Types>
 }
 
 type CommandDataUnion = {
@@ -133,7 +161,7 @@ type CommandDataUnion = {
   f64: CommandDataF64Def
   i64: CommandDataI64Def
   buf: CommandDataBufDef
-  jsvalues: CommandDataCallDef
+  bytes: CommandDataByteDef
 }
 
 /**
@@ -276,20 +304,132 @@ const ARRAY_INDEX_DATA = {
   d1: ARRAY_INDEX,
 } as const satisfies CommandDataRawDef
 
-const CALL_ARGV = {
-  type: "jsvalues",
-  ptr: { name: "argv", type: "JSValue*", doc: "Pointer to argument array", usage: "in" },
-  len: { name: "argc", type: "uint32_t", doc: "Number of arguments", usage: "in" },
-} as const satisfies CommandDataCallDef
+const callArg = (idx: number) => {
+  return {
+    name: `arg${idx}`,
+    type: "JSValueSlot",
+    doc: `Argument ${idx}`,
+    usage: "in",
+  } as const satisfies ParamDef<"JSValueSlot">
+}
+
+export type SlotType = "JSValueSlot" | "FuncListSlot" | "AnySlot"
+export type SlotDef = {
+  itemType: string
+  itemBytes: number
+  free?: keyof typeof COMMANDS
+}
+
+export const REGISTER_BANKS = {
+  /**
+   * Most common slot type, for passing JSValues.
+   */
+  JSValueSlot: {
+    itemType: "JSValue",
+    itemBytes: 16,
+  },
+  /**
+   * Used when defining classes.
+   * struct QTS_FuncList { uint32_t count; JSCFunctionListEntry *entries; }
+   */
+  FuncListSlot: {
+    itemType: "QTS_FuncList",
+    itemBytes: 8,
+  },
+  // /** Used to return additional values from a command, not expected to be used as command inputs */
+  // OutSlot: {
+  //   itemType: "uint32_t",
+  //   itemBytes: 4,
+  // },
+} as const satisfies Record<Exclude<SlotType, "AnySlot">, SlotDef>
 
 export const COMMANDS = {
   // ============================================================================
-  // Invalid/Uninitialized
+  // Protocol operations
   // ============================================================================
 
   /** Opcode 0: detect uninitialized commands (mallocz zeros memory) */
   INVALID: {
     doc: "Invalid opcode - indicates uninitialized command",
+  },
+
+  // These operations are generic to simplify command planning
+  SLOT_STORE: {
+    doc: "Copy slot memory contents to a memory location owned by the caller",
+    slot_a: {
+      name: "in_slot",
+      doc: "The slot to save",
+      type: "AnySlot",
+      usage: "in",
+    },
+    slot_b: {
+      name: "in_slot_type",
+      type: "SlotType",
+      doc: "The type of the slot",
+      usage: "in",
+    },
+    data: {
+      type: "raw",
+      d1: {
+        name: "out_ptr",
+        doc: "Pointer to the memory location to copy the slot memory contents to",
+        type: "void*",
+        usage: "out",
+      },
+      d2: {
+        name: "len",
+        type: "uint32_t",
+        doc: "Max bytes to copy",
+        usage: "in",
+      },
+    },
+  },
+
+  SLOT_LOAD: {
+    doc: "Copy data from a memory location into a slot",
+    slot_a: {
+      name: "out_slot",
+      doc: "The slot load into",
+      type: "AnySlot",
+      usage: "out",
+    },
+    slot_b: {
+      name: "out_slot_type",
+      type: "SlotType",
+      doc: "The type of the slot",
+      usage: "in",
+    },
+    data: {
+      type: "raw",
+      d1: {
+        name: "in_ptr",
+        doc: "Pointer to the memory location to copy the slot memory contents from",
+        type: "void*",
+        usage: "in",
+      },
+      d2: {
+        name: "len",
+        type: "uint32_t",
+        doc: "Max bytes to copy",
+        usage: "in",
+      },
+    },
+  },
+
+  SLOT_FREE: {
+    doc: "Free a slot: for JSValueSlot, call JS_FreeValue to decrement refcount; for FuncListSlot, free the array of JSCFunctionListEntry",
+    slot_a: {
+      name: "target_slot",
+      type: "AnySlot",
+      doc: "The slot to free",
+      usage: "in-consumed",
+    },
+    slot_b: {
+      name: "target_slot_type",
+      type: "SlotType",
+      doc: "The type of the slot",
+      usage: "in",
+    },
   },
 
   // ============================================================================
@@ -685,7 +825,7 @@ export const COMMANDS = {
   // Property Set by JSValue Key
   // ============================================================================
 
-  SET: {
+  SET_VALUE_VALUE: {
     doc: "Set property using JSValue key (JS_SetProperty)",
     slot_a: TARGET_JSVALUE_SLOT,
     slot_b: KEY_JSVALUE_SLOT,
@@ -701,7 +841,7 @@ export const COMMANDS = {
     },
   },
 
-  DEF_GETSET: {
+  DEF_VALUE_GETSET: {
     doc: "define a getter/setter property on object",
     slot_a: TARGET_JSVALUE_SLOT,
     slot_b: PROP_MAYBE_NAME_LEN_SLOT,
@@ -728,7 +868,7 @@ export const COMMANDS = {
   // Property Get
   // ============================================================================
 
-  GET: {
+  GET_VALUE: {
     doc: "Get property using JSValue key (JS_GetProperty)",
     slot_a: RESULT_JSVALUE_SLOT,
     slot_b: SOURCE_JSVALUE_SLOT,
@@ -810,21 +950,45 @@ export const COMMANDS = {
   // ============================================================================
 
   CALL: {
-    doc: "Call a function (JS_Call) eg `func(args)`",
+    doc: "Call a function (JS_Call) eg `func(args)` with up to 10 arguments in slots",
     barrier: true,
     slot_a: RESULT_JSVALUE_SLOT,
     slot_b: { name: "func_slot", type: "JSValueSlot", doc: "Function slot", usage: "in" },
     slot_c: {
       name: "this_slot",
       type: "JSValueSlot",
-      doc: "This value slot; 0=undefined",
+      doc: "This value slot",
       usage: "in",
     },
-    data: CALL_ARGV,
+    data: {
+      type: "bytes",
+      byte00: {
+        name: "argc",
+        type: "uint8_t",
+        doc: "Number of arguments",
+        usage: "in",
+      },
+      byte01: callArg(1),
+      byte02: callArg(2),
+      byte03: callArg(3),
+      byte04: callArg(4),
+      byte05: callArg(5),
+      byte06: callArg(6),
+      byte07: callArg(7),
+      byte08: callArg(8),
+      byte09: callArg(9),
+      byte10: callArg(10),
+      byte11: {
+        name: "call_as_constructor",
+        type: "uint8_t",
+        doc: "Whether to call the function as a constructor, eg `new func(args)`",
+        usage: "in",
+      },
+    },
   },
 
-  CALL_CTOR: {
-    doc: "Call a constructor (JS_CallConstructor) eg `new Ctor(args)`",
+  CALL_ARGV: {
+    doc: "Call a function with any number of arguments stored in adjacent memory (JS_Call)",
     barrier: true,
     slot_a: RESULT_JSVALUE_SLOT,
     slot_b: {
@@ -833,7 +997,21 @@ export const COMMANDS = {
       doc: "Constructor function slot",
       usage: "in",
     },
-    data: CALL_ARGV,
+    data: {
+      type: "raw",
+      d1: {
+        name: "argc",
+        type: "uint32_t",
+        doc: "Number of arguments in argv",
+        usage: "in",
+      },
+      d2: {
+        name: "argv",
+        type: "JSValue*",
+        doc: "Pointer to argument array",
+        usage: "in",
+      },
+    },
   },
 
   EVAL: {
@@ -889,48 +1067,6 @@ export const COMMANDS = {
       type: "JSValueSlot",
       doc: "Value that may be an exception",
       usage: "in",
-    },
-  },
-
-  // ============================================================================
-  // Reference Counting
-  // ============================================================================
-
-  DUP: {
-    doc: "Duplicate a value (JS_DupValue) - increment refcount",
-    slot_a: RESULT_JSVALUE_SLOT,
-    slot_b: SOURCE_JSVALUE_SLOT,
-  },
-
-  DUP_PTR: {
-    doc: "Duplicate a JSValue* pointer into a JSValueSlot",
-    slot_a: RESULT_JSVALUE_SLOT,
-    data: {
-      type: "raw",
-      d1: {
-        name: "value_ptr",
-        type: "JSValue*",
-        doc: "Pointer to value to duplicate",
-        usage: "in",
-      },
-    },
-  },
-
-  FREE: {
-    doc: "Free a value (JS_FreeValue) - decrement refcount",
-    slot_a: TARGET_JSVALUE_SLOT,
-  },
-
-  FREE_PTR: {
-    doc: "Free a JSValue* pointer - JS_FreeValue the value, then free the pointer",
-    data: {
-      type: "raw",
-      d1: {
-        name: "value_ptr",
-        type: "JSValue*",
-        doc: "Pointer to value to free",
-        usage: "in",
-      },
     },
   },
 
@@ -991,11 +1127,6 @@ export const COMMANDS = {
       doc: "Funclist slot",
       usage: "in",
     },
-  },
-
-  FUNCLIST_FREE: {
-    doc: "Free a funclist array",
-    slot_a: TARGET_FUNCLIST_SLOT,
   },
 
   // ============================================================================
@@ -1168,6 +1299,10 @@ export const COMMANDS = {
   },
 } as const satisfies Record<string, CommandDef>
 
+function unreachable(val: never): never {
+  throw new Error(`Should never happen: ${typeof val === "object" ? JSON.stringify(val) : val}`)
+}
+
 function collectParamMap(command: CommandDef): Map<ParamPath, ParamDef<any>> {
   const map = new Map<ParamPath, ParamDef<any>>()
   if (command.slot_a) map.set("slot_a", command.slot_a)
@@ -1194,11 +1329,22 @@ function collectParamMap(command: CommandDef): Map<ParamPath, ParamDef<any>> {
       map.set("data.len", command.data.len)
       if (command.data.extra) map.set("data.extra", command.data.extra)
       break
-    case "jsvalues":
-      map.set("data.ptr", command.data.ptr)
-      map.set("data.len", command.data.len)
-      if (command.data.extra) map.set("data.extra", command.data.extra)
+    case "bytes":
+      if (command.data.byte00) map.set("data.byte00", command.data.byte00)
+      if (command.data.byte01) map.set("data.byte01", command.data.byte01)
+      if (command.data.byte02) map.set("data.byte02", command.data.byte02)
+      if (command.data.byte03) map.set("data.byte03", command.data.byte03)
+      if (command.data.byte04) map.set("data.byte04", command.data.byte04)
+      if (command.data.byte05) map.set("data.byte05", command.data.byte05)
+      if (command.data.byte06) map.set("data.byte06", command.data.byte06)
+      if (command.data.byte07) map.set("data.byte07", command.data.byte07)
+      if (command.data.byte08) map.set("data.byte08", command.data.byte08)
+      if (command.data.byte09) map.set("data.byte09", command.data.byte09)
+      if (command.data.byte10) map.set("data.byte10", command.data.byte10)
+      if (command.data.byte11) map.set("data.byte11", command.data.byte11)
       break
+    default:
+      unreachable(command.data)
   }
   return map
 }
