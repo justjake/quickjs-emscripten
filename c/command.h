@@ -72,6 +72,15 @@ typedef enum {
 /** If condition is true, set the error message and return an error */
 #define OP_ERROR_IF(env, cond, msg) if (cond) { OP_ERROR(env, msg); }
 
+#define OP_ERROR_GOTO(env, msg, label) do { \
+    (env)->error = QTS_DEBUG_STACKFRAME ": " msg; \
+    goto label; \
+} while(0)
+
+#define OP_ERROR_IF_GOTO(env, cond, msg, label) do { \
+    if (cond) { OP_ERROR_GOTO(env, msg, label); } \
+} while(0)
+
 #define OP_GET_JSVALUE(env, slot, msg) ({ \
     OP_ERROR_IF(env, slot >= env->jsvalue_slots_count, "jsvalue slot out of range"); \
     env->jsvalue_slots[slot]; \

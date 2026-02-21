@@ -27,6 +27,7 @@ QTS_CommandStatus perform_new_func(QTS_CommandEnv *env, JSValueSlot result_slot,
         1,                // data_len
         &host_ref         // data array
     );
+    JS_FreeValue(env->ctx, host_ref);
     OP_ERROR_IF(env, JS_IsException(func), "new_func: failed to create function");
 
     // Set the function name if provided
@@ -38,6 +39,10 @@ QTS_CommandStatus perform_new_func(QTS_CommandEnv *env, JSValueSlot result_slot,
                 JS_PROP_CONFIGURABLE);
             JS_FreeAtom(env->ctx, name_atom);
         }
+    }
+
+    if (is_constructor) {
+        JS_SetConstructorBit(env->ctx, func, is_constructor);
     }
 
     OP_SET_JSVALUE(env, result_slot, func);
