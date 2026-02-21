@@ -1,7 +1,7 @@
 #include "perform_funclist_def_undefined.h"
 
 // Perform op FUNCLIST_DEF_UNDEFINED
-// To change function signature, update scripts/idl.ts and run 'pnpm run generate:c-ops'.
+// To change function signature, update scripts/idl.ts and run 'pnpm run ops:c'.
 // Add new utilities to qts_utils.{h,c} if needed.
 
 /**

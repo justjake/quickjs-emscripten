@@ -1,7 +1,7 @@
 #include "perform_set_str_value.h"
 
 // Perform op SET_STR_VALUE
-// To change function signature, update scripts/idl.ts and run 'pnpm run generate:c-ops'.
+// To change function signature, update scripts/idl.ts and run 'pnpm run ops:c'.
 // Add new utilities to qts_utils.{h,c} if needed.
 
 /**

@@ -566,7 +566,10 @@ type WriterPatternGroup = {
   writers: WriterInfo[]
 }
 
-function normalizeWriterBody(lines: readonly string[], params: readonly { name: string }[]): string[] {
+function normalizeWriterBody(
+  lines: readonly string[],
+  params: readonly { name: string }[],
+): string[] {
   if (params.length === 0) {
     return [...lines]
   }
@@ -588,7 +591,8 @@ function renderWriterCode(writer: WriterInfo, helperName?: string): string {
     return `${writer.signature} {\n  ${writer.body.join("\n  ")}\n}`
   }
   const args = writer.params.map((param) => param.name).join(", ")
-  const helperCall = args.length > 0 ? `${helperName}(view, offset, ${args})` : `${helperName}(view, offset)`
+  const helperCall =
+    args.length > 0 ? `${helperName}(view, offset, ${args})` : `${helperName}(view, offset)`
   return `${writer.signature} {\n  ${writer.body[0]}\n  ${helperCall}\n}`
 }
 
@@ -725,26 +729,32 @@ function collectCommandParams(command: CommandDef): ParamWithPath[] {
   switch (command.data.type) {
     case "raw":
       out.push({ path: "data.d1", param: command.data.d1, isJsValuesArrayPtr: false })
-      if (command.data.d2) out.push({ path: "data.d2", param: command.data.d2, isJsValuesArrayPtr: false })
-      if (command.data.d3) out.push({ path: "data.d3", param: command.data.d3, isJsValuesArrayPtr: false })
+      if (command.data.d2)
+        out.push({ path: "data.d2", param: command.data.d2, isJsValuesArrayPtr: false })
+      if (command.data.d3)
+        out.push({ path: "data.d3", param: command.data.d3, isJsValuesArrayPtr: false })
       break
     case "f64":
       out.push({ path: "data.value", param: command.data.value, isJsValuesArrayPtr: false })
-      if (command.data.extra) out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
+      if (command.data.extra)
+        out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
       break
     case "i64":
       out.push({ path: "data.value", param: command.data.value, isJsValuesArrayPtr: false })
-      if (command.data.extra) out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
+      if (command.data.extra)
+        out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
       break
     case "buf":
       out.push({ path: "data.ptr", param: command.data.ptr, isJsValuesArrayPtr: false })
       out.push({ path: "data.len", param: command.data.len, isJsValuesArrayPtr: false })
-      if (command.data.extra) out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
+      if (command.data.extra)
+        out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
       break
     case "jsvalues":
       out.push({ path: "data.ptr", param: command.data.ptr, isJsValuesArrayPtr: true })
       out.push({ path: "data.len", param: command.data.len, isJsValuesArrayPtr: false })
-      if (command.data.extra) out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
+      if (command.data.extra)
+        out.push({ path: "data.extra", param: command.data.extra, isJsValuesArrayPtr: false })
       break
   }
   return out
@@ -830,7 +840,11 @@ type CaseGroup = {
   statements: string[]
 }
 
-function addCaseGroup(groups: Map<string, CaseGroup>, name: string, statements: readonly string[]): void {
+function addCaseGroup(
+  groups: Map<string, CaseGroup>,
+  name: string,
+  statements: readonly string[],
+): void {
   if (statements.length === 0) {
     return
   }
@@ -923,7 +937,7 @@ function buildOpsFiles(useRelativeImport = false): string {
   const imports = `import type {
   ${importTypes.join(",\n  ")},
 } from "${importFrom}"
-import type { AnyRef, FuncListRef, JSValueRef } from "./command-types"`
+import type { FuncListRef, JSValueRef, RefVisitor } from "./command-types"`
 
   const opcodeConsts = OPCODE_TO_COMMAND.map(
     (name, opcode) => `export const ${name} = ${opcode} as const`,
@@ -1029,8 +1043,6 @@ ${commandCreatorFns.join("\n\n")}
 `.trim()
 
   const plannerAccessors = `
-export type RefVisitor = (ref: AnyRef) => void
-
 export function forEachReadRef(command: Command, visit: RefVisitor): void {
   switch (command.kind) {
 ${renderCaseGroups(readCaseGroups).join("\n")}

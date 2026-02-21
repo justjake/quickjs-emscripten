@@ -95,7 +95,7 @@ The command buffer system allows batching multiple QuickJS operations into a sin
 Regenerate all C ops files:
 
 ```bash
-pnpm run generate:c-ops
+pnpm run ops:c
 # or directly: ./scripts/generate.ts c-ops c/
 ```
 

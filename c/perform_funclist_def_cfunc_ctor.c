@@ -1,7 +1,7 @@
 #include "perform_funclist_def_cfunc_ctor.h"
 
 // Perform op FUNCLIST_DEF_CFUNC_CTOR
-// To change function signature, update scripts/idl.ts and run 'pnpm run generate:c-ops'.
+// To change function signature, update scripts/idl.ts and run 'pnpm run ops:c'.
 // Add new utilities to qts_utils.{h,c} if needed.
 
 /**

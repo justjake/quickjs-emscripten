@@ -1,9 +1,9 @@
+import type { CommandRef } from "./command-types"
 import {
   forEachReadRef as forEachGeneratedReadRef,
   forEachWriteRef as forEachGeneratedWriteRef,
   type Command as OpsCommand,
 } from "./ops"
-import type { AnyRef } from "./command-types"
 
 export type OwnedValueId = number
 export type SlotId = number
@@ -41,7 +41,7 @@ export function hasNullByte(value: string): boolean {
   return value.includes("\0")
 }
 
-export function packRef(bankId: BankId, valueId: OwnedValueId): AnyRef {
+export function packRef(bankId: BankId, valueId: OwnedValueId): CommandRef {
   if (!Number.isInteger(bankId) || bankId < 0 || bankId > REF_MAX_BANK_ID) {
     throw new Error(`Invalid bank id: ${bankId}`)
   }
@@ -49,19 +49,19 @@ export function packRef(bankId: BankId, valueId: OwnedValueId): AnyRef {
     throw new Error(`Invalid value id: ${valueId}`)
   }
 
-  return (((bankId << REF_VALUE_BITS) | valueId) >>> 0) as AnyRef
+  return (((bankId << REF_VALUE_BITS) | valueId) >>> 0) as CommandRef
 }
 
-export function refBankId(ref: AnyRef): BankId {
+export function refBankId(ref: CommandRef): BankId {
   return (ref >>> REF_VALUE_BITS) & REF_MAX_BANK_ID
 }
 
-export function refValueId(ref: AnyRef): OwnedValueId {
+export function refValueId(ref: CommandRef): OwnedValueId {
   return ref & REF_MAX_VALUE_ID
 }
 
-type SlotResolver = (ref: AnyRef) => SlotId
-export type RefVisitor = (ref: AnyRef) => void
+type SlotResolver = (ref: CommandRef) => SlotId
+export type RefVisitor = (ref: CommandRef) => void
 
 export interface CommandShape {
   kind: number
@@ -75,7 +75,8 @@ export interface CommandOperandAccessors<TCommand extends CommandShape = OpsComm
 }
 
 const DEFAULT_OPERAND_ACCESSORS: CommandOperandAccessors<OpsCommand> = {
-  forEachReadRef: forEachGeneratedReadRef as unknown as CommandOperandAccessors<OpsCommand>["forEachReadRef"],
+  forEachReadRef:
+    forEachGeneratedReadRef as unknown as CommandOperandAccessors<OpsCommand>["forEachReadRef"],
   forEachWriteRef:
     forEachGeneratedWriteRef as unknown as CommandOperandAccessors<OpsCommand>["forEachWriteRef"],
 }
@@ -101,7 +102,7 @@ export interface QuickJSBatchDriver<
 }
 
 export interface InitialValueBinding<ParkedAlias = unknown> {
-  ref: AnyRef
+  ref: CommandRef
   slot?: SlotId
   parkedAlias?: ParkedAlias
   retained?: boolean
@@ -111,7 +112,7 @@ export interface ExecuteCommandPlanOptions<
   ParkedAlias = unknown,
   TCommand extends CommandShape = OpsCommand,
 > {
-  retainedRefs?: Iterable<AnyRef>
+  retainedRefs?: Iterable<CommandRef>
   initialValues?: ReadonlyArray<InitialValueBinding<ParkedAlias>>
   enableFastPath?: boolean
   operandAccessors?: CommandOperandAccessors<TCommand>
@@ -228,7 +229,11 @@ function estimatePeakResidentForBank<TCommand extends CommandShape>(
       }
       const readValueId = refValueId(readRef)
       workingReads[readValueId] -= 1
-      if (workingReads[readValueId] === 0 && retained[readValueId] === 0 && live[readValueId] === 1) {
+      if (
+        workingReads[readValueId] === 0 &&
+        retained[readValueId] === 0 &&
+        live[readValueId] === 1
+      ) {
         live[readValueId] = 0
         liveCount--
       }
@@ -249,7 +254,7 @@ function assertValidBankId(bankId: number, bankCount: number): void {
 }
 
 function assertRefInBounds<ParkedAlias>(
-  ref: AnyRef,
+  ref: CommandRef,
   bankStates: readonly PlannerBankState<ParkedAlias>[],
   bankCount: number,
 ): PlannerBankState<ParkedAlias> {
@@ -263,7 +268,10 @@ function assertRefInBounds<ParkedAlias>(
   return bankState
 }
 
-export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, ParkedAlias = unknown>(
+export function executeCommandPlan<
+  TCommand extends CommandShape = OpsCommand,
+  ParkedAlias = unknown,
+>(
   commands: readonly TCommand[],
   driver: QuickJSBatchDriver<TCommand, ParkedAlias>,
   options: ExecuteCommandPlanOptions<ParkedAlias, TCommand> = {},
@@ -286,7 +294,7 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
   const maxValueIdByBank = new Int32Array(bankCount)
   maxValueIdByBank.fill(-1)
 
-  const noteRef = (ref: AnyRef) => {
+  const noteRef = (ref: CommandRef) => {
     const bankId = refBankId(ref)
     assertValidBankId(bankId, bankCount)
     const valueId = refValueId(ref)
@@ -486,7 +494,11 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
     }
   }
 
-  const clearResident = (bankState: PlannerBankState<ParkedAlias>, slot: number, valueId: number) => {
+  const clearResident = (
+    bankState: PlannerBankState<ParkedAlias>,
+    slot: number,
+    valueId: number,
+  ) => {
     if (bankState.slotToValue[slot] !== valueId) {
       throw new Error(
         `Slot/value mismatch while clearing resident in bank ${bankState.bankId}: slot=${slot} value=${valueId}`,
@@ -564,7 +576,9 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
     }
 
     if (!allowParking) {
-      throw new Error(`Out of slots (${bankState.slotCapacity}) in fast path for bank ${bankState.bankId}`)
+      throw new Error(
+        `Out of slots (${bankState.slotCapacity}) in fast path for bank ${bankState.bankId}`,
+      )
     }
 
     let parkedCandidate = -1
@@ -599,19 +613,28 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
       return evictCandidate
     }
 
-    throw new Error(`Out of slots (${bankState.slotCapacity}) with all values pinned in bank ${bankState.bankId}`)
+    throw new Error(
+      `Out of slots (${bankState.slotCapacity}) with all values pinned in bank ${bankState.bankId}`,
+    )
   }
 
-  const ensureResidentByBank = (bankState: PlannerBankState<ParkedAlias>, valueId: number): number => {
+  const ensureResidentByBank = (
+    bankState: PlannerBankState<ParkedAlias>,
+    valueId: number,
+  ): number => {
     const state = bankState.values[valueId]
     if (state.freed) {
-      throw new Error(`Value ${valueId} in bank ${bankState.bankId} was already freed but is still referenced`)
+      throw new Error(
+        `Value ${valueId} in bank ${bankState.bankId} was already freed but is still referenced`,
+      )
     }
     if (state.residentSlot >= 0) {
       return state.residentSlot
     }
     if (state.parkedAlias === undefined) {
-      throw new Error(`Value ${valueId} in bank ${bankState.bankId} is not resident and has no parked alias`)
+      throw new Error(
+        `Value ${valueId} in bank ${bankState.bankId} is not resident and has no parked alias`,
+      )
     }
 
     const slot = allocateSlot(bankState)
@@ -622,7 +645,7 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
     return slot
   }
 
-  const ensureResident = (ref: AnyRef): number => {
+  const ensureResident = (ref: CommandRef): number => {
     const bankId = refBankId(ref)
     const valueId = refValueId(ref)
     assertValidBankId(bankId, bankCount)
@@ -638,12 +661,14 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
     const valueId = refValueId(ref)
     const state = bankState.values[valueId]
     if (state.residentSlot < 0) {
-      throw new Error(`Cannot resolve slot for non-resident value ${valueId} in bank ${bankState.bankId}`)
+      throw new Error(
+        `Cannot resolve slot for non-resident value ${valueId} in bank ${bankState.bankId}`,
+      )
     }
     return state.residentSlot
   }
 
-  const postCommandReclaim = (ref: AnyRef) => {
+  const postCommandReclaim = (ref: CommandRef) => {
     const bankState = assertRefInBounds(ref, bankStates, bankCount)
     const valueId = refValueId(ref)
     const state = bankState.values[valueId]
@@ -656,7 +681,7 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
   const touchedBankIds: number[] = []
   const touchedBankMarks = new Uint8Array(bankCount)
 
-  const markPinned = (ref: AnyRef) => {
+  const markPinned = (ref: CommandRef) => {
     const bankId = refBankId(ref)
     const valueId = refValueId(ref)
     assertValidBankId(bankId, bankCount)
@@ -693,7 +718,9 @@ export function executeCommandPlan<TCommand extends CommandShape = OpsCommand, P
       const state = bankState.values[valueId]
 
       if (state.written && state.residentSlot === -1 && state.parkedAlias === undefined) {
-        throw new Error(`Command tried to rewrite value ${valueId} in bank ${bankId}, which is unsupported`)
+        throw new Error(
+          `Command tried to rewrite value ${valueId} in bank ${bankId}, which is unsupported`,
+        )
       }
       if (state.residentSlot >= 0 || state.parkedAlias !== undefined) {
         throw new Error(`Command writes value ${valueId} in bank ${bankId} that is already live`)

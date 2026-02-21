@@ -46,31 +46,8 @@ export type ParamPath =
   | "data.byte10"
   | "data.byte11"
 
-export type PointerParamConfig =
-  | { kind: "utf8.nullTerminated" }
-  | { kind: "utf8"; lenParam: ParamPath }
-  | { kind: "utf8.optionalLength"; lenParam: ParamPath }
-  | { kind: "bytes"; lenParam: ParamPath }
-
-export type ParamUsage = "in" | "in-consumed" | "out" | "in-out"
-
-/** Describes a scalar parameter in a command. */
-export type ParamDef<T extends string = string> = {
-  /** Parameter name. */
-  name: string
-  /** Parameter c type. */
-  type: T
-  /** Documenatation. */
-  doc: string
-  /**
-   * Whether the parameter is an input, output, or both.
-   * Eg, if the parameter is a pointer or slot:
-   * - use 'in' if the command reads from the pointer or slot
-   * - use 'out' if the command writes to the pointer or slot
-   * - use 'in-out' if the command reads from and writes to the pointer or slot
-   */
-  usage: ParamUsage
-} & (T extends "char*" | "uint8_t*" ? { pointer: PointerParamConfig } : { pointer?: never })
+/** Non-scalar pointer types. */
+type ArrayPointerTypes = "uint8_t*" | "char*"
 
 /**
  * Type aliases for uint8_t; any type that fits in 8 bits.
@@ -100,14 +77,56 @@ type UInt8Types =
 type UInt32Types =
   | "uint32_t"
   | "int32_t"
+  | ArrayPointerTypes
   | "HostRefId"
-  | "char*"
-  | "uint8_t*"
   | "JSCFunctionType*"
   | "JSPropFlags"
   | "SetPropFlags"
   | "JSValue*"
   | "void*"
+
+/**
+ * Extra details for non-scalar pointer parameters.
+ * In general, we should pass {ptr, len} pairs where possible.
+ * All char* must be null-terminated regardless of presence of lenParam.
+ */
+export type ArrayPointerDef =
+  /**
+   * string ->char* passed with no length and terminated by null byte
+   * It is an error if the input string contains a null byte.
+   */
+  | { kind: "utf8.nullTerminated" }
+  /** string -> char*, len pair. Can contain null bytes. */
+  | { kind: "utf8"; lenParam: ParamPath }
+  /** string -> char*, maybe_len pair. If it contains a null byte, maybe_len must be set. */
+  | { kind: "utf8.optionalLength"; lenParam: ParamPath }
+  /** ArrayBuffer-like -> uint8_t*, len pair. Can contain null bytes. */
+  | { kind: "bytes"; lenParam: ParamPath }
+
+/**
+ * Whether the parameter is an input, output, or both.
+ * Eg, if the parameter is a pointer or slot:
+ * - use 'in' if the command reads from the pointer or slot
+ * - use 'in-consumed' if the command implicitly consumes/frees the parameter.
+ *   The command executor must take this into account: consumed parameters
+ *   cannot be used again, and should not be double-freed.
+ * - use 'out' if the command writes a new value to the pointer/slot.
+ *   The command executor must take this into account: any new values that are
+ *   not returned to the caller must be freed.
+ */
+export type ParamUsage = "in" | "in-consumed" | "out"
+
+/** Describes a scalar parameter in a command. */
+export type ParamDef<T extends string = string> = {
+  /** Parameter name. */
+  name: string
+  /** Parameter c type. */
+  type: T
+  /** Documenatation. */
+  doc: string
+  /** See {@link ParamUsage}. */
+  usage: ParamUsage
+} & (T extends ArrayPointerTypes ? { pointer: ArrayPointerDef } : { pointer?: never })
 
 type CommandDataRawDef = {
   type: "raw"
@@ -1395,7 +1414,9 @@ for (const [name, command] of Object.entries(COMMANDS)) {
     }
 
     if (param.pointer) {
-      throw new Error(`${name}.${path}: pointer metadata is only valid for char* and uint8_t* params`)
+      throw new Error(
+        `${name}.${path}: pointer metadata is only valid for char* and uint8_t* params`,
+      )
     }
   }
 }

@@ -1,7 +1,7 @@
 #include "perform_eval.h"
 
 // Perform op EVAL
-// To change function signature, update scripts/idl.ts and run 'pnpm run generate:c-ops'.
+// To change function signature, update scripts/idl.ts and run 'pnpm run ops:c'.
 // Add new utilities to qts_utils.{h,c} if needed.
 
 /**

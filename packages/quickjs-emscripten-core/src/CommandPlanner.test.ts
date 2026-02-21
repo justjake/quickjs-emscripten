@@ -2,25 +2,25 @@ import assert from "assert"
 import * as fs from "fs"
 import * as path from "path"
 import { describe, it } from "vitest"
-import { JSValueLifetime } from "./lifetime"
+import type { CommandRef } from "./command-types"
+import { CommandBuilder } from "./CommandBuilder"
 import {
-  type CommandShape,
-  type CommandOperandAccessors,
-  QuickJSBatchExecutionError,
   type BankId,
+  type CommandOperandAccessors,
+  type CommandShape,
   type ExecuteCommandPlanOptions,
   type QuickJSBatchDriver,
+  QuickJSBatchExecutionError,
   executeCommandPlan,
   packRef,
   refBankId,
 } from "./CommandPlanner"
-import type { AnyRef } from "./command-types"
-import { appendStructuredClone } from "./StructuredCloneCommandProducer"
-import { CommandBuilder } from "./CommandBuilder"
-import { HostRefMap } from "./host-ref"
-import * as Op from "./ops"
-import { QuickJSWrongOwner } from "./errors"
 import type { QuickJSContext } from "./context"
+import { QuickJSWrongOwner } from "./errors"
+import { HostRefMap } from "./host-ref"
+import { JSValueLifetime } from "./lifetime"
+import * as Op from "./ops"
+import { appendStructuredClone } from "./StructuredCloneCommandProducer"
 import type { QuickJSHandle } from "./types"
 
 const JS_VALUE_BANK = 0 as const
@@ -48,9 +48,9 @@ type ParkedAlias = {
 }
 
 type TestCommand = CommandShape & {
-  readA?: AnyRef
-  readB?: AnyRef
-  write?: AnyRef
+  readA?: CommandRef
+  readB?: CommandRef
+  write?: CommandRef
 }
 
 const NO_OPERAND_ACCESSORS: CommandOperandAccessors<CommandShape> = {
@@ -68,9 +68,10 @@ const TEST_OPERAND_ACCESSORS: CommandOperandAccessors<TestCommand> = {
   },
 }
 
-class FakeDriver<TCommand extends CommandShape = CommandShape>
-  implements QuickJSBatchDriver<TCommand, ParkedAlias>
-{
+class FakeDriver<TCommand extends CommandShape = CommandShape> implements QuickJSBatchDriver<
+  TCommand,
+  ParkedAlias
+> {
   readonly emitted: EmittedRecord[] = []
   readonly batchSizes: number[] = []
   readonly setSlotCalls: Array<{ bankId: BankId; slot: number; alias: ParkedAlias }> = []
@@ -94,7 +95,7 @@ class FakeDriver<TCommand extends CommandShape = CommandShape>
     return capacity
   }
 
-  emit(command: TCommand, resolveSlot: (ref: AnyRef) => number, indexInBatch: number): void {
+  emit(command: TCommand, resolveSlot: (ref: CommandRef) => number, indexInBatch: number): void {
     const readSlots: string[] = []
     const writeSlots: string[] = []
     this.operandAccessors.forEachReadRef(command, (ref) => {
@@ -140,7 +141,7 @@ class FakeDriver<TCommand extends CommandShape = CommandShape>
   }
 }
 
-function ref(bankId: BankId, valueId: number): AnyRef {
+function ref(bankId: BankId, valueId: number): CommandRef {
   return packRef(bankId, valueId)
 }
 
@@ -168,10 +169,7 @@ function makeCloneContext(owner: unknown = { name: "owner" }): QuickJSContext {
 }
 
 let nextKind = 1
-function cmd(
-  kind: string,
-  config: Omit<TestCommand, "kind" | "label"> = {},
-): TestCommand {
+function cmd(kind: string, config: Omit<TestCommand, "kind" | "label"> = {}): TestCommand {
   return {
     kind: nextKind++,
     label: kind,
@@ -269,7 +267,10 @@ describe("executeCommandPlan", () => {
   it("tracks banks independently and frees in the correct bank", () => {
     const driver = new FakeDriver<TestCommand>([8, 1], 256, 2, undefined, TEST_OPERAND_ACCESSORS)
 
-    const commands = [cmd("NEW_FUNC", { write: ref(FUNC_LIST_BANK, 10) }), cmd("USE_FUNC", { readA: ref(FUNC_LIST_BANK, 10) })]
+    const commands = [
+      cmd("NEW_FUNC", { write: ref(FUNC_LIST_BANK, 10) }),
+      cmd("USE_FUNC", { readA: ref(FUNC_LIST_BANK, 10) }),
+    ]
 
     runTestPlan(commands, driver)
 
@@ -297,7 +298,6 @@ describe("executeCommandPlan", () => {
       },
     )
   })
-
 })
 
 describe("appendStructuredClone", () => {

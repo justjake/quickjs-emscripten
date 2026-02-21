@@ -1,4 +1,4 @@
-// Generated - do not edit. To change, update scripts/idl.ts and run 'pnpm run generate:c-ops'
+// Generated - do not edit. To change, update scripts/idl.ts and run 'pnpm run ops:c'
 #ifndef QTS_PERFORM_MAP_SET_H
 #define QTS_PERFORM_MAP_SET_H
 

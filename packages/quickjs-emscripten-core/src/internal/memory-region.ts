@@ -5,6 +5,7 @@ export type Memory<Ptr extends number = number> = {
   uint8: () => Uint8Array
   malloc: (size: number) => Ptr
   realloc: (ptr: Ptr, size: number) => Ptr
+  free: (ptr: Ptr) => void
 }
 
 export type MemoryViewState = {
@@ -33,6 +34,7 @@ export class ArrayBufferMemory implements Memory<number> {
     }
     this.bytes = memory instanceof Uint8Array ? memory : new Uint8Array(memory)
   }
+  free: (ptr: number) => void
 
   uint8(): Uint8Array {
     return this.bytes
@@ -232,4 +234,3 @@ export function getWritableRegion<Ptr extends number>(
   assertStorageWindow(bytes, ptr as number, byteLength, false)
   return bytes.subarray(ptr as number, (ptr as number) + byteLength)
 }
-

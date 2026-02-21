@@ -1,7 +1,7 @@
 #include "perform_new_map.h"
 
 // Perform op NEW_MAP
-// To change function signature, update scripts/idl.ts and run 'pnpm run generate:c-ops'.
+// To change function signature, update scripts/idl.ts and run 'pnpm run ops:c'.
 // Add new utilities to qts_utils.{h,c} if needed.
 
 /**

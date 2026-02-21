@@ -194,6 +194,25 @@ export const SetPropFlags = {
 // Command buffer types
 // -----------------------------------------------------------------------------
 
+function createSlotType<S extends string, V extends number>(name: S, value: V): Brand<V, S> {
+  return value as Brand<V, S>
+}
+
+/** Indicates a slot or ref for a JSValue slot */
+export const JSValueSlotType = createSlotType("JSValueSlotType", 1)
+export type JSValueSlotType = typeof JSValueSlotType
+
+/** Indicates a slot or ref for a FuncList slot */
+export const FuncListSlotType = createSlotType("FuncListSlotType", 2)
+export type FuncListSlotType = Brand<1, "SlotType">
+
+export const SlotType = {
+  JSValueSlotType,
+  FuncListSlotType,
+} as const
+
+export type SlotType = (typeof SlotType)[keyof typeof SlotType]
+
 /** Byte offset to a command within a command buffer */
 export type CommandPtr = Brand<number, "CommandPtr">
 
@@ -208,11 +227,13 @@ export type FuncListSlot = Brand<number, "FuncListSlot">
 // -----------------------------------------------------------------------------
 
 export type Uint8 = Brand<number, "Uint8">
-export type Uint32 = Brand<number, "Uint32">
-export type Int32 = Brand<number, "Int32">
-export type Float64 = Brand<number, "Float64">
-export type Int64 = Brand<bigint, "Int64">
 export type Uint16 = Brand<number, "Uint16">
+export type Uint32 = Brand<number, "Uint32">
+
+export type Int32 = Brand<number, "Int32">
+export type Int64 = Brand<bigint, "Int64">
+
+export type Float64 = Brand<number, "Float64">
 
 /**
  * State of a promise.

@@ -145,7 +145,7 @@ export function CFunc(name: string, command: CommandDef) {
 
   // Generate header file content
   const headerGuard = `QTS_PERFORM_${name}_H`
-  const headerContent = `// Generated - do not edit. To change, update scripts/idl.ts and run 'pnpm run generate:c-ops'
+  const headerContent = `// Generated - do not edit. To change, update scripts/idl.ts and run 'pnpm run ops:c'
 #ifndef ${headerGuard}
 #define ${headerGuard}
 
@@ -162,7 +162,7 @@ ${signature};
   const scaffoldContent = `#include "perform_${lcName}.h"
 
 // Perform op ${name}
-// To change function signature, update scripts/idl.ts and run 'pnpm run generate:c-ops'.
+// To change function signature, update scripts/idl.ts and run 'pnpm run ops:c'.
 // Add new utilities to qts_utils.{h,c} if needed.
 
 ${docComment}
