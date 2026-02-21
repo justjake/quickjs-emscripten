@@ -70,7 +70,7 @@ export type ParamDef<T extends string = string> = {
    * - use 'in-out' if the command reads from and writes to the pointer or slot
    */
   usage: ParamUsage
-} & (T extends "char*" ? { pointer: PointerParamConfig } : { pointer?: never })
+} & (T extends "char*" | "uint8_t*" ? { pointer: PointerParamConfig } : { pointer?: never })
 
 /**
  * Type aliases for uint8_t; any type that fits in 8 bits.
@@ -102,6 +102,7 @@ type UInt32Types =
   | "int32_t"
   | "HostRefId"
   | "char*"
+  | "uint8_t*"
   | "JSCFunctionType*"
   | "JSPropFlags"
   | "SetPropFlags"
@@ -129,7 +130,7 @@ type CommandDataI64Def = {
 
 type CommandDataBufDef = {
   type: "buf"
-  ptr: ParamDef<"char*">
+  ptr: ParamDef<"uint8_t*" | "char*">
   len: ParamDef<"uint32_t">
   extra?: ParamDef<UInt32Types>
 }
@@ -518,11 +519,18 @@ export const COMMANDS = {
   NEW_ARRAYBUFFER: {
     doc: "Create an ArrayBuffer by copying data (JS_NewArrayBufferCopy)",
     slot_a: RESULT_JSVALUE_SLOT,
+    // TODO: copy vs alias input buffer
+    slot_c: {
+      name: "class_is_shared_array_buffer",
+      type: "uint8_t",
+      doc: "1 if the ArrayBuffer is a SharedArrayBuffer",
+      usage: "in",
+    },
     data: {
       type: "buf",
       ptr: {
         name: "data_ptr",
-        type: "char*",
+        type: "uint8_t*",
         doc: "Pointer to source data",
         usage: "in",
         pointer: { kind: "bytes", lenParam: "data.len" },
@@ -991,10 +999,11 @@ export const COMMANDS = {
     doc: "Call a function with any number of arguments stored in adjacent memory (JS_Call)",
     barrier: true,
     slot_a: RESULT_JSVALUE_SLOT,
-    slot_b: {
-      name: "ctor_slot",
+    slot_b: { name: "func_slot", type: "JSValueSlot", doc: "Function slot", usage: "in" },
+    slot_c: {
+      name: "this_slot",
       type: "JSValueSlot",
-      doc: "Constructor function slot",
+      doc: "This value slot",
       usage: "in",
     },
     data: {
@@ -1009,6 +1018,12 @@ export const COMMANDS = {
         name: "argv",
         type: "JSValue*",
         doc: "Pointer to argument array",
+        usage: "in",
+      },
+      d3: {
+        name: "call_as_constructor",
+        type: "uint32_t",
+        doc: "Whether to call the function as a constructor, eg `new func(args)`",
         usage: "in",
       },
     },
@@ -1356,12 +1371,15 @@ function isLengthFieldType(type: string): boolean {
 for (const [name, command] of Object.entries(COMMANDS)) {
   const paramMap = collectParamMap(command)
   for (const [path, param] of paramMap.entries()) {
-    if (param.type === "char*") {
+    if (param.type === "char*" || param.type === "uint8_t*") {
       if (!param.pointer) {
-        throw new Error(`${name}.${path}: char* params require pointer metadata`)
+        throw new Error(`${name}.${path}: ${param.type} params require pointer metadata`)
       }
       const pointer = param.pointer
       if (pointer.kind === "utf8.nullTerminated") {
+        if (param.type !== "char*") {
+          throw new Error(`${name}.${path}: utf8.nullTerminated is only valid for char* params`)
+        }
         continue
       }
       const lenParam = paramMap.get(pointer.lenParam)
@@ -1377,7 +1395,7 @@ for (const [name, command] of Object.entries(COMMANDS)) {
     }
 
     if (param.pointer) {
-      throw new Error(`${name}.${path}: pointer metadata is only valid for char* params`)
+      throw new Error(`${name}.${path}: pointer metadata is only valid for char* and uint8_t* params`)
     }
   }
 }

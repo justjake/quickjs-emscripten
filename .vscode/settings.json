@@ -28,5 +28,6 @@
     "vector": "cpp",
     "perform_call.h": "c"
   },
-  "files.exclude": {}
+  "files.exclude": {},
+  "vitest.disableWorkspaceWarning": true
 }

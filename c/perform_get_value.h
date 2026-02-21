@@ -1,6 +1,6 @@
 // Generated - do not edit. To change, update scripts/idl.ts and run 'pnpm run generate:c-ops'
-#ifndef QTS_PERFORM_GET_H
-#define QTS_PERFORM_GET_H
+#ifndef QTS_PERFORM_GET_VALUE_H
+#define QTS_PERFORM_GET_VALUE_H
 
 #include "command.h"
 
@@ -11,6 +11,6 @@
  * @param source_slot source value will be read from this slot
  * @param key_slot slot containing property key
  */
-QTS_CommandStatus perform_get(QTS_CommandEnv *env, JSValueSlot result_slot, JSValueSlot source_slot, JSValueSlot key_slot);
+QTS_CommandStatus perform_get_value(QTS_CommandEnv *env, JSValueSlot result_slot, JSValueSlot source_slot, JSValueSlot key_slot);
 
-#endif // QTS_PERFORM_GET_H
+#endif // QTS_PERFORM_GET_VALUE_H

@@ -28,6 +28,11 @@ typedef struct QTS_Command {
         struct { double value; uint32_t extra; } f64;
         struct { int64_t value; uint32_t extra; } i64;
         struct { char *ptr; uint32_t len; uint32_t extra; } buf;
+        struct {
+            uint8_t byte00, byte01, byte02, byte03;
+            uint8_t byte04, byte05, byte06, byte07;
+            uint8_t byte08, byte09, byte10, byte11;
+        } bytes;
         struct { JSValue *ptr; uint32_t len; uint32_t extra; } jsvalues;
     } data;
 } QTS_Command;

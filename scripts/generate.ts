@@ -706,7 +706,7 @@ function pascalToCamel(name: string): string {
 
 function commandFieldName(param: ParamDef<any>): string {
   const fieldName = snakeToCamel(param.name)
-  if (param.type === "char*" && fieldName.endsWith("Ptr")) {
+  if ((param.type === "char*" || param.type === "uint8_t*") && fieldName.endsWith("Ptr")) {
     if (param.pointer.kind === "bytes") {
       return fieldName.replace(/Ptr$/, "Bytes")
     }
@@ -757,7 +757,7 @@ function isRefSlotType(type: string): boolean {
 function commandParamType(param: ParamDef<any>, isJsValuesArrayPtr: boolean): string {
   if (param.type === "JSValueSlot") return "JSValueRef"
   if (param.type === "FuncListSlot") return "FuncListRef"
-  if (param.type === "char*") {
+  if (param.type === "char*" || param.type === "uint8_t*") {
     if (param.pointer.kind === "bytes") {
       return "Uint8Array"
     }
@@ -772,7 +772,10 @@ function commandParamType(param: ParamDef<any>, isJsValuesArrayPtr: boolean): st
 function hiddenLenPaths(params: readonly ParamWithPath[]): Set<ParamPath> {
   const out = new Set<ParamPath>()
   for (const entry of params) {
-    if (entry.param.type === "char*" && entry.param.pointer.kind !== "utf8.nullTerminated") {
+    if (
+      (entry.param.type === "char*" || entry.param.type === "uint8_t*") &&
+      entry.param.pointer.kind !== "utf8.nullTerminated"
+    ) {
       out.add(entry.param.pointer.lenParam)
       continue
     }

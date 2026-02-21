@@ -65,9 +65,16 @@ typedef uint8_t SetPropFlags;  /** Property flags for set/define operations */
 
 typedef uint8_t JSValueSlot;   /** Slot (index) of a JSValue in a command environment */
 typedef uint8_t FuncListSlot;  /** Slot (index) of a FuncList in a command environment */
+typedef uint8_t AnySlot;       /** Slot index in any register bank */
+typedef uint8_t SlotType;      /** Register bank selector for AnySlot */
 typedef uint8_t EvalFlags;     /** JS_EVAL_* flags for evaluation */
 typedef uint8_t NewErrorFlags; /** Flags for NEW_ERROR op (error type selection) */
 typedef uint8_t NewTypedArrayFlags; /** JSTypedArrayEnum - TypedArray type (maps to JSTypedArrayEnum) */
+
+enum {
+  QTS_SLOT_TYPE_JSVALUE = 0,
+  QTS_SLOT_TYPE_FUNCLIST = 1,
+};
 
 // ----------------------------------------------------------------------------
 // Debug
