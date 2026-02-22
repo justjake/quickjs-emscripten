@@ -58,6 +58,18 @@ describe("PtrArrayBuffer", () => {
     assert.deepStrictEqual([...memory.uint8().subarray(8, 12)], [1, 2, 3, 4])
   })
 
+  it("grows with realloc and preserves existing bytes", () => {
+    const memory = new ArrayBufferMemory(16)
+    const region = new PtrArrayBuffer(memory, 0, 4)
+    region.bytes().set([7, 8, 9, 10], 0)
+
+    region.grow(8)
+
+    assert.strictEqual(region.byteLength, 8)
+    assert.deepStrictEqual([...region.bytes().subarray(0, 4)], [7, 8, 9, 10])
+    assert.throws(() => region.grow(2), /Cannot shrink/)
+  })
+
   it("creates DataView windows with range checks", () => {
     const memory = new ArrayBufferMemory(32)
     const region = new PtrArrayBuffer(memory, 4, 8)

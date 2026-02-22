@@ -63,6 +63,26 @@ describe("PtrTypedArray", () => {
     assert.deepStrictEqual([...memory.uint8().subarray(8, 12)], [9, 10, 11, 12])
   })
 
+  it("grows with realloc and preserves existing values", () => {
+    const memory = new ArrayBufferMemory(32)
+    const viewPtr = new PtrTypedArray(memory, Uint32Array, 0, 2)
+    viewPtr.typedArray().set([111, 222], 0)
+
+    viewPtr.grow(4)
+
+    assert.strictEqual(viewPtr.length, 4)
+    assert.strictEqual(viewPtr.byteLength, 16)
+    assert.deepStrictEqual([...viewPtr.typedArray().subarray(0, 2)], [111, 222])
+    assert.throws(() => viewPtr.grow(1), /Cannot shrink/)
+  })
+
+  it("rejects grow when byteOffset is non-zero", () => {
+    const memory = new ArrayBufferMemory(16)
+    const viewPtr = new PtrTypedArray(memory, Uint8Array, 0, 4, 2)
+
+    assert.throws(() => viewPtr.grow(8), /byteOffset=0/)
+  })
+
   it("supports typed-array read/write through view()", () => {
     const memory = new ArrayBufferMemory(16)
     const viewPtr = new PtrTypedArray(memory, Uint8Array, 2, 4)

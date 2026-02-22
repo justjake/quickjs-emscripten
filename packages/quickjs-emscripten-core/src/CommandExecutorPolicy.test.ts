@@ -1,15 +1,14 @@
 import { SlotType, type SetPropFlags } from "@jitl/quickjs-ffi-types"
 import { describe, expect, it } from "vitest"
 import { CommandRef, type CommandRef as CommandRefType } from "./command-types"
-import * as Ops from "./ops"
 import {
   NoSpillBatchCutPolicy,
   PlanCode,
   RefLocation,
   type BatchStateView,
+  type CommandCount,
   type CommandPc,
   type CommandPcOrNone,
-  type CommandCount,
   type DiagnosticsSink,
   type PlannerEmitter,
   type PrepassView,
@@ -19,12 +18,15 @@ import {
   type SlotPlanner,
   type SpillPtr,
 } from "./CommandExecutorPolicy"
+import type { Command } from "./ops"
+import * as Ops from "./ops"
 
 type RefMetadata = {
   firstUse?: CommandPc
   lastUse?: CommandPc
   producedAt?: CommandPcOrNone
   returned?: boolean
+  executorOwned?: boolean
 }
 
 class FakePrepass implements PrepassView {
@@ -53,6 +55,10 @@ class FakePrepass implements PrepassView {
 
   isReturned(ref: CommandRefType): boolean {
     return this.metadata.get(ref as number)?.returned ?? false
+  }
+
+  isExecutorOwned(ref: CommandRefType): boolean {
+    return this.metadata.get(ref as number)?.executorOwned ?? true
   }
 }
 
@@ -175,11 +181,13 @@ class FakeBatch implements BatchStateView {
 
 class FakeEmitter implements PlannerEmitter {
   readonly plannedPcs: CommandPc[] = []
+  readonly plannerOps: Command[] = []
 
   constructor(private readonly batch: FakeBatch) {}
 
-  emitPlannerOp(): void {
-    throw new Error("NoSpillBatchCutPolicy must not emit planner ops")
+  emitPlannerOp(op: Command): void {
+    this.plannerOps.push(op)
+    this.batch.onCommandEncoded()
   }
 
   emitSourceCommand(pc: CommandPc): void {
@@ -228,6 +236,8 @@ describe("NoSpillBatchCutPolicy", () => {
     const result = policy.planAt(0)
     expect(result).toBe(PlanCode.PLANNED)
     expect(emit.plannedPcs).toEqual([0])
+    expect(emit.plannerOps).toHaveLength(1)
+    expect(emit.plannerOps[0]?.opcode).toBe(Ops.SLOT_FREE)
     expect(refs.location(out)).toBe(RefLocation.DEAD)
     expect(slots.available(SlotType.JSValueSlotType)).toBe(1)
     expect(diagnostics.messages).toHaveLength(0)

@@ -2,11 +2,11 @@ import { SetPropFlags } from "@jitl/quickjs-ffi-types"
 import * as fs from "fs"
 import * as path from "path"
 import { describe, expect, it, vi } from "vitest"
+import { CommandBuilder } from "./CommandBuilder"
+import type { QuickJSContext } from "./context"
 import { HostRefMap } from "./host-ref"
 import { JSValueLifetime } from "./lifetime"
 import * as Op from "./ops"
-import { CommandBuilder } from "./CommandBuilder"
-import type { QuickJSContext } from "./context"
 import type { QuickJSHandle } from "./types"
 
 function makeFakeHandle(): QuickJSHandle {
@@ -32,8 +32,8 @@ describe("CommandBuilder", () => {
 
     const commands = builder.getCommands()
     expect(commands).toHaveLength(2)
-    expect(commands[0]?.kind).toBe(Op.SET_STR_INT32)
-    expect(commands[1]?.kind).toBe(Op.SET_IDX_STRING)
+    expect(commands[0]?.opcode).toBe(Op.SET_STR_INT32)
+    expect(commands[1]?.opcode).toBe(Op.SET_IDX_STRING)
     expect(builder.getInputBindings()).toHaveLength(1)
   })
 
@@ -49,7 +49,7 @@ describe("CommandBuilder", () => {
     builder.setPropRef(target, keyHandle, valueRef)
 
     const commands = builder.getCommands()
-    expect(commands.map((command) => command.kind)).toEqual([
+    expect(commands.map((command) => command.opcode)).toEqual([
       Op.NEW_OBJECT,
       Op.NEW_FLOAT64,
       Op.SET_STR_VALUE,
@@ -68,7 +68,7 @@ describe("CommandBuilder", () => {
     builder.setProp(target, "a", valueHandle)
 
     const command = builder.getCommands()[1]
-    expect(command?.kind).toBe(Op.SET_STR_VALUE)
+    expect(command?.opcode).toBe(Op.SET_STR_VALUE)
     expect(builder.getInputBindings()).toHaveLength(1)
   })
 
@@ -89,7 +89,7 @@ describe("CommandBuilder", () => {
 
     expect(boundA).toBe(boundB)
     expect(builder.getInputBindings()).toHaveLength(1)
-    expect(builder.getCommands().map((c) => c.kind)).toEqual([
+    expect(builder.getCommands().map((c) => c.opcode)).toEqual([
       Op.NEW_MAP,
       Op.NEW_SET,
       Op.NEW_STRING,
@@ -110,9 +110,7 @@ describe("CommandBuilder", () => {
     const bindings = builder.getInputBindings()
     expect(bindings).toHaveLength(2)
     expect(bindings.find((binding) => binding.handle === target)?.mode).toBe("borrowed")
-    expect(bindings.find((binding) => binding.handle === moved)?.mode).toBe(
-      "consume_on_success",
-    )
+    expect(bindings.find((binding) => binding.handle === moved)?.mode).toBe("consume_on_success")
   })
 
   it("upgrades existing input binding mode to consume_on_success", () => {
@@ -123,9 +121,7 @@ describe("CommandBuilder", () => {
     builder.bindInput(handle)
     builder.setProp(makeFakeHandle(), "x", builder.consume(handle))
 
-    const binding = builder
-      .getInputBindings()
-      .find((candidate) => candidate.handle === handle)
+    const binding = builder.getInputBindings().find((candidate) => candidate.handle === handle)
     expect(binding?.mode).toBe("consume_on_success")
   })
 
@@ -157,8 +153,8 @@ describe("CommandBuilder", () => {
     })
 
     const command = builder.getCommands()[0]
-    expect(command?.kind).toBe(Op.SET_STR_BOOL)
-    if (!command || command.kind !== Op.SET_STR_BOOL) {
+    expect(command?.opcode).toBe(Op.SET_STR_BOOL)
+    if (!command || command.opcode !== Op.SET_STR_BOOL) {
       return
     }
     const expectedFlags =
@@ -184,8 +180,8 @@ describe("CommandBuilder", () => {
     })
 
     const command = builder.getCommands()[2]
-    expect(command?.kind).toBe(Op.SET_STR_VALUE)
-    if (!command || command.kind !== Op.SET_STR_VALUE) {
+    expect(command?.opcode).toBe(Op.SET_STR_VALUE)
+    if (!command || command.opcode !== Op.SET_STR_VALUE) {
       return
     }
     const expectedFlags =
@@ -208,13 +204,13 @@ describe("CommandBuilder", () => {
 
     const commands = builder.getCommands()
     expect(commands).toHaveLength(2)
-    expect(commands[0]?.kind).toBe(Op.NEW_FUNC)
-    expect(commands[1]?.kind).toBe(Op.NEW_FUNC)
+    expect(commands[0]?.opcode).toBe(Op.NEW_FUNC)
+    expect(commands[1]?.opcode).toBe(Op.NEW_FUNC)
 
-    if (!commands[0] || commands[0].kind !== Op.NEW_FUNC) {
+    if (!commands[0] || commands[0].opcode !== Op.NEW_FUNC) {
       return
     }
-    if (!commands[1] || commands[1].kind !== Op.NEW_FUNC) {
+    if (!commands[1] || commands[1].opcode !== Op.NEW_FUNC) {
       return
     }
 
@@ -245,7 +241,7 @@ describe("CommandBuilder", () => {
     builder.defineFuncListProp(root, 3, "nested", { object: child }, { enumerable: true })
 
     const commands = builder.getCommands()
-    expect(commands.map((c) => c.kind)).toEqual([
+    expect(commands.map((c) => c.opcode)).toEqual([
       Op.FUNCLIST_NEW,
       Op.FUNCLIST_NEW,
       Op.FUNCLIST_DEF_STRING,
@@ -255,7 +251,7 @@ describe("CommandBuilder", () => {
     ])
 
     const last = commands[5]
-    if (!last || last.kind !== Op.FUNCLIST_DEF_OBJECT) {
+    if (!last || last.opcode !== Op.FUNCLIST_DEF_OBJECT) {
       return
     }
     expect(last.flags).toBe(0b00100)
@@ -267,9 +263,7 @@ describe("CommandBuilder", () => {
     const root = builder.newFuncList(1)
     const handle = makeFakeHandle()
 
-    expect(() =>
-      builder.defineFuncListProp(root, 0, "bad", handle as any),
-    ).toThrow(
+    expect(() => builder.defineFuncListProp(root, 0, "bad", handle as any)).toThrow(
       "defineFuncListProp does not accept QuickJSHandle values. FuncList entries must be literals or nested `{ object: FuncListRef }` definitions.",
     )
   })

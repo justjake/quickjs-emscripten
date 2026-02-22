@@ -1,5 +1,6 @@
 import type { SlotType } from "@jitl/quickjs-ffi-types"
 import { CommandRefType, type CommandRef } from "./command-types"
+import * as Ops from "./ops"
 import {
   forEachConsumedRef,
   forEachReadRef,
@@ -54,6 +55,7 @@ export interface PrepassView {
   nextUseAfter(ref: CommandRef, pc: CommandPc): CommandPcOrNone
   producedAt(ref: CommandRef): CommandPcOrNone
   isReturned(ref: CommandRef): boolean
+  isExecutorOwned(ref: CommandRef): boolean
 }
 
 export interface RefStateView {
@@ -124,12 +126,6 @@ export abstract class BasePolicy {
   abstract end(totalSuccessful: CommandCount, failedPc: CommandPcOrNone): void
 }
 
-type PendingAllocation = {
-  ref: CommandRef
-  bank: SlotType
-  slot: SlotIndex
-}
-
 function pushUniqueRef(refs: CommandRef[], ref: CommandRef): void {
   for (let i = 0; i < refs.length; i++) {
     if (refs[i] === ref) {
@@ -143,15 +139,36 @@ export class NoSpillBatchCutPolicy extends BasePolicy {
   private ctx?: PolicyContext
   private readonly readRefs: CommandRef[] = []
   private readonly writeRefs: CommandRef[] = []
+  private readonly consumedRefs: CommandRef[] = []
   private readonly touchedRefs: CommandRef[] = []
-  private readonly allocations: PendingAllocation[] = []
+  private readonly allocationRefs: CommandRef[] = []
+  private readonly allocationBanks: SlotType[] = []
+  private readonly allocationSlots: SlotIndex[] = []
+  private allocationCount = 0
+
+  private readonly onReadRef = (ref: CommandRef): void => {
+    pushUniqueRef(this.readRefs, ref)
+    pushUniqueRef(this.touchedRefs, ref)
+  }
+
+  private readonly onConsumedRef = (ref: CommandRef): void => {
+    pushUniqueRef(this.readRefs, ref)
+    pushUniqueRef(this.consumedRefs, ref)
+    pushUniqueRef(this.touchedRefs, ref)
+  }
+
+  private readonly onWriteRef = (ref: CommandRef): void => {
+    pushUniqueRef(this.writeRefs, ref)
+    pushUniqueRef(this.touchedRefs, ref)
+  }
 
   begin(ctx: PolicyContext): void {
     this.ctx = ctx
     this.readRefs.length = 0
     this.writeRefs.length = 0
+    this.consumedRefs.length = 0
     this.touchedRefs.length = 0
-    this.allocations.length = 0
+    this.allocationCount = 0
   }
 
   planAt(pc: CommandPc): PlanCode {
@@ -234,11 +251,16 @@ export class NoSpillBatchCutPolicy extends BasePolicy {
       }
     }
 
-    for (let i = 0; i < this.allocations.length; i++) {
-      const allocation = this.allocations[i]
-      ctx.refs.markInSlot(allocation.ref, allocation.slot)
+    const requiredCommands = this.requiredCommandCapacityForCurrentPc(pc)
+    if (requiredCommands > remainingCapacity) {
+      this.clearPendingAllocations()
+      return this.onCommandBufferExhausted(pc, requiredCommands, remainingCapacity)
     }
-    this.allocations.length = 0
+
+    for (let i = 0; i < this.allocationCount; i++) {
+      ctx.refs.markInSlot(this.allocationRefs[i]!, this.allocationSlots[i]!)
+    }
+    this.allocationCount = 0
 
     ctx.emit.emitSourceCommand(pc)
     this.releaseDeadRefs(pc)
@@ -257,8 +279,9 @@ export class NoSpillBatchCutPolicy extends BasePolicy {
     this.ctx = undefined
     this.readRefs.length = 0
     this.writeRefs.length = 0
+    this.consumedRefs.length = 0
     this.touchedRefs.length = 0
-    this.allocations.length = 0
+    this.allocationCount = 0
   }
 
   private assertBegun(): PolicyContext {
@@ -271,20 +294,12 @@ export class NoSpillBatchCutPolicy extends BasePolicy {
   private collectRefs(command: Command): void {
     this.readRefs.length = 0
     this.writeRefs.length = 0
+    this.consumedRefs.length = 0
     this.touchedRefs.length = 0
 
-    forEachReadRef(command, (ref) => {
-      pushUniqueRef(this.readRefs, ref)
-      pushUniqueRef(this.touchedRefs, ref)
-    })
-    forEachConsumedRef(command, (ref) => {
-      pushUniqueRef(this.readRefs, ref)
-      pushUniqueRef(this.touchedRefs, ref)
-    })
-    forEachWriteRef(command, (ref) => {
-      pushUniqueRef(this.writeRefs, ref)
-      pushUniqueRef(this.touchedRefs, ref)
-    })
+    forEachReadRef(command, this.onReadRef)
+    forEachConsumedRef(command, this.onConsumedRef)
+    forEachWriteRef(command, this.onWriteRef)
   }
 
   private reserveSlot(ref: CommandRef): boolean {
@@ -294,17 +309,19 @@ export class NoSpillBatchCutPolicy extends BasePolicy {
     if (slot < 0) {
       return false
     }
-    this.allocations.push({ ref, bank, slot })
+    const allocationIndex = this.allocationCount++
+    this.allocationRefs[allocationIndex] = ref
+    this.allocationBanks[allocationIndex] = bank
+    this.allocationSlots[allocationIndex] = slot
     return true
   }
 
   private clearPendingAllocations(): void {
     const ctx = this.assertBegun()
-    for (let i = this.allocations.length - 1; i >= 0; i--) {
-      const allocation = this.allocations[i]
-      ctx.slots.free(allocation.bank, allocation.slot)
+    for (let i = this.allocationCount - 1; i >= 0; i--) {
+      ctx.slots.free(this.allocationBanks[i]!, this.allocationSlots[i]!)
     }
-    this.allocations.length = 0
+    this.allocationCount = 0
   }
 
   private onSlotExhausted(pc: CommandPc, ref: CommandRef): PlanCode {
@@ -319,6 +336,76 @@ export class NoSpillBatchCutPolicy extends BasePolicy {
       return PlanCode.FATAL_CAPACITY_ERROR
     }
     return PlanCode.BATCH_FULL_BEFORE_COMMAND
+  }
+
+  private onCommandBufferExhausted(
+    pc: CommandPc,
+    requiredCommands: CommandCount,
+    remainingCapacity: CommandCount,
+  ): PlanCode {
+    const ctx = this.assertBegun()
+    if (ctx.batch.isEmpty()) {
+      ctx.diagnostics.setFatalPlanningError(
+        `NoSpillBatchCutPolicy cannot fit command ${pc} in empty batch: requires ${requiredCommands} command slots, remaining capacity ${remainingCapacity}`,
+      )
+      return PlanCode.FATAL_CAPACITY_ERROR
+    }
+    return PlanCode.BATCH_FULL_BEFORE_COMMAND
+  }
+
+  private requiredCommandCapacityForCurrentPc(pc: CommandPc): CommandCount {
+    let required = 1 // source command
+    required += this.countReleaseDeadPlannerOps(pc)
+    return required
+  }
+
+  private countReleaseDeadPlannerOps(pc: CommandPc): CommandCount {
+    const ctx = this.assertBegun()
+    let count = 0
+
+    for (let i = 0; i < this.touchedRefs.length; i++) {
+      const ref = this.touchedRefs[i]
+      if (!ctx.prepass.isExecutorOwned(ref)) {
+        continue
+      }
+      if (ctx.prepass.isReturned(ref)) {
+        continue
+      }
+
+      const lastUse = ctx.prepass.lastUse(ref)
+      const producedAt = ctx.prepass.producedAt(ref)
+      const deadAfterCommand =
+        lastUse === pc || (producedAt === pc && (lastUse < 0 || lastUse < producedAt))
+      if (!deadAfterCommand) {
+        continue
+      }
+      if (this.isConsumedByCurrentCommand(ref)) {
+        continue
+      }
+      if (!this.willBeInSlot(ref)) {
+        continue
+      }
+      count++
+    }
+
+    return count
+  }
+
+  private willBeInSlot(ref: CommandRef): boolean {
+    const ctx = this.assertBegun()
+    const location = ctx.refs.location(ref)
+    if (location === RefLocation.IN_SLOT) {
+      return true
+    }
+    if (location !== RefLocation.UNMATERIALIZED && location !== RefLocation.DEAD) {
+      return false
+    }
+    for (let i = 0; i < this.allocationCount; i++) {
+      if (this.allocationRefs[i] === ref) {
+        return true
+      }
+    }
+    return false
   }
 
   private releaseDeadRefs(pc: CommandPc): void {
@@ -341,9 +428,22 @@ export class NoSpillBatchCutPolicy extends BasePolicy {
       const location = ctx.refs.location(ref)
       if (location === RefLocation.IN_SLOT) {
         const slot = ctx.refs.slotOf(ref)
-        ctx.slots.free(CommandRefType(ref), slot)
+        const slotType = CommandRefType(ref)
+        ctx.slots.free(slotType, slot)
+        if (!this.isConsumedByCurrentCommand(ref) && ctx.prepass.isExecutorOwned(ref)) {
+          ctx.emit.emitPlannerOp(Ops.SlotFreeCmd(slot, slotType))
+        }
       }
       ctx.refs.markDead(ref)
     }
+  }
+
+  private isConsumedByCurrentCommand(ref: CommandRef): boolean {
+    for (let i = 0; i < this.consumedRefs.length; i++) {
+      if (this.consumedRefs[i] === ref) {
+        return true
+      }
+    }
+    return false
   }
 }

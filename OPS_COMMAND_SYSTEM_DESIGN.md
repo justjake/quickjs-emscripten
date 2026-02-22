@@ -20,7 +20,7 @@ Note that the specifics of the command system are considered internal. There is 
    - If an error occurs, the loop halts, and CommandExecutor cleans up any intermediate allocations.
 4. CommandExecutor extracts results requested by the application from WASM memory and returns them to the caller. Any other made during command execution are cleaned up.
 
-Execution is re-entrant: all command/slot buffers are passed explicitly as function args for each call. The executor may reuse preallocated buffers internally, but this is an implementation detail rather than protocol state.
+Execution is re-entrant at the WASM-module boundary: all command/slot buffers are passed explicitly as function args for each call, and multiple executor instances in the same WASM module can execute independently. Re-entering `execute()` on the same `CommandExecutor` instance is out of scope for v0 and not required.
 
 ## Commands
 
@@ -389,7 +389,7 @@ TODO: refcounting / cleanup algorithm. When/how to insert `SLOT_FREE` commands? 
 3. IDL (`/Users/jitl/src/quickjs-emscripten/scripts/idl.ts`) is source of truth for command signatures and register-bank widths.
 4. No implicit `JS_DupValue` insertion for normal input flows.
 5. Cleanup is tracked by planner state only (never by scanning WASM slot memory).
-6. Executor behavior is re-entrant per call.
+6. Re-entrancy is required across execute calls within the same WASM module, but not for nested/concurrent `execute()` calls on the same executor instance.
 
 ### Execute boundary contract
 
@@ -425,10 +425,21 @@ Planner tables are bank-local and keyed by builder-produced ids.
 - `commands: readonly Command[]`
 - `inputBindings: readonly InputBinding[]`
 - `returnRefs: readonly CommandRef[]`
+- pre-allocated executor-owned pointers:
+  - `command_buffer_ptr`
+  - `jsvalue_slots_ptr`
+  - `funclist_slots_ptr`
+  - `out_status_ptr`
+  - `out_error_ptr`
+  - `arena_ptr`
 - capacities:
   - command buffer
   - jsvalue slots
   - funclist slots
+
+The command buffer capacity is fixed for an execute call. Planner policies must fit emitted planner/source commands within that capacity by using batch cuts; the executor does not resize the command buffer.
+
+For normal execute paths (excluding externally-visible value ownership transfer for returned handles), executor internals must not allocate or resize WASM memory during `execute()`. All internal buffers must come from pre-allocated pointers supplied in ExecuteInputs.
 
 #### PrepassTables (immutable)
 
@@ -569,7 +580,7 @@ For each `consume_on_success` binding at execute return:
 
 ### Validation scenarios
 
-1. Re-entrant nested executes with separate buffers succeed.
+1. Separate executor instances in the same WASM module execute independently; nested/concurrent `execute()` on one executor instance is out of scope.
 2. `SLOT_LOAD/STORE` copy widths are slot-type-derived and lengthless.
 3. No implicit dup for borrowed inputs.
 4. Slot pressure produces deterministic spill behavior.

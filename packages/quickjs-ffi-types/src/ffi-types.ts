@@ -225,6 +225,8 @@ export type JSValueSlot = Brand<number, "JSValueSlot">
 /** Index of a FuncList slot (0-255) */
 export type FuncListSlot = Brand<number, "FuncListSlot">
 
+export type AnySlot = JSValueSlot | FuncListSlot
+
 // -----------------------------------------------------------------------------
 // Scalar types (following TypedArray naming: Uint8, Int32, Float64, etc.)
 // -----------------------------------------------------------------------------

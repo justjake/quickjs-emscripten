@@ -228,6 +228,25 @@ export class PtrArrayBuffer<Ptr extends number = number> extends PtrRegion<Uint8
     this.invalidateFullDataView()
   }
 
+  grow(newByteLength: number): void {
+    assertNonNegativeInt(newByteLength, "newByteLength")
+    if (newByteLength < this._byteLength) {
+      throw new Error(
+        `Cannot shrink PtrArrayBuffer byteLength from ${this._byteLength} to ${newByteLength}`,
+      )
+    }
+    if (newByteLength === this._byteLength) {
+      return
+    }
+
+    const nextPtr = this.memory.realloc(this.ptr, newByteLength)
+    if (!Number.isInteger(nextPtr as number) || (nextPtr as number) < 0) {
+      throw new Error(`realloc() returned invalid ptr: ${nextPtr}`)
+    }
+
+    this.rebind(nextPtr, newByteLength)
+  }
+
   bytes(): Uint8Array {
     return this.resolveCachedView((bytes, regionByteOffset, _absoluteByteOffset, byteLength) =>
       bytes.subarray(regionByteOffset, regionByteOffset + byteLength),
@@ -358,6 +377,27 @@ export class PtrTypedArray<
     this.rebindRegion(ptr, computeTypedByteLength(this._arrayType, length), byteOffset)
     this._length = length
     this.buffer.rebind(this.regionPtr(0), this._byteLength)
+  }
+
+  grow(newLength: number): void {
+    assertNonNegativeInt(newLength, "newLength")
+    if (newLength < this._length) {
+      throw new Error(`Cannot shrink PtrTypedArray length from ${this._length} to ${newLength}`)
+    }
+    if (newLength === this._length) {
+      return
+    }
+    if (this._byteOffset !== 0) {
+      throw new Error("PtrTypedArray.grow() only supports byteOffset=0")
+    }
+
+    const nextByteLength = computeTypedByteLength(this._arrayType, newLength)
+    const nextPtr = this.memory.realloc(this.ptr, nextByteLength)
+    if (!Number.isInteger(nextPtr as number) || (nextPtr as number) < 0) {
+      throw new Error(`realloc() returned invalid ptr: ${nextPtr}`)
+    }
+
+    this.rebind(nextPtr, newLength, 0)
   }
 
   typedArray(): ArrayT {

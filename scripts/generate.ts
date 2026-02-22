@@ -183,13 +183,10 @@ function cTypeToTypescriptType(ctype: string, branded = false): ParsedType {
     NewTypedArrayFlags: "NewTypedArrayFlags",
     // Other semantic types
     HostRefId: "HostRefId",
+    AnySlot: "AnySlot",
   }
   if (type in brandedTypes) {
     return { ffi: "number", typescript: brandedTypes[type], ctype, attributes }
-  }
-
-  if (type === "AnySlot") {
-    return { ffi: "number", typescript: branded ? "Uint8" : "number", ctype, attributes }
   }
 
   // mapping
@@ -695,6 +692,42 @@ function addDataParams(
       }
       break
 
+    case "bytes": {
+      const groups: Array<{
+        fields: Array<ParamDef<UInt8Types> | undefined>
+        setter: "setD1_u32" | "setD2_u32" | "setD3_u32"
+      }> = [
+        {
+          fields: [data.byte00, data.byte01, data.byte02, data.byte03],
+          setter: "setD1_u32",
+        },
+        {
+          fields: [data.byte04, data.byte05, data.byte06, data.byte07],
+          setter: "setD2_u32",
+        },
+        {
+          fields: [data.byte08, data.byte09, data.byte10, data.byte11],
+          setter: "setD3_u32",
+        },
+      ]
+
+      for (const group of groups) {
+        const parts: string[] = []
+        for (let idx = 0; idx < group.fields.length; idx++) {
+          const field = group.fields[idx]
+          if (!field) {
+            parts.push("0")
+            continue
+          }
+          params.push({ name: field.name, tsType: tsType(field.type) })
+          const asU8 = `(${field.name} as number) & 0xff`
+          parts.push(idx === 0 ? asU8 : `(${asU8} << ${idx * 8})`)
+        }
+        const packedExpr = parts.length === 0 ? "0" : parts.join(" | ")
+        useSetter(group.setter, `${group.setter}(view, offset, ${packedExpr})`)
+      }
+      break
+    }
   }
 }
 
@@ -797,7 +830,7 @@ function collectCommandParams(command: CommandDef): ParamWithPath[] {
 }
 
 function isRefSlotType(type: string): boolean {
-  return type === "JSValueSlot" || type === "FuncListSlot"
+  return type === "JSValueSlot" || type === "FuncListSlot" || type === "AnySlot"
 }
 
 function isReadUsage(usage: string): boolean {
@@ -815,17 +848,13 @@ function isConsumeUsage(usage: string): boolean {
 function commandParamType(param: ParamDef<any>, isJsValuesArrayPtr: boolean): string {
   if (param.type === "JSValueSlot") return "JSValueRef"
   if (param.type === "FuncListSlot") return "FuncListRef"
-  if (param.type === "AnySlot") return "number"
-  if (param.type === "char*" || param.type === "uint8_t*") {
-    if (param.pointer.kind === "bytes") {
-      return "Uint8Array"
-    }
-    return "string"
-  }
+  if (param.type === "AnySlot") return "CommandRef"
+  if (param.type === "char*") return "string"
+  if (param.type === "uint8_t*") return "Uint8Array"
   if (param.type === "JSValue*") {
     return isJsValuesArrayPtr ? "readonly JSValueRef[]" : "JSValuePointer"
   }
-  return cTypeToTypescriptType(param.type, false).typescript
+  return cTypeToTypescriptType(param.type, true).typescript
 }
 
 function hiddenLenPaths(params: readonly ParamWithPath[]): Set<ParamPath> {
@@ -927,6 +956,148 @@ function renderCaseGroups(groups: Map<string, CaseGroup>): string[] {
   return out
 }
 
+function renderWriteArgExpr(type: string, expr: string): string {
+  void type
+  return expr
+}
+
+function renderWriteCommandCase(name: OpName, commandDef: CommandDef): string {
+  const params = collectCommandParams(commandDef)
+  const omittedPaths = hiddenLenPaths(params)
+  const paramMap = new Map<ParamPath, ParamWithPath>(params.map((entry) => [entry.path, entry]))
+  const visibleByPath = new Map<ParamPath, ParamWithPath>()
+  for (const entry of params) {
+    if (!omittedPaths.has(entry.path)) {
+      visibleByPath.set(entry.path, entry)
+    }
+  }
+
+  const pointerVarByPath = new Map<ParamPath, string>()
+  const hiddenLenExprByPath = new Map<ParamPath, string>()
+  const prelude: string[] = []
+
+  for (const entry of params) {
+    const { path, param } = entry
+    if (param.type !== "char*" && param.type !== "uint8_t*") {
+      continue
+    }
+
+    const visible = visibleByPath.get(path)
+    if (!visible) {
+      continue
+    }
+
+    const fieldName = commandFieldName(visible.param)
+    const allocVar = `alloc_${fieldName}`
+
+    const tsType = cTypeToTypescriptType(param.type, true).typescript
+    let tsLenType: string | undefined
+    if (param.pointer?.lenParam) {
+      const lenParam = paramMap.get(param.pointer.lenParam)
+      if (lenParam) {
+        tsLenType = cTypeToTypescriptType(lenParam.param.type, true).typescript
+      }
+    }
+    const encodeTypeParams = tsLenType ? `${tsType}, ${tsLenType}` : tsType
+
+    if (param.pointer.kind === "bytes") {
+      const lenPath = param.pointer.lenParam
+      const lenEntry = params.find((it) => it.path === lenPath)
+      if (!lenEntry) {
+        throw new Error(`${name}: missing len param ${lenPath}`)
+      }
+      const maxValue = lenEntry.param.type === "uint8_t" ? "0xff" : "0xffffffff"
+      prelude.push(
+        `const ${allocVar} = helpers.encodeBytes<${encodeTypeParams}>(command.${fieldName}, ${maxValue})`,
+      )
+      prelude.push(
+        `if (${allocVar}.len > ${maxValue}) throw new Error("${name}.${fieldName}: byte length overflow")`,
+      )
+      if (omittedPaths.has(lenPath) && !hiddenLenExprByPath.has(lenPath)) {
+        hiddenLenExprByPath.set(lenPath, `${allocVar}.len`)
+      }
+    } else {
+      if (param.pointer.kind === "utf8.nullTerminated") {
+        prelude.push(
+          `const ${allocVar} = helpers.encodeUtf8<${encodeTypeParams}>(command.${fieldName}, undefined, true)`,
+        )
+      } else {
+        const lenPath = param.pointer.lenParam
+        const lenEntry = params.find((it) => it.path === lenPath)
+        if (!lenEntry) {
+          throw new Error(`${name}: missing len param ${lenPath}`)
+        }
+        const maxValue = lenEntry.param.type === "uint8_t" ? "0xff" : "0xffffffff"
+        if (param.pointer.kind === "utf8.optionalLength") {
+          prelude.push(
+            `const ${allocVar} = helpers.encodeUtf8<${encodeTypeParams}>(command.${fieldName}, ${maxValue}, false)`,
+          )
+        } else {
+          prelude.push(
+            `const ${allocVar} = helpers.encodeUtf8<${encodeTypeParams}>(command.${fieldName}, ${maxValue})`,
+          )
+        }
+        if (omittedPaths.has(lenPath) && !hiddenLenExprByPath.has(lenPath)) {
+          hiddenLenExprByPath.set(lenPath, `${allocVar}.len`)
+        }
+      }
+    }
+
+    pointerVarByPath.set(path, allocVar)
+  }
+
+  const args: string[] = []
+  for (const entry of params) {
+    const { path, param } = entry
+    const writerArgType = cTypeToTypescriptType(param.type, true).typescript
+
+    if (isRefSlotType(param.type)) {
+      const visible = visibleByPath.get(path)
+      if (!visible) {
+        throw new Error(`${name}: hidden slot param not supported (${path})`)
+      }
+      const fieldName = commandFieldName(visible.param)
+      args.push(renderWriteArgExpr(writerArgType, `helpers.resolveRef(command.${fieldName})`))
+      continue
+    }
+
+    if (param.type === "char*" || param.type === "uint8_t*") {
+      const ptrVar = pointerVarByPath.get(path)
+      if (!ptrVar) {
+        throw new Error(`${name}: missing pointer var for ${path}`)
+      }
+      args.push(renderWriteArgExpr(writerArgType, `${ptrVar}.ptr`))
+      continue
+    }
+
+    if (omittedPaths.has(path)) {
+      const hiddenExpr = hiddenLenExprByPath.get(path)
+      if (!hiddenExpr) {
+        throw new Error(`${name}: missing hidden expression for ${path}`)
+      }
+      args.push(renderWriteArgExpr(writerArgType, hiddenExpr))
+      continue
+    }
+
+    const visible = visibleByPath.get(path)
+    if (!visible) {
+      throw new Error(`${name}: missing visible param ${path}`)
+    }
+    const fieldName = commandFieldName(visible.param)
+    args.push(renderWriteArgExpr(writerArgType, `command.${fieldName}`))
+  }
+
+  const writerName = `write${TsOpName(name)}`
+  const writerCallArgs = args.length > 0 ? `, ${args.join(", ")}` : ""
+  const lines = [
+    `    case ${name}: {`,
+    ...prelude.map((line) => `      ${line}`),
+    `      return ${writerName}(view, offset${writerCallArgs})`,
+    `    }`,
+  ]
+  return lines.join("\n")
+}
+
 function buildOpsFiles(useRelativeImport = false): string {
   const usedSetters = new Set<string>()
   const usedTypes = new Set<string>()
@@ -990,10 +1161,16 @@ function buildOpsFiles(useRelativeImport = false): string {
   const importTypes = [...usedTypes].filter((t) => !primitiveTypes.has(t)).sort()
 
   const importFrom = useRelativeImport ? "./ffi-types" : "@jitl/quickjs-ffi-types"
-const imports = `import type {
+  const imports = `import type {
   ${importTypes.join(",\n  ")},
 } from "${importFrom}"
-import type { CommandRef, FuncListRef, JSValueRef, RefVisitor } from "./command-types"`
+import type {
+  CommandRef,
+  CommandWriteHelpers,
+  FuncListRef,
+  JSValueRef,
+  RefVisitor,
+} from "./command-types"`
 
   const opcodeConsts = OPCODE_TO_COMMAND.map(
     (name, opcode) => `export const ${name} = ${opcode} as const`,
@@ -1035,7 +1212,7 @@ import type { CommandRef, FuncListRef, JSValueRef, RefVisitor } from "./command-
 
     const interfaceLines = [
       `export interface ${typeName} extends BaseCommand {`,
-      `  kind: typeof ${name}`,
+      `  opcode: typeof ${name}`,
       ...fieldRows,
       `}`,
     ].filter(Boolean)
@@ -1053,7 +1230,7 @@ import type { CommandRef, FuncListRef, JSValueRef, RefVisitor } from "./command-
 
     const commandInit = [
       `  return {`,
-      `    kind: ${name},`,
+      `    opcode: ${name},`,
       ...fieldAssignments.map((line) => line.replace("      ", "    ")),
       `  }`,
     ].filter(Boolean)
@@ -1088,7 +1265,7 @@ import type { CommandRef, FuncListRef, JSValueRef, RefVisitor } from "./command-
 
   const commandTypes = `
 interface BaseCommand {
-  kind: number
+  opcode: number
   label?: string
 }
 
@@ -1101,7 +1278,7 @@ ${commandCreatorFns.join("\n\n")}
 
   const plannerAccessors = `
 export function forEachReadRef(command: Command, visit: RefVisitor): void {
-  switch (command.kind) {
+  switch (command.opcode) {
 ${renderCaseGroups(readCaseGroups).join("\n")}
     default:
       return
@@ -1109,7 +1286,7 @@ ${renderCaseGroups(readCaseGroups).join("\n")}
 }
 
 export function forEachWriteRef(command: Command, visit: RefVisitor): void {
-  switch (command.kind) {
+  switch (command.opcode) {
 ${renderCaseGroups(writeCaseGroups).join("\n")}
     default:
       return
@@ -1117,10 +1294,33 @@ ${renderCaseGroups(writeCaseGroups).join("\n")}
 }
 
 export function forEachConsumedRef(command: Command, visit: RefVisitor): void {
-  switch (command.kind) {
+  switch (command.opcode) {
 ${renderCaseGroups(consumedCaseGroups).join("\n")}
     default:
       return
+  }
+}
+`.trim()
+
+  const writeCommandCases = OPCODE_TO_COMMAND.map((name) =>
+    renderWriteCommandCase(name as OpName, COMMANDS[name as OpName]),
+  ).join("\n")
+
+  const commandWriter = `
+function getCommandKind(command: { opcode: number }): number {
+  return command.opcode
+}
+
+export function writeCommand(
+  view: DataView,
+  offset: CommandPtr,
+  command: Command,
+  helpers: CommandWriteHelpers,
+): void {
+  switch (command.opcode) {
+${writeCommandCases}
+    default:
+      throw new Error(\`Unknown command opcode: \${getCommandKind(command)}\`)
   }
 }
 `.trim()
@@ -1131,6 +1331,7 @@ ${renderCaseGroups(consumedCaseGroups).join("\n")}
     opcodeConsts,
     commandTypes,
     plannerAccessors,
+    commandWriter,
     "// =============================================================================",
     "// Setter Helpers",
     "// =============================================================================",

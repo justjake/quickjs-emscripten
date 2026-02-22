@@ -93,7 +93,7 @@ export type ArrayPointerDef =
    * string ->char* passed with no length and terminated by null byte
    * It is an error if the input string contains a null byte.
    */
-  | { kind: "utf8.nullTerminated" }
+  | { kind: "utf8.nullTerminated"; lenParam?: undefined }
   /** string -> char*, len pair. Can contain null bytes. */
   | { kind: "utf8"; lenParam: ParamPath }
   /** string -> char*, maybe_len pair. If it contains a null byte, maybe_len must be set. */
