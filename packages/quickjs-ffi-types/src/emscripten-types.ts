@@ -146,6 +146,7 @@ export interface EmscriptenModule extends EmscriptenModuleLoaderOptions {
   lengthBytesUTF8(str: string): number
 
   _malloc(size: number): number
+  _realloc(ptr: number, size: number): number
   _free(ptr: number): void
   cwrap(
     ident: string,

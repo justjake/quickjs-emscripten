@@ -4,6 +4,8 @@ import type {
   JSValueConstPointerPointer,
   JSVoidPointer,
 } from "@jitl/quickjs-ffi-types"
+import type { Memory } from "./internal/memory-region"
+import { PtrTypedArray } from "./internal/PtrTypedArray"
 import { Lifetime } from "./lifetime"
 import type { QuickJSHandle } from "./types"
 
@@ -30,65 +32,150 @@ export interface TypedArrayConstructor<T> {
 }
 
 /** @private */
-export type HeapTypedArray<JS extends TypedArray, C extends number> = Lifetime<{
-  typedArray: JS
-  ptr: C
-}>
+export type HeapTypedArray<JS extends TypedArray, C extends number> = Lifetime<PtrTypedArray<JS, C>>
 
 /**
  * @private
  */
-export class ModuleMemory {
+export class ModuleMemory implements Memory<number> {
+  private _buffer = this.module.HEAPU8.buffer
+  private _epoch = 0
+  private _allocationSize = new Map<number, number>()
+
   constructor(public module: EitherModule) {}
 
+  epoch(): number {
+    this.syncEpoch()
+    return this._epoch
+  }
+
+  uint8(): Uint8Array {
+    this.syncEpoch()
+    return this.module.HEAPU8
+  }
+
+  uint32(): Uint32Array {
+    this.syncEpoch()
+    return this.module.HEAPU32
+  }
+
+  malloc(size: number): number {
+    if (!Number.isInteger(size) || size < 0) {
+      throw new Error(`Invalid malloc size: ${size}`)
+    }
+
+    const ptr = this.module._malloc(size)
+    if (!Number.isInteger(ptr) || ptr < 0) {
+      throw new Error(`_malloc returned invalid pointer: ${ptr}`)
+    }
+    this._allocationSize.set(ptr, size)
+    this.syncEpoch()
+    return ptr
+  }
+
+  realloc(ptr: number, size: number): number {
+    if (!Number.isInteger(ptr) || ptr < 0) {
+      throw new Error(`Invalid realloc pointer: ${ptr}`)
+    }
+    if (!Number.isInteger(size) || size < 0) {
+      throw new Error(`Invalid realloc size: ${size}`)
+    }
+
+    if (!this._allocationSize.has(ptr)) {
+      throw new Error(`Cannot realloc unknown pointer: ${ptr}`)
+    }
+
+    const next = this.module._realloc(ptr, size)
+    if (!Number.isInteger(next) || next < 0) {
+      throw new Error(`_realloc returned invalid pointer: ${next}`)
+    }
+    if (size > 0 && next === 0) {
+      throw new Error(`_realloc returned null pointer for size ${size}`)
+    }
+
+    if (next !== ptr) {
+      this._allocationSize.delete(ptr)
+    }
+    if (size === 0) {
+      this._allocationSize.delete(next)
+    } else {
+      this._allocationSize.set(next, size)
+    }
+    this.syncEpoch()
+    return next
+  }
+
+  free(ptr: number): void {
+    if (!Number.isInteger(ptr) || ptr < 0) {
+      throw new Error(`Invalid free pointer: ${ptr}`)
+    }
+    this.module._free(ptr)
+    this._allocationSize.delete(ptr)
+    this.syncEpoch()
+  }
+
   toPointerArray(handleArray: QuickJSHandle[]): Lifetime<JSValueConstPointerPointer> {
-    const typedArray = new Int32Array(handleArray.map((handle) => handle.value))
-    const numBytes = typedArray.length * typedArray.BYTES_PER_ELEMENT
-    const ptr = this.module._malloc(numBytes) as JSValueConstPointerPointer
-    const heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes)
-    heapBytes.set(new Uint8Array(typedArray.buffer))
-    return new Lifetime(ptr, undefined, (ptr) => this.module._free(ptr))
+    const length = handleArray.length
+    const ptr = this.malloc(length * Int32Array.BYTES_PER_ELEMENT) as JSValueConstPointerPointer
+    const out = new PtrTypedArray(this, Int32Array, ptr as number, length)
+    const values = out.view()
+    for (let i = 0; i < length; i++) {
+      values[i] = handleArray[i].value
+    }
+    return new Lifetime(ptr, undefined, (value) => this.free(value))
   }
 
   newTypedArray<JS extends TypedArray, C extends number>(
     kind: TypedArrayConstructor<JS>,
     length: number,
   ): HeapTypedArray<JS, C> {
-    const zeros = new kind(new Array(length).fill(0))
-    const numBytes = zeros.length * zeros.BYTES_PER_ELEMENT
-    const ptr = this.module._malloc(numBytes) as C
-    const typedArray = new kind(this.module.HEAPU8.buffer, ptr, length)
-    typedArray.set(zeros)
-    return new Lifetime({ typedArray, ptr }, undefined, (value) => this.module._free(value.ptr))
+    if (!Number.isInteger(length) || length < 0) {
+      throw new Error(`Invalid typed array length: ${length}`)
+    }
+
+    const numBytes = length * kind.BYTES_PER_ELEMENT
+    const ptr = this.malloc(numBytes) as C
+    const typedArray = new PtrTypedArray(this, kind, ptr, length) as unknown as PtrTypedArray<
+      JS,
+      C
+    >
+    typedArray.view().fill(0)
+    return new Lifetime(typedArray, undefined, (value) => this.free(value.ptr))
   }
 
   // TODO: shouldn't this be Uint32 instead of Int32?
-  newMutablePointerArray<T extends number>(
-    length: number,
-  ): Lifetime<{ typedArray: Int32Array<ArrayBuffer>; ptr: T }> {
-    return this.newTypedArray(Int32Array, length)
+  newMutablePointerArray<T extends number>(length: number): HeapTypedArray<Int32Array, T> {
+    return this.newTypedArray(Int32Array, length) as HeapTypedArray<Int32Array, T>
   }
 
   newHeapCharPointer(string: string): Lifetime<{ ptr: OwnedHeapCharPointer; strlen: number }> {
     const strlen = this.module.lengthBytesUTF8(string)
     const dataBytes = strlen + 1
-    const ptr: OwnedHeapCharPointer = this.module._malloc(dataBytes) as OwnedHeapCharPointer
+    const ptr: OwnedHeapCharPointer = this.malloc(dataBytes) as OwnedHeapCharPointer
     this.module.stringToUTF8(string, ptr, dataBytes)
-    return new Lifetime({ ptr, strlen }, undefined, (value) => this.module._free(value.ptr))
+    return new Lifetime({ ptr, strlen }, undefined, (value) => this.free(value.ptr))
   }
 
   newHeapBufferPointer(buffer: Uint8Array): Lifetime<HeapUint8Array> {
     const numBytes = buffer.byteLength
-    const ptr: JSVoidPointer = this.module._malloc(numBytes) as JSVoidPointer
-    this.module.HEAPU8.set(buffer, ptr)
+    const ptr: JSVoidPointer = this.malloc(numBytes) as JSVoidPointer
+    this.uint8().set(buffer, ptr)
     return new Lifetime({ pointer: ptr, numBytes }, undefined, (value) =>
-      this.module._free(value.pointer),
+      this.free(value.pointer),
     )
   }
 
   consumeHeapCharPointer(ptr: OwnedHeapCharPointer): string {
     const str = this.module.UTF8ToString(ptr)
-    this.module._free(ptr)
+    this.free(ptr)
     return str
+  }
+
+  private syncEpoch(): void {
+    const next = this.module.HEAPU8.buffer
+    if (next !== this._buffer) {
+      this._buffer = next
+      this._epoch++
+    }
   }
 }
