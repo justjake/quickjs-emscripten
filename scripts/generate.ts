@@ -714,7 +714,7 @@ function addDataParams(
 
     case "bytes": {
       const groups: Array<{
-        fields: Array<ParamDef<UInt8Types> | undefined>
+        fields: Array<ParamDef<any> | undefined>
         setter: "setD1_u32" | "setD2_u32" | "setD3_u32"
       }> = [
         {
@@ -779,7 +779,7 @@ function pascalToCamel(name: string): string {
 function commandFieldName(param: ParamDef<any>): string {
   const fieldName = snakeToCamel(param.name)
   if ((param.type === "char*" || param.type === "uint8_t*") && fieldName.endsWith("Ptr")) {
-    if (param.pointer.kind === "bytes") {
+    if (param.pointer?.kind === "bytes") {
       return fieldName.replace(/Ptr$/, "Bytes")
     }
     return fieldName.replace(/Ptr$/, "")
@@ -879,11 +879,13 @@ function commandParamType(param: ParamDef<any>, isJsValuesArrayPtr: boolean): st
 function hiddenLenPaths(params: readonly ParamWithPath[]): Set<ParamPath> {
   const out = new Set<ParamPath>()
   for (const entry of params) {
+    const pointer = entry.param.pointer
     if (
       (entry.param.type === "char*" || entry.param.type === "uint8_t*") &&
-      entry.param.pointer.kind !== "utf8.nullTerminated"
+      pointer &&
+      pointer.kind !== "utf8.nullTerminated"
     ) {
-      out.add(entry.param.pointer.lenParam)
+      out.add(pointer.lenParam)
       continue
     }
     if (entry.param.type === "JSValue*" && entry.isJsValuesArrayPtr) {
@@ -996,6 +998,10 @@ function renderWriteCommandCase(name: OpName, commandDef: CommandDef): string {
     if (param.type !== "char*" && param.type !== "uint8_t*") {
       continue
     }
+    const pointer = param.pointer
+    if (!pointer) {
+      throw new Error(`${name}: missing pointer metadata for ${param.name}`)
+    }
 
     const visible = visibleByPath.get(path)
     if (!visible) {
@@ -1006,16 +1012,16 @@ function renderWriteCommandCase(name: OpName, commandDef: CommandDef): string {
 
     const tsType = cTypeToTypescriptType(param.type, true).typescript
     let tsLenType: string | undefined
-    if (param.pointer?.lenParam) {
-      const lenParam = paramMap.get(param.pointer.lenParam)
+    if (pointer.kind !== "utf8.nullTerminated") {
+      const lenParam = paramMap.get(pointer.lenParam)
       if (lenParam) {
         tsLenType = cTypeToTypescriptType(lenParam.param.type, true).typescript
       }
     }
     const encodeTypeParams = tsLenType ? `${tsType}, ${tsLenType}` : tsType
 
-    if (param.pointer.kind === "bytes") {
-      const lenPath = param.pointer.lenParam
+    if (pointer.kind === "bytes") {
+      const lenPath = pointer.lenParam
       const lenEntry = params.find((it) => it.path === lenPath)
       if (!lenEntry) {
         throw new Error(`${name}: missing len param ${lenPath}`)
@@ -1028,18 +1034,18 @@ function renderWriteCommandCase(name: OpName, commandDef: CommandDef): string {
         hiddenLenExprByPath.set(lenPath, `${fieldName}.len`)
       }
     } else {
-      if (param.pointer.kind === "utf8.nullTerminated") {
+      if (pointer.kind === "utf8.nullTerminated") {
         prelude.push(
           `const ${fieldName} = helpers.encodeUtf8<${encodeTypeParams}>(command.${fieldName}, undefined, true)`,
         )
       } else {
-        const lenPath = param.pointer.lenParam
+        const lenPath = pointer.lenParam
         const lenEntry = params.find((it) => it.path === lenPath)
         if (!lenEntry) {
           throw new Error(`${name}: missing len param ${lenPath}`)
         }
         const maxValue = lenEntry.param.type === "uint8_t" ? "0xff" : "0xffffffff"
-        if (param.pointer.kind === "utf8.optionalLength") {
+        if (pointer.kind === "utf8.optionalLength") {
           prelude.push(
             `const ${fieldName} = helpers.encodeUtf8<${encodeTypeParams}>(command.${fieldName}, ${maxValue}, false)`,
           )

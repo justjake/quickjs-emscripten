@@ -1,14 +1,18 @@
-import {
-  SetPropFlags as SetPropFlagBits,
-  SlotType,
+import type {
+  Float64,
+  Int32,
+  Int64,
+  Uint32,
+  Uint8,
   type HostRefId,
   type JSPropFlags,
   type SetPropFlags,
 } from "@jitl/quickjs-ffi-types"
+import { SetPropFlags as SetPropFlagBits, SlotType } from "@jitl/quickjs-ffi-types"
 import type { FuncListRef, JSValueRef } from "./command-types"
 import type { QuickJSContext, QuickJSPropertyKey } from "./context"
-import { JSValueLifetime } from "./lifetime"
 import { finalizeConsumedInputBindings } from "./internal/command-input-ownership"
+import { JSValueLifetime } from "./lifetime"
 import type { Command } from "./ops"
 import * as Ops from "./ops"
 import type { QuickJSHandle } from "./types"
@@ -26,7 +30,7 @@ function packGeneratedRef(bankId: number, valueId: number): number {
   return ((bankId << REF_VALUE_BITS) | valueId) >>> 0
 }
 
-export type PlainNumber = number & { brand?: never }
+export type PlainNumber = Float64 | (number & { brand?: never })
 export type Primitive = null | undefined | boolean | PlainNumber | bigint | string
 export type InputBindingMode = "borrowed" | "consume_on_success"
 export type JSValueInput = JSValueRef | QuickJSHandle
@@ -58,11 +62,11 @@ export interface DefineFuncListPropOptions {
 
 export type FuncListPropValue = Primitive | { object: FuncListRef }
 
-function isArrayIndexKey(value: number): boolean {
+function isUint32(value: number): value is Uint32 {
   return Number.isInteger(value) && value >= 0 && value <= 0xffffffff
 }
 
-function isInt32(value: number): boolean {
+function isInt32(value: number): value is Int32 {
   return Number.isInteger(value) && value >= -2147483648 && value <= 2147483647
 }
 
@@ -95,6 +99,18 @@ function jsPropFlagsFromOptions(options: DefineFuncListPropOptions | undefined):
     flags |= JS_PROP_ENUMERABLE
   }
   return flags as JSPropFlags
+}
+
+function assertUint32(value: number, name: string): asserts value is Uint32 {
+  if (!isUint32(value)) {
+    throw new Error(`${name} must fit in uint32_t (positive integer <= 0xffffffff): ${value}`)
+  }
+}
+
+function assertUint8(value: number, name: string): asserts value is Uint8 {
+  if (!Number.isInteger(value) || value < 0 || value > 0xff) {
+    throw new Error(`${name} must fit in uint8_t (positive integer <= 0xff): ${value}`)
+  }
 }
 
 export class CommandBuilder {
@@ -235,7 +251,7 @@ export class CommandBuilder {
 
   newBigInt(value: bigint): JSValueRef {
     const resultSlot = this.allocateJsValueRef()
-    this.push(Ops.NewBigintCmd(resultSlot, value))
+    this.push(Ops.NewBigintCmd(resultSlot, value as Int64))
     return resultSlot
   }
 
@@ -259,12 +275,7 @@ export class CommandBuilder {
     value: Primitive,
     options?: DefinePropOptions,
   ): void {
-    return this.setOrDefinePrimitiveProp(
-      target,
-      key,
-      value,
-      setPropFlagsFromDefineOptions(options),
-    )
+    return this.setOrDefinePrimitiveProp(target, key, value, setPropFlagsFromDefineOptions(options))
   }
 
   definePropRef(
@@ -308,6 +319,7 @@ export class CommandBuilder {
   }
 
   newFuncList(count: number): FuncListRef {
+    assertUint32(count, "funclist count")
     const resultFunclistSlot = this.allocateFuncListRef()
     this.push(Ops.FunclistNewCmd(resultFunclistSlot, count))
     return resultFunclistSlot
@@ -332,6 +344,7 @@ export class CommandBuilder {
   ): void {
     const targetFunclist = this.resolveFuncListRef(funclist)
     const flags = jsPropFlagsFromOptions(options)
+    assertUint32(index, "funclist entry index")
 
     if (value === null) {
       return this.push(Ops.FunclistDefNullCmd(targetFunclist, flags, key, index))
@@ -340,19 +353,22 @@ export class CommandBuilder {
       return this.push(Ops.FunclistDefUndefinedCmd(targetFunclist, flags, key, index))
     }
     if (typeof value === "string") {
+      assertUint8(index, "funclist entry index for string value")
       return this.push(Ops.FunclistDefStringCmd(targetFunclist, index, flags, value, key))
     }
     if (typeof value === "bigint") {
-      return this.push(Ops.FunclistDefInt64Cmd(targetFunclist, index, flags, value, key))
+      assertUint8(index, "funclist entry index for bigint value")
+      return this.push(Ops.FunclistDefInt64Cmd(targetFunclist, index, flags, value as Int64, key))
     }
     if (typeof value === "number") {
       if (isInt32(value)) {
         return this.push(Ops.FunclistDefInt32Cmd(targetFunclist, flags, index, value, key))
       }
+      assertUint8(index, "funclist entry index for double value")
       return this.push(Ops.FunclistDefDoubleCmd(targetFunclist, index, flags, value, key))
     }
     if (typeof value === "boolean") {
-      return this.push(Ops.FunclistDefInt32Cmd(targetFunclist, flags, index, value ? 1 : 0, key))
+      return this.push(Ops.FunclistDefInt32Cmd(targetFunclist, flags, index, value, key))
     }
 
     if (value instanceof JSValueLifetime) {
@@ -382,10 +398,20 @@ export class CommandBuilder {
     fn: VmFunctionImplementation<QuickJSHandle>,
     isConstructor: boolean,
   ): JSValueRef {
+    const length = fn.length
+    assertUint8(length, "fn.length (arity)")
     const hostRefId = this.context.runtime.hostRefs.put(fn)
     try {
       const resultSlot = this.allocateJsValueRef()
-      this.push(Ops.NewFuncCmd(resultSlot, fn.length, isConstructor ? 1 : 0, name ?? "", hostRefId))
+      this.push(
+        Ops.NewFuncCmd(
+          resultSlot,
+          length,
+          isConstructor ? (1 as Uint8) : (0 as Uint8),
+          name ?? "",
+          hostRefId,
+        ),
+      )
       this.functionBindings.push({ ref: resultSlot, hostRefId, fn })
       return resultSlot
     } catch (error) {
@@ -405,7 +431,7 @@ export class CommandBuilder {
       return this.emitSetPrimitiveByStringKey(targetRef, key, value, flags)
     }
     if (typeof key === "number") {
-      if (isArrayIndexKey(key)) {
+      if (isUint32(key)) {
         return this.emitSetPrimitiveByIndex(targetRef, key, value, flags)
       }
       const valueRef = this.materializePrimitiveToRef(value)
@@ -430,7 +456,7 @@ export class CommandBuilder {
       return
     }
     if (typeof key === "number") {
-      if (isArrayIndexKey(key)) {
+      if (isUint32(key)) {
         this.push(Ops.SetIdxValueCmd(targetRef, valueRef, flags, key))
         return
       }
@@ -454,13 +480,15 @@ export class CommandBuilder {
       return this.push(Ops.SetStrUndefCmd(targetRef, flags, key))
     }
     if (typeof value === "boolean") {
-      return this.push(Ops.SetStrBoolCmd(targetRef, value ? 1 : 0, flags, key))
+      return this.push(
+        Ops.SetStrBoolCmd(targetRef, value ? (1 as Uint8) : (0 as Uint8), flags, key),
+      )
     }
     if (typeof value === "string") {
       return this.push(Ops.SetStrStringCmd(targetRef, flags, value, key))
     }
     if (typeof value === "bigint") {
-      return this.push(Ops.SetStrBigintCmd(targetRef, flags, value, key))
+      return this.push(Ops.SetStrBigintCmd(targetRef, flags, value as Int64, key))
     }
     if (typeof value === "number") {
       if (isInt32(value)) {
@@ -478,6 +506,7 @@ export class CommandBuilder {
     value: Primitive,
     flags: SetPropFlags,
   ): void {
+    assertUint32(index, "array index")
     if (value === null) {
       return this.push(Ops.SetIdxNullCmd(targetRef, flags, index))
     }
@@ -485,13 +514,15 @@ export class CommandBuilder {
       return this.push(Ops.SetIdxUndefCmd(targetRef, flags, index))
     }
     if (typeof value === "boolean") {
-      return this.push(Ops.SetIdxBoolCmd(targetRef, value ? 1 : 0, flags, index))
+      return this.push(
+        Ops.SetIdxBoolCmd(targetRef, value ? (1 as Uint8) : (0 as Uint8), flags, index),
+      )
     }
     if (typeof value === "string") {
       return this.push(Ops.SetIdxStringCmd(targetRef, flags, value, index))
     }
     if (typeof value === "bigint") {
-      return this.push(Ops.SetIdxBigintCmd(targetRef, flags, value, index))
+      return this.push(Ops.SetIdxBigintCmd(targetRef, flags, value as Int64, index))
     }
     if (typeof value === "number") {
       if (isInt32(value)) {

@@ -238,7 +238,7 @@ export type Uint32 = Brand<number, "Uint32">
 export type Int32 = Brand<number, "Int32">
 export type Int64 = Brand<bigint, "Int64">
 
-export type Float64 = Brand<number, "Float64">
+export type Float64 = number
 
 /**
  * State of a promise.

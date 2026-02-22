@@ -1314,6 +1314,24 @@ export const COMMANDS = {
       extra: TARGET_FUNCLIST_INDEX,
     },
   },
+
+  FUNCLIST_DEF_BOOL: {
+    doc: "Set funclist entry to JS_DEF_PROP_BOOL",
+    slot_a: TARGET_FUNCLIST_SLOT,
+    slot_b: PROP_MAYBE_NAME_LEN_SLOT,
+    slot_c: PROP_FLAGS,
+    data: {
+      type: "raw",
+      d1: TARGET_FUNCLIST_INDEX,
+      d2: {
+        name: "bool_val",
+        type: "int32_t",
+        doc: "Boolean value as 0 or 1",
+        usage: "in",
+      },
+      d3: PROP_KEY_PTR,
+    },
+  },
 } as const satisfies Record<string, CommandDef>
 
 function unreachable(val: never): never {
