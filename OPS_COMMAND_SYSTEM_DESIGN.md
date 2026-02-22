@@ -4,7 +4,9 @@ Date: 2026-02-21
 
 Status: draft, nothing is set in stone! We should update the design if there's a better way!
 
-Intent: apply the application's intent to QuickJS with maximum perforamnce and minimum user-facing complexity.
+System Intent: apply the application's intent to QuickJS with maximum perforamnce and minimum user-facing complexity.
+
+AI authorship disclosure: this document is human written until the [AI AUTHORED](#ai-authored) section.
 
 Calling between JavaScript and WASM imposes a FFI overhead. To minimize impact of the call overhead, quickjs-emscripten can batch multiple operations together into a single FFI call using command buffers. This document describes the design of the command buffer system.
 
@@ -375,3 +377,204 @@ TODO: what, if any, parts of the executor should be code-generated? Ideas: codeg
 TODO: plan representation. How to add executor-planned commands to the user-provided command list? What kinds of extra commands are needed? Ideally we perform no allocation (amortized). Consider typed arrays that are zero'd before re-use. Potentially code-gen aspects of the representation that need to be packed into typed arrays.
 
 TODO: refcounting / cleanup algorithm. When/how to insert `SLOT_FREE` commands? How to clean up on error? Note: it's okay to allocate on the error handling sad path if that simplifies logic. From prototyping, it seems using an "undo log" approach for error handling leads to confusing/unmaintainable logic.
+
+## AI AUTHORED
+
+## gpt-5.3-codex's CommandExecutor design
+
+### Invariants
+
+1. Command execution order is exactly source order.
+2. No barrier/reordering semantics exist.
+3. IDL (`/Users/jitl/src/quickjs-emscripten/scripts/idl.ts`) is source of truth for command signatures and register-bank widths.
+4. No implicit `JS_DupValue` insertion for normal input flows.
+5. Cleanup is tracked by planner state only (never by scanning WASM slot memory).
+6. Executor behavior is re-entrant per call.
+
+### Execute boundary contract
+
+`QTS_ExecuteCommands` is called with explicit per-call buffers:
+
+- `ctx`
+- `command_count`
+- `commands`
+- `jsvalue_slots`, `jsvalue_slots_count`
+- `funclist_slots`, `funclist_slots_count`
+- `out_status`, `out_error`
+
+Semantics:
+
+1. return value = `successful_count`.
+2. `out_status` = `QTS_COMMAND_OK | QTS_COMMAND_ERROR`.
+3. `out_error` points to borrowed error text (copy immediately if needed).
+4. failure op index is derived from `successful_count`.
+
+### CommandRef identity model
+
+Canonical ref identity is packed `CommandRef`:
+
+- `bank = ref >>> 24`
+- `id = ref & 0x00ffffff`
+
+Planner tables are bank-local and keyed by builder-produced ids.
+
+### Data model
+
+#### ExecuteInputs (immutable)
+
+- `commands: readonly Command[]`
+- `inputBindings: readonly InputBinding[]`
+- `returnRefs: readonly CommandRef[]`
+- capacities:
+  - command buffer
+  - jsvalue slots
+  - funclist slots
+
+#### PrepassTables (immutable)
+
+Bank-local tables keyed by `id`:
+
+- `firstUse[id]`
+- `lastUse[id]`
+- `producedAt[id]` (`-1` for inputs)
+- `isInput[id]`
+- `isReturned[id]`
+- `inputMode[id]` (`borrowed | consume_on_success`)
+
+Also:
+
+- `maxIdPerBank`
+- consume candidate set (`consume_on_success` inputs)
+
+#### ExecState (mutable)
+
+Per bank:
+
+- `slotToRef[slot]`
+- free-slot stack
+- `refLocation[id]` in `{UNMATERIALIZED, IN_SLOT, SPILLED, DEAD}`
+- `refSlot[id]`
+- `spillPtr[id]`
+
+Global:
+
+- `pc`
+- cumulative `successfulCount`
+- batch builder state
+- `consumedReached` set
+- shared spill allocator (`ByteRegionAllocator`)
+- lazy FuncList spill activation
+
+### Plan output
+
+Planner is streaming; full IR materialization is optional.
+Required outputs are:
+
+1. immutable `PrepassTables`,
+2. batch boundary metadata (`batchStart`, `batchLen`, cumulative successes),
+3. finalization metadata (`consumedReached` and `returnRef -> output handle`).
+
+### Canonical algorithm
+
+#### Pass A: prepass
+
+For each command in source order:
+
+1. visit read refs (`forEachReadRef`),
+2. visit write refs (`forEachWriteRef`),
+3. visit consumed refs (`forEachConsumedRef`).
+
+Update liveness/ownership tables:
+
+- initialize `firstUse` on first mention,
+- advance `lastUse` on read/consume,
+- set `producedAt` on writes,
+- mark returns,
+- mark consume candidates from input modes.
+
+#### Pass B: linear-scan planning + execute
+
+For each command `pc`:
+
+1. compute pinned refs (reads, consumed, required destinations),
+2. materialize reads/consumed refs:
+   - `UNMATERIALIZED` input -> allocate slot + direct memory copy handle->slot,
+   - `SPILLED` -> allocate slot + emit `SLOT_LOAD`,
+   - `IN_SLOT` -> no action,
+3. allocate destination slots,
+4. if needed, evict victim by deterministic policy,
+5. emit command,
+6. post-command transitions:
+   - mark reached consumed refs,
+   - kill refs with `lastUse == pc` and not returned,
+   - free ownership for dead refs,
+   - return slots to free list,
+7. flush batch when command buffer is full.
+
+#### Deterministic victim policy
+
+If no free slot in required bank:
+
+1. exclude pinned refs,
+2. prefer refs with no future use and not returned,
+3. else pick farthest next use,
+4. tie-break by larger numeric `CommandRef`.
+
+Victim action:
+
+- has future use -> spill via `SLOT_STORE`, mark `SPILLED`,
+- no future use -> finalize/free ownership, mark `DEAD`,
+- reuse slot.
+
+### Spill policy
+
+Canonical spill topology:
+
+- one shared spill allocator,
+- FuncList spill storage allocated lazily only when required.
+
+### Handle transfer policy
+
+Canonical hot path:
+
+1. input materialization: direct memory copy handle->slot,
+2. returning outputs: direct memory copy slot->new handle memory.
+
+`SLOT_LOAD`/`SLOT_STORE` are canonical for spill/restore and generic pointer-based slot transfers.
+
+### Error and cleanup behavior
+
+On batch failure:
+
+1. compute failing global index from prior successes + batch success count,
+2. stop execution,
+3. run tracked cleanup,
+4. finalize consume inputs based on reached commands only.
+
+Cleanup rules:
+
+- `IN_SLOT` live non-returned ref -> `SLOT_FREE(slot, type)` behavior,
+- `SPILLED` live non-returned ref -> load to temp slot then free,
+- never inspect raw WASM memory to discover cleanup targets.
+
+Primary execution failure remains primary error; cleanup failures are secondary diagnostics.
+
+### Deferred consume finalization
+
+For each `consume_on_success` binding at execute return:
+
+1. if consumed path was reached: `invalidateHandle()` (no dispose),
+2. else if full success: `dispose()`,
+3. else (failure before consume): keep alive.
+
+### Validation scenarios
+
+1. Re-entrant nested executes with separate buffers succeed.
+2. `SLOT_LOAD/STORE` copy widths are slot-type-derived and lengthless.
+3. No implicit dup for borrowed inputs.
+4. Slot pressure produces deterministic spill behavior.
+5. Shared spill allocator remains unused for FuncList unless needed.
+6. Success + unconsumed consume-binding disposes at return.
+7. Failure before consume leaves binding alive.
+8. Failure after consume invalidates without double-free.
+9. Cleanup uses tracked state only.
