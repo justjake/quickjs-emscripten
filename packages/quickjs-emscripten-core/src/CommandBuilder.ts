@@ -14,7 +14,13 @@ import {
   SetPropFlags as SetPropFlagBits,
   SlotType,
 } from "@jitl/quickjs-ffi-types"
-import { CommandRef, type FuncListRef, type JSValueRef } from "./command-types"
+import {
+  CommandRef,
+  CommandRefId,
+  CommandRefType,
+  type FuncListRef,
+  type JSValueRef,
+} from "./command-types"
 import type { QuickJSContext, QuickJSPropertyKey } from "./context"
 import { finalizeConsumedInputBindings } from "./internal/command-input-ownership"
 import { JSValueLifetime } from "./lifetime"
@@ -121,8 +127,6 @@ export class CommandBuilder {
   private functionBindings: FunctionBinding[] = []
   private inputBindingByHandle = new WeakMap<QuickJSHandle, InputBinding>()
   private consumeOnSuccessHandles = new WeakSet<QuickJSHandle>()
-  private knownJsValueRefs = new Set<number>()
-  private knownFuncListRefs = new Set<number>()
 
   constructor(context: QuickJSContext) {
     this.context = context
@@ -132,22 +136,12 @@ export class CommandBuilder {
     this.commands.push(command)
   }
 
-  private takeCommands(): Command[] {
-    const out = this.commands
-    this.commands = []
-    return out
-  }
-
   private allocateJsValueRef(): JSValueRef {
-    const ref = CommandRef(JSValueSlotType, this.nextJsValueId++)
-    this.knownJsValueRefs.add(ref)
-    return ref
+    return CommandRef(JSValueSlotType, this.nextJsValueId++)
   }
 
   private allocateFuncListRef(): FuncListRef {
-    const ref = CommandRef(FuncListSlotType, this.nextFuncListId++)
-    this.knownFuncListRefs.add(ref)
-    return ref
+    return CommandRef(FuncListSlotType, this.nextFuncListId++)
   }
 
   getCommands(): readonly Command[] {
@@ -167,13 +161,13 @@ export class CommandBuilder {
   }
 
   clear(): void {
-    this.takeCommands()
+    this.commands = []
+    this.nextJsValueId = 1
+    this.nextFuncListId = 1
     this.inputBindings = []
     this.functionBindings = []
     this.inputBindingByHandle = new WeakMap<QuickJSHandle, InputBinding>()
     this.consumeOnSuccessHandles = new WeakSet<QuickJSHandle>()
-    this.knownJsValueRefs.clear()
-    this.knownFuncListRefs.clear()
   }
 
   setProp(target: JSValueInput, key: QuickJSPropertyKey, value: Primitive | QuickJSHandle): void {
@@ -191,66 +185,66 @@ export class CommandBuilder {
     return this.bindHandle(handle)
   }
 
-  consume(handle: QuickJSHandle): QuickJSHandle {
-    const existing = this.inputBindingByHandle.get(handle)
-    if (existing) {
-      existing.mode = "consume_on_success"
-    } else {
-      this.consumeOnSuccessHandles.add(handle)
-    }
-    return handle
+  consume(handle: QuickJSHandle): JSValueRef {
+    return this.bindHandle(handle, "consume_on_success")
   }
 
   newObject(prototype?: JSValueInput): JSValueRef {
-    const resultSlot = this.allocateJsValueRef()
+    const result = this.allocateJsValueRef()
     if (prototype === undefined) {
-      this.push(Ops.NewObjectCmd(resultSlot))
-      return resultSlot
+      this.push(Ops.NewObjectCmd(result))
+      return result
     }
-    this.push(Ops.NewObjectProtoCmd(resultSlot, this.resolveJsValueInput(prototype)))
-    return resultSlot
+    this.push(Ops.NewObjectProtoCmd(result, this.resolveJsValueInput(prototype)))
+    return result
   }
 
-  newArray(): JSValueRef {
-    const resultSlot = this.allocateJsValueRef()
-    this.push(Ops.NewArrayCmd(resultSlot))
-    return resultSlot
+  newArray(items?: Iterable<Primitive | QuickJSHandle>): JSValueRef {
+    const result = this.allocateJsValueRef()
+    this.push(Ops.NewArrayCmd(result))
+    if (items) {
+      let index = 0
+      for (const item of items) {
+        this.setProp(result, index++, item)
+      }
+    }
+    return result
   }
 
   newMap(): JSValueRef {
-    const resultSlot = this.allocateJsValueRef()
-    this.push(Ops.NewMapCmd(resultSlot))
-    return resultSlot
+    const result = this.allocateJsValueRef()
+    this.push(Ops.NewMapCmd(result))
+    return result
   }
 
   newSet(): JSValueRef {
-    const resultSlot = this.allocateJsValueRef()
-    this.push(Ops.NewSetCmd(resultSlot))
-    return resultSlot
+    const result = this.allocateJsValueRef()
+    this.push(Ops.NewSetCmd(result))
+    return result
   }
 
   newDate(timestampMs: number): JSValueRef {
-    const resultSlot = this.allocateJsValueRef()
-    this.push(Ops.NewDateCmd(resultSlot, timestampMs))
-    return resultSlot
+    const result = this.allocateJsValueRef()
+    this.push(Ops.NewDateCmd(result, timestampMs))
+    return result
   }
 
   newNumber(value: number): JSValueRef {
-    const resultSlot = this.allocateJsValueRef()
-    this.push(Ops.NewFloat64Cmd(resultSlot, value))
-    return resultSlot
+    const result = this.allocateJsValueRef()
+    this.push(Ops.NewFloat64Cmd(result, value))
+    return result
   }
 
   newString(value: string): JSValueRef {
-    const resultSlot = this.allocateJsValueRef()
-    this.push(Ops.NewStringCmd(resultSlot, value))
-    return resultSlot
+    const result = this.allocateJsValueRef()
+    this.push(Ops.NewStringCmd(result, value))
+    return result
   }
 
   newBigInt(value: bigint): JSValueRef {
-    const resultSlot = this.allocateJsValueRef()
-    this.push(Ops.NewBigintCmd(resultSlot, value as Int64))
-    return resultSlot
+    const result = this.allocateJsValueRef()
+    this.push(Ops.NewBigintCmd(result, value as Int64))
+    return result
   }
 
   mapSet(target: JSValueInput, key: JSValueInput, value: JSValueInput): void {
@@ -402,18 +396,18 @@ export class CommandBuilder {
     assertUint8(length, "fn.length (arity)")
     const hostRefId = this.context.runtime.hostRefs.put(fn)
     try {
-      const resultSlot = this.allocateJsValueRef()
+      const result = this.allocateJsValueRef()
       this.push(
         Ops.NewFuncCmd(
-          resultSlot,
+          result,
           length,
           isConstructor ? (1 as Uint8) : (0 as Uint8),
           name ?? "",
           hostRefId,
         ),
       )
-      this.functionBindings.push({ ref: resultSlot, hostRefId, fn })
-      return resultSlot
+      this.functionBindings.push({ ref: result, hostRefId, fn })
+      return result
     } catch (error) {
       this.context.runtime.hostRefs.delete(hostRefId)
       throw error
@@ -557,7 +551,7 @@ export class CommandBuilder {
       if (!this.isKnownJsValueRef(input)) {
         throw new TypeError("Unknown JSValueRef")
       }
-      return input as JSValueRef
+      return input
     }
     if (input instanceof JSValueLifetime) {
       return this.bindHandle(input)
@@ -572,31 +566,35 @@ export class CommandBuilder {
     return ref
   }
 
-  private bindHandle(handle: QuickJSHandle): JSValueRef {
-    const mode: InputBindingMode = this.consumeOnSuccessHandles.has(handle)
-      ? "consume_on_success"
-      : "borrowed"
+  private bindHandle(handle: QuickJSHandle, mode: InputBindingMode = "borrowed"): JSValueRef {
     const existing = this.inputBindingByHandle.get(handle)
     if (existing !== undefined) {
-      if (mode === "consume_on_success") {
+      if (existing.mode === "borrowed" && mode !== "borrowed") {
         existing.mode = mode
       }
       return existing.ref
     }
     this.context.runtime.assertOwned(handle)
     const ref = this.allocateJsValueRef()
-    const binding = { ref, handle, mode } satisfies InputBinding
+    const binding: InputBinding = { ref, handle, mode }
+    if (mode === "consume_on_success") {
+      this.consumeOnSuccessHandles.add(handle)
+    }
     this.inputBindingByHandle.set(handle, binding)
     this.inputBindings.push(binding)
     return ref
   }
 
-  private isKnownJsValueRef(value: number): boolean {
-    return this.knownJsValueRefs.has(value)
+  private isKnownJsValueRef(ref: number): boolean {
+    const id = CommandRefId(ref as JSValueRef)
+    return (
+      CommandRefType(ref as JSValueRef) === JSValueSlotType && id >= 1 && id < this.nextJsValueId
+    )
   }
 
   private resolveFuncListRef(ref: FuncListRef): FuncListRef {
-    if (!this.knownFuncListRefs.has(ref as number)) {
+    const id = CommandRefId(ref)
+    if (CommandRefType(ref) !== FuncListSlotType || id < 1 || id >= this.nextFuncListId) {
       throw new TypeError("Unknown FuncListRef")
     }
     return ref
