@@ -38,7 +38,7 @@ describe("finalizeConsumedInputBindings", () => {
     const { binding, handle, ref } = makeBinding(1)
     const disposeSpy = vi.spyOn(handle, "dispose")
     const invalidateSpy = vi.spyOn(handle, "invalidateHandle")
-    const commands = [Ops.SlotFreeCmd(ref as number, SlotType.JSValueSlotType)]
+    const commands = [Ops.SlotFreeCmd(ref, SlotType.JSValueSlotType)]
 
     finalizeConsumedInputBindings([binding], commands, commands.length)
 
@@ -53,7 +53,7 @@ describe("finalizeConsumedInputBindings", () => {
     const invalidateSpy = vi.spyOn(handle, "invalidateHandle")
     const commands = [
       Ops.NewObjectCmd(2 as JSValueRef),
-      Ops.SlotFreeCmd(ref as number, SlotType.JSValueSlotType),
+      Ops.SlotFreeCmd(ref, SlotType.JSValueSlotType),
     ]
 
     finalizeConsumedInputBindings([binding], commands, 1)
@@ -68,7 +68,7 @@ describe("finalizeConsumedInputBindings", () => {
     const disposeSpy = vi.spyOn(handle, "dispose")
     const invalidateSpy = vi.spyOn(handle, "invalidateHandle")
     const commands = [
-      Ops.SlotFreeCmd(ref as number, SlotType.JSValueSlotType),
+      Ops.SlotFreeCmd(ref, SlotType.JSValueSlotType),
       Ops.NewObjectCmd(2 as JSValueRef),
     ]
 

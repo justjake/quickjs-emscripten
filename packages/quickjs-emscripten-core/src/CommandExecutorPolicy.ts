@@ -431,7 +431,7 @@ export class NoSpillBatchCutPolicy extends BasePolicy {
         const slotType = CommandRefType(ref)
         ctx.slots.free(slotType, slot)
         if (!this.isConsumedByCurrentCommand(ref) && ctx.prepass.isExecutorOwned(ref)) {
-          ctx.emit.emitPlannerOp(Ops.SlotFreeCmd(slot, slotType))
+          ctx.emit.emitPlannerOp(Ops.SlotFreeCmd(ref, slotType))
         }
       }
       ctx.refs.markDead(ref)
