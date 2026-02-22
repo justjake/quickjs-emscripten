@@ -8,8 +8,13 @@ import type {
   Uint32,
   Uint8,
 } from "@jitl/quickjs-ffi-types"
-import { SetPropFlags as SetPropFlagBits, SlotType } from "@jitl/quickjs-ffi-types"
-import type { FuncListRef, JSValueRef } from "./command-types"
+import {
+  FuncListSlotType,
+  JSValueSlotType,
+  SetPropFlags as SetPropFlagBits,
+  SlotType,
+} from "@jitl/quickjs-ffi-types"
+import { CommandRef, type FuncListRef, type JSValueRef } from "./command-types"
 import type { QuickJSContext, QuickJSPropertyKey } from "./context"
 import { finalizeConsumedInputBindings } from "./internal/command-input-ownership"
 import { JSValueLifetime } from "./lifetime"
@@ -22,13 +27,6 @@ const JS_PROP_CONFIGURABLE = 0b00001
 const JS_PROP_WRITABLE = 0b00010
 const JS_PROP_ENUMERABLE = 0b00100
 const SET_PROP_ASSIGNMENT = 0 as SetPropFlags
-const REF_VALUE_BITS = 24
-const JS_VALUE_BANK_ID = 0
-const FUNC_LIST_BANK_ID = 1
-
-function packGeneratedRef(bankId: number, valueId: number): number {
-  return ((bankId << REF_VALUE_BITS) | valueId) >>> 0
-}
 
 export type PlainNumber = Float64 | (number & { brand?: never })
 export type Primitive = null | undefined | boolean | PlainNumber | bigint | string
@@ -141,14 +139,14 @@ export class CommandBuilder {
   }
 
   private allocateJsValueRef(): JSValueRef {
-    const ref = packGeneratedRef(JS_VALUE_BANK_ID, this.nextJsValueId++) as JSValueRef
-    this.knownJsValueRefs.add(ref as number)
+    const ref = CommandRef(JSValueSlotType, this.nextJsValueId++)
+    this.knownJsValueRefs.add(ref)
     return ref
   }
 
   private allocateFuncListRef(): FuncListRef {
-    const ref = packGeneratedRef(FUNC_LIST_BANK_ID, this.nextFuncListId++) as FuncListRef
-    this.knownFuncListRefs.add(ref as number)
+    const ref = CommandRef(FuncListSlotType, this.nextFuncListId++)
+    this.knownFuncListRefs.add(ref)
     return ref
   }
 

@@ -12,15 +12,17 @@ export type JSValueRef = Brand<number, JSValueSlotType>
 /** Logical reference ID to a FuncList mentioned in a command. */
 export type FuncListRef = Brand<number, FuncListSlotType>
 
-export type SlotTypeToRef = {
-  [JSValueSlotType]: JSValueRef
-  [FuncListSlotType]: FuncListRef
-}
+export type SlotTypeToRef<T extends SlotType> = T extends JSValueSlotType
+  ? JSValueRef
+  : T extends FuncListSlotType
+    ? FuncListRef
+    : never
 
-export type SlotTypeToSlot = {
-  [JSValueSlotType]: JSValueSlot
-  [FuncListSlotType]: FuncListSlot
-}
+export type SlotTypeToSlot<T extends SlotType> = T extends JSValueSlotType
+  ? JSValueSlot
+  : T extends FuncListSlotType
+    ? FuncListSlot
+    : never
 
 /**
  * Any reference ID used in a command.
@@ -37,11 +39,11 @@ function isUint24(value: number): value is number {
 }
 
 /** Pack a slot type and id into a command reference. */
-export function CommandRef<S extends SlotType>(type: S, id: number): SlotTypeToRef[S] {
+export function CommandRef<S extends SlotType>(type: S, id: number): SlotTypeToRef<S> {
   if (!isUint24(id)) {
     throw new RangeError(`ref id out not represnetable as a 24-bit unsigned integer: ${id}`)
   }
-  return ((type << REF_TYPE_SHIFT) | id) as SlotTypeToRef[S]
+  return ((type << REF_TYPE_SHIFT) | id) as SlotTypeToRef<S>
 }
 
 /** Get the {@link SlotType} of a {@link CommandRef}. */
