@@ -1502,10 +1502,25 @@ export function FunclistDefObjectCmd(
 export function forEachReadRef(command: Command, visit: RefVisitor): void {
   switch (command.opcode) {
     case SLOT_STORE:
-      visit(command.inSlot as CommandRef)
+      visit(command.inSlot)
       return
     case SLOT_FREE:
-      visit(command.targetSlot as CommandRef)
+    case SET_STR_NULL:
+    case SET_STR_UNDEF:
+    case SET_STR_BOOL:
+    case SET_STR_INT32:
+    case SET_STR_F64:
+    case SET_STR_BIGINT:
+    case SET_STR_STRING:
+    case SET_IDX_NULL:
+    case SET_IDX_UNDEF:
+    case SET_IDX_BOOL:
+    case SET_IDX_INT32:
+    case SET_IDX_F64:
+    case SET_IDX_BIGINT:
+    case SET_IDX_STRING:
+    case DEF_VALUE_GETSET:
+      visit(command.targetSlot)
       return
     case NEW_OBJECT_PROTO:
       visit(command.protoSlot)
@@ -1523,23 +1538,6 @@ export function forEachReadRef(command: Command, visit: RefVisitor): void {
     case SET_ADD:
       visit(command.targetSlot)
       visit(command.valueSlot)
-      return
-    case SET_STR_NULL:
-    case SET_STR_UNDEF:
-    case SET_STR_BOOL:
-    case SET_STR_INT32:
-    case SET_STR_F64:
-    case SET_STR_BIGINT:
-    case SET_STR_STRING:
-    case SET_IDX_NULL:
-    case SET_IDX_UNDEF:
-    case SET_IDX_BOOL:
-    case SET_IDX_INT32:
-    case SET_IDX_F64:
-    case SET_IDX_BIGINT:
-    case SET_IDX_STRING:
-    case DEF_VALUE_GETSET:
-      visit(command.targetSlot)
       return
     case SET_VALUE_VALUE:
     case MAP_SET:
@@ -1605,7 +1603,7 @@ export function forEachReadRef(command: Command, visit: RefVisitor): void {
 export function forEachWriteRef(command: Command, visit: RefVisitor): void {
   switch (command.opcode) {
     case SLOT_LOAD:
-      visit(command.outSlot as CommandRef)
+      visit(command.outSlot)
       return
     case NEW_OBJECT:
     case NEW_OBJECT_PROTO:
@@ -1645,7 +1643,7 @@ export function forEachWriteRef(command: Command, visit: RefVisitor): void {
 export function forEachConsumedRef(command: Command, visit: RefVisitor): void {
   switch (command.opcode) {
     case SLOT_FREE:
-      visit(command.targetSlot as CommandRef)
+      visit(command.targetSlot)
       return
     default:
       return
@@ -1664,103 +1662,87 @@ export function writeCommand(
 ): void {
   switch (command.opcode) {
     case INVALID: {
-      writeInvalid(view, offset)
-      return
+      return writeInvalid(view, offset)
     }
     case SLOT_STORE: {
-      writeSlotStore(
+      return writeSlotStore(
         view,
         offset,
         helpers.resolveRef(command.inSlot),
         command.inSlotType,
         command.outPtr,
       )
-      return
     }
     case SLOT_LOAD: {
-      writeSlotLoad(
+      return writeSlotLoad(
         view,
         offset,
         helpers.resolveRef(command.outSlot),
         command.outSlotType,
         command.inPtr,
       )
-      return
     }
     case SLOT_FREE: {
-      writeSlotFree(view, offset, helpers.resolveRef(command.targetSlot), command.targetSlotType)
-      return
+      return writeSlotFree(
+        view,
+        offset,
+        helpers.resolveRef(command.targetSlot),
+        command.targetSlotType,
+      )
     }
     case NEW_OBJECT: {
-      writeNewObject(view, offset, helpers.resolveRef(command.resultSlot))
-      return
+      return writeNewObject(view, offset, helpers.resolveRef(command.resultSlot))
     }
     case NEW_OBJECT_PROTO: {
-      writeNewObjectProto(
+      return writeNewObjectProto(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.protoSlot),
       )
-      return
     }
     case NEW_ARRAY: {
-      writeNewArray(view, offset, helpers.resolveRef(command.resultSlot))
-      return
+      return writeNewArray(view, offset, helpers.resolveRef(command.resultSlot))
     }
     case NEW_MAP: {
-      writeNewMap(view, offset, helpers.resolveRef(command.resultSlot))
-      return
+      return writeNewMap(view, offset, helpers.resolveRef(command.resultSlot))
     }
     case NEW_SET: {
-      writeNewSet(view, offset, helpers.resolveRef(command.resultSlot))
-      return
+      return writeNewSet(view, offset, helpers.resolveRef(command.resultSlot))
     }
     case NEW_DATE: {
-      writeNewDate(view, offset, helpers.resolveRef(command.resultSlot), command.timestamp)
-      return
+      return writeNewDate(view, offset, helpers.resolveRef(command.resultSlot), command.timestamp)
     }
     case NEW_ERROR: {
-      const alloc_message = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(
+      const message = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(
         command.message,
         0xffffffff,
       )
-      const alloc_name = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(
-        command.name,
-        0xff,
-        false,
-      )
-      writeNewError(
+      const name = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.name, 0xff, false)
+      return writeNewError(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
-        alloc_name.len,
+        name.len,
         command.newErrorFlags,
-        alloc_message.ptr,
-        alloc_message.len,
-        alloc_name.ptr,
+        message.ptr,
+        message.len,
+        name.ptr,
       )
-      return
     }
     case NEW_ARRAYBUFFER: {
-      const alloc_dataBytes = helpers.encodeBytes<JSVoidPointer, Uint32>(
-        command.dataBytes,
-        0xffffffff,
-      )
-      if (alloc_dataBytes.len > 0xffffffff)
-        throw new Error("NEW_ARRAYBUFFER.dataBytes: byte length overflow")
-      writeNewArraybuffer(
+      const dataBytes = helpers.encodeBytes<JSVoidPointer, Uint32>(command.dataBytes, 0xffffffff)
+      return writeNewArraybuffer(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
         command.classIsSharedArrayBuffer,
-        alloc_dataBytes.ptr,
-        alloc_dataBytes.len,
+        dataBytes.ptr,
+        dataBytes.len,
       )
-      return
     }
     case NEW_TYPED_ARRAY: {
-      writeNewTypedArray(
+      return writeNewTypedArray(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
@@ -1769,165 +1751,139 @@ export function writeCommand(
         command.sourceOffset,
         command.length,
       )
-      return
     }
     case NEW_SYMBOL: {
-      const alloc_desc = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(
-        command.desc,
-        0xffffffff,
-      )
-      writeNewSymbol(
+      const desc = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.desc, 0xffffffff)
+      return writeNewSymbol(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
         command.isGlobal,
-        alloc_desc.ptr,
-        alloc_desc.len,
+        desc.ptr,
+        desc.len,
       )
-      return
     }
     case NEW_FLOAT64: {
-      writeNewFloat64(view, offset, helpers.resolveRef(command.resultSlot), command.value)
-      return
+      return writeNewFloat64(view, offset, helpers.resolveRef(command.resultSlot), command.value)
     }
     case NEW_STRING: {
-      const alloc_str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
-      writeNewString(
-        view,
-        offset,
-        helpers.resolveRef(command.resultSlot),
-        alloc_str.ptr,
-        alloc_str.len,
-      )
-      return
+      const str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
+      return writeNewString(view, offset, helpers.resolveRef(command.resultSlot), str.ptr, str.len)
     }
     case NEW_BIGINT: {
-      writeNewBigint(view, offset, helpers.resolveRef(command.resultSlot), command.value)
-      return
+      return writeNewBigint(view, offset, helpers.resolveRef(command.resultSlot), command.value)
     }
     case NEW_FUNC: {
-      const alloc_name = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(
-        command.name,
-        0xffffffff,
-      )
-      writeNewFunc(
+      const name = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.name, 0xffffffff)
+      return writeNewFunc(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
         command.arity,
         command.isConstructor,
-        alloc_name.ptr,
-        alloc_name.len,
+        name.ptr,
+        name.len,
         command.hostRefId,
       )
-      return
     }
     case SET_STR_VALUE: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeSetStrValue(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeSetStrValue(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.valueSlot),
         command.flags,
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
       )
-      return
     }
     case SET_STR_NULL: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeSetStrNull(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeSetStrNull(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
       )
-      return
     }
     case SET_STR_UNDEF: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeSetStrUndef(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeSetStrUndef(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
       )
-      return
     }
     case SET_STR_BOOL: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeSetStrBool(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeSetStrBool(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.boolVal,
         command.flags,
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
       )
-      return
     }
     case SET_STR_INT32: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeSetStrInt32(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeSetStrInt32(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
         command.intVal,
       )
-      return
     }
     case SET_STR_F64: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
-      writeSetStrF64(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
+      return writeSetStrF64(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
-        alloc_key.len,
+        key.len,
         command.flags,
         command.f64Val,
-        alloc_key.ptr,
+        key.ptr,
       )
-      return
     }
     case SET_STR_BIGINT: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
-      writeSetStrBigint(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
+      return writeSetStrBigint(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
-        alloc_key.len,
+        key.len,
         command.flags,
         command.i64Val,
-        alloc_key.ptr,
+        key.ptr,
       )
-      return
     }
     case SET_STR_STRING: {
-      const alloc_str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
-      writeSetStrString(
+      const str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
+      return writeSetStrString(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
-        alloc_key.len,
+        key.len,
         command.flags,
-        alloc_str.ptr,
-        alloc_str.len,
-        alloc_key.ptr,
+        str.ptr,
+        str.len,
+        key.ptr,
       )
-      return
     }
     case SET_IDX_VALUE: {
-      writeSetIdxValue(
+      return writeSetIdxValue(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
@@ -1935,30 +1891,27 @@ export function writeCommand(
         command.flags,
         command.index,
       )
-      return
     }
     case SET_IDX_NULL: {
-      writeSetIdxNull(
+      return writeSetIdxNull(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
         command.index,
       )
-      return
     }
     case SET_IDX_UNDEF: {
-      writeSetIdxUndef(
+      return writeSetIdxUndef(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
         command.index,
       )
-      return
     }
     case SET_IDX_BOOL: {
-      writeSetIdxBool(
+      return writeSetIdxBool(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
@@ -1966,10 +1919,9 @@ export function writeCommand(
         command.flags,
         command.index,
       )
-      return
     }
     case SET_IDX_INT32: {
-      writeSetIdxInt32(
+      return writeSetIdxInt32(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
@@ -1977,10 +1929,9 @@ export function writeCommand(
         command.index,
         command.intVal,
       )
-      return
     }
     case SET_IDX_F64: {
-      writeSetIdxF64(
+      return writeSetIdxF64(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
@@ -1988,10 +1939,9 @@ export function writeCommand(
         command.f64Val,
         command.index,
       )
-      return
     }
     case SET_IDX_BIGINT: {
-      writeSetIdxBigint(
+      return writeSetIdxBigint(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
@@ -1999,23 +1949,21 @@ export function writeCommand(
         command.i64Val,
         command.index,
       )
-      return
     }
     case SET_IDX_STRING: {
-      const alloc_str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
-      writeSetIdxString(
+      const str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
+      return writeSetIdxString(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
-        alloc_str.ptr,
-        alloc_str.len,
+        str.ptr,
+        str.len,
         command.index,
       )
-      return
     }
     case SET_VALUE_VALUE: {
-      writeSetValueValue(
+      return writeSetValueValue(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
@@ -2023,114 +1971,103 @@ export function writeCommand(
         helpers.resolveRef(command.valueSlot),
         command.flags,
       )
-      return
     }
     case DEF_VALUE_GETSET: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
-      writeDefValueGetset(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
+      return writeDefValueGetset(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
-        alloc_key.len,
+        key.len,
         command.flags,
         command.getterRef,
         command.setterRef,
-        alloc_key.ptr,
+        key.ptr,
       )
-      return
     }
     case GET_VALUE: {
-      writeGetValue(
+      return writeGetValue(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.sourceSlot),
         helpers.resolveRef(command.keySlot),
       )
-      return
     }
     case GET_STR: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeGetStr(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeGetStr(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.sourceSlot),
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
       )
-      return
     }
     case GET_IDX: {
-      writeGetIdx(
+      return writeGetIdx(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.sourceSlot),
         command.index,
       )
-      return
     }
     case GLOBAL: {
-      writeGlobal(view, offset, helpers.resolveRef(command.resultSlot))
-      return
+      return writeGlobal(view, offset, helpers.resolveRef(command.resultSlot))
     }
     case GLOBAL_GET_STR: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeGlobalGetStr(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeGlobalGetStr(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
       )
-      return
     }
     case GLOBAL_SET_STR: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeGlobalSetStr(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeGlobalSetStr(
         view,
         offset,
         helpers.resolveRef(command.valueSlot),
         command.flags,
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
       )
-      return
     }
     case MAP_SET: {
-      writeMapSet(
+      return writeMapSet(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.keySlot),
         helpers.resolveRef(command.valueSlot),
       )
-      return
     }
     case MAP_SET_STR: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeMapSetStr(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeMapSetStr(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.valueSlot),
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
       )
-      return
     }
     case SET_ADD: {
-      writeSetAdd(
+      return writeSetAdd(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.valueSlot),
       )
-      return
     }
     case CALL: {
-      writeCall(
+      return writeCall(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
@@ -2149,10 +2086,9 @@ export function writeCommand(
         helpers.resolveRef(command.arg10),
         command.callAsConstructor,
       )
-      return
     }
     case CALL_ARGV: {
-      writeCallArgv(
+      return writeCallArgv(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
@@ -2162,220 +2098,204 @@ export function writeCommand(
         command.argv,
         command.callAsConstructor,
       )
-      return
     }
     case EVAL: {
-      const alloc_code = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(
-        command.code,
-        0xffffffff,
-      )
-      const alloc_filename = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(
+      const code = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.code, 0xffffffff)
+      const filename = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(
         command.filename,
         0xff,
         false,
       )
-      writeEval(
+      return writeEval(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
-        alloc_filename.len,
+        filename.len,
         command.callFlags,
-        alloc_code.ptr,
-        alloc_code.len,
-        alloc_filename.ptr,
+        code.ptr,
+        code.len,
+        filename.ptr,
       )
-      return
     }
     case THROW: {
-      writeThrow(view, offset, helpers.resolveRef(command.errorSlot))
-      return
+      return writeThrow(view, offset, helpers.resolveRef(command.errorSlot))
     }
     case RESOLVE_EXC: {
-      writeResolveExc(
+      return writeResolveExc(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.maybeExcSlot),
       )
-      return
     }
     case BYTECODE_WRITE: {
-      writeBytecodeWrite(
+      return writeBytecodeWrite(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.sourceSlot),
         command.flags,
       )
-      return
     }
     case BYTECODE_READ: {
-      writeBytecodeRead(
+      return writeBytecodeRead(
         view,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.sourceSlot),
         command.flags,
       )
-      return
     }
     case FUNCLIST_NEW: {
-      writeFunclistNew(view, offset, helpers.resolveRef(command.resultFunclistSlot), command.count)
-      return
+      return writeFunclistNew(
+        view,
+        offset,
+        helpers.resolveRef(command.resultFunclistSlot),
+        command.count,
+      )
     }
     case FUNCLIST_ASSIGN: {
-      writeFunclistAssign(
+      return writeFunclistAssign(
         view,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.sourceFunclistSlot),
       )
-      return
     }
     case FUNCLIST_DEF_CFUNC: {
-      const alloc_funcName = helpers.encodeUtf8<BorrowedHeapCharPointer>(
+      const funcName = helpers.encodeUtf8<BorrowedHeapCharPointer>(
         command.funcName,
         undefined,
         true,
       )
-      writeFunclistDefCfunc(
+      return writeFunclistDefCfunc(
         view,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.arity,
         command.flags,
         command.index,
-        alloc_funcName.ptr,
+        funcName.ptr,
         command.cFuncPtr,
       )
-      return
     }
     case FUNCLIST_DEF_CFUNC_CTOR: {
-      const alloc_funcName = helpers.encodeUtf8<BorrowedHeapCharPointer>(
+      const funcName = helpers.encodeUtf8<BorrowedHeapCharPointer>(
         command.funcName,
         undefined,
         true,
       )
-      writeFunclistDefCfuncCtor(
+      return writeFunclistDefCfuncCtor(
         view,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.arity,
         command.flags,
         command.index,
-        alloc_funcName.ptr,
+        funcName.ptr,
         command.cFuncPtr,
       )
-      return
     }
     case FUNCLIST_DEF_CGETSET: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.key, undefined, true)
-      writeFunclistDefCgetset(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.key, undefined, true)
+      return writeFunclistDefCgetset(
         view,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.index,
         command.flags,
-        alloc_key.ptr,
+        key.ptr,
         command.getterPtr,
         command.setterPtr,
       )
-      return
     }
     case FUNCLIST_DEF_STRING: {
-      const alloc_str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
-      const alloc_name = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.name, undefined, true)
-      writeFunclistDefString(
+      const str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
+      const name = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.name, undefined, true)
+      return writeFunclistDefString(
         view,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.index,
         command.flags,
-        alloc_str.ptr,
-        alloc_str.len,
-        alloc_name.ptr,
+        str.ptr,
+        str.len,
+        name.ptr,
       )
-      return
     }
     case FUNCLIST_DEF_INT32: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
-      writeFunclistDefInt32(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
+      return writeFunclistDefInt32(
         view,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
-        alloc_key.len,
+        key.len,
         command.flags,
         command.index,
         command.intVal,
-        alloc_key.ptr,
+        key.ptr,
       )
-      return
     }
     case FUNCLIST_DEF_INT64: {
-      const alloc_name = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.name, undefined, true)
-      writeFunclistDefInt64(
+      const name = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.name, undefined, true)
+      return writeFunclistDefInt64(
         view,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.index,
         command.flags,
         command.i64Val,
-        alloc_name.ptr,
+        name.ptr,
       )
-      return
     }
     case FUNCLIST_DEF_DOUBLE: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.key, undefined, true)
-      writeFunclistDefDouble(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.key, undefined, true)
+      return writeFunclistDefDouble(
         view,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.index,
         command.flags,
         command.f64Val,
-        alloc_key.ptr,
+        key.ptr,
       )
-      return
     }
     case FUNCLIST_DEF_NULL: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeFunclistDefNull(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeFunclistDefNull(
         view,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.flags,
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
         command.index,
       )
-      return
     }
     case FUNCLIST_DEF_UNDEFINED: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeFunclistDefUndefined(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeFunclistDefUndefined(
         view,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.flags,
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
         command.index,
       )
-      return
     }
     case FUNCLIST_DEF_OBJECT: {
-      const alloc_key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
-      writeFunclistDefObject(
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
+      return writeFunclistDefObject(
         view,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         helpers.resolveRef(command.objectFunclistSlot),
         command.flags,
-        alloc_key.ptr,
-        alloc_key.len,
+        key.ptr,
+        key.len,
         command.index,
       )
-      return
     }
     default:
       throw new Error(`Unknown command opcode: ${getCommandKind(command)}`)

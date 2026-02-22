@@ -5,6 +5,7 @@ import * as crypto from "crypto"
 import * as pathlib from "path"
 
 import * as fs from "fs-extra"
+import * as prettier from "prettier"
 import { CFunc } from "./CFunc"
 import { repoRoot } from "./helpers"
 import type { CommandDataDef, CommandDef, OpName, ParamDef, ParamPath } from "./idl"
@@ -32,13 +33,32 @@ const DECL_RE = /^([\w()* ]+[\s*]+)(QTS_\w+)(\((.*?)\)) ?{$/gm
 const TS_EXPORT_TYPE_RE = /^export type (\w+)/gm
 const EM_JS_RE = /^\s*EM_JS\((.+), ?\{$/gm
 
-function writeFile(filename: string, content: string) {
+async function formatBeforeWrite(filename: string, content: string): Promise<string> {
+  const normalized = content.endsWith("\n") ? content : `${content}\n`
   if (filename === "-") {
-    console.log(content)
+    return normalized
+  }
+
+  const fileInfo = await prettier.getFileInfo(filename, { resolveConfig: false })
+  if (fileInfo.ignored || !fileInfo.inferredParser) {
+    return normalized
+  }
+
+  const options = (await prettier.resolveConfig(filename)) ?? {}
+  return prettier.format(normalized, {
+    ...options,
+    filepath: filename,
+  })
+}
+
+async function writeFile(filename: string, content: string) {
+  const formatted = await formatBeforeWrite(filename, content)
+  if (filename === "-") {
+    process.stdout.write(formatted)
     return
   }
 
-  fs.writeFileSync(filename, content + "\n", "utf-8")
+  fs.writeFileSync(filename, formatted, "utf-8")
 }
 
 export function getMatches(context: Context) {
@@ -55,7 +75,7 @@ export function getMatches(context: Context) {
   }
 }
 
-function main() {
+async function main() {
   const [, , command, destination, hashDestination] = process.argv
   const context = new Context()
 
@@ -67,19 +87,19 @@ function main() {
 
   if (command === "symbols") {
     const symbols = buildSymbols(context, matches)
-    writeFile(destination, JSON.stringify(symbols))
+    await writeFile(destination, JSON.stringify(symbols))
     return
   }
 
   if (command === "sync-symbols") {
     const symbols = buildSyncSymbols(context, matches)
-    writeFile(destination, JSON.stringify(symbols))
+    await writeFile(destination, JSON.stringify(symbols))
     return
   }
 
   if (command === "async-callback-symbols") {
     const symbols = buildAsyncifySymbols(emJsMatches)
-    writeFile(destination, JSON.stringify(symbols))
+    await writeFile(destination, JSON.stringify(symbols))
     return
   }
 
@@ -97,12 +117,12 @@ function main() {
         return `${returnType}${name}${params};`
       })
       .join("\n")
-    writeFile(destination, [includes, typedefs, decls].join("\n\n"))
+    await writeFile(destination, [includes, typedefs, decls].join("\n\n"))
     return
   }
 
   if (command === "ffi") {
-    writeFile(destination, buildFFI(context, matches))
+    await writeFile(destination, buildFFI(context, matches))
     return
   }
 
@@ -115,12 +135,12 @@ function main() {
     // Use relative import if destination is in quickjs-ffi-types package
     const useRelativeImport = destination.includes("quickjs-ffi-types")
     const built = buildOpsFiles(useRelativeImport)
-    writeFile(destination, built)
+    await writeFile(destination, built)
     return
   }
 
   if (command === "c-ops") {
-    buildCOps(destination)
+    await buildCOps(destination)
     return
   }
 
@@ -743,7 +763,6 @@ type RefOperand = {
   read: boolean
   write: boolean
   consume: boolean
-  requiresCommandRefCast: boolean
 }
 
 function snakeToCamel(name: string): string {
@@ -879,14 +898,13 @@ function collectRefOperands(params: readonly ParamWithPath[]): RefOperand[] {
   for (const { param, isJsValuesArrayPtr } of params) {
     const fieldName = commandFieldName(param)
 
-    if (isRefSlotType(param.type) || param.type === "AnySlot") {
+    if (isRefSlotType(param.type)) {
       out.push({
         fieldName,
         isMany: false,
         read: isReadUsage(param.usage),
         write: isWriteUsage(param.usage),
         consume: isConsumeUsage(param.usage),
-        requiresCommandRefCast: param.type === "AnySlot",
       })
       continue
     }
@@ -898,7 +916,6 @@ function collectRefOperands(params: readonly ParamWithPath[]): RefOperand[] {
         read: isReadUsage(param.usage),
         write: isWriteUsage(param.usage),
         consume: isConsumeUsage(param.usage),
-        requiresCommandRefCast: false,
       })
     }
   }
@@ -908,11 +925,9 @@ function collectRefOperands(params: readonly ParamWithPath[]): RefOperand[] {
 function renderVisitStatements(operands: readonly RefOperand[]): string[] {
   const lines: string[] = []
   for (const operand of operands) {
-    const fieldExpr = operand.requiresCommandRefCast
-      ? `(command.${operand.fieldName} as CommandRef)`
-      : `command.${operand.fieldName}`
+    const fieldExpr = `command.${operand.fieldName}`
     if (operand.isMany) {
-      lines.push(`command.${operand.fieldName}.forEach((ref) => visit(ref as CommandRef))`)
+      lines.push(`${fieldExpr}.forEach(visit)`)
     } else {
       lines.push(`visit(${fieldExpr})`)
     }
@@ -988,7 +1003,6 @@ function renderWriteCommandCase(name: OpName, commandDef: CommandDef): string {
     }
 
     const fieldName = commandFieldName(visible.param)
-    const allocVar = `alloc_${fieldName}`
 
     const tsType = cTypeToTypescriptType(param.type, true).typescript
     let tsLenType: string | undefined
@@ -1008,18 +1022,15 @@ function renderWriteCommandCase(name: OpName, commandDef: CommandDef): string {
       }
       const maxValue = lenEntry.param.type === "uint8_t" ? "0xff" : "0xffffffff"
       prelude.push(
-        `const ${allocVar} = helpers.encodeBytes<${encodeTypeParams}>(command.${fieldName}, ${maxValue})`,
-      )
-      prelude.push(
-        `if (${allocVar}.len > ${maxValue}) throw new Error("${name}.${fieldName}: byte length overflow")`,
+        `const ${fieldName} = helpers.encodeBytes<${encodeTypeParams}>(command.${fieldName}, ${maxValue})`,
       )
       if (omittedPaths.has(lenPath) && !hiddenLenExprByPath.has(lenPath)) {
-        hiddenLenExprByPath.set(lenPath, `${allocVar}.len`)
+        hiddenLenExprByPath.set(lenPath, `${fieldName}.len`)
       }
     } else {
       if (param.pointer.kind === "utf8.nullTerminated") {
         prelude.push(
-          `const ${allocVar} = helpers.encodeUtf8<${encodeTypeParams}>(command.${fieldName}, undefined, true)`,
+          `const ${fieldName} = helpers.encodeUtf8<${encodeTypeParams}>(command.${fieldName}, undefined, true)`,
         )
       } else {
         const lenPath = param.pointer.lenParam
@@ -1030,23 +1041,23 @@ function renderWriteCommandCase(name: OpName, commandDef: CommandDef): string {
         const maxValue = lenEntry.param.type === "uint8_t" ? "0xff" : "0xffffffff"
         if (param.pointer.kind === "utf8.optionalLength") {
           prelude.push(
-            `const ${allocVar} = helpers.encodeUtf8<${encodeTypeParams}>(command.${fieldName}, ${maxValue}, false)`,
+            `const ${fieldName} = helpers.encodeUtf8<${encodeTypeParams}>(command.${fieldName}, ${maxValue}, false)`,
           )
         } else {
           prelude.push(
-            `const ${allocVar} = helpers.encodeUtf8<${encodeTypeParams}>(command.${fieldName}, ${maxValue})`,
+            `const ${fieldName} = helpers.encodeUtf8<${encodeTypeParams}>(command.${fieldName}, ${maxValue})`,
           )
         }
         if (omittedPaths.has(lenPath) && !hiddenLenExprByPath.has(lenPath)) {
-          hiddenLenExprByPath.set(lenPath, `${allocVar}.len`)
+          hiddenLenExprByPath.set(lenPath, `${fieldName}.len`)
         }
       }
     }
 
-    pointerVarByPath.set(path, allocVar)
+    pointerVarByPath.set(path, fieldName)
   }
 
-  const args: string[] = []
+  const args: string[] = ["view", "offset"]
   for (const entry of params) {
     const { path, param } = entry
     const writerArgType = cTypeToTypescriptType(param.type, true).typescript
@@ -1088,11 +1099,11 @@ function renderWriteCommandCase(name: OpName, commandDef: CommandDef): string {
   }
 
   const writerName = `write${TsOpName(name)}`
-  const writerCallArgs = args.length > 0 ? `, ${args.join(", ")}` : ""
+  const writerCallArgs = args.map((arg) => `        ${arg},\n`).join("")
   const lines = [
     `    case ${name}: {`,
     ...prelude.map((line) => `      ${line}`),
-    `      return ${writerName}(view, offset${writerCallArgs})`,
+    `      return ${writerName}(\n${writerCallArgs})`,
     `    }`,
   ]
   return lines.join("\n")
@@ -1496,23 +1507,23 @@ function updateFunctionSignature(
 /**
  * Build all C ops files in the specified output directory.
  */
-function buildCOps(outputDir: string): void {
+async function buildCOps(outputDir: string): Promise<void> {
   // Ensure output directory exists
   fs.ensureDirSync(outputDir)
 
   // 1. Generate c/op.h
   const opHeaderPath = pathlib.join(outputDir, "op.h")
-  fs.writeFileSync(opHeaderPath, buildOpHeader())
+  await writeFile(opHeaderPath, buildOpHeader())
   console.log(`Generated ${opHeaderPath}`)
 
   // 2. Generate c/perform_op.h
   const performOpHeaderPath = pathlib.join(outputDir, "perform_op.h")
-  fs.writeFileSync(performOpHeaderPath, buildPerformOpHeader())
+  await writeFile(performOpHeaderPath, buildPerformOpHeader())
   console.log(`Generated ${performOpHeaderPath}`)
 
   // 3. Generate c/perform_op.c
   const performOpCPath = pathlib.join(outputDir, "perform_op.c")
-  fs.writeFileSync(performOpCPath, buildPerformOpC())
+  await writeFile(performOpCPath, buildPerformOpC())
   console.log(`Generated ${performOpCPath}`)
 
   // 5. For each op, generate .h and .c files (skip INVALID - handled specially)
@@ -1527,13 +1538,13 @@ function buildCOps(outputDir: string): void {
 
     // Always regenerate .h
     const headerPath = pathlib.join(outputDir, `perform_${cf.lcName}.h`)
-    fs.writeFileSync(headerPath, cf.headerContent)
+    await writeFile(headerPath, cf.headerContent)
     headersGenerated++
 
     // For .c files: create if missing, or update signature if it changed
     const cPath = pathlib.join(outputDir, `perform_${cf.lcName}.c`)
     if (!fs.existsSync(cPath)) {
-      fs.writeFileSync(cPath, cf.scaffoldContent)
+      await writeFile(cPath, cf.scaffoldContent)
       scaffoldsGenerated++
     } else {
       // Read existing file and try to update the function signature and doc comment
@@ -1545,7 +1556,7 @@ function buildCOps(outputDir: string): void {
         cf.docComment,
       )
       if (updatedContent !== existingContent) {
-        fs.writeFileSync(cPath, updatedContent)
+        await writeFile(cPath, updatedContent)
         signaturesUpdated++
       } else {
         signaturesUnchanged++
@@ -1594,5 +1605,8 @@ function cleanupCOps(outputDir: string): void {
 }
 
 if (require.main === module) {
-  main()
+  void main().catch((error) => {
+    console.error(error)
+    process.exit(1)
+  })
 }

@@ -76,7 +76,7 @@ export function CFunc(name: string, command: CommandDef) {
       doc: "Command execution environment",
       name: "env",
       type: "QTS_CommandEnv*",
-      usage: "in-out",
+      usage: "in",
     },
   }
 
