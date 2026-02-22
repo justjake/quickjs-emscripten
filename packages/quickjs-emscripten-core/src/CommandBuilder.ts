@@ -1,12 +1,12 @@
 import type {
   Float64,
+  HostRefId,
   Int32,
   Int64,
+  JSPropFlags,
+  SetPropFlags,
   Uint32,
   Uint8,
-  type HostRefId,
-  type JSPropFlags,
-  type SetPropFlags,
 } from "@jitl/quickjs-ffi-types"
 import { SetPropFlags as SetPropFlagBits, SlotType } from "@jitl/quickjs-ffi-types"
 import type { FuncListRef, JSValueRef } from "./command-types"
@@ -368,7 +368,9 @@ export class CommandBuilder {
       return this.push(Ops.FunclistDefDoubleCmd(targetFunclist, index, flags, value, key))
     }
     if (typeof value === "boolean") {
-      return this.push(Ops.FunclistDefInt32Cmd(targetFunclist, flags, index, value, key))
+      return this.push(
+        Ops.FunclistDefBoolCmd(targetFunclist, flags, index, (value ? 1 : 0) as Int32, key),
+      )
     }
 
     if (value instanceof JSValueLifetime) {
@@ -480,9 +482,7 @@ export class CommandBuilder {
       return this.push(Ops.SetStrUndefCmd(targetRef, flags, key))
     }
     if (typeof value === "boolean") {
-      return this.push(
-        Ops.SetStrBoolCmd(targetRef, value ? (1 as Uint8) : (0 as Uint8), flags, key),
-      )
+      return this.push(Ops.SetStrBoolCmd(targetRef, (value ? 1 : 0) as Uint8, flags, key))
     }
     if (typeof value === "string") {
       return this.push(Ops.SetStrStringCmd(targetRef, flags, value, key))
@@ -514,9 +514,7 @@ export class CommandBuilder {
       return this.push(Ops.SetIdxUndefCmd(targetRef, flags, index))
     }
     if (typeof value === "boolean") {
-      return this.push(
-        Ops.SetIdxBoolCmd(targetRef, value ? (1 as Uint8) : (0 as Uint8), flags, index),
-      )
+      return this.push(Ops.SetIdxBoolCmd(targetRef, (value ? 1 : 0) as Uint8, flags, index))
     }
     if (typeof value === "string") {
       return this.push(Ops.SetIdxStringCmd(targetRef, flags, value, index))

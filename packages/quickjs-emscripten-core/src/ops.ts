@@ -94,6 +94,7 @@ export const FUNCLIST_DEF_DOUBLE = 60 as const
 export const FUNCLIST_DEF_NULL = 61 as const
 export const FUNCLIST_DEF_UNDEFINED = 62 as const
 export const FUNCLIST_DEF_OBJECT = 63 as const
+export const FUNCLIST_DEF_BOOL = 64 as const
 
 interface BaseCommand {
   opcode: number
@@ -579,6 +580,15 @@ export interface FunclistDefObjectCommand extends BaseCommand {
   index: Uint32
 }
 
+export interface FunclistDefBoolCommand extends BaseCommand {
+  opcode: typeof FUNCLIST_DEF_BOOL
+  targetFunclistSlot: FuncListRef
+  flags: JSPropFlags
+  index: Uint32
+  boolVal: Int32
+  key: string
+}
+
 export type Command =
   | InvalidCommand
   | SlotStoreCommand
@@ -644,6 +654,7 @@ export type Command =
   | FunclistDefNullCommand
   | FunclistDefUndefinedCommand
   | FunclistDefObjectCommand
+  | FunclistDefBoolCommand
 
 export function InvalidCmd(): InvalidCommand {
   return {
@@ -1499,6 +1510,23 @@ export function FunclistDefObjectCmd(
   }
 }
 
+export function FunclistDefBoolCmd(
+  targetFunclistSlot: FuncListRef,
+  flags: JSPropFlags,
+  index: Uint32,
+  boolVal: Int32,
+  key: string,
+): FunclistDefBoolCommand {
+  return {
+    opcode: FUNCLIST_DEF_BOOL,
+    targetFunclistSlot,
+    flags,
+    index,
+    boolVal,
+    key,
+  }
+}
+
 export function forEachReadRef(command: Command, visit: RefVisitor): void {
   switch (command.opcode) {
     case SLOT_STORE:
@@ -1589,6 +1617,7 @@ export function forEachReadRef(command: Command, visit: RefVisitor): void {
     case FUNCLIST_DEF_DOUBLE:
     case FUNCLIST_DEF_NULL:
     case FUNCLIST_DEF_UNDEFINED:
+    case FUNCLIST_DEF_BOOL:
       visit(command.targetFunclistSlot)
       return
     case FUNCLIST_DEF_OBJECT:
@@ -2297,6 +2326,19 @@ export function writeCommand(
         command.index,
       )
     }
+    case FUNCLIST_DEF_BOOL: {
+      const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
+      return writeFunclistDefBool(
+        view,
+        offset,
+        helpers.resolveRef(command.targetFunclistSlot),
+        key.len,
+        command.flags,
+        command.index,
+        command.boolVal,
+        key.ptr,
+      )
+    }
     default:
       throw new Error(`Unknown command opcode: ${getCommandKind(command)}`)
   }
@@ -2469,6 +2511,24 @@ function writePattern37(
   setSlotC(view, offset, p2)
   setD1_u32(view, offset, p3)
   setD2_u32(view, offset, p4)
+  setD3_u32(view, offset, p5)
+}
+
+function writePattern40(
+  view: DataView,
+  offset: CommandPtr,
+  p0: FuncListSlot,
+  p1: Uint8,
+  p2: JSPropFlags,
+  p3: Uint32,
+  p4: Int32,
+  p5: BorrowedHeapCharPointer,
+): void {
+  setSlotA(view, offset, p0)
+  setSlotB(view, offset, p1)
+  setSlotC(view, offset, p2)
+  setD1_u32(view, offset, p3)
+  setD2_i32(view, offset, p4)
   setD3_u32(view, offset, p5)
 }
 
@@ -3285,12 +3345,7 @@ export function writeFunclistDefInt32(
   key_ptr: BorrowedHeapCharPointer,
 ): void {
   setOpcode(view, offset, 58)
-  setSlotA(view, offset, target_funclist_slot)
-  setSlotB(view, offset, maybe_key_len)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, index)
-  setD2_i32(view, offset, int_val)
-  setD3_u32(view, offset, key_ptr)
+  writePattern40(view, offset, target_funclist_slot, maybe_key_len, flags, index, int_val, key_ptr)
 }
 
 export function writeFunclistDefInt64(
@@ -3372,6 +3427,20 @@ export function writeFunclistDefObject(
   setD3_u32(view, offset, index)
 }
 
+export function writeFunclistDefBool(
+  view: DataView,
+  offset: CommandPtr,
+  target_funclist_slot: FuncListSlot,
+  maybe_key_len: Uint8,
+  flags: JSPropFlags,
+  index: Uint32,
+  bool_val: Int32,
+  key_ptr: BorrowedHeapCharPointer,
+): void {
+  setOpcode(view, offset, 64)
+  writePattern40(view, offset, target_funclist_slot, maybe_key_len, flags, index, bool_val, key_ptr)
+}
+
 export const OP_ENCODERS = [
   writeInvalid,
   writeSlotStore,
@@ -3437,4 +3506,5 @@ export const OP_ENCODERS = [
   writeFunclistDefNull,
   writeFunclistDefUndefined,
   writeFunclistDefObject,
+  writeFunclistDefBool,
 ] as const

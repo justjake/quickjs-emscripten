@@ -63,6 +63,7 @@
 #include "perform_funclist_def_null.h"
 #include "perform_funclist_def_undefined.h"
 #include "perform_funclist_def_object.h"
+#include "perform_funclist_def_bool.h"
 
 QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd) {
     switch (cmd.opcode) {
@@ -132,6 +133,7 @@ QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd) {
         case QTS_OP_FUNCLIST_DEF_NULL: return perform_funclist_def_null(env, (FuncListSlot)cmd.slot_a, (JSPropFlags)cmd.slot_c, cmd.data.buf.ptr, cmd.data.buf.len, cmd.data.buf.extra);
         case QTS_OP_FUNCLIST_DEF_UNDEFINED: return perform_funclist_def_undefined(env, (FuncListSlot)cmd.slot_a, (JSPropFlags)cmd.slot_c, cmd.data.buf.ptr, cmd.data.buf.len, cmd.data.buf.extra);
         case QTS_OP_FUNCLIST_DEF_OBJECT: return perform_funclist_def_object(env, (FuncListSlot)cmd.slot_a, (FuncListSlot)cmd.slot_b, (JSPropFlags)cmd.slot_c, cmd.data.buf.ptr, cmd.data.buf.len, cmd.data.buf.extra);
+        case QTS_OP_FUNCLIST_DEF_BOOL: return perform_funclist_def_bool(env, (FuncListSlot)cmd.slot_a, cmd.slot_b, (JSPropFlags)cmd.slot_c, cmd.data.raw.d1, (int32_t)cmd.data.raw.d2, (char*)cmd.data.raw.d3);
         default:
             env->error = "Unknown opcode";
             return QTS_COMMAND_ERROR;

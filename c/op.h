@@ -71,6 +71,7 @@ typedef enum {
     QTS_OP_FUNCLIST_DEF_NULL = 61, /** Set funclist entry to JS_DEF_PROP_NULL */
     QTS_OP_FUNCLIST_DEF_UNDEFINED = 62, /** Set funclist entry to JS_DEF_PROP_UNDEFINED */
     QTS_OP_FUNCLIST_DEF_OBJECT = 63, /** Set funclist entry to JS_DEF_OBJECT (nested object with its own funclist) */
+    QTS_OP_FUNCLIST_DEF_BOOL = 64, /** Set funclist entry to JS_DEF_PROP_BOOL */
 } QTS_Opcode;
 
 #if UINTPTR_MAX == 0xffffffffu
