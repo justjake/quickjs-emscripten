@@ -85,3 +85,30 @@ export interface CommandWriteHelpers {
     maxLength?: number,
   ): EncodedBufferRef<Ptr, Len>
 }
+
+// =============================================================================
+// Command Buffer View
+// =============================================================================
+
+/** True if the host machine is little-endian (same as WASM). */
+export const IS_LITTLE_ENDIAN = new Uint8Array(new Uint32Array([1]).buffer)[0] === 1
+
+/**
+ * Multi-view into a command buffer for efficient read/write operations.
+ * On little-endian hosts (99.9% of real-world), we can use direct typed array
+ * access instead of DataView for better performance.
+ */
+export interface CmdBuf {
+  u8: Uint8Array
+  u32: Uint32Array
+  dv: DataView // needed for f64/i64 (not 8-byte aligned within 16-byte commands)
+}
+
+/** Create a {@link CmdBuf} view of an ArrayBuffer. */
+export function createCmdBuf(buffer: ArrayBuffer): CmdBuf {
+  return {
+    u8: new Uint8Array(buffer),
+    u32: new Uint32Array(buffer),
+    dv: new DataView(buffer),
+  }
+}

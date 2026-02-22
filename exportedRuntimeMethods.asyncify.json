@@ -1,1 +1,1 @@
-["cwrap", "stringToUTF8", "lengthBytesUTF8", "UTF8ToString", "HEAPU8", "HEAP8", "Asyncify"]
+["cwrap", "stringToUTF8", "lengthBytesUTF8", "UTF8ToString", "HEAPU8", "HEAPU32", "Asyncify"]

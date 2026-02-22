@@ -23,12 +23,14 @@ import type {
   Uint8,
 } from "@jitl/quickjs-ffi-types"
 import type {
+  CmdBuf,
   CommandRef,
   CommandWriteHelpers,
   FuncListRef,
   JSValueRef,
   RefVisitor,
 } from "./command-types"
+import { IS_LITTLE_ENDIAN } from "./command-types"
 
 export const INVALID = 0 as const
 export const SLOT_STORE = 1 as const
@@ -1701,18 +1703,18 @@ function getCommandKind(command: { opcode: number }): number {
 }
 
 export function writeCommand(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   command: Command,
   helpers: CommandWriteHelpers,
 ): void {
   switch (command.opcode) {
     case INVALID: {
-      return writeInvalid(view, offset)
+      return writeInvalid(buf, offset)
     }
     case SLOT_STORE: {
       return writeSlotStore(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.inSlot),
         command.inSlotType,
@@ -1721,7 +1723,7 @@ export function writeCommand(
     }
     case SLOT_LOAD: {
       return writeSlotLoad(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.outSlot),
         command.outSlotType,
@@ -1730,34 +1732,34 @@ export function writeCommand(
     }
     case SLOT_FREE: {
       return writeSlotFree(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.targetSlotType,
       )
     }
     case NEW_OBJECT: {
-      return writeNewObject(view, offset, helpers.resolveRef(command.resultSlot))
+      return writeNewObject(buf, offset, helpers.resolveRef(command.resultSlot))
     }
     case NEW_OBJECT_PROTO: {
       return writeNewObjectProto(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.protoSlot),
       )
     }
     case NEW_ARRAY: {
-      return writeNewArray(view, offset, helpers.resolveRef(command.resultSlot))
+      return writeNewArray(buf, offset, helpers.resolveRef(command.resultSlot))
     }
     case NEW_MAP: {
-      return writeNewMap(view, offset, helpers.resolveRef(command.resultSlot))
+      return writeNewMap(buf, offset, helpers.resolveRef(command.resultSlot))
     }
     case NEW_SET: {
-      return writeNewSet(view, offset, helpers.resolveRef(command.resultSlot))
+      return writeNewSet(buf, offset, helpers.resolveRef(command.resultSlot))
     }
     case NEW_DATE: {
-      return writeNewDate(view, offset, helpers.resolveRef(command.resultSlot), command.timestamp)
+      return writeNewDate(buf, offset, helpers.resolveRef(command.resultSlot), command.timestamp)
     }
     case NEW_ERROR: {
       const message = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(
@@ -1766,7 +1768,7 @@ export function writeCommand(
       )
       const name = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.name, 0xff, false)
       return writeNewError(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         name.len,
@@ -1779,7 +1781,7 @@ export function writeCommand(
     case NEW_ARRAYBUFFER: {
       const dataBytes = helpers.encodeBytes<JSVoidPointer, Uint32>(command.dataBytes, 0xffffffff)
       return writeNewArraybuffer(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         command.classIsSharedArrayBuffer,
@@ -1789,7 +1791,7 @@ export function writeCommand(
     }
     case NEW_TYPED_ARRAY: {
       return writeNewTypedArray(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.sourceSlot),
@@ -1801,7 +1803,7 @@ export function writeCommand(
     case NEW_SYMBOL: {
       const desc = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.desc, 0xffffffff)
       return writeNewSymbol(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         command.isGlobal,
@@ -1810,24 +1812,19 @@ export function writeCommand(
       )
     }
     case NEW_FLOAT64: {
-      return writeNewFloat64(view, offset, helpers.resolveRef(command.resultSlot), command.value)
+      return writeNewFloat64(buf, offset, helpers.resolveRef(command.resultSlot), command.value)
     }
     case NEW_STRING: {
       const str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
-      return writeNewString(view, offset, helpers.resolveRef(command.resultSlot), str.ptr, str.len)
+      return writeNewString(buf, offset, helpers.resolveRef(command.resultSlot), str.ptr, str.len)
     }
     case NEW_BIGINT_INT64: {
-      return writeNewBigintInt64(
-        view,
-        offset,
-        helpers.resolveRef(command.resultSlot),
-        command.value,
-      )
+      return writeNewBigintInt64(buf, offset, helpers.resolveRef(command.resultSlot), command.value)
     }
     case NEW_BIGINT_STR: {
       const str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
       return writeNewBigintStr(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         str.ptr,
@@ -1837,7 +1834,7 @@ export function writeCommand(
     case NEW_FUNC: {
       const name = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.name, 0xffffffff)
       return writeNewFunc(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         command.arity,
@@ -1850,7 +1847,7 @@ export function writeCommand(
     case SET_STR_VALUE: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeSetStrValue(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.valueSlot),
@@ -1862,7 +1859,7 @@ export function writeCommand(
     case SET_STR_NULL: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeSetStrNull(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
@@ -1873,7 +1870,7 @@ export function writeCommand(
     case SET_STR_UNDEF: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeSetStrUndef(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
@@ -1884,7 +1881,7 @@ export function writeCommand(
     case SET_STR_BOOL: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeSetStrBool(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.boolVal,
@@ -1896,7 +1893,7 @@ export function writeCommand(
     case SET_STR_INT32: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeSetStrInt32(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
@@ -1908,7 +1905,7 @@ export function writeCommand(
     case SET_STR_F64: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
       return writeSetStrF64(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         key.len,
@@ -1920,7 +1917,7 @@ export function writeCommand(
     case SET_STR_BIGINT: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
       return writeSetStrBigint(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         key.len,
@@ -1933,7 +1930,7 @@ export function writeCommand(
       const str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
       return writeSetStrString(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         key.len,
@@ -1945,7 +1942,7 @@ export function writeCommand(
     }
     case SET_IDX_VALUE: {
       return writeSetIdxValue(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.valueSlot),
@@ -1955,7 +1952,7 @@ export function writeCommand(
     }
     case SET_IDX_NULL: {
       return writeSetIdxNull(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
@@ -1964,7 +1961,7 @@ export function writeCommand(
     }
     case SET_IDX_UNDEF: {
       return writeSetIdxUndef(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
@@ -1973,7 +1970,7 @@ export function writeCommand(
     }
     case SET_IDX_BOOL: {
       return writeSetIdxBool(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.boolVal,
@@ -1983,7 +1980,7 @@ export function writeCommand(
     }
     case SET_IDX_INT32: {
       return writeSetIdxInt32(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
@@ -1993,7 +1990,7 @@ export function writeCommand(
     }
     case SET_IDX_F64: {
       return writeSetIdxF64(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
@@ -2003,7 +2000,7 @@ export function writeCommand(
     }
     case SET_IDX_BIGINT: {
       return writeSetIdxBigint(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
@@ -2014,7 +2011,7 @@ export function writeCommand(
     case SET_IDX_STRING: {
       const str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
       return writeSetIdxString(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         command.flags,
@@ -2025,7 +2022,7 @@ export function writeCommand(
     }
     case SET_VALUE_VALUE: {
       return writeSetValueValue(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.keySlot),
@@ -2036,7 +2033,7 @@ export function writeCommand(
     case DEF_VALUE_GETSET: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
       return writeDefValueGetset(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         key.len,
@@ -2048,7 +2045,7 @@ export function writeCommand(
     }
     case GET_VALUE: {
       return writeGetValue(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.sourceSlot),
@@ -2058,7 +2055,7 @@ export function writeCommand(
     case GET_STR: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeGetStr(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.sourceSlot),
@@ -2068,7 +2065,7 @@ export function writeCommand(
     }
     case GET_IDX: {
       return writeGetIdx(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.sourceSlot),
@@ -2076,12 +2073,12 @@ export function writeCommand(
       )
     }
     case GLOBAL: {
-      return writeGlobal(view, offset, helpers.resolveRef(command.resultSlot))
+      return writeGlobal(buf, offset, helpers.resolveRef(command.resultSlot))
     }
     case GLOBAL_GET_STR: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeGlobalGetStr(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         key.ptr,
@@ -2091,7 +2088,7 @@ export function writeCommand(
     case GLOBAL_SET_STR: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeGlobalSetStr(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.valueSlot),
         command.flags,
@@ -2101,7 +2098,7 @@ export function writeCommand(
     }
     case MAP_SET: {
       return writeMapSet(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.keySlot),
@@ -2111,7 +2108,7 @@ export function writeCommand(
     case MAP_SET_STR: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeMapSetStr(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.valueSlot),
@@ -2121,7 +2118,7 @@ export function writeCommand(
     }
     case SET_ADD: {
       return writeSetAdd(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.valueSlot),
@@ -2129,7 +2126,7 @@ export function writeCommand(
     }
     case CALL: {
       return writeCall(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.funcSlot),
@@ -2150,7 +2147,7 @@ export function writeCommand(
     }
     case CALL_ARGV: {
       return writeCallArgv(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.funcSlot),
@@ -2168,7 +2165,7 @@ export function writeCommand(
         false,
       )
       return writeEval(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         filename.len,
@@ -2179,11 +2176,11 @@ export function writeCommand(
       )
     }
     case THROW: {
-      return writeThrow(view, offset, helpers.resolveRef(command.errorSlot))
+      return writeThrow(buf, offset, helpers.resolveRef(command.errorSlot))
     }
     case RESOLVE_EXC: {
       return writeResolveExc(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.maybeExcSlot),
@@ -2191,7 +2188,7 @@ export function writeCommand(
     }
     case BYTECODE_WRITE: {
       return writeBytecodeWrite(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.sourceSlot),
@@ -2200,7 +2197,7 @@ export function writeCommand(
     }
     case BYTECODE_READ: {
       return writeBytecodeRead(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultSlot),
         helpers.resolveRef(command.sourceSlot),
@@ -2209,7 +2206,7 @@ export function writeCommand(
     }
     case FUNCLIST_NEW: {
       return writeFunclistNew(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.resultFunclistSlot),
         command.count,
@@ -2217,7 +2214,7 @@ export function writeCommand(
     }
     case FUNCLIST_ASSIGN: {
       return writeFunclistAssign(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetSlot),
         helpers.resolveRef(command.sourceFunclistSlot),
@@ -2230,7 +2227,7 @@ export function writeCommand(
         true,
       )
       return writeFunclistDefCfunc(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.arity,
@@ -2247,7 +2244,7 @@ export function writeCommand(
         true,
       )
       return writeFunclistDefCfuncCtor(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.arity,
@@ -2260,7 +2257,7 @@ export function writeCommand(
     case FUNCLIST_DEF_CGETSET: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.key, undefined, true)
       return writeFunclistDefCgetset(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.index,
@@ -2274,7 +2271,7 @@ export function writeCommand(
       const str = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.str, 0xffffffff)
       const name = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.name, undefined, true)
       return writeFunclistDefString(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.index,
@@ -2287,7 +2284,7 @@ export function writeCommand(
     case FUNCLIST_DEF_INT32: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
       return writeFunclistDefInt32(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         key.len,
@@ -2300,7 +2297,7 @@ export function writeCommand(
     case FUNCLIST_DEF_INT64: {
       const name = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.name, undefined, true)
       return writeFunclistDefInt64(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.index,
@@ -2312,7 +2309,7 @@ export function writeCommand(
     case FUNCLIST_DEF_DOUBLE: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer>(command.key, undefined, true)
       return writeFunclistDefDouble(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.index,
@@ -2324,7 +2321,7 @@ export function writeCommand(
     case FUNCLIST_DEF_NULL: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeFunclistDefNull(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.flags,
@@ -2336,7 +2333,7 @@ export function writeCommand(
     case FUNCLIST_DEF_UNDEFINED: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeFunclistDefUndefined(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         command.flags,
@@ -2348,7 +2345,7 @@ export function writeCommand(
     case FUNCLIST_DEF_OBJECT: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint32>(command.key, 0xffffffff)
       return writeFunclistDefObject(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         helpers.resolveRef(command.objectFunclistSlot),
@@ -2361,7 +2358,7 @@ export function writeCommand(
     case FUNCLIST_DEF_BOOL: {
       const key = helpers.encodeUtf8<BorrowedHeapCharPointer, Uint8>(command.key, 0xff, false)
       return writeFunclistDefBool(
-        view,
+        buf,
         offset,
         helpers.resolveRef(command.targetFunclistSlot),
         key.len,
@@ -2382,154 +2379,174 @@ export function writeCommand(
 
 // =============================================================================
 
-function setOpcode(view: DataView, offset: number, opcode: number): void {
-  view.setUint8(offset + 0, opcode)
+function setOpcode(buf: CmdBuf, offset: number, opcode: number): void {
+  buf.u8[offset] = opcode
 }
 
-function setSlotA(view: DataView, offset: number, slot: number): void {
-  view.setUint8(offset + 1, slot)
+function setSlotA(buf: CmdBuf, offset: number, slot: number): void {
+  buf.u8[offset + 1] = slot
 }
 
-function setSlotB(view: DataView, offset: number, slot: number): void {
-  view.setUint8(offset + 2, slot)
+function setSlotB(buf: CmdBuf, offset: number, slot: number): void {
+  buf.u8[offset + 2] = slot
 }
 
-function setSlotC(view: DataView, offset: number, slot: number): void {
-  view.setUint8(offset + 3, slot)
+function setSlotC(buf: CmdBuf, offset: number, slot: number): void {
+  buf.u8[offset + 3] = slot
 }
 
-function setD1_u32(view: DataView, offset: number, value: number): void {
-  view.setUint32(offset + 4, value, true)
+const setD1_u32: (buf: CmdBuf, offset: number, value: number) => void = IS_LITTLE_ENDIAN
+  ? (buf, offset, value) => {
+      buf.u32[(offset + 4) >> 2] = value
+    }
+  : (buf, offset, value) => {
+      buf.dv.setUint32(offset + 4, value, true)
+    }
+
+const setD2_u32: (buf: CmdBuf, offset: number, value: number) => void = IS_LITTLE_ENDIAN
+  ? (buf, offset, value) => {
+      buf.u32[(offset + 8) >> 2] = value
+    }
+  : (buf, offset, value) => {
+      buf.dv.setUint32(offset + 8, value, true)
+    }
+
+const setD2_i32: (buf: CmdBuf, offset: number, value: number) => void = IS_LITTLE_ENDIAN
+  ? (buf, offset, value) => {
+      buf.u32[(offset + 8) >> 2] = value >>> 0
+    }
+  : (buf, offset, value) => {
+      buf.dv.setInt32(offset + 8, value, true)
+    }
+
+const setD3_u32: (buf: CmdBuf, offset: number, value: number) => void = IS_LITTLE_ENDIAN
+  ? (buf, offset, value) => {
+      buf.u32[(offset + 12) >> 2] = value
+    }
+  : (buf, offset, value) => {
+      buf.dv.setUint32(offset + 12, value, true)
+    }
+
+const setD3_i32: (buf: CmdBuf, offset: number, value: number) => void = IS_LITTLE_ENDIAN
+  ? (buf, offset, value) => {
+      buf.u32[(offset + 12) >> 2] = value >>> 0
+    }
+  : (buf, offset, value) => {
+      buf.dv.setInt32(offset + 12, value, true)
+    }
+
+function setData_f64(buf: CmdBuf, offset: number, value: number): void {
+  buf.dv.setFloat64(offset + 4, value, true)
 }
 
-function setD2_u32(view: DataView, offset: number, value: number): void {
-  view.setUint32(offset + 8, value, true)
-}
-
-function setD2_i32(view: DataView, offset: number, value: number): void {
-  view.setInt32(offset + 8, value, true)
-}
-
-function setD3_u32(view: DataView, offset: number, value: number): void {
-  view.setUint32(offset + 12, value, true)
-}
-
-function setD3_i32(view: DataView, offset: number, value: number): void {
-  view.setInt32(offset + 12, value, true)
-}
-
-function setData_f64(view: DataView, offset: number, value: number): void {
-  view.setFloat64(offset + 4, value, true)
-}
-
-function setData_i64(view: DataView, offset: number, value: bigint): void {
-  view.setBigInt64(offset + 4, value, true)
+function setData_i64(buf: CmdBuf, offset: number, value: bigint): void {
+  buf.dv.setBigInt64(offset + 4, value, true)
 }
 
 function writePattern0(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   p0: AnySlot,
   p1: SlotType,
   p2: JSVoidPointer,
 ): void {
-  setSlotA(view, offset, p0)
-  setSlotB(view, offset, p1)
-  setD1_u32(view, offset, p2)
+  setSlotA(buf, offset, p0)
+  setSlotB(buf, offset, p1)
+  setD1_u32(buf, offset, p2)
 }
 
-function writePattern2(view: DataView, offset: CommandPtr, p0: JSValueSlot): void {
-  setSlotA(view, offset, p0)
+function writePattern2(buf: CmdBuf, offset: CommandPtr, p0: JSValueSlot): void {
+  setSlotA(buf, offset, p0)
 }
 
-function writePattern3(view: DataView, offset: CommandPtr, p0: JSValueSlot, p1: JSValueSlot): void {
-  setSlotA(view, offset, p0)
-  setSlotB(view, offset, p1)
+function writePattern3(buf: CmdBuf, offset: CommandPtr, p0: JSValueSlot, p1: JSValueSlot): void {
+  setSlotA(buf, offset, p0)
+  setSlotB(buf, offset, p1)
 }
 
-function writePattern4(view: DataView, offset: CommandPtr, p0: JSValueSlot, p1: Float64): void {
-  setSlotA(view, offset, p0)
-  setData_f64(view, offset, p1)
+function writePattern4(buf: CmdBuf, offset: CommandPtr, p0: JSValueSlot, p1: Float64): void {
+  setSlotA(buf, offset, p0)
+  setData_f64(buf, offset, p1)
 }
 
 function writePattern9(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   p0: JSValueSlot,
   p1: BorrowedHeapCharPointer,
   p2: Uint32,
 ): void {
-  setSlotA(view, offset, p0)
-  setD1_u32(view, offset, p1)
-  setD2_u32(view, offset, p2)
+  setSlotA(buf, offset, p0)
+  setD1_u32(buf, offset, p1)
+  setD2_u32(buf, offset, p2)
 }
 
 function writePattern13(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   p0: JSValueSlot,
   p1: SetPropFlags,
   p2: BorrowedHeapCharPointer,
   p3: Uint32,
 ): void {
-  setSlotA(view, offset, p0)
-  setSlotC(view, offset, p1)
-  setD1_u32(view, offset, p2)
-  setD2_u32(view, offset, p3)
+  setSlotA(buf, offset, p0)
+  setSlotC(buf, offset, p1)
+  setD1_u32(buf, offset, p2)
+  setD2_u32(buf, offset, p3)
 }
 
 function writePattern20(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   p0: JSValueSlot,
   p1: SetPropFlags,
   p2: Uint32,
 ): void {
-  setSlotA(view, offset, p0)
-  setSlotC(view, offset, p1)
-  setD1_u32(view, offset, p2)
+  setSlotA(buf, offset, p0)
+  setSlotC(buf, offset, p1)
+  setD1_u32(buf, offset, p2)
 }
 
 function writePattern28(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   p0: JSValueSlot,
   p1: JSValueSlot,
   p2: JSValueSlot,
 ): void {
-  setSlotA(view, offset, p0)
-  setSlotB(view, offset, p1)
-  setSlotC(view, offset, p2)
+  setSlotA(buf, offset, p0)
+  setSlotB(buf, offset, p1)
+  setSlotC(buf, offset, p2)
 }
 
 function writePattern29(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   p0: JSValueSlot,
   p1: JSValueSlot,
   p2: BorrowedHeapCharPointer,
   p3: Uint32,
 ): void {
-  setSlotA(view, offset, p0)
-  setSlotB(view, offset, p1)
-  setD1_u32(view, offset, p2)
-  setD2_u32(view, offset, p3)
+  setSlotA(buf, offset, p0)
+  setSlotB(buf, offset, p1)
+  setD1_u32(buf, offset, p2)
+  setD2_u32(buf, offset, p3)
 }
 
 function writePattern30(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   p0: JSValueSlot,
   p1: JSValueSlot,
   p2: Uint32,
 ): void {
-  setSlotA(view, offset, p0)
-  setSlotB(view, offset, p1)
-  setD1_u32(view, offset, p2)
+  setSlotA(buf, offset, p0)
+  setSlotB(buf, offset, p1)
+  setD1_u32(buf, offset, p2)
 }
 
 function writePattern37(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   p0: FuncListSlot,
   p1: Uint8,
@@ -2538,16 +2555,16 @@ function writePattern37(
   p4: BorrowedHeapCharPointer,
   p5: JSCFunctionTypePointer,
 ): void {
-  setSlotA(view, offset, p0)
-  setSlotB(view, offset, p1)
-  setSlotC(view, offset, p2)
-  setD1_u32(view, offset, p3)
-  setD2_u32(view, offset, p4)
-  setD3_u32(view, offset, p5)
+  setSlotA(buf, offset, p0)
+  setSlotB(buf, offset, p1)
+  setSlotC(buf, offset, p2)
+  setD1_u32(buf, offset, p3)
+  setD2_u32(buf, offset, p4)
+  setD3_u32(buf, offset, p5)
 }
 
 function writePattern40(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   p0: FuncListSlot,
   p1: Uint8,
@@ -2556,16 +2573,16 @@ function writePattern40(
   p4: Int32,
   p5: BorrowedHeapCharPointer,
 ): void {
-  setSlotA(view, offset, p0)
-  setSlotB(view, offset, p1)
-  setSlotC(view, offset, p2)
-  setD1_u32(view, offset, p3)
-  setD2_i32(view, offset, p4)
-  setD3_u32(view, offset, p5)
+  setSlotA(buf, offset, p0)
+  setSlotB(buf, offset, p1)
+  setSlotC(buf, offset, p2)
+  setD1_u32(buf, offset, p3)
+  setD2_i32(buf, offset, p4)
+  setD3_u32(buf, offset, p5)
 }
 
 function writePattern43(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   p0: FuncListSlot,
   p1: JSPropFlags,
@@ -2573,11 +2590,11 @@ function writePattern43(
   p3: Uint32,
   p4: Uint32,
 ): void {
-  setSlotA(view, offset, p0)
-  setSlotC(view, offset, p1)
-  setD1_u32(view, offset, p2)
-  setD2_u32(view, offset, p3)
-  setD3_u32(view, offset, p4)
+  setSlotA(buf, offset, p0)
+  setSlotC(buf, offset, p1)
+  setD1_u32(buf, offset, p2)
+  setD2_u32(buf, offset, p3)
+  setD3_u32(buf, offset, p4)
 }
 
 // =============================================================================
@@ -2586,85 +2603,85 @@ function writePattern43(
 
 // =============================================================================
 
-export function writeInvalid(view: DataView, offset: CommandPtr): void {
-  setOpcode(view, offset, 0)
+export function writeInvalid(buf: CmdBuf, offset: CommandPtr): void {
+  setOpcode(buf, offset, 0)
 }
 
 export function writeSlotStore(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   in_slot: AnySlot,
   in_slot_type: SlotType,
   out_ptr: JSVoidPointer,
 ): void {
-  setOpcode(view, offset, 1)
-  writePattern0(view, offset, in_slot, in_slot_type, out_ptr)
+  setOpcode(buf, offset, 1)
+  writePattern0(buf, offset, in_slot, in_slot_type, out_ptr)
 }
 
 export function writeSlotLoad(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   out_slot: AnySlot,
   out_slot_type: SlotType,
   in_ptr: JSVoidPointer,
 ): void {
-  setOpcode(view, offset, 2)
-  writePattern0(view, offset, out_slot, out_slot_type, in_ptr)
+  setOpcode(buf, offset, 2)
+  writePattern0(buf, offset, out_slot, out_slot_type, in_ptr)
 }
 
 export function writeSlotFree(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: AnySlot,
   target_slot_type: SlotType,
 ): void {
-  setOpcode(view, offset, 3)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, target_slot_type)
+  setOpcode(buf, offset, 3)
+  setSlotA(buf, offset, target_slot)
+  setSlotB(buf, offset, target_slot_type)
 }
 
-export function writeNewObject(view: DataView, offset: CommandPtr, result_slot: JSValueSlot): void {
-  setOpcode(view, offset, 4)
-  writePattern2(view, offset, result_slot)
+export function writeNewObject(buf: CmdBuf, offset: CommandPtr, result_slot: JSValueSlot): void {
+  setOpcode(buf, offset, 4)
+  writePattern2(buf, offset, result_slot)
 }
 
 export function writeNewObjectProto(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   proto_slot: JSValueSlot,
 ): void {
-  setOpcode(view, offset, 5)
-  writePattern3(view, offset, result_slot, proto_slot)
+  setOpcode(buf, offset, 5)
+  writePattern3(buf, offset, result_slot, proto_slot)
 }
 
-export function writeNewArray(view: DataView, offset: CommandPtr, result_slot: JSValueSlot): void {
-  setOpcode(view, offset, 6)
-  writePattern2(view, offset, result_slot)
+export function writeNewArray(buf: CmdBuf, offset: CommandPtr, result_slot: JSValueSlot): void {
+  setOpcode(buf, offset, 6)
+  writePattern2(buf, offset, result_slot)
 }
 
-export function writeNewMap(view: DataView, offset: CommandPtr, result_slot: JSValueSlot): void {
-  setOpcode(view, offset, 7)
-  writePattern2(view, offset, result_slot)
+export function writeNewMap(buf: CmdBuf, offset: CommandPtr, result_slot: JSValueSlot): void {
+  setOpcode(buf, offset, 7)
+  writePattern2(buf, offset, result_slot)
 }
 
-export function writeNewSet(view: DataView, offset: CommandPtr, result_slot: JSValueSlot): void {
-  setOpcode(view, offset, 8)
-  writePattern2(view, offset, result_slot)
+export function writeNewSet(buf: CmdBuf, offset: CommandPtr, result_slot: JSValueSlot): void {
+  setOpcode(buf, offset, 8)
+  writePattern2(buf, offset, result_slot)
 }
 
 export function writeNewDate(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   timestamp: Float64,
 ): void {
-  setOpcode(view, offset, 9)
-  writePattern4(view, offset, result_slot, timestamp)
+  setOpcode(buf, offset, 9)
+  writePattern4(buf, offset, result_slot, timestamp)
 }
 
 export function writeNewError(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   maybe_name_len: Uint8,
@@ -2673,32 +2690,32 @@ export function writeNewError(
   message_len: Uint32,
   name_ptr: BorrowedHeapCharPointer,
 ): void {
-  setOpcode(view, offset, 10)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, maybe_name_len)
-  setSlotC(view, offset, new_error_flags)
-  setD1_u32(view, offset, message_ptr)
-  setD2_u32(view, offset, message_len)
-  setD3_u32(view, offset, name_ptr)
+  setOpcode(buf, offset, 10)
+  setSlotA(buf, offset, result_slot)
+  setSlotB(buf, offset, maybe_name_len)
+  setSlotC(buf, offset, new_error_flags)
+  setD1_u32(buf, offset, message_ptr)
+  setD2_u32(buf, offset, message_len)
+  setD3_u32(buf, offset, name_ptr)
 }
 
 export function writeNewArraybuffer(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   class_is_shared_array_buffer: Uint8,
   data_ptr: JSVoidPointer,
   data_len: Uint32,
 ): void {
-  setOpcode(view, offset, 11)
-  setSlotA(view, offset, result_slot)
-  setSlotC(view, offset, class_is_shared_array_buffer)
-  setD1_u32(view, offset, data_ptr)
-  setD2_u32(view, offset, data_len)
+  setOpcode(buf, offset, 11)
+  setSlotA(buf, offset, result_slot)
+  setSlotC(buf, offset, class_is_shared_array_buffer)
+  setD1_u32(buf, offset, data_ptr)
+  setD2_u32(buf, offset, data_len)
 }
 
 export function writeNewTypedArray(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   source_slot: JSValueSlot,
@@ -2706,74 +2723,74 @@ export function writeNewTypedArray(
   source_offset: Uint32,
   length: Uint32,
 ): void {
-  setOpcode(view, offset, 12)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, source_slot)
-  setSlotC(view, offset, array_type)
-  setD1_u32(view, offset, source_offset)
-  setD2_u32(view, offset, length)
+  setOpcode(buf, offset, 12)
+  setSlotA(buf, offset, result_slot)
+  setSlotB(buf, offset, source_slot)
+  setSlotC(buf, offset, array_type)
+  setD1_u32(buf, offset, source_offset)
+  setD2_u32(buf, offset, length)
 }
 
 export function writeNewSymbol(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   is_global: Uint8,
   desc_ptr: BorrowedHeapCharPointer,
   desc_len: Uint32,
 ): void {
-  setOpcode(view, offset, 13)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, is_global)
-  setD1_u32(view, offset, desc_ptr)
-  setD2_u32(view, offset, desc_len)
+  setOpcode(buf, offset, 13)
+  setSlotA(buf, offset, result_slot)
+  setSlotB(buf, offset, is_global)
+  setD1_u32(buf, offset, desc_ptr)
+  setD2_u32(buf, offset, desc_len)
 }
 
 export function writeNewFloat64(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   value: Float64,
 ): void {
-  setOpcode(view, offset, 14)
-  writePattern4(view, offset, result_slot, value)
+  setOpcode(buf, offset, 14)
+  writePattern4(buf, offset, result_slot, value)
 }
 
 export function writeNewString(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   str_ptr: BorrowedHeapCharPointer,
   str_len: Uint32,
 ): void {
-  setOpcode(view, offset, 15)
-  writePattern9(view, offset, result_slot, str_ptr, str_len)
+  setOpcode(buf, offset, 15)
+  writePattern9(buf, offset, result_slot, str_ptr, str_len)
 }
 
 export function writeNewBigintInt64(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   value: Int64,
 ): void {
-  setOpcode(view, offset, 16)
-  setSlotA(view, offset, result_slot)
-  setData_i64(view, offset, value)
+  setOpcode(buf, offset, 16)
+  setSlotA(buf, offset, result_slot)
+  setData_i64(buf, offset, value)
 }
 
 export function writeNewBigintStr(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   str_ptr: BorrowedHeapCharPointer,
   str_len: Uint32,
 ): void {
-  setOpcode(view, offset, 17)
-  writePattern9(view, offset, result_slot, str_ptr, str_len)
+  setOpcode(buf, offset, 17)
+  writePattern9(buf, offset, result_slot, str_ptr, str_len)
 }
 
 export function writeNewFunc(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   arity: Uint8,
@@ -2782,17 +2799,17 @@ export function writeNewFunc(
   name_len: Uint32,
   host_ref_id: HostRefId,
 ): void {
-  setOpcode(view, offset, 18)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, arity)
-  setSlotC(view, offset, is_constructor)
-  setD1_u32(view, offset, name_ptr)
-  setD2_u32(view, offset, name_len)
-  setD3_u32(view, offset, host_ref_id)
+  setOpcode(buf, offset, 18)
+  setSlotA(buf, offset, result_slot)
+  setSlotB(buf, offset, arity)
+  setSlotC(buf, offset, is_constructor)
+  setD1_u32(buf, offset, name_ptr)
+  setD2_u32(buf, offset, name_len)
+  setD3_u32(buf, offset, host_ref_id)
 }
 
 export function writeSetStrValue(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   value_slot: JSValueSlot,
@@ -2800,40 +2817,40 @@ export function writeSetStrValue(
   key_ptr: BorrowedHeapCharPointer,
   key_len: Uint32,
 ): void {
-  setOpcode(view, offset, 19)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, value_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
+  setOpcode(buf, offset, 19)
+  setSlotA(buf, offset, target_slot)
+  setSlotB(buf, offset, value_slot)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, key_ptr)
+  setD2_u32(buf, offset, key_len)
 }
 
 export function writeSetStrNull(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   flags: SetPropFlags,
   key_ptr: BorrowedHeapCharPointer,
   key_len: Uint32,
 ): void {
-  setOpcode(view, offset, 20)
-  writePattern13(view, offset, target_slot, flags, key_ptr, key_len)
+  setOpcode(buf, offset, 20)
+  writePattern13(buf, offset, target_slot, flags, key_ptr, key_len)
 }
 
 export function writeSetStrUndef(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   flags: SetPropFlags,
   key_ptr: BorrowedHeapCharPointer,
   key_len: Uint32,
 ): void {
-  setOpcode(view, offset, 21)
-  writePattern13(view, offset, target_slot, flags, key_ptr, key_len)
+  setOpcode(buf, offset, 21)
+  writePattern13(buf, offset, target_slot, flags, key_ptr, key_len)
 }
 
 export function writeSetStrBool(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   bool_val: Uint8,
@@ -2841,16 +2858,16 @@ export function writeSetStrBool(
   key_ptr: BorrowedHeapCharPointer,
   key_len: Uint32,
 ): void {
-  setOpcode(view, offset, 22)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, bool_val)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
+  setOpcode(buf, offset, 22)
+  setSlotA(buf, offset, target_slot)
+  setSlotB(buf, offset, bool_val)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, key_ptr)
+  setD2_u32(buf, offset, key_len)
 }
 
 export function writeSetStrInt32(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   flags: SetPropFlags,
@@ -2858,16 +2875,16 @@ export function writeSetStrInt32(
   key_len: Uint32,
   int_val: Int32,
 ): void {
-  setOpcode(view, offset, 23)
-  setSlotA(view, offset, target_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
-  setD3_i32(view, offset, int_val)
+  setOpcode(buf, offset, 23)
+  setSlotA(buf, offset, target_slot)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, key_ptr)
+  setD2_u32(buf, offset, key_len)
+  setD3_i32(buf, offset, int_val)
 }
 
 export function writeSetStrF64(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   maybe_key_len: Uint8,
@@ -2875,16 +2892,16 @@ export function writeSetStrF64(
   f64_val: Float64,
   key_ptr: BorrowedHeapCharPointer,
 ): void {
-  setOpcode(view, offset, 24)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, maybe_key_len)
-  setSlotC(view, offset, flags)
-  setData_f64(view, offset, f64_val)
-  setD3_u32(view, offset, key_ptr)
+  setOpcode(buf, offset, 24)
+  setSlotA(buf, offset, target_slot)
+  setSlotB(buf, offset, maybe_key_len)
+  setSlotC(buf, offset, flags)
+  setData_f64(buf, offset, f64_val)
+  setD3_u32(buf, offset, key_ptr)
 }
 
 export function writeSetStrBigint(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   maybe_key_len: Uint8,
@@ -2892,16 +2909,16 @@ export function writeSetStrBigint(
   i64_val: Int64,
   key_ptr: BorrowedHeapCharPointer,
 ): void {
-  setOpcode(view, offset, 25)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, maybe_key_len)
-  setSlotC(view, offset, flags)
-  setData_i64(view, offset, i64_val)
-  setD3_u32(view, offset, key_ptr)
+  setOpcode(buf, offset, 25)
+  setSlotA(buf, offset, target_slot)
+  setSlotB(buf, offset, maybe_key_len)
+  setSlotC(buf, offset, flags)
+  setData_i64(buf, offset, i64_val)
+  setD3_u32(buf, offset, key_ptr)
 }
 
 export function writeSetStrString(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   maybe_key_len: Uint8,
@@ -2910,114 +2927,114 @@ export function writeSetStrString(
   str_len: Uint32,
   key_ptr: BorrowedHeapCharPointer,
 ): void {
-  setOpcode(view, offset, 26)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, maybe_key_len)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, str_ptr)
-  setD2_u32(view, offset, str_len)
-  setD3_u32(view, offset, key_ptr)
+  setOpcode(buf, offset, 26)
+  setSlotA(buf, offset, target_slot)
+  setSlotB(buf, offset, maybe_key_len)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, str_ptr)
+  setD2_u32(buf, offset, str_len)
+  setD3_u32(buf, offset, key_ptr)
 }
 
 export function writeSetIdxValue(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   value_slot: JSValueSlot,
   flags: SetPropFlags,
   index: Uint32,
 ): void {
-  setOpcode(view, offset, 27)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, value_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, index)
+  setOpcode(buf, offset, 27)
+  setSlotA(buf, offset, target_slot)
+  setSlotB(buf, offset, value_slot)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, index)
 }
 
 export function writeSetIdxNull(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   flags: SetPropFlags,
   index: Uint32,
 ): void {
-  setOpcode(view, offset, 28)
-  writePattern20(view, offset, target_slot, flags, index)
+  setOpcode(buf, offset, 28)
+  writePattern20(buf, offset, target_slot, flags, index)
 }
 
 export function writeSetIdxUndef(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   flags: SetPropFlags,
   index: Uint32,
 ): void {
-  setOpcode(view, offset, 29)
-  writePattern20(view, offset, target_slot, flags, index)
+  setOpcode(buf, offset, 29)
+  writePattern20(buf, offset, target_slot, flags, index)
 }
 
 export function writeSetIdxBool(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   bool_val: Uint8,
   flags: SetPropFlags,
   index: Uint32,
 ): void {
-  setOpcode(view, offset, 30)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, bool_val)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, index)
+  setOpcode(buf, offset, 30)
+  setSlotA(buf, offset, target_slot)
+  setSlotB(buf, offset, bool_val)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, index)
 }
 
 export function writeSetIdxInt32(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   flags: SetPropFlags,
   index: Uint32,
   int_val: Int32,
 ): void {
-  setOpcode(view, offset, 31)
-  setSlotA(view, offset, target_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, index)
-  setD2_i32(view, offset, int_val)
+  setOpcode(buf, offset, 31)
+  setSlotA(buf, offset, target_slot)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, index)
+  setD2_i32(buf, offset, int_val)
 }
 
 export function writeSetIdxF64(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   flags: SetPropFlags,
   f64_val: Float64,
   index: Uint32,
 ): void {
-  setOpcode(view, offset, 32)
-  setSlotA(view, offset, target_slot)
-  setSlotC(view, offset, flags)
-  setData_f64(view, offset, f64_val)
-  setD3_u32(view, offset, index)
+  setOpcode(buf, offset, 32)
+  setSlotA(buf, offset, target_slot)
+  setSlotC(buf, offset, flags)
+  setData_f64(buf, offset, f64_val)
+  setD3_u32(buf, offset, index)
 }
 
 export function writeSetIdxBigint(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   flags: SetPropFlags,
   i64_val: Int64,
   index: Uint32,
 ): void {
-  setOpcode(view, offset, 33)
-  setSlotA(view, offset, target_slot)
-  setSlotC(view, offset, flags)
-  setData_i64(view, offset, i64_val)
-  setD3_u32(view, offset, index)
+  setOpcode(buf, offset, 33)
+  setSlotA(buf, offset, target_slot)
+  setSlotC(buf, offset, flags)
+  setData_i64(buf, offset, i64_val)
+  setD3_u32(buf, offset, index)
 }
 
 export function writeSetIdxString(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   flags: SetPropFlags,
@@ -3025,31 +3042,31 @@ export function writeSetIdxString(
   str_len: Uint32,
   index: Uint32,
 ): void {
-  setOpcode(view, offset, 34)
-  setSlotA(view, offset, target_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, str_ptr)
-  setD2_u32(view, offset, str_len)
-  setD3_u32(view, offset, index)
+  setOpcode(buf, offset, 34)
+  setSlotA(buf, offset, target_slot)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, str_ptr)
+  setD2_u32(buf, offset, str_len)
+  setD3_u32(buf, offset, index)
 }
 
 export function writeSetValueValue(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   key_slot: JSValueSlot,
   value_slot: JSValueSlot,
   flags: SetPropFlags,
 ): void {
-  setOpcode(view, offset, 35)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, key_slot)
-  setSlotC(view, offset, value_slot)
-  setD1_u32(view, offset, flags)
+  setOpcode(buf, offset, 35)
+  setSlotA(buf, offset, target_slot)
+  setSlotB(buf, offset, key_slot)
+  setSlotC(buf, offset, value_slot)
+  setD1_u32(buf, offset, flags)
 }
 
 export function writeDefValueGetset(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   maybe_key_len: Uint8,
@@ -3058,115 +3075,115 @@ export function writeDefValueGetset(
   setter_ref: HostRefId,
   key_ptr: BorrowedHeapCharPointer,
 ): void {
-  setOpcode(view, offset, 36)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, maybe_key_len)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, getter_ref)
-  setD2_u32(view, offset, setter_ref)
-  setD3_u32(view, offset, key_ptr)
+  setOpcode(buf, offset, 36)
+  setSlotA(buf, offset, target_slot)
+  setSlotB(buf, offset, maybe_key_len)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, getter_ref)
+  setD2_u32(buf, offset, setter_ref)
+  setD3_u32(buf, offset, key_ptr)
 }
 
 export function writeGetValue(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   source_slot: JSValueSlot,
   key_slot: JSValueSlot,
 ): void {
-  setOpcode(view, offset, 37)
-  writePattern28(view, offset, result_slot, source_slot, key_slot)
+  setOpcode(buf, offset, 37)
+  writePattern28(buf, offset, result_slot, source_slot, key_slot)
 }
 
 export function writeGetStr(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   source_slot: JSValueSlot,
   key_ptr: BorrowedHeapCharPointer,
   key_len: Uint32,
 ): void {
-  setOpcode(view, offset, 38)
-  writePattern29(view, offset, result_slot, source_slot, key_ptr, key_len)
+  setOpcode(buf, offset, 38)
+  writePattern29(buf, offset, result_slot, source_slot, key_ptr, key_len)
 }
 
 export function writeGetIdx(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   source_slot: JSValueSlot,
   index: Uint32,
 ): void {
-  setOpcode(view, offset, 39)
-  writePattern30(view, offset, result_slot, source_slot, index)
+  setOpcode(buf, offset, 39)
+  writePattern30(buf, offset, result_slot, source_slot, index)
 }
 
-export function writeGlobal(view: DataView, offset: CommandPtr, result_slot: JSValueSlot): void {
-  setOpcode(view, offset, 40)
-  writePattern2(view, offset, result_slot)
+export function writeGlobal(buf: CmdBuf, offset: CommandPtr, result_slot: JSValueSlot): void {
+  setOpcode(buf, offset, 40)
+  writePattern2(buf, offset, result_slot)
 }
 
 export function writeGlobalGetStr(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   key_ptr: BorrowedHeapCharPointer,
   key_len: Uint32,
 ): void {
-  setOpcode(view, offset, 41)
-  writePattern9(view, offset, result_slot, key_ptr, key_len)
+  setOpcode(buf, offset, 41)
+  writePattern9(buf, offset, result_slot, key_ptr, key_len)
 }
 
 export function writeGlobalSetStr(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   value_slot: JSValueSlot,
   flags: JSPropFlags,
   key_ptr: BorrowedHeapCharPointer,
   key_len: Uint32,
 ): void {
-  setOpcode(view, offset, 42)
-  setSlotA(view, offset, value_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
+  setOpcode(buf, offset, 42)
+  setSlotA(buf, offset, value_slot)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, key_ptr)
+  setD2_u32(buf, offset, key_len)
 }
 
 export function writeMapSet(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   key_slot: JSValueSlot,
   value_slot: JSValueSlot,
 ): void {
-  setOpcode(view, offset, 43)
-  writePattern28(view, offset, target_slot, key_slot, value_slot)
+  setOpcode(buf, offset, 43)
+  writePattern28(buf, offset, target_slot, key_slot, value_slot)
 }
 
 export function writeMapSetStr(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   value_slot: JSValueSlot,
   key_ptr: BorrowedHeapCharPointer,
   key_len: Uint32,
 ): void {
-  setOpcode(view, offset, 44)
-  writePattern29(view, offset, target_slot, value_slot, key_ptr, key_len)
+  setOpcode(buf, offset, 44)
+  writePattern29(buf, offset, target_slot, value_slot, key_ptr, key_len)
 }
 
 export function writeSetAdd(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   value_slot: JSValueSlot,
 ): void {
-  setOpcode(view, offset, 45)
-  writePattern3(view, offset, target_slot, value_slot)
+  setOpcode(buf, offset, 45)
+  writePattern3(buf, offset, target_slot, value_slot)
 }
 
 export function writeCall(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   func_slot: JSValueSlot,
@@ -3184,12 +3201,12 @@ export function writeCall(
   arg10: JSValueSlot,
   call_as_constructor: Uint8,
 ): void {
-  setOpcode(view, offset, 46)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, func_slot)
-  setSlotC(view, offset, this_slot)
+  setOpcode(buf, offset, 46)
+  setSlotA(buf, offset, result_slot)
+  setSlotB(buf, offset, func_slot)
+  setSlotC(buf, offset, this_slot)
   setD1_u32(
-    view,
+    buf,
     offset,
     ((argc as number) & 0xff) |
       ((arg1 as number) & (0xff << 8)) |
@@ -3197,7 +3214,7 @@ export function writeCall(
       ((arg3 as number) & (0xff << 24)),
   )
   setD2_u32(
-    view,
+    buf,
     offset,
     ((arg4 as number) & 0xff) |
       ((arg5 as number) & (0xff << 8)) |
@@ -3205,7 +3222,7 @@ export function writeCall(
       ((arg7 as number) & (0xff << 24)),
   )
   setD3_u32(
-    view,
+    buf,
     offset,
     ((arg8 as number) & 0xff) |
       ((arg9 as number) & (0xff << 8)) |
@@ -3215,7 +3232,7 @@ export function writeCall(
 }
 
 export function writeCallArgv(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   func_slot: JSValueSlot,
@@ -3224,17 +3241,17 @@ export function writeCallArgv(
   argv: JSValuePointer,
   call_as_constructor: Uint32,
 ): void {
-  setOpcode(view, offset, 47)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, func_slot)
-  setSlotC(view, offset, this_slot)
-  setD1_u32(view, offset, argc)
-  setD2_u32(view, offset, argv)
-  setD3_u32(view, offset, call_as_constructor)
+  setOpcode(buf, offset, 47)
+  setSlotA(buf, offset, result_slot)
+  setSlotB(buf, offset, func_slot)
+  setSlotC(buf, offset, this_slot)
+  setD1_u32(buf, offset, argc)
+  setD2_u32(buf, offset, argv)
+  setD3_u32(buf, offset, call_as_constructor)
 }
 
 export function writeEval(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   maybe_filename_len: Uint8,
@@ -3243,76 +3260,76 @@ export function writeEval(
   code_len: Uint32,
   filename: BorrowedHeapCharPointer,
 ): void {
-  setOpcode(view, offset, 48)
-  setSlotA(view, offset, result_slot)
-  setSlotB(view, offset, maybe_filename_len)
-  setSlotC(view, offset, call_flags)
-  setD1_u32(view, offset, code_ptr)
-  setD2_u32(view, offset, code_len)
-  setD3_u32(view, offset, filename)
+  setOpcode(buf, offset, 48)
+  setSlotA(buf, offset, result_slot)
+  setSlotB(buf, offset, maybe_filename_len)
+  setSlotC(buf, offset, call_flags)
+  setD1_u32(buf, offset, code_ptr)
+  setD2_u32(buf, offset, code_len)
+  setD3_u32(buf, offset, filename)
 }
 
-export function writeThrow(view: DataView, offset: CommandPtr, error_slot: JSValueSlot): void {
-  setOpcode(view, offset, 49)
-  writePattern2(view, offset, error_slot)
+export function writeThrow(buf: CmdBuf, offset: CommandPtr, error_slot: JSValueSlot): void {
+  setOpcode(buf, offset, 49)
+  writePattern2(buf, offset, error_slot)
 }
 
 export function writeResolveExc(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   maybe_exc_slot: JSValueSlot,
 ): void {
-  setOpcode(view, offset, 50)
-  writePattern3(view, offset, result_slot, maybe_exc_slot)
+  setOpcode(buf, offset, 50)
+  writePattern3(buf, offset, result_slot, maybe_exc_slot)
 }
 
 export function writeBytecodeWrite(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   source_slot: JSValueSlot,
   flags: Uint32,
 ): void {
-  setOpcode(view, offset, 51)
-  writePattern30(view, offset, result_slot, source_slot, flags)
+  setOpcode(buf, offset, 51)
+  writePattern30(buf, offset, result_slot, source_slot, flags)
 }
 
 export function writeBytecodeRead(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_slot: JSValueSlot,
   source_slot: JSValueSlot,
   flags: Uint32,
 ): void {
-  setOpcode(view, offset, 52)
-  writePattern30(view, offset, result_slot, source_slot, flags)
+  setOpcode(buf, offset, 52)
+  writePattern30(buf, offset, result_slot, source_slot, flags)
 }
 
 export function writeFunclistNew(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   result_funclist_slot: FuncListSlot,
   count: Uint32,
 ): void {
-  setOpcode(view, offset, 53)
-  setSlotA(view, offset, result_funclist_slot)
-  setD1_u32(view, offset, count)
+  setOpcode(buf, offset, 53)
+  setSlotA(buf, offset, result_funclist_slot)
+  setD1_u32(buf, offset, count)
 }
 
 export function writeFunclistAssign(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_slot: JSValueSlot,
   source_funclist_slot: FuncListSlot,
 ): void {
-  setOpcode(view, offset, 54)
-  setSlotA(view, offset, target_slot)
-  setSlotB(view, offset, source_funclist_slot)
+  setOpcode(buf, offset, 54)
+  setSlotA(buf, offset, target_slot)
+  setSlotB(buf, offset, source_funclist_slot)
 }
 
 export function writeFunclistDefCfunc(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_funclist_slot: FuncListSlot,
   arity: Uint8,
@@ -3321,12 +3338,12 @@ export function writeFunclistDefCfunc(
   func_name_ptr: BorrowedHeapCharPointer,
   c_func_ptr: JSCFunctionTypePointer,
 ): void {
-  setOpcode(view, offset, 55)
-  writePattern37(view, offset, target_funclist_slot, arity, flags, index, func_name_ptr, c_func_ptr)
+  setOpcode(buf, offset, 55)
+  writePattern37(buf, offset, target_funclist_slot, arity, flags, index, func_name_ptr, c_func_ptr)
 }
 
 export function writeFunclistDefCfuncCtor(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_funclist_slot: FuncListSlot,
   arity: Uint8,
@@ -3335,12 +3352,12 @@ export function writeFunclistDefCfuncCtor(
   func_name_ptr: BorrowedHeapCharPointer,
   c_func_ptr: JSCFunctionTypePointer,
 ): void {
-  setOpcode(view, offset, 56)
-  writePattern37(view, offset, target_funclist_slot, arity, flags, index, func_name_ptr, c_func_ptr)
+  setOpcode(buf, offset, 56)
+  writePattern37(buf, offset, target_funclist_slot, arity, flags, index, func_name_ptr, c_func_ptr)
 }
 
 export function writeFunclistDefCgetset(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_funclist_slot: FuncListSlot,
   index: Uint8,
@@ -3349,17 +3366,17 @@ export function writeFunclistDefCgetset(
   getter_ptr: JSCFunctionTypePointer,
   setter_ptr: JSCFunctionTypePointer,
 ): void {
-  setOpcode(view, offset, 57)
-  setSlotA(view, offset, target_funclist_slot)
-  setSlotB(view, offset, index)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, getter_ptr)
-  setD3_u32(view, offset, setter_ptr)
+  setOpcode(buf, offset, 57)
+  setSlotA(buf, offset, target_funclist_slot)
+  setSlotB(buf, offset, index)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, key_ptr)
+  setD2_u32(buf, offset, getter_ptr)
+  setD3_u32(buf, offset, setter_ptr)
 }
 
 export function writeFunclistDefString(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_funclist_slot: FuncListSlot,
   index: Uint8,
@@ -3368,17 +3385,17 @@ export function writeFunclistDefString(
   str_len: Uint32,
   name_ptr: BorrowedHeapCharPointer,
 ): void {
-  setOpcode(view, offset, 58)
-  setSlotA(view, offset, target_funclist_slot)
-  setSlotB(view, offset, index)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, str_ptr)
-  setD2_u32(view, offset, str_len)
-  setD3_u32(view, offset, name_ptr)
+  setOpcode(buf, offset, 58)
+  setSlotA(buf, offset, target_funclist_slot)
+  setSlotB(buf, offset, index)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, str_ptr)
+  setD2_u32(buf, offset, str_len)
+  setD3_u32(buf, offset, name_ptr)
 }
 
 export function writeFunclistDefInt32(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_funclist_slot: FuncListSlot,
   maybe_key_len: Uint8,
@@ -3387,12 +3404,12 @@ export function writeFunclistDefInt32(
   int_val: Int32,
   key_ptr: BorrowedHeapCharPointer,
 ): void {
-  setOpcode(view, offset, 59)
-  writePattern40(view, offset, target_funclist_slot, maybe_key_len, flags, index, int_val, key_ptr)
+  setOpcode(buf, offset, 59)
+  writePattern40(buf, offset, target_funclist_slot, maybe_key_len, flags, index, int_val, key_ptr)
 }
 
 export function writeFunclistDefInt64(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_funclist_slot: FuncListSlot,
   index: Uint8,
@@ -3400,16 +3417,16 @@ export function writeFunclistDefInt64(
   i64_val: Int64,
   name_ptr: BorrowedHeapCharPointer,
 ): void {
-  setOpcode(view, offset, 60)
-  setSlotA(view, offset, target_funclist_slot)
-  setSlotB(view, offset, index)
-  setSlotC(view, offset, flags)
-  setData_i64(view, offset, i64_val)
-  setD3_u32(view, offset, name_ptr)
+  setOpcode(buf, offset, 60)
+  setSlotA(buf, offset, target_funclist_slot)
+  setSlotB(buf, offset, index)
+  setSlotC(buf, offset, flags)
+  setData_i64(buf, offset, i64_val)
+  setD3_u32(buf, offset, name_ptr)
 }
 
 export function writeFunclistDefDouble(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_funclist_slot: FuncListSlot,
   index: Uint8,
@@ -3417,16 +3434,16 @@ export function writeFunclistDefDouble(
   f64_val: Float64,
   key_ptr: BorrowedHeapCharPointer,
 ): void {
-  setOpcode(view, offset, 61)
-  setSlotA(view, offset, target_funclist_slot)
-  setSlotB(view, offset, index)
-  setSlotC(view, offset, flags)
-  setData_f64(view, offset, f64_val)
-  setD3_u32(view, offset, key_ptr)
+  setOpcode(buf, offset, 61)
+  setSlotA(buf, offset, target_funclist_slot)
+  setSlotB(buf, offset, index)
+  setSlotC(buf, offset, flags)
+  setData_f64(buf, offset, f64_val)
+  setD3_u32(buf, offset, key_ptr)
 }
 
 export function writeFunclistDefNull(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_funclist_slot: FuncListSlot,
   flags: JSPropFlags,
@@ -3434,12 +3451,12 @@ export function writeFunclistDefNull(
   key_len: Uint32,
   index: Uint32,
 ): void {
-  setOpcode(view, offset, 62)
-  writePattern43(view, offset, target_funclist_slot, flags, key_ptr, key_len, index)
+  setOpcode(buf, offset, 62)
+  writePattern43(buf, offset, target_funclist_slot, flags, key_ptr, key_len, index)
 }
 
 export function writeFunclistDefUndefined(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_funclist_slot: FuncListSlot,
   flags: JSPropFlags,
@@ -3447,12 +3464,12 @@ export function writeFunclistDefUndefined(
   key_len: Uint32,
   index: Uint32,
 ): void {
-  setOpcode(view, offset, 63)
-  writePattern43(view, offset, target_funclist_slot, flags, key_ptr, key_len, index)
+  setOpcode(buf, offset, 63)
+  writePattern43(buf, offset, target_funclist_slot, flags, key_ptr, key_len, index)
 }
 
 export function writeFunclistDefObject(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_funclist_slot: FuncListSlot,
   object_funclist_slot: FuncListSlot,
@@ -3461,17 +3478,17 @@ export function writeFunclistDefObject(
   key_len: Uint32,
   index: Uint32,
 ): void {
-  setOpcode(view, offset, 64)
-  setSlotA(view, offset, target_funclist_slot)
-  setSlotB(view, offset, object_funclist_slot)
-  setSlotC(view, offset, flags)
-  setD1_u32(view, offset, key_ptr)
-  setD2_u32(view, offset, key_len)
-  setD3_u32(view, offset, index)
+  setOpcode(buf, offset, 64)
+  setSlotA(buf, offset, target_funclist_slot)
+  setSlotB(buf, offset, object_funclist_slot)
+  setSlotC(buf, offset, flags)
+  setD1_u32(buf, offset, key_ptr)
+  setD2_u32(buf, offset, key_len)
+  setD3_u32(buf, offset, index)
 }
 
 export function writeFunclistDefBool(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   target_funclist_slot: FuncListSlot,
   maybe_key_len: Uint8,
@@ -3480,8 +3497,8 @@ export function writeFunclistDefBool(
   bool_val: Int32,
   key_ptr: BorrowedHeapCharPointer,
 ): void {
-  setOpcode(view, offset, 65)
-  writePattern40(view, offset, target_funclist_slot, maybe_key_len, flags, index, bool_val, key_ptr)
+  setOpcode(buf, offset, 65)
+  writePattern40(buf, offset, target_funclist_slot, maybe_key_len, flags, index, bool_val, key_ptr)
 }
 
 export const OP_ENCODERS = [

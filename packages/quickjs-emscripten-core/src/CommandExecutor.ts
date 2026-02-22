@@ -32,6 +32,7 @@ import type {
 import { NoSpillBatchCutPolicy, PlanCode } from "./CommandExecutorPolicy"
 import {
   CommandRefType,
+  type CmdBuf,
   type CommandRef,
   type CommandWriteHelpers,
   type EncodedBufferRef,
@@ -271,8 +272,8 @@ export class CommandExecutor
   }>
 
   private commandBufferPtr: number
-  private commandView?: DataView
-  private commandViewEpoch = -1
+  private commandBuf?: CmdBuf
+  private commandBufEpoch = -1
 
   private readonly outStatusPtr: number
   private readonly outErrorPtr: number
@@ -770,7 +771,7 @@ export class CommandExecutor
 
   private appendSourceCommand(command: Command, pc: number): void {
     this.ensureBatchCapacity()
-    const view = this.ensureCommandView()
+    const view = this.ensureCommandBuf()
     const offset = (this.batchCount * COMMAND_SIZE_BYTES) as any
 
     if (command.opcode === SLOT_STORE) {
@@ -796,7 +797,7 @@ export class CommandExecutor
 
   private appendPlannerCommand(command: Command): void {
     this.ensureBatchCapacity()
-    const view = this.ensureCommandView()
+    const view = this.ensureCommandBuf()
     const offset = (this.batchCount * COMMAND_SIZE_BYTES) as any
 
     if (command.opcode === SLOT_STORE) {
@@ -921,7 +922,7 @@ export class CommandExecutor
     }
 
     this.resetBatch()
-    const view = this.ensureCommandView()
+    const view = this.ensureCommandBuf()
 
     for (let i = 0; i < liveCount; i++) {
       const ref = this.liveRefs[i]! as CommandRef
@@ -974,18 +975,21 @@ export class CommandExecutor
     }
   }
 
-  private ensureCommandView(): DataView {
+  private ensureCommandBuf(): CmdBuf {
     const epoch = this.memory.epoch()
-    if (!this.commandView || this.commandViewEpoch !== epoch) {
+    if (!this.commandBuf || this.commandBufEpoch !== epoch) {
       const bytes = this.memory.uint8()
-      this.commandView = new DataView(
-        bytes.buffer,
-        this.commandBufferPtr,
-        this.commandCapacity * COMMAND_SIZE_BYTES,
-      )
-      this.commandViewEpoch = epoch
+      const byteLength = this.commandCapacity * COMMAND_SIZE_BYTES
+      // commandBufferPtr must be 4-byte aligned for Uint32Array
+      // (should always be true since commands are 16-byte aligned)
+      this.commandBuf = {
+        u8: new Uint8Array(bytes.buffer, this.commandBufferPtr, byteLength),
+        u32: new Uint32Array(bytes.buffer, this.commandBufferPtr, byteLength >> 2),
+        dv: new DataView(bytes.buffer, this.commandBufferPtr, byteLength),
+      }
+      this.commandBufEpoch = epoch
     }
-    return this.commandView
+    return this.commandBuf
   }
 
   private resetBatch(): void {

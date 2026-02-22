@@ -376,9 +376,11 @@ function getAvailableDefinitions(context: Context, matches: RegExpMatchArray[]) 
   return filtered
 }
 
+const BUILTIN_SYMBOLS = ["_malloc", "_free", "_realloc"] as const
+
 function buildSymbols(context: Context, matches: RegExpMatchArray[]) {
   const names = getAvailableDefinitions(context, matches).map((fn) => "_" + fn.functionName)
-  return names.concat("_malloc", "_free")
+  return names.concat(BUILTIN_SYMBOLS)
 }
 
 function buildSyncSymbols(context: Context, matches: RegExpMatchArray[]) {
@@ -515,41 +517,45 @@ function updateHashFile(src: string, dest: string) {
 
 /** Map of setter name -> function code. Only used setters are emitted. */
 const SETTER_DEFS: Record<string, string> = {
-  setOpcode: `function setOpcode(view: DataView, offset: number, opcode: number): void {
-  view.setUint8(offset + 0, opcode)
+  // Single-byte setters - always use direct u8 access (faster than DataView.setUint8)
+  setOpcode: `function setOpcode(buf: CmdBuf, offset: number, opcode: number): void {
+  buf.u8[offset] = opcode
 }`,
-  setSlotA: `function setSlotA(view: DataView, offset: number, slot: number): void {
-  view.setUint8(offset + 1, slot)
+  setSlotA: `function setSlotA(buf: CmdBuf, offset: number, slot: number): void {
+  buf.u8[offset + 1] = slot
 }`,
-  setSlotB: `function setSlotB(view: DataView, offset: number, slot: number): void {
-  view.setUint8(offset + 2, slot)
+  setSlotB: `function setSlotB(buf: CmdBuf, offset: number, slot: number): void {
+  buf.u8[offset + 2] = slot
 }`,
-  setSlotC: `function setSlotC(view: DataView, offset: number, slot: number): void {
-  view.setUint8(offset + 3, slot)
+  setSlotC: `function setSlotC(buf: CmdBuf, offset: number, slot: number): void {
+  buf.u8[offset + 3] = slot
 }`,
-  setD1_u32: `function setD1_u32(view: DataView, offset: number, value: number): void {
-  view.setUint32(offset + 4, value, true)
+  // u32 setters - use direct u32 access on little-endian (WASM is always LE)
+  // Conditional is resolved at module load time, JIT can inline the fast path
+  setD1_u32: `const setD1_u32: (buf: CmdBuf, offset: number, value: number) => void = IS_LITTLE_ENDIAN
+  ? (buf, offset, value) => { buf.u32[(offset + 4) >> 2] = value }
+  : (buf, offset, value) => { buf.dv.setUint32(offset + 4, value, true) }`,
+  setD1_i32: `const setD1_i32: (buf: CmdBuf, offset: number, value: number) => void = IS_LITTLE_ENDIAN
+  ? (buf, offset, value) => { buf.u32[(offset + 4) >> 2] = value >>> 0 }
+  : (buf, offset, value) => { buf.dv.setInt32(offset + 4, value, true) }`,
+  setD2_u32: `const setD2_u32: (buf: CmdBuf, offset: number, value: number) => void = IS_LITTLE_ENDIAN
+  ? (buf, offset, value) => { buf.u32[(offset + 8) >> 2] = value }
+  : (buf, offset, value) => { buf.dv.setUint32(offset + 8, value, true) }`,
+  setD2_i32: `const setD2_i32: (buf: CmdBuf, offset: number, value: number) => void = IS_LITTLE_ENDIAN
+  ? (buf, offset, value) => { buf.u32[(offset + 8) >> 2] = value >>> 0 }
+  : (buf, offset, value) => { buf.dv.setInt32(offset + 8, value, true) }`,
+  setD3_u32: `const setD3_u32: (buf: CmdBuf, offset: number, value: number) => void = IS_LITTLE_ENDIAN
+  ? (buf, offset, value) => { buf.u32[(offset + 12) >> 2] = value }
+  : (buf, offset, value) => { buf.dv.setUint32(offset + 12, value, true) }`,
+  setD3_i32: `const setD3_i32: (buf: CmdBuf, offset: number, value: number) => void = IS_LITTLE_ENDIAN
+  ? (buf, offset, value) => { buf.u32[(offset + 12) >> 2] = value >>> 0 }
+  : (buf, offset, value) => { buf.dv.setInt32(offset + 12, value, true) }`,
+  // f64/i64 setters - must use DataView (data section not 8-byte aligned within 16-byte commands)
+  setData_f64: `function setData_f64(buf: CmdBuf, offset: number, value: number): void {
+  buf.dv.setFloat64(offset + 4, value, true)
 }`,
-  setD1_i32: `function setD1_i32(view: DataView, offset: number, value: number): void {
-  view.setInt32(offset + 4, value, true)
-}`,
-  setD2_u32: `function setD2_u32(view: DataView, offset: number, value: number): void {
-  view.setUint32(offset + 8, value, true)
-}`,
-  setD2_i32: `function setD2_i32(view: DataView, offset: number, value: number): void {
-  view.setInt32(offset + 8, value, true)
-}`,
-  setD3_u32: `function setD3_u32(view: DataView, offset: number, value: number): void {
-  view.setUint32(offset + 12, value, true)
-}`,
-  setD3_i32: `function setD3_i32(view: DataView, offset: number, value: number): void {
-  view.setInt32(offset + 12, value, true)
-}`,
-  setData_f64: `function setData_f64(view: DataView, offset: number, value: number): void {
-  view.setFloat64(offset + 4, value, true)
-}`,
-  setData_i64: `function setData_i64(view: DataView, offset: number, value: bigint): void {
-  view.setBigInt64(offset + 4, value, true)
+  setData_i64: `function setData_i64(buf: CmdBuf, offset: number, value: bigint): void {
+  buf.dv.setBigInt64(offset + 4, value, true)
 }`,
 }
 
@@ -575,20 +581,20 @@ function TSFunc(
     return ts
   }
 
-  useSetter("setOpcode", `setOpcode(view, offset, ${opcode})`)
+  useSetter("setOpcode", `setOpcode(buf, offset, ${opcode})`)
 
   // Collect params and body statements from slots
   if (command.slot_a) {
     params.push({ name: command.slot_a.name, tsType: tsType(command.slot_a.type) })
-    useSetter("setSlotA", `setSlotA(view, offset, ${command.slot_a.name})`)
+    useSetter("setSlotA", `setSlotA(buf, offset, ${command.slot_a.name})`)
   }
   if (command.slot_b) {
     params.push({ name: command.slot_b.name, tsType: tsType(command.slot_b.type) })
-    useSetter("setSlotB", `setSlotB(view, offset, ${command.slot_b.name})`)
+    useSetter("setSlotB", `setSlotB(buf, offset, ${command.slot_b.name})`)
   }
   if (command.slot_c) {
     params.push({ name: command.slot_c.name, tsType: tsType(command.slot_c.type) })
-    useSetter("setSlotC", `setSlotC(view, offset, ${command.slot_c.name})`)
+    useSetter("setSlotC", `setSlotC(buf, offset, ${command.slot_c.name})`)
   }
 
   // Collect params and body from data fields
@@ -598,7 +604,7 @@ function TSFunc(
 
   const paramList =
     params.length > 0 ? `, ${params.map((p) => `${p.name}: ${p.tsType}`).join(", ")}` : ""
-  const signature = `export function ${functionName}(view: DataView, offset: CommandPtr${paramList}): void`
+  const signature = `export function ${functionName}(buf: CmdBuf, offset: CommandPtr${paramList}): void`
   return { functionName, opcode, params, body, signature }
 }
 
@@ -637,7 +643,7 @@ function renderWriterCode(writer: WriterInfo, helperName?: string): string {
   }
   const args = writer.params.map((param) => param.name).join(", ")
   const helperCall =
-    args.length > 0 ? `${helperName}(view, offset, ${args})` : `${helperName}(view, offset)`
+    args.length > 0 ? `${helperName}(buf, offset, ${args})` : `${helperName}(buf, offset)`
   return `${writer.signature} {\n  ${writer.body[0]}\n  ${helperCall}\n}`
 }
 
@@ -657,57 +663,57 @@ function addDataParams(
     case "raw":
       params.push({ name: data.d1.name, tsType: tsType(data.d1.type) })
       if (data.d1.type === "int32_t") {
-        useSetter("setD1_i32", `setD1_i32(view, offset, ${data.d1.name})`)
+        useSetter("setD1_i32", `setD1_i32(buf, offset, ${data.d1.name})`)
       } else {
-        useSetter("setD1_u32", `setD1_u32(view, offset, ${data.d1.name})`)
+        useSetter("setD1_u32", `setD1_u32(buf, offset, ${data.d1.name})`)
       }
       if (data.d2) {
         params.push({ name: data.d2.name, tsType: tsType(data.d2.type) })
         if (data.d2.type === "int32_t") {
-          useSetter("setD2_i32", `setD2_i32(view, offset, ${data.d2.name})`)
+          useSetter("setD2_i32", `setD2_i32(buf, offset, ${data.d2.name})`)
         } else {
-          useSetter("setD2_u32", `setD2_u32(view, offset, ${data.d2.name})`)
+          useSetter("setD2_u32", `setD2_u32(buf, offset, ${data.d2.name})`)
         }
       }
       if (data.d3) {
         params.push({ name: data.d3.name, tsType: tsType(data.d3.type) })
         if (data.d3.type === "int32_t") {
-          useSetter("setD3_i32", `setD3_i32(view, offset, ${data.d3.name})`)
+          useSetter("setD3_i32", `setD3_i32(buf, offset, ${data.d3.name})`)
         } else {
-          useSetter("setD3_u32", `setD3_u32(view, offset, ${data.d3.name})`)
+          useSetter("setD3_u32", `setD3_u32(buf, offset, ${data.d3.name})`)
         }
       }
       break
 
     case "f64":
       params.push({ name: data.value.name, tsType: tsType(data.value.type) })
-      useSetter("setData_f64", `setData_f64(view, offset, ${data.value.name})`)
+      useSetter("setData_f64", `setData_f64(buf, offset, ${data.value.name})`)
       if (data.extra) {
         params.push({ name: data.extra.name, tsType: tsType(data.extra.type) })
-        useSetter("setD3_u32", `setD3_u32(view, offset, ${data.extra.name})`)
+        useSetter("setD3_u32", `setD3_u32(buf, offset, ${data.extra.name})`)
       }
       break
 
     case "i64":
       params.push({ name: data.value.name, tsType: tsType(data.value.type) })
-      useSetter("setData_i64", `setData_i64(view, offset, ${data.value.name})`)
+      useSetter("setData_i64", `setData_i64(buf, offset, ${data.value.name})`)
       if (data.extra) {
         params.push({ name: data.extra.name, tsType: tsType(data.extra.type) })
-        useSetter("setD3_u32", `setD3_u32(view, offset, ${data.extra.name})`)
+        useSetter("setD3_u32", `setD3_u32(buf, offset, ${data.extra.name})`)
       }
       break
 
     case "buf":
       params.push({ name: data.ptr.name, tsType: tsType(data.ptr.type) })
-      useSetter("setD1_u32", `setD1_u32(view, offset, ${data.ptr.name})`)
+      useSetter("setD1_u32", `setD1_u32(buf, offset, ${data.ptr.name})`)
       params.push({ name: data.len.name, tsType: tsType(data.len.type) })
-      useSetter("setD2_u32", `setD2_u32(view, offset, ${data.len.name})`)
+      useSetter("setD2_u32", `setD2_u32(buf, offset, ${data.len.name})`)
       if (data.extra) {
         params.push({ name: data.extra.name, tsType: tsType(data.extra.type) })
         if (data.extra.type === "int32_t") {
-          useSetter("setD3_i32", `setD3_i32(view, offset, ${data.extra.name})`)
+          useSetter("setD3_i32", `setD3_i32(buf, offset, ${data.extra.name})`)
         } else {
-          useSetter("setD3_u32", `setD3_u32(view, offset, ${data.extra.name})`)
+          useSetter("setD3_u32", `setD3_u32(buf, offset, ${data.extra.name})`)
         }
       }
       break
@@ -744,7 +750,7 @@ function addDataParams(
           parts.push(idx === 0 ? asU8 : `(${asU8} << ${idx * 8})`)
         }
         const packedExpr = parts.length === 0 ? "0" : parts.join(" | ")
-        useSetter(group.setter, `${group.setter}(view, offset, ${packedExpr})`)
+        useSetter(group.setter, `${group.setter}(buf, offset, ${packedExpr})`)
       }
       break
     }
@@ -1063,7 +1069,7 @@ function renderWriteCommandCase(name: OpName, commandDef: CommandDef): string {
     pointerVarByPath.set(path, fieldName)
   }
 
-  const args: string[] = ["view", "offset"]
+  const args: string[] = ["buf", "offset"]
   for (const entry of params) {
     const { path, param } = entry
     const writerArgType = cTypeToTypescriptType(param.type, true).typescript
@@ -1164,7 +1170,7 @@ function buildOpsFiles(useRelativeImport = false): string {
         ? `, ${group.params.map((param, idx) => `p${idx}: ${param.tsType}`).join(", ")}`
         : ""
     writerPatternHelpers.push(
-      `function ${group.helperName}(view: DataView, offset: CommandPtr${helperParams}): void {\n  ${group.normalizedBody.join(
+      `function ${group.helperName}(buf: CmdBuf, offset: CommandPtr${helperParams}): void {\n  ${group.normalizedBody.join(
         "\n  ",
       )}\n}`,
     )
@@ -1182,12 +1188,14 @@ function buildOpsFiles(useRelativeImport = false): string {
   ${importTypes.join(",\n  ")},
 } from "${importFrom}"
 import type {
+  CmdBuf,
   CommandRef,
   CommandWriteHelpers,
   FuncListRef,
   JSValueRef,
   RefVisitor,
-} from "./command-types"`
+} from "./command-types"
+import { IS_LITTLE_ENDIAN } from "./command-types"`
 
   const opcodeConsts = OPCODE_TO_COMMAND.map(
     (name, opcode) => `export const ${name} = ${opcode} as const`,
@@ -1329,7 +1337,7 @@ function getCommandKind(command: { opcode: number }): number {
 }
 
 export function writeCommand(
-  view: DataView,
+  buf: CmdBuf,
   offset: CommandPtr,
   command: Command,
   helpers: CommandWriteHelpers,
