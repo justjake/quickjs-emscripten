@@ -1,6 +1,7 @@
 export type ArenaRawMemory = ArrayBuffer | Uint8Array
 
 export type Memory<Ptr extends number = number> = {
+  epoch: () => number
   uint32: () => Uint32Array
   uint8: () => Uint8Array
   malloc: (size: number) => Ptr
@@ -17,6 +18,7 @@ export type MemoryViewState = {
 
 export class ArrayBufferMemory implements Memory<number> {
   private bytes: Uint8Array
+  private epochValue = 0
   free = (_ptr: number): void => {}
 
   constructor(
@@ -35,6 +37,10 @@ export class ArrayBufferMemory implements Memory<number> {
     }
     this.bytes = memory instanceof Uint8Array ? memory : new Uint8Array(memory)
   }
+  epoch(): number {
+    return this.epochValue
+  }
+
   uint8(): Uint8Array {
     return this.bytes
   }
@@ -68,6 +74,7 @@ export class ArrayBufferMemory implements Memory<number> {
     const next = new Uint8Array(needed)
     next.set(this.bytes.subarray(0, Math.min(this.bytes.byteLength, next.byteLength)), 0)
     this.bytes = next
+    this.epochValue++
   }
 }
 
@@ -75,6 +82,7 @@ export function isMemoryObject<Ptr extends number = number>(value: unknown): val
   return (
     typeof value === "object" &&
     value !== null &&
+    "epoch" in value &&
     "uint32" in value &&
     "uint8" in value &&
     "malloc" in value &&

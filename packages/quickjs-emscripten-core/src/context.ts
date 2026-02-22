@@ -1,24 +1,24 @@
-import { IsEqualOp, JSPromiseStateEnum } from "@jitl/quickjs-ffi-types"
 import type {
-  EvalFlags,
+  EitherFFI,
   EitherModule,
   EvalDetectModule,
+  EvalFlags,
+  HostRefId,
   JSBorrowedCharPointer,
   JSContextPointer,
   JSRuntimePointer,
   JSValueConstPointer,
   JSValuePointer,
   JSValuePointerPointer,
-  EitherFFI,
-  UInt32Pointer,
   JSValuePointerPointerPointer,
   JSVoidPointer,
-  HostRefId,
+  UInt32Pointer,
 } from "@jitl/quickjs-ffi-types"
+import { IsEqualOp, JSPromiseStateEnum } from "@jitl/quickjs-ffi-types"
 import type { JSPromiseState } from "./deferred-promise"
 import { QuickJSDeferredPromise } from "./deferred-promise"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
+import { QuickJSIterator } from "./QuickJSIterator"
 import {
   QuickJSEmptyGetOwnPropertyNames,
   QuickJSHostRefInvalid,
@@ -26,6 +26,8 @@ import {
   QuickJSPromisePending,
   QuickJSUnwrapError,
 } from "./errors"
+import { HostRef } from "./host-ref"
+import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import type { Disposable, DisposableArray, DisposableFail, DisposableSuccess } from "./lifetime"
 import {
   DisposableResult,
@@ -41,9 +43,9 @@ import type { HeapTypedArray } from "./memory"
 import { ModuleMemory } from "./memory"
 import type { ContextCallbacks, QuickJSModuleCallbacks } from "./module"
 import type {
-  QuickJSRuntime,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ExecutePendingJobsResult,
+  QuickJSRuntime,
 } from "./runtime"
 import type {
   ContextEvalOptions,
@@ -60,8 +62,6 @@ import type {
   VmFunctionImplementation,
   VmPropertyDescriptor,
 } from "./vm-interface"
-import { QuickJSIterator } from "./QuickJSIterator"
-import { HostRef } from "./host-ref"
 
 export type QuickJSContextResult<S> = DisposableResult<S, QuickJSHandle>
 
@@ -407,7 +407,10 @@ export class QuickJSContext
     if (!this._BigInt) {
       const bigIntHandle = this.getProp(this.global, "BigInt")
       this.memory.manage(bigIntHandle)
-      this._BigInt = new StaticJSValueLifetime(bigIntHandle.value as JSValueConstPointer, this.runtime)
+      this._BigInt = new StaticJSValueLifetime(
+        bigIntHandle.value as JSValueConstPointer,
+        this.runtime,
+      )
     }
 
     const bigIntHandle = this._BigInt
@@ -488,7 +491,7 @@ export class QuickJSContext
         mutablePointerArray.value.ptr,
       )
       const promiseHandle = this.memory.heapValueHandle(promisePtr)
-      const [resolveHandle, rejectHandle] = Array.from(mutablePointerArray.value.typedArray).map(
+      const [resolveHandle, rejectHandle] = Array.from(mutablePointerArray.value.typedArray()).map(
         (jsvaluePtr) => this.memory.heapValueHandle(jsvaluePtr as any),
       )
       return new QuickJSDeferredPromise({
@@ -995,7 +998,7 @@ export class QuickJSContext
     if (status < 0) {
       return undefined
     }
-    return this.uint32Out.value.typedArray[0]
+    return this.uint32Out.value.typedArray()[0]
   }
 
   /**
@@ -1053,8 +1056,8 @@ export class QuickJSContext
       if (errorPtr) {
         return this.fail(this.memory.heapValueHandle(errorPtr))
       }
-      const len = this.uint32Out.value.typedArray[0]
-      const ptr = outPtr.value.typedArray[0]
+      const len = this.uint32Out.value.typedArray()[0]
+      const ptr = outPtr.value.typedArray()[0]
       const pointerArray = new Uint32Array(this.module.HEAP8.buffer, ptr, len)
       const handles = Array.from(pointerArray).map((ptr) =>
         this.memory.heapValueHandle(ptr as JSValuePointer),
@@ -1482,9 +1485,7 @@ export class QuickJSContext
               this.runtime.debugLog("throw error", result.error)
               throw result.error
             }
-            const handle = scope.manage(
-              result instanceof JSValueLifetime ? result : result.value,
-            )
+            const handle = scope.manage(result instanceof JSValueLifetime ? result : result.value)
             return this.ffi.QTS_DupValuePointer(this.ctx.value, handle.value)
           }
           return 0 as JSValuePointer

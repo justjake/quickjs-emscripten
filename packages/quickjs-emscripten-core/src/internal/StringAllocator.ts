@@ -1,7 +1,4 @@
-import {
-  ByteRegionAllocator,
-  type ByteRegionAllocatorOptions,
-} from "./ByteRegionAllocator"
+import { ByteRegionAllocator, type ByteRegionAllocatorOptions } from "./ByteRegionAllocator"
 import {
   assertStorageWindow,
   getDirectMemoryViews,
@@ -133,7 +130,7 @@ export class StringAllocator<Ptr extends number = number> {
 
     this.ensureRegionCapacity(totalBytes)
 
-    const allocator = this.allocator as ByteRegionAllocator<Ptr>
+    const allocator = this.allocator!
     allocator.reset()
     const basePtr = allocator.reserve(totalBytes)
     const region = getWritableRegion(this.memory, basePtr, totalBytes)

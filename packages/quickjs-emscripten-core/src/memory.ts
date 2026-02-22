@@ -1,8 +1,8 @@
 import type {
   EitherModule,
-  OwnedHeapCharPointer,
   JSValueConstPointerPointer,
   JSVoidPointer,
+  OwnedHeapCharPointer,
 } from "@jitl/quickjs-ffi-types"
 import type { Memory } from "./internal/memory-region"
 import { PtrTypedArray } from "./internal/PtrTypedArray"
@@ -118,7 +118,7 @@ export class ModuleMemory implements Memory<number> {
     const length = handleArray.length
     const ptr = this.malloc(length * Int32Array.BYTES_PER_ELEMENT) as JSValueConstPointerPointer
     const out = new PtrTypedArray(this, Int32Array, ptr as number, length)
-    const values = out.view()
+    const values = out.typedArray()
     for (let i = 0; i < length; i++) {
       values[i] = handleArray[i].value
     }
@@ -135,11 +135,8 @@ export class ModuleMemory implements Memory<number> {
 
     const numBytes = length * kind.BYTES_PER_ELEMENT
     const ptr = this.malloc(numBytes) as C
-    const typedArray = new PtrTypedArray(this, kind, ptr, length) as unknown as PtrTypedArray<
-      JS,
-      C
-    >
-    typedArray.view().fill(0)
+    const typedArray = new PtrTypedArray(this, kind, ptr, length) as unknown as PtrTypedArray<JS, C>
+    typedArray.typedArray().fill(0)
     return new Lifetime(typedArray, undefined, (value) => this.free(value.ptr))
   }
 
@@ -160,9 +157,7 @@ export class ModuleMemory implements Memory<number> {
     const numBytes = buffer.byteLength
     const ptr: JSVoidPointer = this.malloc(numBytes) as JSVoidPointer
     this.uint8().set(buffer, ptr)
-    return new Lifetime({ pointer: ptr, numBytes }, undefined, (value) =>
-      this.free(value.pointer),
-    )
+    return new Lifetime({ pointer: ptr, numBytes }, undefined, (value) => this.free(value.pointer))
   }
 
   consumeHeapCharPointer(ptr: OwnedHeapCharPointer): string {

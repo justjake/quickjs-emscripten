@@ -94,6 +94,7 @@ describe("SlotArena", () => {
     let resizedTo = -1
 
     const memoryObject: Memory<number> = {
+      epoch: () => 0,
       uint8: () => backing,
       uint32: () => new Uint32Array(backing.buffer, backing.byteOffset, backing.byteLength >>> 2),
       malloc: (bytes) => {
@@ -126,6 +127,7 @@ describe("SlotArena", () => {
   it("throws when Memory ptr is not 4-byte aligned", () => {
     const backing = new Uint8Array(32)
     const memoryObject: Memory<number> = {
+      epoch: () => 0,
       uint8: () => backing,
       uint32: () => new Uint32Array(backing.buffer, backing.byteOffset, backing.byteLength >>> 2),
       malloc: () => 2,

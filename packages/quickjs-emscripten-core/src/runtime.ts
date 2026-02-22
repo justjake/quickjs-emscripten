@@ -1,22 +1,22 @@
 import type {
   BorrowedHeapCharPointer,
+  EitherFFI,
+  EitherModule,
   JSContextPointer,
   JSContextPointerPointer,
   JSRuntimePointer,
-  EitherFFI,
-  EitherModule,
 } from "@jitl/quickjs-ffi-types"
 import { maybeAsyncFn } from "./asyncify-helpers"
 import { QuickJSContext } from "./context"
 import { QTS_DEBUG } from "./debug"
 import { QuickJSWrongOwner } from "./errors"
+import { HostRefMap } from "./host-ref"
 import type { Disposable } from "./lifetime"
 import { DisposableResult, Lifetime, Scope, UsingDisposable } from "./lifetime"
 import { ModuleMemory } from "./memory"
 import type { QuickJSModuleCallbacks, RuntimeCallbacks } from "./module"
 import type { ContextOptions, JSModuleLoader, JSModuleNormalizer, QuickJSHandle } from "./types"
 import { intrinsicsToFlags } from "./types"
-import { HostRefMap } from "./host-ref"
 
 /**
  * Callback called regularly while the VM executes code.
@@ -251,7 +251,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
       ctxPtrOut.value.ptr,
     )
 
-    const ctxPtr = ctxPtrOut.value.typedArray[0] as JSContextPointer
+    const ctxPtr = ctxPtrOut.value.typedArray()[0] as JSContextPointer
     ctxPtrOut.dispose()
     if (ctxPtr === 0) {
       // No jobs executed.
