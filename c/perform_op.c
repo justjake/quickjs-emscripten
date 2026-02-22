@@ -15,7 +15,8 @@
 #include "perform_new_symbol.h"
 #include "perform_new_float64.h"
 #include "perform_new_string.h"
-#include "perform_new_bigint.h"
+#include "perform_new_bigint_int64.h"
+#include "perform_new_bigint_str.h"
 #include "perform_new_func.h"
 #include "perform_set_str_value.h"
 #include "perform_set_str_null.h"
@@ -85,7 +86,8 @@ QTS_CommandStatus QTS_PerformOp(QTS_CommandEnv *env, QTS_Command cmd) {
         case QTS_OP_NEW_SYMBOL: return perform_new_symbol(env, (JSValueSlot)cmd.slot_a, cmd.slot_b, cmd.data.buf.ptr, cmd.data.buf.len);
         case QTS_OP_NEW_FLOAT64: return perform_new_float64(env, (JSValueSlot)cmd.slot_a, cmd.data.f64.value);
         case QTS_OP_NEW_STRING: return perform_new_string(env, (JSValueSlot)cmd.slot_a, cmd.data.buf.ptr, cmd.data.buf.len);
-        case QTS_OP_NEW_BIGINT: return perform_new_bigint(env, (JSValueSlot)cmd.slot_a, cmd.data.i64.value);
+        case QTS_OP_NEW_BIGINT_INT64: return perform_new_bigint_int64(env, (JSValueSlot)cmd.slot_a, cmd.data.i64.value);
+        case QTS_OP_NEW_BIGINT_STR: return perform_new_bigint_str(env, (JSValueSlot)cmd.slot_a, cmd.data.buf.ptr, cmd.data.buf.len);
         case QTS_OP_NEW_FUNC: return perform_new_func(env, (JSValueSlot)cmd.slot_a, cmd.slot_b, cmd.slot_c, cmd.data.buf.ptr, cmd.data.buf.len, (HostRefId)cmd.data.buf.extra);
         case QTS_OP_SET_STR_VALUE: return perform_set_str_value(env, (JSValueSlot)cmd.slot_a, (JSValueSlot)cmd.slot_b, (SetPropFlags)cmd.slot_c, cmd.data.buf.ptr, cmd.data.buf.len);
         case QTS_OP_SET_STR_NULL: return perform_set_str_null(env, (JSValueSlot)cmd.slot_a, (SetPropFlags)cmd.slot_c, cmd.data.buf.ptr, cmd.data.buf.len);

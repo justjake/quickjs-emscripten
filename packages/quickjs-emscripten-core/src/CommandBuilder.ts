@@ -74,6 +74,10 @@ function isInt32(value: number): value is Int32 {
   return Number.isInteger(value) && value >= -2147483648 && value <= 2147483647
 }
 
+function isBigInt64(value: bigint): value is Int64 {
+  return value >= -9223372036854775808n && value <= 9223372036854775807n
+}
+
 function setPropFlagsFromDefineOptions(options: DefinePropOptions | undefined): SetPropFlags {
   let flags = SetPropFlagBits.DEFINE as number
   if (options?.configurable) {
@@ -243,7 +247,11 @@ export class CommandBuilder {
 
   newBigInt(value: bigint): JSValueRef {
     const result = this.allocateJsValueRef()
-    this.push(Ops.NewBigintCmd(result, value as Int64))
+    if (isBigInt64(value)) {
+      this.push(Ops.NewBigintInt64Cmd(result, value))
+    } else {
+      this.push(Ops.NewBigintStrCmd(result, value.toString(10)))
+    }
     return result
   }
 

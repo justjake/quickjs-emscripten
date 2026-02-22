@@ -617,12 +617,28 @@ export const COMMANDS = {
     },
   },
 
-  NEW_BIGINT: {
+  NEW_BIGINT_INT64: {
     doc: "Create a BigInt value from i64 (JS_NewBigInt64)",
     slot_a: RESULT_JSVALUE_SLOT,
     data: {
       type: "i64",
       value: { name: "value", type: "int64_t", doc: "The int64 value", usage: "in" },
+    },
+  },
+
+  NEW_BIGINT_STR: {
+    doc: "Create a BigInt value from a decimal string",
+    slot_a: RESULT_JSVALUE_SLOT,
+    data: {
+      type: "buf",
+      ptr: {
+        name: "str_ptr",
+        type: "char*",
+        doc: "Pointer to decimal string data",
+        usage: "in",
+        pointer: { kind: "utf8", lenParam: "data.len" },
+      },
+      len: { name: "str_len", type: "uint32_t", doc: "Length of string in bytes", usage: "in" },
     },
   },
 
