@@ -578,3 +578,244 @@ For each `consume_on_success` binding at execute return:
 7. Failure before consume leaves binding alive.
 8. Failure after consume invalidates without double-free.
 9. Cleanup uses tracked state only.
+
+### v0 policy: no-spill, batch-cut on slot exhaustion
+
+This is the simplest acceptable CommandExecutor planning policy for initial rollout.
+
+Rules:
+
+1. The policy never emits spill operations (`SLOT_STORE`/`SLOT_LOAD`) for planning purposes.
+2. If a command cannot be planned because required slots are unavailable, planning returns `batch_full_before_command`.
+3. Executor flushes the current batch and retries planning the same command.
+4. If planning still fails when the batch is empty, execution fails with a deterministic capacity error (`single command cannot fit in configured slot capacity`).
+
+Notes:
+
+- This policy is intentionally incomplete for workloads that require spilling.
+- It is valid for simple and medium command lists where live-slot pressure stays within capacities.
+- It shares all ownership/cleanup/finalization semantics with the canonical model above.
+
+### Pluggable planning policies
+
+The class should separate:
+
+1. shared execution mechanics, and
+2. policy-specific slot planning decisions.
+
+#### Allocation policy for the planner API
+
+The policy API is designed to avoid per-command object allocation.
+
+1. No `PlanDecision` objects.
+2. No `PlanCommandRequest` objects.
+3. No event object callbacks.
+4. No `onCommandCommitted` hook.
+
+`onCommandCommitted` is intentionally removed. A command is considered committed when `planAt(pc)` returns `PLANNED` and the executor emits that command. A separate commit callback adds API surface without adding state that cannot already be derived.
+
+#### Shared infrastructure (executor core)
+
+Always shared across policies:
+
+1. input binding ingestion (`borrowed` vs `consume_on_success`),
+2. command traversal and read/write/consumed operand discovery,
+3. command encoding/writing into command buffer memory,
+4. batch flushing and C call orchestration (`QTS_ExecuteCommands`),
+5. error mapping (`successful_count`, `out_status`, `out_error`),
+6. tracked cleanup and consume finalization,
+7. returned-handle construction and result assembly.
+
+#### Policy responsibilities
+
+A policy decides only planning behavior:
+
+1. whether a command can be admitted to current batch,
+2. how refs are materialized/located (`IN_SLOT`/`SPILLED`),
+3. whether additional planner-generated ops are needed before/after a command,
+4. when to request a batch cut before admitting a command.
+5. policy-provided planning diagnostics for fatal planning conditions.
+
+A policy is not responsible for:
+
+1. C execution error mapping (`successful_count`, `out_status`, `out_error`),
+2. tracked cleanup/freeing on execution failure,
+3. consume finalization and returned-handle ownership behavior.
+
+#### BasePolicy contract (normative)
+
+```ts
+export const enum PlanCode {
+  /** Command `pc` was admitted; planner/generated ops and source command were encoded. */
+  PLANNED = 0,
+  /** Command `pc` was not admitted; executor must flush batch then retry same `pc`. */
+  BATCH_FULL_BEFORE_COMMAND = 1,
+  /** Command `pc` cannot fit even with an empty batch; executor must fail deterministically. */
+  FATAL_CAPACITY_ERROR = 2,
+}
+
+/** Source command index in `commands` (0-based). */
+export type CommandPc = number
+/** Command count (non-negative integer). */
+export type CommandCount = number
+/** Source command index or sentinel `-1` (none / no failure). */
+export type CommandPcOrNone = number
+/** Slot index in a bank-local slot array (0-based). */
+export type SlotIndex = number
+/** Slot index or sentinel `-1` (allocation failure / unknown). */
+export type SlotIndexOrNone = number
+/** WASM byte pointer to spill storage. */
+export type SpillPtr = number
+
+export abstract class BasePolicy {
+  /**
+   * Called exactly once at execute() start before any planning.
+   * `ctx` is stable for the full execute call and must be treated as borrowed.
+   * Allowed side effects: initialize/reset policy scratch state.
+   * Disallowed side effects: emitting commands, mutating command inputs.
+   */
+  abstract begin(ctx: PolicyContext): void
+
+  /**
+   * Plans one source command at index `pc`.
+   * `pc` is in source order; the same `pc` may be presented multiple times when a prior
+   * return was `BATCH_FULL_BEFORE_COMMAND` and executor retried after flush.
+   *
+   * On `PLANNED`:
+   * - policy has fully committed this command to current batch (including any planner ops),
+   * - policy must have emitted source command `pc` exactly once via `emit.emitSourceCommand(pc)`.
+   *
+   * On `BATCH_FULL_BEFORE_COMMAND`:
+   * - policy must emit nothing for `pc` (no partial writes for that command),
+   * - executor flushes current batch and retries same `pc`.
+   *
+   * On `FATAL_CAPACITY_ERROR`:
+   * - policy determined command cannot fit in an empty batch under this policy,
+   * - policy should set a deterministic message via `diagnostics`,
+   * - executor terminates planning/execution for this request.
+   */
+  abstract planAt(pc: CommandPc): PlanCode
+
+  /**
+   * Called after every batch flush returns from C, including partial-failure flushes.
+   * `batchStartPc` and `batchLen` describe the source-command span submitted in that flush.
+   * `successfulInBatch` is the C return count for that flush.
+   *
+   * Allowed side effects: update policy runtime bookkeeping that depends on execution results.
+   * Disallowed side effects: emitting planner/source commands (planning occurs only in `planAt`).
+   */
+  abstract onBatchFlushed(
+    batchStartPc: CommandPc,
+    batchLen: CommandCount,
+    successfulInBatch: CommandCount,
+  ): void
+
+  /**
+   * Called exactly once before execute() returns.
+   * `totalSuccessful` is cumulative successful source-command count across all flushed batches.
+   * `failedPc` is global failed source-command index, or `-1` when execution fully succeeds.
+   *
+   * Allowed side effects: finalize policy diagnostics/counters and clear temporary scratch state.
+   * Disallowed side effects: mutating returned handles, cleanup state, or executor ownership logic.
+   */
+  abstract end(totalSuccessful: CommandCount, failedPc: CommandPcOrNone): void
+}
+```
+
+#### PolicyContext dependencies injected by CommandExecutor
+
+```ts
+export interface PolicyContext {
+  /** Immutable source commands in source order (`pc` index). */
+  readonly commands: readonly Command[]
+  readonly prepass: PrepassView
+  readonly refs: RefStateView
+  readonly slots: SlotPlanner
+  readonly batch: BatchStateView
+  readonly emit: PlannerEmitter
+  readonly spill: SpillFacade | null
+  readonly diagnostics: DiagnosticsSink
+}
+```
+
+```ts
+export interface PrepassView {
+  firstUse(ref: CommandRef): CommandPc
+  lastUse(ref: CommandRef): CommandPc
+  nextUseAfter(ref: CommandRef, pc: CommandPc): CommandPcOrNone
+  producedAt(ref: CommandRef): CommandPcOrNone
+  isReturned(ref: CommandRef): boolean
+}
+
+export interface RefStateView {
+  location(ref: CommandRef): RefLocation
+  slotOf(ref: CommandRef): SlotIndex
+  spillPtrOf(ref: CommandRef): SpillPtr
+  markInSlot(ref: CommandRef, slot: SlotIndex): void
+  markSpilled(ref: CommandRef, spillPtr: SpillPtr): void
+  markDead(ref: CommandRef): void
+}
+
+export interface SlotPlanner {
+  tryAlloc(bank: SlotType): SlotIndexOrNone
+  free(bank: SlotType, slot: SlotIndex): void
+  forEachLiveRefInBank(
+    bank: SlotType,
+    visit: (ref: CommandRef, slot: SlotIndex) => void,
+  ): void
+}
+
+export interface BatchStateView {
+  remainingCommandCapacity(): CommandCount
+  isEmpty(): boolean
+}
+
+export interface PlannerEmitter {
+  emitPlannerOp(op: Command): void
+  emitSourceCommand(pc: CommandPc): void
+}
+
+export interface SpillFacade {
+  allocateSpill(bank: SlotType): SpillPtr
+  emitStore(bank: SlotType, slot: SlotIndex, spillPtr: SpillPtr): void
+  emitLoad(bank: SlotType, slot: SlotIndex, spillPtr: SpillPtr): void
+}
+
+export interface DiagnosticsSink {
+  setFatalPlanningError(message: string): void
+}
+```
+
+Policies import and call generated helpers directly on `commands[pc]`:
+`forEachReadRef(command, visit)`, `forEachWriteRef(command, visit)`, `forEachConsumedRef(command, visit)`.
+
+#### Method lifecycle with example use-cases
+
+1. `begin(ctx)`: example use-case: `NoSpillBatchCutPolicy` caches `ctx` and clears transient pin masks before the first command.
+2. `planAt(pc)`: example use-case: v0 checks if all required refs and destinations can fit; if not, returns `BATCH_FULL_BEFORE_COMMAND`; v1 may spill a victim then return `PLANNED`.
+3. `onBatchFlushed(batchStartPc, batchLen, successfulInBatch)`: example use-case: `SpillLinearScanPolicy` updates batch-local bookkeeping after C execution; `NoSpillBatchCutPolicy` is usually a no-op.
+4. `end(totalSuccessful, failedPc)`: example use-case: write final policy diagnostics counters; release temporary policy scratch state.
+
+#### Injected interface purpose with example use-cases
+
+1. `commands`: example use-case: read `commands[pc]`, then call generated `forEachReadRef` and related helpers directly.
+2. `prepass`: example use-case: query `lastUse(ref)` for dead-after-command detection or victim scoring.
+3. `refs`: example use-case: transition a ref from `SPILLED` to `IN_SLOT` after emitting `SLOT_LOAD`.
+4. `slots`: example use-case: allocate a destination slot and iterate live refs in a bank when selecting a victim.
+5. `batch`: example use-case: if `remainingCommandCapacity() == 0`, return `BATCH_FULL_BEFORE_COMMAND`.
+6. `emit`: example use-case: emit a planner-generated `SLOT_LOAD` before emitting source command `pc`.
+7. `spill`: example use-case: allocate spill pointer storage and emit `SLOT_STORE`/`SLOT_LOAD`; null for no-spill policy.
+8. `diagnostics`: example use-case: set deterministic fatal error text when command cannot fit in an empty batch.
+
+#### Recommended policy set
+
+1. `NoSpillBatchCutPolicy` (v0 default): minimal complexity, no spill ops, batch cut on slot exhaustion.
+2. `SpillLinearScanPolicy` (v1): deterministic victim policy, emits spill load/store ops as needed, supports high-pressure command lists.
+
+#### Why this split works
+
+The mechanical infrastructure is already the majority of the class complexity. Making planning policy pluggable gives:
+
+1. a low-risk v0 path (`NoSpillBatchCutPolicy`),
+2. forward-compatible upgrade path to spill-capable planning,
+3. shared correctness for cleanup/error/finalization without duplicate implementations.
