@@ -1,4 +1,4 @@
-import type { InputBinding } from "../CommandBuilder"
+import type { JSValueBinding } from "../CommandBuilder"
 import type { Command } from "../ops"
 import { forEachConsumedRef } from "../ops"
 
@@ -24,7 +24,7 @@ function clampSuccessfulCount(successfulCount: number, commandCount: number): nu
  * - Failure: only consumed bindings are invalidated; untouched bindings remain alive.
  */
 export function finalizeConsumedInputBindings(
-  bindings: readonly InputBinding[],
+  bindings: readonly JSValueBinding[],
   commands: readonly Command[],
   successfulCount: number,
 ): void {
@@ -35,7 +35,7 @@ export function finalizeConsumedInputBindings(
 
   const executedCount = clampSuccessfulCount(successfulCount, commands.length)
   const executionSucceeded = executedCount === commands.length
-  const consumeBindingByRef = new Map<number, InputBinding>()
+  const consumeBindingByRef = new Map<number, JSValueBinding>()
   for (const binding of consumeBindings) {
     consumeBindingByRef.set(binding.ref as number, binding)
   }

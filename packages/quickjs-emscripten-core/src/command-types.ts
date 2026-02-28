@@ -6,6 +6,7 @@ import type {
   JSValueSlotType,
   SlotType,
 } from "@jitl/quickjs-ffi-types"
+import type { QuickJSHandle } from "./types"
 
 /** Logical reference ID to a JSValue mentioned in a command. */
 export type JSValueRef = Brand<number, JSValueSlotType>
@@ -22,6 +23,12 @@ export type SlotTypeToSlot<T extends SlotType> = T extends JSValueSlotType
   ? JSValueSlot
   : T extends FuncListSlotType
     ? FuncListSlot
+    : never
+
+export type SlotTypeToValue<T extends SlotType> = T extends JSValueSlotType
+  ? QuickJSHandle
+  : T extends FuncListSlotType
+    ? undefined
     : never
 
 /**

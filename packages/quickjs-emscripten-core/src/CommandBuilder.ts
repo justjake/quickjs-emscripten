@@ -1,4 +1,5 @@
 import type {
+  Brand,
   Float64,
   HostRefId,
   Int32,
@@ -14,13 +15,8 @@ import {
   SetPropFlags as SetPropFlagBits,
   SlotType,
 } from "@jitl/quickjs-ffi-types"
-import {
-  CommandRef,
-  CommandRefId,
-  CommandRefType,
-  type FuncListRef,
-  type JSValueRef,
-} from "./command-types"
+import type { FuncListRef, JSValueRef } from "./command-types"
+import { CommandRef, CommandRefId, CommandRefType } from "./command-types"
 import type { QuickJSContext, QuickJSPropertyKey } from "./context"
 import { finalizeConsumedInputBindings } from "./internal/command-input-ownership"
 import { JSValueLifetime } from "./lifetime"
@@ -39,7 +35,7 @@ export type Primitive = null | undefined | boolean | PlainNumber | bigint | stri
 export type InputBindingMode = "borrowed" | "consume_on_success"
 export type JSValueInput = JSValueRef | QuickJSHandle
 
-export interface InputBinding {
+export interface JSValueBinding {
   ref: JSValueRef
   handle: QuickJSHandle
   mode: InputBindingMode
@@ -121,23 +117,79 @@ function assertUint8(value: number, name: string): asserts value is Uint8 {
   }
 }
 
+export type CommandIndex = Brand<number, "CommandIndex">
+export type NotFound = Brand<-1, "NotFound">
+
+// TODO: consider compact struct-of-arrays
+export type RefLifetime = {
+  firstRead: CommandIndex
+  lastRead: CommandIndex
+  reads: CommandIndex[] // todo: remove?
+  producedAt: CommandIndex | NotFound
+  consumedAt: CommandIndex | NotFound
+}
+
+const NOT_FOUND = -1 as NotFound
+
+function forEachRef(
+  command: Command,
+  visit: (ref: CommandRef, usage: "read" | "write" | "consume") => void,
+): void {
+  Ops.forEachReadRef(command, (ref) => visit(ref, "read"))
+  Ops.forEachWriteRef(command, (ref) => visit(ref, "write"))
+  Ops.forEachConsumedRef(command, (ref) => visit(ref, "consume"))
+}
+
 export class CommandBuilder {
   public readonly context: QuickJSContext
+  public readonly lifetimes = new Map<CommandRef, RefLifetime>()
+  public readonly jsvalueBindings = new Map<QuickJSHandle, JSValueBinding>()
+  public readonly functionBindings = new Map<
+    VmFunctionImplementation<QuickJSHandle>,
+    FunctionBinding
+  >()
 
   private commands: Command[] = []
   private nextJsValueId = 1
   private nextFuncListId = 1
-  private inputBindings: InputBinding[] = []
-  private functionBindings: FunctionBinding[] = []
-  private inputBindingByHandle = new WeakMap<QuickJSHandle, InputBinding>()
-  private consumeOnSuccessHandles = new WeakSet<QuickJSHandle>()
 
   constructor(context: QuickJSContext) {
     this.context = context
   }
 
   private push(command: Command): void {
+    const commandIndex = this.commands.length as CommandIndex
     this.commands.push(command)
+
+    forEachRef(command, (ref, usage) => {
+      let lifetime = this.lifetimes.get(ref)
+      if (!lifetime) {
+        lifetime = {
+          firstRead: commandIndex,
+          lastRead: commandIndex,
+          reads: [],
+          producedAt: NOT_FOUND,
+          consumedAt: NOT_FOUND,
+        }
+        this.lifetimes.set(ref, lifetime)
+      }
+      switch (usage) {
+        case "read":
+          lifetime.lastRead = commandIndex
+          lifetime.reads.push(commandIndex)
+          break
+        case "consume":
+          lifetime.lastRead = commandIndex
+          lifetime.reads.push(commandIndex)
+          lifetime.consumedAt = commandIndex
+          break
+        case "write":
+          lifetime.producedAt = commandIndex
+          break
+        default:
+          throw new Error(`Unknown ref usage: ${usage}`)
+      }
+    })
   }
 
   private allocateJsValueRef(): JSValueRef {
@@ -152,26 +204,24 @@ export class CommandBuilder {
     return this.commands
   }
 
-  getInputBindings(): readonly InputBinding[] {
-    return this.inputBindings
+  getInputBindings(): readonly JSValueBinding[] {
+    return Array.from(this.jsvalueBindings.values())
   }
 
   finalizeConsumedInputs(successfulCount: number): void {
-    finalizeConsumedInputBindings(this.inputBindings, this.commands, successfulCount)
+    finalizeConsumedInputBindings(this.getInputBindings(), this.commands, successfulCount)
   }
 
   getFunctionBindings(): readonly FunctionBinding[] {
-    return this.functionBindings
+    return Array.from(this.functionBindings.values())
   }
 
   clear(): void {
     this.commands = []
     this.nextJsValueId = 1
     this.nextFuncListId = 1
-    this.inputBindings = []
-    this.functionBindings = []
-    this.inputBindingByHandle = new WeakMap<QuickJSHandle, InputBinding>()
-    this.consumeOnSuccessHandles = new WeakSet<QuickJSHandle>()
+    this.jsvalueBindings.clear()
+    this.functionBindings.clear()
   }
 
   setProp(target: JSValueInput, key: QuickJSPropertyKey, value: Primitive | QuickJSHandle): void {
@@ -414,7 +464,7 @@ export class CommandBuilder {
           hostRefId,
         ),
       )
-      this.functionBindings.push({ ref: result, hostRefId, fn })
+      this.functionBindings.set(fn, { ref: result, hostRefId, fn })
       return result
     } catch (error) {
       this.context.runtime.hostRefs.delete(hostRefId)
@@ -575,7 +625,7 @@ export class CommandBuilder {
   }
 
   private bindHandle(handle: QuickJSHandle, mode: InputBindingMode = "borrowed"): JSValueRef {
-    const existing = this.inputBindingByHandle.get(handle)
+    const existing = this.jsvalueBindings.get(handle)
     if (existing !== undefined) {
       if (existing.mode === "borrowed" && mode !== "borrowed") {
         existing.mode = mode
@@ -584,12 +634,11 @@ export class CommandBuilder {
     }
     this.context.runtime.assertOwned(handle)
     const ref = this.allocateJsValueRef()
-    const binding: InputBinding = { ref, handle, mode }
+    const binding: JSValueBinding = { ref, handle, mode }
     if (mode === "consume_on_success") {
-      this.consumeOnSuccessHandles.add(handle)
+      binding.mode = "consume_on_success"
     }
-    this.inputBindingByHandle.set(handle, binding)
-    this.inputBindings.push(binding)
+    this.jsvalueBindings.set(handle, binding)
     return ref
   }
 

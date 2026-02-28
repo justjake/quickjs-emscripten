@@ -1,13 +1,17 @@
 import { SlotType } from "@jitl/quickjs-ffi-types"
 import { describe, expect, it, vi } from "vitest"
-import type { InputBinding } from "../CommandBuilder"
+import type { JSValueBinding } from "../CommandBuilder"
 import type { JSValueRef } from "../command-types"
 import { JSValueLifetime } from "../lifetime"
 import * as Ops from "../ops"
 import type { QuickJSHandle } from "../types"
 import { finalizeConsumedInputBindings } from "./command-input-ownership"
 
-function makeBinding(refId: number): { binding: InputBinding; handle: QuickJSHandle; ref: JSValueRef } {
+function makeBinding(refId: number): {
+  binding: JSValueBinding
+  handle: QuickJSHandle
+  ref: JSValueRef
+} {
   const ref = refId as unknown as JSValueRef
   const handle = new JSValueLifetime(0 as any) as unknown as QuickJSHandle
   return {
