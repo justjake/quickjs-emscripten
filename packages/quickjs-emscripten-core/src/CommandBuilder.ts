@@ -16,7 +16,7 @@ import {
   SlotType,
 } from "@jitl/quickjs-ffi-types"
 import type { FuncListRef, JSValueRef } from "./command-types"
-import { CommandRef, CommandRefId, CommandRefType } from "./command-types"
+import { assertCommandRef, CommandRef } from "./command-types"
 import type { QuickJSContext, QuickJSPropertyKey } from "./context"
 import { finalizeConsumedInputBindings } from "./internal/command-input-ownership"
 import { JSValueLifetime } from "./lifetime"
@@ -112,9 +112,13 @@ function assertUint32(value: number, name: string): asserts value is Uint32 {
 }
 
 function assertUint8(value: number, name: string): asserts value is Uint8 {
-  if (!Number.isInteger(value) || value < 0 || value > 0xff) {
+  if (!isUint8(value)) {
     throw new Error(`${name} must fit in uint8_t (positive integer <= 0xff): ${value}`)
   }
+}
+
+function isUint8(value: number): value is Uint8 {
+  return Number.isInteger(value) && value >= 0 && value <= 0xff
 }
 
 export type CommandIndex = Brand<number, "CommandIndex">
@@ -138,6 +142,16 @@ function forEachRef(
   Ops.forEachReadRef(command, (ref) => visit(ref, "read"))
   Ops.forEachWriteRef(command, (ref) => visit(ref, "write"))
   Ops.forEachConsumedRef(command, (ref) => visit(ref, "consume"))
+}
+
+function RefLifetime(commandIndex: CommandIndex): RefLifetime {
+  return {
+    firstRead: commandIndex,
+    lastRead: commandIndex,
+    reads: [],
+    producedAt: NOT_FOUND,
+    consumedAt: NOT_FOUND,
+  }
 }
 
 export class CommandBuilder {
@@ -164,13 +178,7 @@ export class CommandBuilder {
     forEachRef(command, (ref, usage) => {
       let lifetime = this.lifetimes.get(ref)
       if (!lifetime) {
-        lifetime = {
-          firstRead: commandIndex,
-          lastRead: commandIndex,
-          reads: [],
-          producedAt: NOT_FOUND,
-          consumedAt: NOT_FOUND,
-        }
+        lifetime = RefLifetime(commandIndex)
         this.lifetimes.set(ref, lifetime)
       }
       switch (usage) {
@@ -187,19 +195,10 @@ export class CommandBuilder {
           lifetime.producedAt = commandIndex
           break
         default:
-          throw new Error(`Unknown ref usage: ${usage}`)
+          unreachable(usage)
       }
     })
   }
-
-  private allocateJsValueRef(): JSValueRef {
-    return CommandRef(JSValueSlotType, this.nextJsValueId++)
-  }
-
-  private allocateFuncListRef(): FuncListRef {
-    return CommandRef(FuncListSlotType, this.nextFuncListId++)
-  }
-
   getCommands(): readonly Command[] {
     return this.commands
   }
@@ -231,6 +230,16 @@ export class CommandBuilder {
     return this.setOrDefinePrimitiveProp(target, key, value, SET_PROP_ASSIGNMENT)
   }
 
+  setProps(
+    target: JSValueInput,
+    entries: Iterable<[string | number, Primitive | QuickJSHandle]>,
+  ): void {
+    const targetRef = this.resolveJSValue(target)
+    forEach(entries, ([key, value]) => {
+      this.setProp(targetRef, key, value)
+    })
+  }
+
   setPropRef(target: JSValueInput, key: QuickJSPropertyKey, value: JSValueRef): void {
     return this.setOrDefineRefProp(target, key, value, SET_PROP_ASSIGNMENT)
   }
@@ -243,13 +252,23 @@ export class CommandBuilder {
     return this.bindHandle(handle, "consume_on_success")
   }
 
-  newObject(prototype?: JSValueInput): JSValueRef {
+  newObject(entries: Iterable<[string | number, Primitive | QuickJSHandle]>): JSValueRef
+  newObject(prototype?: JSValueInput): JSValueRef
+  newObject(
+    prototype?: JSValueInput | Iterable<[string | number, Primitive | QuickJSHandle]>,
+  ): JSValueRef {
     const result = this.allocateJsValueRef()
     if (prototype === undefined) {
       this.push(Ops.NewObjectCmd(result))
-      return result
+    } else if (prototype instanceof JSValueLifetime) {
+      this.push(Ops.NewObjectProtoCmd(result, this.bindHandle(prototype)))
+    } else if (typeof prototype === "number") {
+      this.push(Ops.NewObjectProtoCmd(result, prototype))
+    } else if (prototype && typeof prototype === "object") {
+      this.setProps(result, prototype)
+    } else {
+      unreachable(prototype)
     }
-    this.push(Ops.NewObjectProtoCmd(result, this.resolveJsValueInput(prototype)))
     return result
   }
 
@@ -257,23 +276,32 @@ export class CommandBuilder {
     const result = this.allocateJsValueRef()
     this.push(Ops.NewArrayCmd(result))
     if (items) {
-      let index = 0
-      for (const item of items) {
-        this.setProp(result, index++, item)
-      }
+      forEach(items, (item, index) => {
+        this.setProp(result, index, item)
+      })
     }
     return result
   }
 
-  newMap(): JSValueRef {
+  newMap(entries?: Iterable<[JSValueInput, JSValueInput]>): JSValueRef {
     const result = this.allocateJsValueRef()
     this.push(Ops.NewMapCmd(result))
+    if (entries) {
+      forEach(entries, ([key, value]) => {
+        this.mapSet(result, key, value)
+      })
+    }
     return result
   }
 
-  newSet(): JSValueRef {
+  newSet(items?: Iterable<JSValueInput>): JSValueRef {
     const result = this.allocateJsValueRef()
     this.push(Ops.NewSetCmd(result))
+    if (items) {
+      forEach(items, (item) => {
+        this.setAdd(result, item)
+      })
+    }
     return result
   }
 
@@ -305,18 +333,52 @@ export class CommandBuilder {
     return result
   }
 
+  newPrimitive(value: Primitive): JSValueRef {
+    if (value === null) {
+      return this.bindHandle(this.context.null)
+    }
+    if (value === undefined) {
+      return this.bindHandle(this.context.undefined)
+    }
+    if (typeof value === "boolean") {
+      return this.bindHandle(value ? this.context.true : this.context.false)
+    }
+    if (typeof value === "string") {
+      return this.newString(value)
+    }
+    if (typeof value === "bigint") {
+      return this.newBigInt(value)
+    }
+    if (typeof value === "number") {
+      return this.newNumber(value)
+    }
+    value satisfies never
+    throw new TypeError(`Unsupported primitive value: ${typeof value}`)
+  }
+
+  Map = {
+    new: (entries?: Iterable<[JSValueInput, JSValueInput]>) => this.newMap(entries),
+    set: (target: JSValueInput, key: JSValueInput, value: JSValueInput) =>
+      this.mapSet(target, key, value),
+  } as const
+
   mapSet(target: JSValueInput, key: JSValueInput, value: JSValueInput): void {
     this.push(
       Ops.MapSetCmd(
-        this.resolveJsValueInput(target),
-        this.resolveJsValueInput(key),
-        this.resolveJsValueInput(value),
+        this.resolveJSValue(target),
+        this.resolveJSValue(key),
+        this.resolveJSValue(value),
       ),
     )
   }
 
+  Set = {
+    new: (items?: Iterable<JSValueInput>) => this.newSet(items),
+    add: (target: JSValueInput, value: JSValueInput) => this.setAdd(target, value),
+  } as const
+
   setAdd(target: JSValueInput, value: JSValueInput): void {
-    this.push(Ops.SetAddCmd(this.resolveJsValueInput(target), this.resolveJsValueInput(value)))
+    this.push(Ops.SetAddCmd(this.resolveJSValue(target), this.resolveJSValue(value)))
   }
 
   defineProp(
@@ -376,9 +438,7 @@ export class CommandBuilder {
   }
 
   assignFuncList(target: JSValueInput, funclist: FuncListRef): void {
-    this.push(
-      Ops.FunclistAssignCmd(this.resolveJsValueInput(target), this.resolveFuncListRef(funclist)),
-    )
+    this.push(Ops.FunclistAssignCmd(this.resolveJSValue(target), this.resolveFuncListRef(funclist)))
   }
 
   freeFuncList(funclist: FuncListRef): void {
@@ -478,21 +538,16 @@ export class CommandBuilder {
     value: Primitive,
     flags: SetPropFlags,
   ): void {
-    const targetRef = this.resolveJsValueInput(target)
+    const targetRef = this.resolveJSValue(target)
     if (typeof key === "string") {
-      return this.emitSetPrimitiveByStringKey(targetRef, key, value, flags)
+      return this.setOrDefinePropByString(targetRef, key, value, flags)
     }
-    if (typeof key === "number") {
-      if (isUint32(key)) {
-        return this.emitSetPrimitiveByIndex(targetRef, key, value, flags)
-      }
-      const valueRef = this.materializePrimitiveToRef(value)
-      this.push(Ops.SetValueValueCmd(targetRef, this.newNumber(key), valueRef, flags))
-      return
+    if (typeof key === "number" && isUint32(key)) {
+      return this.setOrDefinePropByIndex(targetRef, key, value, flags)
     }
-
-    const valueRef = this.materializePrimitiveToRef(value)
-    this.push(Ops.SetValueValueCmd(targetRef, this.bindHandle(key), valueRef, flags))
+    const keyRef = typeof key === "number" ? this.newNumber(key) : this.bindHandle(key)
+    const valueRef = this.newPrimitive(value)
+    this.push(Ops.SetValueValueCmd(targetRef, keyRef, valueRef, flags))
   }
 
   private setOrDefineRefProp(
@@ -501,25 +556,21 @@ export class CommandBuilder {
     value: JSValueRef,
     flags: SetPropFlags,
   ): void {
-    const targetRef = this.resolveJsValueInput(target)
-    const valueRef = this.resolveJsValueRef(value)
+    const targetRef = this.resolveJSValue(target)
     if (typeof key === "string") {
-      this.push(Ops.SetStrValueCmd(targetRef, valueRef, flags, key))
-      return
+      return this.push(Ops.SetStrValueCmd(targetRef, value, flags, key))
     }
     if (typeof key === "number") {
       if (isUint32(key)) {
-        this.push(Ops.SetIdxValueCmd(targetRef, valueRef, flags, key))
-        return
+        return this.push(Ops.SetIdxValueCmd(targetRef, value, flags, key))
       }
-      this.push(Ops.SetValueValueCmd(targetRef, this.newNumber(key), valueRef, flags))
-      return
+      return this.push(Ops.SetValueValueCmd(targetRef, this.newNumber(key), value, flags))
     }
 
-    this.push(Ops.SetValueValueCmd(targetRef, this.bindHandle(key), valueRef, flags))
+    this.push(Ops.SetValueValueCmd(targetRef, this.bindHandle(key), value, flags))
   }
 
-  private emitSetPrimitiveByStringKey(
+  private setOrDefinePropByString(
     targetRef: JSValueRef,
     key: string,
     value: Primitive,
@@ -550,7 +601,7 @@ export class CommandBuilder {
     throw new TypeError("Unsupported value for setProp/defineProp")
   }
 
-  private emitSetPrimitiveByIndex(
+  private setOrDefinePropByIndex(
     targetRef: JSValueRef,
     index: number,
     value: Primitive,
@@ -579,49 +630,26 @@ export class CommandBuilder {
       return this.push(Ops.SetIdxF64Cmd(targetRef, flags, value, index))
     }
 
-    throw new TypeError("Unsupported value for setProp/defineProp")
+    throw new TypeError(`Unsupported value for setProp/defineProp: ${typeof value}`)
   }
 
-  private materializePrimitiveToRef(value: Primitive): JSValueRef {
-    if (value === null) {
-      return this.bindHandle(this.context.null)
-    }
-    if (value === undefined) {
-      return this.bindHandle(this.context.undefined)
-    }
-    if (typeof value === "boolean") {
-      return this.bindHandle(value ? this.context.true : this.context.false)
-    }
-    if (typeof value === "string") {
-      return this.newString(value)
-    }
-    if (typeof value === "bigint") {
-      return this.newBigInt(value)
-    }
-    if (typeof value === "number") {
-      return this.newNumber(value)
-    }
-    throw new TypeError("Unsupported primitive value")
+  private allocateJsValueRef(): JSValueRef {
+    return CommandRef(JSValueSlotType, this.nextJsValueId++)
   }
 
-  private resolveJsValueInput(input: JSValueInput): JSValueRef {
+  private allocateFuncListRef(): FuncListRef {
+    return CommandRef(FuncListSlotType, this.nextFuncListId++)
+  }
+
+  private resolveJSValue(input: JSValueInput): JSValueRef {
     if (typeof input === "number") {
-      if (!this.isKnownJsValueRef(input)) {
-        throw new TypeError("Unknown JSValueRef")
-      }
+      assertCommandRef(JSValueSlotType, this.nextJsValueId, input)
       return input
     }
     if (input instanceof JSValueLifetime) {
       return this.bindHandle(input)
     }
     throw new TypeError("Expected JSValueRef or QuickJSHandle")
-  }
-
-  private resolveJsValueRef(ref: JSValueRef): JSValueRef {
-    if (typeof ref !== "number" || !this.isKnownJsValueRef(ref)) {
-      throw new TypeError("Unknown JSValueRef")
-    }
-    return ref
   }
 
   private bindHandle(handle: QuickJSHandle, mode: InputBindingMode = "borrowed"): JSValueRef {
@@ -642,18 +670,23 @@ export class CommandBuilder {
     return ref
   }
 
-  private isKnownJsValueRef(ref: number): boolean {
-    const id = CommandRefId(ref as JSValueRef)
-    return (
-      CommandRefType(ref as JSValueRef) === JSValueSlotType && id >= 1 && id < this.nextJsValueId
-    )
-  }
-
   private resolveFuncListRef(ref: FuncListRef): FuncListRef {
-    const id = CommandRefId(ref)
-    if (CommandRefType(ref) !== FuncListSlotType || id < 1 || id >= this.nextFuncListId) {
-      throw new TypeError("Unknown FuncListRef")
-    }
+    assertCommandRef(FuncListSlotType, this.nextFuncListId, ref)
     return ref
+  }
+}
+
+function unreachable(val: never): never {
+  throw new Error(`Should never happen: ${typeof val === "object" ? JSON.stringify(val) : val}`)
+}
+
+function forEach<T>(iterable: Iterable<T>, callback: (item: T, index: number) => void): void {
+  if (Array.isArray(iterable)) {
+    iterable.forEach(callback)
+  } else {
+    let index = 0
+    for (const item of iterable) {
+      callback(item, index++)
+    }
   }
 }
