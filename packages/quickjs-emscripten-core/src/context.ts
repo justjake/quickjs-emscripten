@@ -27,7 +27,6 @@ import {
   QuickJSUnwrapError,
 } from "./errors"
 import { HostRef } from "./host-ref"
-import type { shouldInterruptAfterDeadline } from "./interrupt-helpers"
 import type { Disposable, DisposableArray, DisposableFail, DisposableSuccess } from "./lifetime"
 import {
   DisposableResult,

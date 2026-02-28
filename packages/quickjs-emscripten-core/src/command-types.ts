@@ -63,6 +63,28 @@ export function CommandRefId(ref: CommandRef): number {
   return ref & REF_VALUE_MASK
 }
 
+export function isCommandRef<T extends CommandRef>(type: T["brand"], ref: unknown): ref is T {
+  if (typeof ref === "number" && CommandRefType(ref as CommandRef) === type) {
+    return true
+  }
+  return false
+}
+
+export function assertCommandRef<T extends CommandRef>(
+  type: T["brand"],
+  nextId: number,
+  ref: unknown,
+): asserts ref is T {
+  if (!isCommandRef(type, ref)) {
+    throw new TypeError(
+      `Expected ${type} ref, got ${typeof ref === "number" ? CommandRefType(ref as CommandRef) : typeof ref}`,
+    )
+  }
+  if (CommandRefId(ref as CommandRef) >= nextId) {
+    throw new RangeError(`Ref id out of range: ${CommandRefId(ref as CommandRef)} > ${nextId}`)
+  }
+}
+
 /** Visitor function for visiting references within a command. */
 export type RefVisitor = (ref: CommandRef) => void
 
