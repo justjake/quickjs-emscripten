@@ -40,9 +40,12 @@ export class QuickJSAsyncWASMModule extends QuickJSWASMModule {
    */
   override newRuntime(options: AsyncRuntimeOptions = {}): QuickJSAsyncRuntime {
     const rt = new Lifetime(this.ffi.QTS_NewRuntime(), undefined, (rt_ptr) => {
-      this.callbacks.deleteRuntime(rt_ptr)
+      // Free runtime first - this runs GC finalizers that may call back into JS
       this.ffi.QTS_FreeRuntime(rt_ptr)
+      // Then delete callbacks after finalizers have run
+      this.callbacks.deleteRuntime(rt_ptr)
     })
+
     const runtime = new QuickJSAsyncRuntime({
       module: this.module,
       ffi: this.ffi,
