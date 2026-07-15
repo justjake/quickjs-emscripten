@@ -210,6 +210,7 @@ export class QuickJSAsyncFFI {
     "QTS_GetSymbolDescriptionOrKey",
     "number",
     ["number", "number"],
+    { async: true },
   )
 
   QTS_IsGlobalSymbol: (
@@ -239,6 +240,7 @@ export class QuickJSAsyncFFI {
     "QTS_ExecutePendingJob",
     "number",
     ["number", "number", "number"],
+    { async: true },
   )
 
   QTS_GetProp: (
@@ -253,11 +255,12 @@ export class QuickJSAsyncFFI {
     ctx: JSContextPointer,
     this_val: JSValuePointer | JSValueConstPointer,
     prop_name: JSValuePointer | JSValueConstPointer,
-  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap("QTS_GetProp", "number", [
+  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
+    "QTS_GetProp",
     "number",
-    "number",
-    "number",
-  ])
+    ["number", "number", "number"],
+    { async: true },
+  )
 
   QTS_GetPropNumber: (
     ctx: JSContextPointer,
@@ -271,11 +274,12 @@ export class QuickJSAsyncFFI {
     ctx: JSContextPointer,
     this_val: JSValuePointer | JSValueConstPointer,
     prop_name: number,
-  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap("QTS_GetPropNumber", "number", [
+  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
+    "QTS_GetPropNumber",
     "number",
-    "number",
-    "number",
-  ])
+    ["number", "number", "number"],
+    { async: true },
+  )
 
   QTS_SetProp: (
     ctx: JSContextPointer,
@@ -291,12 +295,12 @@ export class QuickJSAsyncFFI {
     this_val: JSValuePointer | JSValueConstPointer,
     prop_name: JSValuePointer | JSValueConstPointer,
     prop_value: JSValuePointer | JSValueConstPointer,
-  ) => void | Promise<void> = this.module.cwrap("QTS_SetProp", null, [
-    "number",
-    "number",
-    "number",
-    "number",
-  ])
+  ) => void | Promise<void> = this.module.cwrap(
+    "QTS_SetProp",
+    null,
+    ["number", "number", "number", "number"],
+    { async: true },
+  )
 
   QTS_DefineProp: (
     ctx: JSContextPointer,
@@ -346,6 +350,7 @@ export class QuickJSAsyncFFI {
     "QTS_GetOwnPropertyNames",
     "number",
     ["number", "number", "number", "number", "number"],
+    { async: true },
   )
 
   QTS_Call: (
@@ -364,13 +369,12 @@ export class QuickJSAsyncFFI {
     this_obj: JSValuePointer | JSValueConstPointer,
     argc: number,
     argv_ptrs: JSValueConstPointerPointer,
-  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap("QTS_Call", "number", [
+  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
+    "QTS_Call",
     "number",
-    "number",
-    "number",
-    "number",
-    "number",
-  ])
+    ["number", "number", "number", "number", "number"],
+    { async: true },
+  )
 
   QTS_ResolveException: (ctx: JSContextPointer, maybe_exception: JSValuePointer) => JSValuePointer =
     this.module.cwrap("QTS_ResolveException", "number", ["number", "number"])
@@ -389,6 +393,7 @@ export class QuickJSAsyncFFI {
     "QTS_Dump",
     "number",
     ["number", "number"],
+    { async: true },
   )
 
   QTS_Eval: (
@@ -416,14 +421,12 @@ export class QuickJSAsyncFFI {
     filename: string,
     detectModule: EvalDetectModule,
     evalFlags: EvalFlags,
-  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap("QTS_Eval", "number", [
+  ) => JSValuePointer | Promise<JSValuePointer> = this.module.cwrap(
+    "QTS_Eval",
     "number",
-    "number",
-    "number",
-    "string",
-    "number",
-    "number",
-  ])
+    ["number", "number", "number", "string", "number", "number"],
+    { async: true },
+  )
 
   QTS_GetModuleNamespace: (
     ctx: JSContextPointer,
