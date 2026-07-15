@@ -3,6 +3,7 @@ import type {
   JSContextPointer,
   JSContextPointerPointer,
   JSRuntimePointer,
+  JSValuePointer,
   EitherFFI,
   EitherModule,
 } from "@jitl/quickjs-ffi-types"
@@ -253,6 +254,14 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
 
     const ctxPtr = ctxPtrOut.value.typedArray[0] as JSContextPointer
     ctxPtrOut.dispose()
+    return this.resolveExecutePendingJobsResult(valuePtr, ctxPtr)
+  }
+
+  /** @private */
+  protected resolveExecutePendingJobsResult(
+    valuePtr: JSValuePointer,
+    ctxPtr: JSContextPointer,
+  ): ExecutePendingJobsResult {
     if (ctxPtr === 0) {
       // No jobs executed.
       this.ffi.QTS_FreeValuePointerRuntime(this.rt.value, valuePtr)
