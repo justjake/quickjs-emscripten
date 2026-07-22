@@ -1,4 +1,0 @@
-name = "cloudflare-workers-example"
-main = "src/index.mts"
-compatibility_date = "2023-12-18"
-

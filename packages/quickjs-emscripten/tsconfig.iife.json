@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "paths": {
-      "#variants": ["./src/variants.iife.ts", "./src/variants.iife.js"]
-    }
-  }
-}

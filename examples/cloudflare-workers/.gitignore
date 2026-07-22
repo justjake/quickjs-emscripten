@@ -1,4 +1,0 @@
-src/*.wasm
-src/*.wasm.*
-node_modules
-.wrangler
