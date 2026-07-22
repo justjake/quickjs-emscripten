@@ -53,9 +53,11 @@ PREFIX?=/usr/local
 #CONFIG_MSAN=y
 # use UB sanitizer
 #CONFIG_UBSAN=y
+# use thread sanitizer
+#CONFIG_TSAN=y
 
 # TEST262 bootstrap config: commit id and shallow "since" parameter
-TEST262_COMMIT?=d0994d64b07cb6c164dd9f345c94ed797a53d69f
+TEST262_COMMIT?=5c8206929d81b2d3d727ca6aac56c18358c8d790
 TEST262_SINCE?=2025-09-01
 
 OBJDIR=.obj
@@ -191,6 +193,10 @@ endif
 ifdef CONFIG_UBSAN
 CFLAGS+=-fsanitize=undefined -fno-omit-frame-pointer
 LDFLAGS+=-fsanitize=undefined -fno-omit-frame-pointer
+endif
+ifdef CONFIG_TSAN
+CFLAGS+=-fsanitize=thread -fno-omit-frame-pointer
+LDFLAGS+=-fsanitize=thread -fno-omit-frame-pointer
 endif
 ifdef CONFIG_WIN32
 LDEXPORT=
@@ -456,6 +462,7 @@ test: qjs$(EXE)
 	$(WINE) ./qjs$(EXE) tests/test_worker.js
 ifndef CONFIG_WIN32
 	$(WINE) ./qjs$(EXE) tests/test_std.js
+	$(WINE) ./qjs$(EXE) tests/test_rw_handler.js
 endif
 ifdef CONFIG_SHARED_LIBS
 	$(WINE) ./qjs$(EXE) tests/test_bjson.js
@@ -486,7 +493,7 @@ test2o: run-test262
 	time ./run-test262 -t -m -c test262o.conf
 
 test2o-update: run-test262
-	./run-test262 -t -u -c test262o.conf
+	./run-test262 -t -u -c test262o.conf -T 1
 endif
 
 ifeq ($(wildcard test262/features.txt),)
