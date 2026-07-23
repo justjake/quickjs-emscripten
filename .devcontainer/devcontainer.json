@@ -1,0 +1,20 @@
+{
+    "name": "quickjs-emscripten",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "features": {
+        // Needed for calls to the emscripten docker image
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    "postCreateCommand": "pnpm install",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "ms-vscode.cpptools-extension-pack"
+            ]
+        }
+    }
+}
