@@ -1537,14 +1537,24 @@ void QTS_RuntimeDisableModuleLoader(JSRuntime *rt) {
   JS_SetModuleLoaderFunc(rt, NULL, NULL, NULL);
 }
 
+// Frees a buffer that was handed off to an ArrayBuffer created with
+// JS_NewArrayBuffer. The buffer was allocated by QuickJS (JS_WriteObject), so
+// it must be released through the runtime allocator.
+static void qts_free_bjson_buffer(JSRuntime *rt, void *opaque, void *ptr) {
+  js_free_rt(rt, ptr);
+}
+
 JSValue *QTS_bjson_encode(JSContext *ctx, JSValueConst *val) {
   size_t length;
   uint8_t *buffer = JS_WriteObject(ctx, &length, *val, JS_WRITE_OBJ_REFERENCE);
   if (!buffer)
     return jsvalue_to_heap(JS_EXCEPTION);
 
-  JSValue array = JS_NewArrayBufferCopy(ctx, buffer, length);
-  js_free(ctx, buffer);
+  // Transfer ownership of the buffer to the ArrayBuffer instead of copying it.
+  // QuickJS will call qts_free_bjson_buffer when the ArrayBuffer is collected.
+  JSValue array = JS_NewArrayBuffer(ctx, buffer, length, qts_free_bjson_buffer, NULL, false);
+  if (JS_IsException(array))
+    js_free(ctx, buffer);
   return jsvalue_to_heap(array);
 }
 
