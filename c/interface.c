@@ -926,9 +926,7 @@ MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue ***out_ptr
     }
     return jsvalue_to_heap(JS_GetException(ctx));
   }
-  // Must use js_malloc (not malloc): the JS side frees this array via
-  // QTS_FreeVoidPointer -> js_free. Mixing malloc with js_free corrupts the
-  // heap under QuickJS's custom small-block allocator (2026-06-04+).
+  // Freed on the JS side with js_free, so allocate with js_malloc.
   *out_ptrs = js_malloc(ctx, sizeof(JSValue *) * total_props);
   for (int i = 0; i < total_props; i++) {
     JSAtom atom = tab[i].atom;

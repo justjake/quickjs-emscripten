@@ -246,11 +246,8 @@ typedef enum OPCodeEnum OPCodeEnum;
 #define JS_MALLOC_MIN_SMALL_SIZE 16
 #define JS_MALLOC_MAX_SMALL_SIZE 512
 #if defined(__SANITIZE_ADDRESS__) || defined(__EMSCRIPTEN__)
-/* use the host malloc() for all allocations.
-   quickjs-emscripten: under Emscripten/WASM the custom small-block arena
-   allocator over-commits memory (whole arenas at a time), which makes
-   JS_SetMemoryLimit enforcement coarse/inaccurate, so fall back to the
-   host malloc() there like the AddressSanitizer build does. */
+/* quickjs-emscripten: use the host malloc() under Emscripten too, otherwise the
+   small-block allocator over-commits arenas and makes JS_SetMemoryLimit inaccurate. */
 #define JS_MALLOC_LARGE_BLOCKS_ONLY 1
 #else
 #define JS_MALLOC_LARGE_BLOCKS_ONLY 0
