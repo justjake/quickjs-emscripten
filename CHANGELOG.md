@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.33.0
+
+- [#266](https://github.com/justjake/quickjs-emscripten/pull/266) Upgrade [bellard/quickjs](https://github.com/bellard/quickjs) to [2026-06-04+04be2460](https://github.com/bellard/quickjs/commit/04be246001599f5995fa2f2d8c91a0f198d3f34c). Review the [QuickJS changelog](https://github.com/bellard/quickjs/blob/04be246001599f5995fa2f2d8c91a0f198d3f34c/Changelog) for details.
+  - Fixed heap corruption in `getOwnPropertyNames` caused by a `malloc`/`js_free` mismatch that the new small-block allocator exposed; now uses `js_malloc`.
+  - Disabled QuickJS's new custom small-block allocator under Emscripten (`JS_MALLOC_LARGE_BLOCKS_ONLY`) so `setMemoryLimit` stays accurate. The release's micro-optimization speedups are unaffected.
+
 ## v0.32.0
 
 - [#227](https://github.com/justjake/quickjs-emscripten/pull/227)

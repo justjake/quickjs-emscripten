@@ -1,0 +1,16 @@
+diff --git a/vendor/quickjs/quickjs.c b/vendor/quickjs/quickjs.c
+index 4b732ed..76c9259 100644
+--- a/vendor/quickjs/quickjs.c
++++ b/vendor/quickjs/quickjs.c
+@@ -245,8 +245,9 @@ typedef enum OPCodeEnum OPCodeEnum;
+ #define JS_MALLOC_BLOCK_SIZE_COUNT 31
+ #define JS_MALLOC_MIN_SMALL_SIZE 16
+ #define JS_MALLOC_MAX_SMALL_SIZE 512
+-#if defined(__SANITIZE_ADDRESS__)
+-/* use the host malloc() for all allocations */
++#if defined(__SANITIZE_ADDRESS__) || defined(__EMSCRIPTEN__)
++/* quickjs-emscripten: use the host malloc() under Emscripten too, otherwise the
++   small-block allocator over-commits arenas and makes JS_SetMemoryLimit inaccurate. */
+ #define JS_MALLOC_LARGE_BLOCKS_ONLY 1
+ #else
+ #define JS_MALLOC_LARGE_BLOCKS_ONLY 0

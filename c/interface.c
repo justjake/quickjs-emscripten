@@ -926,7 +926,8 @@ MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue ***out_ptr
     }
     return jsvalue_to_heap(JS_GetException(ctx));
   }
-  *out_ptrs = malloc(sizeof(JSValue) * total_props);
+  // Freed on the JS side with js_free, so allocate with js_malloc.
+  *out_ptrs = js_malloc(ctx, sizeof(JSValue *) * total_props);
   for (int i = 0; i < total_props; i++) {
     JSAtom atom = tab[i].atom;
 
