@@ -60,7 +60,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",
     "fs-extra": "^10.0.1",
-    "glob": "^10.3.10",
+    "glob": "^13.0.3",
     "hads": "^3.0.3",
     "mdast-util-toc": "^7.1.0",
     "node-fetch-commonjs": "^3.1.1",
@@ -76,7 +76,7 @@
     "typedoc-plugin-remark": "^2.0.1",
     "typescript": "^5.3.3",
     "vite-tsconfig-paths": "^4.2.2",
-    "vitest": "2.0.5"
+    "vitest": "2.1.9"
   },
   "packageManager": "pnpm@10.29.3"
 }
