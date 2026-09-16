@@ -233,6 +233,12 @@ function renderFunction(args: {
     // builds assert when it is missing; release builds otherwise continue in
     // a corrupted state.
     cwrapArgs.push("{ async: true }")
+  } else if (forceSync) {
+    // Handed no options, cwrap returns the raw WebAssembly export and skips ccall entirely —
+    // including its check for a call that suspended. The suspension then goes unnoticed and the
+    // caller reads a return value the call never produced, instead of the Promise assertSync is
+    // here to catch. Empty options are enough to keep that check.
+    cwrapArgs.push("{}")
   }
 
   let cwrap = `this.module.cwrap(${cwrapArgs.join(", ")})`

@@ -200,7 +200,7 @@ export class QuickJSAsyncFFI {
     ctx: JSContextPointer,
     value: JSValuePointer | JSValueConstPointer,
   ) => JSBorrowedCharPointer = assertSync(
-    this.module.cwrap("QTS_GetSymbolDescriptionOrKey", "number", ["number", "number"]),
+    this.module.cwrap("QTS_GetSymbolDescriptionOrKey", "number", ["number", "number"], {}),
   )
 
   QTS_GetSymbolDescriptionOrKey_MaybeAsync: (
@@ -229,7 +229,7 @@ export class QuickJSAsyncFFI {
     maxJobsToExecute: number,
     lastJobContext: JSContextPointerPointer,
   ) => JSValuePointer = assertSync(
-    this.module.cwrap("QTS_ExecutePendingJob", "number", ["number", "number", "number"]),
+    this.module.cwrap("QTS_ExecutePendingJob", "number", ["number", "number", "number"], {}),
   )
 
   QTS_ExecutePendingJob_MaybeAsync: (
@@ -248,7 +248,7 @@ export class QuickJSAsyncFFI {
     this_val: JSValuePointer | JSValueConstPointer,
     prop_name: JSValuePointer | JSValueConstPointer,
   ) => JSValuePointer = assertSync(
-    this.module.cwrap("QTS_GetProp", "number", ["number", "number", "number"]),
+    this.module.cwrap("QTS_GetProp", "number", ["number", "number", "number"], {}),
   )
 
   QTS_GetProp_MaybeAsync: (
@@ -267,7 +267,7 @@ export class QuickJSAsyncFFI {
     this_val: JSValuePointer | JSValueConstPointer,
     prop_name: number,
   ) => JSValuePointer = assertSync(
-    this.module.cwrap("QTS_GetPropNumber", "number", ["number", "number", "number"]),
+    this.module.cwrap("QTS_GetPropNumber", "number", ["number", "number", "number"], {}),
   )
 
   QTS_GetPropNumber_MaybeAsync: (
@@ -287,7 +287,7 @@ export class QuickJSAsyncFFI {
     prop_name: JSValuePointer | JSValueConstPointer,
     prop_value: JSValuePointer | JSValueConstPointer,
   ) => void = assertSync(
-    this.module.cwrap("QTS_SetProp", null, ["number", "number", "number", "number"]),
+    this.module.cwrap("QTS_SetProp", null, ["number", "number", "number", "number"], {}),
   )
 
   QTS_SetProp_MaybeAsync: (
@@ -331,13 +331,12 @@ export class QuickJSAsyncFFI {
     obj: JSValuePointer | JSValueConstPointer,
     flags: number,
   ) => JSValuePointer = assertSync(
-    this.module.cwrap("QTS_GetOwnPropertyNames", "number", [
+    this.module.cwrap(
+      "QTS_GetOwnPropertyNames",
       "number",
-      "number",
-      "number",
-      "number",
-      "number",
-    ]),
+      ["number", "number", "number", "number", "number"],
+      {},
+    ),
   )
 
   QTS_GetOwnPropertyNames_MaybeAsync: (
@@ -360,7 +359,7 @@ export class QuickJSAsyncFFI {
     argc: number,
     argv_ptrs: JSValueConstPointerPointer,
   ) => JSValuePointer = assertSync(
-    this.module.cwrap("QTS_Call", "number", ["number", "number", "number", "number", "number"]),
+    this.module.cwrap("QTS_Call", "number", ["number", "number", "number", "number", "number"], {}),
   )
 
   QTS_Call_MaybeAsync: (
@@ -383,7 +382,7 @@ export class QuickJSAsyncFFI {
     ctx: JSContextPointer,
     obj: JSValuePointer | JSValueConstPointer,
   ) => JSBorrowedCharPointer = assertSync(
-    this.module.cwrap("QTS_Dump", "number", ["number", "number"]),
+    this.module.cwrap("QTS_Dump", "number", ["number", "number"], {}),
   )
 
   QTS_Dump_MaybeAsync: (
@@ -404,14 +403,12 @@ export class QuickJSAsyncFFI {
     detectModule: EvalDetectModule,
     evalFlags: EvalFlags,
   ) => JSValuePointer = assertSync(
-    this.module.cwrap("QTS_Eval", "number", [
+    this.module.cwrap(
+      "QTS_Eval",
       "number",
-      "number",
-      "number",
-      "string",
-      "number",
-      "number",
-    ]),
+      ["number", "number", "number", "string", "number", "number"],
+      {},
+    ),
   )
 
   QTS_Eval_MaybeAsync: (
