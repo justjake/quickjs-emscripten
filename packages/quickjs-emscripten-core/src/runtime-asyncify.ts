@@ -49,7 +49,12 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
   override newContext(options: ContextOptions = {}): QuickJSAsyncContext {
     const intrinsics = intrinsicsToFlags(options.intrinsics)
     const ctx = new Lifetime(
-      this.ffi.QTS_NewContext(this.rt.value, intrinsics),
+      // Honor options.contextPointer like the base runtime does (runtime.ts): callers pass it to
+      // *wrap* an existing context (the module loader and executePendingJobs both use
+      // `this.contextMap.get(ptr) ?? this.newContext({ contextPointer: ptr })`). Ignoring it
+      // creates a brand new engine context instead of wrapping the one the caller asked for, and
+      // nothing owns that new context, so it leaks until JS_FreeRuntime asserts.
+      options.contextPointer || this.ffi.QTS_NewContext(this.rt.value, intrinsics),
       undefined,
       (ctx_ptr) => {
         this.contextMap.delete(ctx_ptr)
