@@ -541,6 +541,49 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
   })
 
   describe(".evalCode", () => {
+    describe("compileOnly", () => {
+      for (const type of ["global", "module"] as const) {
+        it(`${type}: returns disposable compiled code without executing it`, () => {
+          vm.unwrapResult(vm.evalCode("globalThis.compileOnlyRuns = 0")).dispose()
+          const code =
+            type === "module"
+              ? "globalThis.compileOnlyRuns++; export const value = 42"
+              : "globalThis.compileOnlyRuns++; 42"
+          const compiled = vm.unwrapResult(
+            vm.evalCode(code, "compiled.js", { type, compileOnly: true }),
+          )
+          assert.equal(vm.typeof(compiled), "unknown")
+          compiled.dispose()
+          assert.equal(vm.getProp(vm.global, "compileOnlyRuns").consume(vm.getNumber), 0)
+        })
+      }
+
+      it("module: preserves syntax errors", () => {
+        const result = vm.evalCode("export const =", "invalid.js", {
+          type: "module",
+          compileOnly: true,
+        })
+        assert(result.error, "Compilation should return a syntax error")
+        assert.equal(result.error.consume(vm.dump).name, "SyntaxError")
+      })
+
+      it("module: can compile, interrupt evaluation, and dispose", () => {
+        const code = "while (true) {}"
+        vm.unwrapResult(
+          vm.evalCode(code, "compiled.js", { type: "module", compileOnly: true }),
+        ).dispose()
+        let calls = 0
+        vm.runtime.setInterruptHandler(() => ++calls > 10)
+        const result = vm.evalCode(code, "executed.js", { type: "module" })
+        assert(result.error, "Evaluation should be interrupted")
+        assertError(result.error.consume(vm.dump), {
+          name: "InternalError",
+          message: "interrupted",
+        })
+        assert(calls > 10, "Reached the interrupt budget")
+      })
+    })
+
     it("on success: returns { value: success }", () => {
       const value = vm.unwrapResult(vm.evalCode(`["this", "should", "work"].join(' ')`))
       assert.equal(vm.getString(value), "this should work")
@@ -1268,6 +1311,28 @@ function asyncContextTests(
   })
 
   describe("module loading", () => {
+    it("compileOnly: returns disposable compiled code without executing it", async () => {
+      vm.unwrapResult(vm.evalCode("globalThis.compileOnlyRuns = 0")).dispose()
+      const result = await vm.evalCodeAsync(
+        "globalThis.compileOnlyRuns++; export const value = 42",
+        "compiled.js",
+        { type: "module", compileOnly: true },
+      )
+      const compiled = vm.unwrapResult(result)
+      assert.equal(vm.typeof(compiled), "unknown")
+      compiled.dispose()
+      assert.equal(vm.getProp(vm.global, "compileOnlyRuns").consume(vm.getNumber), 0)
+    })
+
+    it("compileOnly: preserves syntax errors", async () => {
+      const result = await vm.evalCodeAsync("export const =", "invalid.js", {
+        type: "module",
+        compileOnly: true,
+      })
+      assert(result.error, "Compilation should return a syntax error")
+      assert.equal(result.error.consume(vm.dump).name, "SyntaxError")
+    })
+
     it("supports async module loading", async () => {
       async function testBody() {
         let moduleLoaderCalls = 0
