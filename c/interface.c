@@ -1098,8 +1098,10 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
       // Error - nothing more to do.
       JS_IsException(eval_result)
       // Non-module eval - return the result
-      || (evalFlags & JS_EVAL_TYPE_MODULE) == 0) {
-    QTS_DEBUG("QTS_Eval: non-module or exception")
+      || (evalFlags & JS_EVAL_TYPE_MODULE) == 0
+      // Compiled code has not been evaluated; return it without accessing module.
+      || (evalFlags & JS_EVAL_FLAG_COMPILE_ONLY) != 0) {
+    QTS_DEBUG("QTS_Eval: non-module, compile-only, or exception")
     return jsvalue_to_heap(eval_result);
   }
 
@@ -1114,7 +1116,6 @@ MaybeAsync(JSValue *) QTS_Eval(JSContext *ctx, BorrowedHeapChar *js_code, size_t
       // quickjs@2024-01-14 evaluating module
       // produced a promise
       (state == JS_PROMISE_FULFILLED)
-      // quickjs in compile mode
       // quickjs-ng before rebasing on quickjs@2024-01-14
       // not a promise.
       || (state == -1)) {
