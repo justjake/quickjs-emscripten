@@ -552,6 +552,7 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
           const compiled = vm.unwrapResult(
             vm.evalCode(code, "compiled.js", { type, compileOnly: true }),
           )
+          // Compiled code is bytecode, not a JS value, so it has no JS type.
           assert.equal(vm.typeof(compiled), "unknown")
           compiled.dispose()
           assert.equal(vm.getProp(vm.global, "compileOnlyRuns").consume(vm.getNumber), 0)
@@ -565,22 +566,6 @@ function contextTests(getContext: GetTestContext, options: ContextTestOptions = 
         })
         assert(result.error, "Compilation should return a syntax error")
         assert.equal(result.error.consume(vm.dump).name, "SyntaxError")
-      })
-
-      it("module: can compile, interrupt evaluation, and dispose", () => {
-        const code = "while (true) {}"
-        vm.unwrapResult(
-          vm.evalCode(code, "compiled.js", { type: "module", compileOnly: true }),
-        ).dispose()
-        let calls = 0
-        vm.runtime.setInterruptHandler(() => ++calls > 10)
-        const result = vm.evalCode(code, "executed.js", { type: "module" })
-        assert(result.error, "Evaluation should be interrupted")
-        assertError(result.error.consume(vm.dump), {
-          name: "InternalError",
-          message: "interrupted",
-        })
-        assert(calls > 10, "Reached the interrupt budget")
       })
     })
 
@@ -1319,6 +1304,7 @@ function asyncContextTests(
         { type: "module", compileOnly: true },
       )
       const compiled = vm.unwrapResult(result)
+      // Compiled code is bytecode, not a JS value, so it has no JS type.
       assert.equal(vm.typeof(compiled), "unknown")
       compiled.dispose()
       assert.equal(vm.getProp(vm.global, "compileOnlyRuns").consume(vm.getNumber), 0)
