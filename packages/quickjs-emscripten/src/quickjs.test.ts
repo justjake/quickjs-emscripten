@@ -1191,6 +1191,98 @@ export default "the default";
     })
   })
 
+  describe("WASM memory growth", () => {
+    // Growing the WASM heap replaces `module.HEAPU8.buffer` and detaches every
+    // TypedArray view created earlier. Reading a detached view yields `undefined`.
+    // These tests assert our out-parameter handling reads through the *current* heap.
+    const getModule = () =>
+      (vm as any).module as {
+        HEAPU8: Uint8Array
+        _malloc(n: number): number
+        _free(p: number): void
+      }
+
+    /** Force the heap to grow now. Throws if it didn't, so the tests below can't pass vacuously. */
+    function growHeap() {
+      const module = getModule()
+      const before = module.HEAPU8.buffer
+      // Blocks that fit in existing free space don't grow the heap, so double the size until one doesn't.
+      // (Compare with `!==`: assert.notStrictEqual would try to print the whole heap on failure.)
+      for (let mb = 16; module.HEAPU8.buffer === before; mb *= 2) {
+        assert.ok(mb <= 512, "heap did not grow")
+        module._free(module._malloc(mb * 1024 * 1024))
+      }
+    }
+
+    it("newTypedArray reads current heap contents after growth", () => {
+      const memory = (vm as any).memory as any
+      using array = memory.newMutablePointerArray(2)
+      const staleView = array.value.typedArray.value
+      growHeap()
+      assert.equal(staleView.length, 0, "precondition: the old view is detached")
+
+      const module = getModule()
+      new Int32Array(module.HEAPU8.buffer, array.value.ptr, 2).set([1234, 5678])
+      assert.deepEqual(Array.from(array.value.typedArray.value), [1234, 5678])
+    })
+
+    it("newTypedArray zero-initializes", () => {
+      const memory = (vm as any).memory as any
+      // Dirty the heap first so zeroing is observable.
+      const module = getModule()
+      const dirty = module._malloc(64)
+      module.HEAPU8.fill(0xff, dirty, dirty + 64)
+      module._free(dirty)
+      using array = memory.newMutablePointerArray(8)
+      assert.deepEqual(Array.from(array.value.typedArray.value), new Array(8).fill(0))
+    })
+
+    it(".getLength() after the heap grew since the context was created", () => {
+      growHeap()
+      using array = vm.unwrapResult(vm.evalCode(`new Array(1234).fill(0)`))
+      assert.strictEqual(vm.getLength(array), 1234)
+    })
+
+    it(".getOwnPropertyNames() after the heap grew, with many keys", () => {
+      growHeap()
+      const count = 50_000
+      using object = vm.unwrapResult(
+        vm.evalCode(`const o = {}; for (let i = 0; i < ${count}; i++) o["k" + i] = i; o`),
+      )
+      using names = vm.unwrapResult(vm.getOwnPropertyNames(object))
+      assert.strictEqual(names.length, count)
+      assert.strictEqual(vm.getString(names[0]), "k0")
+      assert.strictEqual(vm.getString(names[count - 1]), `k${count - 1}`)
+    })
+
+    it(".executePendingJobs() when a job grows the heap", () => {
+      const module = getModule()
+      const bufferBefore = module.HEAPU8.buffer
+      // The heap may already be large from earlier tests, so the job allocates until the host
+      // sees the heap grow, rather than assuming a fixed amount is enough.
+      using heapGrew = vm.newFunction("heapGrew", () =>
+        vm.newNumber(module.HEAPU8.buffer !== bufferBefore ? 1 : 0),
+      )
+      vm.setProp(vm.global, "heapGrew", heapGrew)
+      vm.unwrapResult(
+        vm.evalCode(`Promise.resolve().then(() => {
+          const kept = []
+          for (let n = 0; n < 1000; n++) {
+            kept.push(new ArrayBuffer(4 * 1024 * 1024))
+            if (heapGrew()) return
+          }
+          throw new Error("heap never grew")
+        })`),
+      ).dispose()
+      const result = vm.runtime.executePendingJobs()
+      assert.ok(module.HEAPU8.buffer !== bufferBefore, "precondition: the job grew the heap")
+      // Throws if the job threw (e.g. "heap never grew").
+      assert.strictEqual(vm.unwrapResult(result), 1)
+      // The job ran in `vm`; a stale ctxPtr would have created a second, leaked context.
+      assert.strictEqual((vm.runtime as any).contextMap.size, 1)
+    })
+  })
+
   describe("memory pressure", () => {
     it("can pass a large string to a C function", async () => {
       const jsonString = await fs.promises.readFile(
