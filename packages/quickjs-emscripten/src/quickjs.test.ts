@@ -1343,6 +1343,34 @@ export default "the default";
       assert.strictEqual(freed, 1)
     })
 
+    it("throws instead of writing through a null pointer when the WASM heap is exhausted", () => {
+      const module = (vm as any).module
+      const _malloc = module._malloc
+      module._malloc = () => 0
+      try {
+        assert.throws(() => vm.newString("hello"), /out of memory/)
+        assert.throws(() => vm.newArrayBuffer(new Uint8Array([1, 2, 3]).buffer), /out of memory/)
+        assert.throws(() => vm.callFunction(vm.global, vm.undefined, vm.undefined), /out of memory/)
+      } finally {
+        module._malloc = _malloc
+      }
+    })
+
+    it(".getOwnPropertyNames() does not unbalance QuickJS allocation counters", () => {
+      using object = vm.unwrapResult(vm.evalCode(`({ a: 1, b: 2, c: 3 })`))
+      const count = () => {
+        const usage = vm.runtime.computeMemoryUsage()
+        const { malloc_count } = vm.dump(usage)
+        usage.dispose()
+        return malloc_count as number
+      }
+      const before = count()
+      using names = vm.unwrapResult(vm.getOwnPropertyNames(object))
+      names.dispose()
+      // The out-array is plain malloc'd memory; freeing it with js_free would drop the count.
+      assert.strictEqual(count(), before)
+    })
+
     it(".newArrayBuffer() frees the host buffer and throws if QuickJS cannot create it", () => {
       // With no headroom, allocating the ArrayBuffer object fails.
       vm.runtime.setMemoryLimit(1)

@@ -1072,7 +1072,8 @@ export class QuickJSContext
       const handles = Array.from(pointerArray).map((ptr) =>
         this.memory.heapValueHandle(ptr as JSValuePointer),
       )
-      this.ffi.QTS_FreeVoidPointer(this.ctx.value, ptr as JSVoidPointer)
+      // The C side allocated this array with plain malloc, not js_malloc.
+      this.module._free(ptr)
       return this.success(createDisposableArray(handles))
     })
   }

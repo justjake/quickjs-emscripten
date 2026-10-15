@@ -17,7 +17,9 @@ function getGroupId(id: HostRefId): number {
  */
 export class HostRefMap {
   private nextId = INT32_MIN
+  /** FIFO queue of ids to reuse: `freelist[freelistHead..]`. */
   private freelist: HostRefId[] = []
+  private freelistHead = 0
   private groups = new Map<number, Map<HostRefId, object>>()
 
   put(value: object): HostRefId {
@@ -62,7 +64,10 @@ export class HostRefMap {
       throw new QuickJSHostRefInvalid(`host reference id ${id} is not defined`)
     }
 
-    group.delete(id)
+    if (!group.delete(id)) {
+      // Recycling an already-deleted id again would hand it out twice.
+      throw new QuickJSHostRefInvalid(`host reference id ${id} is not defined`)
+    }
     if (group.size === 0) {
       this.groups.delete(groupId)
     }
@@ -71,8 +76,14 @@ export class HostRefMap {
   }
 
   private allocateId(): HostRefId {
-    if (this.freelist.length > 0) {
-      return this.freelist.shift()!
+    if (this.freelistHead < this.freelist.length) {
+      const id = this.freelist[this.freelistHead++]
+      // Drop consumed entries occasionally; Array#shift per allocation is O(n).
+      if (this.freelistHead >= 1024 && this.freelistHead * 2 >= this.freelist.length) {
+        this.freelist = this.freelist.slice(this.freelistHead)
+        this.freelistHead = 0
+      }
+      return id
     }
 
     if (this.nextId === INVALID_HOST_REF_ID) {

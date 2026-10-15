@@ -71,10 +71,19 @@ export type HeapTypedArray<JS extends TypedArray, C extends number> = Lifetime<{
 export class ModuleMemory {
   constructor(public module: EitherModule) {}
 
+  /** `_malloc` that throws instead of returning a null pointer we would then write through. */
+  private malloc<T extends number>(numBytes: number): T {
+    const ptr = this.module._malloc(numBytes)
+    if (!ptr && numBytes > 0) {
+      throw new Error(`Failed to allocate ${numBytes} bytes in the WASM heap (out of memory)`)
+    }
+    return ptr as T
+  }
+
   toPointerArray(handleArray: QuickJSHandle[]): Lifetime<JSValueConstPointerPointer> {
     const typedArray = new Int32Array(handleArray.map((handle) => handle.value))
     const numBytes = typedArray.length * typedArray.BYTES_PER_ELEMENT
-    const ptr = this.module._malloc(numBytes) as JSValueConstPointerPointer
+    const ptr = this.malloc<JSValueConstPointerPointer>(numBytes)
     const heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes)
     heapBytes.set(new Uint8Array(typedArray.buffer))
     return new Lifetime(ptr, undefined, (ptr) => this.module._free(ptr))
@@ -85,7 +94,7 @@ export class ModuleMemory {
     length: number,
   ): HeapTypedArray<JS, C> {
     const numBytes = length * kind.BYTES_PER_ELEMENT
-    const ptr = this.module._malloc(numBytes) as C
+    const ptr = this.malloc<C>(numBytes)
     const typedArray = new RefreshableTypedArray(this.module, kind, ptr, length)
     typedArray.value.fill(0)
     return new Lifetime({ typedArray, ptr }, undefined, (value) => this.module._free(value.ptr))
@@ -101,14 +110,14 @@ export class ModuleMemory {
   newHeapCharPointer(string: string): Lifetime<{ ptr: OwnedHeapCharPointer; strlen: number }> {
     const strlen = this.module.lengthBytesUTF8(string)
     const dataBytes = strlen + 1
-    const ptr: OwnedHeapCharPointer = this.module._malloc(dataBytes) as OwnedHeapCharPointer
+    const ptr = this.malloc<OwnedHeapCharPointer>(dataBytes)
     this.module.stringToUTF8(string, ptr, dataBytes)
     return new Lifetime({ ptr, strlen }, undefined, (value) => this.module._free(value.ptr))
   }
 
   newHeapBufferPointer(buffer: Uint8Array): Lifetime<HeapUint8Array> {
     const numBytes = buffer.byteLength
-    const ptr: JSVoidPointer = this.module._malloc(numBytes) as JSVoidPointer
+    const ptr = this.malloc<JSVoidPointer>(numBytes)
     this.module.HEAPU8.set(buffer, ptr)
     return new Lifetime({ pointer: ptr, numBytes }, undefined, (value) =>
       this.module._free(value.pointer),
