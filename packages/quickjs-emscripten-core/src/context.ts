@@ -12,7 +12,6 @@ import type {
   EitherFFI,
   UInt32Pointer,
   JSValuePointerPointerPointer,
-  JSVoidPointer,
   HostRefId,
 } from "@jitl/quickjs-ffi-types"
 import type { JSPromiseState } from "./deferred-promise"
