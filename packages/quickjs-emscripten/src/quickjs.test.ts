@@ -1381,6 +1381,31 @@ export default "the default";
     })
   })
 
+  describe("32-bit limits", () => {
+    it("rejects memory limits that would wrap in a 32-bit size_t", () => {
+      for (const bad of [NaN, Infinity, 2 ** 32]) {
+        assert.throws(() => vm.runtime.setMemoryLimit(bad), RangeError, String(bad))
+      }
+      vm.runtime.setMemoryLimit(2 ** 32 - 1)
+      vm.runtime.setMemoryLimit(-1)
+    })
+
+    it("rejects max stack sizes that would wrap in a 32-bit size_t", () => {
+      for (const bad of [NaN, Infinity, 2 ** 32]) {
+        assert.throws(() => vm.runtime.setMaxStackSize(bad), RangeError, String(bad))
+      }
+      assert.throws(() => vm.runtime.setMaxStackSize(-5), /max stack size/)
+    })
+
+    it("pointer arrays read addresses of 2 GiB and above as positive numbers", () => {
+      const memory = (vm as any).memory
+      const module = (vm as any).module
+      using array = memory.newMutablePointerArray(1)
+      new Uint32Array(module.HEAPU8.buffer, array.value.ptr, 1)[0] = 0xfffffff0
+      assert.strictEqual(array.value.typedArray.value[0], 0xfffffff0)
+    })
+  })
+
   describe("memory pressure", () => {
     it("can pass a large string to a C function", async () => {
       const jsonString = await fs.promises.readFile(

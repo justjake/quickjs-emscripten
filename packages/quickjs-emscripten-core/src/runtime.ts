@@ -43,6 +43,8 @@ export type ExecutePendingJobsResult = DisposableResult<
   }
 >
 
+const UINT32_MAX = 0xffffffff
+
 /**
  * A runtime represents a Javascript runtime corresponding to an object heap.
  * Several runtimes can exist at the same time but they cannot exchange objects.
@@ -285,6 +287,10 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
     if (limitBytes < 0 && limitBytes !== -1) {
       throw new Error("Cannot set memory limit to negative number. To unset, pass -1")
     }
+    if (limitBytes !== -1 && !(limitBytes <= UINT32_MAX)) {
+      // NaN, Infinity and values above 2^32 - 1 would silently wrap in the 32-bit C `size_t`.
+      throw new RangeError(`Memory limit must be a number of bytes no greater than ${UINT32_MAX}`)
+    }
 
     this.ffi.QTS_RuntimeSetMemoryLimit(this.rt.value, limitBytes)
   }
@@ -317,7 +323,10 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
    */
   setMaxStackSize(stackSize: number) {
     if (stackSize < 0) {
-      throw new Error("Cannot set memory limit to negative number. To unset, pass 0.")
+      throw new Error("Cannot set max stack size to negative number. To unset, pass 0.")
+    }
+    if (!(stackSize <= UINT32_MAX)) {
+      throw new RangeError(`Max stack size must be a number of bytes no greater than ${UINT32_MAX}`)
     }
 
     this.ffi.QTS_RuntimeSetMaxStackSize(this.rt.value, stackSize)

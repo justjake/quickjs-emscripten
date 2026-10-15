@@ -81,7 +81,7 @@ export class ModuleMemory {
   }
 
   toPointerArray(handleArray: QuickJSHandle[]): Lifetime<JSValueConstPointerPointer> {
-    const typedArray = new Int32Array(handleArray.map((handle) => handle.value))
+    const typedArray = new Uint32Array(handleArray.map((handle) => handle.value))
     const numBytes = typedArray.length * typedArray.BYTES_PER_ELEMENT
     const ptr = this.malloc<JSValueConstPointerPointer>(numBytes)
     const heapBytes = new Uint8Array(this.module.HEAPU8.buffer, ptr, numBytes)
@@ -100,11 +100,11 @@ export class ModuleMemory {
     return new Lifetime({ typedArray, ptr }, undefined, (value) => this.module._free(value.ptr))
   }
 
-  // TODO: shouldn't this be Uint32 instead of Int32?
+  /** Pointers are unsigned: heap addresses of 2 GiB and above must not read back negative. */
   newMutablePointerArray<T extends number>(
     length: number,
-  ): Lifetime<{ typedArray: RefreshableTypedArray<Int32Array<ArrayBuffer>>; ptr: T }> {
-    return this.newTypedArray(Int32Array, length)
+  ): Lifetime<{ typedArray: RefreshableTypedArray<Uint32Array<ArrayBuffer>>; ptr: T }> {
+    return this.newTypedArray(Uint32Array, length)
   }
 
   newHeapCharPointer(string: string): Lifetime<{ ptr: OwnedHeapCharPointer; strlen: number }> {

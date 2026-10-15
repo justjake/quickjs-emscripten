@@ -433,6 +433,9 @@ export class QuickJSWASMModule {
    * Retrieve the WebAssembly memory used by this QuickJS module.
    * Use this access very carefully - you are responsible for safe interaction with the memory.
    *
+   * Do not call `memory.grow()` on the returned memory yourself: Emscripten's `HEAP*` views
+   * would not be refreshed and the module would stop working. Let the module grow its own memory.
+   *
    * To supply a custom, pre-initialized memory to QuickJS, create a new variant
    * and provide the {@link CustomizeVariantOptions#wasmMemory} option.
    *
