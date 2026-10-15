@@ -116,8 +116,10 @@ export class ModuleMemory {
   }
 
   consumeHeapCharPointer(ptr: OwnedHeapCharPointer): string {
-    const str = this.module.UTF8ToString(ptr)
-    this.module._free(ptr)
-    return str
+    try {
+      return this.module.UTF8ToString(ptr)
+    } finally {
+      this.module._free(ptr)
+    }
   }
 }

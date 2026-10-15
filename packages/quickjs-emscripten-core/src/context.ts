@@ -127,9 +127,11 @@ class ContextMemory extends ModuleMemory implements Disposable {
   }
 
   consumeJSCharPointer(ptr: JSBorrowedCharPointer): string {
-    const str = this.module.UTF8ToString(ptr)
-    this.ffi.QTS_FreeCString(this.ctx.value, ptr)
-    return str
+    try {
+      return this.module.UTF8ToString(ptr)
+    } finally {
+      this.ffi.QTS_FreeCString(this.ctx.value, ptr)
+    }
   }
 
   heapValueHandle(ptr: JSValuePointer, extraDispose?: () => void): JSValue {
@@ -448,6 +450,13 @@ export class QuickJSContext
     const array = new Uint8Array(buffer)
     const handle = this.memory.newHeapBufferPointer(array)
     const ptr = this.ffi.QTS_NewArrayBuffer(this.ctx.value, handle.value.pointer, array.length)
+    const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, ptr)
+    if (errorPtr) {
+      // QuickJS only takes ownership of the host buffer when it succeeds in creating the ArrayBuffer.
+      handle.dispose()
+      this.ffi.QTS_FreeValuePointer(this.ctx.value, ptr)
+      return this.unwrapResult(this.fail(this.memory.heapValueHandle(errorPtr)))
+    }
     return this.memory.heapValueHandle(ptr)
   }
 
@@ -806,7 +815,9 @@ export class QuickJSContext
   }
 
   /**
-   * Coverts `handle` to a JavaScript ArrayBuffer
+   * Coverts `handle` to a JavaScript ArrayBuffer.
+   *
+   * The returned bytes are a copy that stays valid however much the WASM heap grows afterwards.
    */
   getArrayBuffer(handle: QuickJSHandle): Lifetime<Uint8Array> {
     this.runtime.assertOwned(handle)
@@ -815,9 +826,12 @@ export class QuickJSContext
     if (!ptr) {
       throw new Error("Couldn't allocate memory to get ArrayBuffer")
     }
-    return new Lifetime(this.module.HEAPU8.subarray(ptr, ptr + len), undefined, () =>
-      this.module._free(ptr),
-    )
+    try {
+      // A view into the heap would be detached by the next memory growth, so copy out.
+      return new Lifetime<Uint8Array>(this.module.HEAPU8.slice(ptr, ptr + len))
+    } finally {
+      this.module._free(ptr)
+    }
   }
 
   /**
