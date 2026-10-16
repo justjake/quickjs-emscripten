@@ -110,6 +110,27 @@ describe("HostRefMap", () => {
   })
 
   describe("ID recycling (freelist)", () => {
+    it("does not hand out an id twice if it is deleted twice while its group is non-empty", () => {
+      const map = new HostRefMap()
+      const id1 = map.put({ a: 1 })
+      map.put({ b: 2 }) // keeps id1's group alive
+      map.delete(id1)
+      assert.throws(() => map.delete(id1), QuickJSHostRefInvalid)
+      const reused = map.put({ c: 3 })
+      const fresh = map.put({ d: 4 })
+      assert.strictEqual(reused, id1)
+      assert.notStrictEqual(fresh, id1)
+    })
+
+    it("keeps FIFO order across compaction of the freelist", () => {
+      const map = new HostRefMap()
+      const ids = Array.from({ length: 5000 }, (_, i) => map.put({ i }))
+      ids.forEach((id) => map.delete(id))
+      const reused = ids.map((_, i) => map.put({ i }))
+      assert.deepStrictEqual(reused, ids)
+      assert.ok(!ids.includes(map.put({ fresh: true })), "falls back to new ids once drained")
+    })
+
     it("reuses deleted IDs", () => {
       const map = new HostRefMap()
       const id1 = map.put({ first: true })
