@@ -1381,6 +1381,38 @@ export default "the default";
     })
   })
 
+  describe("large inputs to C", () => {
+    it(".dumpMemoryUsage() is not truncated for a runtime with many object kinds", () => {
+      vm.unwrapResult(
+        vm.evalCode(`
+          globalThis.f = function () { return 1 }
+          globalThis.o = { a: 1, b: [1, 2, 3], c: new Map([[1, 2]]) }
+          globalThis.p = Promise.resolve()
+          globalThis.A = class A { m() {} }
+          globalThis.e = new Error("e")
+          globalThis.u8 = new Uint8Array(10)
+          globalThis.rx = /a+/g
+        `),
+      ).dispose()
+      const dump = vm.runtime.dumpMemoryUsage()
+      // The old fixed 1 KiB buffer cut the report off mid-line.
+      assert.ok(dump.endsWith("\n"), `report ends mid-line: ${JSON.stringify(dump.slice(-40))}`)
+    })
+
+    it(".callFunction() with a very large argument list returns a result or a catchable error", () => {
+      using fn = vm.unwrapResult(vm.evalCode(`(...args) => args.length`))
+      const args = new Array(1_000_000).fill(vm.undefined)
+      const result = vm.callFunction(fn, vm.undefined, args)
+      if (result.error) {
+        result.error.dispose()
+      } else {
+        result.value.dispose()
+      }
+      // A variable-length array of this size on the wasm stack used to trap the whole module.
+      assert.strictEqual(vm.getNumber(vm.unwrapResult(vm.evalCode(`1 + 1`))), 2)
+    })
+  })
+
   describe("memory pressure", () => {
     it("can pass a large string to a C function", async () => {
       const jsonString = await fs.promises.readFile(
