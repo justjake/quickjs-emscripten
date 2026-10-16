@@ -134,6 +134,10 @@ class ContextMemory extends ModuleMemory implements Disposable {
   }
 
   heapValueHandle(ptr: JSValuePointer, extraDispose?: () => void): JSValue {
+    if (!ptr) {
+      // The C side returns NULL when it cannot allocate the heap copy of a JSValue.
+      throw new Error("Failed to allocate a JSValue handle (out of memory)")
+    }
     const dispose: typeof this.freeJSValue = extraDispose
       ? (val) => {
           extraDispose()

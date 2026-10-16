@@ -931,7 +931,16 @@ MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue ***out_ptr
     }
     return jsvalue_to_heap(JS_GetException(ctx));
   }
-  *out_ptrs = malloc(sizeof(JSValue) * total_props);
+  // One pointer per property (the entries are JSValue*, not JSValue). Never malloc(0): NULL is our failure signal.
+  *out_ptrs = malloc(sizeof(JSValue *) * (total_props > 0 ? total_props : 1));
+  if (*out_ptrs == NULL) {
+    for (uint32_t i = 0; i < total_props; i++) {
+      JS_FreeAtom(ctx, tab[i].atom);
+    }
+    js_free(ctx, tab);
+    JS_ThrowOutOfMemory(ctx);
+    return jsvalue_to_heap(JS_GetException(ctx));
+  }
   for (int i = 0; i < total_props; i++) {
     JSAtom atom = tab[i].atom;
 

@@ -48,15 +48,15 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
 
   override newContext(options: ContextOptions = {}): QuickJSAsyncContext {
     const intrinsics = intrinsicsToFlags(options.intrinsics)
-    const ctx = new Lifetime(
-      this.ffi.QTS_NewContext(this.rt.value, intrinsics),
-      undefined,
-      (ctx_ptr) => {
-        this.contextMap.delete(ctx_ptr)
-        this.callbacks.deleteContext(ctx_ptr)
-        this.ffi.QTS_FreeContext(ctx_ptr)
-      },
-    )
+    const ctxPtr = this.ffi.QTS_NewContext(this.rt.value, intrinsics)
+    if (!ctxPtr) {
+      throw new Error("Failed to create QuickJSContext (out of memory)")
+    }
+    const ctx = new Lifetime(ctxPtr, undefined, (ctx_ptr) => {
+      this.contextMap.delete(ctx_ptr)
+      this.callbacks.deleteContext(ctx_ptr)
+      this.ffi.QTS_FreeContext(ctx_ptr)
+    })
 
     const context = new QuickJSAsyncContext({
       module: this.module,

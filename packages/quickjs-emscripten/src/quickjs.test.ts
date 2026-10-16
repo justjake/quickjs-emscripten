@@ -1413,6 +1413,29 @@ export default "the default";
     })
   })
 
+  describe("allocation failure", () => {
+    it("newContext() throws if QuickJS cannot create the context", () => {
+      vm.runtime.setMemoryLimit(1)
+      try {
+        assert.throws(() => vm.runtime.newContext(), /out of memory/)
+      } finally {
+        vm.runtime.setMemoryLimit(-1)
+      }
+    })
+
+    it("heapValueHandle() throws on the NULL pointer the C side returns when it cannot allocate", () => {
+      const memory = (vm as any).memory
+      assert.throws(() => memory.heapValueHandle(0), /out of memory/)
+    })
+
+    it(".getOwnPropertyNames() works for objects with no own properties", () => {
+      // The C side must not treat an empty allocation as a failure.
+      using object = vm.newObject()
+      using names = vm.unwrapResult(vm.getOwnPropertyNames(object))
+      assert.strictEqual(names.length, 0)
+    })
+  })
+
   describe("memory pressure", () => {
     it("can pass a large string to a C function", async () => {
       const jsonString = await fs.promises.readFile(
