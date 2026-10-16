@@ -174,6 +174,15 @@ context.dispose()
 runtime.dispose()
 ```
 
+`setMemoryLimit` relies on QuickJS's own allocation accounting, which can undercount in WebAssembly
+builds. For a hard guarantee, cap the module's linear memory (release variants only; at least 16 MiB).
+Allocation then fails inside the module and guest code gets a catchable `InternalError`:
+
+```typescript
+const variant = newVariant(RELEASE_SYNC, { maxMemoryBytes: 64 * 1024 * 1024 })
+const QuickJS = await newQuickJSWASMModuleFromVariant(variant)
+```
+
 #### EcmaScript Module Exports
 
 When you evaluate code as an ES Module, the result will be a handle to the

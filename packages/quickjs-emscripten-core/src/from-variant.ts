@@ -114,6 +114,11 @@ function smartUnwrap<T extends object>(val: T | { default: T } | { default: { de
   return val as T
 }
 
+const WASM_PAGE_BYTES = 64 * 1024
+const WASM_MAX_PAGES = 65536
+/** Emscripten's default INITIAL_MEMORY (16 MiB); the variants do not override it. */
+const EMSCRIPTEN_INITIAL_PAGES = 256
+
 export type OrLoader<T> = T | (() => Promise<T>)
 
 export interface CustomizeVariantOptions {
@@ -125,6 +130,19 @@ export interface CustomizeVariantOptions {
   wasmModule?: OrLoader<WebAssembly.Module>
   /** If given, use the Memory when instantiating the WebAssembly.Instance. */
   wasmMemory?: OrLoader<WebAssembly.Memory>
+  /**
+   * Hard cap, in bytes, on this module's WebAssembly linear memory (rounded down to 64 KiB pages).
+   * When the cap is reached allocations fail inside the module: guest code gets a catchable
+   * `InternalError` and the host stays within the cap.
+   *
+   * Unlike {@link QuickJSRuntime#setMemoryLimit} this does not depend on QuickJS's own allocation
+   * accounting, which can undercount on Emscripten builds. It bounds *everything* in the module:
+   * the guest heap, host-side buffers, and the 5 MiB WASM stack, so it must be at least 16 MiB.
+   *
+   * Release variants only: debug (sanitizer) variants abort the module when the heap cannot grow.
+   * Cannot be combined with {@link wasmMemory}.
+   */
+  maxMemoryBytes?: number
   /** If given, Emscripten will try to load the source map for the WebAssembly module from this location (path or URI) as appropriate for the current platform. */
   wasmSourceMapLocation?: string
   /** If given, we will provide the source map to Emscripten directly. This may only be respected if wasmModule is also provided. */
@@ -227,7 +245,21 @@ export function newVariant<T extends QuickJSVariant>(
         }
 
         if (options.wasmMemory) {
+          if (options.maxMemoryBytes !== undefined) {
+            throw new TypeError("newVariant: pass either wasmMemory or maxMemoryBytes, not both")
+          }
           moduleLoaderArg.wasmMemory = await force(options.wasmMemory)
+        } else if (options.maxMemoryBytes !== undefined) {
+          const maximumPages = Math.floor(options.maxMemoryBytes / WASM_PAGE_BYTES)
+          if (!(maximumPages >= EMSCRIPTEN_INITIAL_PAGES)) {
+            throw new RangeError(
+              `maxMemoryBytes must be at least ${EMSCRIPTEN_INITIAL_PAGES * WASM_PAGE_BYTES} (16 MiB)`,
+            )
+          }
+          moduleLoaderArg.wasmMemory = new WebAssembly.Memory({
+            initial: EMSCRIPTEN_INITIAL_PAGES,
+            maximum: Math.min(maximumPages, WASM_MAX_PAGES),
+          })
         }
 
         const optionsWasmModule = options.wasmModule
