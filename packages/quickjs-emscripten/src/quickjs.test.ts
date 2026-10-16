@@ -1436,6 +1436,56 @@ export default "the default";
     })
   })
 
+  describe("binary JSON", () => {
+    const roundTrip = (source: string) => {
+      using value = vm.unwrapResult(vm.evalCode(source))
+      using encoded = vm.encodeBinaryJSON(value)
+      using decoded = vm.decodeBinaryJSON(encoded)
+      return vm.dump(decoded)
+    }
+
+    it("round-trips plain values", () => {
+      assert.deepEqual(roundTrip(`({ a: 1, b: [1, 2, { c: "d" }], e: null })`), {
+        a: 1,
+        b: [1, 2, { c: "d" }],
+        e: null,
+      })
+    })
+
+    it("round-trips an object referenced more than once", () => {
+      const result = roundTrip(
+        `const shared = { n: 1 }; ({ a: shared, b: shared, list: [shared, shared] })`,
+      )
+      assert.deepEqual(result, { a: { n: 1 }, b: { n: 1 }, list: [{ n: 1 }, { n: 1 }] })
+    })
+
+    /** Encode the guest value of `source`, decode it into a global `decoded`, and evaluate `check`. */
+    const decodedSatisfies = (source: string, check: string) => {
+      using value = vm.unwrapResult(vm.evalCode(source))
+      using encoded = vm.encodeBinaryJSON(value)
+      using decoded = vm.decodeBinaryJSON(encoded)
+      vm.setProp(vm.global, "decoded", decoded)
+      using result = vm.unwrapResult(vm.evalCode(check))
+      return vm.dump(result)
+    }
+
+    it("preserves object identity for shared references", () => {
+      const same = decodedSatisfies(
+        `const shared = { n: 1 }; ({ a: shared, b: shared })`,
+        `decoded.a === decoded.b`,
+      )
+      assert.strictEqual(same, true)
+    })
+
+    it("round-trips a cyclic object", () => {
+      const ok = decodedSatisfies(
+        `const o = { name: "loop" }; o.self = o; o`,
+        `decoded.name === "loop" && decoded.self === decoded`,
+      )
+      assert.strictEqual(ok, true)
+    })
+  })
+
   describe("memory pressure", () => {
     it("can pass a large string to a C function", async () => {
       const jsonString = await fs.promises.readFile(

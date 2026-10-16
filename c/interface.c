@@ -1587,6 +1587,9 @@ JSValue *QTS_bjson_decode(JSContext *ctx, JSValueConst *data) {
   if (!buffer)
     return jsvalue_to_heap(JS_EXCEPTION);
 
-  JSValue value = JS_ReadObject(ctx, buffer, length, 0);
+  // Must accept references: QTS_bjson_encode writes them (JS_WRITE_OBJ_REFERENCE) for shared
+  // and cyclic objects, and without this flag decoding such data fails with
+  // "object references are not allowed". Bytecode and SharedArrayBuffer stay disallowed.
+  JSValue value = JS_ReadObject(ctx, buffer, length, JS_READ_OBJ_REFERENCE);
   return jsvalue_to_heap(value);
 }
