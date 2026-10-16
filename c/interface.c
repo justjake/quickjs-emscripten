@@ -416,12 +416,17 @@ JSValue *QTS_RuntimeComputeMemoryUsage(JSRuntime *rt, JSContext *ctx) {
 }
 
 OwnedHeapChar *QTS_RuntimeDumpMemoryUsage(JSRuntime *rt) {
-  char *result = malloc(sizeof(char) * 1024);
-  FILE *memfile = fmemopen(result, 1024, "w");
+  // The report grows with the number of object classes in use; a fixed-size buffer truncated it.
+  char *result = NULL;
+  size_t size = 0;
+  FILE *memfile = open_memstream(&result, &size);
+  if (!memfile) {
+    return NULL;
+  }
   JSMemoryUsage s;
   JS_ComputeMemoryUsage(rt, &s);
   JS_DumpMemoryUsage(memfile, &s, rt);
-  fclose(memfile);
+  fclose(memfile); // flushes and NUL-terminates `result`, which the caller frees with free()
   return result;
 }
 
@@ -962,14 +967,23 @@ MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue ***out_ptr
 }
 
 MaybeAsync(JSValue *) QTS_Call(JSContext *ctx, JSValueConst *func_obj, JSValueConst *this_obj, int argc, JSValueConst **argv_ptrs) {
-  // convert array of pointers to array of values
-  JSValueConst argv[argc];
+  // Convert array of pointers to array of values. This is heap allocated: a variable-length
+  // array of a very large argc overflows the wasm shadow stack and traps the whole module.
+  JSValueConst *argv = NULL;
+  if (argc > 0) {
+    argv = malloc(sizeof(JSValueConst) * (size_t)argc);
+    if (!argv) {
+      return jsvalue_to_heap(JS_ThrowOutOfMemory(ctx));
+    }
+  }
   int i;
   for (i = 0; i < argc; i++) {
     argv[i] = *(argv_ptrs[i]);
   }
 
-  return jsvalue_to_heap(JS_Call(ctx, *func_obj, *this_obj, argc, argv));
+  JSValue result = JS_Call(ctx, *func_obj, *this_obj, argc, argv);
+  free(argv);
+  return jsvalue_to_heap(result);
 }
 
 /**
