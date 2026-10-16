@@ -12,7 +12,6 @@ import type {
   EitherFFI,
   UInt32Pointer,
   JSValuePointerPointerPointer,
-  JSVoidPointer,
   HostRefId,
 } from "@jitl/quickjs-ffi-types"
 import type { JSPromiseState } from "./deferred-promise"
@@ -127,12 +126,18 @@ class ContextMemory extends ModuleMemory implements Disposable {
   }
 
   consumeJSCharPointer(ptr: JSBorrowedCharPointer): string {
-    const str = this.module.UTF8ToString(ptr)
-    this.ffi.QTS_FreeCString(this.ctx.value, ptr)
-    return str
+    try {
+      return this.module.UTF8ToString(ptr)
+    } finally {
+      this.ffi.QTS_FreeCString(this.ctx.value, ptr)
+    }
   }
 
   heapValueHandle(ptr: JSValuePointer, extraDispose?: () => void): JSValue {
+    if (!ptr) {
+      // The C side returns NULL when it cannot allocate the heap copy of a JSValue.
+      throw new Error("Failed to allocate a JSValue handle (out of memory)")
+    }
     const dispose: typeof this.freeJSValue = extraDispose
       ? (val) => {
           extraDispose()
@@ -448,6 +453,13 @@ export class QuickJSContext
     const array = new Uint8Array(buffer)
     const handle = this.memory.newHeapBufferPointer(array)
     const ptr = this.ffi.QTS_NewArrayBuffer(this.ctx.value, handle.value.pointer, array.length)
+    const errorPtr = this.ffi.QTS_ResolveException(this.ctx.value, ptr)
+    if (errorPtr) {
+      // QuickJS only takes ownership of the host buffer when it succeeds in creating the ArrayBuffer.
+      handle.dispose()
+      this.ffi.QTS_FreeValuePointer(this.ctx.value, ptr)
+      return this.unwrapResult(this.fail(this.memory.heapValueHandle(errorPtr)))
+    }
     return this.memory.heapValueHandle(ptr)
   }
 
@@ -487,9 +499,9 @@ export class QuickJSContext
         mutablePointerArray.value.ptr,
       )
       const promiseHandle = this.memory.heapValueHandle(promisePtr)
-      const [resolveHandle, rejectHandle] = Array.from(mutablePointerArray.value.typedArray).map(
-        (jsvaluePtr) => this.memory.heapValueHandle(jsvaluePtr as any),
-      )
+      const [resolveHandle, rejectHandle] = Array.from(
+        mutablePointerArray.value.typedArray.value,
+      ).map((jsvaluePtr) => this.memory.heapValueHandle(jsvaluePtr as any))
       return new QuickJSDeferredPromise({
         context: this,
         promiseHandle,
@@ -806,7 +818,9 @@ export class QuickJSContext
   }
 
   /**
-   * Coverts `handle` to a JavaScript ArrayBuffer
+   * Coverts `handle` to a JavaScript ArrayBuffer.
+   *
+   * The returned bytes are a copy that stays valid however much the WASM heap grows afterwards.
    */
   getArrayBuffer(handle: QuickJSHandle): Lifetime<Uint8Array> {
     this.runtime.assertOwned(handle)
@@ -815,9 +829,12 @@ export class QuickJSContext
     if (!ptr) {
       throw new Error("Couldn't allocate memory to get ArrayBuffer")
     }
-    return new Lifetime(this.module.HEAPU8.subarray(ptr, ptr + len), undefined, () =>
-      this.module._free(ptr),
-    )
+    try {
+      // A view into the heap would be detached by the next memory growth, so copy out.
+      return new Lifetime<Uint8Array>(this.module.HEAPU8.slice(ptr, ptr + len))
+    } finally {
+      this.module._free(ptr)
+    }
   }
 
   /**
@@ -994,7 +1011,7 @@ export class QuickJSContext
     if (status < 0) {
       return undefined
     }
-    return this.uint32Out.value.typedArray[0]
+    return this.uint32Out.value.typedArray.value[0]
   }
 
   /**
@@ -1052,13 +1069,14 @@ export class QuickJSContext
       if (errorPtr) {
         return this.fail(this.memory.heapValueHandle(errorPtr))
       }
-      const len = this.uint32Out.value.typedArray[0]
-      const ptr = outPtr.value.typedArray[0]
-      const pointerArray = new Uint32Array(this.module.HEAP8.buffer, ptr, len)
+      const len = this.uint32Out.value.typedArray.value[0]
+      const ptr = outPtr.value.typedArray.value[0]
+      const pointerArray = new Uint32Array(this.module.HEAPU8.buffer, ptr, len)
       const handles = Array.from(pointerArray).map((ptr) =>
         this.memory.heapValueHandle(ptr as JSValuePointer),
       )
-      this.ffi.QTS_FreeVoidPointer(this.ctx.value, ptr as JSVoidPointer)
+      // The C side allocated this array with plain malloc, not js_malloc.
+      this.module._free(ptr)
       return this.success(createDisposableArray(handles))
     })
   }

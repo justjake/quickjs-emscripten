@@ -416,12 +416,17 @@ JSValue *QTS_RuntimeComputeMemoryUsage(JSRuntime *rt, JSContext *ctx) {
 }
 
 OwnedHeapChar *QTS_RuntimeDumpMemoryUsage(JSRuntime *rt) {
-  char *result = malloc(sizeof(char) * 1024);
-  FILE *memfile = fmemopen(result, 1024, "w");
+  // The report grows with the number of object classes in use; a fixed-size buffer truncated it.
+  char *result = NULL;
+  size_t size = 0;
+  FILE *memfile = open_memstream(&result, &size);
+  if (!memfile) {
+    return NULL;
+  }
   JSMemoryUsage s;
   JS_ComputeMemoryUsage(rt, &s);
   JS_DumpMemoryUsage(memfile, &s, rt);
-  fclose(memfile);
+  fclose(memfile); // flushes and NUL-terminates `result`, which the caller frees with free()
   return result;
 }
 
@@ -442,8 +447,18 @@ int QTS_BuildIsSanitizeLeak() {
 }
 
 #ifdef QTS_ASYNCIFY
-EM_JS(void, set_asyncify_stack_size, (size_t size, size_t default_size), {
-  Asyncify.StackSize = size || default_size;
+// The asyncify buffer holds the saved locals of every suspended wasm frame. That needs more bytes
+// than the native stack depth QuickJS limits with JS_SetMaxStackSize: measured up to 1.9x for
+// recursive JS across release/debug and quickjs/quickjs-ng builds. If the buffer is smaller than
+// the QuickJS limit requires, a deep suspension aborts the module ("unreachable") instead of
+// throwing a catchable "stack overflow". Leave margin over the measured worst case.
+#define QTS_ASYNCIFY_STACK_FACTOR 3
+
+EM_JS(void, set_asyncify_stack_size, (size_t size, size_t default_size, size_t factor), {
+  size = size >>> 0;
+  default_size = default_size >>> 0;
+  // malloc'd once per suspension; cap well below the 2 GiB wasm heap limit.
+  Asyncify.StackSize = size ? Math.min(Math.max(size * factor, default_size), 0x40000000) : default_size;
 });
 #endif
 
@@ -453,7 +468,7 @@ EM_JS(void, set_asyncify_stack_size, (size_t size, size_t default_size), {
 
 void QTS_RuntimeSetMaxStackSize(JSRuntime *rt, size_t stack_size) {
 #ifdef QTS_ASYNCIFY
-  set_asyncify_stack_size(stack_size, QTS_ASYNCIFY_DEFAULT_STACK_SIZE);
+  set_asyncify_stack_size(stack_size, QTS_ASYNCIFY_DEFAULT_STACK_SIZE, QTS_ASYNCIFY_STACK_FACTOR);
 #endif
   JS_SetMaxStackSize(rt, stack_size);
 }
@@ -926,7 +941,16 @@ MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue ***out_ptr
     }
     return jsvalue_to_heap(JS_GetException(ctx));
   }
-  *out_ptrs = malloc(sizeof(JSValue) * total_props);
+  // One pointer per property (the entries are JSValue*, not JSValue). Never malloc(0): NULL is our failure signal.
+  *out_ptrs = malloc(sizeof(JSValue *) * (total_props > 0 ? total_props : 1));
+  if (*out_ptrs == NULL) {
+    for (uint32_t i = 0; i < total_props; i++) {
+      JS_FreeAtom(ctx, tab[i].atom);
+    }
+    js_free(ctx, tab);
+    JS_ThrowOutOfMemory(ctx);
+    return jsvalue_to_heap(JS_GetException(ctx));
+  }
   for (int i = 0; i < total_props; i++) {
     JSAtom atom = tab[i].atom;
 
@@ -962,14 +986,23 @@ MaybeAsync(JSValue *) QTS_GetOwnPropertyNames(JSContext *ctx, JSValue ***out_ptr
 }
 
 MaybeAsync(JSValue *) QTS_Call(JSContext *ctx, JSValueConst *func_obj, JSValueConst *this_obj, int argc, JSValueConst **argv_ptrs) {
-  // convert array of pointers to array of values
-  JSValueConst argv[argc];
+  // Convert array of pointers to array of values. This is heap allocated: a variable-length
+  // array of a very large argc overflows the wasm shadow stack and traps the whole module.
+  JSValueConst *argv = NULL;
+  if (argc > 0) {
+    argv = malloc(sizeof(JSValueConst) * (size_t)argc);
+    if (!argv) {
+      return jsvalue_to_heap(JS_ThrowOutOfMemory(ctx));
+    }
+  }
   int i;
   for (i = 0; i < argc; i++) {
     argv[i] = *(argv_ptrs[i]);
   }
 
-  return jsvalue_to_heap(JS_Call(ctx, *func_obj, *this_obj, argc, argv));
+  JSValue result = JS_Call(ctx, *func_obj, *this_obj, argc, argv);
+  free(argv);
+  return jsvalue_to_heap(result);
 }
 
 /**
@@ -1564,6 +1597,9 @@ JSValue *QTS_bjson_decode(JSContext *ctx, JSValueConst *data) {
   if (!buffer)
     return jsvalue_to_heap(JS_EXCEPTION);
 
-  JSValue value = JS_ReadObject(ctx, buffer, length, 0);
+  // Must accept references: QTS_bjson_encode writes them (JS_WRITE_OBJ_REFERENCE) for shared
+  // and cyclic objects, and without this flag decoding such data fails with
+  // "object references are not allowed". Bytecode and SharedArrayBuffer stay disallowed.
+  JSValue value = JS_ReadObject(ctx, buffer, length, JS_READ_OBJ_REFERENCE);
   return jsvalue_to_heap(value);
 }

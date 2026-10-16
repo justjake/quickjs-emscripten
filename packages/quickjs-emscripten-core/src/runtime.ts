@@ -142,15 +142,15 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
    */
   newContext(options: ContextOptions = {}): QuickJSContext {
     const intrinsics = intrinsicsToFlags(options.intrinsics)
-    const ctx = new Lifetime(
-      options.contextPointer || this.ffi.QTS_NewContext(this.rt.value, intrinsics),
-      undefined,
-      (ctx_ptr) => {
-        this.contextMap.delete(ctx_ptr)
-        this.callbacks.deleteContext(ctx_ptr)
-        this.ffi.QTS_FreeContext(ctx_ptr)
-      },
-    )
+    const ctxPtr = options.contextPointer || this.ffi.QTS_NewContext(this.rt.value, intrinsics)
+    if (!ctxPtr) {
+      throw new Error("Failed to create QuickJSContext (out of memory)")
+    }
+    const ctx = new Lifetime(ctxPtr, undefined, (ctx_ptr) => {
+      this.contextMap.delete(ctx_ptr)
+      this.callbacks.deleteContext(ctx_ptr)
+      this.ffi.QTS_FreeContext(ctx_ptr)
+    })
 
     const context = new QuickJSContext({
       module: this.module,
@@ -251,7 +251,7 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
       ctxPtrOut.value.ptr,
     )
 
-    const ctxPtr = ctxPtrOut.value.typedArray[0] as JSContextPointer
+    const ctxPtr = ctxPtrOut.value.typedArray.value[0] as JSContextPointer
     ctxPtrOut.dispose()
     if (ctxPtr === 0) {
       // No jobs executed.
