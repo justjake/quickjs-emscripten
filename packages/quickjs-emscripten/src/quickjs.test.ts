@@ -1390,6 +1390,19 @@ export default "the default";
       vm.runtime.setMemoryLimit(-1)
     })
 
+    it("a valid memory limit still bounds a large allocation, and the runtime disposes cleanly", () => {
+      vm.runtime.setMemoryLimit(1024 * 1024)
+      try {
+        const result = vm.evalCode(`"x".repeat(8 * 1024 * 1024)`)
+        assert.ok(result.error, "expected the 8 MiB string to exceed a 1 MiB limit")
+        assert.match(vm.dump(result.error).message as string, /out of memory/i)
+        result.error.dispose()
+      } finally {
+        vm.runtime.setMemoryLimit(-1)
+      }
+      // afterEach disposes the context; it asserts nothing was leaked.
+    })
+
     it("rejects max stack sizes that would wrap in a 32-bit size_t", () => {
       for (const bad of [NaN, Infinity, 2 ** 32]) {
         assert.throws(() => vm.runtime.setMaxStackSize(bad), RangeError, String(bad))
