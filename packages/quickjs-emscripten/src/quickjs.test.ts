@@ -1191,6 +1191,301 @@ export default "the default";
     })
   })
 
+  describe("WASM memory growth", () => {
+    // Growing the WASM heap replaces `module.HEAPU8.buffer` and detaches every
+    // TypedArray view created earlier. Reading a detached view yields `undefined`.
+    // These tests assert our out-parameter handling reads through the *current* heap.
+    const getModule = () =>
+      (vm as any).module as {
+        HEAPU8: Uint8Array
+        _malloc(n: number): number
+        _free(p: number): void
+      }
+
+    /** Force the heap to grow now. Throws if it didn't, so the tests below can't pass vacuously. */
+    function growHeap() {
+      const module = getModule()
+      const before = module.HEAPU8.buffer
+      // Blocks that fit in existing free space don't grow the heap, so double the size until one doesn't.
+      // (Compare with `!==`: assert.notStrictEqual would try to print the whole heap on failure.)
+      for (let mb = 16; module.HEAPU8.buffer === before; mb *= 2) {
+        assert.ok(mb <= 512, "heap did not grow")
+        module._free(module._malloc(mb * 1024 * 1024))
+      }
+    }
+
+    it("newTypedArray reads current heap contents after growth", () => {
+      const memory = (vm as any).memory as any
+      using array = memory.newMutablePointerArray(2)
+      const staleView = array.value.typedArray.value
+      growHeap()
+      assert.equal(staleView.length, 0, "precondition: the old view is detached")
+
+      const module = getModule()
+      new Int32Array(module.HEAPU8.buffer, array.value.ptr, 2).set([1234, 5678])
+      assert.deepEqual(Array.from(array.value.typedArray.value), [1234, 5678])
+    })
+
+    it("newTypedArray zero-initializes", () => {
+      const memory = (vm as any).memory as any
+      // Dirty the heap first so zeroing is observable.
+      const module = getModule()
+      const dirty = module._malloc(64)
+      module.HEAPU8.fill(0xff, dirty, dirty + 64)
+      module._free(dirty)
+      using array = memory.newMutablePointerArray(8)
+      assert.deepEqual(Array.from(array.value.typedArray.value), new Array(8).fill(0))
+    })
+
+    it(".getLength() after the heap grew since the context was created", () => {
+      growHeap()
+      using array = vm.unwrapResult(vm.evalCode(`new Array(1234).fill(0)`))
+      assert.strictEqual(vm.getLength(array), 1234)
+    })
+
+    it(".getOwnPropertyNames() after the heap grew, with many keys", () => {
+      growHeap()
+      const count = 50_000
+      using object = vm.unwrapResult(
+        vm.evalCode(`const o = {}; for (let i = 0; i < ${count}; i++) o["k" + i] = i; o`),
+      )
+      using names = vm.unwrapResult(vm.getOwnPropertyNames(object))
+      assert.strictEqual(names.length, count)
+      assert.strictEqual(vm.getString(names[0]), "k0")
+      assert.strictEqual(vm.getString(names[count - 1]), `k${count - 1}`)
+    })
+
+    it(".getArrayBuffer() result is still readable after the heap grew", () => {
+      using handle = vm.unwrapResult(vm.evalCode(`new Uint8Array([1, 2, 3, 4]).buffer`))
+      using bytes = vm.getArrayBuffer(handle)
+      growHeap()
+      assert.deepEqual(Array.from(bytes.value), [1, 2, 3, 4])
+    })
+
+    it(".executePendingJobs() when a job grows the heap", () => {
+      const module = getModule()
+      const bufferBefore = module.HEAPU8.buffer
+      // The heap may already be large from earlier tests, so the job allocates until the host
+      // sees the heap grow, rather than assuming a fixed amount is enough.
+      using heapGrew = vm.newFunction("heapGrew", () =>
+        vm.newNumber(module.HEAPU8.buffer !== bufferBefore ? 1 : 0),
+      )
+      vm.setProp(vm.global, "heapGrew", heapGrew)
+      vm.unwrapResult(
+        vm.evalCode(`Promise.resolve().then(() => {
+          const kept = []
+          for (let n = 0; n < 1000; n++) {
+            kept.push(new ArrayBuffer(4 * 1024 * 1024))
+            if (heapGrew()) return
+          }
+          throw new Error("heap never grew")
+        })`),
+      ).dispose()
+      const result = vm.runtime.executePendingJobs()
+      assert.ok(module.HEAPU8.buffer !== bufferBefore, "precondition: the job grew the heap")
+      // Throws if the job threw (e.g. "heap never grew").
+      assert.strictEqual(vm.unwrapResult(result), 1)
+      // The job ran in `vm`; a stale ctxPtr would have created a second, leaked context.
+      assert.strictEqual((vm.runtime as any).contextMap.size, 1)
+    })
+  })
+
+  describe("failure paths free host memory", () => {
+    /** Record every pointer malloc'd and freed while `fn` runs. */
+    function trackHeap<T>(fn: () => T): {
+      result: T | undefined
+      error: unknown
+      leaked: number[]
+    } {
+      const module = (vm as any).module
+      const { _malloc, _free } = module
+      const live = new Set<number>()
+      module._malloc = (n: number) => {
+        const ptr = _malloc(n)
+        live.add(ptr)
+        return ptr
+      }
+      module._free = (ptr: number) => {
+        live.delete(ptr)
+        return _free(ptr)
+      }
+      try {
+        return { result: fn(), error: undefined, leaked: [...live] }
+      } catch (error) {
+        return { result: undefined, error, leaked: [...live] }
+      } finally {
+        module._malloc = _malloc
+        module._free = _free
+        live.forEach((ptr) => _free(ptr))
+      }
+    }
+
+    it(".getString() frees the C string if decoding throws", () => {
+      using handle = vm.newString("hello")
+      const module = (vm as any).module
+      const UTF8ToString = module.UTF8ToString
+      const ffi = (vm as any).ffi
+      const QTS_FreeCString = ffi.QTS_FreeCString
+      let freed = 0
+      ffi.QTS_FreeCString = (...args: unknown[]) => {
+        freed++
+        return QTS_FreeCString.apply(ffi, args)
+      }
+      module.UTF8ToString = () => {
+        throw new Error("decode failed")
+      }
+      try {
+        assert.throws(() => vm.getString(handle), /decode failed/)
+      } finally {
+        module.UTF8ToString = UTF8ToString
+        ffi.QTS_FreeCString = QTS_FreeCString
+      }
+      assert.strictEqual(freed, 1)
+    })
+
+    it("throws instead of writing through a null pointer when the WASM heap is exhausted", () => {
+      const module = (vm as any).module
+      const _malloc = module._malloc
+      module._malloc = () => 0
+      try {
+        assert.throws(() => vm.newString("hello"), /out of memory/)
+        assert.throws(() => vm.newArrayBuffer(new Uint8Array([1, 2, 3]).buffer), /out of memory/)
+        assert.throws(() => vm.callFunction(vm.global, vm.undefined, vm.undefined), /out of memory/)
+      } finally {
+        module._malloc = _malloc
+      }
+    })
+
+    it(".getOwnPropertyNames() does not unbalance QuickJS allocation counters", () => {
+      using object = vm.unwrapResult(vm.evalCode(`({ a: 1, b: 2, c: 3 })`))
+      const count = () => {
+        const usage = vm.runtime.computeMemoryUsage()
+        const { malloc_count } = vm.dump(usage)
+        usage.dispose()
+        return malloc_count as number
+      }
+      const before = count()
+      using names = vm.unwrapResult(vm.getOwnPropertyNames(object))
+      names.dispose()
+      // The out-array is plain malloc'd memory; freeing it with js_free would drop the count.
+      assert.strictEqual(count(), before)
+    })
+
+    it(".newArrayBuffer() frees the host buffer and throws if QuickJS cannot create it", () => {
+      // With no headroom, allocating the ArrayBuffer object fails.
+      vm.runtime.setMemoryLimit(1)
+      const { error, leaked } = trackHeap(() => vm.newArrayBuffer(new Uint8Array([1, 2, 3]).buffer))
+      vm.runtime.setMemoryLimit(-1)
+      assert.ok(error, "expected newArrayBuffer to throw")
+      assert.deepEqual(leaked, [])
+    })
+  })
+
+  describe("large inputs to C", () => {
+    it(".dumpMemoryUsage() is not truncated for a runtime with many object kinds", () => {
+      vm.unwrapResult(
+        vm.evalCode(`
+          globalThis.f = function () { return 1 }
+          globalThis.o = { a: 1, b: [1, 2, 3], c: new Map([[1, 2]]) }
+          globalThis.p = Promise.resolve()
+          globalThis.A = class A { m() {} }
+          globalThis.e = new Error("e")
+          globalThis.u8 = new Uint8Array(10)
+          globalThis.rx = /a+/g
+        `),
+      ).dispose()
+      const dump = vm.runtime.dumpMemoryUsage()
+      // The old fixed 1 KiB buffer cut the report off mid-line.
+      assert.ok(dump.endsWith("\n"), `report ends mid-line: ${JSON.stringify(dump.slice(-40))}`)
+    })
+
+    it(".callFunction() with a very large argument list returns a result or a catchable error", () => {
+      using fn = vm.unwrapResult(vm.evalCode(`(...args) => args.length`))
+      const args = new Array(1_000_000).fill(vm.undefined)
+      const result = vm.callFunction(fn, vm.undefined, args)
+      if (result.error) {
+        result.error.dispose()
+      } else {
+        result.value.dispose()
+      }
+      // A variable-length array of this size on the wasm stack used to trap the whole module.
+      assert.strictEqual(vm.getNumber(vm.unwrapResult(vm.evalCode(`1 + 1`))), 2)
+    })
+  })
+
+  describe("allocation failure", () => {
+    it("newContext() throws if QuickJS cannot create the context", () => {
+      vm.runtime.setMemoryLimit(1)
+      try {
+        assert.throws(() => vm.runtime.newContext(), /out of memory/)
+      } finally {
+        vm.runtime.setMemoryLimit(-1)
+      }
+    })
+
+    it("heapValueHandle() throws on the NULL pointer the C side returns when it cannot allocate", () => {
+      const memory = (vm as any).memory
+      assert.throws(() => memory.heapValueHandle(0), /out of memory/)
+    })
+
+    it(".getOwnPropertyNames() works for objects with no own properties", () => {
+      // The C side must not treat an empty allocation as a failure.
+      using object = vm.newObject()
+      using names = vm.unwrapResult(vm.getOwnPropertyNames(object))
+      assert.strictEqual(names.length, 0)
+    })
+  })
+
+  describe("binary JSON", () => {
+    const roundTrip = (source: string) => {
+      using value = vm.unwrapResult(vm.evalCode(source))
+      using encoded = vm.encodeBinaryJSON(value)
+      using decoded = vm.decodeBinaryJSON(encoded)
+      return vm.dump(decoded)
+    }
+
+    it("round-trips plain values", () => {
+      assert.deepEqual(roundTrip(`({ a: 1, b: [1, 2, { c: "d" }], e: null })`), {
+        a: 1,
+        b: [1, 2, { c: "d" }],
+        e: null,
+      })
+    })
+
+    it("round-trips an object referenced more than once", () => {
+      const result = roundTrip(
+        `const shared = { n: 1 }; ({ a: shared, b: shared, list: [shared, shared] })`,
+      )
+      assert.deepEqual(result, { a: { n: 1 }, b: { n: 1 }, list: [{ n: 1 }, { n: 1 }] })
+    })
+
+    /** Encode the guest value of `source`, decode it into a global `decoded`, and evaluate `check`. */
+    const decodedSatisfies = (source: string, check: string) => {
+      using value = vm.unwrapResult(vm.evalCode(source))
+      using encoded = vm.encodeBinaryJSON(value)
+      using decoded = vm.decodeBinaryJSON(encoded)
+      vm.setProp(vm.global, "decoded", decoded)
+      using result = vm.unwrapResult(vm.evalCode(check))
+      return vm.dump(result)
+    }
+
+    it("preserves object identity for shared references", () => {
+      const same = decodedSatisfies(
+        `const shared = { n: 1 }; ({ a: shared, b: shared })`,
+        `decoded.a === decoded.b`,
+      )
+      assert.strictEqual(same, true)
+    })
+
+    it("round-trips a cyclic object", () => {
+      const ok = decodedSatisfies(
+        `const o = { name: "loop" }; o.self = o; o`,
+        `decoded.name === "loop" && decoded.self === decoded`,
+      )
+      assert.strictEqual(ok, true)
+    })
+  })
+
   describe("memory pressure", () => {
     it("can pass a large string to a C function", async () => {
       const jsonString = await fs.promises.readFile(
