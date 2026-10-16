@@ -1668,6 +1668,54 @@ function asyncContextTests(
     // |---------------------|--------------------|
     // | 4096 (default)      | 12                 |
     // | 81920               | 297                |
+    // The asyncify buffer must hold every suspended frame QuickJS lets us create. If it is smaller,
+    // suspending in the deepest recursion QuickJS allows aborts the whole module ("unreachable").
+    // Patterns that go through C functions use more host (V8) stack per level when unwinding, so they
+    // are only run with the smaller limit to stay under node's own call stack size.
+    const recursionPatterns: Record<string, [(leaf: string) => string, number[]]> = {
+      plain: [
+        (leaf) => `function f(d) { return d === 0 ? ${leaf} : f(d - 1) + 0 }`,
+        [81920, 262144],
+      ],
+      arrayMap: [
+        (leaf) => `function f(d) { return d === 0 ? ${leaf} : [d - 1].map(f)[0] + 0 }`,
+        [81920],
+      ],
+      apply: [
+        (leaf) => `function f(d) { return d === 0 ? ${leaf} : f.apply(null, [d - 1]) + 0 }`,
+        [81920],
+      ],
+    }
+    for (const [name, [define, maxStackSizes]] of Object.entries(recursionPatterns)) {
+      for (const maxStackSize of maxStackSizes) {
+        it(`can suspend at the deepest ${name} recursion allowed by max stack ${maxStackSize}`, async () => {
+          vm.runtime.setMaxStackSize(maxStackSize)
+          const completesSync = (depth: number) => {
+            const result = vm.evalCode(`${define("0")}; f(${depth})`)
+            if (result.error) {
+              result.error.dispose()
+              return false
+            }
+            result.value.dispose()
+            return true
+          }
+          let [low, high] = [10, Math.floor(maxStackSize / 50)]
+          assert.ok(!completesSync(high), "upper bound should exceed the QuickJS stack limit")
+          while (low < high) {
+            const mid = Math.ceil((low + high) / 2)
+            if (completesSync(mid)) low = mid
+            else high = mid - 1
+          }
+
+          vm.newAsyncifiedFunction("hostSleep", async () => vm.newNumber(1)).consume((fn) =>
+            vm.setProp(vm.global, "hostSleep", fn),
+          )
+          const result = await vm.evalCodeAsync(`${define("hostSleep()")}; f(${low})`)
+          assert.strictEqual(vm.getNumber(vm.unwrapResult(result)), 1)
+        })
+      }
+    }
+
     it("is enough to support at least 20 levels of function nesting", async () => {
       // The nesting levels of the test cannot be too high, otherwise the
       // node.js call stack will overflow when executing `yarn test`

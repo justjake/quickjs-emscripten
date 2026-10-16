@@ -86,7 +86,11 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
    * Set the max stack size for this runtime in bytes.
    * To remove the limit, set to `0`.
    *
-   * Setting this limit also adjusts the global `ASYNCIFY_STACK_SIZE` for the entire {@link QuickJSAsyncWASMModule}.
+   * Setting this limit also adjusts the global `ASYNCIFY_STACK_SIZE` for the entire {@link QuickJSAsyncWASMModule}
+   * to 3x the limit (never less than the build's default), so that QuickJS reports a catchable
+   * "stack overflow" before an async host function can suspend deeper than the asyncify buffer holds.
+   * Without calling this, the build default (81920 bytes) holds roughly 300 nested suspended
+   * frames; suspending deeper aborts the WASM module, which cannot be recovered.
    * See the [pull request](https://github.com/justjake/quickjs-emscripten/pull/114) for more details.
    */
   public override setMaxStackSize(stackSize: number): void {

@@ -447,8 +447,18 @@ int QTS_BuildIsSanitizeLeak() {
 }
 
 #ifdef QTS_ASYNCIFY
-EM_JS(void, set_asyncify_stack_size, (size_t size, size_t default_size), {
-  Asyncify.StackSize = size || default_size;
+// The asyncify buffer holds the saved locals of every suspended wasm frame. That needs more bytes
+// than the native stack depth QuickJS limits with JS_SetMaxStackSize: measured up to 1.9x for
+// recursive JS across release/debug and quickjs/quickjs-ng builds. If the buffer is smaller than
+// the QuickJS limit requires, a deep suspension aborts the module ("unreachable") instead of
+// throwing a catchable "stack overflow". Leave margin over the measured worst case.
+#define QTS_ASYNCIFY_STACK_FACTOR 3
+
+EM_JS(void, set_asyncify_stack_size, (size_t size, size_t default_size, size_t factor), {
+  size = size >>> 0;
+  default_size = default_size >>> 0;
+  // malloc'd once per suspension; cap well below the 2 GiB wasm heap limit.
+  Asyncify.StackSize = size ? Math.min(Math.max(size * factor, default_size), 0x40000000) : default_size;
 });
 #endif
 
@@ -458,7 +468,7 @@ EM_JS(void, set_asyncify_stack_size, (size_t size, size_t default_size), {
 
 void QTS_RuntimeSetMaxStackSize(JSRuntime *rt, size_t stack_size) {
 #ifdef QTS_ASYNCIFY
-  set_asyncify_stack_size(stack_size, QTS_ASYNCIFY_DEFAULT_STACK_SIZE);
+  set_asyncify_stack_size(stack_size, QTS_ASYNCIFY_DEFAULT_STACK_SIZE, QTS_ASYNCIFY_STACK_FACTOR);
 #endif
   JS_SetMaxStackSize(rt, stack_size);
 }
