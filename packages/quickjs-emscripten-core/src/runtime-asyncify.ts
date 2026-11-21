@@ -111,7 +111,7 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
         maxJobsToExecute ?? -1,
         ctxPtrOut.value.ptr,
       )
-      const ctxPtr = ctxPtrOut.value.typedArray[0] as JSContextPointer
+      const ctxPtr = this.memory.readPointer<JSContextPointer>(ctxPtrOut.value.ptr)
       return this.resolveExecutePendingJobsResult(valuePtr, ctxPtr)
     } finally {
       ctxPtrOut.dispose()

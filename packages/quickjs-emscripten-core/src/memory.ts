@@ -62,6 +62,15 @@ export class ModuleMemory {
     return new Lifetime({ typedArray, ptr }, undefined, (value) => this.module._free(value.ptr))
   }
 
+  /**
+   * Read one pointer out of the heap through a view built at call time. WASM
+   * memory growth detaches any view made earlier, so a caller that suspends
+   * between allocating and reading must not reuse the original typed array.
+   */
+  readPointer<T extends number>(ptr: number): T {
+    return new Int32Array(this.module.HEAPU8.buffer, ptr, 1)[0] as T
+  }
+
   // TODO: shouldn't this be Uint32 instead of Int32?
   newMutablePointerArray<T extends number>(
     length: number,
