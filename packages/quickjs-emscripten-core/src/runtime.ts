@@ -235,6 +235,12 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
    * In QuickJS, promises and async functions *inside the runtime* create
    * pendingJobs. These do not execute immediately and need to triggered to run.
    *
+   * If this runtime was created from an Asyncify variant and a pending job may
+   * call an asyncified host function (see `QuickJSAsyncContext#newAsyncifiedFunction`),
+   * use `QuickJSAsyncRuntime#executePendingJobsAsync` instead. When a job
+   * suspends, this synchronous version throws "Function unexpectedly returned a
+   * Promise" because it cannot wait for the host function to settle.
+   *
    * @param maxJobsToExecute - When negative, run all pending jobs. Otherwise execute
    * at most `maxJobsToExecute` before returning.
    *
