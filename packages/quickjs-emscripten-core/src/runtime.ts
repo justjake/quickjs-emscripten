@@ -252,7 +252,8 @@ export class QuickJSRuntime extends UsingDisposable implements Disposable {
       ctxPtrOut.value.ptr,
     )
 
-    const ctxPtr = ctxPtrOut.value.typedArray[0] as JSContextPointer
+    // Read through a fresh view: a job that grows WASM memory detaches the one made above.
+    const ctxPtr = this.memory.readPointer<JSContextPointer>(ctxPtrOut.value.ptr)
     ctxPtrOut.dispose()
     return this.resolveExecutePendingJobsResult(valuePtr, ctxPtr)
   }
