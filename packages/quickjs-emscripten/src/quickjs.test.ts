@@ -1224,6 +1224,34 @@ function asyncContextTests(
   })
 
   describe("asyncify functions", () => {
+    it("supports sequential awaited host calls in one evaluation", async () => {
+      let asyncFunctionCalls = 0
+      vm.newAsyncifiedFunction("get", async (pathHandle) => {
+        asyncFunctionCalls++
+        const path = vm.getString(pathHandle)
+        return vm.newString(JSON.stringify({ path }))
+      }).consume((fn) => vm.setProp(vm.global, "get", fn))
+
+      const result = await vm.evalCodeAsync(`
+        (async () => {
+          const a = JSON.parse(await get("/a"))
+          const b = JSON.parse(await get("/b"))
+          const c = JSON.parse(await get("/c"))
+          return [a, b, c]
+        })()
+      `)
+
+      const promise = vm.unwrapResult(result).consume((handle) => vm.resolvePromise(handle))
+      vm.unwrapResult(await vm.runtime.executePendingJobsAsync())
+      const resolved = vm.unwrapResult(await promise)
+      assert.deepEqual(vm.dump(resolved), [{ path: "/a" }, { path: "/b" }, { path: "/c" }])
+      resolved.dispose()
+      assert.equal(asyncFunctionCalls, 3)
+
+      const reuseResult = await vm.evalCodeAsync("1 + 1")
+      assert.equal(vm.unwrapResult(reuseResult).consume(vm.dump), 2)
+    })
+
     it("sees Promise<handle> as synchronous", async () => {
       let asyncFunctionCalls = 0
       const asyncFn = async () => {

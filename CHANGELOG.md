@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.33.0 (unreleased)
+
+- [#265](https://github.com/justjake/quickjs-emscripten/pull/265) Fix sequential awaited host calls in Asyncify runtimes ([#258](https://github.com/justjake/quickjs-emscripten/issues/258)).
+  - Add `QuickJSAsyncRuntime.executePendingJobsAsync()`. Use it instead of `executePendingJobs()` when pending jobs may call asyncified host functions.
+  - **Possibly breaking**: on a runtime from an Asyncify variant, `runtime.executePendingJobs()` now throws "Function unexpectedly returned a Promise" if a pending job suspends in an asyncified host function. Previously this went unnoticed and left the module in a corrupted state. Switch such callers to `await runtime.executePendingJobsAsync()`.
+  - Release Asyncify variants now compile `{ async: true }` into the bindings of functions that may suspend, as debug variants already did.
+  - Fix reading the pending-job context pointer through a typed array detached by WASM memory growth.
+
 ## v0.32.0
 
 - [#227](https://github.com/justjake/quickjs-emscripten/pull/227)

@@ -555,6 +555,28 @@ const upperCaseData = context.unwrapResult(result).consume(context.getString)
 console.log(upperCaseData) // 'VERY USEFUL DATA'
 ```
 
+##### Pending jobs that call asyncified functions
+
+If code that runs from a pending job -- for example, the continuation of an
+`async` function after an `await` -- calls an asyncified host function, it may
+suspend. The synchronous `runtime.executePendingJobs()` cannot wait for the host
+function, so on an Asyncify runtime it throws "Function unexpectedly returned a
+Promise". Drive pending jobs with `await runtime.executePendingJobsAsync()`
+instead:
+
+```typescript
+const result = await context.evalCodeAsync(`
+  (async () => {
+    const a = await get("/a")
+    const b = await get("/b")
+    return [a, b]
+  })()
+`)
+const promise = context.resolvePromise(context.unwrapResult(result))
+context.unwrapResult(await context.runtime.executePendingJobsAsync())
+const resolved = context.unwrapResult(await promise)
+```
+
 ### Testing your code
 
 This library is complicated to use, so please consider automated testing your

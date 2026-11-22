@@ -2,6 +2,7 @@ import type {
   QuickJSAsyncEmscriptenModule,
   QuickJSAsyncFFI,
   JSContextPointer,
+  JSContextPointerPointer,
   JSRuntimePointer,
 } from "@jitl/quickjs-ffi-types"
 import { QuickJSAsyncContext } from "./context-asyncify"
@@ -21,6 +22,7 @@ import type {
 } from "./types"
 import { intrinsicsToFlags } from "./types"
 import { Lifetime } from "./lifetime"
+import type { ExecutePendingJobsResult } from "./runtime"
 
 export class QuickJSAsyncRuntime extends QuickJSRuntime {
   declare public context: QuickJSAsyncContext | undefined
@@ -91,5 +93,28 @@ export class QuickJSAsyncRuntime extends QuickJSRuntime {
    */
   public override setMaxStackSize(stackSize: number): void {
     return super.setMaxStackSize(stackSize)
+  }
+
+  /**
+   * Asyncified version of {@link QuickJSRuntime.executePendingJobs}.
+   *
+   * Pending jobs may call an asyncified host function, so the synchronous
+   * version cannot safely drive a runtime created from an Asyncify build.
+   */
+  async executePendingJobsAsync(
+    maxJobsToExecute: number | void = -1,
+  ): Promise<ExecutePendingJobsResult> {
+    const ctxPtrOut = this.memory.newMutablePointerArray<JSContextPointerPointer>(1)
+    try {
+      const valuePtr = await this.ffi.QTS_ExecutePendingJob_MaybeAsync(
+        this.rt.value,
+        maxJobsToExecute ?? -1,
+        ctxPtrOut.value.ptr,
+      )
+      const ctxPtr = this.memory.readPointer<JSContextPointer>(ctxPtrOut.value.ptr)
+      return this.resolveExecutePendingJobsResult(valuePtr, ctxPtr)
+    } finally {
+      ctxPtrOut.dispose()
+    }
   }
 }
