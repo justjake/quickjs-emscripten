@@ -700,10 +700,33 @@ JSValue *QTS_NewArray(JSContext *ctx) {
 }
 
 void qts_free_buffer(JSRuntime *unused_rt, void *unused_opaque, void *ptr) { free(ptr); }
+#ifdef QTS_USE_QUICKJS_NG
+// The host allocates the buffer with the module's malloc, so libc realloc and free own it.
+static void *qts_realloc_buffer(JSRuntime *unused_rt, void *unused_opaque, void *ptr, size_t size) {
+  if (size == 0) {
+    free(ptr);
+    return NULL;
+  }
+  return realloc(ptr, size);
+}
+// JS_WriteObject allocates through the runtime, so the runtime's allocator owns the buffer.
+static void *qts_realloc_bjson_buffer(JSRuntime *rt, void *unused_opaque, void *ptr, size_t size) {
+  if (size == 0) {
+    js_free_rt(rt, ptr);
+    return NULL;
+  }
+  return js_realloc_rt(rt, ptr, size);
+}
+#endif
 
 JSValue *QTS_NewArrayBuffer(JSContext *ctx, JSVoid *buffer, size_t length) {
   return jsvalue_to_heap(
+      
+#ifdef QTS_USE_QUICKJS_NG
+      JS_NewArrayBuffer(ctx, (uint8_t *)buffer, length, 0, qts_realloc_buffer, NULL, false));
+#else
       JS_NewArrayBuffer(ctx, (uint8_t *)buffer, length, qts_free_buffer, NULL, false));
+#endif
 }
 
 JSValue *QTS_NewFloat64(JSContext *ctx, double num) {
@@ -1398,9 +1421,15 @@ EM_JS(int, qts_host_interrupt_handler, (JSRuntime * rt), {
 #endif
 
 // interrupt: QuickJS -> C
+#ifdef QTS_USE_QUICKJS_NG
+int qts_interrupt_handler(JSContext *ctx, void *_unused) {
+  return qts_host_interrupt_handler(JS_GetRuntime(ctx));
+}
+#else
 int qts_interrupt_handler(JSRuntime *rt, void *_unused) {
   return qts_host_interrupt_handler(rt);
 }
+#endif
 
 // interrupt: Host -> QuickJS
 void QTS_RuntimeEnableInterruptHandler(JSRuntime *rt) {
@@ -1552,7 +1581,11 @@ JSValue *QTS_bjson_encode(JSContext *ctx, JSValueConst *val) {
 
   // Transfer ownership of the buffer to the ArrayBuffer instead of copying it.
   // QuickJS will call qts_free_bjson_buffer when the ArrayBuffer is collected.
+  #ifdef QTS_USE_QUICKJS_NG
+  JSValue array = JS_NewArrayBuffer(ctx, buffer, length, 0, qts_realloc_bjson_buffer, NULL, false);
+#else
   JSValue array = JS_NewArrayBuffer(ctx, buffer, length, qts_free_bjson_buffer, NULL, false);
+#endif
   if (JS_IsException(array))
     js_free(ctx, buffer);
   return jsvalue_to_heap(array);
